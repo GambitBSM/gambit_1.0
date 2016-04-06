@@ -25,9 +25,9 @@ template<> PseudoJet::PseudoJet(const siscone::Cmomentum & four_vector) {
 /////////////////////////////////////////////
 // static members declaration              //
 /////////////////////////////////////////////
-std::auto_ptr<SISConePlugin>           SISConePlugin::stored_plugin;
-std::auto_ptr<std::vector<PseudoJet> > SISConePlugin::stored_particles;
-std::auto_ptr<Csiscone>                SISConePlugin::stored_siscone;
+std::unique_ptr<SISConePlugin>           SISConePlugin::stored_plugin;
+std::unique_ptr<std::vector<PseudoJet> > SISConePlugin::stored_particles;
+std::unique_ptr<Csiscone>                SISConePlugin::stored_siscone;
 
 
 /////////////////////////////////////////////
@@ -35,11 +35,11 @@ std::auto_ptr<Csiscone>                SISConePlugin::stored_siscone;
 /////////////////////////////////////////////
 string SISConePlugin::description () const {
   ostringstream desc;
-  
+
   const string on = "on";
   const string off = "off";
 
-  string sm_scale_string = "split-merge uses " + 
+  string sm_scale_string = "split-merge uses " +
     split_merge_scale_name(Esplit_merge_scale(split_merge_scale()));
 
   desc << "SISCone jet algorithm with " ;
@@ -79,7 +79,7 @@ void SISConePlugin::run_clustering(ClusterSequence & clust_seq) const {
 
   Csiscone   local_siscone;
   Csiscone * siscone;
-  
+
   unsigned n = clust_seq.jets().size();
 
   bool new_siscone = true; // by default we'll be running it
@@ -92,18 +92,18 @@ void SISConePlugin::run_clustering(ClusterSequence & clust_seq) const {
     // relevant pointers so that we can reuse and old run.
     if (stored_siscone.get() != 0) {
       new_siscone = !(stored_plugin->cone_radius()   == cone_radius()
-                      && stored_plugin->n_pass_max() == n_pass_max()  
+                      && stored_plugin->n_pass_max() == n_pass_max()
                       && stored_particles->size()    == n);
       if (!new_siscone) {
         for(unsigned i = 0; i < n; i++) {
           // only check momentum because indices will be correctly dealt
           // with anyway when extracting the clustering order.
-          new_siscone |= !have_same_momentum(clust_seq.jets()[i], 
+          new_siscone |= !have_same_momentum(clust_seq.jets()[i],
                                              (*stored_particles)[i]);
         }
       }
-    } 
-      
+    }
+
     // allocate the new siscone, etc., if need be
     if (new_siscone) {
       stored_siscone  .reset( new Csiscone );
@@ -134,17 +134,17 @@ void SISConePlugin::run_clustering(ClusterSequence & clust_seq) const {
       const PseudoJet & p = clust_seq.jets()[i]; // shorthand
       siscone_momenta[i] = Cmomentum(p.px(), p.py(), p.pz(), p.E());
     }
-    
+
     // run the jet finding
     //cout << "plg sms: " << split_merge_scale() << endl;
     siscone->compute_jets(siscone_momenta, cone_radius(), overlap_threshold(),
-			  n_pass_max(), protojet_or_ghost_ptmin(), 
+			  n_pass_max(), protojet_or_ghost_ptmin(),
 			  Esplit_merge_scale(split_merge_scale()));
   } else {
     // rerun the jet finding
     // just run the overlap part of the jets.
     //cout << "plg rcmp sms: " << split_merge_scale() << endl;
-    siscone->recompute_jets(overlap_threshold(), protojet_or_ghost_ptmin(), 
+    siscone->recompute_jets(overlap_threshold(), protojet_or_ghost_ptmin(),
 			    Esplit_merge_scale(split_merge_scale()));
   }
 
@@ -156,7 +156,7 @@ void SISConePlugin::run_clustering(ClusterSequence & clust_seq) const {
 
   for (int ijet = njet-1; ijet >= 0; ijet--) {
     const Cjet & jet = siscone->jets[ijet]; // shorthand
-    
+
     // Successively merge the particles that make up the cone jet
     // until we have all particles in it.  Start off with the zeroth
     // particle.
@@ -206,7 +206,7 @@ void SISConePlugin::run_clustering(ClusterSequence & clust_seq) const {
   extras->_jet_def_plugin = this;
 
   // give the extras object to the cluster sequence.
-  clust_seq.plugin_associate_extras(std::auto_ptr<ClusterSequence::Extras>(extras));
+  clust_seq.plugin_associate_extras(std::unique_ptr<ClusterSequence::Extras>(extras));
 }
 
 

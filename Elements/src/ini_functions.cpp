@@ -78,7 +78,7 @@ namespace Gambit
     {
       Backends::backendInfo().defaults[be] = def;
     }
-    catch (std::exception& e) { ini_catch(e); }    
+    catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
 

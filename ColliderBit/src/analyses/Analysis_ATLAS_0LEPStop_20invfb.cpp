@@ -4,6 +4,7 @@
 #include <iomanip>
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
 using namespace std;
@@ -117,53 +118,41 @@ namespace Gambit {
         HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
-        // Now define vectors of baseline objects
-        vector<HEPUtils::Particle*> baselineElectrons;
 
+        // Baseline lepton objects
+        vector<HEPUtils::Particle*> baselineElectrons, baselineMuons, baselineTaus;
         for (HEPUtils::Particle* electron : event->electrons()) {
-
-          if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
-
-
-        vector<HEPUtils::Particle*> baselineMuons;
         for (HEPUtils::Particle* muon : event->muons()) {
-
-          if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
-
-
-
-        vector<HEPUtils::Particle*> baselineTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
-
-          if (tau->pT() > 10. && fabs(tau->eta()) < 2.47) baselineTaus.push_back(tau);
+          if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(baselineTaus);
 
+
+        // Jets
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::Jet*> bJets;
         vector<HEPUtils::Jet*> nonBJets;
         vector<HEPUtils::Jet*> trueBJets; //for debugging
 
-        //Get b jets
-        //Note that we assume that b jets have previously been 100% tagged
-        //Now we use the new Buckley tagger
-
+        // Get b jets
+        /// @note We assume that b jets have previously been 100% tagged
+        //  Now we use the new Buckley tagger...   AB: ???!?
         const std::vector<double>  a = {0,10.};
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.7};
         HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
-
-
         for (HEPUtils::Jet* jet : event->jets()) {
-
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
           bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) {
             if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.){
               bJets.push_back(jet);
-            }
-            else {
+            } else {
               nonBJets.push_back(jet);
             }
           }
@@ -298,21 +287,21 @@ namespace Gambit {
         }
 
         //mjjj combinations
-      
-  HEPUtils::P4 mbjj0, mbjj1;
 
-  double mindphi_12 = 9999.;
-        
-  HEPUtils::P4 W1;
-  HEPUtils::P4 W2;
-  HEPUtils::P4 T1;
-  HEPUtils::P4 T2;
-  HEPUtils::P4 jet1;
-  HEPUtils::P4 jet2;
-  HEPUtils::P4 jet3;
-  HEPUtils::P4 jet4;
-  HEPUtils::P4 jet5;
-  HEPUtils::P4 jet6;
+        HEPUtils::P4 mbjj0, mbjj1;
+
+        double mindphi_12 = 9999.;
+
+        HEPUtils::P4 W1;
+        HEPUtils::P4 W2;
+        HEPUtils::P4 T1;
+        HEPUtils::P4 T2;
+        HEPUtils::P4 jet1;
+        HEPUtils::P4 jet2;
+        HEPUtils::P4 jet3;
+        HEPUtils::P4 jet4;
+        HEPUtils::P4 jet5;
+        HEPUtils::P4 jet6;
 
         //Need to form top quark four vectors from jets
         //Use the two leading b jets as the b jets (a slight departure from ATLAS which uses the two jets with the highest b weight)
@@ -346,7 +335,7 @@ namespace Gambit {
             for(unsigned int l=k+1; l<selectNonBJets.size(); l++) {
         jet1.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
         jet2.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
-       
+
         if(jet1.deltaR_eta(jet2)<mindphi_12) {
                 j1 = k;
                 j2 = l;
@@ -354,37 +343,37 @@ namespace Gambit {
                 W1 = jet1+jet2;
 
               }
-        
+
             }
           }
 
-    
+
           double mindphi_w1j3 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
-          
-      jet3.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
+
+            jet3.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
             if(jet3.deltaR_eta(W1)<mindphi_w1j3) {
               b1 = p;
               mindphi_w1j3 = jet3.deltaR_eta(W1);
               T1 = W1+jet3;
-    
+
             }
           }
 
-    double mindphi_45 = 9999.;
+          double mindphi_45 = 9999.;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
             for(unsigned int l=k; l<selectNonBJets.size(); l++) {
               if(k!=j1 && k!=j2 && l!=j1 && l!=j2) {
-              
-    jet4.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
-    jet5.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
 
-    if(jet4.deltaR_eta(jet5)<mindphi_45) {
+                jet4.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
+                jet5.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
+
+                if(jet4.deltaR_eta(jet5)<mindphi_45) {
                   //j4 = k;
                   //j5 = l;
                   mindphi_45 = jet4.deltaR_eta(jet5);
                   W2 = jet4+jet5;
-    
+
                 }
               }
             }
@@ -392,14 +381,14 @@ namespace Gambit {
           double mindphi_w2j6 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
             if(p!=b1) {
-           
-        jet6.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
+
+              jet6.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
 
               if(jet6.deltaR_eta(W2)<mindphi_w2j6) {
                 //j6 = p;
                 mindphi_w2j6 = jet6.deltaR_eta(W2);
                 T2 = W2+jet6;
-  
+
               }
             }
           }
@@ -654,14 +643,13 @@ namespace Gambit {
         if(isSRC2)_numSRC2++;
         if(isSRC3)_numSRC3++;
 
-
         return;
 
       }
-      
+
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_ATLAS_0LEPStop_20invfb* specificOther
@@ -686,67 +674,67 @@ namespace Gambit {
       void collect_results() {
 
         SignalRegionData results_SRA1;
-        results_SRA1.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRA1.set_sr_label("SRA1");
-        results_SRA1.set_observation(11.);
-        results_SRA1.set_background(15.8);
-        results_SRA1.set_backgroundsys(1.9);
-        results_SRA1.set_signalsys(0.);
-        results_SRA1.set_signal(_numSRA1);
+        results_SRA1.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRA1.sr_label = "SRA1";
+        results_SRA1.n_observed = 11.;
+        results_SRA1.n_background = 15.8;
+        results_SRA1.background_sys = 1.9;
+        results_SRA1.signal_sys = 0.;
+        results_SRA1.n_signal = _numSRA1;
 
         SignalRegionData results_SRA2;
-        results_SRA2.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRA2.set_sr_label("SRA2");
-        results_SRA2.set_observation(4.);
-        results_SRA2.set_background(4.1);
-        results_SRA2.set_backgroundsys(0.8);
-        results_SRA2.set_signalsys(0.);
-        results_SRA2.set_signal(_numSRA2);
+        results_SRA2.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRA2.sr_label = "SRA2";
+        results_SRA2.n_observed = 4.;
+        results_SRA2.n_background = 4.1;
+        results_SRA2.background_sys = 0.8;
+        results_SRA2.signal_sys = 0.;
+        results_SRA2.n_signal = _numSRA2;
 
         SignalRegionData results_SRA3;
-        results_SRA3.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRA3.set_sr_label("SRA3");
-        results_SRA3.set_observation(5.);
-        results_SRA3.set_background(4.1);
-        results_SRA3.set_backgroundsys(0.9);
-        results_SRA3.set_signalsys(0.);
-        results_SRA3.set_signal(_numSRA3);
+        results_SRA3.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRA3.sr_label = "SRA3";
+        results_SRA3.n_observed = 5.;
+        results_SRA3.n_background = 4.1;
+        results_SRA3.background_sys = 0.9;
+        results_SRA3.signal_sys = 0.;
+        results_SRA3.n_signal = _numSRA3;
 
         SignalRegionData results_SRA4;
-        results_SRA4.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRA4.set_sr_label("SRA4");
-        results_SRA4.set_observation(4.);
-        results_SRA4.set_background(2.4);
-        results_SRA4.set_backgroundsys(0.7);
-        results_SRA4.set_signalsys(0.);
-        results_SRA4.set_signal(_numSRA4);
+        results_SRA4.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRA4.sr_label = "SRA4";
+        results_SRA4.n_observed = 4.;
+        results_SRA4.n_background = 2.4;
+        results_SRA4.background_sys = 0.7;
+        results_SRA4.signal_sys = 0.;
+        results_SRA4.n_signal = _numSRA4;
 
         SignalRegionData results_SRC1;
-        results_SRC1.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRC1.set_sr_label("SRC1");
-        results_SRC1.set_observation(59.);
-        results_SRC1.set_background(68.);
-        results_SRC1.set_backgroundsys(7.);
-        results_SRC1.set_signalsys(0.);
-        results_SRC1.set_signal(_numSRC1);
+        results_SRC1.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRC1.sr_label = "SRC1";
+        results_SRC1.n_observed = 59.;
+        results_SRC1.n_background = 68.;
+        results_SRC1.background_sys = 7.;
+        results_SRC1.signal_sys = 0.;
+        results_SRC1.n_signal = _numSRC1;
 
         SignalRegionData results_SRC2;
-        results_SRC2.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRC2.set_sr_label("SRC2");
-        results_SRC2.set_observation(30.);
-        results_SRC2.set_background(34.);
-        results_SRC2.set_backgroundsys(5.);
-        results_SRC2.set_signalsys(0.);
-        results_SRC2.set_signal(_numSRC2);
+        results_SRC2.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRC2.sr_label = "SRC2";
+        results_SRC2.n_observed = 30.;
+        results_SRC2.n_background = 34.;
+        results_SRC2.background_sys = 5.;
+        results_SRC2.signal_sys = 0.;
+        results_SRC2.n_signal = _numSRC2;
 
         SignalRegionData results_SRC3;
-        results_SRC3.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
-        results_SRC3.set_sr_label("SRC3");
-        results_SRC3.set_observation(15.);
-        results_SRC3.set_background(20.3);
-        results_SRC3.set_backgroundsys(3.);
-        results_SRC3.set_signalsys(0.);
-        results_SRC3.set_signal(_numSRC3);
+        results_SRC3.analysis_name = "Analysis_ATLAS_0LEPStop_20invfb";
+        results_SRC3.sr_label = "SRC3";
+        results_SRC3.n_observed = 15.;
+        results_SRC3.n_background = 20.3;
+        results_SRC3.background_sys = 3.;
+        results_SRC3.signal_sys = 0.;
+        results_SRC3.n_signal = _numSRC3;
 
         add_result(results_SRA1);
         add_result(results_SRA2);

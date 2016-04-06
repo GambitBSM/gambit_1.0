@@ -50,7 +50,7 @@ class ClusterSequenceArea : public ClusterSequenceAreaBase {
 public:
   /// main constructor
   template<class L> ClusterSequenceArea
-         (const std::vector<L> & pseudojets, 
+         (const std::vector<L> & pseudojets,
 	  const JetDefinition & jet_def_in,
 	  const AreaDefinition & area_def_in)  : _area_def(area_def_in) {
     initialize_and_run_cswa(pseudojets, jet_def_in);
@@ -58,7 +58,7 @@ public:
 
   /// constructor with a GhostedAreaSpec
   template<class L> ClusterSequenceArea
-         (const std::vector<L> & pseudojets, 
+         (const std::vector<L> & pseudojets,
 	  const JetDefinition & jet_def_in,
 	  const GhostedAreaSpec & ghost_spec)   : _area_def(ghost_spec){
     initialize_and_run_cswa(pseudojets, jet_def_in);
@@ -66,7 +66,7 @@ public:
 
   /// constructor with a VoronoiAreaSpec
   template<class L> ClusterSequenceArea
-         (const std::vector<L> & pseudojets, 
+         (const std::vector<L> & pseudojets,
 	  const JetDefinition & jet_def_in,
 	  const VoronoiAreaSpec & voronoi_spec)   : _area_def(voronoi_spec){
     initialize_and_run_cswa(pseudojets, jet_def_in);
@@ -92,7 +92,7 @@ public:
   // /// return the total area, up to |y|<maxrap, that is free of jets
   // virtual double empty_area(double maxrap) const {
   //   return _area_base->empty_area(maxrap);}
-  // 
+  //
   // /// return something similar to the number of pure ghost jets
   // /// in the given rapidity range in an active area case.
   // /// For the local implementation we return empty_area/(0.55 pi R^2),
@@ -132,9 +132,9 @@ public:
   virtual bool has_explicit_ghosts() const {
     return _area_base->has_explicit_ghosts();
   }
-  
 
-  /// overload version of what's in the ClusterSequenceAreaBase class, which 
+
+  /// overload version of what's in the ClusterSequenceAreaBase class, which
   /// additionally checks compatibility between "selector" and region in which
   /// ghosts are thrown.
   ///
@@ -142,7 +142,7 @@ public:
   /// jet (see the BackgroundEstimator and Subtractor tools for more
   /// advanced usage)
   virtual void get_median_rho_and_sigma(const std::vector<PseudoJet> & all_jets,
-					const Selector & selector, 
+					const Selector & selector,
                                         bool use_area_4vector,
                                         double & median, double & sigma,
                                         double & mean_area,
@@ -157,7 +157,7 @@ public:
   /// which actually just does the same thing as the base version (but
   /// since we've overridden the 5-argument version above, we have to
   /// override the 4-argument version too.
-  virtual void get_median_rho_and_sigma(const Selector & selector, 
+  virtual void get_median_rho_and_sigma(const Selector & selector,
                                         bool use_area_4vector,
                                         double & median, double & sigma) const {
     ClusterSequenceAreaBase::get_median_rho_and_sigma(selector,use_area_4vector,
@@ -168,7 +168,7 @@ public:
   /// which actually just does the same thing as the base version (but
   /// since we've overridden the multi-argument version above, we have to
   /// override the 5-argument version too.
-  virtual void get_median_rho_and_sigma(const Selector & selector, 
+  virtual void get_median_rho_and_sigma(const Selector & selector,
                                         bool use_area_4vector,
                                         double & median, double & sigma,
 					double & mean_area) const {
@@ -177,12 +177,12 @@ public:
   }
 
 
-  /// overload version of what's in the ClusterSequenceAreaBase class, which 
+  /// overload version of what's in the ClusterSequenceAreaBase class, which
   /// additionally checks compatibility between "range" and region in which
   /// ghosts are thrown.
-  virtual void parabolic_pt_per_unit_area(double & a, double & b, 
-                                          const Selector & selector, 
-                                          double exclude_above=-1.0, 
+  virtual void parabolic_pt_per_unit_area(double & a, double & b,
+                                          const Selector & selector,
+                                          double exclude_above=-1.0,
                                           bool use_area_4vector=false) const {
     _warn_if_range_unsuitable(selector);
     ClusterSequenceAreaBase::parabolic_pt_per_unit_area(
@@ -191,17 +191,17 @@ public:
 
 
 private:
-  
+
   /// print a warning if the range is unsuitable for the current
   /// calculation of the area (e.g. because ghosts do not extend
   /// far enough).
   void _warn_if_range_unsuitable(const Selector & selector) const;
 
   template<class L> void initialize_and_run_cswa (
-                                 const std::vector<L> & pseudojets, 
+                                 const std::vector<L> & pseudojets,
                                  const JetDefinition & jet_def);
 
-  std::auto_ptr<ClusterSequenceAreaBase> _area_base;
+  std::unique_ptr<ClusterSequenceAreaBase> _area_base;
   AreaDefinition _area_def;
   static LimitedWarning _range_warnings;
   static LimitedWarning _explicit_ghosts_repeats_warnings;
@@ -210,51 +210,49 @@ private:
 
 //----------------------------------------------------------------------
 template<class L> void ClusterSequenceArea::initialize_and_run_cswa(
-           const std::vector<L> & pseudojets, 
+           const std::vector<L> & pseudojets,
            const JetDefinition  & jet_def_in)
  {
-  
+
   ClusterSequenceAreaBase * _area_base_ptr;
   switch(_area_def.area_type()) {
   case active_area:
-    _area_base_ptr = new ClusterSequenceActiveArea(pseudojets, 
-                                                   jet_def_in, 
+    _area_base_ptr = new ClusterSequenceActiveArea(pseudojets,
+                                                   jet_def_in,
                                                    _area_def.ghost_spec());
     break;
   case active_area_explicit_ghosts:
-    if (_area_def.ghost_spec().repeat() != 1) 
+    if (_area_def.ghost_spec().repeat() != 1)
       _explicit_ghosts_repeats_warnings.warn("Requested active area with explicit ghosts with repeat != 1; only 1 set of ghosts will be used");
-    _area_base_ptr = new ClusterSequenceActiveAreaExplicitGhosts(pseudojets, 
-                                                   jet_def_in, 
+    _area_base_ptr = new ClusterSequenceActiveAreaExplicitGhosts(pseudojets,
+                                                   jet_def_in,
                                                    _area_def.ghost_spec());
     break;
   case voronoi_area:
-    _area_base_ptr = new ClusterSequenceVoronoiArea(pseudojets, 
-                                                   jet_def_in, 
+    _area_base_ptr = new ClusterSequenceVoronoiArea(pseudojets,
+                                                   jet_def_in,
                                                    _area_def.voronoi_spec());
     break;
   case one_ghost_passive_area:
-    _area_base_ptr = new ClusterSequence1GhostPassiveArea(pseudojets, 
-						    jet_def_in, 
+    _area_base_ptr = new ClusterSequence1GhostPassiveArea(pseudojets,
+						    jet_def_in,
 						    _area_def.ghost_spec());
     break;
   case passive_area:
-    _area_base_ptr = new ClusterSequencePassiveArea(pseudojets, 
-						    jet_def_in, 
+    _area_base_ptr = new ClusterSequencePassiveArea(pseudojets,
+						    jet_def_in,
 						    _area_def.ghost_spec());
     break;
   default:
-    std::cerr << "Error: unrecognized area_type in ClusterSequenceArea:" 
+    std::cerr << "Error: unrecognized area_type in ClusterSequenceArea:"
               << _area_def.area_type() << std::endl;
     exit(-1);
   }
   // now copy across the information from the area base class
-  _area_base = std::auto_ptr<ClusterSequenceAreaBase>(_area_base_ptr);
+  _area_base = std::unique_ptr<ClusterSequenceAreaBase>(_area_base_ptr);
   transfer_from_sequence(*_area_base);
 }
 
 FASTJET_END_NAMESPACE
 
 #endif // __FASTJET_CLUSTERSEQUENCEAREA_HH__
-
-

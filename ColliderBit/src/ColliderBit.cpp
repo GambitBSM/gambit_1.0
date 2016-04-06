@@ -1,3 +1,5 @@
+
+
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
@@ -40,6 +42,7 @@
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
+#include "HEPUtils/FastJet.h"
 
 //#define DUMP_LIMIT_PLOT_DATA
 
@@ -70,9 +73,9 @@ namespace Gambit
           else step /= 10.;
         }
       }
-    
+
       double result = 0.5 * (1.0 - erf(p95 + (x - x95) / sigma / sqrt(2.)));
-    
+
       if (result < 0.0 or Utils::isnan(result))
       {
         cout << "result: " << result << endl;
@@ -111,11 +114,15 @@ namespace Gambit
     std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
     bool eventsGenerated;
-    int pythiaConfigurations, pythiaNumber, nEvents;
+    int nEvents;
     /// Analysis stuff
-    std::vector<std::string> analysisNames;
-    HEPUtilsAnalysisContainer globalAnalyses;
-    
+    bool useATLAS;
+    std::vector<std::string> analysisNamesATLAS;
+    HEPUtilsAnalysisContainer globalAnalysesATLAS;
+    bool useCMS;
+    std::vector<std::string> analysisNamesCMS;
+    HEPUtilsAnalysisContainer globalAnalysesCMS;
+
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -147,26 +154,17 @@ namespace Gambit
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
         piped_invalid_point.check();
-        pythiaNumber = 0;
-        // Defaults to 1 if option unspecified
-        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
-
-        while (pythiaNumber < pythiaConfigurations)
+        Loop::reset();
+        Loop::executeIteration(INIT);
+        currentEvent = 0;
+        #pragma omp parallel
         {
-          piped_invalid_point.check();
-          ++pythiaNumber;
-          Loop::reset();
-          Loop::executeIteration(INIT);
-          currentEvent = 0;
-          #pragma omp parallel
-          {
-            Loop::executeIteration(START_SUBPROCESS);
-            // main event loop
-            while(currentEvent<nEvents and not *Loop::done) {
-              Loop::executeIteration(currentEvent++);
-            }
-            Loop::executeIteration(END_SUBPROCESS);
+          Loop::executeIteration(START_SUBPROCESS);
+          // main event loop
+          while(currentEvent<nEvents and not *Loop::done) {
+            Loop::executeIteration(currentEvent++);
           }
+          Loop::executeIteration(END_SUBPROCESS);
         }
       }
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
@@ -226,13 +224,11 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName)) pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        if (runOptions->hasKey(*iter))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -323,17 +319,13 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-
+        if (runOptions->hasKey(*iter))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
-      
+
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
@@ -401,24 +393,46 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
+        // Reset Options
+        delphesOptions.clear();
+        std::string delphesConfigFile;
+        GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
+        delphesOptions.push_back(delphesConfigFile);
         // Setup new Delphes
-        GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
         result.init(delphesOptions);
       }
     }
 #endif // not defined EXCLUDE_DELPHES
 
 
-    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
+    void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
-      using namespace Pipes::getBuckFast;
-      std::string buckFastOption;
-      if (*Loop::iteration == INIT)
+      using namespace Pipes::getBuckFastATLAS;
+      bool partonOnly;
+      double antiktR;
+      if (*Loop::iteration == INIT and useATLAS)
+      {
+        result.clear();
+        // Setup new BuckFast:
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
+      }
+    }
+
+
+    void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
+    {
+      using namespace Pipes::getBuckFastCMS;
+      bool partonOnly;
+      double antiktR;
+      if (*Loop::iteration == INIT and useCMS)
       {
         result.clear();
         // Setup new BuckFast
-        // @note There's really nothing to do. BuckFast doesn't even have class variables.
-        result.init();
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
       }
     }
 
@@ -426,13 +440,15 @@ namespace Gambit
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
     {
       using namespace Pipes::getBuckFastIdentity;
-      std::string buckFastOption;
+      bool partonOnly;
+      double antiktR;
       if (*Loop::iteration == INIT)
       {
         result.clear();
         // Setup new BuckFast
-        // @note There's really nothing to do. BuckFast doesn't even have class variables.
-        result.init();
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
       }
     }
 
@@ -440,21 +456,25 @@ namespace Gambit
 
     /// *** Initialization for analyses ***
 
-    void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
-      using namespace Pipes::getAnalysisContainer;
+    void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getATLASAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
-        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        globalAnalyses.clear();
-        globalAnalyses.init(analysisNames);
+        useATLAS = runOptions->getValueOrDef<bool>(true, "useATLAS");
+        if (!useATLAS) return;
+        GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
+        globalAnalysesATLAS.clear();
+        globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
       }
+
+      if (!useATLAS) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
         result.clear();
-        result.init(analysisNames);
+        result.init(analysisNamesATLAS);
         return;
       }
 
@@ -467,16 +487,55 @@ namespace Gambit
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
         {
-          globalAnalyses.add(result);
+          globalAnalysesATLAS.add(result);
           // Use improve_xsec to combine results from the same process type
-          globalAnalyses.improve_xsec(result);
+          globalAnalysesATLAS.improve_xsec(result);
         }
         return;
       }
-      
+
     }
-    
-    
+
+    void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getCMSAnalysisContainer;
+      if (*Loop::iteration == BASE_INIT) {
+        useCMS = runOptions->getValueOrDef<bool>(true, "useCMS");
+        if (!useCMS) return;
+        GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
+        globalAnalysesCMS.clear();
+        globalAnalysesCMS.init(analysisNamesCMS);
+        return;
+      }
+
+      if (!useCMS) return;
+
+      if (*Loop::iteration == START_SUBPROCESS)
+      {
+        // Each thread gets its own Analysis container.
+        // Thus, their initialization is *after* INIT, within omp parallel.
+        result.clear();
+        result.init(analysisNamesCMS);
+        return;
+      }
+
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      {
+        const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+        const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+        result.add_xsec(xs_fb, xserr_fb);
+
+        // Combine results from the threads together
+        #pragma omp critical (access_globalAnalyses)
+        {
+          globalAnalysesCMS.add(result);
+          // Use improve_xsec to combine results from the same process type
+          globalAnalysesCMS.improve_xsec(result);
+        }
+        return;
+      }
+
+    }
+
 
     /// *** Hard Scattering Event Generators ***
 
@@ -498,281 +557,6 @@ namespace Gambit
 
 
 
-    /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
-    /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
-    void convertPythia8ParticleEvent(HEPUtils::Event& result)
-    {
-      using namespace Pipes::convertPythia8ParticleEvent;
-      if (*Loop::iteration <= BASE_INIT) return;
-      result.clear();
-
-      /// Get the next event from Pythia8
-      const Pythia8::Event& pevt = *Dep::HardScatteringEvent;
-
-      std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
-      std::vector<HEPUtils::Particle*> bpartons;
-      std::vector<HEPUtils::Particle*> tauCandidates;
-      HEPUtils::P4 pout; //< Sum of momenta outside acceptance
-
-      // Make a first pass of non-final particles to gather b-hadrons and taus
-      for (int i = 0; i < pevt.size(); ++i) {
-        const Pythia8::Particle& p = pevt[i];
-
-        // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-        if(p.idAbs()==5) {
-          std::vector<int> bDaughterList = p.daughterList();
-          bool isGoodB=true;
-
-          for (size_t daughter = 0; daughter < bDaughterList.size(); daughter++) {
-            const Pythia8::Particle& pDaughter = pevt[bDaughterList[daughter]];
-            int daughterID = pDaughter.idAbs();
-            if(daughterID == 5)isGoodB=false;
-          }
-
-          if(isGoodB){
-            HEPUtils::Particle* tmpB = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-            bpartons.push_back(tmpB);
-          }
-
-        }
-
-        // Veto leptonic taus
-        if(p.idAbs()==15) {
-          std::vector<int> tauDaughterList = p.daughterList();
-          HEPUtils::P4 tmpMomentum;
-          bool isGoodTau=true;
-
-          for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
-            const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
-            int daughterID = pDaughter.idAbs();
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
-                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
-              isGoodTau=false;
-            if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
-          }
-
-          if(isGoodTau){
-            HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-            tauCandidates.push_back(tmpTau);
-          }
-        }
-      }
-
-      // Loop over final state particles for jet inputs and MET
-      std::vector<fastjet::PseudoJet> jetparticles;
-      for (int i = 0; i < pevt.size(); ++i) {
-        const Pythia8::Particle& p = pevt[i];
-
-        // Only consider final state particles
-        if (!p.isFinal()) continue;
-
-        // Add particle outside ATLAS/CMS acceptance to MET
-        /// @todo Move out-of-acceptance MET contribution to BuckFast
-        if (std::abs(p.eta()) > 5.0) {
-          pout += mk_p4(p.p());
-          continue;
-        }
-
-        // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-        const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
-        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
-
-        // Add prompt and invisible particles as individual particles
-        if (prompt || !visible) {
-          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-          gp->set_prompt();
-          result.add_particle(gp); // Will be automatically categorised
-        }
-
-        // All particles other than invisibles and muons are jet constituents
-        if (visible && p.idAbs() != MCUtils::PID::MUON) jetparticles.push_back(mk_pseudojet(p.p()));
-      }
-
-      /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
-      /// @todo choose jet algorithm via _settings?
-      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
-      fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
-
-      /// Do jet b-tagging, etc. and add to the Event
-      /// @todo Use ghost tagging?
-      /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
-      for (auto& pj : pjets) {
-        /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
-        bool isB = false;
-
-        HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
-        for (auto& pb : bpartons) {
-          if (jetMom.deltaR_eta(pb->mom()) < 0.4) {
-            isB = true;
-            break;
-          }
-        }
-
-        bool isTau = false;
-        for (auto& ptau : tauCandidates){
-          if (jetMom.deltaR_eta(ptau->mom()) < 0.5){
-            isTau = true;
-            break;
-          }
-        }
-
-        // Add to the event (use jet momentum for tau)
-        if (isTau) {
-          HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
-          gp->set_prompt();
-          result.add_particle(gp);
-        }
-
-        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
-      }
-
-      /// Calculate missing momentum
-      //
-      // From balance of all visible momenta (requires isolation)
-      // const std::vector<Particle*> visibles = result.visible_particles();
-      // HEPUtils::P4 pvis;
-      // for (size_t i = 0; i < visibles.size(); ++i) {
-      //   pvis += visibles[i]->mom();
-      // }
-      // for (size_t i = 0; i < result.jets.size(); ++i) {
-      //   pvis += result.jets[i]->mom();
-      // }
-      // set_missingmom(-pvis);
-      //
-      // From sum of invisibles, including those out of range
-      for (size_t i = 0; i < result.invisible_particles().size(); ++i) {
-        pout += result.invisible_particles()[i]->mom();
-      }
-      result.set_missingmom(pout);
-    }
-
-    /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
-    void convertPythia8PartonEvent(HEPUtils::Event& result) {
-      using namespace Pipes::convertPythia8PartonEvent;
-      if (*Loop::iteration <= BASE_INIT) return;
-      result.clear();
-
-      /// Get the next event from Pythia8
-      std::vector<HEPUtils::Particle*> tauCandidates;
-      const auto& pevt = *Dep::HardScatteringEvent;
-
-      // Make a first pass of non-final particles to gather taus
-      for (int i = 0; i < pevt.size(); ++i) {
-        const Pythia8::Particle& p = pevt[i];
-
-        // Find last tau in prompt tau replica chains as a proxy for tau-tagging
-        if(p.idAbs()==15) {
-          std::vector<int> tauDaughterList = p.daughterList();
-          HEPUtils::P4 tmpMomentum;
-          bool isGoodTau=true;
-
-          for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
-            const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
-            int daughterID = pDaughter.idAbs();
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
-                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
-              isGoodTau=false;
-            if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
-          }
-
-          if(isGoodTau){
-            HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-            tauCandidates.push_back(tmpTau);
-          }
-        }
-      }
-
-      std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
-      HEPUtils::P4 pout; //< Sum of momenta outside acceptance
-
-      // Make a single pass over the event to gather final leptons, partons, and photons
-      for (int i = 0; i < pevt.size(); ++i) {
-        const Pythia8::Particle& p = pevt[i];
-
-        // We only use "final" particles, i.e. those with no children. So Py8 must have hadronization disabled
-        if (!p.isFinal()) continue;
-
-        // Only consider partons within ATLAS/CMS acceptance
-        /// @todo We should leave this for the detector sim / analysis to deal with
-        if (std::abs(p.eta()) > 5.0) {
-          pout += mk_p4(p.p());
-          continue;
-        }
-
-        // Find electrons/muons/taus/photons to be treated as prompt (+ invisibles)
-        /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
-        /// @todo Lepton dressing
-        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt)); // && std::abs(p.id()) != MCUtils::PID::TAU);
-        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
-        if (prompt || !visible) {
-          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-          gp->set_prompt();
-          result.add_particle(gp); // Will be automatically categorised
-        }
-
-        // Everything other than invisibles and muons, including taus & partons are jet constituents
-        /// @todo Only include hadronic tau fraction?
-        // if (visible && (isFinalParton(i, pevt) || isFinalTau(i, pevt))) {
-        if (visible && p.idAbs() != MCUtils::PID::MUON) {
-          fastjet::PseudoJet pj = mk_pseudojet(p.p());
-          pj.set_user_index(std::abs(p.id()));
-          jetparticles.push_back(pj);
-        }
-
-      }
-
-      /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
-      /// @todo choose jet algorithm via _settings?
-      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
-      fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
-      // Add to the event, with b-tagging info"
-      for (const fastjet::PseudoJet& pj : pjets) {
-        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
-        const bool isB = HEPUtils::any(pj.constituents(),
-                 [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
-        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
-
-        bool isTau=false;
-        for(auto& ptau : tauCandidates){
-          HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
-          if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
-            isTau=true;
-            break;
-          }
-        }
-        // Add to the event (use jet momentum for tau)
-        if(isTau){
-          HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
-          gp->set_prompt();
-          result.add_particle(gp);
-        }
-      }
-
-      /// Calculate missing momentum
-      //
-      // From balance of all visible momenta (requires isolation)
-      // const std::vector<Particle*> visibles = result.visible_particles();
-      // HEPUtils::P4 pvis;
-      // for (size_t i = 0; i < visibles.size(); ++i) {
-      //   pvis += visibles[i]->mom();
-      // }
-      // for (size_t i = 0; i < result.jets.size(); ++i) {
-      //   pvis += result.jets[i]->mom();
-      // }
-      // set_missingmom(-pvis);
-      //
-      // From sum of invisibles, including those out of range
-      for (const HEPUtils::Particle* p : result.invisible_particles())
-        pout += p->mom();
-      result.set_missingmom(pout);
-    }
-
-
     /// *** Standard Event Format Functions ***
 
 #ifndef EXCLUDE_DELPHES
@@ -788,35 +572,47 @@ namespace Gambit
     }
 #endif // not defined EXCLUDE_DELPHES
 
-    void reconstructBuckFastEvent(HEPUtils::Event& result) {
-      using namespace Pipes::reconstructBuckFastEvent;
-      if (*Loop::iteration <= BASE_INIT) return;
+    void smearEventATLAS(HEPUtils::Event& result) {
+      using namespace Pipes::smearEventATLAS;
+      if (*Loop::iteration <= BASE_INIT or !useATLAS) return;
       result.clear();
 
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
+      // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+    }
+
+    void smearEventCMS(HEPUtils::Event& result) {
+      using namespace Pipes::smearEventCMS;
+      if (*Loop::iteration <= BASE_INIT or !useCMS) return;
+      result.clear();
+
+      // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
     }
 
 
-    void reconstructBuckFastIdentityEvent(HEPUtils::Event& result) {
-      using namespace Pipes::reconstructBuckFastIdentityEvent;
+    void copyEvent(HEPUtils::Event& result) {
+      using namespace Pipes::copyEvent;
       if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
+      // Get the next event from Pythia8 and convert to HEPUtils::Event
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
     }
 
 
 
     /// *** Analysis Accumulators ***
 
-    void runAnalyses(ColliderLogLikes& result)
+    void runATLASAnalyses(ColliderLogLikes& result)
     {
-      using namespace Pipes::runAnalyses;
+      using namespace Pipes::runATLASAnalyses;
+      if (!useATLAS) return;
       if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        globalAnalyses.scale();
-        for (auto anaPtr = globalAnalyses.analyses.begin(); anaPtr != globalAnalyses.analyses.end(); ++anaPtr)
+        globalAnalysesATLAS.scale();
+        for (auto anaPtr = globalAnalysesATLAS.analyses.begin(); anaPtr != globalAnalysesATLAS.analyses.end(); ++anaPtr)
           result.push_back((*anaPtr)->get_results());
         return;
       }
@@ -824,7 +620,28 @@ namespace Gambit
       if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
-      Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
+      Dep::ATLASAnalysisContainer->analyze(*Dep::ATLASSmearedEvent);
+    }
+
+
+
+    void runCMSAnalyses(ColliderLogLikes& result)
+    {
+      using namespace Pipes::runCMSAnalyses;
+      if (!useCMS) return;
+      if (*Loop::iteration == FINALIZE && eventsGenerated) {
+        // The final iteration: get log likelihoods for the analyses
+        result.clear();
+        globalAnalysesCMS.scale();
+        for (auto anaPtr = globalAnalysesCMS.analyses.begin(); anaPtr != globalAnalysesCMS.analyses.end(); ++anaPtr)
+          result.push_back((*anaPtr)->get_results());
+        return;
+      }
+
+      if (*Loop::iteration <= BASE_INIT) return;
+
+      // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      Dep::CMSAnalysisContainer->analyze(*Dep::CMSSmearedEvent);
     }
 
 
@@ -844,7 +661,13 @@ namespace Gambit
         result = 0.;
         return;
       }
-      ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
+      ColliderLogLikes analysisResults;
+      if(useATLAS)
+        analysisResults.insert(analysisResults.end(),
+                Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
+      if(useCMS)
+        analysisResults.insert(analysisResults.end(),
+                Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
@@ -876,17 +699,17 @@ namespace Gambit
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
-	  logger() << endl;                                                                                                                                                                                  
-          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;                                                                                                          
-          logger() << "  NEvents, not scaled to luminosity :" << endl;                                                                                                                                       
-          logger() << "    " << srData.n_signal << endl;                                                                                                                                                     
-	  logger() << "  NEvents, scaled  to luminosity :  " << endl;
+          logger() << endl;
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+          logger() << "  NEvents, not scaled to luminosity :" << endl;
+          logger() << "    " << srData.n_signal << endl;
+          logger() << "  NEvents, scaled  to luminosity :  " << endl;
 
-	  logger() << "    " << srData.n_signal_at_lumi << endl;
+          logger() << "    " << srData.n_signal_at_lumi << endl;
 
-          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;                                                                                                                                      
-          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "                                                                                                                     
-                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;  
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
           // Use a log-normal distribution for the nuisance parameter (more correct)
@@ -1987,7 +1810,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-    
+
       double max_mixing;
       const SubSpectrum* mssm = spec->get_HE();
       str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
@@ -2035,7 +1858,7 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-      
+
     }
 
     void ALEPH_Smuon_Conservative_LLike(double& result)
@@ -2102,7 +1925,7 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-      
+
     }
 
     void ALEPH_Stau_Conservative_LLike(double& result)
@@ -2200,7 +2023,7 @@ namespace Gambit
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-    
+
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2267,7 +2090,7 @@ namespace Gambit
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-    
+
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2335,7 +2158,7 @@ namespace Gambit
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-      
+
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -3832,4 +3655,3 @@ namespace Gambit
 
   }
 }
-#undef DEBUG
