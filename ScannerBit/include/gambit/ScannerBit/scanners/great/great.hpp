@@ -30,7 +30,7 @@ namespace Gambit
     /// Structure for passing likelihood and printer data through GreAT to the objective function.
     struct greatScanData
     {
-      Scanner::scan_ptr<double (const std::vector<double>&)> likelihood_function;
+      Scanner::like_ptr likelihood_function;
       Scanner::printer_interface* printer;
     };
 

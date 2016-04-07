@@ -93,7 +93,9 @@ scanner_plugin(GreAT, version(1, 0, 0))
     TGreatManager<TGreatMCMCAlgorithmCovariance> MyManager(MyModel);
     // Tell the algorithm to use former points to update its prior
     MyManager.GetAlgorithm()->SetUpdateStatus(true);
-    MyManager.SetOutputFileName("MCMC.root");
+    std::string defpath = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT/");
+    std::string filename = defpath + "MCMC.root";
+    MyManager.SetOutputFileName(filename);
     MyManager.SetTreeName("mcmc");
     // Set number of trials (steps) and triallists (chains)
     MyManager.SetNTrialLists(nTrialLists);
@@ -114,33 +116,27 @@ scanner_plugin(GreAT, version(1, 0, 0))
     // Show the scan statistics
     estimator->ShowStatistics();
 
-    // GAMBIT needs access to the GreAT point IDs
-    // Write function which is passed to GreAT and accepts a double
-    // This function will be called by GreAT when it accepts a point and returns the point ID.
-
-
     // Setup auxilliary stream. It is only needed by the master process
     static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
     if(MPIrank == 0)
     {
-      Gambit::Options ind_samples_options   = get_inifile_node("aux_printer_ind_samples_options");
+      Gambit::Options ind_samples_options = get_inifile_node("aux_printer_ind_samples_options");
 
       // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
       ind_samples_options.setValue("synchronised", false);
 
       std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
       // Initialise auxiliary print streams
-      data.printer -> new_stream("ind_samples", ind_samples_options);
+      data.printer->new_stream("ind_samples", ind_samples_options);
 
       Scanner::printer* ind_samples_printer(data.printer->get_stream("ind_samples"));
       static const int MPIrank = data.likelihood_function->getRank();
-      int pointID = 0;//data.likelihood_function->getPtID();
 
       for(TGreatMCMCSample *sample = estimator->GetFirstIndSample(); sample != 0; sample = estimator->GetNextIndSample())
       {
         ind_samples_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, sample->GetID());
         ind_samples_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, sample->GetID());
-        pointID++;
+        ind_samples_printer->print(sample->GetID(), "Point ID", MPIrank, sample->GetID());
       }
     }
 
@@ -156,7 +152,7 @@ namespace Gambit
     double LogLikelihoodFunction(TGreatPoint& point)
     {
       std::vector<double> parameter_vector = point.GetPoint();
-
+      point.SetID(data.likelihood_function->getPtID());
       return data.likelihood_function(parameter_vector);
     }
   }
