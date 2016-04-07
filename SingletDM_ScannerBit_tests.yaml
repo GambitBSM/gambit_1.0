@@ -154,10 +154,13 @@ Scanner:
       like: LogLike
       NP: 1000
       verbosity: 1
+      
+    twalk:
+      plugin: twalk
+      tolerance: 1.03
+      projection_dimension: 4
 
     #great:
-
-    #twalk(?):
 
 
 ###############################
