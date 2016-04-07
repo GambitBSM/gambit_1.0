@@ -291,17 +291,17 @@ for code_part_name, code_dict in code_parts_dict.items():
 
         elif (f_name_short in cfg.load_functions) and (found_other_f):
             if f_name_short in other_f_list:
-                print "    INFO: Will skip function '%s' in module '%s'. The requested '%s' is identified with a different function." % (f_name_short, module_name, f_name_short)
+                print "    INFO: Will skip %s '%s' in module '%s'. The requested '%s' is identified with a different %s." % (code_category, f_name_short, module_name, f_name_short, code_category)
                 is_requested = False
             else:
                 print
-                print "    ERROR: The function name '%s' listed in load_functions is ambiguous. The following candidates have been identified:" % (f_name_short)
+                print "    ERROR: The %s name '%s' listed in load_functions is ambiguous. The following candidates have been identified:" % (code_category, f_name_short)
                 print 
                 print "    - '%s' in module '%s'" % (f_name_short, module_name)
                 for other_f in other_f_list:
                     print "    - '%s' in module '%s'" % (f_name_short, other_f.split('::')[0])
                 print
-                print "    Please specify both the module name and the function name, separated by '::', e.g., 'some_module::some_function'."
+                print "    Please specify both the module name and the %s name, separated by '::', e.g., 'some_module::some_%s'." % (code_category, code_category)
                 print
                 sys.exit()
         else:
@@ -315,11 +315,9 @@ for code_part_name, code_dict in code_parts_dict.items():
         else:
             print "    Found %s: '%s'" % (code_category, f_name_short)
             
-
-        # If function, get return type
-        return_type = ''
+        # If function, get info on return type
         if code_category == 'function':
-            return_type = utils.getFunctionReturnType(code_lines[0])
+            return_type_info = utils.getFunctionReturnType(code_lines[0])
 
         # Get dictionary with parameter definitions
         parameter_defs = utils.getParameterDefs(code_lines)
@@ -333,7 +331,7 @@ for code_part_name, code_dict in code_parts_dict.items():
         # Construct a dict with all the info required to generate code for the GAMBIT frontend header
         f_dict = OrderedDict()
         f_dict['name'] = f_name_short
-        f_dict['return_type'] = return_type
+        f_dict['return_type_info'] = return_type_info
         f_dict['category'] = code_category
         f_dict['arg_info'] = OrderedDict(arg_info_dict)
         f_dict['module'] = module_name

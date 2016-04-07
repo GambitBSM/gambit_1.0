@@ -520,7 +520,7 @@ def isVariableDecl(line_in, return_type=False):
 
     line_list = line.split()
     for i in [3,2,1]:
-        check_type = ''.join(line_list[:i])
+        check_type = ''.join(line_list[:i]).lower()
 
 
         # Check that we can deal with this Fortran type.
@@ -540,7 +540,6 @@ def isVariableDecl(line_in, return_type=False):
 
             is_variable_decl = True
             break
-
 
     if return_type:
         return is_variable_decl, type_name, type_size
@@ -750,7 +749,6 @@ def getVariablesDict(code_lines, get_variables):
                                               'size'     : type_size
                                              }
 
-
     return return_var_dicts
 
 # ====== END: getVariablesDict ========
@@ -877,17 +875,24 @@ def getFunctionReturnType(code_line):
 #
 # Output: "doubleprecision" 
 
-    f_return_type = ''
+    return_type_dict = OrderedDict()
 
     line_list = code_line.split()
     f_index = code_line.lower().split().index('function')
-
-    f_return_type = ''.join(line_list[:f_index])
-
-    if f_return_type.lower() not in gb.type_translation_dict.keys():
-        print '    WARNING: Unrecognized function return type: %s' % (f_return_type)
     
-    return f_return_type
+    # Grab content if line up til 'function' keyword
+    f_return_type_line = ' '.join(line_list[:f_index])
+
+    # Get information on return type
+    is_decl, type_name, type_size = isVariableDecl(f_return_type_line, return_type=True)
+
+    # Construct dict to be returned
+    return_type_dict['type'] = type_name
+    return_type_dict['size'] = type_size
+    # TODO: set this properly...
+    return_type_dict['dimension'] = ''
+
+    return return_type_dict
 
 # ====== END: getFunctionReturnType ========
 
@@ -987,17 +992,11 @@ def generateFrontendFunction(f_dict, parameter_defs):
     else:
         f_name = f_name_short
 
-    f_return_type = f_dict['return_type']
-    if f_return_type == '':
-        f_return_type_c = 'void'
-    else:
-        # TODO:
-        # Need to get a proper var_dict for the return type so that 
-        # it can be translated to C type correctly.
-        f_return_type_c = f_return_type
+    arg_info_dict = f_dict['arg_info']
+    ret_type_info_dict = f_dict['return_type_info']
 
-    arg_info_dict     = f_dict['arg_info']
-
+    # Get correct C type for the return type
+    f_return_type_c = getCTypeName(ret_type_info_dict, parameter_defs)
 
     # Generate mangled symbol name
     f_mangled_symbol = getMangledSymbolName(f_name_short, module=module_name)
