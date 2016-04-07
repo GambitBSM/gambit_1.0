@@ -1,12 +1,16 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.
 //
 #pragma once
+
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
 
 #include "HepMC/GenEvent.h"
 
@@ -20,7 +24,7 @@ namespace MCUtils {
   //@{
 
   /// Filter a vector of GenParticle pointers to only contain those for which fkeep(const GenParticle*) returns true
-  /// @todo Refine using boost::function
+  /// @todo Refine using std::function
   template <typename FN>
   inline GenParticlesC& filter_keep(GenParticlesC& particles, FN fkeep) {
     // Reimplementation of std::remove_if with inverted predicate logic
@@ -34,7 +38,7 @@ namespace MCUtils {
   }
 
   /// Filter a vector of GenParticle pointers to only contain those for which fremove(const GenParticle*) returns false
-  /// @todo Refine using boost::function
+  /// @todo Refine using std::function
   template <typename FN>
   inline GenParticlesC& filter_remove(GenParticlesC& particles, FN fremove) {
     // Reimplementation of std::remove_if, for equivalence to filter_keep

@@ -253,6 +253,73 @@ ExternalProject_Add_Step(pythia apply_hacks
 BOSS_backend(pythia Pythia 8.212)
 add_extra_targets(pythia ${pythia_dir} ${backend_download}/${pythia_dl} distclean)
 
+
+# Pythia with external model (pythiaEM)
+set(pythiaEM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212.EM/")
+set(pythiaEM_dl "pythia8212.tgz")
+# - Actual configure and compile commands
+ExternalProject_Add(pythiaEM
+  URL http://home.thep.lu.se/~torbjorn/pythia8/${pythia_dl}
+  URL_MD5 0886d1b2827d8f0cd2ae69b925045f40
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${pythiaEM_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}" lib/libpythia8.so
+  INSTALL_COMMAND ""
+)
+ExternalProject_Add_Step(pythiaEM apply_hacks
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythiaEM_dir}/src/Pythia.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.cc ${pythiaEM_dir}/src/ParticleData.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythiaEM_dir}/src/SusyLesHouches.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ResonanceDecays.cc ${pythiaEM_dir}/src/ResonanceDecays.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.h ${pythiaEM_dir}/include/Pythia8/Pythia.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.h ${pythiaEM_dir}/include/Pythia8/ParticleData.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.h ${pythiaEM_dir}/include/Pythia8/SusyLesHouches.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Settings.h ${pythiaEM_dir}/include/Pythia8/Settings.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/PartonDistributions.h ${pythiaEM_dir}/include/Pythia8/PartonDistributions.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/PartonDistributions.cc ${pythiaEM_dir}/src/PartonDistributions.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/HelAmps_GambitDemo_UFO.h ${pythiaEM_dir}/include/HelAmps_GambitDemo_UFO.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Parameters_GambitDemo_UFO.h ${pythiaEM_dir}/include/Parameters_GambitDemo_UFO.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_ccx_uvuvx.h ${pythiaEM_dir}/include/Sigma_GambitDemo_UFO_ccx_uvuvx.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_ddx_uvuvx.h ${pythiaEM_dir}/include/Sigma_GambitDemo_UFO_ddx_uvuvx.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_gg_uvuvx.h ${pythiaEM_dir}/include/Sigma_GambitDemo_UFO_gg_uvuvx.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_ssx_uvuvx.h ${pythiaEM_dir}/include/Sigma_GambitDemo_UFO_ssx_uvuvx.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_uux_uvuvx.h ${pythiaEM_dir}/include/Sigma_GambitDemo_UFO_uux_uvuvx.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/HelAmps_GambitDemo_UFO.cc ${pythiaEM_dir}/src/HelAmps_GambitDemo_UFO.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Parameters_GambitDemo_UFO.cc ${pythiaEM_dir}/src/Parameters_GambitDemo_UFO.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_ccx_uvuvx.cc ${pythiaEM_dir}/src/Sigma_GambitDemo_UFO_ccx_uvuvx.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_ddx_uvuvx.cc ${pythiaEM_dir}/src/Sigma_GambitDemo_UFO_ddx_uvuvx.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_gg_uvuvx.cc ${pythiaEM_dir}/src/Sigma_GambitDemo_UFO_gg_uvuvx.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_ssx_uvuvx.cc ${pythiaEM_dir}/src/Sigma_GambitDemo_UFO_ssx_uvuvx.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Sigma_GambitDemo_UFO_uux_uvuvx.cc ${pythiaEM_dir}/src/Sigma_GambitDemo_UFO_uux_uvuvx.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/ProcessContainer.cc ${pythiaEM_dir}/src/ProcessContainer.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/Index.xml  ${pythiaEM_dir}/share/Pythia8/xmldoc/Index.xml
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ExternalModel/UserModel.xml ${pythiaEM_dir}/share/Pythia8/xmldoc/UserModel.xml
+  DEPENDEES download
+  DEPENDERS patch
+)
+BOSS_backend(pythiaEM Pythia 8.212.EM)
+add_extra_targets(pythiaEM ${pythiaEM_dir} ${backend_download}/${pythia_dl} distclean)
+
+# Fastsim
+set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
+set(fastsim_dir "${PROJECT_SOURCE_DIR}/Backends/installed/fastsim/1.0")
+ExternalProject_Add(fastsim
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${fastsim_location} ${fastsim_dir}
+  SOURCE_DIR ${fastsim_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
+  INSTALL_COMMAND ""
+)
+add_extra_targets(fastsim ${fastsim_dir} null distclean)
+
+
 # Nulike
 set(nulike_ver "1.0.2")
 set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
@@ -408,6 +475,53 @@ ExternalProject_Add(higgssignals
 add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssignals_dl} hyperclean)
 
 
+# gm2calc
+set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.0.0")
+set(gm2calc_dl "gm2calc-1.0.0.tar.gz")
+ExternalProject_Add(gm2calc
+  URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
+  URL_MD5 309e38ac04c933884b7b950fae920412
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${gm2calc_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  INSTALL_COMMAND ""
+)
+ExternalProject_Add_Step(gm2calc apply_hacks
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calcHacks/Makefile ${gm2calc_dir}/Makefile
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calcHacks/module.mk ${gm2calc_dir}/src/module.mk
+  DEPENDEES download
+  DEPENDERS patch
+)
+BOSS_backend(gm2calc gm2calc 1.0.0)
+add_extra_targets(gm2calc ${gm2calc_dir} ${backend_download}/${gm2calc_dl} clean)
+
+
+# gm2calc_c (C interface)
+set(gm2calc_c_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc_c/1.1.0")
+set(gm2calc_dl "gm2calc-1.1.0.tar.gz")
+ExternalProject_Add(gm2calc_c
+  URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
+  URL_MD5 8470a1a1b77be56c5915825667160e39
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${gm2calc_c_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  INSTALL_COMMAND ""
+)
+ExternalProject_Add_Step(gm2calc_c apply_hacks
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calc_cHacks/Makefile ${gm2calc_c_dir}/Makefile
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calc_cHacks/module.mk ${gm2calc_c_dir}/src/module.mk
+  DEPENDEES download
+  DEPENDERS patch
+)
+add_extra_targets(gm2calc_c ${gm2calc_c_dir} ${backend_download}/${gm2calc_dl} clean)
+
+
 set_target_properties(darksusy
                       darksusy_5_1_1
                       micromegas
@@ -420,9 +534,12 @@ set_target_properties(darksusy
                       feynhiggs_2_11_2
                       susyhit
                       pythia
+		      pythiaEM
                       ddcalc
                       gamlike
                       nulike
+                      gm2calc
+                      gm2calc_c
                       PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends
@@ -437,6 +554,8 @@ add_custom_target(backends
                   susyhit
                   pythia
                   nulike
+                  gm2calc
+                  gm2calc_c
                  )
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike)
@@ -459,4 +578,6 @@ add_custom_target(clean-backends
                   clean-nulike
                   clean-delphes
                   clean-flexiblesusy
+                  clean-gm2calc
+                  clean-gm2calc_c
                  )

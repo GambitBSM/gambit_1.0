@@ -56,7 +56,7 @@ Printer:
     # name of output file
     output_file: "runs/CMSSM_multinest_hdf5/samples/gambit_output.hdf5"
     group: "/CMSSM"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 ##############################

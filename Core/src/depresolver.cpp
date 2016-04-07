@@ -1419,8 +1419,7 @@ namespace Gambit
         //logger() << EOM;
 
         // Check if we wanted to output this observable to the printer system.
-        //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        masterGraph[fromVertex]->setPrintRequirement(printme);
+        if ( toVertex==OBSLIKE_VERTEXID ) masterGraph[fromVertex]->setPrintRequirement(printme);
         // Check if the flag to output timing data is set
         if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 

@@ -7,15 +7,15 @@ Parameters:
     vesc: 550
     vrot: 235
   MSSM7atQ:
-    Ad_3: 8660.76
-    Au_3: 453.931
-    M2: 774.672
+    Ad_3: 285.144
+    Au_3: 1708.73
+    M2: 151.788
     Qin: 1000
     SignMu: 1
-    TanBeta: 49.0016
-    mHd2: 7.10041e+07
-    mHu2: 25607.3
-    mf2: 2.84052e+06
+    TanBeta: 30.0419
+    mHd2: 3.22725e+06
+    mHu2: 38494.5
+    mf2: 426177
   StandardModel_SLHA2:
     CKM_A: 0.814
     CKM_etabar: 0.353
@@ -24,10 +24,10 @@ Parameters:
     GF: 1.16638e-05
     alpha1: 0
     alpha2: 0
-    alphaS: 0.116783
-    alphainv: 127.95
+    alphaS: 0.11884
+    alphainv: 127.944
     delta13: 0
-    mBmB: 4.20979
+    mBmB: 4.18393
     mCmC: 1.275
     mD: 0.0048
     mE: 0.000510999
@@ -36,7 +36,7 @@ Parameters:
     mNu2: 0
     mNu3: 0
     mS: 0.095
-    mT: 174.856
+    mT: 173.994
     mTau: 1.77682
     mU: 0.0023
     mZ: 91.1876
@@ -47,11 +47,8 @@ Parameters:
     deltad: -0.427
     deltas: -0.085
     deltau: 0.842
-    sigmal: 33.1557
-    sigmas: 52.0743
-
-
-
+    sigmal: 72.2826
+    sigmas: 47.5613
 
 Priors:
 
@@ -64,7 +61,7 @@ Printer:
   options:
     output_file: "MSSM7.hdf5"
     group: "/MSSM7"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 Scanner:
 
@@ -126,16 +123,16 @@ ObsLikes:
     # DM Local Halo likelihoods
     - capability: lnL_rho0
       purpose: LogLike
-      
+
     - capability: lnL_vrot
       purpose: LogLike
-      
+
     - capability: lnL_v0
       purpose: LogLike
-      
+
     - capability: lnL_vesc
       purpose: LogLike
-      
+
     # FlavBit likelihoods
     - purpose:    LogLike
       capability: b2ll_LL
@@ -146,17 +143,15 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    #- purpose:    LogLike
-    #  capability: LHC_Combined_LogLike
+    # ColliderBit likelihoods
+    - purpose:    Likelihood
+      capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
 
     - purpose:    LogLike
       capability: LEP_Higgs_LogLike
-
-    - purpose:    Observable
-      capability: SLHA1_violation
 
     - purpose:    LogLike
       capability: ALEPH_Selectron_LLike
@@ -204,16 +199,13 @@ ObsLikes:
       capability: OPAL_Neutralino_Hadronic_LLike
 
 
-    - purpose:    Observable
-      capability: MSSM_spectrum
-      type:       map_str_dbl
-
+    # Other observables
     - purpose:    Observable
       capability: RD_oh2
-      
+
     - purpose:    Observable
       capability: mwimp
-      
+
     - purpose:    Observable
       capability: sigmav
 
@@ -229,6 +221,12 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SD_n
 
+    - purpose:    Observable
+      capability: SLHA1_violation
+
+    - purpose:    Observable
+      capability: MSSM_spectrum
+      type:       map_str_dbl
 
     # Missing:
     # CMB+HESS likelihoods
@@ -237,8 +235,8 @@ ObsLikes:
 Rules:
 
   # Tell all functions that are able to dump SLHA files to do so.
-  - options:
-      drop_SLHA_file: true
+  #- options:
+  #    drop_SLHA_file: true
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
@@ -371,8 +369,8 @@ Rules:
     options:
       vesc_obs: 550 # km/s
       vesc_obserr: 35 # km/s
-      
-  # Precision Bit
+
+  # PrecisionBit
   - capability: lnL_light_quark_masses
     options:
       # m_u/m_d
@@ -385,25 +383,42 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
+  # ColliderBit
+  - capability: SimpleSmearingSim
+    type: "Gambit::ColliderBit::BuckFastSmearATLAS"
+    function: getBuckFastATLAS
     options:
-      analysisNames: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
-
-  - capability: DetectorSim
-    function: getDelphes
-    options:
-      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+      partonOnly: false
+      antiktR: 0.4
 
   - capability: SimpleSmearingSim
-    function: getBuckFast
+    type: "Gambit::ColliderBit::BuckFastSmearCMS"
+    function: getBuckFastCMS
     options:
-      buckFastOption: "BuckFastSmear"
+      partonOnly: false
+      antiktR: 0.5
 
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", function: "convertPythia8ParticleEvent"}
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
+    options:  
+      #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
+      useATLAS: true
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           "ATLAS_3LEPEW_20invfb"]
+
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:  
+      #useCMS defaults to true anyways. Set it to false to ignore all these analyses
+      useCMS: true
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+
+
+  - capability: ConvertedScatteringEvent
+    function: convertPythia8ParticleEvent
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -424,22 +439,18 @@ Rules:
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
       Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["Print:quiet = on",
-                          "PartonLevel:MPI = off",
-                          "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = on",
-                          "HadronLevel:all = on",
-        "SUSY:all = on",
-        "TauDecays:mode = 0"]
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0"]
 
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
-  - capability: AnalysisNumbers
-    dependencies:
-    - {capability: "ReconstructedEvent", function: "reconstructBuckFastEvent"}
 
 Logger:
 

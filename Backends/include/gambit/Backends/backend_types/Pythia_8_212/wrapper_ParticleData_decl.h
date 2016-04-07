@@ -22,12 +22,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ParticleData : public WrapperBase<Pythia8::Abstract_ParticleData>
+        class ParticleData : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_ParticleData> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_ParticleData>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -37,13 +33,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void initPtr(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtrIn, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn);
+                void initPtr(Pythia8::Info* infoPtrIn, Pythia8::Settings* settingsPtrIn, Pythia8::Rndm* rndmPtrIn, Pythia8::Couplings* couplingsPtrIn);
         
                 bool init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile);
         
                 bool init();
         
-                bool init(const WrapperBase< Pythia8::Abstract_ParticleData >& particleDataIn);
+                bool init(const Pythia8::ParticleData& particleDataIn);
         
                 bool reInit(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile, bool xmlFormat);
         
@@ -55,7 +51,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void listXML(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > outFile);
         
-                bool copyXML(const WrapperBase< Pythia8::Abstract_ParticleData >& particleDataIn);
+                bool copyXML(const Pythia8::ParticleData& particleDataIn);
         
                 bool loadXML(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > inFile, bool reset);
         
@@ -283,8 +279,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void rescaleBR(int idIn);
         
-                void setResonancePtr(int idIn, WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn);
-        
                 void resInit(int idIn);
         
                 double resWidth(int idIn, double mHat, int idInFlav, bool openOnly, bool setBR);
@@ -328,7 +322,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 ParticleData(Pythia8::Abstract_ParticleData* in);
-                ParticleData(Pythia8::Abstract_ParticleData* const & in, bool);
         
                 // Copy constructor: 
                 ParticleData(const ParticleData& in);
@@ -339,9 +332,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~ParticleData();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_ParticleData* get_BEptr() const;
         
         };
     }

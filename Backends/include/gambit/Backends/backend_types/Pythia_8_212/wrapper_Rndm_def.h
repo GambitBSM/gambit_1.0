@@ -16,98 +16,93 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline void Rndm::init(int seedIn)
         {
-            wrapperbase::BEptr->init(seedIn);
+            get_BEptr()->init(seedIn);
         }
         
         inline void Rndm::init()
         {
-            wrapperbase::BEptr->init__BOSS();
+            get_BEptr()->init__BOSS();
         }
         
         inline double Rndm::flat()
         {
-            return wrapperbase::BEptr->flat();
+            return get_BEptr()->flat();
         }
         
         inline double Rndm::exp()
         {
-            return wrapperbase::BEptr->exp();
+            return get_BEptr()->exp();
         }
         
         inline double Rndm::xexp()
         {
-            return wrapperbase::BEptr->xexp();
+            return get_BEptr()->xexp();
         }
         
         inline double Rndm::gauss()
         {
-            return wrapperbase::BEptr->gauss();
+            return get_BEptr()->gauss();
         }
         
         inline ::std::pair<double, double> Rndm::gauss2()
         {
-            return wrapperbase::BEptr->gauss2();
+            return get_BEptr()->gauss2();
         }
         
         inline int Rndm::pick(const ::std::vector<double, std::allocator<double> >& prob)
         {
-            return wrapperbase::BEptr->pick(prob);
+            return get_BEptr()->pick(prob);
         }
         
         inline bool Rndm::dumpState(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
         {
-            return wrapperbase::BEptr->dumpState(fileName);
+            return get_BEptr()->dumpState(fileName);
         }
         
         inline bool Rndm::readState(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
         {
-            return wrapperbase::BEptr->readState(fileName);
+            return get_BEptr()->readState(fileName);
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Rndm::Rndm() :
-            WrapperBase<Pythia8::Abstract_Rndm>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Rndm::Rndm(int seedIn) :
-            WrapperBase<Pythia8::Abstract_Rndm>(__factory1(seedIn))
+            WrapperBase(__factory1(seedIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Rndm::Rndm(Pythia8::Abstract_Rndm* in) :
-            WrapperBase<Pythia8::Abstract_Rndm>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Rndm::Rndm(Pythia8::Abstract_Rndm* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Rndm>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Rndm::Rndm(const Rndm& in) :
-            WrapperBase<Pythia8::Abstract_Rndm>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Rndm& Rndm::operator=(const Rndm& in)
         {
-            WrapperBase<Pythia8::Abstract_Rndm>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -115,14 +110,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Rndm::~Rndm()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Rndm::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Rndm* Pythia8::Rndm::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Rndm*>(BEptr);
         }
-        
     }
     
 }

@@ -350,6 +350,7 @@ namespace Gambit
 
       // Minimum branching ratio to include
       double minBranching = 
+      // FIXME: Add getValue documentation
         runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
 
       // Import relevant decays (only Higgs and subsequent decays)

@@ -1,6 +1,6 @@
 diff -rupN SUSY_HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
 --- SUSY_HIT_1_5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-15 16:22:06.641722424 +0000
++++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-26 00:21:44.389833629 +0000
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -78,7 +78,7 @@ diff -rupN SUSY_HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
        WHHSB(I,J)=0.D0
 diff -rupN SUSY_HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
 --- SUSY_HIT_1_5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-15 16:22:06.645722424 +0000
++++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-26 00:21:44.389833629 +0000
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -135,7 +135,7 @@ diff -rupN SUSY_HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bo
  c---- ramona cahnged 2/2/15
 diff -rupN SUSY_HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
 --- SUSY_HIT_1_5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-15 16:22:06.649722424 +0000
++++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-26 00:21:44.393833629 +0000
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -372,7 +372,7 @@ diff -rupN SUSY_HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bo
        COMMON/SD_mwmzpole/amwp,amzp
 diff -rupN SUSY_HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
 --- SUSY_HIT_1_5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/makefile	2016-03-15 16:22:06.649722424 +0000
++++ installed/SUSY-HIT/1.5/makefile	2016-03-26 00:21:44.393833629 +0000
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -399,7 +399,7 @@ diff -rupN SUSY_HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
 +	rm -f *.o
 diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
 --- SUSY_HIT_1_5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-15 16:26:26.857717764 +0000
++++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-26 00:22:04.233833274 +0000
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
@@ -414,16 +414,17 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
        implicit double precision (a-h,m,o-z)
        double precision neutwchar,neutzneut,neuthcchar,neuthlneut,
-@@ -117,6 +122,8 @@ c cccccccccccccccccccccccccccccccccccccc
+@@ -117,6 +122,9 @@ c cccccccccccccccccccccccccccccccccccccc
       .       aeval(3,3),yuval(3,3),ydval(3,3),yeval(3,3),qvalue(1:22),
       .       extval(0:100),m_softval(1:100)
        double precision nl,nq
 +      logical qcdcorrstok(2),qcdcorrsbok(2),qcdcorrchok(2)           !Added by GAMBIT
 +      logical qcdcorrneok(4),qcdcorrglok                             !Added by GAMBIT
++      logical qcdcorrsulok, qcdcorrsurok, qcdcorrsdlok, qcdcorrsdrok !Added by GAMBIT
        integer nx1t,ny1t,nnlo,imod(1:2)
  c--- ramona chnaged on 6/6/13 size of array check
        integer check(1:30)
-@@ -448,7 +455,7 @@ c -- useful when SDECAY is linked to oth
+@@ -448,7 +456,7 @@ c -- useful when SDECAY is linked to oth
        COMMON/SD_stoploop/brgamma,brgammaup,brgammagluino
        COMMON/SD_stop4body/brgamma4bod,brgammaup4bod,brgammagluino4bod,
       .          br4bodoffshelltau
@@ -432,7 +433,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        COMMON/SD_sbot2body/brsb1neutt,brsb2neutt,brsb1chart,brsb2chart,
       .          brsb1hcst,brsb2hcst,brsb1wst,brsb2wst,brsb1glui,
       .          brsb2glui,brsb2hl,brsb2hh,brsb2ha,brsb2zbot
-@@ -474,7 +481,7 @@ c -- useful when SDECAY is linked to oth
+@@ -474,7 +482,7 @@ c -- useful when SDECAY is linked to oth
        COMMON/SD_topwidth/toptot2
  c---- ramona changed 18/3/2013
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -441,7 +442,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
  c------ end ramona changed
  c----- ramona added for alex output 25/11/14
-@@ -514,6 +521,8 @@ c----- if iflag3bod2bod=2 2 body decay s
+@@ -514,6 +522,8 @@ c----- if iflag3bod2bod=2 2 body decay s
  c----- end ramona added
  
  
@@ -450,7 +451,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        open(ninshs,file='susyhit.in',status='unknown')
  
  c -- read in susyhit.in --
-@@ -553,6 +562,384 @@ c-----ramona chnaged 7/6/13
+@@ -553,6 +563,384 @@ c-----ramona chnaged 7/6/13
        print*, "output only in SLHA2 format"
        flagoutput=1d0
        flagshsin=2d0
@@ -835,7 +836,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        endif
  c---- end ramona chnaged
  c -- The following flags are not read in any more but hard-coded for - c
-@@ -747,7 +1134,11 @@ c -- the 2-body decays and 2-body total
+@@ -747,7 +1135,11 @@ c -- the 2-body decays and 2-body total
           do i=1,2,1
              chartot2nlo(i) = chartot2lo(i)+qcdcharst1(i)+qcdcharst2(i)+
       .           qcdcharsb1(i)+qcdcharsb2(i)+2.D0*(qcdcharsupl(i)+
@@ -848,7 +849,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           end do
        endif
  
-@@ -821,6 +1212,46 @@ c ------------------------ the total wid
+@@ -821,6 +1213,46 @@ c ------------------------ the total wid
  
  c -------------------- the chargino branching ratios ----------------- c
  
@@ -895,7 +896,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0)  then
-@@ -837,6 +1268,7 @@ c -- for the 2-body decays --
+@@ -837,6 +1269,7 @@ c -- for the 2-body decays --
        endif
  
        do i=1,2,1
@@ -903,7 +904,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           brcharst1(i)    = charst1(i)/chartot(i)
           brcharst2(i)    = charst2(i)/chartot(i)
           brcharsb1(i)    = charsb1(i)/chartot(i)
-@@ -852,20 +1284,27 @@ c -- for the 2-body decays --
+@@ -852,20 +1285,27 @@ c -- for the 2-body decays --
           brcharselr(i)   = charselr(i)/chartot(i)
           brcharstau1(i)  = charstau1(i)/chartot(i)
           brcharstau2(i)  = charstau2(i)/chartot(i)
@@ -931,7 +932,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           end do
        endif
  
-@@ -1032,6 +1471,10 @@ c -- the 2-body decays and 2-body total
+@@ -1032,6 +1472,10 @@ c -- the 2-body decays and 2-body total
       .           qcdneutsb1(i)+qcdneutsb2(i)+2.D0*qcdneutsupl(i)+2.D0*
       .           qcdneutsupr(i)+2.D0*qcdneutsdownl(i)+2.D0*
       .           qcdneutsdownr(i)) + neuttot2lo(i)
@@ -942,7 +943,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           end do
        endif
  
-@@ -1140,6 +1583,50 @@ c ------------------------ the total wid
+@@ -1140,6 +1584,50 @@ c ------------------------ the total wid
  
  c ------------------- the neutralino branching ratios ---------------- c
  
@@ -993,7 +994,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -1160,40 +1647,44 @@ c -- for the 2-body decays --
+@@ -1160,40 +1648,44 @@ c -- for the 2-body decays --
        endif
  
        do i=1,4,1
@@ -1068,7 +1069,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           end do
        endif
  
-@@ -1307,6 +1798,11 @@ c -- the 2-body decays and 2-body total
+@@ -1307,6 +1799,11 @@ c -- the 2-body decays and 2-body total
       .                   +2.D0*qcdgsupr+2.D0*qcdgsdownl+2.D0*qcdgsdownr)
       .            + gluitot2lo
  
@@ -1080,7 +1081,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        if(flagqcd.eq.0.D0) then
           gluitot2 = gluitot2lo
        elseif(flagqcd.eq.1.D0) then
-@@ -1380,6 +1876,18 @@ c ------------------------ the total wid
+@@ -1380,6 +1877,18 @@ c ------------------------ the total wid
  
  c -------------------- the gluino branching ratios ------------------- c
  
@@ -1099,7 +1100,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -1393,14 +1901,14 @@ c -- for the 2-body decays --
+@@ -1393,14 +1902,14 @@ c -- for the 2-body decays --
           gsdownr = gsdownr+qcdgsdownr
        endif
  
@@ -1122,7 +1123,140 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
        if(flagnlspgmsb.eq.1.D0) then
           brggravgl = ggravgl/gluitot
-@@ -1714,6 +2222,14 @@ c -- the 2-body decays and 2-body total
+@@ -1487,6 +1996,14 @@ c --------------------------------------
+      .            + qcdsuprneutup(3)+qcdsuprneutup(4)+qcdsuprchardow(1)
+      .            + qcdsuprchardow(2)+qcdsuprglui
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      qcdcorrsulok = supltot2nlo .ge. 0.D0
++      qcdcorrsurok = suprtot2nlo .ge. 0.D0
++      if (.not.qcdcorrsulok) supltot2nlo =
++     . supltot2lo / (2.D0 - supltot2nlo / supltot2lo)
++      if (.not.qcdcorrsurok) suprtot2nlo =
++     . suprtot2lo / (2.D0 - suprtot2nlo / suprtot2lo)
++
+       if(flagqcd.eq.0.D0) then
+          supltot2 = supltot2lo
+          suprtot2 = suprtot2lo
+@@ -1495,6 +2012,29 @@ c --------------------------------------
+          suprtot2 = suprtot2nlo
+       endif
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrsulok) then
++        do i=1,4,1
++           brsuplnup(i) = suplneutup(i)/supltot2lo
++        end do
++        do i=1,2,1
++           brsuplcdow(i) = suplchardow(i)/supltot2lo
++        end do
++        brsuplglui = suplglui/supltot2lo
++      endif
++
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrsurok) then
++        do i=1,4,1
++           brsuprnup(i) = suprneutup(i)/suprtot2lo
++        end do
++        do i=1,2,1
++           brsuprcdow(i) = suprchardow(i)/suprtot2lo
++        end do
++        brsuprglui = suprglui/suprtot2lo
++      endif
++
++
+       if(flagqcd.eq.1.D0) then
+          do i=1,4,1
+             suplneutup(i) = suplneutup(i)+qcdsuplneutup(i)
+@@ -1509,15 +2049,15 @@ c --------------------------------------
+       endif
+ 
+       do i=1,4,1
+-         brsuplnup(i) = suplneutup(i)/supltot2
+-         brsuprnup(i) = suprneutup(i)/suprtot2
++         if(qcdcorrsulok) brsuplnup(i) = suplneutup(i)/supltot2      !Modified by GAMBIT
++         if(qcdcorrsurok) brsuprnup(i) = suprneutup(i)/suprtot2      !Modified by GAMBIT
+       end do
+       do i=1,2,1
+-         brsuplcdow(i) = suplchardow(i)/supltot2
+-         brsuprcdow(i) = suprchardow(i)/suprtot2
++         if(qcdcorrsulok) brsuplcdow(i) = suplchardow(i)/supltot2    !Modified by GAMBIT
++         if(qcdcorrsurok) brsuprcdow(i) = suprchardow(i)/suprtot2    !Modified by GAMBIT
+       end do
+-      brsuplglui = suplglui/supltot2
+-      brsuprglui = suprglui/suprtot2
++      if(qcdcorrsulok) brsuplglui = suplglui/supltot2                !Modified by GAMBIT
++      if(qcdcorrsurok) brsuprglui = suprglui/suprtot2                !Modified by GAMBIT
+     
+ c -------------------------------------------------------------------- c
+ c                         sdown 2-body decays                          c
+@@ -1576,6 +2116,14 @@ c --------------------------------------
+      .               qcdsdowrneutdow(4)+qcdsdowrcharup(1)+
+      .               qcdsdowrcharup(2)+qcdsdowrglui
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      qcdcorrsdlok = sdowltot2nlo .ge. 0.D0
++      qcdcorrsdrok = sdowrtot2nlo .ge. 0.D0
++      if (.not.qcdcorrsdlok) sdowltot2nlo =
++     . sdowltot2lo / (2.D0 - sdowltot2nlo / sdowltot2lo)
++      if (.not.qcdcorrsdrok) sdowrtot2nlo =
++     . sdowrtot2lo / (2.D0 - sdowrtot2nlo / sdowrtot2lo)
++
+       if(flagqcd.eq.0.D0) then
+          sdowltot2 = sdowltot2lo
+          sdowrtot2 = sdowrtot2lo
+@@ -1584,6 +2132,28 @@ c --------------------------------------
+          sdowrtot2 = sdowrtot2nlo
+       endif
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrsdlok) then
++        do i=1,4,1
++           brsdowlndow(i) = sdowlneutdow(i)/sdowltot2lo
++        end do
++        do i=1,2,1
++           brsdowlchup(i) = sdowlcharup(i)/sdowltot2lo
++        end do
++        brsdowlglui = sdowlglui/sdowltot2lo
++      endif
++
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrsdrok) then
++        do i=1,4,1
++           brsdowrndow(i) = sdowrneutdow(i)/sdowrtot2lo
++        end do
++        do i=1,2,1
++           brsdowrchup(i) = sdowrcharup(i)/sdowrtot2lo
++        end do
++        brsdowrglui = sdowrglui/sdowrtot2lo
++      endif
++
+       if(flagqcd.eq.1.D0) then
+          do i=1,4,1
+             sdowlneutdow(i) = sdowlneutdow(i)+qcdsdowlneutdow(i)
+@@ -1598,15 +2168,15 @@ c --------------------------------------
+       endif
+ 
+       do i=1,4,1
+-         brsdowlndow(i) = sdowlneutdow(i)/sdowltot2
+-         brsdowrndow(i) = sdowrneutdow(i)/sdowrtot2
++         if(qcdcorrsdlok) brsdowlndow(i) = sdowlneutdow(i)/sdowltot2 !Modified by GAMBIT
++         if(qcdcorrsdrok) brsdowrndow(i) = sdowrneutdow(i)/sdowrtot2 !Modified by GAMBIT
+       end do
+       do i=1,2,1
+-         brsdowlchup(i) = sdowlcharup(i)/sdowltot2
+-         brsdowrchup(i) = sdowrcharup(i)/sdowrtot2
++         if(qcdcorrsdlok) brsdowlchup(i) = sdowlcharup(i)/sdowltot2  !Modified by GAMBIT
++         if(qcdcorrsdrok) brsdowrchup(i) = sdowrcharup(i)/sdowrtot2  !Modified by GAMBIT
+       end do
+-      brsdowlglui = sdowlglui/sdowltot2
+-      brsdowrglui = sdowrglui/sdowrtot2
++      if(qcdcorrsdlok) brsdowlglui = sdowlglui/sdowltot2             !Modified by GAMBIT
++      if(qcdcorrsdrok) brsdowrglui = sdowrglui/sdowrtot2             !Modified by GAMBIT
+ 
+ c -------------------------------------------------------------------- c
+ c                 stop1 and stop2 2- and 3-body decays                 c
+@@ -1714,6 +2284,14 @@ c -- the 2-body decays and 2-body total
       .            qcdst2hl+qcdst2hh+qcdst2ha+qcdst2ztop+qcdst2wsb(1)+
       .            qcdst2wsb(2)
  
@@ -1137,7 +1271,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        if(flagqcd.eq.0.D0) then
           do i=1,2,1
              stoptot2(i) = stoptot2lo(i)
-@@ -1818,7 +2334,8 @@ c ------------------------ the total wid
+@@ -1818,7 +2396,8 @@ c ------------------------ the total wid
              if(stoptotmulti(1).ne.0.D0) then
                 stoptot(1) = stoptotmulti(1)+stoptotrad(1)
              else
@@ -1147,7 +1281,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
              endif
           else
              stoptot(1) = stoptot2(1)
-@@ -1837,6 +2354,39 @@ c ------------------------ the total wid
+@@ -1837,6 +2416,39 @@ c ------------------------ the total wid
  
  c ---------------------- the stop branching ratios ------------------- c
  
@@ -1187,7 +1321,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -1861,23 +2411,23 @@ c -- for the 2-body decays --
+@@ -1861,23 +2473,23 @@ c -- for the 2-body decays --
        endif
  
        do i=1,4,1
@@ -1226,7 +1360,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
  c -- for the 3-body and loop decays --
  
-@@ -2043,6 +2593,14 @@ c -- the 2-body decays and 2-body total
+@@ -2043,6 +2655,14 @@ c -- the 2-body decays and 2-body total
       .               qcdsb2hcst(2)+qcdsb2hl+qcdsb2hh+qcdsb2ha +
       .               qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)
  
@@ -1241,7 +1375,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        if(flagqcd.eq.0.D0) then
           do i=1,2,1
              sbottot2(i) = sbottot2lo(i)
-@@ -2101,6 +2659,39 @@ c ------------------------ the total wid
+@@ -2101,6 +2721,39 @@ c ------------------------ the total wid
  
  c --------------------- the sbottom branching ratios ----------------- c
  
@@ -1281,7 +1415,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -2125,23 +2716,23 @@ c -- for the 2-body decays --
+@@ -2125,23 +2778,23 @@ c -- for the 2-body decays --
        endif
  
        do i=1,4,1
@@ -1320,7 +1454,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
  c -- for the 3-body decays --
  
-@@ -2533,8 +3124,8 @@ c --------------------------------------
+@@ -2533,8 +3186,8 @@ c --------------------------------------
  
  
  c---- ramona chnaged 27/5/13--- flavour violation only with SLHA Output so far
@@ -1331,7 +1465,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c---- end ramona changed
  c ------------------ output a la Les Houches accord ------------------ c
  
-@@ -8392,7 +8983,7 @@ c      write(nout,102) bhcgd(2),2,ic2,ig
+@@ -8392,7 +9045,7 @@ c      write(nout,102) bhcgd(2),2,ic2,ig
  
  c ---------------- output not a la Les Houches accord ---------------- c
  
@@ -1340,7 +1474,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
        write(21,*)
        write(21,*) "                              ======================"
-@@ -11767,8 +12358,8 @@ c------ ramona chnaged 27/5/13
+@@ -11767,8 +12420,8 @@ c------ ramona chnaged 27/5/13
       . usqmix(6,6), dsqmix(6,6), amsneutrino(3)
         integer ifavvio
        COMMON/msfermion/amsupq, amsdownq, amslepton, amsneutrino
@@ -1351,7 +1485,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c------end ramona chnaged
  c -------------- common block given by SD_read_leshouches ------------ c
        COMMON/SD_leshouches1/spinfo1,spinfo2,modselval,mincom,extcom,
-@@ -12190,7 +12781,7 @@ c -- mb(mb)_MSbar --
+@@ -12190,7 +12843,7 @@ c -- mb(mb)_MSbar --
           call SD_runmbmb(amzp,runmbz)
        endif
  
@@ -1360,7 +1494,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           samb = massval(34)
        endif
  
-@@ -12465,7 +13056,7 @@ c---- end ramona changed
+@@ -12465,7 +13118,7 @@ c---- end ramona changed
        common/SD_selectron/selmix
  c----ramona changed 7/6/13
              COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -1369,7 +1503,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c---- end ramona chnaged
  c -- i_sd_mbmb = 0 ensures that the routine is called which calulates --
  c -- the mbpole mass from mb(mb)_MSbar = smval(5)                 --
-@@ -15618,7 +16209,7 @@ c---------------------------------------
+@@ -15618,7 +16271,7 @@ c---------------------------------------
        double precision sinbeta,alsew,g2ew,g1ew, ams, amc
        COMMON/SD_param/sdgf,amz,amw,pi,g2
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -1378,7 +1512,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
        COMMON/SD_weinberg/sw,cw
        COMMON/SD_mixang/alp_mssm,tanbeta
-@@ -15666,7 +16257,7 @@ c---------------------------------------
+@@ -15666,7 +16319,7 @@ c---------------------------------------
       . usqmix(6,6), dsqmix(6,6)
        double precision g3, left, right
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -1387,7 +1521,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
       	common/alfas/g3
           
  	left=(g3*Usqmix(j, i)/dSqrt(2d0))
-@@ -15685,7 +16276,7 @@ c----- quartic sup coupling for flavor v
+@@ -15685,7 +16338,7 @@ c----- quartic sup coupling for flavor v
       . usqmix(6,6), dsqmix(6,6)
        double precision g3
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -1396,7 +1530,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        common/alfas/g3
  	 coupfavquartic=1d0/12d0*g3**2*(
       -     ((USQMIX(j,1))*USQMIX(iint,1) + 
-@@ -29742,7 +30333,7 @@ c---end ramona changed
+@@ -29742,7 +30395,7 @@ c---end ramona changed
       
        COMMON/SD_refscale/amuref
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -1405,7 +1539,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        COMMON/msfermion/amsupq, amsdownq, amslepton, amsneutrino
        COMMON/SD_param/gf,amz,amw,pi,g2
        COMMON/SD_massgino/amneut,xmneut,amchar,xmchar
-@@ -29838,7 +30429,7 @@ c---end ramona changed
+@@ -29838,7 +30491,7 @@ c---end ramona changed
       
        COMMON/SD_refscale/amuref
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
@@ -1414,7 +1548,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        COMMON/msfermion/amsupq, amsdownq, amslepton, amsneutrino
        COMMON/SD_param/gf,amz,amw,pi,g2
        COMMON/SD_massgino/amneut,xmneut,amchar,xmchar
-@@ -37107,14 +37698,14 @@ c --------------------------------------
+@@ -37107,14 +37760,14 @@ c --------------------------------------
        AXX=SD_AX(xmu1,xmu2,xmu3)
        BXX=SD_BX(xmu1,xmu2,xmu3)
  
@@ -1431,7 +1565,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           SY=0.D0
           DO 2 J=1,NY
  
-@@ -37129,7 +37720,7 @@ c --------------------------------------
+@@ -37129,7 +37782,7 @@ c --------------------------------------
  
  c -------------------------------------------------------------------- c
  
@@ -1440,7 +1574,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  C     GAUSS-LEGENDRE INTEGRATION FROM A TO B (WEIGHT = 1.)
  C     CALCULATES GAUSSIAN POINTS X AND WEIGHTS W
  C                      FOR N=4,6,8,12,16,24,32 ;
-@@ -37138,7 +37729,7 @@ C     THE INTERVAL [A,B] AND N INTO CORR
+@@ -37138,7 +37791,7 @@ C     THE INTERVAL [A,B] AND N INTO CORR
  C     N MUST BE EVEN AND >= 4,IF IT IS NOT,IT IS CHANGED !
  C
        IMPLICIT REAL*8 (A-H,O-Z)
@@ -1449,7 +1583,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        DATA NBEG,NA,NI,NG /9*0,4,6,8,12,16,24,32/
        DATA XG/ .43056815579702629D 0, .16999052179242813D 0, 14*0.D0,
       X         .46623475710157601D 0, .33060469323313226D 0,
-@@ -37715,7 +38306,7 @@ c---------------------------------------
+@@ -37715,7 +38368,7 @@ c---------------------------------------
        double precision sinbeta,alsew,g2ew,g1ew
        COMMON/SD_param/sdgf,amz,amw,pi,g2
        COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 

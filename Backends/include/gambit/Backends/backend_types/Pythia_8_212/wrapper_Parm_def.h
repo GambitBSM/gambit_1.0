@@ -15,152 +15,140 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Wrappers for original constructors: 
         inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn) :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory0(nameIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn)),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory0(nameIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn)),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn) :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory1(nameIn, defaultIn, hasMinIn, hasMaxIn, minIn)),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory1(nameIn, defaultIn, hasMinIn, hasMaxIn, minIn)),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn) :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory2(nameIn, defaultIn, hasMinIn, hasMaxIn)),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory2(nameIn, defaultIn, hasMinIn, hasMaxIn)),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn) :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory3(nameIn, defaultIn, hasMinIn)),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory3(nameIn, defaultIn, hasMinIn)),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn) :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory4(nameIn, defaultIn)),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory4(nameIn, defaultIn)),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn) :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory5(nameIn)),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory5(nameIn)),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Parm::Parm() :
-            WrapperBase<Pythia8::Abstract_Parm>(__factory6()),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(__factory6()),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Parm::Parm(Pythia8::Abstract_Parm* in) :
-            WrapperBase<Pythia8::Abstract_Parm>(in),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(in),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Parm::Parm(Pythia8::Abstract_Parm* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Parm>(in, true),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Parm::Parm(const Parm& in) :
-            WrapperBase<Pythia8::Abstract_Parm>(in),
-            name(wrapperbase::BEptr->name_ref__BOSS()),
-            valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
-            valDefault(wrapperbase::BEptr->valDefault_ref__BOSS()),
-            hasMin(wrapperbase::BEptr->hasMin_ref__BOSS()),
-            hasMax(wrapperbase::BEptr->hasMax_ref__BOSS()),
-            valMin(wrapperbase::BEptr->valMin_ref__BOSS()),
-            valMax(wrapperbase::BEptr->valMax_ref__BOSS())
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
+            name( get_BEptr()->name_ref__BOSS()),
+            valNow( get_BEptr()->valNow_ref__BOSS()),
+            valDefault( get_BEptr()->valDefault_ref__BOSS()),
+            hasMin( get_BEptr()->hasMin_ref__BOSS()),
+            hasMax( get_BEptr()->hasMax_ref__BOSS()),
+            valMin( get_BEptr()->valMin_ref__BOSS()),
+            valMax( get_BEptr()->valMax_ref__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Parm& Parm::operator=(const Parm& in)
         {
-            WrapperBase<Pythia8::Abstract_Parm>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -168,14 +156,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Parm::~Parm()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Parm::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Parm* Pythia8::Parm::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Parm*>(BEptr);
         }
-        
     }
     
 }
