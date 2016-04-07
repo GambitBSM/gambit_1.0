@@ -148,7 +148,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      //std::cout.rdbuf(0); 
+      std::cout.rdbuf(0); 
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -181,6 +181,7 @@ namespace Gambit
       using namespace Pipes::getPythia;
 
       static std::string pythia_doc_path;
+      static std::string default_doc_path;
       static bool print_pythia_banner = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
@@ -195,7 +196,10 @@ namespace Gambit
         // Get Pythia to print its banner.
         if (print_pythia_banner)
         {
-          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+          default_doc_path = "Backends/installed/Pythia/" + 
+                             Backends::backendInfo().default_version("Pythia") +
+                             "/share/Pythia8/xmldoc/";
+          pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
           result.banner(pythia_doc_path);
           print_pythia_banner = false;
         }

@@ -157,8 +157,9 @@ Rules:
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV: ["PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = on",
