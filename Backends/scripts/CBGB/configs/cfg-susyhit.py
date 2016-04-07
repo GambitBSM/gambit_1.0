@@ -7,8 +7,8 @@
 #
 
 
-# Set path to source file:
-src_file_path = 'example/sdecay.f'
+# List paths to input Fortran files:
+input_files = ['examples/sdecay.f']
 
 
 # Choose 'fixed' or 'free' format:

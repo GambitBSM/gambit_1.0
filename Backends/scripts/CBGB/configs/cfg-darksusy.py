@@ -7,8 +7,8 @@
 #
 
 
-# Set path to source file:
-src_file_path = 'example/dsmssm.h'
+# List paths to input Fortran files:
+input_files = ['examples/dsmssm.h']
 
 
 # Choose 'fixed' or 'free' format:

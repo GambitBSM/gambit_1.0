@@ -29,7 +29,7 @@ if (len(sys.argv) < 2):
     print 'Missing input arguments.'
     print 'Usage:'
     print
-    print '  python cbgb.py configs/<config_file>.py'
+    print '  python cbgb.py configs/<config_file>'
     print 
 
     sys.exit()
@@ -67,19 +67,21 @@ import modules.utils as utils
 # Check and output some info from the config file.
 #
 
-print '  Input source file:'
-print '  ------------------'
+print '  Input Fortran files:'
+print '  --------------------'
 print
-print '    %s' % cfg.src_file_path
-print 
+for i, src_file_name in enumerate(cfg.input_files,1):
+    print '    ' + src_file_name
 print
+print
+
 print '  Requested functions/subroutines:'
 print '  --------------------------------'
 print
 
 f_listing = '    '
-for i, cb_name in enumerate(cfg.load_functions,1):
-    f_listing += cb_name + ', '
+for i, f_name in enumerate(cfg.load_functions,1):
+    f_listing += f_name + ', '
 
     if i%4==0:
         f_listing += '\n    '
@@ -131,15 +133,14 @@ print
 
 
 #
-# Read input source file and prepare output files
+# Read input source files
 #
 
-src_file = open(cfg.src_file_path, 'r')
-src_content = src_file.read()
-src_file.close()
+src_content = ''
+for fn in cfg.input_files:
+    with open(fn,'r') as src_file:
+        src_content += src_file.read()
 
-out_file_be_types = open(gb.output_file_path_be_types, 'w')
-out_file_frontend = open(gb.output_file_path_frontend, 'w')
 
 
 #
@@ -405,11 +406,13 @@ for code_part_name, code_dict in code_parts_dict.items():
 be_types_file_content = utils.addNamespace(be_types_file_content, 'Gambit', indent=4)
 
 # Write output files
-out_file_be_types.write('\n')            
-out_file_be_types.write(be_types_file_content)
+with open(gb.output_file_path_be_types, 'w') as out_file_be_types:
+    out_file_be_types.write('\n')            
+    out_file_be_types.write(be_types_file_content)
 
-out_file_frontend.write('\n')            
-out_file_frontend.write(frontend_file_content)
+with open(gb.output_file_path_frontend, 'w') as out_file_frontend:
+    out_file_frontend.write('\n')            
+    out_file_frontend.write(frontend_file_content)
 
 # Print summary
 print
@@ -429,15 +432,13 @@ if len(common_blocks_left) > 0:
     for cb_name in common_blocks_left:
         print "    WARNING: Reqested common block '%s' was not found." % cb_name 
 
-
-# Close output files
-out_file_be_types.close()
-out_file_frontend.close()
 print 
-print '    Generated code for GAMBIT written to files: %s, %s.' % (gb.output_file_path_be_types, gb.output_file_path_frontend)
-
-
+print '    Generated code for GAMBIT written to files:'
 print
+print '    - ' + gb.output_file_path_frontend
+print '    - ' + gb.output_file_path_be_types
+print
+
 print
 print '  ~~~~  Done!  ~~~~'
 print

@@ -7,8 +7,8 @@
 #
 
 
-# Set path to source file:
-src_file_path = 'example/minimal_test.f90'
+# List paths to input Fortran files:
+input_files = ['examples/minimal_test_p1.f90', 'examples/minimal_test_p2.f90']
 
 
 # Choose 'fixed' or 'free' format:
