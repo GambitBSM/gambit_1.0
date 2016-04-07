@@ -26,7 +26,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
 {
     int plugin_main ()
     {
-        like_ptr LogLike = get_purpose(get_inifile_value<std::string>("purpose", "LogLike"));
+        like_ptr LogLike = get_purpose(get_inifile_value<std::string>("like", "LogLike"));
         int dim = get_dimension();
         
         int numtasks;
