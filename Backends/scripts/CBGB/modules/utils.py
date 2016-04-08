@@ -107,7 +107,7 @@ def removeStatementLabels(code_lines):
                     code_lines[i] = line.replace(label, ' '*len(label), 1)                    
 
         else:
-            raise Exception("cfg.format must be set to either 'fixed' or 'free'.")
+            raise RuntimeError("cfg.format must be set to either 'fixed' or 'free'.")
 
     return code_lines
 
@@ -165,7 +165,7 @@ def joinContinuedLines(code_lines):
                 continue_line = False
 
     else:
-        raise Exception("cfg.format must be set to either 'fixed' or 'free'.")
+        raise RuntimeError("cfg.format must be set to either 'fixed' or 'free'.")
 
     if joined_code_lines[0] == '':
         joined_code_lines.pop(0)
@@ -246,27 +246,31 @@ def getCodeParts(code_lines, prepend_module_name=False):
                 start_line = i
     
                 # Identify name for new code part
-                line_list = line.split()
-                line_list_lowercase = line.lower().split()
-                keyword_index = line_list_lowercase.index(new_part)
-
-                if len(line_list) == keyword_index+1:
-                    name_long = 'unnamed_' + new_part + '_' + str(unnamed_part_counter)
+                name = getCodePartName(line, new_part)
+                if (name == 'unnamed_' + new_part):
+                    name = name + '_' + str(unnamed_part_counter)
                     unnamed_part_counter += 1
 
-                else:
-                    # name_item = line_list[line_list.index(new_part)+1]
-                    name_item = line_list[keyword_index+1]
-                    if '(' in name_item:
-                        name = name_item[:name_item.find('(')]
-                    else:
-                        name = name_item
+                # line_list = line.split()
+                # line_list_lowercase = line.lower().split()
+                # keyword_index = line_list_lowercase.index(new_part)
 
-                if prepend_module_name: 
-                    if current_module != '':
-                        name_long = current_module + '::' + name
-                    else:
-                        name_long =  name
+                # if len(line_list) == keyword_index+1:
+                #     name_long = 'unnamed_' + new_part + '_' + str(unnamed_part_counter)
+                #     unnamed_part_counter += 1
+
+                # else:
+                #     # name_item = line_list[line_list.index(new_part)+1]
+                #     name_item = line_list[keyword_index+1]
+                #     if '(' in name_item:
+                #         name = name_item[:name_item.find('(')]
+                #     else:
+                #         name = name_item
+
+                if (current_module != '') and (prepend_module_name):
+                    name_long = current_module + '::' + name
+                else:
+                    name_long =  name
 
                 # Update current_part
                 current_part = new_part
@@ -317,6 +321,33 @@ def getCodeParts(code_lines, prepend_module_name=False):
     return code_parts_dict
 
 # ====== END: getCodeParts ========
+
+
+
+
+# ====== getCodePartName ========
+
+def getCodePartName(code_line, keyword):
+
+    line_list = code_line.split()
+    line_list_lowercase = code_line.lower().split()
+    keyword_index = line_list_lowercase.index(keyword)
+
+    if len(line_list) == keyword_index+1:
+        name = 'unnamed_' + keyword
+
+    else:
+        name_item = line_list[keyword_index+1]
+        if '(' in name_item:
+            name = name_item[:name_item.find('(')]
+        else:
+            name = name_item
+
+    return name
+
+# ====== END: getCodePartName ========
+
+
 
 
 
@@ -583,6 +614,10 @@ def getArrayIndicesTuples(dimensions_str, parameter_defs):
     if dimensions_str == '':
         return indicies_tuples
 
+    # Check for assumed-shape arrays. We can't deal with that yet...        
+    if dimensions_str == ':':
+        raise RuntimeError
+
     # Loop over comma-separated entries in dimensions_str
     for dim_str in dimensions_str.split(','):
 
@@ -645,7 +680,7 @@ def getVariablesDict(code_lines, get_variables):
             line_list = line.split()
             i = 1
             while i <= len(line_list):
-                if ''.join(line_list[:i]) in full_type_name:
+                if ''.join(line_list[:i]).lower() in full_type_name:
                     i += 1
                     continue
                 else:
@@ -709,7 +744,7 @@ def getVariablesDict(code_lines, get_variables):
                         type_name, type_size = implicit_defs[first_char.lower()]
 
                         if type_name == None or type_size == None:
-                            raise Exception("No type declaration (neither explicit nor implicit) was found for variable '%s'." % var_name)
+                            raise RuntimeError("No type declaration (neither explicit nor implicit) was found for variable '%s'." % var_name)
 
                         return_var_dicts[var_name] = { 
                                                        'type'     : type_name,
@@ -741,7 +776,7 @@ def getVariablesDict(code_lines, get_variables):
             type_name, type_size = implicit_defs[first_char.lower()]
 
             if type_name == None or type_size == None:
-                raise Exception("No type declaration (neither explicit nor implicit) was found for variable '%s'." % get_var_name)
+                raise RuntimeError("No type declaration (neither explicit nor implicit) was found for variable '%s'." % get_var_name)
 
             return_var_dicts[get_var_name] = { 
                                               'type'     : type_name,
@@ -869,28 +904,29 @@ def getFunctionArgumentNames(code_line):
 
 # ====== getFunctionReturnType ========
 
-def getFunctionReturnType(code_line):
+def getFunctionReturnType(code_lines):
 
-# Input : "double precision function some_function(arg1,arg2,arg3)"
-#
-# Output: "doubleprecision" 
+    f_decl_line = code_lines[0]
 
-    return_type_dict = OrderedDict()
-
-    line_list = code_line.split()
-    f_index = code_line.lower().split().index('function')
+    f_decl_line_list = f_decl_line.split()
+    f_index = f_decl_line.lower().split().index('function')
     
-    # Grab content if line up til 'function' keyword
-    f_return_type_line = ' '.join(line_list[:f_index])
+    # Get function name
+    f_name = getCodePartName(f_decl_line, 'function')
 
-    # Get information on return type
-    is_decl, type_name, type_size = isVariableDecl(f_return_type_line, return_type=True)
+    # Grab content in declaration line preceding the 'function' keyword
+    # and append the function name to form a regular variable declaration: 
+    f_return_type_line = ' '.join(f_decl_line_list[:f_index] + [f_name])
 
-    # Construct dict to be returned
-    return_type_dict['type'] = type_name
-    return_type_dict['size'] = type_size
-    # TODO: set this properly...
-    return_type_dict['dimension'] = ''
+    # If f_return_type_line forms a valid type declaration, use it.
+    # Otherwise, search the function body for a declaration.
+    is_decl = isVariableDecl(f_return_type_line)
+    if is_decl:
+        result_dict = getVariablesDict([f_return_type_line], [f_name])
+        return_type_dict = result_dict[f_name]
+    else:
+        result_dict = getVariablesDict(code_lines[1:], [f_name])
+        return_type_dict = result_dict[f_name]
 
     return return_type_dict
 
@@ -930,26 +966,13 @@ def generateTypeDeclCommonBlock(cb_dict, var_info_dict, parameter_defs):
 
     for var_name, var_dict in var_info_dict.items():
 
-        c_type_name = getCTypeName(var_dict, parameter_defs)
+        try:
+            c_type_name = getCTypeName(var_dict, parameter_defs)
+        except RuntimeError:
+            print "    ERROR: Failed to translate variable '%s' in common block '%s' to C type." % (var_name, cb_name)
+            raise
 
         code += indent + c_type_name + ' ' + var_name + ';\n'
-
-        # array_indices_tuples = getArrayIndicesTuples(var_dict['dimension'])
-
-        # is_array = bool(len(array_indices_tuples))
-        
-        # if is_array:
-    
-        #     if c_type_name == 'char':
-        #         code += indent + '// Fstring, FstringArray: REMAINS TO BE IMPLEMENTED!\n'
-    
-        #     else:
-        #         all_indices_list = [i for tpl in array_indices_tuples for i in tpl]
-        #         all_indices_str = ','.join( map(str,all_indices_list) )
-        #         template_bracket = '< %s,%s >' % (c_type_name, all_indices_str)
-        #         code += indent + 'Farray' + template_bracket + ' ' + var_name + ';\n'
-        # else:
-        #     code += indent + c_type_name + ' ' + var_name + ';\n'
 
     code += '};\n'
 
@@ -993,10 +1016,20 @@ def generateFrontendFunction(f_dict, parameter_defs):
         f_name = f_name_short
 
     arg_info_dict = f_dict['arg_info']
-    ret_type_info_dict = f_dict['return_type_info']
 
-    # Get correct C type for the return type
-    f_return_type_c = getCTypeName(ret_type_info_dict, parameter_defs)
+    # Get correct C type for the return type.
+    # - if function:
+    if 'return_type_info' in f_dict.keys():
+        ret_type_info_dict = f_dict['return_type_info']
+        try:
+            f_return_type_c = getCTypeName(ret_type_info_dict, parameter_defs)
+        except RuntimeError:
+            print "    ERROR: Failed to translate the return type of function '%s' to C type." % (f_name)
+            raise
+    # - if subroutine:
+    else:
+        f_return_type_c = 'void'
+
 
     # Generate mangled symbol name
     f_mangled_symbol = getMangledSymbolName(f_name_short, module=module_name)
@@ -1011,7 +1044,11 @@ def generateFrontendFunction(f_dict, parameter_defs):
     # Construct argument list
     arg_bracket = '('
     for arg_name, d in arg_info_dict.items():
-        c_type_name = getCTypeName(d, parameter_defs)
+        try:
+            c_type_name = getCTypeName(d, parameter_defs)
+        except RuntimeError:
+            print "    ERROR: Failed to translate the argument '%s' in %s '%s' to C type." % (arg_name, f_dict['category'], f_name_short)
+            raise
         arg_bracket += c_type_name + ', '
     arg_bracket.rstrip(', ')
     arg_bracket += ')'
@@ -1046,7 +1083,7 @@ def getMangledSymbolName(identifier, module=''):
         else:
             mangled_symbol = identifier.lower() + '_'
     else:
-        raise Exception("cfg.name_mangling must be set to either 'gfortran', 'ifort' or 'g77'.")
+        raise RuntimeError("cfg.name_mangling must be set to either 'gfortran', 'ifort' or 'g77'.")
 
     return mangled_symbol
 
@@ -1065,7 +1102,11 @@ def getCTypeName(var_dict, parameter_defs):
 
     c_type_base_name = gb.type_translation_dict[fortran_type_name]
 
-    array_indices_tuples = getArrayIndicesTuples(var_dict['dimension'], parameter_defs)
+    try:
+        array_indices_tuples = getArrayIndicesTuples(var_dict['dimension'], parameter_defs)
+    except RuntimeError:
+        print '    ERROR: Cannot determine the correct size for variable of type %s(%s).' % (fortran_type_name, var_dict['dimension'])
+        raise
 
     # Is this variable an array?
     if (fortran_type_name != 'character') and (len(array_indices_tuples) > 0):

@@ -15,7 +15,7 @@ input_files = ['examples/sdecay.f']
 format = 'fixed'  
 
 # List the functions/subroutines to be loaded:
-load_functions = ['sd_read_mass']
+load_functions = ['SD_READ_MASS']
 
 
 # List the common blocks to be loaded:
@@ -36,7 +36,8 @@ load_common_blocks = ['WIDTHA_HDEC', 'WIDTHHL_HDEC', 'WIDTHHH_HDEC',
                       'SD_sntauwidth', 'SD_top2body', 'SD_topwidth', 
                       'SUSYHITIN', 'SD_leshouches1', 'SD_leshouches2',
                       'SD_mbmb', 'flavviolation', 'checkfavvio', 'SD_selectron',
-                      'SLHA_leshouches1_HDEC', 'SLHA_leshouches2_HDEC']
+                      'SLHA_leshouches1_HDEC', 'SLHA_leshouches2_HDEC',
+                      'msfermion']
 
 
 # Convert tabs to how many spaces?

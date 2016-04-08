@@ -317,7 +317,8 @@ for code_part_name, code_dict in code_parts_dict.items():
             
         # If function, get info on return type
         if code_category == 'function':
-            return_type_info = utils.getFunctionReturnType(code_lines[0])
+            return_type_info = utils.getFunctionReturnType(code_lines)
+
 
         # Get dictionary with parameter definitions
         parameter_defs = utils.getParameterDefs(code_lines)
@@ -331,7 +332,8 @@ for code_part_name, code_dict in code_parts_dict.items():
         # Construct a dict with all the info required to generate code for the GAMBIT frontend header
         f_dict = OrderedDict()
         f_dict['name'] = f_name_short
-        f_dict['return_type_info'] = return_type_info
+        if code_category == 'function':
+            f_dict['return_type_info'] = return_type_info
         f_dict['category'] = code_category
         f_dict['arg_info'] = OrderedDict(arg_info_dict)
         f_dict['module'] = module_name

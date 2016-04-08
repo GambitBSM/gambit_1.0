@@ -15,7 +15,7 @@ input_files = ['examples/minimal_test_p1.f90', 'examples/minimal_test_p2.f90']
 format = 'free'  
 
 # List the functions/subroutines to be loaded:
-load_functions = ['Five', 'six', 'text', 'MA::text']
+load_functions = ['Five', 'six', 'text', 'MA::text', 'Partial_sums']
 
 # List the common blocks to be loaded:
 load_common_blocks = ['WIDTHA_HDEC', 'WIDTHHL_HDEC', 'WIDTHHH_HDEC', 
