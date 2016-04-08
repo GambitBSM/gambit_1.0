@@ -1,13 +1,9 @@
 ColliderBit cleanup TODOs:
 ==========================
 
-1.) Check all yaml files for correct ColliderBit settings; remove obsolete yaml files.
+1.) Add DELPHES instructions (commented out) to gambit_Collider_CMSSM.yaml.
 
-2.) Add DELPHES instructions (commented out) to gambit_Collider_CMSSM.yaml.
-
-3.) Fix the ColliderBit_standalone example (it needs to use the new capability structure).
-
-4.) Test and cleanup the doxygen comments in the code.
+2.) Test and cleanup the doxygen comments in the code.
 
 
 ** I guess we're done with memory leak hunting, but just in case...
