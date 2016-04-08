@@ -158,7 +158,8 @@ Scanner:
     twalk:
       plugin: twalk
       tolerance: 1.03
-      projection_dimension: 4
+      #projection_dimension: 4
+      #chain_number:
 
     #great:
 
