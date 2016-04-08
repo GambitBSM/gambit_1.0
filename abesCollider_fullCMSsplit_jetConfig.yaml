@@ -39,7 +39,7 @@ Printer:
     # name of output file
     output_file: "gambit_output.hdf5"
     group: "/"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 ##############################
 # Scanner setup
@@ -56,10 +56,6 @@ Scanner:
       like:  Likelihood
       nlive: 200
       tol: 0.01
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
-
 
     grid:
       plugin: grid
@@ -99,7 +95,6 @@ ObsLikes:
   #- purpose:    Observable
   #  capability: SLHA1_violation
 
-  # TODO: Test the functionality of these likelihood functions
   # Test LEP SUSY limit slepton likelihoods
   #- purpose:    Likelihood
   #  capability: ALEPH_Selectron_LLike
@@ -232,9 +227,6 @@ Rules:
       useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
-
-  - capability: ConvertedScatteringEvent
-    function: convertPythia8ParticleEvent
 
   - capability:  ColliderOperator
     function: operateLHCLoop

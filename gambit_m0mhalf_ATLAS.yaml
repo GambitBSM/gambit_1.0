@@ -48,7 +48,7 @@ Printer:
 
 Scanner:
 
-  use_scanner: multinest
+  use_scanner: random
 
   scanners:
 
@@ -63,7 +63,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 100
+      point_number: 5
       output_file:  output
       like:  Likelihood
       files:
@@ -82,7 +82,6 @@ ObsLikes:
   - purpose:    Observable
     capability: SLHA1_violation
 
-  # TODO: Test the functionality of these likelihood functions
   # Test LEP SUSY limit slepton likelihoods
   #- purpose:    Likelihood
   #  capability: ALEPH_Selectron_LLike
@@ -182,16 +181,15 @@ Rules:
     options:  
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
-  - capability: SimpleSmearingSim
-    function: getBuckFastATLAS
- 
-  - capability: ConvertedScatteringEvent
-    function: convertPythia8ParticleEvent
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:  
+      useCMS: false
 
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: 10000
+      nEvents: 1000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
 

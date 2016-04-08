@@ -417,9 +417,6 @@ Rules:
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
 
-  - capability: ConvertedScatteringEvent
-    function: convertPythia8ParticleEvent
-
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:

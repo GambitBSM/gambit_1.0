@@ -142,25 +142,45 @@ Rules:
   - capability: t_decay_rates
     function: FH_t_decays
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
-    options:
-      analysisNames: ["ATLAS_0LEP_20invfb","CMS_1LEPDMTOP_20invfb"]
-
   - capability: DetectorSim
     function: getDelphes
     options:
       delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
 
   - capability: SimpleSmearingSim
-    function: getBuckFast
+    type: "Gambit::ColliderBit::BuckFastSmearATLAS"
+    function: getBuckFastATLAS
     options:
-      buckFastOption: "BuckFastSmear"
+      partonOnly: false
+      antiktR: 0.4
 
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", function: "convertPythia8ParticleEvent"}
+  - capability: SimpleSmearingSim
+    type: "Gambit::ColliderBit::BuckFastSmearCMS"
+    function: getBuckFastCMS
+    options:
+      partonOnly: false
+      antiktR: 0.5
+
+  - capability: SimpleSmearingSim
+    type: "Gambit::ColliderBit::BuckFastIdentity"
+    function: getBuckFastIdentity
+    options:
+      partonOnly: false
+      antiktR: 0.4
+
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
+    options:  
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           "ATLAS_3LEPEW_20invfb"]
+
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:  
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
   - capability:  ColliderOperator
     function: operateLHCLoop
