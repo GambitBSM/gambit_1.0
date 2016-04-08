@@ -126,18 +126,31 @@ scanner_plugin(GreAT, version(1, 0, 0))
       ind_samples_options.setValue("synchronised", false);
 
       std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
-      // Initialise auxiliary print streams
+      // Initialise auxiliary print stream
       data.printer->new_stream("ind_samples", ind_samples_options);
 
       Scanner::printer* ind_samples_printer(data.printer->get_stream("ind_samples"));
       static const int MPIrank = data.likelihood_function->getRank();
 
+      TGreatMCMCSample *prev_sample = estimator->GetFirstIndSample();
+      unsigned int multiplicity = 0;
+
       for(TGreatMCMCSample *sample = estimator->GetFirstIndSample(); sample != 0; sample = estimator->GetNextIndSample())
       {
-        ind_samples_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, sample->GetID());
-        ind_samples_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, sample->GetID());
-        ind_samples_printer->print(sample->GetID(), "Point ID", MPIrank, sample->GetID());
+        // count samples to get their posterior weight and save them
+        if(prev_sample->GetID() == sample->GetID())
+          ++multiplicity;
+        else
+        {
+          ind_samples_printer->print(multiplicity, "multiplicity", MPIrank, prev_sample->GetID());
+          ind_samples_printer->print(prev_sample->GetID(), "Point ID", MPIrank, prev_sample->GetID());
+          prev_sample = sample;
+          multiplicity = 1;
+        }
       }
+      // save the last point
+      ind_samples_printer->print(multiplicity, "multiplicity", MPIrank, prev_sample->GetID());
+      ind_samples_printer->print(prev_sample->GetID(), "Point ID", MPIrank, prev_sample->GetID());
     }
 
     std::cout << "\033[1;31mGreAT finished successfully!\033[0m" << std::endl;
