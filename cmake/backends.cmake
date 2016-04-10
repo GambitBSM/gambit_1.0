@@ -460,6 +460,7 @@ add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssi
 
 
 # gm2calc
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
 set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.0.0")
 set(gm2calc_dl "gm2calc-1.0.0.tar.gz")
 ExternalProject_Add(gm2calc
@@ -470,7 +471,7 @@ ExternalProject_Add(gm2calc
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""
 )
 ExternalProject_Add_Step(gm2calc apply_hacks
@@ -494,7 +495,7 @@ ExternalProject_Add(gm2calc_c
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""
 )
 ExternalProject_Add_Step(gm2calc_c apply_hacks
