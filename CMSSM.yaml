@@ -152,9 +152,6 @@ ObsLikes:
     - purpose:    LogLike
       capability: LEP_Higgs_LogLike
 
-    - purpose:    Observable
-      capability: SLHA1_violation
-
     - purpose:    LogLike
       capability: ALEPH_Selectron_LLike
 
@@ -201,16 +198,13 @@ ObsLikes:
       capability: OPAL_Neutralino_Hadronic_LLike
 
 
-    - purpose:    Observable
-      capability: MSSM_spectrum
-      type:       map_str_dbl
-
+    # Other observables
     - purpose:    Observable
       capability: RD_oh2
-      
+
     - purpose:    Observable
       capability: mwimp
-      
+
     - purpose:    Observable
       capability: sigmav
 
@@ -226,12 +220,22 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SD_n
 
+    - purpose:    Observable
+      capability: SLHA1_violation
+
+    - purpose:    Observable
+      capability: MSSM_spectrum
+      type:       map_str_dbl
 
     # Missing:
     # CMB+HESS likelihoods
 
 
 Rules:
+
+  # Tell all functions that are able to dump SLHA files to do so.
+  #- options:
+  #    drop_SLHA_file: true
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
@@ -366,8 +370,8 @@ Rules:
     options:
       vesc_obs: 550 # km/s
       vesc_obserr: 35 # km/s
-      
-  # Precision Bit
+
+  # PrecisionBit
   - capability: lnL_light_quark_masses
     options:
       # m_u/m_d
@@ -380,6 +384,7 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
+  # ColliderBit
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS

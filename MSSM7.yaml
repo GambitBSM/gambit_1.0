@@ -151,8 +151,7 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    # ColliderBit likelihoods
-    - purpose:    Likelihood
+    - purpose:    LogLike
       capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
@@ -458,7 +457,6 @@ Rules:
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
 
 Logger:
 
