@@ -386,14 +386,14 @@ Rules:
 
   # ColliderBit
   - capability: SimpleSmearingSim
-    type: "Gambit::ColliderBit::BuckFastSmearATLAS"
+    type: "ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
       partonOnly: false
       antiktR: 0.4
 
   - capability: SimpleSmearingSim
-    type: "Gambit::ColliderBit::BuckFastSmearCMS"
+    type: "ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
       partonOnly: false
