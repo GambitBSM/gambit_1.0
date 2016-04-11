@@ -65,9 +65,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: gaussian
+  use_objectives: object_detection
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: random
+  use_scanner: multinest
   #find_shift
   #find_kernel
   #object_detection
@@ -103,7 +103,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 10000000
+      point_number: 10008
       like: LogLike
           
     toy:
@@ -346,11 +346,10 @@ Scanner:
     object_detection:
       plugin: object_detection
       purpose: LogLike
-      options:
-        psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
-        image_file: "/home/gmartine/fits/c0052.fits"
-        grid_file: "/home/gmartine/fits/grid.fits"
-        min_pixel_number: -1
+      psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
+      image_file: "/home/gmartine/fits/c0052.fits"
+      grid_file: "/home/gmartine/fits/grid.fits"
+      min_pixel_number: -1
       parameters:
         pos_x:
           range: [200, 800]
