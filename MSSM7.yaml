@@ -120,6 +120,9 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
+    - capability:  lnL_gm2
+      purpose:     LogLike
+
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:    LogLike
