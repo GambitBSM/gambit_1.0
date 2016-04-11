@@ -11,6 +11,7 @@
 ///  \author Antje Putze
 ///          (putze@lapth.cnrs.fr)
 ///  \date 2015 Nov
+///  \date 2016 Apr
 ///
 ///  *********************************************
 
@@ -88,12 +89,14 @@ scanner_plugin(GreAT, version(1, 0, 0))
     MyModel->SetLogLikelihoodFunction(LogLikelihoodFunction);
 
     // Setting up the GreAT Manager
-    // TGreatManager<typename T> MyManager(TGreatModel*);
     std::cout << "\033[1;31mCreating GreAT Manager\033[0m" << std::endl;
+    // TGreatManager<typename T> MyManager(TGreatModel*);
+    // Using here a multivariate Gaussian distribution (TGreatMCMCAlgorithmCovariance)
     TGreatManager<TGreatMCMCAlgorithmCovariance> MyManager(MyModel);
     // Tell the algorithm to use former points to update its prior
     MyManager.GetAlgorithm()->SetUpdateStatus(true);
-    std::string defpath = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT/");
+    // Set the output path, file name, and name for the TTree
+    std::string defpath = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT-native/");
     std::string filename = defpath + "MCMC.root";
     MyManager.SetOutputFileName(filename);
     MyManager.SetTreeName("mcmc");
@@ -120,7 +123,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
     static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
     if(MPIrank == 0)
     {
-      Gambit::Options ind_samples_options = get_inifile_node("aux_printer_ind_samples_options");
+      Gambit::Options ind_samples_options;// = get_inifile_node("aux_printer_ind_samples_options");
 
       // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
       ind_samples_options.setValue("synchronised", false);

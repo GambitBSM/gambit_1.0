@@ -155,7 +155,12 @@ Scanner:
       NP: 1000
       verbosity: 1
 
-    #great:
+    mcmc:
+      plugin: GreAT
+      nTrialLists: 5
+      nTrials: 40000
+      like: Likelihood
+      aux_printer_ind_samples_options:
 
     #twalk(?):
 

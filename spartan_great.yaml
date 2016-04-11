@@ -5,7 +5,7 @@
 # Jun 2015
 #
 # Antje Putze <putze@lapth.cnrs.fr>
-# Nov 2015
+# Nov 2015, Apr 2016
 #
  
 #======== Input parameter declarations =======
@@ -38,8 +38,6 @@ Scanner:
       nTrialLists: 5
       nTrials: 40000
       like: Likelihood
-      path: "runs/spartan_great/great_native"
-      aux_printer_ind_samples_options:
 
 #======== Observables of interest ========
 ObsLikes:
@@ -58,8 +56,6 @@ Logger:
     [Default]      : "default.log"
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
-    [Printers]     : "Printers.log"
-  log_debug_messages: true
 
 #======== Generic Name/Value Section ========
 KeyValues:
