@@ -162,7 +162,12 @@ namespace Gambit
           Loop::executeIteration(START_SUBPROCESS);
           // main event loop
           while(currentEvent<nEvents and not *Loop::done) {
-            Loop::executeIteration(currentEvent++);
+            try {
+              Loop::executeIteration(currentEvent);
+              currentEvent++;
+            } catch (std::domain_error& e) {
+              std::cerr<<"\n   Continuing to the next event...\n\n";
+            }
           }
           Loop::executeIteration(END_SUBPROCESS);
         }
@@ -582,7 +587,20 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
+        {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+        }
+        throw e;
+      }
     }
 
     void smearEventCMS(HEPUtils::Event& result) {
@@ -591,7 +609,20 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
+        {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+        }
+        throw e;
+      }
     }
 
 
@@ -601,7 +632,20 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8 and convert to HEPUtils::Event
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
+        {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+        }
+        throw e;
+      }
     }
 
 
