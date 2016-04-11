@@ -303,22 +303,6 @@ ExternalProject_Add_Step(pythiaEM apply_hacks
 BOSS_backend(pythiaEM Pythia 8.212.EM)
 add_extra_targets(pythiaEM ${pythiaEM_dir} ${backend_download}/${pythia_dl} distclean)
 
-# Fastsim
-set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
-set(fastsim_dir "${PROJECT_SOURCE_DIR}/Backends/installed/fastsim/1.0")
-ExternalProject_Add(fastsim
-  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-           COMMAND ${CMAKE_COMMAND} -E copy_directory ${fastsim_location} ${fastsim_dir}
-  SOURCE_DIR ${fastsim_dir}
-  BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
-  INSTALL_COMMAND ""
-)
-add_extra_targets(fastsim ${fastsim_dir} null distclean)
-
 
 # Nulike
 set(nulike_ver "1.0.2")
@@ -476,6 +460,7 @@ add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssi
 
 
 # gm2calc
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
 set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.0.0")
 set(gm2calc_dl "gm2calc-1.0.0.tar.gz")
 ExternalProject_Add(gm2calc
@@ -486,7 +471,7 @@ ExternalProject_Add(gm2calc
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""
 )
 ExternalProject_Add_Step(gm2calc apply_hacks
@@ -510,7 +495,7 @@ ExternalProject_Add(gm2calc_c
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} BOOSTFLAGS=-I${Boost_INCLUDE_DIR} sharedlib
   INSTALL_COMMAND ""
 )
 ExternalProject_Add_Step(gm2calc_c apply_hacks
