@@ -1,6 +1,9 @@
 #pragma once
-
-// Functions that do super fast detector simulation based on four vector smearing
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Functions that do super fast ATLAS detector simulation based on four vector smearing.
 
 #include <random>
 #include "gambit/ColliderBit/Utils.hpp"
@@ -10,6 +13,9 @@
 
 namespace Gambit {
   namespace ColliderBit {
+/// @brief ATLAS-specific efficiency and smearing functions for super fast detector simulation
+///
+/// See also BuckFastSmearATLAS
     namespace ATLAS {
 
 

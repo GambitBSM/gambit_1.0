@@ -28,6 +28,10 @@
 #define IF_X_RTN_CREATE_ANA_X(A)                                           \
   if (name == #A) return create_Analysis_ ## A()
 
+/// For the string based SpecializablePythia function resetSpecialization()
+#define IF_X_SPECIALIZEX(X)                                                \
+  if (specName == #X) { _specialInit = X::init; return; }
+
 /// Convenience macro for getting mandatory runoptions
 #define GET_COLLIDER_RUNOPTION(OPTION_NAME, OPTION_TYPE)                   \
   do { try {                                                               \

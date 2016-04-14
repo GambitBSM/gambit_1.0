@@ -1,4 +1,10 @@
 #pragma once
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  The SpecializablePythia class.
+
 #include <ostream>
 #include "gambit/ColliderBit/colliders/BaseCollider.hpp"
 #include "SLHAea/slhaea.h"

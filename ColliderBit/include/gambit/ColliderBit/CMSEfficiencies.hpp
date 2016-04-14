@@ -1,6 +1,9 @@
 #pragma once
-
-/// @file Functions that do super fast CMS detector simulation based on four vector smearing
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Functions that do super fast CMS detector simulation based on four vector smearing.
 
 #include "gambit/ColliderBit/Utils.hpp"
 
@@ -13,6 +16,9 @@
 
 namespace Gambit {
   namespace ColliderBit {
+/// @brief CMS-specific efficiency and smearing functions for super fast detector simulation
+///
+/// See also BuckFastSmearCMS
     namespace CMS {
 
 
