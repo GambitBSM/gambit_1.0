@@ -15,7 +15,7 @@ namespace Gambit {
 
     /// A simple container for the result of one signal region from one analysis.
     struct SignalRegionData {
-      std::string analysis_name;
+      std::string analysis_name; ///< The name of the analysis common to all signal regions.
       std::string sr_label; ///< A label for the particular signal region of the analysis.
       double n_observed; ///< The number of events passing selection for this signal region,
                          ///< as reported by the experiment.
@@ -154,6 +154,7 @@ namespace Gambit {
       //@}
     };
 
+    /// A BaseAnalysis template specialization for our preferred event type.
     typedef BaseAnalysis<HEPUtils::Event> HEPUtilsAnalysis;
 
   }
