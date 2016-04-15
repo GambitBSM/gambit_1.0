@@ -19,6 +19,7 @@ namespace Gambit {
         Pythia8::Pythia* _pythiaBase;
         std::vector<std::string> _pythiaSettings;
         void (*_specialInit)(SpecializablePythia*);
+
       /// @name Getters:
       //@{
       public:
@@ -112,7 +113,6 @@ namespace Gambit {
         /// Report the cross section uncertainty (in pb) at the end of the subprocess.
         double xsecErr_pb() const { return _pythiaInstance->info.sigmaErr() * 1e9; }
       ///@}
-
      };
 
   }

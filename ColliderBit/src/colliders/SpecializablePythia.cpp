@@ -18,11 +18,10 @@
 
 namespace Gambit
 {
-
   namespace ColliderBit
   {
+
     /// @brief Contains a SpecializablePythia init function which does nothing
-    ///
     /// @note Pythia settings may still be applied externally via yaml file input.
     namespace Pythia_external
     {
@@ -30,7 +29,6 @@ namespace Gambit
     }
 
     /// @brief Contains a SpecializablePythia init function for a basic SUSY @ 8TeV LHC scenario.
-    ///
     /// @note Additional Pythia settings may still be applied externally via yaml file input.
     namespace Pythia_SUSY_LHC_8TeV
     {
@@ -46,7 +44,6 @@ namespace Gambit
     }
 
     /// @brief Contains a SpecializablePythia init function for gluino-squark production @ 8TeV LHC scenario.
-    ///
     /// @note This "inherits" Pythia_SUSY_LHC_8TeV by explicitly calling its init before changing additional settings.
     /// @note Additional Pythia settings may still be applied externally via yaml file input.
     namespace Pythia_glusq_LHC_8TeV

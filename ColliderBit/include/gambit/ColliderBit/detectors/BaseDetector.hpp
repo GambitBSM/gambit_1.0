@@ -1,4 +1,10 @@
 #pragma once
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  The BaseDetector class.
+
 #include <string>
 #include <vector>
 #include <exception>
@@ -15,21 +21,17 @@
 namespace Gambit {
   namespace ColliderBit {
 
-
-    /// @note Abstract base class BaseDetector
+    /// An abstract base class for detector simulators within ColliderBit.
     template <typename EventIn, typename EventOut>
     struct BaseDetector {
-      /// @name Typedefs
-      //@{
-        typedef EventIn EventInType;
-        typedef EventOut EventOutType;
-      //@}
+      typedef EventIn EventInType;
+      typedef EventOut EventOutType;
 
       /// @name Construction, Destruction, and Recycling
       //@{
         BaseDetector() {}
         virtual ~BaseDetector() {}
-        /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
+        /// Reset this instance for reuse, avoiding the need for "new" or "delete".
         virtual void clear() { }
       //@}
 
@@ -40,14 +42,12 @@ namespace Gambit {
 
       /// @name (Re-)Initialization functions
       //@{
-        /// @brief Settings parsing and initialization for each sub-class.
+        /// Settings parsing and initialization for each sub-class.
         virtual void init(const std::vector<std::string>&) {};
-        /// @brief General init for any collider of this type - no settings version.
+        /// General init for any collider of this type - no settings version.
         virtual void init() { };
       //@}
-
     };
-
 
   }
 }

@@ -1,4 +1,10 @@
 #pragma once
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  The BaseCollider class.
+
 #include <string>
 #include <vector>
 #include <exception>
@@ -11,7 +17,7 @@ namespace Gambit {
     /// An abstract base class for collider simulators within ColliderBit.
     template <typename EventT>
     struct BaseCollider {
-        typedef EventT EventType;
+      typedef EventT EventType;
 
       /// @name Construction, Destruction, and Recycling:
       //@{

@@ -1,14 +1,19 @@
 #pragma once
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  The BaseAnalysis class and SignalRegionData struct.
+
 #include <string>
 #include <sstream>
 #include <vector>
+
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 #include "gambit/ColliderBit/Utils.hpp"
+
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/Event.h"
-#include "omp.h"
-
-using std::vector;
 
 namespace Gambit {
   namespace ColliderBit {
@@ -55,9 +60,9 @@ namespace Gambit {
         }
       //@}
 
-      public:
       /// @name Event analysis, event number, and cross section functions:
       //@{
+      public:
         /// Analyze the event (accessed by reference).
         void analyze(const EventT& e) { analyze(&e); }
         /// Analyze the event (accessed by pointer).
@@ -88,18 +93,18 @@ namespace Gambit {
         }
       //@}
 
-      protected:
       /// @name Protected collection functions:
       //@{
+      protected:
         /// Add the given result to the internal results list.
         void add_result(const SignalRegionData& res) { _results.push_back(res);}
         /// Gather together the info for likelihood calculation.
         virtual void collect_results() = 0;
       //@}
 
-      public:
       /// @name (Re-)Initialization functions:
       //@{
+      public:
         /// General init for any analysis of this type.
         virtual void init(const std::vector<std::string>&) {}
         /// General init for any collider of this type - no settings version.
@@ -116,9 +121,9 @@ namespace Gambit {
         }
       //@}
 
-      public:
       /// @name BaseAnalysis combination operations:
       //@{
+      public:
         /// An operator to do xsec-weighted combination of analysis runs.
         virtual void add(BaseAnalysis* other) {
           if (_results.empty()) collect_results();
@@ -155,6 +160,7 @@ namespace Gambit {
         }
       //@}
     };
+
 
     /// A BaseAnalysis template specialization for our preferred event type.
     typedef BaseAnalysis<HEPUtils::Event> HEPUtilsAnalysis;

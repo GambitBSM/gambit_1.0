@@ -14,6 +14,7 @@ namespace Gambit {
     class SimplePythia : public BaseCollider<Pythia8::Event> {
       protected:
         Pythia8::Pythia* _pythiaInstance;
+
       /// @name Getters:
       //@{
       public:
@@ -66,7 +67,6 @@ namespace Gambit {
         /// Report the cross section uncertainty (in pb) at the end of the subprocess.
         double xsecErr_pb() const { return _pythiaInstance->info.sigmaErr() * 1e9; }
       //@}
-
      };
 
   }
