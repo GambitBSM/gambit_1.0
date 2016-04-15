@@ -39,6 +39,10 @@
 #          (c.weniger@uva.nl)
 #  \date 2015 Sep
 #
+#  \author Tomas Gonzalo
+#          (t.e.gonzalo@fys.uio.no)
+#  \date 2016 Apr
+#
 #************************************************
 
 # DarkSUSY
@@ -66,7 +70,6 @@ ExternalProject_Add(darksusy
 add_extra_targets(darksusy ${darksusy_dir} ${backend_download}/${darksusy_dl} distclean)
 
 # DarkSUSY 5.1.1
-set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
 set(darksusy_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1")
 set(darksusy_dl "darksusy-5.1.1.tar.gz")
@@ -407,6 +410,27 @@ ExternalProject_Add(higgssignals
 )
 add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssignals_dl} hyperclean)
 
+# SPheno
+set(spheno_ver "3\\.3\\.8")
+set(spheno_lib "lib/libSPheno")
+set(spheno_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SPheno/3.3.8")
+set(spheno_short_dir "./Backends/installed/SPheno/3.3.8")
+set(spheno_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SPheno/3.3.8")
+set(spheno_dl "SPheno-3.3.8.tar.gz")
+ExternalProject_Add(spheno
+  URL http://www.hepforge.org/archive/spheno/${spheno_dl}
+  URL_MD5 4307cb4b736cebca5e57ca6c5e0b5836
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${spheno_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  PATCH_COMMAND patch -bp0 --ignore-whitespace < ${spheno_patch}/patch_SPheno_3_3_8.dif
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${spheno_lib}.so  
+  INSTALL_COMMAND ""
+)
+add_extra_targets(spheno ${spheno_dir} ${backend_download}/${spheno_dl} clean)
+
 
 set_target_properties(darksusy
                       darksusy_5_1_1
@@ -423,6 +447,7 @@ set_target_properties(darksusy
                       ddcalc
                       gamlike
                       nulike
+                      spheno
                       PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends
@@ -437,6 +462,7 @@ add_custom_target(backends
                   susyhit
                   pythia
                   nulike
+                  spheno
                  )
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike)
@@ -459,4 +485,6 @@ add_custom_target(clean-backends
                   clean-nulike
                   clean-delphes
                   clean-flexiblesusy
+                  clean-spheno
                  )
+
