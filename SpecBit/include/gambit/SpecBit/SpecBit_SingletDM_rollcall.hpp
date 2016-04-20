@@ -56,9 +56,21 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
-
-
   #undef CAPABILITY
+
+  #define CAPABILITY SingletDM_spectrum
+    // ============================== 
+    // Convert an MSSM_spectrum into a standard map so that it can be printed
+    #define FUNCTION get_SingletDM_spectrum_as_map 
+    START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
+    DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+    #undef FUNCTION    
+  #undef CAPABILITY
+
+
+
+
+
 
   #define CAPABILITY SingletDM_pole_mh
   START_CAPABILITY

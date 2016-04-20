@@ -392,6 +392,71 @@ namespace Gambit
     }
     
     
+    // print spectrum out, stripped down copy from MSSM version with variable names changed
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>&, const Spectrum*);
+   
+    void get_SingletDM_spectrum_as_map (std::map<std::string,double>& specmap)
+    {
+      namespace myPipe = Pipes::get_SingletDM_spectrum_as_map;
+      const Spectrum* singletdmspec(*myPipe::Dep::SingletDM_spectrum);
+      fill_map_from_SingletDMspectrum(specmap, singletdmspec);
+    }
+    
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>& specmap, const Spectrum* singletdmspec)
+    {
+      /// Add everything... use spectrum contents routines to automate task
+      static const SpectrumContents::SingletDM contents;
+      static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
+      
+      for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+           it != required_parameters.end(); ++it)
+      {
+         const Par::Tags        tag   = it->tag();
+         const std::string      name  = it->name();
+         const std::vector<int> shape = it->shape();
+
+         /// Verification routine should have taken care of invalid shapes etc, so won't check for that here.
+
+         // Check scalar case
+         if(shape.size()==1 and shape[0]==1)
+         {
+           std::ostringstream label;
+           label << name <<" "<< Par::toString.at(tag);
+           specmap[label.str()] = singletdmspec->get_HE()->get(tag,name);
+         }
+         // Check vector case
+         else if(shape.size()==1 and shape[0]>1)
+         {
+           for(int i = 1; i<=shape[0]; ++i) {
+             std::ostringstream label;
+             label << name <<"_"<<i<<" "<< Par::toString.at(tag);
+             specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i);
+           }
+         }
+         // Check matrix case
+         else if(shape.size()==2)
+         {
+           for(int i = 1; i<=shape[0]; ++i) {
+             for(int j = 1; j<=shape[0]; ++j) {
+               std::ostringstream label;
+               label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
+               specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i,j);
+             }  
+           }
+         }
+         // Deal with all other cases
+         else
+         {
+           // ERROR
+           std::ostringstream errmsg;           
+           errmsg << "Error, invalid parameter received while converting SingletDMspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
+           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape; 
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());
+         }
+      }
+
+    }
+    
 //    void check_perturb_to_min_lambda_SingletDMZ3(double &error)
 //    {
 //    using namespace flexiblesusy;
