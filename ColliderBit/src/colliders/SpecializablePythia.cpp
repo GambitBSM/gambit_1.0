@@ -83,7 +83,7 @@ namespace Gambit
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        _pythiaBase->init(os);
+        if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
@@ -100,7 +100,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
       // Send along the SLHAea::Coll pointer, if it exists
       if (slhaea) _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-      _pythiaInstance->init(os);
+      if (!_pythiaInstance->init(os)) throw InitializationError();
     }
 
     void SpecializablePythia::init(const std::string pythiaDocPath,
@@ -117,7 +117,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        _pythiaBase->init(os);
+        if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
@@ -125,7 +125,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
       // Send along the SLHAea::Coll pointer, if it exists
       if (slhaea) _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-      _pythiaInstance->init(os);
+      if (!_pythiaInstance->init(os)) throw InitializationError();
     }
 
     void SpecializablePythia::resetSpecialization(const std::string& specName)

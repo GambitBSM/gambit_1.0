@@ -120,6 +120,9 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
+    - capability:  lnL_gm2
+      purpose:     LogLike
+
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:    LogLike
@@ -151,8 +154,7 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    # ColliderBit likelihoods
-    - purpose:    Likelihood
+    - purpose:    LogLike
       capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
@@ -393,14 +395,14 @@ Rules:
 
   # ColliderBit
   - capability: SimpleSmearingSim
-    type: "Gambit::ColliderBit::BuckFastSmearATLAS"
+    type: "ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
       partonOnly: false
       antiktR: 0.4
 
   - capability: SimpleSmearingSim
-    type: "Gambit::ColliderBit::BuckFastSmearCMS"
+    type: "ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
       partonOnly: false
@@ -458,7 +460,6 @@ Rules:
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
 
 Logger:
 
