@@ -994,7 +994,7 @@ def generateFrontendCommonBlock(cb_dict):
 
     cb_mangled_symbol = getMangledSymbolName(cb_name)
 
-    code += 'BE_VARIABLE(%s, %s, "%s", "%s")\n' % (cb_type_name, cb_name, cb_mangled_symbol, cb_capability_name)
+    code += 'BE_VARIABLE(%s, %s, "%s", "%s")\n' % (cb_name, cb_type_name, cb_mangled_symbol, cb_capability_name)
 
     return code
 
