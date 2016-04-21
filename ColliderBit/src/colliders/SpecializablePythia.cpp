@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include <sstream>
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
-#include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
 /*#include "Pythia8/Sigma_MC4BSM_2012_UFO_gg_uvuvx.h"
 #include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_uvuvx.h"
@@ -16,13 +15,7 @@ namespace Gambit
   namespace ColliderBit
   {
 
-    /// SpecializablePythia init function for a user defined model.
-    namespace Pythia_UserModel
-    {
-      void init(SpecializablePythia*) { }
-    }
-
-    /// SpecializablePythia init function which does nothing - pure external settings only.
+    /// SpecializablePythia init function which does nothing - external settings from yaml input.
     namespace Pythia_external
     {
       void init(SpecializablePythia*) { }
@@ -43,12 +36,12 @@ namespace Gambit
     }
 
     /// SpecializablePythia init function for gluino-squark production @ 8TeV LHC scenario.
+    /// @note This "inherits" Pythia_SUSY_LHC_8TeV by explicitly calling its init before changing additional settings.
     namespace Pythia_glusq_LHC_8TeV
     {
 
       void init(SpecializablePythia* specializeMe)
       {
-        /// @note This "inherits" Pythia_SUSY_LHC_8TeV by explicitly calling its init before changing additional settings.
         Pythia_SUSY_LHC_8TeV::init(specializeMe);
         specializeMe->addToSettings("SUSY:idA = 1000021");
         specializeMe->addToSettings("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
@@ -90,7 +83,7 @@ namespace Gambit
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        _pythiaBase->init(os);
+        if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
@@ -107,7 +100,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
       // Send along the SLHAea::Coll pointer, if it exists
       if (slhaea) _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-      _pythiaInstance->init(os);
+      if (!_pythiaInstance->init(os)) throw InitializationError();
     }
 
     void SpecializablePythia::init(const std::string pythiaDocPath,
@@ -124,7 +117,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        _pythiaBase->init(os);
+        if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
@@ -132,7 +125,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
       // Send along the SLHAea::Coll pointer, if it exists
       if (slhaea) _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-      _pythiaInstance->init(os);
+      if (!_pythiaInstance->init(os)) throw InitializationError();
     }
 
     void SpecializablePythia::resetSpecialization(const std::string& specName)

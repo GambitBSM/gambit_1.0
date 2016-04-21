@@ -27,15 +27,6 @@ namespace Gambit {
       double background_sys; ///< The absolute systematic error of n_background.
 
       SignalRegionData() {}
-
-      void set_analysis_name(std::string a) {analysis_name=a;}
-      void set_sr_label(std::string a) {sr_label=a;}
-      void set_observation(double a) {n_observed=a;}
-      void set_signal(double a) {n_signal=a;}
-      void set_signal_at_lumi(double a) {n_signal_at_lumi=a;}
-      void set_background(double a) {n_background=a;}
-      void set_signalsys(double a) {signal_sys=a;}
-      void set_backgroundsys(double a) {background_sys=a;}
     };
 
 
@@ -69,7 +60,7 @@ namespace Gambit {
         void analyze(const EventT& e) { analyze(&e); }
         /// @brief Analyze the event (accessed by pointer)
         /// @note Needs to be called from Derived::analyze()
-        virtual void analyze(const HEPUtils::Event*) { _ntot += 1; }
+        virtual void analyze(const EventT*) { _ntot += 1; }
 
         /// @brief Return the total number of events seen so far
         double num_events() const { return _ntot; }

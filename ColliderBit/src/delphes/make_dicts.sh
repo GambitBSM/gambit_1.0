@@ -1,4 +1,10 @@
-rootcint -f BTaggingWithTruthModule_dict.cc -c -I../../../contrib/Delphes-3.1.2 -I../../../contrib/Delphes-3.1.2/external -I../../include/gambit/ColliderBit/delphes BTaggingWithTruthModule.h BTaggingWithTruthModuleLinkDef.h 
-rootcint -f AbsoluteIsolationModule_dict.cc -c -I../../../contrib/Delphes-3.1.2 -I../../../contrib/Delphes-3.1.2/external -I../../include/gambit/ColliderBit/delphes AbsoluteIsolationModule.h AbsoluteIsolationModuleLinkDef.h 
+#! /usr/bin/env bash
+
+DDIR="../../../contrib/Delphes-3.1.2"
+FLAGS="-I$DDIR -I$DDIR/external -I../../include/gambit/ColliderBit/delphes"
+
+rootcint -f BTaggingWithTruthModule_dict.cc -c $FLAGS BTaggingWithTruthModule.h BTaggingWithTruthModuleLinkDef.h
 mv BTaggingWithTruthModule_dict.h ../../include/gambit/ColliderBit/delphes/
+
+rootcint -f AbsoluteIsolationModule_dict.cc -c $FLAGS AbsoluteIsolationModule.h AbsoluteIsolationModuleLinkDef.h
 mv AbsoluteIsolationModule_dict.h ../../include/gambit/ColliderBit/delphes/

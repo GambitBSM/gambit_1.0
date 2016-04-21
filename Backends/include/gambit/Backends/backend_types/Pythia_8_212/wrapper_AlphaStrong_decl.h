@@ -14,12 +14,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class AlphaStrong : public WrapperBase<Pythia8::Abstract_AlphaStrong>
+        class AlphaStrong : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_AlphaStrong> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_AlphaStrong>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -68,7 +64,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 AlphaStrong(Pythia8::Abstract_AlphaStrong* in);
-                AlphaStrong(Pythia8::Abstract_AlphaStrong* const & in, bool);
         
                 // Copy constructor: 
                 AlphaStrong(const AlphaStrong& in);
@@ -79,9 +74,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~AlphaStrong();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_AlphaStrong* get_BEptr() const;
         
         };
     }

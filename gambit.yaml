@@ -194,10 +194,6 @@ ObsLikes:
 #  - purpose:      LogLike
 #    capability:   lnL_LUX_2013
 
-  # Uncomment to test FastSim
-#- purpose:      LogLike
-#   capability:   fast_sim
-
   # Uncomment to test array and -> operators in safety buckets.
   - purpose:      Observable
     capability:   ptrmeth_arr_tester
@@ -354,7 +350,7 @@ Rules:
   - capability:  GambitColliderEvent
     function:    reconstructDelphesEvent
     options:
-      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl"
+      delphesConfigFile: "ColliderBit/data/delphes_card_ATLAS.tcl"
 
   - capability:  hardScatteringEvent
     function:    generatePythia8Event

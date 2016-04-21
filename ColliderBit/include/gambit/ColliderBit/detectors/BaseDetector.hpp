@@ -19,7 +19,7 @@ namespace Gambit {
     /// @note Abstract base class BaseDetector
     template <typename EventIn, typename EventOut>
     struct BaseDetector {
-      /// @name Member variables
+      /// @name Typedefs
       //@{
         typedef EventIn EventInType;
         typedef EventOut EventOutType;

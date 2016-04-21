@@ -10,7 +10,6 @@ from collections import OrderedDict
 import copy
 import warnings
 
-# import modules.cfg as cfg
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
 
@@ -82,7 +81,7 @@ def getArgs(func_el):
 
 def constrArgsBracket(args, include_arg_name=True, include_arg_type=True, include_namespace=False,
                       cast_to_original=False, use_wrapper_class=False, wrapper_to_pointer=False, 
-                      use_wrapper_base_class=False, add_namespace_to_loaded=''):
+                      add_namespace_to_loaded=''):
 
     #
     # Requires a list of dicts as input, as returned by 'getArgs' or 'constrWrapperArgs'.
@@ -125,13 +124,12 @@ def constrArgsBracket(args, include_arg_name=True, include_arg_type=True, includ
                     qualifiers = ' '.join(arg_dict['kw'])
                     cast_to_type = qualifiers + ' ' + cast_to_type
 
-                # Determine what argument name to use (arg_name or *arg_name.BEptr or ...)
+                # Determine what argument name to use (arg_name or *arg_name.get_BEptr() or ...)
                 if wrapper_to_pointer:
                     if arg_dict['type'].count('*') == 0:
-                        use_name = '*' + arg_dict['name'] + '.BEptr'
+                        use_name = '*' + arg_dict['name'] + '.get_BEptr()'
                     elif arg_dict['type'].count('*') == 1:
-                        # use_name = '(*' + arg_dict['name'] + ')' + '.BEptr.get()'
-                        use_name = '(*' + arg_dict['name'] + ')' + '.BEptr'
+                        use_name = '(*' + arg_dict['name'] + ')' + '.get_BEptr()'
                     args_seq += 'dynamic_cast< ' + cast_to_type + ' >(' + use_name + ')'
                 else:
                     args_seq += 'dynamic_cast< ' + cast_to_type + ' >(' + arg_dict['name'] + ')'
@@ -146,7 +144,7 @@ def constrArgsBracket(args, include_arg_name=True, include_arg_type=True, includ
                 args_seq += ''.join([ kw+' ' for kw in arg_dict['kw'] ])
 
                 if use_wrapper_class and arg_dict['loaded_class'] == True:
-                    args_seq += classutils.toWrapperType(arg_dict['type'], use_base_type=use_wrapper_base_class, include_namespace=include_namespace)
+                    args_seq += classutils.toWrapperType(arg_dict['type'], include_namespace=include_namespace)
 
                 else:
                     if include_namespace:
@@ -164,9 +162,9 @@ def constrArgsBracket(args, include_arg_name=True, include_arg_type=True, includ
             if include_arg_name:
                 if utils.isLoadedClass(arg_dict['type'], byname=True) and wrapper_to_pointer:
                     if arg_dict['type'].count('*') == 0:
-                        args_seq += '*' + arg_dict['name'] + '.BEptr'
+                        args_seq += '*' + arg_dict['name'] + '.get_BEptr()'
                     elif arg_dict['type'].count('*') == 1:
-                        args_seq += '(*' + arg_dict['name'] + ')' + '.BEptr'
+                        args_seq += '(*' + arg_dict['name'] + ')' + '.get_BEptr()'
                     else:
                         raise Exception('funcutils.constrArgsBracket cannot presently deal with arguments of type pointer-to-pointer for wrapper classes.')
                 else:
@@ -306,7 +304,7 @@ def constrWrapperBody(return_type, func_name, args, return_is_loaded_class, keyw
 
         if return_is_loaded_class:
             if is_ref:
-                w_func_body += '&(' + func_name + args_bracket_notypes + ');\n'
+                w_func_body += func_name + args_bracket_notypes + ';\n'
             elif (not is_ref) and (pointerness > 0):
                 w_func_body += func_name + args_bracket_notypes + ';\n'
             else:
@@ -534,50 +532,6 @@ def getFunctionNameDict(func_el):
 
     # Get information about the arguments
     args = getArgs(func_el)
-
-
-    # #
-    # # Start filling the name dict
-    # #
-    
-    # # If two or more functions have the same name, the return type will
-    # # be part of the 'demangled' entry. Otherwise it will not.
-    
-    # if (return_type + ' ') == func_el.get('demangled')[:len(return_type)+1]:
-    
-    #     func_name['long_templ_return_args']  = func_el.get('demangled')
-    
-    #     # Remove return type
-    #     if return_type == 'void':
-    #         func_name['long_templ_args'] = func_name['long_templ_return_args']
-    #     else:
-    #         func_name['long_templ_args'] = func_name['long_templ_return_args'].replace(return_type,'',1).strip()
-
-    # else:
-
-    #     func_name['long_templ_args']  = func_el.get('demangled')
-    
-    #     # Add return type
-    #     if return_type == 'void':
-    #         func_name['long_templ_return_args'] = func_name['long_templ_args']
-    #     else:
-    #         func_name['long_templ_return_args'] = return_type + ' ' + func_name['long_templ_args']
-
-
-    # # Remove argument bracket
-    # func_name['long_templ'], args_bracket = utils.removeArgumentBracket(func_name['long_templ_args'], return_args_bracket=True)
-
-    # # Remove template bracket
-    # func_name['long'], template_bracket = utils.removeTemplateBracket(func_name['long_templ'], return_bracket=True)
-
-    # # Remove namespace
-    # func_name['short'] = utils.removeNamespace(func_name['long'])
-
-    # # Combine short name and template bracket
-    # func_name['short_templ'] = func_name['short'] + template_bracket
-
-    # # Combine short name, template bracket and argument bracket
-    # func_name['short_templ_args'] = func_name['short_templ'] + args_bracket
 
 
     #

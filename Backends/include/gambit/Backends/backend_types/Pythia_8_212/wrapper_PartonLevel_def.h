@@ -8,7 +8,6 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
-#include "wrapper_UserHooks_decl.h"
 #include "wrapper_Event_decl.h"
 #include <vector>
 #include "wrapper_ResonanceDecays_decl.h"
@@ -22,108 +21,103 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline bool PartonLevel::next(WrapperBase< Pythia8::Abstract_Event >& process, WrapperBase< Pythia8::Abstract_Event >& event)
+        inline bool PartonLevel::next(Pythia8::Event& process, Pythia8::Event& event)
         {
-            return wrapperbase::BEptr->next__BOSS(*process.BEptr, *event.BEptr);
+            return get_BEptr()->next__BOSS(*process.get_BEptr(), *event.get_BEptr());
         }
         
-        inline void PartonLevel::setupShowerSys(WrapperBase< Pythia8::Abstract_Event >& process, WrapperBase< Pythia8::Abstract_Event >& event)
+        inline void PartonLevel::setupShowerSys(Pythia8::Event& process, Pythia8::Event& event)
         {
-            wrapperbase::BEptr->setupShowerSys__BOSS(*process.BEptr, *event.BEptr);
+            get_BEptr()->setupShowerSys__BOSS(*process.get_BEptr(), *event.get_BEptr());
         }
         
-        inline bool PartonLevel::resonanceShowers(WrapperBase< Pythia8::Abstract_Event >& process, WrapperBase< Pythia8::Abstract_Event >& event, bool skipForR)
+        inline bool PartonLevel::resonanceShowers(Pythia8::Event& process, Pythia8::Event& event, bool skipForR)
         {
-            return wrapperbase::BEptr->resonanceShowers__BOSS(*process.BEptr, *event.BEptr, skipForR);
+            return get_BEptr()->resonanceShowers__BOSS(*process.get_BEptr(), *event.get_BEptr(), skipForR);
         }
         
-        inline bool PartonLevel::wzDecayShowers(WrapperBase< Pythia8::Abstract_Event >& event)
+        inline bool PartonLevel::wzDecayShowers(Pythia8::Event& event)
         {
-            return wrapperbase::BEptr->wzDecayShowers__BOSS(*event.BEptr);
+            return get_BEptr()->wzDecayShowers__BOSS(*event.get_BEptr());
         }
         
         inline bool PartonLevel::hasVetoed() const
         {
-            return wrapperbase::BEptr->hasVetoed();
+            return get_BEptr()->hasVetoed();
         }
         
         inline bool PartonLevel::hasVetoedDiff() const
         {
-            return wrapperbase::BEptr->hasVetoedDiff();
+            return get_BEptr()->hasVetoedDiff();
         }
         
         inline void PartonLevel::accumulate()
         {
-            wrapperbase::BEptr->accumulate();
+            get_BEptr()->accumulate();
         }
         
         inline void PartonLevel::statistics(bool reset)
         {
-            wrapperbase::BEptr->statistics(reset);
+            get_BEptr()->statistics(reset);
         }
         
         inline void PartonLevel::statistics()
         {
-            wrapperbase::BEptr->statistics__BOSS();
+            get_BEptr()->statistics__BOSS();
         }
         
         inline void PartonLevel::resetStatistics()
         {
-            wrapperbase::BEptr->resetStatistics();
+            get_BEptr()->resetStatistics();
         }
         
         inline void PartonLevel::resetTrial()
         {
-            wrapperbase::BEptr->resetTrial();
+            get_BEptr()->resetTrial();
         }
         
         inline double PartonLevel::pTLastInShower()
         {
-            return wrapperbase::BEptr->pTLastInShower();
+            return get_BEptr()->pTLastInShower();
         }
         
         inline int PartonLevel::typeLastInShower()
         {
-            return wrapperbase::BEptr->typeLastInShower();
+            return get_BEptr()->typeLastInShower();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::PartonLevel::PartonLevel() :
-            WrapperBase<Pythia8::Abstract_PartonLevel>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::PartonLevel::PartonLevel(Pythia8::Abstract_PartonLevel* in) :
-            WrapperBase<Pythia8::Abstract_PartonLevel>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::PartonLevel::PartonLevel(Pythia8::Abstract_PartonLevel* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_PartonLevel>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::PartonLevel::PartonLevel(const PartonLevel& in) :
-            WrapperBase<Pythia8::Abstract_PartonLevel>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::PartonLevel& PartonLevel::operator=(const PartonLevel& in)
         {
-            WrapperBase<Pythia8::Abstract_PartonLevel>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -131,14 +125,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::PartonLevel::~PartonLevel()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::PartonLevel::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_PartonLevel* Pythia8::PartonLevel::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_PartonLevel*>(BEptr);
         }
-        
     }
     
 }
