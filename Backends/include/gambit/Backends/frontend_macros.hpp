@@ -76,7 +76,7 @@ MODULE_DECLARE_FUNCTION(BackendIniBit,                                      \
  void,2)                                                                    \
 
 /// Main actual backend variable macro
-#define BE_VARIABLE_I(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)             \
+#define BE_VARIABLE_I(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)             \
 namespace Gambit                                                              \
 {                                                                             \
   namespace Backends                                                          \
