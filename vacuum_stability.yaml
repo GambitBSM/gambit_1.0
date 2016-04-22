@@ -19,7 +19,7 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [173.15,173.16]
+         range: [150,190]
          prior_type: flat
 
       # SLHA1
@@ -61,21 +61,23 @@ Parameters:
       alpha1  :  0       # first Majorana CP-violating phase
       alpha2  :  0       # second CP-violating Majorana phase
 
-    StandardModel_Higgs_running:
+    StandardModel_Higgs:
       mH:
-        range: [146.1, 146.66]
+        range: [120, 150]
         prior_type: flat
-      QEWSB: 173
+      #QEWSB: 173
 
 
     SingletDM:
       mS: 80
-      lambda_hS: 0.5 #0.30
+      lambda_hS: 0.1 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
   #    lambda_hS: 0.1
   #    lambda_S: 0.01
+
+
 
 
 
@@ -88,20 +90,12 @@ Parameters:
 
 Printer:
 
-  # Select printer to use via string tag
-  printer: ascii
-
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
+  printer: hdf5
   options:
-    # name of output file
-    output_file: "gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "gambit_output.info"
-    buffer_length: 50
-
+    output_file: "gambit_output.hdf5"
+    group: "/sing/let"
+    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 ##############################
@@ -109,14 +103,25 @@ Printer:
 ##############################
 
 Scanner:
-
-  #use_objectives: uniform
-  use_scanner: grid
-
-# Scanners
+  use_scanner: multinest
 
   scanners:
 
+    multinest:
+      plugin: MultiNest
+      like:  LogLike
+      nlive: 1000
+      tol: 0.5
+
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 1000
+      verbosity: 1
+
+    #great:
+
+    #twalk(?):
 
     random:
       plugin: random_sampler
@@ -138,26 +143,6 @@ Scanner:
       like:  LogLike
       grid_pts: [2,2]
 
-    multinest:
-      plugin: MultiNest
-      like:  LogLike
-      nlive: 5000
-      tol: 0.1
-      outfile: 0
-      root: "runs/SSDM/samples/native-"
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
-
-  objectives:
-
-    uniform:
-      plugin: uniform
-      version: ">=1.0 & <2.0"
-      some_param: 10
-      parameters:
-        param...2:
-          range: [-10, 10]
 
 
 ###############################
@@ -168,23 +153,24 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-    - capability: vacuum_stability
-      purpose: Observable
-      function: find_min_lambda
-    - capability: SingletDM_pole_mh
+#    - capability: vacuum_stability
+ #     purpose: Observable
+  #    function: find_min_lambda
+
+    - capability: print_SingletDM_spectrum
       purpose: Observable
 
     - capability: VS_likelihood
-      purpose: Observable
+      purpose: LogLike
 
-    - capability: check_perturb_min_lambda
-      purpose: Observable
+ #   - capability: check_perturb_min_lambda
+ #     purpose: Observable
 
-    - capability: check_perturb
-      purpose: Observable
+ #   - capability: check_perturb
+ #     purpose: Observable
 
-    - capability: expected_lifetime
-      purpose: Observable
+ #   - capability: expected_lifetime
+ #     purpose: Observable
 
 
 
@@ -193,17 +179,19 @@ ObsLikes:
 #########################
 
 Rules:
-    - capability: check_perturb
-      purpose: Observable
-      function: check_perturb_SingletDM #or check_perturb_simple
-      options:
-        set_high_scale: 1e18  #option can be used with check_perturb_simple only
+ #   - capability: check_perturb
+ #     purpose: Observable
+ #     function: check_perturb_SingletDM #or check_perturb_simple
+ #     options:
+ #       set_high_scale: 1e18  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum_pole
-      options:
-        set_high_scale: 200
-        check_perturb_pts: 10
+
+
+#      options:
+#        set_high_scale: 200
+#        check_perturb_pts: 10
 
 #########################
 # Logging setup
@@ -271,5 +259,5 @@ KeyValues:
 
   enable_testing: false
 
-  default_output_path: "runs/SingletDM/"
+  default_output_path: "runs/vacuum_stability/"
 
