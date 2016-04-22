@@ -28,10 +28,10 @@ BE_FUNCTION(mInterp, int, (double,int,int,double*) , "mInterp", "mInterp")
 BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
 BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
-BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
-BE_VARIABLE(int, ForceUG, "ForceUG", "ForceUG")
-BE_VARIABLE(int, VZdecay, "VZdecay", "VZdecay")
-BE_VARIABLE(int, VWdecay, "VWdecay", "VWdecay")
+BE_VARIABLE(mocommon_, MicrOmegas::MOcommonSTR, "mocommon_", "MOcommon")
+BE_VARIABLE(ForceUG, int, "ForceUG", "ForceUG")
+BE_VARIABLE(VZdecay, int, "VZdecay", "VZdecay")
+BE_VARIABLE(VWdecay, int, "VWdecay", "VWdecay")
 
 BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 

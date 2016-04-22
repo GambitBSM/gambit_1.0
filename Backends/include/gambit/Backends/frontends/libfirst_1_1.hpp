@@ -43,10 +43,10 @@ BE_FUNCTION(arrayarg_2D, double, (double(*)[10]), "_Z11arrayarg_2DPA10_d", "exam
 BE_FUNCTION(arrayarg_3D, double, (double(*)[10][10]), "_Z11arrayarg_3DPA10_A10_d", "example_be_array_3D")
 
 // Variables
-BE_VARIABLE(int,SomeInt, "someInt", "SomeInt", (CMSSM, UED))
-BE_VARIABLE(double,SomeDouble, "someDouble", "SomeDouble")
-BE_VARIABLE(dblarr,SomeArray, "someArray", "SomeArray")
-BE_VARIABLE(std::vector<double>,SomeVector, "someVector", "test_vector")
+BE_VARIABLE(SomeInt, int, "someInt", "SomeInt", (CMSSM, UED))
+BE_VARIABLE(SomeDouble, double, "someDouble", "SomeDouble")
+BE_VARIABLE(SomeArray, dblarr, "someArray", "SomeArray")
+BE_VARIABLE(SomeVector, std::vector<double>, "someVector", "test_vector")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(nevents, int)

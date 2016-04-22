@@ -202,9 +202,9 @@ add_extra_targets(micromegasSingletDM ${micromegasSingletDM_dir} ${backend_downl
 # Pythia
 option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimization on/off" ON)
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
-# - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
+# - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g -diag-disable 654")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
 endif()
