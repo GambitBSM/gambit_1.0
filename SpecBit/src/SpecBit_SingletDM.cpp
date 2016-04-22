@@ -290,32 +290,6 @@ namespace Gambit
 
     }
 
-
-    void get_pole_mh(double &result)
-    {
-      using namespace flexiblesusy;
-      using namespace softsusy;
-      namespace myPipe = Pipes::get_pole_mh;//get_SingletDM_spectrum;
-      using namespace Gambit;
-      using namespace SpecBit;
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-      result=spec->get(Par::Pole_Mass,"h0");
-    }
-
-
-    void get_pole_ms(double &result)
-    {
-      using namespace flexiblesusy;
-      using namespace softsusy;
-      namespace myPipe = Pipes::get_pole_ms;//get_SingletDM_spectrum;
-      using namespace Gambit;
-      using namespace SpecBit;
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-      result=spec->get(Par::Pole_Mass,"s0");
-    }
-    
     
     // simple function for generating a spectrum up to a given high scale, this does not save the spectrum object, so only used when the spectrum was already
     // calculated before hand for use with find_min_lambda for vacuum stability
