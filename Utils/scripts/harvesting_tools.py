@@ -275,7 +275,7 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
 def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=False):
 
-    command_index = {"BE_VARIABLE":1,
+    command_index = {"BE_VARIABLE":2,
                      "BE_FUNCTION":2, 
                      "BE_CONV_FUNCTION":2,
                      "BACKEND_REQ":0}

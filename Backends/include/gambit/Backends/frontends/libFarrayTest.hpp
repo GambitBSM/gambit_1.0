@@ -12,9 +12,9 @@
 
 LOAD_LIBRARY
 
-BE_VARIABLE(libFarrayTest_CB_type, commonBlock, "commonblock_", "libFarrayTestCommonBlock")
-BE_VARIABLE(libFarrayTest_CB2_type, commonBlock2, "commonblock2_", "libFarrayTestCommonBlock2")
-BE_VARIABLE(libFarrayTest_CB3_type, commonBlock3, "commonblock3_", "libFarrayTestCommonBlock3")
+BE_VARIABLE(commonBlock, libFarrayTest_CB_type, "commonblock_", "libFarrayTestCommonBlock")
+BE_VARIABLE(commonBlock2, libFarrayTest_CB2_type, "commonblock2_", "libFarrayTestCommonBlock2")
+BE_VARIABLE(commonBlock3, libFarrayTest_CB3_type, "commonblock3_", "libFarrayTestCommonBlock3")
 
 BE_FUNCTION(printStuff, void, (), "printstuff_", "libFarrayTest_printStuff")
 
