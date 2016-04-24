@@ -187,7 +187,7 @@ namespace Gambit
 
       static std::string pythia_doc_path;
       static std::string default_doc_path;
-      static bool print_pythia_banner = true;
+      static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
       int seedBase;
@@ -199,15 +199,16 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
-        // Get Pythia to print its banner.
-        if (print_pythia_banner)
+        // Setup the Pythia documentation path
+        if (pythia_doc_path_needs_setting)
         {
           default_doc_path = "Backends/installed/Pythia/" + 
                              Backends::backendInfo().default_version("Pythia") +
                              "/share/Pythia8/xmldoc/";
           pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
-          result.banner(pythia_doc_path);
-          print_pythia_banner = false;
+          // Get one thread to print the Pythia banner.
+          if (omp_get_thread_num() == 0) result.banner(pythia_doc_path);
+          pythia_doc_path_needs_setting = false;
         }
 
         // SLHAea object constructed from dependencies on the spectrum and decays.
@@ -323,7 +324,7 @@ namespace Gambit
 
       static std::vector<std::string> filenames;
       static std::string pythia_doc_path;
-      static bool print_pythia_banner = true;
+      static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = -1;
       int seedBase;
       // variables for xsec veto
@@ -334,12 +335,13 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
-        // Get Pythia to print its banner.
-        if (print_pythia_banner)
+        // Setup the Pythia documentation path
+        if (pythia_doc_path_needs_setting)
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          result.banner(pythia_doc_path);
-          print_pythia_banner = false;
+          // Get one thread to print the Pythia banner.
+          if (omp_get_thread_num() == 0) result.banner(pythia_doc_path);
+          pythia_doc_path_needs_setting = false;
         }
         // If there are no debug filenames set, look for them.
         if (filenames.empty())
