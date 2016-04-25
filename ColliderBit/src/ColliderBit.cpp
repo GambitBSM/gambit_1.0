@@ -264,10 +264,12 @@ namespace Gambit
 
         try
         {
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions, &slha);
+          result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+          // DEBUG: Commented out if else block below
+          // if (omp_get_thread_num() == 0)
+          //   result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+          // else
+          //   result.init(pythia_doc_path, pythiaOptions, &slha);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
@@ -275,10 +277,12 @@ namespace Gambit
                    int(Random::draw() * 899990000.) + omp_get_thread_num()));
           try
           {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions, &slha);
+            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+            // DEBUG: Commented out if else block below
+            // if (omp_get_thread_num() == 0)
+            //   result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+            // else
+            //   result.init(pythia_doc_path, pythiaOptions, &slha);
           }
           catch (SpecializablePythia::InitializationError &e)
           {
@@ -290,7 +294,8 @@ namespace Gambit
 
 
         // xsec veto
-        if (omp_get_thread_num() == 0)
+        // DEBUG: Commented out if statement below
+        // if (omp_get_thread_num() == 0)
         {
           code = -1;
           nxsec = 0;
@@ -383,10 +388,12 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         try
         {
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions);
+          result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+          // DEBUG: Commented out if else block below
+          // if (omp_get_thread_num() == 0)
+          //   result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+          // else
+          //   result.init(pythia_doc_path, pythiaOptions);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
@@ -394,10 +401,12 @@ namespace Gambit
                    int(Random::draw() * 899990000.) + omp_get_thread_num()));
           try
           {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions);
+            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+            // DEBUG: Commented out if else block below
+            // if (omp_get_thread_num() == 0)
+            //   result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+            // else
+            //   result.init(pythia_doc_path, pythiaOptions);
           }
           catch (SpecializablePythia::InitializationError &e)
           {
@@ -408,7 +417,8 @@ namespace Gambit
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0)
+        // DEBUG: Commented out if statement below
+        // if (omp_get_thread_num() == 0)
         {
           code = -1;
           nxsec = 0;
