@@ -162,6 +162,8 @@ namespace Gambit
           Loop::executeIteration(START_SUBPROCESS);
           // main event loop
           while(currentEvent<nEvents and not *Loop::done) {
+            if (!eventsGenerated)
+              eventsGenerated = true;
             try {
               Loop::executeIteration(currentEvent);
               currentEvent++;
@@ -265,11 +267,6 @@ namespace Gambit
         try
         {
           result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-          // DEBUG: Commented out if else block below
-          // if (omp_get_thread_num() == 0)
-          //   result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-          // else
-          //   result.init(pythia_doc_path, pythiaOptions, &slha);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
@@ -278,11 +275,6 @@ namespace Gambit
           try
           {
             result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            // DEBUG: Commented out if else block below
-            // if (omp_get_thread_num() == 0)
-            //   result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            // else
-            //   result.init(pythia_doc_path, pythiaOptions, &slha);
           }
           catch (SpecializablePythia::InitializationError &e)
           {
@@ -294,30 +286,25 @@ namespace Gambit
 
 
         // xsec veto
-        // DEBUG: Commented out if statement below
-        // if (omp_get_thread_num() == 0)
+        code = -1;
+        nxsec = 0;
+        totalxsec = 0.;
+        while(true)
         {
-          code = -1;
-          nxsec = 0;
-          totalxsec = 0.;
-          while(true)
-          {
-            std::getline(processLevelOutput, readline);
-            std::istringstream issPtr(readline);
-            issPtr.seekg(47, issPtr.beg);
-            issPtr >> code;
-            if (!issPtr.good() && nxsec > 0) break;
-            issPtr >> _junk >> xsec;
-            if (issPtr.good()) {
-              totalxsec += xsec;
-              nxsec++;
-            }
+          std::getline(processLevelOutput, readline);
+          std::istringstream issPtr(readline);
+          issPtr.seekg(47, issPtr.beg);
+          issPtr >> code;
+          if (!issPtr.good() && nxsec > 0) break;
+          issPtr >> _junk >> xsec;
+          if (issPtr.good()) {
+            totalxsec += xsec;
+            nxsec++;
           }
-
-          /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
-          if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
-          else eventsGenerated = true;
         }
+
+        /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
+        if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
 
       }
     }
@@ -374,7 +361,7 @@ namespace Gambit
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
-        pythiaOptions.push_back("Print:quiet = on");
+        pythiaOptions.push_back("Print:quiet = off");
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
@@ -389,11 +376,6 @@ namespace Gambit
         try
         {
           result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-          // DEBUG: Commented out if else block below
-          // if (omp_get_thread_num() == 0)
-          //   result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-          // else
-          //   result.init(pythia_doc_path, pythiaOptions);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
@@ -402,11 +384,6 @@ namespace Gambit
           try
           {
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-            // DEBUG: Commented out if else block below
-            // if (omp_get_thread_num() == 0)
-            //   result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-            // else
-            //   result.init(pythia_doc_path, pythiaOptions);
           }
           catch (SpecializablePythia::InitializationError &e)
           {
@@ -417,30 +394,25 @@ namespace Gambit
         }
 
         // xsec veto
-        // DEBUG: Commented out if statement below
-        // if (omp_get_thread_num() == 0)
+        code = -1;
+        nxsec = 0;
+        totalxsec = 0.;
+        while(true)
         {
-          code = -1;
-          nxsec = 0;
-          totalxsec = 0.;
-          while(true)
-          {
-            std::getline(processLevelOutput, readline);
-            std::istringstream issPtr(readline);
-            issPtr.seekg(47, issPtr.beg);
-            issPtr >> code;
-            if (!issPtr.good() && nxsec > 0) break;
-            issPtr >> _junk >> xsec;
-            if (issPtr.good()) {
-              totalxsec += xsec;
-              nxsec++;
-            }
+          std::getline(processLevelOutput, readline);
+          std::istringstream issPtr(readline);
+          issPtr.seekg(47, issPtr.beg);
+          issPtr >> code;
+          if (!issPtr.good() && nxsec > 0) break;
+          issPtr >> _junk >> xsec;
+          if (issPtr.good()) {
+            totalxsec += xsec;
+            nxsec++;
           }
-
-          /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
-          if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
-          else eventsGenerated = true;
         }
+
+        /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
+        if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
 
       }
     }
