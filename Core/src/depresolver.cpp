@@ -35,6 +35,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #ifdef HAVE_REGEX_H
   #include <regex>
 #endif
