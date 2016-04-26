@@ -252,7 +252,7 @@ namespace Gambit
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
-        pythiaOptions.push_back("Print:quiet = on");
+        pythiaOptions.push_back("Print:quiet = off");
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
