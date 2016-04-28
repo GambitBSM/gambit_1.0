@@ -29,6 +29,8 @@
 
 using namespace Gambit;
 
+// Deprecated!
+
 // Helper stuct
 //struct reweightScanData
 //{
@@ -37,107 +39,106 @@ using namespace Gambit;
 //  Printers::BaseBaseReader* reader;
 //};
 
-
-// The prior transformation used by the 'reweight' scanner plugin
-// This is used instead of a normal prior, to transfer parameter
-// values out of the old output into the ModelParameters
-objective_plugin(reweight_prior, version(1, 0, 0))
-{
-  std::map<std::string,std::vector<std::string>> req_models; // All the required model+parameter names
-  std::map<std::string,std::map<std::string,std::string>> longname; // Retrieve the "model::parameter" version of the name
-
-  plugin_constructor
-  {
-      std::cout << "Constructing prior plugin for reweight scanner" << std::endl;
-      std::vector<std::string> keys = get_keys();
-      //set_dimension(keys.size());
-      
-      // Pull the keys apart into model-name, parameter-name pairs
-      std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
-      for(auto it=keys.begin(); it!=keys.end(); ++it)
-      {
-         std::cout << "   " << *it << std::endl;
-         std::vector<std::string> splitkey = Utils::delimiterSplit(*it, "::");
-         std::string model = splitkey[0];
-         std::string par   = splitkey[1];
-         req_models[model].push_back(par);
-         longname[model][par] = *it;
-      }   
-   }
-
-  // The transform function
-  // Takes in the vector of unit hypercube parameters and outputs the physical parameters
-  // Here we don't actually need the hypercube parameters, and instead just load the physical
-  // parameters from the output file supplied by the user. Interaction with that file takes
-  // place in the "reweight" plugin; here we just access the parameters via the abstract
-  // 'reader' object.
-  void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
-  {
-    std::cout << "Running prior transform plugin for 'reweight' scanner" << std::endl;
-
-      // Get the reader object
-    Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
-
-    // Extract the model parameters
-    for(auto it=req_models.begin(); it!=req_models.end(); ++it)
-    {
-      ModelParameters modelparameters;
-      std::string model = it->first;
-      reader->retrieve(modelparameters, model);
-
-      /// @{ Debugging; show what was actually retrieved from the output file
-      std::pair<unsigned int,unsigned long> current_point = reader->get_current_point();
-      unsigned int  MPIrank = current_point.first;
-      unsigned long pointID = current_point.second;
-      std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
-      std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
-      const std::vector<std::string> names = modelparameters.getKeys();
-      for(std::vector<std::string>::const_iterator
-          it = names.begin();
-          it!= names.end(); ++it)
-      {
-        std::cout << "    " << *it << " : " << modelparameters[*it] << std::endl;
-      }
-      /// @}
-
-      // Check that all the required parameters were retrieved
-      // Could actually do this in the constructor for the scanner plugin, would be better, but a little more complicated. TODO: do this later.
-      std::vector<std::string> req_pars = it->second;
-      std::vector<std::string> retrieved_pars = modelparameters.getKeys();
-      for(auto jt = req_pars.begin(); jt != req_pars.end(); ++jt)
-      {
-        std::string par = *jt;
-        if(std::find(retrieved_pars.begin(), retrieved_pars.end(), par)
-            == retrieved_pars.end())
-        {
-           std::ostringstream err;
-           err << "Error! asciiReader did not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
-           scan_error().raise(LOCAL_INFO,err.str());
-        }
-
-        // If it was found, add it to the return map
-        outputMap[ longname[model][par] ] = modelparameters[par];
-      }
-    }
- 
-    /// @{ More debugging: show what we are returning to the likelihood container
-    std::cout << "Final transformed parameters:" << std::endl;
-    for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
-    {
-      std::cout << "    " << it->first << " : " << it->second << std::endl;
-    }
-    /// @}
-
-    std::cout << "Finished prior transform for 'reweight' scanner" << std::endl;
-  }
-
-  // Not sure what this does. Might be the likelihood container or something? Greg?
-  double plugin_main(const std::vector<double>&)
-  {
-      return 0.0;
-  }
-
-}
+// // The prior transformation used by the 'reweight' scanner plugin
+// // This is used instead of a normal prior, to transfer parameter
+// // values out of the old output into the ModelParameters
+// objective_plugin(reweight_prior, version(1, 0, 0))
+// {
+//   std::map<std::string,std::vector<std::string>> req_models; // All the required model+parameter names
+//   std::map<std::string,std::map<std::string,std::string>> longname; // Retrieve the "model::parameter" version of the name
+// 
+//   plugin_constructor
+//   {
+//       std::cout << "Constructing prior plugin for reweight scanner" << std::endl;
+//       std::vector<std::string> keys = get_keys();
+//       //set_dimension(keys.size());
+//       
+//       // Pull the keys apart into model-name, parameter-name pairs
+//       std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
+//       for(auto it=keys.begin(); it!=keys.end(); ++it)
+//       {
+//          std::cout << "   " << *it << std::endl;
+//          std::vector<std::string> splitkey = Utils::delimiterSplit(*it, "::");
+//          std::string model = splitkey[0];
+//          std::string par   = splitkey[1];
+//          req_models[model].push_back(par);
+//          longname[model][par] = *it;
+//       }   
+//    }
+// 
+//   // The transform function
+//   // Takes in the vector of unit hypercube parameters and outputs the physical parameters
+//   // Here we don't actually need the hypercube parameters, and instead just load the physical
+//   // parameters from the output file supplied by the user. Interaction with that file takes
+//   // place in the "reweight" plugin; here we just access the parameters via the abstract
+//   // 'reader' object.
+//   void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
+//   {
+//     std::cout << "Running prior transform plugin for 'reweight' scanner" << std::endl;
+// 
+//       // Get the reader object
+//     Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
+// 
+//     // Extract the model parameters
+//     for(auto it=req_models.begin(); it!=req_models.end(); ++it)
+//     {
+//       ModelParameters modelparameters;
+//       std::string model = it->first;
+//       reader->retrieve(modelparameters, model);
+// 
+//       /// @{ Debugging; show what was actually retrieved from the output file
+//       std::pair<unsigned int,unsigned long> current_point = reader->get_current_point();
+//       unsigned int  MPIrank = current_point.first;
+//       unsigned long pointID = current_point.second;
+//       std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
+//       std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
+//       const std::vector<std::string> names = modelparameters.getKeys();
+//       for(std::vector<std::string>::const_iterator
+//           it = names.begin();
+//           it!= names.end(); ++it)
+//       {
+//         std::cout << "    " << *it << " : " << modelparameters[*it] << std::endl;
+//       }
+//       /// @}
+// 
+//       // Check that all the required parameters were retrieved
+//       // Could actually do this in the constructor for the scanner plugin, would be better, but a little more complicated. TODO: do this later.
+//       std::vector<std::string> req_pars = it->second;
+//       std::vector<std::string> retrieved_pars = modelparameters.getKeys();
+//       for(auto jt = req_pars.begin(); jt != req_pars.end(); ++jt)
+//       {
+//         std::string par = *jt;
+//         if(std::find(retrieved_pars.begin(), retrieved_pars.end(), par)
+//             == retrieved_pars.end())
+//         {
+//            std::ostringstream err;
+//            err << "Error! asciiReader did not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
+//            scan_error().raise(LOCAL_INFO,err.str());
+//         }
+// 
+//         // If it was found, add it to the return map
+//         outputMap[ longname[model][par] ] = modelparameters[par];
+//       }
+//     }
+//  
+//     /// @{ More debugging: show what we are returning to the likelihood container
+//     std::cout << "Final transformed parameters:" << std::endl;
+//     for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
+//     {
+//       std::cout << "    " << it->first << " : " << it->second << std::endl;
+//     }
+//     /// @}
+// 
+//     std::cout << "Finished prior transform for 'reweight' scanner" << std::endl;
+//   }
+// 
+//   // Not sure what this does. Might be the likelihood container or something? Greg?
+//   double plugin_main(const std::vector<double>&)
+//   {
+//       return 0.0;
+//   }
+// 
+// }
 
 // The reweigher Scanner plugin
 scanner_plugin(reweight, version(1, 0, 0))
@@ -161,11 +162,33 @@ scanner_plugin(reweight, version(1, 0, 0))
 
   int plugin_main()
   {
-    std::cout << "Running demo 'reweight' plugin for ScannerBit." << std::endl;
+    std::cout << "running demo 'reweight' plugin for scannerbit." << std::endl;
 
     // Retrieve the external likelihood calculator
     like_ptr LogLike;
     LogLike = get_purpose(get_inifile_value<std::string>("LogLike"));
+
+    // Storage for names of models and parameters.
+    std::map<std::string,std::vector<std::string>> req_models; // All the required model+parameter names
+    std::map<std::string,std::map<std::string,std::string>> longname; // Retrieve the "model::parameter" version of the name
+  
+    // Retrieve parameter and model names
+    std::cout << "Constructing prior plugin for reweight scanner" << std::endl;
+    std::vector<std::string> keys = logLike->getPrior().getParameters(); // use to use get_keys() in the objective (prior) plugin;
+    //set_dimension(keys.size());
+    
+    // Pull the keys apart into model-name, parameter-name pairs
+    std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
+    for(auto it=keys.begin(); it!=keys.end(); ++it)
+    {
+       std::cout << "   " << *it << std::endl;
+       std::vector<std::string> splitkey = Utils::delimiterSplit(*it, "::");
+       std::string model = splitkey[0];
+       std::string par   = splitkey[1];
+       req_models[model].push_back(par);
+       longname[model][par] = *it;
+    }   
+
 
     // Create the unit hypercube
     // We aren't going to use it, but the LogLike calculator
@@ -239,9 +262,77 @@ scanner_plugin(reweight, version(1, 0, 0))
       //   std::cout << "    " << *it << ": " << params[*it] << std::endl;
       // }
 
+      /// @{ Retrieve the old parameter values from previous output
+
+      std::cout << "Retrieving old parameter values for 'reweight' scanner" << std::endl;
+
+      // Get the reader object
+      Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
+
+      // Storage for retrieved parameters
+      std::unordered_map<std::string, double> outputMap;
+
+      // Extract the model parameters
+      for(auto it=req_models.begin(); it!=req_models.end(); ++it)
+      {
+        ModelParameters modelparameters;
+        std::string model = it->first;
+        reader->retrieve(modelparameters, model);
+  
+        /// @{ Debugging; show what was actually retrieved from the output file
+        std::pair<unsigned int,unsigned long> current_point = reader->get_current_point();
+        unsigned int  MPIrank = current_point.first;
+        unsigned long pointID = current_point.second;
+        std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
+        std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
+        const std::vector<std::string> names = modelparameters.getKeys();
+        for(std::vector<std::string>::const_iterator
+            it = names.begin();
+            it!= names.end(); ++it)
+        {
+          std::cout << "    " << *it << " : " << modelparameters[*it] << std::endl;
+        }
+        /// @}
+  
+        // Check that all the required parameters were retrieved
+        // Could actually do this in the constructor for the scanner plugin, would be better, but a little more complicated. TODO: do this later.
+        std::vector<std::string> req_pars = it->second;
+        std::vector<std::string> retrieved_pars = modelparameters.getKeys();
+        for(auto jt = req_pars.begin(); jt != req_pars.end(); ++jt)
+        {
+          std::string par = *jt;
+          if(std::find(retrieved_pars.begin(), retrieved_pars.end(), par)
+              == retrieved_pars.end())
+          {
+             std::ostringstream err;
+             err << "Error! asciiReader did not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+  
+          // If it was found, add it to the return map
+          outputMap[ longname[model][par] ] = modelparameters[par];
+        }
+      }
+   
+      /// @{ More debugging: show what we are returning to the likelihood container
+      std::cout << "Final retrieved parameters:" << std::endl;
+      for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
+      {
+        std::cout << "    " << it->first << " : " << it->second << std::endl;
+      }
+      /// @}
+  
+      std::cout << "Finished parameter retrieval 'reweight' scanner" << std::endl;
+
+      /// @}
+
+
       // Call the likelihood function to compute new component
       // Must use "reweight_prior" as the prior!!
-      double partial_logL = LogLike(unitcube);
+      //double partial_logL = LogLike(unitcube);
+
+      // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
+      double partial_logL = LogLike(outputMap); // Here we supply *only* the map; no parameters to transform.
 
       // Combine with the old logL value and output
       double combined_logL = old_LogL + partial_logL;
