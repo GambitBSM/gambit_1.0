@@ -10,9 +10,6 @@
 #include "wrapper_Settings_decl.h"
 #include <istream>
 #include <vector>
-#include "wrapper_UserHooks_decl.h"
-#include "wrapper_SigmaProcess_decl.h"
-#include "wrapper_ResonanceWidths_decl.h"
 #include <ostream>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
@@ -33,12 +30,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Pythia : public WrapperBase<Pythia8::Abstract_Pythia>
+        class Pythia : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Pythia> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Pythia>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -50,14 +43,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // -- Other member variables: 
             public:
-                Pythia8::Event process;
-                Pythia8::Event event;
-                Pythia8::Info info;
-                Pythia8::Settings settings;
-                Pythia8::ParticleData particleData;
-                Pythia8::Rndm rndm;
-                Pythia8::Couplings couplings;
-                Pythia8::SLHAinterface slhaInterface;
+                Pythia8::Event& process;
+                Pythia8::Event& event;
+                Pythia8::Info& info;
+                Pythia8::Settings& settings;
+                Pythia8::ParticleData& particleData;
+                Pythia8::Rndm& rndm;
+                Pythia8::Couplings& couplings;
+                Pythia8::SLHAinterface& slhaInterface;
         
                 // Member functions: 
             public:
@@ -82,10 +75,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 bool readFile();
         
                 bool readFile(::std::basic_istream<char, std::char_traits<char> >& is, int subrun);
-        
-                bool setUserHooksPtr(WrapperBase< Pythia8::Abstract_UserHooks >* userHooksPtrIn);
-        
-                bool setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn);
         
                 bool init(::std::basic_ostream<char, std::char_traits<char> >& os);
         
@@ -132,7 +121,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Pythia(Pythia8::Abstract_Pythia* in);
-                Pythia(Pythia8::Abstract_Pythia* const & in, bool);
         
                 // Copy constructor: 
                 Pythia(const Pythia& in);
@@ -143,9 +131,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~Pythia();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Pythia* get_BEptr() const;
         
         };
     }

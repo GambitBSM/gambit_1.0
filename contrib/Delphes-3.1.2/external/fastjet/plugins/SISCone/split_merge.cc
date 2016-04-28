@@ -74,7 +74,7 @@ bool jets_pt_less(const Cjet &j1, const Cjet &j2){
  ********************************************************/
 
 // odering of two jets
-// The variable of the ordering is pt or mt 
+// The variable of the ordering is pt or mt
 // depending on 'split_merge_scale' choice
 //
 // with EPSILON_SPLITMERGE defined, this attempts to identify
@@ -109,13 +109,13 @@ bool Csplit_merge_ptcomparison::operator ()(const Cjet &jet1, const Cjet &jet2) 
     Cmomentum difference;
     double pt_tilde_difference;
     get_difference(jet1,jet2,&difference,&pt_tilde_difference);
-    
+
     // use the following relation: pt1^2 - pt2^2 = (pt1+pt2)*(pt1-pt2)
     double qdiff;
     Cmomentum sum = jet1.v ;
     sum +=  jet2.v;
     double pt_tilde_sum = jet1.pt_tilde + jet2.pt_tilde;
-    
+
     // depending on the choice of ordering variable, set the result
     switch (split_merge_scale){
     case SM_mt:
@@ -124,7 +124,7 @@ bool Csplit_merge_ptcomparison::operator ()(const Cjet &jet1, const Cjet &jet2) 
     case SM_pt:
       qdiff = sum.px*difference.px + sum.py*difference.py;
       break;
-    case SM_pttilde:  
+    case SM_pttilde:
       qdiff = pt_tilde_sum*pt_tilde_difference;
       break;
     case SM_Et:
@@ -149,7 +149,7 @@ bool Csplit_merge_ptcomparison::operator ()(const Cjet &jet1, const Cjet &jet2) 
 }
 
 
-/// return a name for the sm scale choice 
+/// return a name for the sm scale choice
 /// NB: used internally and also by fastjet
 std::string split_merge_scale_name(Esplit_merge_scale sms) {
   switch(sms) {
@@ -272,7 +272,7 @@ int Csplit_merge::init_particles(vector<Cmomentum> &_particles){
   full_clear();
 
   // compute the list of particles
-  // here, we do not need to throw away particles 
+  // here, we do not need to throw away particles
   // with infinite rapidity (colinear with the beam)
   particles = _particles;
   n = particles.size();
@@ -298,9 +298,9 @@ int Csplit_merge::init_particles(vector<Cmomentum> &_particles){
 // build initial list of remaining particles
 //------------------------------------------
 int Csplit_merge::init_pleft(){
-  // at this level, we only rule out particles with 
+  // at this level, we only rule out particles with
   // infinite rapidity
-  // in the parent particle list, index contain the run 
+  // in the parent particle list, index contain the run
   // at which particles are puts in jets:
   //  - -1 means infinity rapidity
   //  -  0 means not included
@@ -361,7 +361,7 @@ int Csplit_merge::init_pleft(){
 int Csplit_merge::partial_clear(){
   // release jets
 
-  // set up the auto_ptr for the multiset with the _current_ state of
+  // set up the unique_ptr for the multiset with the _current_ state of
   // ptcomparison (which may have changed since we constructed the
   // class)
   candidates.reset(new multiset<Cjet,Csplit_merge_ptcomparison>(ptcomparison));
@@ -397,7 +397,7 @@ int Csplit_merge::full_clear(){
 
 
 // build the list 'p_uncol_hard' from p_remain by clustering collinear particles
-// note that thins in only used for stable-cone detection 
+// note that thins in only used for stable-cone detection
 // so the parent_index field is unnecessary
 //-------------------------------------------------------------------------
 int Csplit_merge::merge_collinear_and_remove_soft(){
@@ -432,7 +432,7 @@ int Csplit_merge::merge_collinear_and_remove_soft(){
       dphi = fabs(p_sorted[j].phi-p_sorted[i].phi);
       if (dphi>M_PI) dphi = twopi-dphi;
       if (dphi<EPSILON_COLLINEAR){
-	// i is collinear with j; add the momentum (i) to the momentum (j) 
+	// i is collinear with j; add the momentum (i) to the momentum (j)
 	p_sorted[j] += p_sorted[i];
 	// set collinearity test to true
 	collinear = true;
@@ -491,7 +491,7 @@ int Csplit_merge::add_protocones(vector<Cmomentum> *protocones, double R2, doubl
       //if (fabs(v->pz)!=v->E){
       dx = eta - v->eta;
       dy = fabs(phi - v->phi);
-      if (dy>M_PI) 
+      if (dy>M_PI)
 	dy -= twopi;
       if (dx*dx+dy*dy<R2){
 	jet.contents.push_back(v->parent_index);
@@ -502,7 +502,7 @@ int Csplit_merge::add_protocones(vector<Cmomentum> *protocones, double R2, doubl
     }
     jet.n=jet.contents.size();
 
-    // set the momentum in protocones 
+    // set the momentum in protocones
     // (it was only known through eta and phi up to now)
     *c = jet.v;
     c->eta = eta; // restore exact original coords
@@ -521,12 +521,12 @@ int Csplit_merge::add_protocones(vector<Cmomentum> *protocones, double R2, doubl
     // add it to the list of jets
     insert(jet);
   }
-  
+
   // update list of included particles
   n_pass++;
 
 #ifdef DEBUG_SPLIT_MERGE
-  cout << "remaining particles: "; 
+  cout << "remaining particles: ";
 #endif
   int j=0;
   for (i=0;i<n_left;i++){
@@ -559,7 +559,7 @@ int Csplit_merge::add_protocones(vector<Cmomentum> *protocones, double R2, doubl
  * really do the splitting and merging
  * At the end, the vector jets is filled with the jets found.
  * the 'contents' field of each jets contains the indices
- * of the particles included in that jet. 
+ * of the particles included in that jet.
  *  - overlap_tshold    threshold for splitting/merging transition
  *  - ptmin             minimal pT allowed for jets
  * return the number of jets is returned
@@ -593,7 +593,7 @@ int Csplit_merge::perform(double overlap_tshold, double ptmin){
     if (candidates->size()>0){
       // browse for the first jet
       j1 = candidates->begin();
-      
+
       // if hardest jet does not pass threshold then nothing else will
       // either so one stops the split merge.
       if (j1->sm_var2<SM_var2_hardest_cut_off) {break;}
@@ -612,20 +612,20 @@ int Csplit_merge::perform(double overlap_tshold, double ptmin){
 	  // check if overlapping energy passes threshold
 	  // Note that this depends on the ordering variable
 #ifdef DEBUG_SPLIT_MERGE
-          cout << "overlap between cdt 1 and cdt " << j2_relindex+1 << " with overlap " 
+          cout << "overlap between cdt 1 and cdt " << j2_relindex+1 << " with overlap "
                << sqrt(overlap2/j2->sm_var2) << endl<<endl;
 #endif
 	  if (overlap2<overlap_tshold2*j2->sm_var2){
 	    // split jets
 	    split(j1, j2);
-	    
+
 	    // update iterators
 	    j2 = j1 = candidates->begin();
             j2_relindex = 0;
 	  } else {
 	    // merge jets
 	    merge(j1, j2);
-	    
+
 	    // update iterators
 	    j2 = j1 = candidates->begin();
             j2_relindex = 0;
@@ -638,7 +638,7 @@ int Csplit_merge::perform(double overlap_tshold, double ptmin){
         j2_relindex++;
 	if (j2 != candidates->end()) j2++;
       } // end of loop on the second jet
-      
+
       if (j1 != candidates->end()) {
         // all "second jet" passed without overlapping
         // (otherwise we won't leave the j2 loop)
@@ -655,7 +655,7 @@ int Csplit_merge::perform(double overlap_tshold, double ptmin){
         candidates->erase(j1);
 
 	//// test that the hardest jet pass the potential cut-off
-	//if ((candidates->size()!=0) && 
+	//if ((candidates->size()!=0) &&
 	//    (candidates->begin()->sm_var2<SM_var2_hardest_cut_off)){
 	//  candidates->clear();
 	//}
@@ -687,20 +687,20 @@ int Csplit_merge::save_contents(FILE *flux){
   for (it_j = jets.begin(), i1=0 ; it_j != jets.end() ; it_j++, i1++){
     j1 = &(*it_j);
     j1->v.build_etaphi();
-    fprintf(flux, "%f\t%f\t%e\t%d\n", 
+    fprintf(flux, "%f\t%f\t%e\t%d\n",
 	    j1->v.eta, j1->v.phi, j1->v.perp(), j1->n);
   }
-  
+
   fprintf(flux, "# jet contents\n");
   fprintf(flux, "# columns are: eta, phi, pt, particle index and jet number\n");
   for (it_j = jets.begin(), i1=0 ; it_j != jets.end() ; it_j++, i1++){
     j1 = &(*it_j);
     for (i2=0;i2<j1->n;i2++)
-      fprintf(flux, "%f\t%f\t%e\t%d\t%d\n", 
+      fprintf(flux, "%f\t%f\t%e\t%d\t%d\n",
       	      particles[j1->contents[i2]].eta, particles[j1->contents[i2]].phi,
       	      particles[j1->contents[i2]].perp(), j1->contents[i2], i1);
   }
-  
+
   return 0;
 }
 
@@ -722,7 +722,7 @@ int Csplit_merge::show(){
       fprintf(stdout, "%d ", j->contents[i2]);
     fprintf(stdout, "\n");
   }
-  
+
   for (it_c = candidates->begin(), i1=0 ; it_c != candidates->end() ; it_c++, i1++){
     c = &(*it_c);
     fprintf(stdout, "cdt %2d: %e\t%e\t%e\t%e\t%e\t", i1+1,
@@ -731,7 +731,7 @@ int Csplit_merge::show(){
       fprintf(stdout, "%d ", c->contents[i2]);
     fprintf(stdout, "\n");
   }
-  
+
   fprintf(stdout, "\n");
   return 0;
 }
@@ -802,7 +802,7 @@ bool Csplit_merge::get_overlap(const Cjet &j1, const Cjet &j2, double *overlap2)
 
 // split the two given jet.
 // during this procedure, the jets j1 & j2 are replaced
-// by 2 new jets. Common particles are associted to the 
+// by 2 new jets. Common particles are associted to the
 // closest initial jet.
 //  - it_j1  iterator of the first jet in 'candidates'
 //  - it_j2  iterator of the second jet in 'candidates'
@@ -843,7 +843,7 @@ bool Csplit_merge::split(cjet_iterator &it_j1, cjet_iterator &it_j2){
   phi2 = tmp.phi;
   pt2_weight = (use_pt_weighted_splitting) ? 1.0/tmp.perp2() : 1.0;
 
-  jet1.v = jet2.v = Cmomentum();  
+  jet1.v = jet2.v = Cmomentum();
 
   // compute jet splitting
   do{
@@ -870,23 +870,23 @@ bool Csplit_merge::split(cjet_iterator &it_j1, cjet_iterator &it_j2){
       // distance w.r.t. centroid 1
       dx1 = eta1 - v->eta;
       dy1 = fabs(phi1 - v->phi);
-      if (dy1>M_PI) 
+      if (dy1>M_PI)
 	dy1 -= twopi;
 
       // distance w.r.t. centroid 2
       dx2 = eta2 - v->eta;
       dy2 = fabs(phi2 - v->phi);
-      if (dy2>M_PI) 
+      if (dy2>M_PI)
 	dy2 -= twopi;
 
-      //? what when == ? 
+      //? what when == ?
       // When use_pt_weighted_splitting is activated, the
       // "geometrical" distance is weighted by the inverse
       // of the pt of the protojet
       double d1sq = (dx1*dx1+dy1*dy1)*pt1_weight;
       double d2sq = (dx2*dx2+dy2*dy2)*pt2_weight;
       // do bookkeeping on most ambiguous split
-      if (fabs(d1sq-d2sq) < most_ambiguous_split) 
+      if (fabs(d1sq-d2sq) < most_ambiguous_split)
         most_ambiguous_split = fabs(d1sq-d2sq);
 
       if (d1sq<d2sq){
@@ -901,13 +901,13 @@ bool Csplit_merge::split(cjet_iterator &it_j1, cjet_iterator &it_j2){
 	jet2.v += *v;
 	jet2.pt_tilde += pt[j2.contents[i2]];
 	jet2.range.add_particle(v->eta,v->phi);
-      }      
+      }
 
       i1++;
       i2++;
     }
   } while ((i1<j1.n) && (i2<j2.n));
-  
+
   while (i1<j1.n){
     v = &(particles[j1.contents[i1]]);
     jet1.contents.push_back(j1.contents[i1]);
@@ -987,7 +987,7 @@ bool Csplit_merge::merge(cjet_iterator &it_j1, cjet_iterator &it_j2){
 }
 
 /**
- * Check whether or not a jet has to be inserted in the 
+ * Check whether or not a jet has to be inserted in the
  * list of protojets. If it has, set its sm_variable and
  * insert it to the list of protojets.
  */
@@ -1015,15 +1015,15 @@ bool Csplit_merge::insert(Cjet &jet){
 }
 
 /**
- * given a 4-momentum and its associated pT, return the 
+ * given a 4-momentum and its associated pT, return the
  * variable that has to be used for SM
  * \param v          4 momentum of the protojet
  * \param pt_tilde   pt_tilde of the protojet
  */
 double Csplit_merge::get_sm_var2(Cmomentum &v, double &pt_tilde){
   switch(ptcomparison.split_merge_scale) {
-  case SM_pt:      return v.perp2();            
-  case SM_mt:      return v.perpmass2();        
+  case SM_pt:      return v.perp2();
+  case SM_mt:      return v.perpmass2();
   case SM_pttilde: return pt_tilde*pt_tilde;
   case SM_Et:      return v.Et2();
   default:

@@ -284,26 +284,16 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
     options:  
-      analysisNames: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
-  - capability: DetectorSim
-    function: getDelphes
-    options:
-      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:  
+      useCMS: false
 
-  - capability: SimpleSmearingSim
-    function: getBuckFast
-    options:
-      buckFastOption: "BuckFastSmear"
- 
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-  
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
@@ -321,24 +311,20 @@ Rules:
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["Print:quiet = on",
-                          "PartonLevel:MPI = off",
-                          "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = on",
-                          "HadronLevel:all = on",
-        "SUSY:all = on",
-        "TauDecays:mode = 0"]
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0"]
 
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
-  - capability: AnalysisNumbers
-    dependencies:
-    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
 
 Logger:
 

@@ -112,6 +112,9 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
+    - purpose:     LogLike
+      capability:  lnL_gm2
+
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:    LogLike
@@ -143,17 +146,14 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    #- purpose:    LogLike
-    #  capability: LHC_Combined_LogLike
+    - purpose:    LogLike
+      capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
 
     - purpose:    LogLike
       capability: LEP_Higgs_LogLike
-
-    - purpose:    Observable
-      capability: SLHA1_violation
 
     - purpose:    LogLike
       capability: ALEPH_Selectron_LLike
@@ -200,17 +200,13 @@ ObsLikes:
     - purpose:    LogLike
       capability: OPAL_Neutralino_Hadronic_LLike
 
-
-    - purpose:    Observable
-      capability: MSSM_spectrum
-      type:       map_str_dbl
-
+    # Other observables
     - purpose:    Observable
       capability: RD_oh2
-      
+
     - purpose:    Observable
       capability: mwimp
-      
+
     - purpose:    Observable
       capability: sigmav
 
@@ -226,12 +222,22 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SD_n
 
+    - purpose:    Observable
+      capability: SLHA1_violation
+
+    - purpose:    Observable
+      capability: MSSM_spectrum
+      type:       map_str_dbl
 
     # Missing:
     # CMB+HESS likelihoods
 
 
 Rules:
+
+  # Tell all functions that are able to dump SLHA files to do so.
+  #- options:
+  #    drop_SLHA_file: true
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
@@ -366,8 +372,8 @@ Rules:
     options:
       vesc_obs: 550 # km/s
       vesc_obserr: 35 # km/s
-      
-  # Precision Bit
+
+  # PrecisionBit
   - capability: lnL_light_quark_masses
     options:
       # m_u/m_d
@@ -380,25 +386,38 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
+  # ColliderBit
+  - capability: SimpleSmearingSim
+    type: "ColliderBit::BuckFastSmearATLAS"
+    function: getBuckFastATLAS
     options:
-      analysisNames: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
-
-  - capability: DetectorSim
-    function: getDelphes
-    options:
-      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+      partonOnly: false
+      antiktR: 0.4
 
   - capability: SimpleSmearingSim
-    function: getBuckFast
+    type: "ColliderBit::BuckFastSmearCMS"
+    function: getBuckFastCMS
     options:
-      buckFastOption: "BuckFastSmear"
+      partonOnly: false
+      antiktR: 0.5
 
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", function: "convertPythia8ParticleEvent"}
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
+    options:  
+      #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
+      useATLAS: true
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           "ATLAS_3LEPEW_20invfb"]
+
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:  
+      #useCMS defaults to true anyways. Set it to false to ignore all these analyses
+      useCMS: true
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -417,24 +436,20 @@ Rules:
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["Print:quiet = on",
-                          "PartonLevel:MPI = off",
-                          "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = on",
-                          "HadronLevel:all = on",
-        "SUSY:all = on",
-        "TauDecays:mode = 0"]
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0"]
 
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
-  - capability: AnalysisNumbers
-    dependencies:
-    - {capability: "ReconstructedEvent", function: "reconstructBuckFastEvent"}
 
 Logger:
 

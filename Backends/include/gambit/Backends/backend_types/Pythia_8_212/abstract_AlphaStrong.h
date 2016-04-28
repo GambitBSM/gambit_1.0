@@ -9,7 +9,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong*);
+
+
+// Forward declaration for wrapper_creator.
+CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_AlphaStrong*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -18,7 +26,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_AlphaStrong : virtual public AbstractBase
+        class Abstract_AlphaStrong : public virtual AbstractBase
         {
             public:
     
@@ -55,35 +63,65 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double facCMW(int) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_AlphaStrong*) =0;
-                virtual Abstract_AlphaStrong* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_AlphaStrong*) =0;
+                virtual Abstract_AlphaStrong* pointer_copy__BOSS() =0;
     
             private:
-                mutable AlphaStrong* wptr;
+                AlphaStrong* wptr;
+                bool delete_wrapper;
+            public:
+                AlphaStrong* get_wptr() { return wptr; }
+                void set_wptr(AlphaStrong* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_AlphaStrong()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(AlphaStrong* wptr_in)
+                Abstract_AlphaStrong(const Abstract_AlphaStrong&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                AlphaStrong* wrapper__BOSS()
+                Abstract_AlphaStrong& operator=(const Abstract_AlphaStrong&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wptr = wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                AlphaStrong* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                AlphaStrong& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_AlphaStrong()
                 {
-                    if (can_delete_wrapper())
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

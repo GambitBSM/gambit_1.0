@@ -19,12 +19,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ResonanceDecays : public WrapperBase<Pythia8::Abstract_ResonanceDecays>
+        class ResonanceDecays : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_ResonanceDecays> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_ResonanceDecays>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -34,11 +30,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void init(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtrIn);
+                void init(Pythia8::Info* infoPtrIn, Pythia8::ParticleData* particleDataPtrIn, Pythia8::Rndm* rndmPtrIn);
         
-                bool next(WrapperBase< Pythia8::Abstract_Event >& process, int iDecNow);
+                bool next(Pythia8::Event& process, int iDecNow);
         
-                bool next(WrapperBase< Pythia8::Abstract_Event >& process);
+                bool next(Pythia8::Event& process);
         
         
                 // Wrappers for original constructors: 
@@ -47,7 +43,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 ResonanceDecays(Pythia8::Abstract_ResonanceDecays* in);
-                ResonanceDecays(Pythia8::Abstract_ResonanceDecays* const & in, bool);
         
                 // Copy constructor: 
                 ResonanceDecays(const ResonanceDecays& in);
@@ -58,9 +53,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~ResonanceDecays();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_ResonanceDecays* get_BEptr() const;
         
         };
     }

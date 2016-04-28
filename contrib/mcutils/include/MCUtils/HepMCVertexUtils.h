@@ -1,18 +1,21 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.
 //
 #pragma once
 
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
+
 /// @file Functions for filtering and classifying HepMC GenVertex objects
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
 #include "HepMC/GenEvent.h"
-#include "boost/function.hpp" //< Replace with std::function when possible
 #include <vector>
 
 #include "HEPUtils/Vectors.h"
@@ -50,7 +53,7 @@ namespace MCUtils {
   inline GenVerticesC mk_const(const GenVertices& gvs) {
     GenVerticesC rtn;
     rtn.reserve(gvs.size());
-    BOOST_FOREACH (const HepMC::GenVertex* gv, gvs) {
+    for (const HepMC::GenVertex* gv : gvs) {
       rtn.push_back(gv);
     }
     return rtn;
@@ -59,7 +62,7 @@ namespace MCUtils {
   inline GenVertices mk_unconst(const GenVerticesC& const_gps) {
     GenVertices rtn;
     rtn.reserve(const_gps.size());
-    BOOST_FOREACH (const HepMC::GenVertex* const_gp, const_gps) {
+    for (const HepMC::GenVertex* const_gp : const_gps) {
       rtn.push_back(const_cast<HepMC::GenVertex*>(const_gp));
     }
     return rtn;

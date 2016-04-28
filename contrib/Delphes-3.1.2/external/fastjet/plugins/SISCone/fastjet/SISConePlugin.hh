@@ -31,7 +31,7 @@ FASTJET_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 ///  - the cone_radius (this should be self-explanatory!)
 ///
 ///  - the overlap_threshold is the parameter which dictates how much
-///    two jets must overlap (pt_overlap/min(pt1,pt2)) if they are to be 
+///    two jets must overlap (pt_overlap/min(pt1,pt2)) if they are to be
 ///    merged
 ///
 ///  - Not all particles are in stable cones in the first round of
@@ -46,7 +46,7 @@ FASTJET_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 ///    (default = 0) are discarded before each iteration of the
 ///    split-merge loop.
 ///
-/// One parameter governs some internal algorithmic shortcuts: 
+/// One parameter governs some internal algorithmic shortcuts:
 ///
 /// - if "caching" is turned on then the last event clustered by
 ///   siscone is stored -- if the current event is identical and the
@@ -83,9 +83,9 @@ public:
   };
 
 
-  /// Main constructor for the SISCone Plugin class.  
+  /// Main constructor for the SISCone Plugin class.
   ///
-  /// Note: wrt version prior to 2.4 this constructor differs in that a 
+  /// Note: wrt version prior to 2.4 this constructor differs in that a
   /// the default value has been removed for overlap_threshold. The
   /// former has been removed because the old default of 0.5 was found
   /// to be unsuitable in high-noise environments; so the user should
@@ -95,7 +95,7 @@ public:
   SISConePlugin (double cone_radius_in,
                  double overlap_threshold_in,
                  int    n_pass_max_in = 0,
-                 double protojet_ptmin_in = 0.0, 
+                 double protojet_ptmin_in = 0.0,
                  bool   caching_in = false,
                  SplitMergeScale  split_merge_scale_in = SM_pttilde,
                  double split_merge_stopping_scale_in = 0.0){
@@ -103,7 +103,7 @@ public:
     _overlap_threshold     = overlap_threshold_in;
     _n_pass_max            = n_pass_max_in;
     _protojet_ptmin        = protojet_ptmin_in;
-    _caching               = caching_in;   
+    _caching               = caching_in;
     _split_merge_scale     = split_merge_scale_in;
     _split_merge_stopping_scale = split_merge_stopping_scale_in;
     _ghost_sep_scale       = 0.0;
@@ -114,7 +114,7 @@ public:
   SISConePlugin (double cone_radius_in,
                  double overlap_threshold_in,
                  int    n_pass_max_in,
-                 double protojet_ptmin_in, 
+                 double protojet_ptmin_in,
                  bool   caching_in,
                  bool   split_merge_on_transverse_mass_in){
     _cone_radius           = cone_radius_in;
@@ -125,7 +125,7 @@ public:
     _split_merge_stopping_scale = 0.0;
     _split_merge_scale     = split_merge_on_transverse_mass_in ? SM_mt : SM_pttilde;
     _ghost_sep_scale       = 0.0;}
-  
+
   /// backwards compatible constructor for the SISCone Plugin class
   /// (avoid using this in future).
   SISConePlugin (double cone_radius_in,
@@ -136,7 +136,7 @@ public:
     _overlap_threshold     = overlap_threshold_in;
     _n_pass_max            = n_pass_max_in;
     _protojet_ptmin        = 0.0;
-    _caching               = caching_in;   
+    _caching               = caching_in;
     _split_merge_scale     = SM_mt;
     _split_merge_stopping_scale = 0.0;
     _ghost_sep_scale       = 0.0;
@@ -183,11 +183,11 @@ private:
 
   bool _use_pt_weighted_splitting;
 
-  // part needed for the cache 
+  // part needed for the cache
   // variables for caching the results and the input
-  static std::auto_ptr<SISConePlugin          > stored_plugin;
-  static std::auto_ptr<std::vector<PseudoJet> > stored_particles;
-  static std::auto_ptr<siscone::Csiscone      > stored_siscone;
+  static std::unique_ptr<SISConePlugin          > stored_plugin;
+  static std::unique_ptr<std::vector<PseudoJet> > stored_particles;
+  static std::unique_ptr<siscone::Csiscone      > stored_siscone;
 };
 
 
@@ -198,7 +198,7 @@ private:
 class SISConeExtras : public SISConeBaseExtras {
 public:
   /// constructor
-  //  it just initialises the pass information 
+  //  it just initialises the pass information
   SISConeExtras(int nparticles)
     : SISConeBaseExtras(nparticles){}
 
@@ -217,4 +217,3 @@ private:
 FASTJET_END_NAMESPACE        // defined in fastjet/internal/base.hh
 
 #endif // __SISCONEPLUGIN_HH__
-

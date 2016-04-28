@@ -113,7 +113,7 @@ namespace Gambit {
         // We now have the signal electrons, muons and jets: move on to the 0 lepton 2012 analysis
 
         // Calculate common variables and cuts first
-        applyMediumIDElectronSelection(signalElectrons);
+        ATLAS::applyMediumIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -343,7 +343,7 @@ namespace Gambit {
 
 
       void collect_results() {
-	
+
 	/*cout << "------------------------------------------------------------------------------------------------------------------------------ "<<endl;
         cout << "CUT FLOW: ATLAS 0 lepton paper "<<endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------"<<endl;
@@ -358,133 +358,133 @@ namespace Gambit {
         //Now fill a results object with the results for each SR
         //Numbers are taken from CONF note
         SignalRegionData results_2jl;
-        results_2jl.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_2jl.set_sr_label("2jl");
-        results_2jl.set_observation(12315.);
-        results_2jl.set_background(13000.);
-        results_2jl.set_backgroundsys(1000.);
-        results_2jl.set_signalsys(0.);
-        results_2jl.set_signal(_num2jl);
+        results_2jl.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_2jl.sr_label = "2jl";
+        results_2jl.n_observed = 12315.;
+        results_2jl.n_background = 13000.;
+        results_2jl.background_sys = 1000.;
+        results_2jl.signal_sys = 0.;
+        results_2jl.n_signal = _num2jl;
         add_result(results_2jl);
 
         SignalRegionData results_2jm;
-        results_2jm.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_2jm.set_sr_label("2jm");
-        results_2jm.set_observation(715.);
-        results_2jm.set_background(760.);
-        results_2jm.set_backgroundsys(50.);
-        results_2jm.set_signalsys(0.);
-        results_2jm.set_signal(_num2jm);
+        results_2jm.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_2jm.sr_label = "2jm";
+        results_2jm.n_observed = 715.;
+        results_2jm.n_background = 760.;
+        results_2jm.background_sys = 50.;
+        results_2jm.signal_sys = 0.;
+        results_2jm.n_signal = _num2jm;
         add_result(results_2jm);
 
         SignalRegionData results_2jt;
-        results_2jt.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_2jt.set_sr_label("2jt");
-        results_2jt.set_observation(133.);
-        results_2jt.set_background(125.);
-        results_2jt.set_backgroundsys(10.);
-        results_2jt.set_signalsys(0.);
-        results_2jt.set_signal(_num2jt);
+        results_2jt.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_2jt.sr_label = "2jt";
+        results_2jt.n_observed = 133.;
+        results_2jt.n_background = 125.;
+        results_2jt.background_sys = 10.;
+        results_2jt.signal_sys = 0.;
+        results_2jt.n_signal = _num2jt;
         add_result(results_2jt);
 
         SignalRegionData results_3j;
-        results_3j.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_3j.set_sr_label("3j");
-        results_3j.set_observation(7.);
-        results_3j.set_background(5.);
-        results_3j.set_backgroundsys(1.2);
-        results_3j.set_signalsys(0.);
-        results_3j.set_signal(_num3j);
+        results_3j.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_3j.sr_label = "3j";
+        results_3j.n_observed = 7.;
+        results_3j.n_background = 5.;
+        results_3j.background_sys = 1.2;
+        results_3j.signal_sys = 0.;
+        results_3j.n_signal = _num3j;
         add_result(results_3j);
 
         SignalRegionData results_4jlm;
-        results_4jlm.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_4jlm.set_sr_label("4jlm");
-        results_4jlm.set_observation(2169.);
-        results_4jlm.set_background(2120.);
-        results_4jlm.set_backgroundsys(110.);
-        results_4jlm.set_signalsys(0.);
-        results_4jlm.set_signal(_num4jlm);
+        results_4jlm.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_4jlm.sr_label = "4jlm";
+        results_4jlm.n_observed = 2169.;
+        results_4jlm.n_background = 2120.;
+        results_4jlm.background_sys = 110.;
+        results_4jlm.signal_sys = 0.;
+        results_4jlm.n_signal = _num4jlm;
         add_result(results_4jlm);
 
         SignalRegionData results_4jl;
-        results_4jl.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_4jl.set_sr_label("4jl");
-        results_4jl.set_observation(608.);
-        results_4jl.set_background(630.);
-        results_4jl.set_backgroundsys(50.);
-        results_4jl.set_signalsys(0.);
-        results_4jl.set_signal(_num4jl);
+        results_4jl.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_4jl.sr_label = "4jl";
+        results_4jl.n_observed = 608.;
+        results_4jl.n_background = 630.;
+        results_4jl.background_sys = 50.;
+        results_4jl.signal_sys = 0.;
+        results_4jl.n_signal = _num4jl;
         add_result(results_4jl);
 
         SignalRegionData results_4jm;
-        results_4jm.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_4jm.set_sr_label("4jm");
-        results_4jm.set_observation(24.);
-        results_4jm.set_background(37.);
-        results_4jm.set_backgroundsys(6.);
-        results_4jm.set_signalsys(0.);
-        results_4jm.set_signal(_num4jm);
+        results_4jm.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_4jm.sr_label = "4jm";
+        results_4jm.n_observed = 24.;
+        results_4jm.n_background = 37.;
+        results_4jm.background_sys = 6.;
+        results_4jm.signal_sys = 0.;
+        results_4jm.n_signal = _num4jm;
         add_result(results_4jm);
 
         SignalRegionData results_4jt;
-        results_4jt.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_4jt.set_sr_label("4jt");
-        results_4jt.set_observation(0.);
-        results_4jt.set_background(2.5);
-        results_4jt.set_backgroundsys(1.);
-        results_4jt.set_signalsys(0.);
-        results_4jt.set_signal(_num4jt);
+        results_4jt.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_4jt.sr_label = "4jt";
+        results_4jt.n_observed = 0.;
+        results_4jt.n_background = 2.5;
+        results_4jt.background_sys = 1.;
+        results_4jt.signal_sys = 0.;
+        results_4jt.n_signal = _num4jt;
         add_result(results_4jt);
 
         SignalRegionData results_5j;
-        results_5j.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_5j.set_sr_label("5j");
-        results_5j.set_observation(121.);
-        results_5j.set_background(126.);
-        results_5j.set_backgroundsys(13.);
-        results_5j.set_signalsys(0.);
-        results_5j.set_signal(_num5j);
+        results_5j.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_5j.sr_label = "5j";
+        results_5j.n_observed = 121.;
+        results_5j.n_background = 126.;
+        results_5j.background_sys = 13.;
+        results_5j.signal_sys = 0.;
+        results_5j.n_signal = _num5j;
         add_result(results_5j);
 
         SignalRegionData results_6jl;
-        results_6jl.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_6jl.set_sr_label("6jl");
-        results_6jl.set_observation(121.);
-        results_6jl.set_background(111.);
-        results_6jl.set_backgroundsys(11.);
-        results_6jl.set_signalsys(0.);
-        results_6jl.set_signal(_num6jl);
+        results_6jl.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_6jl.sr_label = "6jl";
+        results_6jl.n_observed = 121.;
+        results_6jl.n_background = 111.;
+        results_6jl.background_sys = 11.;
+        results_6jl.signal_sys = 0.;
+        results_6jl.n_signal = _num6jl;
         add_result(results_6jl);
 
         SignalRegionData results_6jm;
-        results_6jm.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_6jm.set_sr_label("6jm");
-        results_6jm.set_observation(39.);
-        results_6jm.set_background(33.);
-        results_6jm.set_backgroundsys(6.);
-        results_6jm.set_signalsys(0.);
-        results_6jm.set_signal(_num6jm);
+        results_6jm.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_6jm.sr_label = "6jm";
+        results_6jm.n_observed = 39.;
+        results_6jm.n_background = 33.;
+        results_6jm.background_sys = 6.;
+        results_6jm.signal_sys = 0.;
+        results_6jm.n_signal = _num6jm;
         add_result(results_6jm);
 
         SignalRegionData results_6jt;
-        results_6jt.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_6jt.set_sr_label("6jt");
-        results_6jt.set_observation(5.);
-        results_6jt.set_background(5.2);
-        results_6jt.set_backgroundsys(1.4);
-        results_6jt.set_signalsys(0.);
-        results_6jt.set_signal(_num6jt);
+        results_6jt.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_6jt.sr_label = "6jt";
+        results_6jt.n_observed = 5.;
+        results_6jt.n_background = 5.2;
+        results_6jt.background_sys = 1.4;
+        results_6jt.signal_sys = 0.;
+        results_6jt.n_signal = _num6jt;
         add_result(results_6jt);
 
         SignalRegionData results_6jtp;
-        results_6jtp.set_analysis_name("Analysis_ATLAS_0LEP_20invfb");
-        results_6jtp.set_sr_label("6jtp");
-        results_6jtp.set_observation(6.);
-        results_6jtp.set_background(4.9);
-        results_6jtp.set_backgroundsys(1.6);
-        results_6jtp.set_signalsys(0.);
-        results_6jtp.set_signal(_num6jt);
+        results_6jtp.analysis_name = "Analysis_ATLAS_0LEP_20invfb";
+        results_6jtp.sr_label = "6jtp";
+        results_6jtp.n_observed = 6.;
+        results_6jtp.n_background = 4.9;
+        results_6jtp.background_sys = 1.6;
+        results_6jtp.signal_sys = 0.;
+        results_6jtp.n_signal = _num6jt;
         add_result(results_6jtp);
       }
 
