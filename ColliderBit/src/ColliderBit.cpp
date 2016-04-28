@@ -192,7 +192,7 @@ namespace Gambit
       static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
-      int seedBase;
+      // int seedBase;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
@@ -234,8 +234,8 @@ namespace Gambit
           ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
 
-        // Pythia random number seed will be this, plus the thread number.
-        seedBase = int(Random::draw() * 899990000.);
+        // // Pythia random number seed will be this, plus the thread number.
+        // seedBase = int(Random::draw() * 899990000.);
       }
 
       if (*Loop::iteration == INIT)
@@ -258,7 +258,7 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(int(Random::draw() * 899990000.) + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
@@ -318,7 +318,7 @@ namespace Gambit
       static std::string pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = -1;
-      int seedBase;
+      // int seedBase;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
@@ -342,7 +342,7 @@ namespace Gambit
         if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
 
         // Pythia random number seed will be this, plus the thread number.
-        seedBase = int(Random::draw() * 899990000.);
+        // seedBase = int(Random::draw() * 899990000.);
       }
 
       if (*Loop::iteration == INIT)
@@ -365,7 +365,7 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(int(Random::draw() * 899990000.) + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
@@ -784,7 +784,7 @@ namespace Gambit
           logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
                    << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
 
-          double llb_exp, llsb_exp, llb_obs, llsb_obs;
+          double llb_exp = 0, llsb_exp = 0, llb_obs = 0, llsb_obs = 0;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
