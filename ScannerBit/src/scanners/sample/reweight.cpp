@@ -174,7 +174,7 @@ scanner_plugin(reweight, version(1, 0, 0))
   
     // Retrieve parameter and model names
     std::cout << "Constructing prior plugin for reweight scanner" << std::endl;
-    std::vector<std::string> keys = logLike->getPrior().getParameters(); // use to use get_keys() in the objective (prior) plugin;
+    std::vector<std::string> keys = LogLike->getPrior().getParameters(); // use to use get_keys() in the objective (prior) plugin;
     //set_dimension(keys.size());
     
     // Pull the keys apart into model-name, parameter-name pairs

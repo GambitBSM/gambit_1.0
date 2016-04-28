@@ -9,16 +9,19 @@
  
 #======== Input parameter declarations =======
 Parameters: 
+  # Prior type is "none" because reweight scanner will read in old points
   NormalDist:
-    mu: 
+    mu:
+      prior_type: none
     sigma:
+      prior_type: none
 
 #======== Prior setup ========
-Priors:
-  read_from_file_prior:
-    parameters: [NormalDist::mu, NormalDist::sigma]
-    prior_type: plugin
-    plugin: parameter_reader
+#Priors:
+#  read_from_file_prior:
+#    parameters: [NormalDist::mu, NormalDist::sigma]
+#    prior_type: plugin
+#    plugin: parameter_reader
 
 
 #======== Output setup ========
@@ -42,10 +45,10 @@ Scanner:
         info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
         data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
 
-  objectives:
-
-    parameter_reader:
-      plugin: reweight_prior
+#  objectives:
+#
+#    parameter_reader:
+#      plugin: reweight_prior
  
                    
 #======== Observables of interest ========
