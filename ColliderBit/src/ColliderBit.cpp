@@ -114,7 +114,7 @@ namespace Gambit
     std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
     bool eventsGenerated;
-    int nEvents;
+    int nEvents, seedBase;
     /// Analysis stuff
     bool useATLAS;
     std::vector<std::string> analysisNamesATLAS;
@@ -137,6 +137,8 @@ namespace Gambit
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
       int currentEvent;
       nEvents = 0;
+      // Pythia random number seed will be set properly during BASE_INIT.
+      seedBase = 0; // This just prevents a warning.
       // Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
 
@@ -192,12 +194,6 @@ namespace Gambit
       static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
-      // int seedBase;
-      // variables for xsec veto
-      std::stringstream processLevelOutput;
-      std::string _junk, readline;
-      int code, nxsec;
-      double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -228,14 +224,18 @@ namespace Gambit
           block.push_back(line);
           slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
           slha.push_front(block);
+          std::cout<<"\n\n\n SLHAea contents:\n ================\n\n";
+          std::cout<<slha.str();
+          std::cout<<"\n\n\n SLHAea contents end.\n ====================\n\n";
         }
         else
         {
           ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
 
-        // // Pythia random number seed will be this, plus the thread number.
-        // seedBase = int(Random::draw() * 899990000.);
+        // Pythia random number seed will be this, plus the thread number.
+        seedBase = int(Random::draw() * 899990000.);
+        std::cout<<"\n\n\n seedBase: "<< seedBase <<"\n\n";
       }
 
       if (*Loop::iteration == INIT)
@@ -250,15 +250,22 @@ namespace Gambit
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
+        // variables for xsec veto
+        std::stringstream processLevelOutput;
+        std::string _junk, readline;
+        int code, nxsec;
+        double xsec, totalxsec;
+
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
-        pythiaOptions.push_back("Print:quiet = off");
+        // Although we capture all couts, still we tell Pythia to be quiet....
+        pythiaOptions.push_back("Print:quiet = on");
+        // .... except for showProcesses, which we need for the xsec veto.
+        pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
-        if (omp_get_thread_num() == 0)
-          pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("Random:seed = " + std::to_string(int(Random::draw() * 899990000.) + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
@@ -270,8 +277,7 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(
-                   int(Random::draw() * 899990000.) + omp_get_thread_num()));
+          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
@@ -318,12 +324,6 @@ namespace Gambit
       static std::string pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = -1;
-      // int seedBase;
-      // variables for xsec veto
-      std::stringstream processLevelOutput;
-      std::string _junk, readline;
-      int code, nxsec;
-      double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -342,7 +342,7 @@ namespace Gambit
         if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
 
         // Pythia random number seed will be this, plus the thread number.
-        // seedBase = int(Random::draw() * 899990000.);
+        seedBase = int(Random::draw() * 899990000.);
       }
 
       if (*Loop::iteration == INIT)
@@ -357,15 +357,22 @@ namespace Gambit
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
+        // variables for xsec veto
+        std::stringstream processLevelOutput;
+        std::string _junk, readline;
+        int code, nxsec;
+        double xsec, totalxsec;
+
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
-        pythiaOptions.push_back("Print:quiet = off");
+        // Although we capture all couts, still we tell Pythia to be quiet....
+        pythiaOptions.push_back("Print:quiet = on");
+        // .... except for showProcesses, which we need for the xsec veto.
+        pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
-        if (omp_get_thread_num() == 0)
-          pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("Random:seed = " + std::to_string(int(Random::draw() * 899990000.) + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
@@ -379,8 +386,7 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(
-                   int(Random::draw() * 899990000.) + omp_get_thread_num()));
+          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
