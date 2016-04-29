@@ -10,20 +10,9 @@
 #include "wrapper_Event_decl.h"
 #include <vector>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::ResonanceDecays*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::ResonanceDecays*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::ResonanceDecays* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_ResonanceDecays*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -71,11 +60,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void init_wrapper()
                 {
-                    if (wptr == 0)
-                    {
-                        wptr = wrapper_creator(this);
-                        delete_wrapper = true;
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ResonanceDecays from backend Pythia_8_212_EM. The function Abstract_ResonanceDecays::init_wrapper() in GAMBIT should never have been called..." << std::endl;
                 }
     
                 ResonanceDecays* get_init_wptr()
@@ -92,16 +77,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual ~Abstract_ResonanceDecays()
                 {
-                    if (wptr != 0)
-                    {
-                        set_delete_BEptr(wptr, false);
-                        if (delete_wrapper == true)
-                        {
-                            wrapper_deleter(wptr);
-                            wptr = 0;
-                            delete_wrapper = false;
-                        }
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ResonanceDecays from backend Pythia_8_212_EM. The function Abstract_ResonanceDecays::~Abstract_ResonanceDecays in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }
