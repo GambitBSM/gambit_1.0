@@ -9,20 +9,9 @@
 #include <vector>
 #include <map>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Info*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Info*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Info* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_Info*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -452,11 +441,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void init_wrapper()
                 {
-                    if (wptr == 0)
-                    {
-                        wptr = wrapper_creator(this);
-                        delete_wrapper = true;
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Info from backend Pythia_8_212_EM. The function Abstract_Info::init_wrapper() in GAMBIT should never have been called..." << std::endl;
                 }
     
                 Info* get_init_wptr()
@@ -473,16 +458,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual ~Abstract_Info()
                 {
-                    if (wptr != 0)
-                    {
-                        set_delete_BEptr(wptr, false);
-                        if (delete_wrapper == true)
-                        {
-                            wrapper_deleter(wptr);
-                            wptr = 0;
-                            delete_wrapper = false;
-                        }
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Info from backend Pythia_8_212_EM. The function Abstract_Info::~Abstract_Info in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

@@ -1526,14 +1526,16 @@ def pointerAndRefCheck(input_type, byname=False):
 
 def addIncludeGuard(code, file_name, prefix='', suffix='', uppercase=False):
 
-    # if suffix == '':
-    #     guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name.replace('.','_') + '__'
-    # else:
-    #     file_name_no_ext, file_ext = os.path.splitext(file_name)
-    #     guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name_no_ext.replace('.','_') + '_' + suffix + file_ext.replace('.','_')  + '__'
+    file_name = file_name.rstrip('.FOR_GAMBIT')
 
-    file_name_no_ext, file_ext = os.path.splitext(os.path.basename(file_name))
-    guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name_no_ext.replace('.','_') + ('__' + suffix)*bool(len(suffix)) + '__'
+    if suffix == '':
+        guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name.replace('.','_') + '__'
+    else:
+        file_name_no_ext, file_ext = os.path.splitext(file_name)
+        guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name_no_ext.replace('.','_') + '_' + suffix + file_ext.replace('.','_')  + '__'
+
+    # file_name_no_ext, file_ext = os.path.splitext(os.path.basename(file_name))
+    # guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name_no_ext.replace('.','_') + ('__' + suffix)*bool(len(suffix)) + '__'
 
 
     if uppercase:
