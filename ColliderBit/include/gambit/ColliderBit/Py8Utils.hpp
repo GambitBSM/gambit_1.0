@@ -20,13 +20,13 @@ namespace Gambit {
 
     inline HEPUtils::P4 mk_p4(const Pythia8::Vec4& p) {
       const double m = p.mCalc();
-      assert(m > -5e-2 && "Negative mass vector from Pythia8");
+      if (m < -5e-3) throw std::domain_error("Negative mass vector from Pythia8");
       return HEPUtils::P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
     }
 
     inline HEPUtils::P4 mk_p4(const Pythia8::Particle& p) {
       const double m = p.m();
-      assert(m >= 0);
+      if (m < 0) throw std::domain_error("Negative mass vector from Pythia8");
       return HEPUtils::P4::mkXYZM(p.px(), p.py(), p.pz(), m);
     }
 

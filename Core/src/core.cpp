@@ -60,6 +60,7 @@ namespace Gambit
      , input_model_descriptions(GAMBIT_DIR "/config/models.dat")
      , report_file(GAMBIT_DIR "/config/report.txt")
      , report(report_file.c_str())
+     , outprec(8)
      /* command line flags */ 
      , processed_options(false)
      , show_runorder(false)
@@ -67,6 +68,9 @@ namespace Gambit
      , verbose_flag(false)
      , found_inifile(false)
     {}
+
+    /// Getter for precision to use for cout
+    int gambit_core::get_outprec() const { return outprec; }
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail(int mpirank)

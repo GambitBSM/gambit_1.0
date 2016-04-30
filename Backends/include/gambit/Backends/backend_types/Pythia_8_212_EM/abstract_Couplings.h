@@ -6,20 +6,9 @@
 #include "forward_decls_wrapper_classes.h"
 #include "wrapper_CoupSM_decl.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Couplings*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Couplings*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Couplings* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_Couplings*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -65,11 +54,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void init_wrapper()
                 {
-                    if (wptr == 0)
-                    {
-                        wptr = wrapper_creator(this);
-                        delete_wrapper = true;
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Couplings from backend Pythia_8_212_EM. The function Abstract_Couplings::init_wrapper() in GAMBIT should never have been called..." << std::endl;
                 }
     
                 Couplings* get_init_wptr()
@@ -86,17 +71,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual ~Abstract_Couplings()
                 {
-                    if (wptr != 0)
-                    {
-                        set_delete_BEptr(wptr, false);
-                        if (delete_wrapper == true)
-                        {
-                            wrapper_deleter(wptr);
-                            wptr = 0;
-                            Pythia8::Abstract_CoupSM::set_wptr(0);
-                            delete_wrapper = false;
-                        }
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Couplings from backend Pythia_8_212_EM. The function Abstract_Couplings::~Abstract_Couplings in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

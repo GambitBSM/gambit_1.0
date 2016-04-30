@@ -162,7 +162,12 @@ namespace Gambit
           Loop::executeIteration(START_SUBPROCESS);
           // main event loop
           while(currentEvent<nEvents and not *Loop::done) {
-            Loop::executeIteration(currentEvent++);
+            try {
+              Loop::executeIteration(currentEvent);
+              currentEvent++;
+            } catch (std::domain_error& e) {
+              std::cerr<<"\n   Continuing to the next event...\n\n";
+            }
           }
           Loop::executeIteration(END_SUBPROCESS);
         }
@@ -181,23 +186,29 @@ namespace Gambit
       using namespace Pipes::getPythia;
 
       static std::string pythia_doc_path;
-      static bool print_pythia_banner = true;
+      static std::string default_doc_path;
+      static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
+      int seedBase;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      int code;
+      int code, nxsec;
       double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
-        // Get Pythia to print its banner.
-        if (print_pythia_banner)
+        // Setup the Pythia documentation path
+        if (pythia_doc_path_needs_setting)
         {
-          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          result.banner(pythia_doc_path);
-          print_pythia_banner = false;
+          default_doc_path = "Backends/installed/Pythia/" + 
+                             Backends::backendInfo().default_version("Pythia") +
+                             "/share/Pythia8/xmldoc/";
+          pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
+          // Get one thread to print the Pythia banner.
+          if (omp_get_thread_num() == 0) result.banner(pythia_doc_path);
+          pythia_doc_path_needs_setting = false;
         }
 
         // SLHAea object constructed from dependencies on the spectrum and decays.
@@ -220,6 +231,9 @@ namespace Gambit
         {
           ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
+
+        // Pythia random number seed will be this, plus the thread number.
+        seedBase = int(Random::draw() * 899990000.);
       }
 
       if (*Loop::iteration == INIT)
@@ -242,7 +256,7 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
@@ -257,15 +271,29 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          piped_invalid_point.request("Bad point: Pythia can't initialize");
-          Loop::wrapup();
-          return;
+          pythiaOptions.push_back("Random:seed = " + std::to_string(
+                   int(Random::draw() * 899990000.) + omp_get_thread_num()));
+          try
+          {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions, &slha);
+          }
+          catch (SpecializablePythia::InitializationError &e)
+          {
+            piped_invalid_point.request("Bad point: Pythia can't initialize");
+            Loop::wrapup();
+            return;
+          }
         }
+
 
         // xsec veto
         if (omp_get_thread_num() == 0)
         {
           code = -1;
+          nxsec = 0;
           totalxsec = 0.;
           while(true)
           {
@@ -273,9 +301,12 @@ namespace Gambit
             std::istringstream issPtr(readline);
             issPtr.seekg(47, issPtr.beg);
             issPtr >> code;
-            if (!issPtr.good() && totalxsec > 0.) break;
+            if (!issPtr.good() && nxsec > 0) break;
             issPtr >> _junk >> xsec;
-            if (issPtr.good()) totalxsec += xsec;
+            if (issPtr.good()) {
+              totalxsec += xsec;
+              nxsec++;
+            }
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -293,28 +324,33 @@ namespace Gambit
 
       static std::vector<std::string> filenames;
       static std::string pythia_doc_path;
-      static bool print_pythia_banner = true;
+      static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = -1;
+      int seedBase;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      int code;
+      int code, nxsec;
       double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
-        // Get Pythia to print its banner.
-        if (print_pythia_banner)
+        // Setup the Pythia documentation path
+        if (pythia_doc_path_needs_setting)
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          result.banner(pythia_doc_path);
-          print_pythia_banner = false;
+          // Get one thread to print the Pythia banner.
+          if (omp_get_thread_num() == 0) result.banner(pythia_doc_path);
+          pythia_doc_path_needs_setting = false;
         }
         // If there are no debug filenames set, look for them.
         if (filenames.empty())
           filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
         fileCounter++;
         if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
+
+        // Pythia random number seed will be this, plus the thread number.
+        seedBase = int(Random::draw() * 899990000.);
       }
 
       if (*Loop::iteration == INIT)
@@ -337,7 +373,7 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
@@ -354,15 +390,28 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          piped_invalid_point.request("Bad point: Pythia can't initialize");
-          Loop::wrapup();
-          return;
+          pythiaOptions.push_back("Random:seed = " + std::to_string(
+                   int(Random::draw() * 899990000.) + omp_get_thread_num()));
+          try
+          {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions);
+          }
+          catch (SpecializablePythia::InitializationError &e)
+          {
+            piped_invalid_point.request("Bad point: Pythia can't initialize");
+            Loop::wrapup();
+            return;
+          }
         }
 
         // xsec veto
         if (omp_get_thread_num() == 0)
         {
           code = -1;
+          nxsec = 0;
           totalxsec = 0.;
           while(true)
           {
@@ -370,9 +419,12 @@ namespace Gambit
             std::istringstream issPtr(readline);
             issPtr.seekg(47, issPtr.beg);
             issPtr >> code;
-            if (!issPtr.good() && totalxsec > 0.) break;
+            if (!issPtr.good() && nxsec > 0) break;
             issPtr >> _junk >> xsec;
-            if (issPtr.good()) totalxsec += xsec;
+            if (issPtr.good()) {
+              totalxsec += xsec;
+              nxsec++;
+            }
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -578,7 +630,20 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
+        {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+        }
+        throw e;
+      }
     }
 
     void smearEventCMS(HEPUtils::Event& result) {
@@ -587,7 +652,20 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
+        {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+        }
+        throw e;
+      }
     }
 
 
@@ -597,7 +675,20 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8 and convert to HEPUtils::Event
-      (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
+        {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+        }
+        throw e;
+      }
     }
 
 

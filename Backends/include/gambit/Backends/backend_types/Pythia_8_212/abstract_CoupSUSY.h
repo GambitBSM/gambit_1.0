@@ -11,20 +11,9 @@
 #include <complex>
 #include "wrapper_Couplings_decl.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::CoupSUSY*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::CoupSUSY*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::CoupSUSY* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_CoupSUSY*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -242,11 +231,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void init_wrapper()
                 {
-                    if (wptr == 0)
-                    {
-                        wptr = wrapper_creator(this);
-                        delete_wrapper = true;
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::CoupSUSY from backend Pythia_8_212. The function Abstract_CoupSUSY::init_wrapper() in GAMBIT should never have been called..." << std::endl;
                 }
     
                 CoupSUSY* get_init_wptr()
@@ -263,18 +248,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual ~Abstract_CoupSUSY()
                 {
-                    if (wptr != 0)
-                    {
-                        set_delete_BEptr(wptr, false);
-                        if (delete_wrapper == true)
-                        {
-                            wrapper_deleter(wptr);
-                            wptr = 0;
-                            Pythia8::Abstract_CoupSM::set_wptr(0);
-                            Pythia8::Abstract_Couplings::set_wptr(0);
-                            delete_wrapper = false;
-                        }
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::CoupSUSY from backend Pythia_8_212. The function Abstract_CoupSUSY::~Abstract_CoupSUSY in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }
