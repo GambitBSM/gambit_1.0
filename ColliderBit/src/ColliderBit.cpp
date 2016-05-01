@@ -224,9 +224,6 @@ namespace Gambit
           block.push_back(line);
           slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
           slha.push_front(block);
-          std::cout<<"\n\n\n SLHAea contents:\n ================\n\n";
-          std::cout<<slha.str();
-          std::cout<<"\n\n\n SLHAea contents end.\n ====================\n\n";
         }
         else
         {
@@ -235,7 +232,6 @@ namespace Gambit
 
         // Pythia random number seed will be this, plus the thread number.
         seedBase = int(Random::draw() * 899990000.);
-        std::cout<<"\n\n\n seedBase: "<< seedBase <<"\n\n";
       }
 
       if (*Loop::iteration == INIT)

@@ -182,13 +182,8 @@ bool ProcessLevel::init( Info* infoPtrIn, Settings& settings,
       &resonanceDecays, slhaInterfacePtr, userHooksPtr)) ++numberOn;
 
   // Sum maxima for Monte Carlo choice.
-  std::cerr<<" DEBUG: in ProcessLevel...  sigmaMaxSum = 0.;\n";
   sigmaMaxSum = 0.;
-  for (int i = 0; i < int(containerPtrs.size()); ++i) {
-    std::cerr<<" DEBUG: in ProcessLevel...  sigmaMaxSum += "
-             <<containerPtrs[i]->sigmaMax()<<" ("<< i <<")\n";
-    sigmaMaxSum += containerPtrs[i]->sigmaMax();
-  }
+  for (int i = 0; i < int(containerPtrs.size()); ++i) sigmaMaxSum += containerPtrs[i]->sigmaMax();
 
   // Option to pick a second hard interaction: repeat as above.
   int number2On = 0;
