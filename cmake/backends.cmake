@@ -123,8 +123,8 @@ ExternalProject_Add(superiso
 add_extra_targets(superiso ${superiso_dir} ${backend_download}/${superiso_dl} distclean)
 
 # DDCalc
-set(ddcalc_location "${GAMBIT_INTERNAL}/DDCalc0")
-set(ddcalc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DDCalc/0.0")
+set(ddcalc_location "${GAMBIT_INTERNAL}/DDCalc")
+set(ddcalc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DDCalc/1.0.0")
 ExternalProject_Add(ddcalc
   DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
            COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
@@ -133,10 +133,10 @@ ExternalProject_Add(ddcalc
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc.so FC=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} DDCALC_DIR=${ddcalc_dir} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
-add_extra_targets(ddcalc ${ddcalc_dir} null cleanest)
+add_extra_targets(ddcalc ${ddcalc_dir} null distclean)
 
 # Gamlike
 if(GSL_FOUND)

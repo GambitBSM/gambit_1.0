@@ -33,7 +33,7 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 
 QUICK_FUNCTION(DarkBit, TH_ProcessCatalog, OLD_CAPABILITY, TH_ProcessCatalog_WIMP, DarkBit::TH_ProcessCatalog, ())
 QUICK_FUNCTION(DarkBit, DarkMatter_ID, OLD_CAPABILITY, DarkMatter_ID_WIMP, std::string, ())
-QUICK_FUNCTION(DarkBit, DD_couplings, OLD_CAPABILITY, DD_couplings_WIMP, DarkBit::DD_couplings, ())
+QUICK_FUNCTION(DarkBit, DD_couplings, OLD_CAPABILITY, DD_couplings_WIMP, DM_nucleon_couplings, ())
 
 void dump_array_to_file(const std::string & filename, const
     boost::multi_array<double, 2> & a, const std::vector<double> & x, const
@@ -182,7 +182,7 @@ namespace Gambit
       result = "WIMP";
     }
 
-    void DD_couplings_WIMP(DarkBit::DD_couplings& result)
+    void DD_couplings_WIMP(DM_nucleon_couplings& result)
     {
       using namespace Pipes::DD_couplings_WIMP;
       result.gps = runOptions->getValueOrDef<double>(0., "gps");
@@ -236,21 +236,15 @@ int main(int argc, char* argv[])
   LocalHalo_primary_parameters->setValue("vesc", 550.);
   LocalHalo_primary_parameters->setValue("vearth", 29.78);
 
-
-  // ---- Initialize backends ----
-
-  // Initialize gamLike backend
-  gamLike_1_0_0_init.reset_and_calculate();
-
-  // Initialize DarkSUSY backend
-  DarkSUSY_5_1_3_init.reset_and_calculate();
-
-  // Initialize DDCalc0 backend
-  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
-  DDCalc0_0_0_init.notifyOfModel("LocalHalo");
-  DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
-  DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
-  DDCalc0_0_0_init.reset_and_calculate();
+  // Set up DDCalc backend initialization
+  Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
+  Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
+  Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
+  DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
+  DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
+  DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
+  DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP); // Use DarkSUSY for DD couplings
 
 
   // ---- Set up basic internal structures for direct & indirect detection ----
@@ -376,21 +370,14 @@ int main(int argc, char* argv[])
 
   // ---- Calculate direct detection constraints ----
 
-  // Push WIMP paramters to DDCalc0 backend
-  SetWIMP_DDCalc0.resolveDependency(&DD_couplings_WIMP);  // Use DarkSUSY parameters
-  // FIXME: Remove TH_ProcessCatalog_WIMP dependence - This should be really not necessary
-  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_WIMP);  
-  SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_WIMP);
-  SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_SetWIMP_mG);
-  SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_GetWIMP_msigma);
-
   // Calculate direct detection rates for LUX 2013
-  CalcRates_LUX_2013_DDCalc0.resolveDependency(&SetWIMP_DDCalc0);
-  CalcRates_LUX_2013_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates);
+  LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+  LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
 
   // Calculate direct detection likelihood for LUX 2013
-  LUX_2013_LogLikelihood_DDCalc0.resolveDependency(&CalcRates_LUX_2013_DDCalc0);
-  LUX_2013_LogLikelihood_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_LogLikelihood);
+  LUX_2013_GetLogLikelihood.resolveDependency(&LUX_2013_Calc);
+  LUX_2013_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+  LUX_2013_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
 
   // Set generic WIMP mass object
   mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -451,9 +438,8 @@ int main(int argc, char* argv[])
         RD_oh2_general.reset_and_calculate();
         double oh2 = RD_oh2_general(0);
         oh2_array[i][j] = oh2;
-  //    SetWIMP_DDCalc0.reset_and_calculate();
-  //    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
-  //    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+  //    LUX_2013_Calc.reset_and_calculate();
+  //    LUX_2013_GetLogLikelihood.reset_and_calculate();
       }
     }
     dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
@@ -481,7 +467,6 @@ int main(int argc, char* argv[])
         DarkMatter_ID_WIMP.reset_and_calculate();
         TH_ProcessCatalog_WIMP.reset_and_calculate();
         RD_fraction_fixed.reset_and_calculate();
-        DDCalc0_0_0_init.reset_and_calculate();
         DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
         DD_couplings_WIMP.setOption<double>("gns", 0.);
         DD_couplings_WIMP.setOption<double>("gpa", 0.);
@@ -491,10 +476,10 @@ int main(int argc, char* argv[])
         sigma_SI_p_simple.reset_and_calculate();
         double sigma_SI_p = sigma_SI_p_simple(0);
         std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
-        SetWIMP_DDCalc0.reset_and_calculate();
-        CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
-        LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
-        double lnL = LUX_2013_LogLikelihood_DDCalc0(0);
+        DDCalc_1_0_0_init.reset_and_calculate();
+        LUX_2013_Calc.reset_and_calculate();
+        LUX_2013_GetLogLikelihood.reset_and_calculate();
+        double lnL = LUX_2013_GetLogLikelihood(0);
         std::cout << "LUX2013 lnL = " << lnL << std::endl;
         lnL_array[i][j] = lnL;
       }
