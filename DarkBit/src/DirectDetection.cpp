@@ -34,7 +34,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized DarkSUSY.
     */
-    void DD_couplings_DarkSUSY(DarkBit::DD_couplings &result)
+    void DD_couplings_DarkSUSY(DM_nucleon_couplings &result)
     {
       using namespace Pipes::DD_couplings_DarkSUSY;
 
@@ -111,7 +111,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized MicrOmegas.
     */
-    void DD_couplings_MicrOmegas(DarkBit::DD_couplings &result)
+    void DD_couplings_MicrOmegas(DM_nucleon_couplings &result)
     {
       using namespace Pipes::DD_couplings_MicrOmegas;
 
@@ -212,376 +212,46 @@ namespace Gambit {
 
     //////////////////////////////////////////////////////////////////////////
     //
-    //          Direct detection DDCalc0 intermediate routines
+    //          Direct detection rate and likelihood routines
     //
     //////////////////////////////////////////////////////////////////////////
 
-    /// Point-level initialization of DDCalc backend.
-    void SetWIMP_DDCalc0(bool &result) {
-      using namespace Pipes::SetWIMP_DDCalc0;
-      double M = 
-        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
-      double GpSI = (*Dep::DD_couplings).gps;
-      double GnSI = (*Dep::DD_couplings).gns;
-      double GpSD = (*Dep::DD_couplings).gpa;
-      double GnSD = (*Dep::DD_couplings).gna;                        
-      BEreq::DDCalc0_SetWIMP_mG(&M,&GpSI,&GnSI,&GpSD,&GnSD);
-      result = true;
-      // Print out WIMP-nucleon cross-sections.
-      // This part is optional as WIMP is already set.
-      double sigmapSI,sigmanSI,sigmapSD,sigmanSD;
-      BEreq::DDCalc0_GetWIMP_msigma(&M,&sigmapSI,&sigmanSI,&sigmapSD,&sigmanSD);
-      logger() << "DDCalc0 WIMP-nucleon cross-sections [pb]:" << std::endl;
-      logger() << "  sigmapSI = " << sigmapSI << std::endl;
-      logger() << "  sigmanSI = " << sigmanSI << std::endl;
-      logger() << "  sigmapSD = " << sigmapSD << std::endl;
-      logger() << "  sigmanSD = " << sigmanSD << std::endl;
+    /// Defines a prototypical DDCalc result extractor
+    #define DDCALC_RESULT(EXPERIMENT, TYPE, NAME)                                  \
+    void CAT_3(EXPERIMENT,_Get,NAME)(TYPE &result)                                 \
+    {                                                                              \
+      using namespace Pipes::CAT_3(EXPERIMENT,_Get,NAME);                          \
+      result = BEreq::CAT(DD_,NAME)(BEreq::DD_Experiment(STRINGIFY(EXPERIMENT)));  \
     }
 
-    /// Performs DDCalc0 internal rate calculations for the XENON100 2012 result.
-    void CalcRates_XENON100_2012_DDCalc0(bool &result) {
-      using namespace Pipes::CalcRates_XENON100_2012_DDCalc0;
-      BEreq::DDCalc0_XENON100_2012_CalcRates();
-      result = true;
-    }
+    /// Defines functions to perform the DDCalc internal rate calculations,
+    /// and extract the results and log likelihoods, for the designated experiment.
+    #define DD_EX(EXPERIMENT)                                                      \
+      /* Calculations */                                                           \
+      void CAT(EXPERIMENT,_Calc)(bool &result)                                     \
+      {                                                                            \
+        using namespace Pipes::CAT(EXPERIMENT,_Calc);                              \
+        BEreq::DD_CalcRates(BEreq::DD_Experiment(STRINGIFY(EXPERIMENT)));          \
+        result = true;                                                             \
+      }                                                                            \
+      /* Results */                                                                \
+      DDCALC_RESULT(EXPERIMENT, int,    Events)                                    \
+      DDCALC_RESULT(EXPERIMENT, double, Background)                                \
+      DDCALC_RESULT(EXPERIMENT, double, Signal)                                    \
+      DDCALC_RESULT(EXPERIMENT, double, SignalSI)                                  \
+      DDCALC_RESULT(EXPERIMENT, double, SignalSD)                                  \
+      DDCALC_RESULT(EXPERIMENT, double, LogLikelihood)                             \
+            
+    // Experiments
+    DD_EX(XENON100_2012)        // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
+    DD_EX(LUX_2013)             // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
+    DD_EX(SIMPLE_2014)          // Felizardo et al., PRD 89, 072013 (2014) [arxiv:1404.4309]
+    DD_EX(SuperCDMS_2014)       // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
+    DD_EX(DARWIN_Ar)
+    DD_EX(DARWIN_Xe)
 
-    /// Performs DDCalc0 internal rate calculations for the LUX 2013 result.
-    void CalcRates_LUX_2013_DDCalc0(bool &result) {
-      using namespace Pipes::CalcRates_LUX_2013_DDCalc0;
-      BEreq::DDCalc0_LUX_2013_CalcRates();
-      result = true;
-    }
+    // Just in case, to make sure we don't mess with other things elsewhere.
+    #undef DD_EX
 
-    /// Performs DDCalc0 internal rate calculations for the SuperCDMS 2014 result.
-    void CalcRates_SuperCDMS_2014_DDCalc0(bool &result) {
-      using namespace Pipes::CalcRates_SuperCDMS_2014_DDCalc0;
-      BEreq::DDCalc0_SuperCDMS_2014_CalcRates();
-      result = true;
-    }
-
-    /// Performs DDCalc0 internal rate calculations for the SIMPLE 2014 result.
-    void CalcRates_SIMPLE_2014_DDCalc0(bool &result) {
-      using namespace Pipes::CalcRates_SIMPLE_2014_DDCalc0;
-      BEreq::DDCalc0_SIMPLE_2014_CalcRates();
-      result = true;
-    }
-
-    /*! \brief Performs DDCalc0 internal rate calculations for the future
-     *         argon-based DARWIN experiment.
-     *
-     * Estimated sensitivity (as of 2015) at the current model point.
-     */
-    void CalcRates_DARWIN_Ar_2015_DDCalc0(bool &result) {
-      using namespace Pipes::CalcRates_DARWIN_Ar_2015_DDCalc0;
-      BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
-      result = true;
-    }
-
-    /*! \brief Performs DDCalc0 internal rate calculations for the future
-     *         xenon-based DARWIN experiment.  
-     *
-     * Estimated sensitivity (as of 2015) at the current model point.
-     */
-    void CalcRates_DARWIN_Xe_2015_DDCalc0(bool &result) {
-      using namespace Pipes::CalcRates_DARWIN_Xe_2015_DDCalc0;
-      BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
-      result = true;
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////
-    //
-    //                Direct detection likelihoods/observables
-    //
-    //////////////////////////////////////////////////////////////////////////
-
-    // XENON100 2012 -----------------------------------------------------
-    // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
-
-    /// Log-likelihood - XENON100 2012
-    void XENON100_2012_LogLikelihood_DDCalc0(double &result) {
-      using namespace Pipes::XENON100_2012_LogLikelihood_DDCalc0;
-      result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
-      logger() << "XENON100 2012 log-likelihood: " << result << std::endl;
-    }
-
-    /// Observed events (integer) - XENON100 2012
-    void XENON100_2012_Events_DDCalc0(int &result) {
-      using namespace Pipes::XENON100_2012_Events_DDCalc0;
-      result = BEreq::DDCalc0_XENON100_2012_Events();
-      logger() << "XENON100 2012 events: " << result << std::endl;
-    }
-
-    /// Background expectation - XENON100 2012
-    void XENON100_2012_Background_DDCalc0(double &result) {
-      using namespace Pipes::XENON100_2012_Background_DDCalc0;
-      result = BEreq::DDCalc0_XENON100_2012_Background();
-      logger() << "XENON100 2012 background: " << result << std::endl;
-    }
-
-    /// Signal expectation - XENON100 2012
-    void XENON100_2012_Signal_DDCalc0(double &result) {
-      using namespace Pipes::XENON100_2012_Signal_DDCalc0;
-      result = BEreq::DDCalc0_XENON100_2012_Signal();
-      logger() << "XENON100 2012 signal: " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-independent) - XENON100 2012
-    void XENON100_2012_SignalSI_DDCalc0(double &result) {
-      using namespace Pipes::XENON100_2012_SignalSI_DDCalc0;
-      result = BEreq::DDCalc0_XENON100_2012_SignalSI();
-      logger() << "XENON100 2012 signal (SI): " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-dependent) - XENON100 2012
-    void XENON100_2012_SignalSD_DDCalc0(double &result) {
-      using namespace Pipes::XENON100_2012_SignalSD_DDCalc0;
-      result = BEreq::DDCalc0_XENON100_2012_SignalSD();
-      logger() << "XENON100 2012 signal (SD): " << result << std::endl;
-    }
-
-
-    // LUX 2013 ----------------------------------------------------------
-    // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
-
-    /// Log-likelihood - LUX 2013
-    void LUX_2013_LogLikelihood_DDCalc0(double &result) {
-      using namespace Pipes::LUX_2013_LogLikelihood_DDCalc0;
-      result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
-      logger() << "LUX 2013 log-likelihood: " << result << std::endl;
-    }
-
-    /// Observed events (integer) - LUX 2013
-    void LUX_2013_Events_DDCalc0(int &result) {
-      using namespace Pipes::LUX_2013_Events_DDCalc0;
-      result = BEreq::DDCalc0_LUX_2013_Events();
-      logger() << "LUX 2013 events: " << result << std::endl;
-    }
-
-    /// Background expectation - LUX 2013
-    void LUX_2013_Background_DDCalc0(double &result) {
-      using namespace Pipes::LUX_2013_Background_DDCalc0;
-      result = BEreq::DDCalc0_LUX_2013_Background();
-      logger() << "LUX 2013 background: " << result << std::endl;
-    }
-
-    /// Signal expectation - LUX 2013
-    void LUX_2013_Signal_DDCalc0(double &result) {
-      using namespace Pipes::LUX_2013_Signal_DDCalc0;
-      result = BEreq::DDCalc0_LUX_2013_Signal();
-      logger() << "LUX 2013 signal: " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-independent) - LUX 2013
-    void LUX_2013_SignalSI_DDCalc0(double &result) {
-      using namespace Pipes::LUX_2013_SignalSI_DDCalc0;
-      result = BEreq::DDCalc0_LUX_2013_SignalSI();
-      logger() << "LUX 2013 signal (SI): " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-dependent) - LUX 2013
-    void LUX_2013_SignalSD_DDCalc0(double &result) {
-      using namespace Pipes::LUX_2013_SignalSD_DDCalc0;
-      result = BEreq::DDCalc0_LUX_2013_SignalSD();
-      logger() << "LUX 2013 signal (SD): " << result << std::endl;
-    }
-
-
-    // SuperCDMS 2014 ----------------------------------------------------
-    // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
-
-    /// Log-likelihood - SuperCDMS 2014
-    void SuperCDMS_2014_LogLikelihood_DDCalc0(double &result) {
-      using namespace Pipes::SuperCDMS_2014_LogLikelihood_DDCalc0;
-      result = BEreq::DDCalc0_SuperCDMS_2014_LogLikelihood();
-      logger() << "SuperCDMS 2014 log-likelihood: " << result << std::endl;
-    }
-
-    /// Observed events (integer) - SuperCDMS 2014
-    void SuperCDMS_2014_Events_DDCalc0(int &result) {
-      using namespace Pipes::SuperCDMS_2014_Events_DDCalc0;
-      result = BEreq::DDCalc0_SuperCDMS_2014_Events();
-      logger() << "SuperCDMS 2014 events: " << result << std::endl;
-    }
-
-    /// Background expectation - SuperCDMS 2014
-    void SuperCDMS_2014_Background_DDCalc0(double &result) {
-      using namespace Pipes::SuperCDMS_2014_Background_DDCalc0;
-      result = BEreq::DDCalc0_SuperCDMS_2014_Background();
-      logger() << "SuperCDMS 2014 background: " << result << std::endl;
-    }
-
-    /// Signal expectation - SuperCDMS 2014
-    void SuperCDMS_2014_Signal_DDCalc0(double &result) {
-      using namespace Pipes::SuperCDMS_2014_Signal_DDCalc0;
-      result = BEreq::DDCalc0_SuperCDMS_2014_Signal();
-      logger() << "SuperCDMS 2014 signal: " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-independent) - SuperCDMS 2014
-    void SuperCDMS_2014_SignalSI_DDCalc0(double &result) {
-      using namespace Pipes::SuperCDMS_2014_SignalSI_DDCalc0;
-      result = BEreq::DDCalc0_SuperCDMS_2014_SignalSI();
-      logger() << "SuperCDMS 2014 signal (SI): " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-dependent) - SuperCDMS 2014
-    void SuperCDMS_2014_SignalSD_DDCalc0(double &result) {
-      using namespace Pipes::SuperCDMS_2014_SignalSD_DDCalc0;
-      result = BEreq::DDCalc0_SuperCDMS_2014_SignalSD();
-      logger() << "SuperCDMS 2014 signal (SD): " << result << std::endl;
-    }
-
-
-    // SIMPLE 2014 -------------------------------------------------------
-    // Felizardo et al., PRD 89, 072013 (2014) [arxiv:1404.4309]
-
-    /// Log-likelihood - SIMPLE 2014
-    void SIMPLE_2014_LogLikelihood_DDCalc0(double &result) {
-      using namespace Pipes::SIMPLE_2014_LogLikelihood_DDCalc0;
-      result = BEreq::DDCalc0_SIMPLE_2014_LogLikelihood();
-      logger() << "SIMPLE 2014 log-likelihood: " << result << std::endl;
-    }
-
-    /// Observed events (integer) - SIMPLE 2014
-    void SIMPLE_2014_Events_DDCalc0(int &result) {
-      using namespace Pipes::SIMPLE_2014_Events_DDCalc0;
-      result = BEreq::DDCalc0_SIMPLE_2014_Events();
-      logger() << "SIMPLE 2014 events: " << result << std::endl;
-    }
-
-    /// Background expectation - SIMPLE 2014
-    void SIMPLE_2014_Background_DDCalc0(double &result) {
-      using namespace Pipes::SIMPLE_2014_Background_DDCalc0;
-      result = BEreq::DDCalc0_SIMPLE_2014_Background();
-      logger() << "SIMPLE 2014 background: " << result << std::endl;
-    }
-
-    /// Signal expectation - SIMPLE 2014
-    void SIMPLE_2014_Signal_DDCalc0(double &result) {
-      using namespace Pipes::SIMPLE_2014_Signal_DDCalc0;
-      result = BEreq::DDCalc0_SIMPLE_2014_Signal();
-      logger() << "SIMPLE 2014 signal: " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-independent) - SIMPLE 2014
-    void SIMPLE_2014_SignalSI_DDCalc0(double &result) {
-      using namespace Pipes::SIMPLE_2014_SignalSI_DDCalc0;
-      result = BEreq::DDCalc0_SIMPLE_2014_SignalSI();
-      logger() << "SIMPLE 2014 signal (SI): " << result << std::endl;
-    }
-
-    /// Signal expectation (spin-dependent) - SIMPLE 2014
-    void SIMPLE_2014_SignalSD_DDCalc0(double &result) {
-      using namespace Pipes::SIMPLE_2014_SignalSD_DDCalc0;
-      result = BEreq::DDCalc0_SIMPLE_2014_SignalSD();
-      logger() << "SIMPLE 2014 signal (SD): " << result << std::endl;
-    }
-
-
-    // DARWIN argon-based ------------------------------------------------
-    // Estimated argon-based DARWIN sensitivity (as of 2015):
-    //   Conrad et al., arxiv:15MM.NNNNN
-
-    /// Log-likelihood - DARWIN
-    void DARWIN_Ar_2015_LogLikelihood_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Ar_2015_LogLikelihood_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
-      logger() << "DARWIN argon-based (2015 estimate) log-likelihood: " 
-        << result << std::endl;
-    }
-
-    /// Observed events (integer) - DARWIN
-    void DARWIN_Ar_2015_Events_DDCalc0(int &result) {
-      using namespace Pipes::DARWIN_Ar_2015_Events_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Ar_2015_Events();
-      logger() << "DARWIN argon-based (2015 estimate) events: " 
-        << result << std::endl;
-    }
-
-    /// Background expectation - DARWIN
-    void DARWIN_Ar_2015_Background_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Ar_2015_Background_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Ar_2015_Background();
-      logger() << "DARWIN argon-based (2015 estimate) background: " 
-        << result << std::endl;
-    }
-
-    /// Signal expectation - DARWIN
-    void DARWIN_Ar_2015_Signal_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Ar_2015_Signal_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Ar_2015_Signal();
-      logger() << "DARWIN argon-based (2015 estimate) signal: " 
-        << result << std::endl;
-    }
-
-    /// Signal expectation (spin-independent) - DARWIN
-    void DARWIN_Ar_2015_SignalSI_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Ar_2015_SignalSI_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSI();
-      logger() << "DARWIN argon-based (2015 estimate) signal (SI): " 
-        << result << std::endl;
-    }
-
-    /// Signal expectation (spin-dependent) - DARWIN
-    void DARWIN_Ar_2015_SignalSD_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Ar_2015_SignalSD_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSD();
-      logger() << "DARWIN argon-based (2015 estimate) signal (SD): " 
-        << result << std::endl;
-    }
-
-
-    // DARWIN xenon-based ------------------------------------------------
-    // Estimated xenon-based DARWIN sensitivity (as of 2015):
-    //   Conrad et al., arxiv:15MM.NNNNN
-
-    /// Log-likelihood - DARWIN xenon-based
-    void DARWIN_Xe_2015_LogLikelihood_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Xe_2015_LogLikelihood_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
-      logger() << "DARWIN xenon-based (2015 estimate) log-likelihood: " 
-        << result << std::endl;
-    }
-
-    /// Observed events (integer) - DARWIN xenon-based
-    void DARWIN_Xe_2015_Events_DDCalc0(int &result) {
-      using namespace Pipes::DARWIN_Xe_2015_Events_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Xe_2015_Events();
-      logger() << "DARWIN xenon-based (2015 estimate) events: " 
-        << result << std::endl;
-    }
-
-    /// Background expectation - DARWIN xenon-based
-    void DARWIN_Xe_2015_Background_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Xe_2015_Background_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Xe_2015_Background();
-      logger() << "DARWIN xenon-based (2015 estimate) background: " 
-        << result << std::endl;
-    }
-
-    /// Signal expectation - DARWIN xenon-based
-    void DARWIN_Xe_2015_Signal_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Xe_2015_Signal_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Xe_2015_Signal();
-      logger() << "DARWIN xenon-based (2015 estimate) signal: " 
-        << result << std::endl;
-    }
-
-    /// Signal expectation (spin-independent) - DARWIN xenon-based
-    void DARWIN_Xe_2015_SignalSI_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Xe_2015_SignalSI_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSI();
-      logger() << "DARWIN xenon-based (2015 estimate) signal (SI): " 
-        << result << std::endl;
-    }
-
-    /// Signal expectation (spin-dependent) - DARWIN xenon-based
-    void DARWIN_Xe_2015_SignalSD_DDCalc0(double &result) {
-      using namespace Pipes::DARWIN_Xe_2015_SignalSD_DDCalc0;
-      result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSD();
-      logger() << "DARWIN xenon-based (2015 estimate) signal (SD): " 
-        << result << std::endl;
-    }
   }
 }

@@ -151,7 +151,9 @@
 /// members of the same \em GROUP.  Note that \em GROUPs are automatically declared the 
 /// first time that they are mentioned in a BACKEND_REQ statement.
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
-                                                          CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+                                                          CORE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+#define LONG_DECLARE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
+                                                          CORE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 
 /// Declare a backend group, from which one backend requirement must be activated.
 #define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
@@ -1050,7 +1052,8 @@
 
 /// Redirection of BACKEND_REQ(GROUP, REQUIREMENT, (TAGS), TYPE, [(ARGS)]) 
 /// for declaring backend requirements when invoked from within the Core.
-#define CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE)    \
+#define CORE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT,     \
+                         TAGS, TYPE, ARGS, IS_VARIABLE)                        \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "BACKEND_REQ."))                                                            \

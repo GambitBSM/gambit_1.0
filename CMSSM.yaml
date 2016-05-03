@@ -82,10 +82,16 @@ ObsLikes:
     - capability: lnL_FermiLATdwarfs
       purpose:    LogLike
 
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose:    LogLike
 
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
+      purpose:    LogLike
+
+    - capability: SuperCDMS_2014_LogLikelihood
+      purpose:    LogLike
+
+    - capability: SIMPLE_2014_LogLikelihood
       purpose:    LogLike
 
     - capability: IC79_loglike
@@ -146,8 +152,8 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    - purpose:    LogLike
-      capability: LHC_Combined_LogLike
+#    - purpose:    LogLike
+#      capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike

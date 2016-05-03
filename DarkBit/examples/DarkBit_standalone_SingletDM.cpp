@@ -176,13 +176,6 @@ int main()
   DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
   DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
 
-  // Initialize DDCalc0 backend
-  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
-  DDCalc0_0_0_init.notifyOfModel("LocalHalo");
-  DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
-  DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
-  DDCalc0_0_0_init.reset_and_calculate();
-
 
   // ---- Relic density ----
 
@@ -260,23 +253,27 @@ int main()
 //  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::ddcom);
 //  DD_couplings_DarkSUSY.reset_and_calculate();
 
-  // Push WIMP paramters to DDCalc0 backend
-  SetWIMP_DDCalc0.resolveDependency(&DD_couplings_SingletDM);  // Use DarkSUSY parameters
-  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_SingletDM);
-  SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_SingletDM);
-  SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_SetWIMP_mG);
-  SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_GetWIMP_msigma);
-  SetWIMP_DDCalc0.reset_and_calculate();
+  // Initialize DDCalc backend
+  Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
+  Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
+  Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
+  DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
+  DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
+  DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
+  DDCalc_1_0_0_init.resolveDependency(&DD_couplings_SingletDM);
+  DDCalc_1_0_0_init.reset_and_calculate();
 
   // Calculate direct detection rates for LUX 2013
-  CalcRates_LUX_2013_DDCalc0.resolveDependency(&SetWIMP_DDCalc0);
-  CalcRates_LUX_2013_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates);
-  CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
+  LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+  LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+  LUX_2013_Calc.reset_and_calculate();
 
   // Calculate direct detection likelihood for LUX 2013
-  LUX_2013_LogLikelihood_DDCalc0.resolveDependency(&CalcRates_LUX_2013_DDCalc0);
-  LUX_2013_LogLikelihood_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_LogLikelihood);
-  LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+  LUX_2013_GetLogLikelihood.resolveDependency(&LUX_2013_Calc);
+  LUX_2013_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+  LUX_2013_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+  LUX_2013_GetLogLikelihood.reset_and_calculate();
 
   // Set generic scattering cross-section for later use
   sigma_SI_p_simple.resolveDependency(&DD_couplings_SingletDM);

@@ -20,6 +20,8 @@
 #ifndef __safe_param_map_hpp__
 #define __safe_param_map_hpp__
 
+#include "gambit/Utils/standalone_error_handlers.hpp"
+
 #include <map>
 #include <stdexcept>
 
