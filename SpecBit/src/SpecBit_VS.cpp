@@ -217,10 +217,10 @@ namespace Gambit
       double lifetime,LB;
       if (lambda_min<0) // second minimum exists, now determine stability and lifetime
       {
+        
         LB=u;
-        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4); // compute tunnelling rate
-     
         #ifdef SPECBIT_DEBUG
+        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4); // compute tunnelling rate
         if (p>1)
         {
             cout<< "vacuum is unstable" << endl;

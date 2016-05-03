@@ -92,7 +92,7 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
-    #undef FUNCTION
+//    #undef FUNCTION
 
   #undef CAPABILITY
 

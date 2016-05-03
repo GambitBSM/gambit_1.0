@@ -103,25 +103,29 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: multinest
+  use_scanner: twalk
 
   scanners:
 
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 1000
-      tol: 0.5
+      nlive: 4000
+      tol: 0.1
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 1000
+      NP: 10
       verbosity: 1
 
     #great:
 
-    #twalk(?):
+    twalk:
+      plugin: twalk
+      tolerance: 1.001
+      projection_dimension: 4
+      chain_number: 4
 
     random:
       plugin: random_sampler
@@ -259,5 +263,5 @@ KeyValues:
 
   enable_testing: false
 
-  default_output_path: "runs/vacuum_stability/"
+  default_output_path: "runs/vacuum_stability_twalk/"
 
