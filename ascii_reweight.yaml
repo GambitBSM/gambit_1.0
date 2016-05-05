@@ -1,7 +1,10 @@
 # Test YAML file for running the 'reweight' scanner plugin, for testing
 # out point reweighting
 #
-# largetest_multinest+ascii.yaml
+# To test this out, first run:
+# ./gambit -f largetest_multinest+ascii.yaml
+# to generate output to be reweighted.
+# Then run this file.
 #
 # Ben Farmer <benjamin.farmer@fysik.su.se>
 # Feb 2015
@@ -41,6 +44,7 @@ Scanner:
       LogLike: LogLike
       old_LogLike: LogLike
       reader:
+        # This determines what old output file is to be read and whose parameter points are to be used
         type: ascii
         info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
         data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
