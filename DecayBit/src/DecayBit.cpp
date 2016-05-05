@@ -250,6 +250,36 @@ namespace Gambit
       }
     }
 
+/// SingletDM   /////
+    void SingletDM_Higgs_decays (DecayTable::Entry& result)
+    {
+      using namespace Pipes::SingletDM_Higgs_decays;
+      double mh = (*Pipes::SingletDM_Higgs_decays::Dep::SingletDM_spectrum)->get(Par::Pole_Mass,"h0_1");
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = gambit_version;
+      result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
+      result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
+      result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
+      result.set_BF(virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
+      result.set_BF(virtual_SMHiggs_widths("ss",mh), 0.0, "s", "sbar");
+      result.set_BF(virtual_SMHiggs_widths("cc",mh), 0.0, "c", "cbar");
+      result.set_BF(virtual_SMHiggs_widths("tt",mh), 0.0, "t", "tbar");
+      result.set_BF(virtual_SMHiggs_widths("gg",mh), 0.0, "g", "g");
+      result.set_BF(virtual_SMHiggs_widths("gammagamma",mh), 0.0, "gamma", "gamma");
+      result.set_BF(virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
+      result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
+      result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
+      if (result.width_in_GeV < 0)
+      {
+        if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
+          invalid_point().raise("Negative width returned!");
+        else
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
+      }
+    }
+
+
+
 
     //////////// MSSM /////////////////////
 

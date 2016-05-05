@@ -19,8 +19,9 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [150,190]
-         prior_type: flat
+         #range: [160.071,160.071]
+         range: [160,180]
+         #prior_type: flat
 
       # SLHA1
       alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
@@ -61,23 +62,22 @@ Parameters:
       alpha1  :  0       # first Majorana CP-violating phase
       alpha2  :  0       # second CP-violating Majorana phase
 
-    StandardModel_Higgs:
+    StandardModel_Higgs_running:
       mH:
-        range: [120, 150]
-        prior_type: flat
-      #QEWSB: 173
+        #range: [100.098,100.098]
+        range: [100,150]
+        #prior_type: flat
+      QEWSB: 173
 
 
     SingletDM:
-      mS: 80
-      lambda_hS: 0.1 #0.30
+      mS: 620
+      lambda_hS: 0.185 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
   #    lambda_hS: 0.1
   #    lambda_S: 0.01
-
-
 
 
 
@@ -90,12 +90,20 @@ Parameters:
 
 Printer:
 
-  printer: hdf5
+  # Select printer to use via string tag
+  printer: ascii
+
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer.
   options:
-    output_file: "gambit_output.hdf5"
-    group: "/sing/let"
+    output_file: "gambit_output.txt"
+    group: "/singlet"
     delete_file_if_exists: true
     delete_file_on_restart: true
+
 
 
 ##############################
@@ -103,29 +111,14 @@ Printer:
 ##############################
 
 Scanner:
+
+  #use_objectives: uniform
   use_scanner: twalk
+
+# Scanners
 
   scanners:
 
-    multinest:
-      plugin: MultiNest
-      like:  LogLike
-      nlive: 4000
-      tol: 0.1
-
-    de:
-      plugin: Diver
-      like: LogLike
-      NP: 10
-      verbosity: 1
-
-    #great:
-
-    twalk:
-      plugin: twalk
-      tolerance: 1.001
-      projection_dimension: 4
-      chain_number: 4
 
     random:
       plugin: random_sampler
@@ -145,8 +138,29 @@ Scanner:
       plugin: grid
       version: ">=1.0"
       like:  LogLike
-      grid_pts: [2,2]
+      grid_pts: [1,1]
 
+    multinest:
+      plugin: MultiNest
+      like:  LogLike
+      nlive: 2000
+      tol: 0.1
+
+    twalk:
+      plugin: twalk
+      tolerance: 1.001
+      projection_dimension: 4
+      chain_number: 10
+
+  objectives:
+
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]
 
 
 ###############################
@@ -157,18 +171,16 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-#    - capability: vacuum_stability
- #     purpose: Observable
+  #  - capability: vacuum_stability
+  #    purpose: Observable
   #    function: find_min_lambda
 
-    - capability: print_SingletDM_spectrum
-      purpose: Observable
 
     - capability: VS_likelihood
       purpose: LogLike
 
- #   - capability: check_perturb_min_lambda
- #     purpose: Observable
+#    - capability: check_perturb_min_lambda
+#      purpose: Observable
 
  #   - capability: check_perturb
  #     purpose: Observable
@@ -176,6 +188,10 @@ ObsLikes:
  #   - capability: expected_lifetime
  #     purpose: Observable
 
+    - capability: LHC_Higgs_LogLike
+      purpose:  LogLike
+      options:
+        invalid_point_fatal: false
 
 
 #########################
@@ -183,19 +199,23 @@ ObsLikes:
 #########################
 
 Rules:
- #   - capability: check_perturb
+  #  - capability: check_perturb
  #     purpose: Observable
- #     function: check_perturb_SingletDM #or check_perturb_simple
- #     options:
- #       set_high_scale: 1e18  #option can be used with check_perturb_simple only
+#      function: check_perturb_SingletDM #or check_perturb_simple
+    #  options:
+    #    set_high_scale: 1e18  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum_pole
+   #   options:
+   #     set_high_scale: 200
+   #     check_perturb_pts: 10
 
-
-#      options:
-#        set_high_scale: 200
-#        check_perturb_pts: 10
+    - capability: Higgs_decay_rates
+      function: SS_Higgs_decays
+      dependencies:
+        - capability: Higgs_decay_rates
+          function: SingletDM_Higgs_decays
 
 #########################
 # Logging setup
@@ -260,8 +280,12 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
     ExampleBit_A_error: non-fatal
+    DecayBit_error: non-fatal
+    utils_error: non-fatal
+    invalid_point_fatal: false
+    invalid_point_for_negative_width: false
 
   enable_testing: false
 
-  default_output_path: "runs/vacuum_stability_twalk/"
+  default_output_path: "runs/SingletDM/"
 

@@ -399,6 +399,15 @@ START_MODULE
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 
+    // SingletDM model parameters
+    #define FUNCTION SingletDM_ModelParameters
+    START_FUNCTION(hb_ModelParameters)
+    DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    ALLOW_MODELS(SingletDM,SingletDMZ3)
+    #undef FUNCTION
+
+
     // MSSM Higgs model parameters
     #define FUNCTION MSSMHiggs_ModelParameters
     START_FUNCTION(hb_ModelParameters)

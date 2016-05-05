@@ -3351,6 +3351,107 @@ namespace Gambit
 
       result = HiggsProd;
     }
+    
+        /// SM Higgs only model parameters
+    void SingletDM_ModelParameters(hb_ModelParameters &result)
+    {
+      using namespace Pipes::SingletDM_ModelParameters;
+
+      for(int i = 0; i < 3; i++)
+      {
+        result.Mh[i] = 0.;
+        result.deltaMh[i] = 0.;
+        result.hGammaTot[i] = 0.;
+        result.CP[i] = 0.;
+        result.CS_lep_hjZ_ratio[i] = 0.;
+        result.CS_lep_bbhj_ratio[i] = 0.;
+        result.CS_lep_tautauhj_ratio[i] = 0.;
+        for(int j = 0; j < 3; j++) result.CS_lep_hjhi_ratio[i][j] = 0.;
+        result.CS_gg_hj_ratio[i] = 0.;
+        result.CS_bb_hj_ratio[i] = 0.;
+        result.CS_bg_hjb_ratio[i] = 0.;
+        result.CS_ud_hjWp_ratio[i] = 0.;
+        result.CS_cs_hjWp_ratio[i] = 0.;
+        result.CS_ud_hjWm_ratio[i] = 0.;
+        result.CS_cs_hjWm_ratio[i] = 0.;
+        result.CS_gg_hjZ_ratio[i] = 0.;
+        result.CS_dd_hjZ_ratio[i] = 0.;
+        result.CS_uu_hjZ_ratio[i] = 0.;
+        result.CS_ss_hjZ_ratio[i] = 0.;
+        result.CS_cc_hjZ_ratio[i] = 0.;
+        result.CS_bb_hjZ_ratio[i] = 0.;
+        result.CS_tev_vbf_ratio[i] = 0.;
+        result.CS_tev_tthj_ratio[i] = 0.;
+        result.CS_lhc7_vbf_ratio[i] = 0.;
+        result.CS_lhc7_tthj_ratio[i] = 0.;
+        result.CS_lhc8_vbf_ratio[i] = 0.;
+        result.CS_lhc8_tthj_ratio[i] = 0.;
+        result.BR_hjss[i] = 0.;
+        result.BR_hjcc[i] = 0.;
+        result.BR_hjbb[i] = 0.;
+        result.BR_hjmumu[i] = 0.;
+        result.BR_hjtautau[i] = 0.;
+        result.BR_hjWW[i] = 0.;
+        result.BR_hjZZ[i] = 0.;
+        result.BR_hjZga[i] = 0.;
+        result.BR_hjgaga[i] = 0.;
+        result.BR_hjgg[i] = 0.;
+        result.BR_hjinvisible[i] = 0.;
+        for(int j = 0; j < 3; j++) result.BR_hjhihi[i][j] = 0.;
+      }
+
+      result.MHplus = 0.;
+      result.deltaMHplus = 0.;
+      result.HpGammaTot = 0.;
+      result.CS_lep_HpjHmi_ratio = 0.;
+      result.BR_tWpb = 0.;
+      result.BR_tHpjb = 0.;
+      result.BR_Hpjcs = 0.;
+      result.BR_Hpjcb = 0.;
+      result.BR_Hptaunu = 0.;
+
+      const Spectrum* fullspectrum = *Dep::SingletDM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_HE();
+      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
+
+      result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
+
+      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      result.hGammaTot[0] = decays->width_in_GeV;
+      result.CP[0] = 1;
+      result.CS_lep_hjZ_ratio[0] = 1.;
+      result.CS_lep_bbhj_ratio[0] = 1.;
+      result.CS_lep_tautauhj_ratio[0] = 1.;
+      result.CS_gg_hj_ratio[0] = 1.;
+      result.CS_bb_hj_ratio[0] = 1.;
+      result.CS_bg_hjb_ratio[0] = 1.;
+      result.CS_ud_hjWp_ratio[0] = 1.;
+      result.CS_cs_hjWp_ratio[0] = 1.;
+      result.CS_ud_hjWm_ratio[0] = 1.;
+      result.CS_cs_hjWm_ratio[0] = 1.;
+      result.CS_gg_hjZ_ratio[0] = 1.;
+      result.CS_dd_hjZ_ratio[0] = 1.;
+      result.CS_uu_hjZ_ratio[0] = 1.;
+      result.CS_ss_hjZ_ratio[0] = 1.;
+      result.CS_cc_hjZ_ratio[0] = 1.;
+      result.CS_bb_hjZ_ratio[0] = 1.;
+      result.CS_tev_vbf_ratio[0] = 1.;
+      result.CS_tev_tthj_ratio[0] = 1.;
+      result.CS_lhc7_vbf_ratio[0] = 1.;
+      result.CS_lhc7_tthj_ratio[0] = 1.;
+      result.CS_lhc8_vbf_ratio[0] = 1.;
+      result.CS_lhc8_tthj_ratio[0] = 1.;
+      result.BR_hjss[0] = decays->BF("s", "sbar");
+      result.BR_hjcc[0] = decays->BF("c", "cbar");
+      result.BR_hjbb[0] = decays->BF("b", "bbar");
+      result.BR_hjmumu[0] = decays->BF("mu+", "mu-");
+      result.BR_hjtautau[0] = decays->BF("tau+", "tau-");
+      result.BR_hjWW[0] = decays->BF("W+", "W-");
+      result.BR_hjZZ[0] = decays->BF("Z0", "Z0");
+      result.BR_hjZga[0] = decays->BF("gamma", "Z0");
+      result.BR_hjgaga[0] = decays->BF("gamma", "gamma");
+      result.BR_hjgg[0] = decays->BF("g", "g");
+    }
 
     /// SM Higgs only model parameters
     void SMHiggs_ModelParameters(hb_ModelParameters &result)

@@ -140,7 +140,7 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: multinest
+  use_scanner: twalk
 
   scanners:
 
@@ -155,6 +155,12 @@ Scanner:
       like: LogLike
       NP: 1000
       verbosity: 1
+
+    twalk:
+      plugin: twalk
+      tolerance: 1.001
+      projection_dimension: 4
+      chain_number: 10
 
     #great:
 
@@ -247,6 +253,11 @@ Rules:
     dependencies:
         - capability: SingletDM_spectrum
           function: get_SingletDM_spectrum
+        - capability: Higgs_decay_rates
+          function: SingletDM_Higgs_decays
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum
+
 
   - capability: DD_couplings
     function: DD_couplings_SingletDM
@@ -382,6 +393,6 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e4
 
-  default_output_path: "runs/singletDM_ScannerBit_test/"
+  default_output_path: "runs/singletDM_ScannerBit_test4/"
 
 
