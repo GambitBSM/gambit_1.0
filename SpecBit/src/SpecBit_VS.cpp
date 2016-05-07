@@ -70,11 +70,10 @@ namespace Gambit
     for (int i=1;i<pts;i++)
     {
     SingletDM -> RunToScale(step*float(i));
-    bool perturbative = 0;
-    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
-    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
-    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
-    nperturbative +=!perturbative;
+    bool p1 = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
+    bool p2 = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
+    bool p3 = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
+    nperturbative =!(p1 | p2 | p3);
     }
     return !nperturbative;
     }

@@ -231,6 +231,8 @@ namespace Gambit
             invalid_point().raise(msg.str()); //TODO: This message isn't ending up in the logs.
          }
       }
+      
+      
       static Spectrum matched_spectra;
       matched_spectra = Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
     

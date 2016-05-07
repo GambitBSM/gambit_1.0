@@ -72,7 +72,7 @@ Parameters:
 
     SingletDM:
       mS: 620
-      lambda_hS: 0.185 #0.30
+      lambda_hS: 0.585 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -113,7 +113,7 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: twalk
+  use_scanner: grid
 
 # Scanners
 
@@ -188,10 +188,10 @@ ObsLikes:
  #   - capability: expected_lifetime
  #     purpose: Observable
 
-    - capability: LHC_Higgs_LogLike
-      purpose:  LogLike
-      options:
-        invalid_point_fatal: false
+#    - capability: LHC_Higgs_LogLike
+#      purpose:  LogLike
+  #    options:
+  #      invalid_point_fatal: false
 
 
 #########################
@@ -207,9 +207,9 @@ Rules:
 
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum_pole
-   #   options:
-   #     set_high_scale: 200
-   #     check_perturb_pts: 10
+      options:
+        set_high_scale: 1e20
+        check_perturb_pts: 10
 
     - capability: Higgs_decay_rates
       function: SS_Higgs_decays
