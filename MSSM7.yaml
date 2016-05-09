@@ -69,7 +69,6 @@ Printer:
   options:
     output_file: "MSSM7.hdf5"
     group: "/MSSM7"
-    delete_file_on_restart: true
 
 Scanner:
 
@@ -94,6 +93,12 @@ ObsLikes:
       purpose:    LogLike
 
     - capability: LUX_2013_LogLikelihood
+      purpose:    LogLike
+
+    - capability: SuperCDMS_2014_LogLikelihood
+      purpose:    LogLike
+
+    - capability: SIMPLE_2014_LogLikelihood
       purpose:    LogLike
 
     - capability: IC79_loglike

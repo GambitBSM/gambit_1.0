@@ -118,8 +118,8 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
-    - purpose:     LogLike
-      capability:  lnL_gm2
+    - capability:  lnL_gm2
+      purpose:     LogLike
 
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
@@ -132,16 +132,16 @@ ObsLikes:
     # DM Local Halo likelihoods
     - capability: lnL_rho0
       purpose: LogLike
-      
+
     - capability: lnL_vrot
       purpose: LogLike
-      
+
     - capability: lnL_v0
       purpose: LogLike
-      
+
     - capability: lnL_vesc
       purpose: LogLike
-      
+
     # FlavBit likelihoods
     - purpose:    LogLike
       capability: b2ll_LL
@@ -152,8 +152,8 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-#    - purpose:    LogLike
-#      capability: LHC_Combined_LogLike
+    - purpose:    LogLike
+      capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
@@ -205,6 +205,7 @@ ObsLikes:
 
     - purpose:    LogLike
       capability: OPAL_Neutralino_Hadronic_LLike
+
 
     # Other observables
     - purpose:    Observable
