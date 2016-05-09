@@ -155,6 +155,12 @@ Scanner:
       like: LogLike
       NP: 1000
       verbosity: 1
+      
+    twalk:
+      plugin: twalk
+      tolerance: 1.03
+      #projection_dimension: 4
+      #chain_number:
 
     twalk:
       plugin: twalk
@@ -163,8 +169,6 @@ Scanner:
       chain_number: 10
 
     #great:
-
-    #twalk(?):
 
 
 ###############################
@@ -184,19 +188,19 @@ ObsLikes:
     - capability: lnL_Higgs_invWidth
       purpose: LogLike
 
-# Simple gaussian relic density likelihood
+# Simple one-sided gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
     - capability: lnL_oh2
       purpose: LogLike
-      function: lnL_oh2_Simple
+      function: lnL_oh2_upperlimit
 
 # XENON100 2012 direct detection likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose: LogLike
 
 # LUX 2013 direct detection likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 
 # SI nuclear parameters likelihood
@@ -232,9 +236,6 @@ ObsLikes:
       purpose:  LogLike
 
 Rules:
-
-  - capability: RD_fraction
-    function: RD_fraction_from_oh2
 
   - capability: GA_AnnYield
     function: GA_AnnYield_General
@@ -272,30 +273,22 @@ Rules:
           function: get_SingletDM_spectrum
 
   # Relic density ----------------------
-  - capability: RD_oh2
-    options:
-      fast: 1  # Accuracy options (used by micromegas)
-      Beps: 1e-2
-    function: RD_oh2_general   # general routines (DS backend)
-    #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_MicrOmegas  # micromegas backend
-  - capability: RD_spectrum
-    options:
-      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
-
-#  - capability: RD_thresholds_resonances
-#    function: RD_thresholds_resonances_from_spectrum
-
-  - capability: lnL_oh2
-    function: lnL_oh2_Simple
-    options:
-       #oh2_mean: 0.11
-       #oh2_err: 0.07
-
   - capability: RD_fraction
     function: RD_fraction_from_oh2
     options:
       mode: leq_one
+
+  - capability: RD_oh2
+    function: RD_oh2_general   # general routines (DS backend)
+    #function: RD_oh2_DarkSUSY   # darksusy backend
+    #function: RD_oh2_MicrOmegas  # micromegas backend
+    options:
+      fast: 1  # Accuracy options (used by micromegas)
+      Beps: 1e-2
+
+  - capability: RD_spectrum
+    options:
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
 
 
   # Direct detection -------------------

@@ -59,7 +59,7 @@ class DynamicNearestNeighbours;
 class ClusterSequence {
 
 
- public: 
+ public:
 
   /// default constructor
   ClusterSequence () : _deletes_self_when_unused(false) {}
@@ -73,7 +73,7 @@ class ClusterSequence {
 //   /// clustering; otherwise strategy = NlnN* uses cylinders algorithms
 //   /// with some number of pi coverage. If writeout_combinations=true a
 //   /// summary of the recombination sequence is written out
-//   template<class L> ClusterSequence (const std::vector<L> & pseudojets, 
+//   template<class L> ClusterSequence (const std::vector<L> & pseudojets,
 // 		   const double & R = 1.0,
 // 		   const Strategy & strategy = Best,
 // 		   const bool & writeout_combinations = false);
@@ -86,7 +86,7 @@ class ClusterSequence {
 			          const std::vector<L> & pseudojets,
 				  const JetDefinition & jet_def,
 				  const bool & writeout_combinations = false);
-  
+
   /// copy constructor for a ClusterSequence
   ClusterSequence (const ClusterSequence & cs) : _deletes_self_when_unused(false) {
     transfer_from_sequence(cs);
@@ -116,14 +116,14 @@ class ClusterSequence {
   std::vector<PseudoJet> exclusive_jets (const double & dcut) const;
 
   /// return a vector of all jets when the event is clustered (in the
-  /// exclusive sense) to exactly njets. 
+  /// exclusive sense) to exactly njets.
   ///
   /// If there are fewer than njets particles in the ClusterSequence
   /// an error is thrown
   std::vector<PseudoJet> exclusive_jets (const int & njets) const;
 
   /// return a vector of all jets when the event is clustered (in the
-  /// exclusive sense) to exactly njets. 
+  /// exclusive sense) to exactly njets.
   ///
   /// If there are fewer than njets particles in the ClusterSequence
   /// the function just returns however many particles there were.
@@ -134,7 +134,7 @@ class ClusterSequence {
   /// of particles in the event is <= njets, the function returns 0.
   double exclusive_dmerge (const int & njets) const;
 
-  /// return the maximum of the dmin encountered during all recombinations 
+  /// return the maximum of the dmin encountered during all recombinations
   /// up to the one that led to an n-jet final state; identical to
   /// exclusive_dmerge, except in cases where the dmin do not increase
   /// monotonically.
@@ -161,19 +161,19 @@ class ClusterSequence {
 
   /// return a vector of all subjets of the current jet (in the sense
   /// of the exclusive algorithm) that would be obtained when running
-  /// the algorithm with the given dcut. 
+  /// the algorithm with the given dcut.
   ///
   /// Time taken is O(m ln m), where m is the number of subjets that
   /// are found. If m gets to be of order of the total number of
   /// constituents in the jet, this could be substantially slower than
   /// just getting that list of constituents.
-  std::vector<PseudoJet> exclusive_subjets (const PseudoJet & jet, 
+  std::vector<PseudoJet> exclusive_subjets (const PseudoJet & jet,
                                             const double & dcut) const;
 
   /// return the size of exclusive_subjets(...); still n ln n with same
   /// coefficient, but marginally more efficient than manually taking
   /// exclusive_subjets.size()
-  int n_exclusive_subjets(const PseudoJet & jet, 
+  int n_exclusive_subjets(const PseudoJet & jet,
                           const double & dcut) const;
 
   /// return the list of subjets obtained by unclustering the supplied
@@ -181,7 +181,7 @@ class ClusterSequence {
   /// nsub particles in the jet.
   ///
   /// This requires nsub ln nsub time
-  std::vector<PseudoJet> exclusive_subjets (const PseudoJet & jet, 
+  std::vector<PseudoJet> exclusive_subjets (const PseudoJet & jet,
                                             int nsub) const;
 
   /// return the list of subjets obtained by unclustering the supplied
@@ -189,23 +189,23 @@ class ClusterSequence {
   /// than nsub).
   ///
   /// This requires nsub ln nsub time
-  std::vector<PseudoJet> exclusive_subjets_up_to (const PseudoJet & jet, 
+  std::vector<PseudoJet> exclusive_subjets_up_to (const PseudoJet & jet,
 						  int nsub) const;
 
-  /// return the dij that was present in the merging nsub+1 -> nsub 
+  /// return the dij that was present in the merging nsub+1 -> nsub
   /// subjets inside this jet.
   ///
   /// Returns 0 if there were nsub or fewer constituents in the jet.
   double exclusive_subdmerge(const PseudoJet & jet, int nsub) const;
 
   /// return the maximum dij that occurred in the whole event at the
-  /// stage that the nsub+1 -> nsub merge of subjets occurred inside 
+  /// stage that the nsub+1 -> nsub merge of subjets occurred inside
   /// this jet.
   ///
   /// Returns 0 if there were nsub or fewer constituents in the jet.
   double exclusive_subdmerge_max(const PseudoJet & jet, int nsub) const;
 
-  //std::vector<PseudoJet> exclusive_jets (const PseudoJet & jet, 
+  //std::vector<PseudoJet> exclusive_jets (const PseudoJet & jet,
   //                                       const int & njets) const;
   //double exclusive_dmerge (const PseudoJet & jet, const int & njets) const;
 
@@ -214,7 +214,7 @@ class ClusterSequence {
   /// return Q()^2
   double Q2() const {return _Qtot*_Qtot;}
 
-  /// returns true iff the object is included in the jet. 
+  /// returns true iff the object is included in the jet.
   ///
   /// NB: this is only sensible if the object is already registered
   /// within the cluster sequence, so you cannot use it with an input
@@ -231,7 +231,7 @@ class ClusterSequence {
   ///
   /// if it has no parents it returns false and sets parent1 and
   /// parent2 to zero
-  bool has_parents(const PseudoJet & jet, PseudoJet & parent1, 
+  bool has_parents(const PseudoJet & jet, PseudoJet & parent1,
                PseudoJet & parent2) const;
 
   /// if the jet has a child then return true and give the child jet
@@ -247,25 +247,25 @@ class ClusterSequence {
   /// partner to zero
   bool has_partner(const PseudoJet & jet, PseudoJet & partner) const;
 
-  
+
   /// return a vector of the particles that make up jet
   std::vector<PseudoJet> constituents (const PseudoJet & jet) const;
 
 
   /// output the supplied vector of jets in a format that can be read
   /// by an appropriate root script; the format is:
-  /// jet-n jet-px jet-py jet-pz jet-E 
+  /// jet-n jet-px jet-py jet-pz jet-E
   ///   particle-n particle-rap particle-phi particle-pt
   ///   particle-n particle-rap particle-phi particle-pt
   ///   ...
   /// #END
   /// ... [i.e. above repeated]
-  void print_jets_for_root(const std::vector<PseudoJet> & jets, 
+  void print_jets_for_root(const std::vector<PseudoJet> & jets,
                            std::ostream & ostr = std::cout) const;
 
   /// print jets for root to the file labelled filename, with an
   /// optional comment at the beginning
-  void print_jets_for_root(const std::vector<PseudoJet> & jets, 
+  void print_jets_for_root(const std::vector<PseudoJet> & jets,
                            const std::string & filename,
 			   const std::string & comment = "") const;
 
@@ -274,7 +274,7 @@ class ClusterSequence {
 //   virtual void print_jets (const double & ptmin=0.0) const;
 
   /// add on to subjet_vector the constituents of jet (for internal use mainly)
-  void add_constituents (const PseudoJet & jet, 
+  void add_constituents (const PseudoJet & jet,
 			 std::vector<PseudoJet> & subjet_vector) const;
 
   /// return the enum value of the strategy used to cluster the event
@@ -292,7 +292,7 @@ class ClusterSequence {
 
   /// by calling this routine you tell the ClusterSequence to delete
   /// itself when all the Pseudojets associated with it have gone out
-  /// of scope. 
+  /// of scope.
   ///
   /// At the time you call this, there must be at least one jet or
   /// other object outside the CS that is associated with the CS
@@ -312,7 +312,7 @@ class ClusterSequence {
   void signal_imminent_self_deletion() const;
 
   /// returns the scale associated with a jet as required for this
-  /// clustering algorithm (kt^2 for the kt-algorithm, 1 for the 
+  /// clustering algorithm (kt^2 for the kt-algorithm, 1 for the
   /// Cambridge algorithm). [May become virtual at some point]
   double jet_scale_for_algorithm(const PseudoJet & jet) const;
 
@@ -326,7 +326,7 @@ class ClusterSequence {
   /// return the index (newjet_k) allocated to the new jet, whose
   /// momentum is assumed to be the 4-vector sum of that of jet_i and
   /// jet_j
-  void plugin_record_ij_recombination(int jet_i, int jet_j, double dij, 
+  void plugin_record_ij_recombination(int jet_i, int jet_j, double dij,
 				      int & newjet_k) {
     assert(plugin_activated());
     _do_ij_recombination_step(jet_i, jet_j, dij, newjet_k);
@@ -335,13 +335,13 @@ class ClusterSequence {
   /// as for the simpler variant of plugin_record_ij_recombination,
   /// except that the new jet is attributed the momentum and
   /// user_index of newjet
-  void plugin_record_ij_recombination(int jet_i, int jet_j, double dij, 
-				      const PseudoJet & newjet, 
+  void plugin_record_ij_recombination(int jet_i, int jet_j, double dij,
+				      const PseudoJet & newjet,
 				      int & newjet_k);
 
   /// record the fact that there has been a recombination between
   /// jets()[jet_i] and the beam, with the specified diB; when looking
-  /// for inclusive jets, any iB recombination will returned to the user 
+  /// for inclusive jets, any iB recombination will returned to the user
   /// as a jet.
   void plugin_record_iB_recombination(int jet_i, double diB) {
     assert(plugin_activated());
@@ -351,7 +351,7 @@ class ClusterSequence {
   /// @ingroup extra_info
   /// \class Extras
   /// base class to store extra information that plugins may provide
-  /// 
+  ///
   /// a class intended to serve as a base in case a plugin needs to
   /// associate extra information with a ClusterSequence (see
   /// SISConePlugin.* for an example).
@@ -363,7 +363,7 @@ class ClusterSequence {
 
   /// the plugin can associate some extra information with the
   /// ClusterSequence object by calling this function
-  inline void plugin_associate_extras(std::auto_ptr<Extras> extras_in) {
+  inline void plugin_associate_extras(std::unique_ptr<Extras> extras_in) {
     //_extras = extras_in;
     _extras.reset(extras_in.release());
   }
@@ -379,7 +379,7 @@ class ClusterSequence {
   /// This has N^2 behaviour on "good" distance, but a worst case behaviour
   /// of N^3 (and many algs trigger the worst case behaviour)
   ///
-  /// 
+  ///
   /// For more details on how this works, see GenBriefJet below
   template<class GBJ> void plugin_simple_N2_cluster () {
     assert(plugin_activated());
@@ -399,7 +399,7 @@ public:
   /// \ingroup extra_info
   /// \struct history_element
   /// a single element in the clustering history
-  /// 
+  ///
   /// (see vector _history below).
   struct history_element{
     int parent1; /// index in _history where first parent of this jet
@@ -470,7 +470,7 @@ public:
   /// beforehand).
   unsigned int n_particles() const;
 
-  /// returns a vector of size n_particles() which indicates, for 
+  /// returns a vector of size n_particles() which indicates, for
   /// each of the initial particles (in the order in which they were
   /// supplied), which of the supplied jets it belongs to; if it does
   /// not belong to any of the supplied jets, the index is set to -1;
@@ -483,7 +483,7 @@ public:
   /// matching entry in the unique_history_order.
   ///
   /// The order has the property that an entry's parents will always
-  /// appear prior to that entry itself. 
+  /// appear prior to that entry itself.
   ///
   /// Roughly speaking the order is such that we first provide all
   /// steps that lead to the final jet containing particle 1; then we
@@ -493,7 +493,7 @@ public:
   /// here would be better...]
   std::vector<int> unique_history_order() const;
 
-  /// return the set of particles that have not been clustered. For 
+  /// return the set of particles that have not been clustered. For
   /// kt and cam/aachen algorithms this should always be null, but for
   /// cone type algorithms it can be non-null;
   std::vector<PseudoJet> unclustered_particles() const;
@@ -569,7 +569,7 @@ public:
 private:
   /// \cond internal_doc
 
-  /// contains the actual stream to use for banners 
+  /// contains the actual stream to use for banners
   static std::ostream * _fastjet_banner_ostr;
 
   /// \endcond
@@ -621,11 +621,11 @@ protected:
   /// carry out the recombination between the jets numbered jet_i and
   /// jet_j, at distance scale dij; return the index newjet_k of the
   /// result of the recombination of i and j.
-  void _do_ij_recombination_step(const int & jet_i, const int & jet_j, 
+  void _do_ij_recombination_step(const int & jet_i, const int & jet_j,
 				 const double & dij, int & newjet_k);
 
   /// carry out an recombination step in which _jets[jet_i] merges with
-  /// the beam, 
+  /// the beam,
   void _do_iB_recombination_step(const int & jet_i, const double & diB);
 
   /// every time a jet is added internally during clustering, this
@@ -638,7 +638,7 @@ protected:
   /// make sure that the CS's internal tally of the use count matches
   /// that of the _structure_shared_ptr
   void _update_structure_use_count();
-  
+
 
   /// This contains the physical PseudoJets; for each PseudoJet one
   /// can find the corresponding position in the _history by looking
@@ -653,7 +653,7 @@ protected:
 
   /// set subhist to be a set pointers to history entries corresponding to the
   /// subjets of this jet; one stops going working down through the
-  /// subjets either when 
+  /// subjets either when
   ///   - there is no further to go
   ///   - one has found maxjet entries
   ///   - max_dij_so_far <= dcut
@@ -680,7 +680,7 @@ protected:
  private:
 
   bool _plugin_activated;
-  //std::auto_ptr<Extras> _extras; // things the plugin might want to add
+  //std::unique_ptr<Extras> _extras; // things the plugin might want to add
   SharedPtr<Extras> _extras; // things the plugin might want to add
 
   void _really_dumb_cluster ();
@@ -704,18 +704,18 @@ protected:
   // NSqrtN method for C/A
   void _fast_NsqrtN_cluster();
 
-  void _add_step_to_history(const int & step_number, const int & parent1, 
+  void _add_step_to_history(const int & step_number, const int & parent1,
 			       const int & parent2, const int & jetp_index,
 			       const double & dij);
 
   /// internal routine associated with the construction of the unique
   /// history order (following children in the tree)
-  void _extract_tree_children(int pos, std::valarray<bool> &, 
+  void _extract_tree_children(int pos, std::valarray<bool> &,
 		const std::valarray<int> &, std::vector<int> &) const;
 
   /// internal routine associated with the construction of the unique
   /// history order (following parents in the tree)
-  void _extract_tree_parents (int pos, std::valarray<bool> &, 
+  void _extract_tree_parents (int pos, std::valarray<bool> &,
                 const std::valarray<int> &,  std::vector<int> &) const;
 
 
@@ -725,7 +725,7 @@ protected:
   typedef std::multimap<double,TwoVertices> DistMap;
 
   /// currently used only in the Voronoi based code
-  void _add_ktdistance_to_map(const int & ii, 
+  void _add_ktdistance_to_map(const int & ii,
 			      DistMap & DijMap,
   			      const DynamicNearestNeighbours * DNN);
 
@@ -738,7 +738,7 @@ protected:
   /// times.
   static int _n_exclusive_warnings;
 
-  /// the limited warning member for notification of user that 
+  /// the limited warning member for notification of user that
   /// their requested strategy has been overridden (usually because
   /// they have R>2pi and not all strategies work then)
   static LimitedWarning _changed_strategy_warning;
@@ -760,7 +760,7 @@ protected:
   class TiledJet {
   public:
     double     eta, phi, kt2, NN_dist;
-    TiledJet * NN, *previous, * next; 
+    TiledJet * NN, *previous, * next;
     int        _jets_index, tile_index, diJ_posn;
     // routines that are useful in the minheap version of tiled
     // clustering ("misuse" the otherwise unused diJ_posn, so as
@@ -776,7 +776,7 @@ protected:
 
   /// set the kinematic and labelling info for jeta so that it corresponds
   /// to _jets[_jets_index]
-  template <class J> void _bj_set_jetinfo( J * const jet, 
+  template <class J> void _bj_set_jetinfo( J * const jet,
 						 const int _jets_index) const;
 
   /// "remove" this jet, which implies updating links of neighbours and
@@ -784,7 +784,7 @@ protected:
   void _bj_remove_from_tiles( TiledJet * const jet) const;
 
   /// return the distance between two BriefJet objects
-  template <class J> double _bj_dist(const J * const jeta, 
+  template <class J> double _bj_dist(const J * const jeta,
 			const J * const jetb) const;
 
   // return the diJ (multiplied by _R2) for this jet assuming its NN
@@ -795,8 +795,8 @@ protected:
   /// a jet which corresponds to hist_index in the history, then
   /// return a pointer to that jet; otherwise return tail.
   template <class J> inline J * _bj_of_hindex(
-                          const int hist_index, 
-			  J * const head, J * const tail) 
+                          const int hist_index,
+			  J * const head, J * const tail)
     const {
     J * res;
     for(res = head; res<tail; res++) {
@@ -813,16 +813,16 @@ protected:
   /// whether in the process jeta itself might be a new NN of one of
   /// the jets being scanned -- span the range head to tail-1 with
   /// assumption that jeta is not contained in that range
-  template <class J> void _bj_set_NN_nocross(J * const jeta, 
+  template <class J> void _bj_set_NN_nocross(J * const jeta,
             J * const head, const J * const tail) const;
 
   /// reset the NN for jeta and DO check whether in the process jeta
   /// itself might be a new NN of one of the jets being scanned --
   /// span the range head to tail-1 with assumption that jeta is not
   /// contained in that range
-  template <class J> void _bj_set_NN_crosscheck(J * const jeta, 
+  template <class J> void _bj_set_NN_crosscheck(J * const jeta,
             J * const head, const J * const tail) const;
-  
+
 
 
   /// number of neighbours that a tile will have (rectangular geometry
@@ -833,17 +833,17 @@ protected:
   /// (see CCN27-44 for some discussion of pattern of tiling)
   struct Tile {
     /// pointers to neighbouring tiles, including self
-    Tile *   begin_tiles[n_tile_neighbours]; 
+    Tile *   begin_tiles[n_tile_neighbours];
     /// neighbouring tiles, excluding self
-    Tile **  surrounding_tiles; 
+    Tile **  surrounding_tiles;
     /// half of neighbouring tiles, no self
-    Tile **  RH_tiles;  
+    Tile **  RH_tiles;
     /// just beyond end of tiles
-    Tile **  end_tiles; 
+    Tile **  end_tiles;
     /// start of list of BriefJets contained in this tile
-    TiledJet * head;    
+    TiledJet * head;
     /// sometimes useful to be able to tag a tile
-    bool     tagged;    
+    bool     tagged;
   };
   std::vector<Tile> _tiles;
   double _tiles_eta_min, _tiles_eta_max;
@@ -866,9 +866,9 @@ protected:
   void  _bj_remove_from_tiles(TiledJet * const jet);
   void _initialise_tiles();
   void _print_tiles(TiledJet * briefjets ) const;
-  void _add_neighbours_to_tile_union(const int tile_index, 
+  void _add_neighbours_to_tile_union(const int tile_index,
 		 std::vector<int> & tile_union, int & n_near_tiles) const;
-  void _add_untagged_neighbours_to_tile_union(const int tile_index, 
+  void _add_untagged_neighbours_to_tile_union(const int tile_index,
 		 std::vector<int> & tile_union, int & n_near_tiles);
 
 
@@ -914,7 +914,7 @@ template<class L> void ClusterSequence::_transfer_input_jets(
   // components, such as CLHEP HepLorentzVector).
   for (unsigned int i = 0; i < pseudojets.size(); i++) {
     _jets.push_back(pseudojets[i]);}
-  
+
 }
 
 // //----------------------------------------------------------------------
@@ -925,10 +925,10 @@ template<class L> void ClusterSequence::_transfer_input_jets(
 // 				  const double & R,
 // 				  const Strategy & strategy,
 // 				  const bool & writeout_combinations) {
-// 
+//
 //   // transfer the initial jets (type L) into our own array
 //   _transfer_input_jets(pseudojets);
-// 
+//
 //   // run the clustering
 //   _initialise_and_run(R,strategy,writeout_combinations);
 // }
@@ -1031,7 +1031,7 @@ template <class J> inline void ClusterSequence::_bj_set_NN_nocross(
 
 
 //----------------------------------------------------------------------
-template <class J> inline void ClusterSequence::_bj_set_NN_crosscheck(J * const jet, 
+template <class J> inline void ClusterSequence::_bj_set_NN_crosscheck(J * const jet,
 		    J * const head, const J * const tail) const {
   double NN_dist = _R2;
   J * NN  = NULL;

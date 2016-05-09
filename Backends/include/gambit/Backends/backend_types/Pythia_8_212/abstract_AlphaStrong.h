@@ -5,20 +5,9 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_AlphaStrong*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -92,11 +81,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void init_wrapper()
                 {
-                    if (wptr == 0)
-                    {
-                        wptr = wrapper_creator(this);
-                        delete_wrapper = true;
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::AlphaStrong from backend Pythia_8_212. The function Abstract_AlphaStrong::init_wrapper() in GAMBIT should never have been called..." << std::endl;
                 }
     
                 AlphaStrong* get_init_wptr()
@@ -113,16 +98,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual ~Abstract_AlphaStrong()
                 {
-                    if (wptr != 0)
-                    {
-                        set_delete_BEptr(wptr, false);
-                        if (delete_wrapper == true)
-                        {
-                            wrapper_deleter(wptr);
-                            wptr = 0;
-                            delete_wrapper = false;
-                        }
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::AlphaStrong from backend Pythia_8_212. The function Abstract_AlphaStrong::~Abstract_AlphaStrong in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

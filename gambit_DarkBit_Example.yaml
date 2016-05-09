@@ -103,11 +103,11 @@ ObsLikes:
       purpose:    LogLike
 
     # Calculate the Xenon100 2012 likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose:    LogLike
 
    # Calculate the LUX 2013 likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:    LogLike
 
    # Calculate the IceCube 79 string likelihood

@@ -1,1 +1,0 @@
-g++ -Wall -shared -fPIC -I/import/sydpp2/atlas/Aldos_Data/gambit/external/fastjet/include/ -I/import/sydpp2/atlas/Aldos_Data/gambit/hepforge2/modules/contrib/hep_simple_lib/ -I/import/sydpp2/atlas/Aldos_Data/gambit/hepforge2/modules/ColliderBit/include -o libfastsim.so FastSim.cpp DetectorResponse.cpp  

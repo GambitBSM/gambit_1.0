@@ -196,7 +196,7 @@ namespace Gambit
 
 
     /// Direct detection couplings for Singlet DM.
-    void DD_couplings_SingletDM(DarkBit::DD_couplings &result)
+    void DD_couplings_SingletDM(DM_nucleon_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
       const Spectrum* spec = *Dep::SingletDM_spectrum;

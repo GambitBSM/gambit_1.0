@@ -1,12 +1,16 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.
 //
 #pragma once
+
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
 
 /// @file Functions for working with HepMC particles
 /// @author Andy Buckley <andy.buckley@cern.ch>
@@ -51,7 +55,7 @@ namespace MCUtils {
   inline GenParticlesC mk_const(const GenParticles& gps) {
     GenParticlesC rtn;
     rtn.reserve(gps.size());
-    BOOST_FOREACH (const HepMC::GenParticle* gp, gps) {
+    for (const HepMC::GenParticle* gp : gps) {
       rtn.push_back(gp);
     }
     return rtn;
@@ -60,7 +64,7 @@ namespace MCUtils {
   inline GenParticles mk_unconst(const GenParticlesC& const_gps) {
     GenParticles rtn;
     rtn.reserve(const_gps.size());
-    BOOST_FOREACH (const HepMC::GenParticle* const_gp, const_gps) {
+    for (const HepMC::GenParticle* const_gp : const_gps) {
       rtn.push_back(const_cast<HepMC::GenParticle*>(const_gp));
     }
     return rtn;
