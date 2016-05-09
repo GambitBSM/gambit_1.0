@@ -19,8 +19,8 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         #range: [160.071,160.071]
-         range: [160,180]
+         range: [160.071,160.071]
+         #range: [160,180]
          #prior_type: flat
 
       # SLHA1
@@ -64,8 +64,8 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        #range: [100.098,100.098]
-        range: [100,150]
+        range: [100.098,100.098]
+        #range: [100,150]
         #prior_type: flat
       QEWSB: 173
 
@@ -188,10 +188,10 @@ ObsLikes:
  #   - capability: expected_lifetime
  #     purpose: Observable
 
-#    - capability: LHC_Higgs_LogLike
-#      purpose:  LogLike
-  #    options:
-  #      invalid_point_fatal: false
+    - capability: LHC_Higgs_LogLike
+      purpose:  LogLike
+
+
 
 
 #########################
@@ -207,15 +207,20 @@ Rules:
 
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum_pole
-      options:
-        set_high_scale: 1e20
-        check_perturb_pts: 10
+   #   options:
+   #     set_high_scale: 1e20
+   #     check_perturb_pts: 10
 
     - capability: Higgs_decay_rates
       function: SS_Higgs_decays
       dependencies:
         - capability: Higgs_decay_rates
           function: SingletDM_Higgs_decays
+
+    - capability: Higgs_decay_rates
+      function: SingletDM_Higgs_decays
+      options:
+        invalid_point_for_Higgs_mass: true
 
 #########################
 # Logging setup
@@ -283,7 +288,6 @@ KeyValues:
     DecayBit_error: non-fatal
     utils_error: non-fatal
     invalid_point_fatal: false
-    invalid_point_for_negative_width: false
 
   enable_testing: false
 

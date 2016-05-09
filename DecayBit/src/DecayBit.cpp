@@ -255,6 +255,17 @@ namespace Gambit
     {
       using namespace Pipes::SingletDM_Higgs_decays;
       double mh = (*Pipes::SingletDM_Higgs_decays::Dep::SingletDM_spectrum)->get(Par::Pole_Mass,"h0_1");
+      // invalidate point if Higgs mass is outside a range acceptable for virtual_SMHiggs_widths (choose a smaller range to speed things up)
+      double minmass = 90.0, maxmass = 160.0;
+      if (mh < minmass or mh > maxmass)
+      {
+        std::stringstream msg;
+        msg << "Requested Higgs virtuality is " << mh << "; allowed range is " << minmass << "--" << maxmass << " GeV!";
+        if (runOptions->getValueOrDef<bool>(false,"invalid_point_for_Higgs_mass") )
+        {
+          invalid_point().raise(msg.str());
+        }
+      } 
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
