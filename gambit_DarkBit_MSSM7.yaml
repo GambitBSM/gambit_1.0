@@ -157,7 +157,7 @@ Rules:
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
-       - /Users/troms/bin/gambit_private/DS_mains/RelicDensity_debug.slha
+      - /home/weniger/RelicDensity_debug.slha
 
   # Choose to implement the relic density as an upper bound, not a detection
   - capability: lnL_oh2
