@@ -350,8 +350,8 @@ namespace Gambit {
         double mDM = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
         const double GeV2tocm3s1 = 1.16733e-17;
 
-        auto Weff = Funk::zero("peff");
-        auto peff = Funk::var("peff");
+        auto Weff = daFunk::zero("peff");
+        auto peff = daFunk::var("peff");
         auto s = 4*(peff*peff + mDM*mDM);
 
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();

@@ -303,7 +303,7 @@ int main(int argc, char* argv[])
   GA_missingFinalStates.reset_and_calculate();
 
   // Infer for which type of final states particles MC should be performed
-  cascadeMC_FinalStates.setOption<std::vector<std::string>>("cMC_finalStates", Funk::vec((std::string)"gamma"));
+  cascadeMC_FinalStates.setOption<std::vector<std::string>>("cMC_finalStates", daFunk::vec((std::string)"gamma"));
   cascadeMC_FinalStates.reset_and_calculate();
 
   // Collect decay information for cascade MC

@@ -108,7 +108,7 @@ namespace Gambit {
 
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-      Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
+      daFunk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
       std::ostringstream filename;
       /*
@@ -151,7 +151,7 @@ namespace Gambit {
           /// Option GA_AnnYield::nbins<int>: Number of energy bins (default 26)
         int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
         // from 0.1 to 500 GeV
-        std::vector<double> x = Funk::logspace(log10(x_min), log10(x_max), n);
+        std::vector<double> x = daFunk::logspace(log10(x_min), log10(x_max), n);
         std::vector<double> y = spectrum->bind("E")->vect(x);
         os << "# Annihilation spectrum dNdE [1/GeV]\n";
         os << "GammaRaySpectrum:\n";
@@ -185,16 +185,16 @@ namespace Gambit {
             double m2 = (*Dep::TH_ProcessCatalog).getParticleProperty(
                 it->finalStateIDs[2]).mass;
             double mass = M_DM;
-            Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
-            Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
-            Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set_epsrel(1e-3)->set("v", 0);
-            auto xgrid = Funk::logspace(-2, 3, 1000);
-            auto ygrid = Funk::logspace(-2, 3, 1000);
+            daFunk::Funk E1_low =  daFunk::func(gamma3bdy_limits<0>, daFunk::var("E"), mass, m1, m2);
+            daFunk::Funk E1_high =  daFunk::func(gamma3bdy_limits<1>, daFunk::var("E"), mass, m1, m2);
+            daFunk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set_epsrel(1e-3)->set("v", 0);
+            auto xgrid = daFunk::logspace(-2, 3, 1000);
+            auto ygrid = daFunk::logspace(-2, 3, 1000);
             for ( size_t i = 0; i<xgrid.size(); i++ )
             {
               ygrid[i] = dsigmavde->bind("E")->eval(xgrid[i]);
             }
-            auto interp = Funk::interp("E", xgrid, ygrid);
+            auto interp = daFunk::interp("E", xgrid, ygrid);
             // FIXME: Directly nested integrals seems to be buggy
             // double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
             double svTOT = interp->gsl_integration("E", 10., 20.)->set_epsabs(1e-3)->bind()->eval();

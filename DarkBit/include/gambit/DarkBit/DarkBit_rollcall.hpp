@@ -340,7 +340,7 @@ START_MODULE
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_General
-      START_FUNCTION(Funk::Funk)
+      START_FUNCTION(daFunk::Funk)
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)
       DEPENDENCY(cascadeMC_gammaSpectra, DarkBit::stringFunkMap)
@@ -348,7 +348,7 @@ START_MODULE
     #undef FUNCTION
   /*
     #define FUNCTION GA_AnnYield_DarkSUSY
-      START_FUNCTION(Funk::Funk)
+      START_FUNCTION(daFunk::Funk)
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, std::string)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
@@ -389,12 +389,12 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
     #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -404,7 +404,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -414,7 +414,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION dump_GammaSpectrum
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1350,7 +1350,7 @@ START_MODULE
     START_FUNCTION(int)
     DEPENDENCY(DD_couplings, DarkBit::DD_couplings)
     DEPENDENCY(RD_oh2, double)
-    DEPENDENCY(GA_AnnYield, Funk::Funk)
+    DEPENDENCY(GA_AnnYield, daFunk::Funk)
     DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
     DEPENDENCY(DarkMatter_ID, std::string)
     #undef FUNCTION

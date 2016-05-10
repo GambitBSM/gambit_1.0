@@ -62,7 +62,7 @@ namespace Gambit {
       // These spectra should be handled using SimYields.
 // FIXME: Decide what to do with quark final states
 //      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
-//        disabled = Funk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
+//        disabled = daFunk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
 //            "cbar", "s", "sbar", "t", "tbar", "b", "bbar", "g");
       try
       {
@@ -600,11 +600,11 @@ namespace Gambit {
       */
     }
 
-    // Convenience function for getting a Funk::Funk object of a given spectrum.
+    // Convenience function for getting a daFunk::Funk object of a given spectrum.
     // This function has no associated capability.
     // Function retrieving specific spectra (like cascadeMC_gammaSpectra)
     // should call this function.
-    void cascadeMC_fetchSpectra(std::map<std::string, Funk::Funk> &spectra,
+    void cascadeMC_fetchSpectra(std::map<std::string, daFunk::Funk> &spectra,
         std::string finalState, 
         const std::vector<std::string> &ini,
         const std::vector<std::string> &fin, 
@@ -644,7 +644,7 @@ namespace Gambit {
           }
           // FIXME: Default values provide 1-2% accuracy for singular integrals
           // Make this optional.
-          spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "lin"));
+          spectra[*it] = daFunk::Funk(new daFunk::FunkInterp("E", E, dN_dE, "lin"));
 
           for (size_t i = 1; i<E.size()-1; i++)
           {
@@ -660,13 +660,13 @@ namespace Gambit {
         }
         else
         {
-          spectra[*it] = Funk::zero("E");
+          spectra[*it] = daFunk::zero("E");
         }
       }
     }
 
     // Function requesting and returning gamma ray spectra from cascade decays.
-    void cascadeMC_gammaSpectra(std::map<std::string, Funk::Funk> &spectra)
+    void cascadeMC_gammaSpectra(std::map<std::string, daFunk::Funk> &spectra)
     {
       using namespace Pipes::cascadeMC_gammaSpectra;
       cascadeMC_fetchSpectra(spectra, "gamma", *Dep::GA_missingFinalStates,

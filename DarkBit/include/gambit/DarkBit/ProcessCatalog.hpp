@@ -28,7 +28,7 @@
 
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/daFunk.hpp"
 
 namespace Gambit
 {
@@ -82,7 +82,7 @@ namespace Gambit
         // Functions
 
         /// Constructor
-        TH_Channel(std::vector<str> finalStateIDs, Funk::Funk genRate);
+        TH_Channel(std::vector<str> finalStateIDs, daFunk::Funk genRate);
         
         /// Print information about this channel.
         void printChannel() const;
@@ -106,7 +106,7 @@ namespace Gambit
         int nFinalStates;
 
         /// Energy dependence of final state particles. Includes v_rel ("v") as last argument in case of annihilation
-        Funk::Funk genRate = Funk::zero("dummyArgument");
+        daFunk::Funk genRate = daFunk::zero("dummyArgument");
     };
 
     /// A container for a single process.
@@ -150,7 +150,7 @@ namespace Gambit
         TH_resonances_thresholds thresholdResonances;
 
         /// Additional decay rate or sigmav (in addition to above channels)
-        Funk::Funk genRateMisc;
+        daFunk::Funk genRateMisc;
     };
 
     /// A container holding all annihilation and decay initial states relevant for DarkBit.

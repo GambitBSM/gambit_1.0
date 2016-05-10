@@ -34,7 +34,7 @@ namespace Gambit {
     // TH_Channel definitions
 
     /// Constructor
-    TH_Channel::TH_Channel(std::vector<str> finalStateIDs, Funk::Funk genRate)
+    TH_Channel::TH_Channel(std::vector<str> finalStateIDs, daFunk::Funk genRate)
       :  finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
       genRate(genRate)
     {
@@ -94,7 +94,7 @@ namespace Gambit {
       : isAnnihilation (false), 
       particle1ID    (particle1ID), 
       particle2ID    (""),
-      genRateMisc    (Funk::zero())
+      genRateMisc    (daFunk::zero())
     {}
 
     /// Constructor for annihilation process
@@ -102,7 +102,7 @@ namespace Gambit {
       : isAnnihilation (true),
       particle1ID(particle1ID),
       particle2ID(particle2ID),
-      genRateMisc(Funk::zero("v"))
+      genRateMisc(daFunk::zero("v"))
     {
       if (particle1ID.compare(particle2ID) > 0)
       {

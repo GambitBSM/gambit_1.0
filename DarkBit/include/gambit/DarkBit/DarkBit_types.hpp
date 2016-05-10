@@ -63,7 +63,7 @@
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/daFunk.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -289,21 +289,21 @@ namespace Gambit
 
     struct SimYieldChannel
     {
-        SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
+        SimYieldChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
             dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
         {
 //#ifdef DARBIT_DEBUG
             std::ostringstream msg;
             msg << "SimYieldChannel for " << p1 << " " << p2 << " final state(s): Requested center-of-mass energy out of range (";
             msg << Ecm_min << "-" << Ecm_max << " GeV).";
-            auto error = Funk::raiseInvalidPoint(msg.str());
-            auto Ecm = Funk::var("Ecm");
-            this->dNdE = Funk::ifelse(Ecm - Ecm_min, Funk::ifelse(Ecm_max - Ecm, dNdE, error), error);
+            auto error = daFunk::raiseInvalidPoint(msg.str());
+            auto Ecm = daFunk::var("Ecm");
+            this->dNdE = daFunk::ifelse(Ecm - Ecm_min, daFunk::ifelse(Ecm_max - Ecm, dNdE, error), error);
 //#endif
             dNdE_bound = dNdE->bind("E", "Ecm");
         }
-        Funk::Funk dNdE;       
-        Funk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays
+        daFunk::Funk dNdE;       
+        daFunk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays
         std::string p1;
         std::string p2;
         std::string finalState;
@@ -319,9 +319,9 @@ namespace Gambit
          */
         public:
             SimYieldTable() : 
-                dummy_channel(Funk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
+                dummy_channel(daFunk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
 
-            void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
+            void addChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
             {
                 if ( hasChannel(p1, p2) )
                 {
@@ -331,7 +331,7 @@ namespace Gambit
                 channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
             }
             
-            void addChannel(Funk::Funk dNdE, std::string p1, std::string finalState, double Ecm_min, double Ecm_max)
+            void addChannel(daFunk::Funk dNdE, std::string p1, std::string finalState, double Ecm_min, double Ecm_max)
             {
                 addChannel(dNdE, p1, "", finalState, Ecm_min, Ecm_max);
             }
@@ -375,28 +375,28 @@ namespace Gambit
                 return channel_list[index];
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2, std::string finalState, double Ecm) const
+            daFunk::Funk operator()(std::string p1, std::string p2, std::string finalState, double Ecm) const
             {
                 return this->operator()(p1, p2, finalState)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, std::string finalState, double Ecm) const
+            daFunk::Funk operator()(std::string p1, std::string finalState, double Ecm) const
             {
                 return this->operator()(p1,finalState)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2, std::string finalState) const
+            daFunk::Funk operator()(std::string p1, std::string p2, std::string finalState) const
             {
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
                     DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
-                    return Funk::zero("E", "Ecm");
+                    return daFunk::zero("E", "Ecm");
                 }
                 return channel_list[index].dNdE;
             }
 
-            Funk::Funk operator()(std::string p1, std::string finalState) const
+            daFunk::Funk operator()(std::string p1, std::string finalState) const
             {
                 return this->operator()(p1, "", finalState);
             }

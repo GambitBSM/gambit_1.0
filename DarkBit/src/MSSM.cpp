@@ -397,8 +397,8 @@ namespace Gambit {
         double CAT(sigma_,NAME) = BEreq::dssigmav(index);                      \
         /* Create associated kinematical functions (just dependent on vrel)    \
          *  here: s-wave, vrel independent 1-dim constant function */          \
-        Funk::Funk CAT(kinematicFunction_,NAME) =                              \
-              Funk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                     \
+        daFunk::Funk CAT(kinematicFunction_,NAME) =                            \
+              daFunk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                   \
         /* Create channel identifier string */                                 \
         std::vector<std::string> CAT(finalStates_,NAME);                       \
         CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                       \
@@ -464,8 +464,8 @@ namespace Gambit {
         index = SV_IDX;                                                      \
         /* FIXME: Double-check that import works correctly */                \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
-        Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(sv,"v")*Funk::func(DSgamma3bdy, \
-            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, Funk::var("E"), Funk::var("E1"),     \
+        daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
+            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
             M_DM, m_1, m_2);                                                 \
         /* Create channel identifier string */                               \
         std::vector<std::string> CAT(finalStates_,NAME);                     \
@@ -532,7 +532,7 @@ namespace Gambit {
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
-      auto excludeDecays = Funk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3");
+      auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3");
 
       // Import relevant decays
       using DarkBit_utils::ImportDecays;

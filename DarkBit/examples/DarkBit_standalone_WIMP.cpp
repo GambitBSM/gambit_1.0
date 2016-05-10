@@ -127,18 +127,18 @@ namespace Gambit
       addParticle("phi2", 49.99,  0)
 #undef addParticle
 
-      TH_Channel dec_channel(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
+      TH_Channel dec_channel(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
 
-      TH_Channel dec_channel1(Funk::vec<string>("phi2", "phi2"), Funk::cnst(1.));
+      TH_Channel dec_channel1(daFunk::vec<string>("phi2", "phi2"), daFunk::cnst(1.));
       process_dec1.channelList.push_back(dec_channel1);
 
-      TH_Channel dec_channel2(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
+      TH_Channel dec_channel2(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = Funk::vec<string>("b", "gamma", "gamma", "phi", "phi1");
-      auto p2 = Funk::vec<string>("bbar", "Z0", "gamma", "phi", "phi1");
+      auto p1 = daFunk::vec<string>("b", "gamma", "gamma", "phi", "phi1");
+      auto p2 = daFunk::vec<string>("bbar", "Z0", "gamma", "phi", "phi1");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
@@ -147,9 +147,9 @@ namespace Gambit
             catalog.getParticleProperty(p2[i]).mass;
           if ( mWIMP*2 > mtot_final * 0)
           {
-            Funk::Funk kinematicFunction = (Funk::one("v")+pow(Funk::var("v"), 2)*b)*sv*brList[i];
+            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
-                Funk::vec<string>(p1[i], p2[i]), kinematicFunction
+                daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
             process_ann.channelList.push_back(new_channel);
           }
@@ -163,10 +163,10 @@ namespace Gambit
 
       if ( brList[5] > 0. )
       {
-        auto E = Funk::var("E");
-        Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
+        auto E = daFunk::var("E");
+        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
         // FIXME: Include second gamma in AnnYield (currently ignored)
-        TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
+        TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
       }
 
@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
   GA_missingFinalStates.resolveDependency(&DarkMatter_ID_WIMP);
 
   // Infer for which type of final states particles MC should be performed
-  cascadeMC_FinalStates.setOption<std::vector<std::string>>("cMC_finalStates", Funk::vec((std::string)"gamma"));
+  cascadeMC_FinalStates.setOption<std::vector<std::string>>("cMC_finalStates", daFunk::vec((std::string)"gamma"));
 
   // Collect decay information for cascade MC
   cascadeMC_DecayTable.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -411,11 +411,11 @@ int main(int argc, char* argv[])
     std::cout << "Producing test spectra." << std::endl;
     double mass = 100.;
     double sv = 3e-26;
-    if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, Funk::vec<double>(0., 1., 0., 0., 0., 0.));
-    if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, Funk::vec<double>(0., 0., 1., 0., 0., 0.));
-    if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
-    if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
-    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
+    if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.));
+    if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
+    if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
+    if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.));
+    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
   }
 
   if (mode==6)
@@ -424,8 +424,8 @@ int main(int argc, char* argv[])
     std::cout << "Producing test maps." << std::endl;
     int mBins = 40;
     int svBins = 20;
-    std::vector<double> m_list = Funk::logspace(1.0, 3.0, mBins);
-    std::vector<double> sv_list = Funk::logspace(-28.0, -24.0, svBins);
+    std::vector<double> m_list = daFunk::logspace(1.0, 3.0, mBins);
+    std::vector<double> sv_list = daFunk::logspace(-28.0, -24.0, svBins);
     boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
     boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
     for (size_t i = 0; i < m_list.size(); i++)
@@ -434,8 +434,8 @@ int main(int argc, char* argv[])
       {
         TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
         TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-        TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
-        //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(0., 0., 1., 0., 0., 0.));
+        TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
+        //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
         std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
         DarkMatter_ID_WIMP.reset_and_calculate();
         TH_ProcessCatalog_WIMP.reset_and_calculate();
@@ -473,12 +473,12 @@ int main(int argc, char* argv[])
     std::cout << "Producing test maps." << std::endl;
     int mBins = 40;
     int sBins = 40;
-    std::vector<double> m_list = Funk::logspace(0.0, 4.0, mBins);
-    std::vector<double> s_list = Funk::logspace(-10, -6, sBins);
+    std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
+    std::vector<double> s_list = daFunk::logspace(-10, -6, sBins);
     boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
     boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
     TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
-    TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+    TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
     for (size_t i = 0; i < m_list.size(); i++)
     {
       for (size_t j = 0; j < s_list.size(); j++)
