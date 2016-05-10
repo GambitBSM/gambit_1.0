@@ -69,8 +69,8 @@ def run():
         original_class_file_dir  = os.path.split(original_file_name)[0]
         extras_src_file_name     = os.path.join(cfg.extra_output_dir, gb.general_src_file_prefix + class_name['short'] + cfg.source_extension)
 
-        short_abstr_class_fname = gb.new_header_files[class_name['long']]['abstract']
-        abstr_class_fname       = os.path.join(cfg.extra_output_dir, short_abstr_class_fname)
+        short_abstr_class_fname  = gb.new_header_files[class_name['long']]['abstract']
+        abstr_class_fname        = os.path.join(cfg.extra_output_dir, short_abstr_class_fname)
 
         # namespaces    = class_name['long'].split('::')[:-1]
         namespaces    = utils.getNamespaces(class_el, include_self=False)
@@ -99,6 +99,7 @@ def run():
         # Prepare entries in gb.new_code and includes
         if abstr_class_fname not in gb.new_code.keys():
             gb.new_code[abstr_class_fname] = {'code_tuples':[], 'add_include_guard':True}
+            gb.new_code[abstr_class_fname + '.FOR_GAMBIT'] = {'code_tuples':[], 'add_include_guard':True}
         if original_file_name not in gb.new_code.keys():
             gb.new_code[original_file_name] = {'code_tuples':[], 'add_include_guard':False}
         if original_file_name not in includes.keys():
@@ -128,11 +129,19 @@ def run():
 
 
         #
-        # Construct code for the abstract class header file and register it
+        # For the backend: Construct code for the abstract class header file and register it
         #
         
         constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namespaces, is_template, 
-                                      has_copy_constructor, construct_assignment_operator, abstr_class_fname)
+                                      has_copy_constructor, construct_assignment_operator, abstr_class_fname, file_for_gambit=False)
+
+        #
+        # For GAMBIT: Construct code for the abstract class header file and register it
+        #
+        
+        constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namespaces, is_template, 
+                                      has_copy_constructor, construct_assignment_operator, abstr_class_fname, file_for_gambit=True)
+
 
 
         #
@@ -236,7 +245,10 @@ def run():
 # Construct code for the abstract class header file and register it
 
 def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namespaces, is_template,
-                                  has_copy_constructor, construct_assignment_operator, abstr_class_fname):
+                                  has_copy_constructor, construct_assignment_operator, abstr_class_fname, file_for_gambit=False):
+
+    if file_for_gambit:
+        abstr_class_fname = abstr_class_fname + '.FOR_GAMBIT'
 
     class_decl = ''
 
@@ -247,7 +259,7 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
     include_statements += ['#include "' + gb.frwd_decls_wrp_fname + cfg.header_extension + '"']
     include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='wrapper_decl', exclude_types=[class_name], include_parents=True, use_full_path=False, forward_declared='include')
     include_statements += ['#include <cstddef>']
-    if gb.debug_mode: 
+    if gb.debug_mode or file_for_gambit: 
         include_statements += ['#include <iostream>']
     include_statements_code = '\n'.join(include_statements) + 2*'\n'
     class_decl += include_statements_code
@@ -258,7 +270,7 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
     # enum_include_statement_code += '#ifndef ENUMS_DECLARED\n'
     # enum_include_statement_code += '#define ENUMS_DECLARED\n'
     # enum_include_statement_code += '#include "' + gb.enum_decls_wrp_fname + cfg.header_extension + '"\n'
-    # # enum_include_statement_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.enum_decls_wrp_fname + cfg.header_extension) + '"\n'
+    # # enum_include_statement_code += '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.enum_decls_wrp_fname + cfg.header_extension) + '"\n'
     # enum_include_statement_code += '#endif\n'
     # enum_include_statement_code += '\n'
     # class_decl += enum_include_statement_code
@@ -268,11 +280,12 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
         pass
     elif (is_template == True) and (class_name['long'] not in templ_spec_done):
         class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
-                                                         indent=cfg.indent, template_types=spec_template_types, 
-                                                         construct_assignment_operator=construct_assignment_operator)
+                                                         indent=cfg.indent, file_for_gambit=file_for_gambit, 
+                                                         template_types=spec_template_types, construct_assignment_operator=construct_assignment_operator)
         class_decl += '\n'
     else:
-        class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, indent=cfg.indent, 
+        class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
+                                                         indent=cfg.indent, file_for_gambit=file_for_gambit,
                                                          construct_assignment_operator=construct_assignment_operator)
         class_decl += '\n'
 
@@ -371,7 +384,7 @@ def addIncludesToOriginalClassFile(class_el, namespaces, is_template, original_f
                                    short_abstr_class_fname):
 
     # Generate include statement for abstract class header
-    include_line = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, short_abstr_class_fname ) + '"'
+    include_line = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, short_abstr_class_fname ) + '"'
 
     # Check that we haven't included that statement already
     if include_line in includes[original_file_name]:
@@ -592,7 +605,7 @@ def generateClassMemberInterface(class_el, class_name, abstr_class_name, namespa
         ptr_declaration_code += ' '*cfg.indent*(n_indents+2) + 'using ' + abstr_class_name['short'] + '::pointer_assign' + gb.code_suffix + ';\n'
         ptr_declaration_code += classutils.constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
         
-        ptr_implementation_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full,'identification.hpp') + '"\n'
+        ptr_implementation_code += '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full,'identification.hpp') + '"\n'
         ptr_implementation_code += '\n'
         ptr_implementation_code += classutils.constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=0, include_full_namespace=True)
         ptr_implementation_code += '\n'
@@ -834,8 +847,8 @@ def addAbstractTypedefs(abstr_class_name, namespaces):
     abstr_typedef_code += utils.constrNamespace(namespaces, 'close', indent=cfg.indent)
     abstr_typedef_code += '\n'
 
-    frw_decl_include_statement       = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_abs_fname + cfg.header_extension) + '"\n'
-    identification_include_statement = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n\n'
+    frw_decl_include_statement       = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_abs_fname + cfg.header_extension) + '"\n'
+    identification_include_statement = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n\n'
     undef_include_statement          = '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
 
     abstracts_typedefs_header_path = os.path.join(cfg.extra_output_dir, gb.abstract_typedefs_fname + cfg.header_extension)
@@ -871,8 +884,8 @@ def addWrapperTypedefs(class_name, namespaces):
     wrapper_typedef_code += utils.constrNamespace(namespaces,'close')
     wrapper_typedef_code += '\n'
 
-    frw_decl_include_statement       = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_wrp_fname + cfg.header_extension) + '"\n'
-    identification_include_statement = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n\n'
+    frw_decl_include_statement       = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_wrp_fname + cfg.header_extension) + '"\n'
+    identification_include_statement = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n\n'
     undef_include_statement          = '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
 
     wrapper_typedefs_path = os.path.join(cfg.extra_output_dir, gb.wrapper_typedefs_fname + cfg.header_extension)

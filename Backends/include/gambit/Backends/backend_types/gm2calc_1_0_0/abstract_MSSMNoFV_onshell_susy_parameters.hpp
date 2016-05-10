@@ -7,20 +7,9 @@
 #include <Eigen/Core>
 #include <ostream>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_susy_parameters*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_susy_parameters*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_susy_parameters* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -118,11 +107,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual void init_wrapper()
             {
-               if (wptr == 0)
-               {
-                  wptr = wrapper_creator(this);
-                  delete_wrapper = true;
-               }
+               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell_susy_parameters from backend gm2calc_1_0_0. The function Abstract_MSSMNoFV_onshell_susy_parameters::init_wrapper() in GAMBIT should never have been called..." << std::endl;
             }
    
             MSSMNoFV_onshell_susy_parameters* get_init_wptr()
@@ -139,16 +124,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual ~Abstract_MSSMNoFV_onshell_susy_parameters()
             {
-               if (wptr != 0)
-               {
-                  set_delete_BEptr(wptr, false);
-                  if (delete_wrapper == true)
-                  {
-                     wrapper_deleter(wptr);
-                     wptr = 0;
-                     delete_wrapper = false;
-                  }
-               }
+               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell_susy_parameters from backend gm2calc_1_0_0. The function Abstract_MSSMNoFV_onshell_susy_parameters::~Abstract_MSSMNoFV_onshell_susy_parameters in GAMBIT should never have been called..." << std::endl;
             }
       };
    }

@@ -57,11 +57,14 @@ gambit_backend_namespace    = 'CAT_3(BACKENDNAME,_,SAFE_VERSION)'
 gambit_backend_safeversion  = cfg.gambit_backend_version.replace('.','_')
 gambit_backend_name_full    = cfg.gambit_backend_name + '_' + gambit_backend_safeversion
 
-gambit_backend_types_basedir = 'backend_types'
-gambit_backend_dir_complete  = os.path.join(cfg.extra_output_dir, gambit_backend_types_basedir, gambit_backend_name_full) 
+backend_types_basedir = 'backend_types'
+backend_types_dir_complete = os.path.join(cfg.extra_output_dir, backend_types_basedir, gambit_backend_name_full) 
 
-gambit_frontend_base_dir = 'frontends'
-gambit_frontend_dir_complete = os.path.join(cfg.extra_output_dir, gambit_frontend_base_dir) 
+for_gambit_basedir = 'for_gambit'
+for_gambit_backend_types_dir_complete = os.path.join(cfg.extra_output_dir, for_gambit_basedir, backend_types_basedir, gambit_backend_name_full) 
+
+frontend_base_dir = 'frontends'
+frontend_dir_complete = os.path.join(cfg.extra_output_dir, frontend_base_dir) 
 
 gambit_backend_incl_dir = 'gambit/Backends/'
 gambit_utils_incl_dir   = 'gambit/Utils/'
@@ -84,7 +87,7 @@ abstract_typedefs_fname = 'abstracttypedefs'
 enum_decls_wrp_fname    = 'enum_decl_copies'
 
 frontend_fname          = gambit_backend_name_full + '.hpp'
-frontend_path           = os.path.join(gambit_frontend_dir_complete, frontend_fname)
+frontend_path           = os.path.join(frontend_dir_complete, frontend_fname)
 
 # Dictionary of what names to use for various operator symbols
 operator_names = {
