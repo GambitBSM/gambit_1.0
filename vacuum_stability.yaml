@@ -19,8 +19,8 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [160.071,160.071]
-         #range: [160,180]
+         #range: [160.071,160.071]
+         range: [160,180]
          #prior_type: flat
 
       # SLHA1
@@ -64,8 +64,8 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [100.098,100.098]
-        #range: [100,150]
+        #range: [100.098,100.098]
+        range: [100,150]
         #prior_type: flat
       QEWSB: 173
 
@@ -89,20 +89,12 @@ Parameters:
 ##############################
 
 Printer:
-
-  # Select printer to use via string tag
-  printer: ascii
-
-
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
+  printer: hdf5
   options:
-    output_file: "gambit_output.txt"
+    output_file: "gambit_output.hdf5"
     group: "/singlet"
-    delete_file_if_exists: true
-    delete_file_on_restart: true
+    delete_file_if_exists: false
+    delete_file_on_restart: false
 
 
 
@@ -113,7 +105,7 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: grid
+  use_scanner: multinest
 
 # Scanners
 
@@ -191,6 +183,9 @@ ObsLikes:
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
 
+    - capability: print_SingletDM_spectrum
+      purpose: observable
+
 
 
 
@@ -210,12 +205,6 @@ Rules:
    #   options:
    #     set_high_scale: 1e20
    #     check_perturb_pts: 10
-
-    - capability: Higgs_decay_rates
-      function: SS_Higgs_decays
-      dependencies:
-        - capability: Higgs_decay_rates
-          function: SingletDM_Higgs_decays
 
     - capability: Higgs_decay_rates
       function: SingletDM_Higgs_decays
@@ -249,13 +238,6 @@ Logger:
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
-
-###############################
-## Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
 
 
 ##########################
@@ -291,5 +273,5 @@ KeyValues:
 
   enable_testing: false
 
-  default_output_path: "runs/SingletDM/"
+  default_output_path: "runs/vacuum_stability2/"
 

@@ -261,7 +261,7 @@ namespace Gambit
       {
         std::stringstream msg;
         msg << "Requested Higgs virtuality is " << mh << "; allowed range is " << minmass << "--" << maxmass << " GeV!";
-        if (runOptions->getValueOrDef<bool>(false,"invalid_point_for_Higgs_mass") )
+        if (runOptions->getValueOrDef<bool>(true,"invalid_point_for_Higgs_mass") )
         {
           invalid_point().raise(msg.str());
         }
