@@ -153,12 +153,13 @@ namespace Gambit {
       daFunk::Funk halfBox_int = betaGamma*sqrt(E*E-mass*mass);
       daFunk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       daFunk::Funk integrand = dNdE/(2*halfBox_int);
-      //return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
-      //  ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
-      //
-      // Numerically more stable to integrate over lnE instead
-      return (integrand*E)->set("E", exp(lnE))->gsl_integration("lnE", log(Ep*gamma-halfBox_bound), log(Ep*gamma+halfBox_bound))
+      return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
         ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
+      //
+      // TODO: Check whether to use numerically more stable integration over lnE instead
+      // Note: this causes problems in the WIMP example (3) as the singularity is dropped
+      //return (integrand*E)->set("E", exp(lnE))->gsl_integration("lnE", log(Ep*gamma-halfBox_bound), log(Ep*gamma+halfBox_bound))
+      //  ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
     }
 
     /*! \brief General routine to derive annihilation yield.
