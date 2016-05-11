@@ -410,6 +410,26 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY lnL_CTAGC
+  START_CAPABILITY
+    #define FUNCTION lnL_CTAGC_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
+      DEPENDENCY(RD_fraction, double)
+      BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_HESSGC
+  START_CAPABILITY
+    #define FUNCTION lnL_HESSGC_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
+      DEPENDENCY(RD_fraction, double)
+      BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY dump_GammaSpectrum
   START_CAPABILITY
     #define FUNCTION dump_GammaSpectrum

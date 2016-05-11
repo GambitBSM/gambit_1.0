@@ -115,18 +115,65 @@ namespace Gambit {
       using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
 
       double fraction = *Dep::RD_fraction;
+      int mode = 0;
       result = 0;
 
-      // from 0.1 to 500 GeV
-      std::vector<double> x = daFunk::logspace(-1, 2.698, 100);
+      std::string version = runOptions->getValueOrDef<std::string>("pass8", "version");
+      if ( version == "pass8" ) mode = 1;
+      else if ( version == "pass7" ) mode = 0;
+      else DarkBit_error().raise(LOCAL_INFO, "Fermi LAT dwarf likelihood version unknown.");
+
+      // from 0.5 to 500 GeV
+      std::vector<double> x = daFunk::logspace(-0.301, 2.699, 100);
       x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
+      result = BEreq::lnL(byVal(mode), x, y);
 
-      result += BEreq::lnL(1, x, y);
+      logger() << "GamLike dSph likelihood is lnL = " << result << std::endl;
+    }
 
-      logger() << "GamLike likelihood is lnL = " << result << std::endl;
+    void lnL_HESSGC_gamLike(double &result)
+    {
+      using namespace Pipes::lnL_HESSGC_gamLike;
+
+      double fraction = *Dep::RD_fraction;
+      int mode = 0;
+      result = 0;
+
+      std::string version = runOptions->getValueOrDef<std::string>("integral", "version");
+      if ( version == "integral" ) mode = 6;
+      else if ( version == "spectral" ) mode = 7;
+      else DarkBit_error().raise(LOCAL_INFO, "HESS GC likelihood version unknown.");
+
+      // from 230(265) GeV to 30 TeV
+      std::vector<double> x = daFunk::logspace(2.36, 4.48, 100);
+      x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
+      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
+        set("v", 0)->bind("E")->vect(x);
+
+      result = BEreq::lnL(byVal(mode), x, y);
+
+      logger() << "GamLike HESS GC likelihood is lnL = " << result << std::endl;
+    }
+
+    void lnL_CTAGC_gamLike(double &result)
+    {
+      using namespace Pipes::lnL_CTAGC_gamLike;
+
+      double fraction = *Dep::RD_fraction;
+      result = 0;
+
+      // from 250 GeV to 10 TeV
+      std::vector<double> x = daFunk::logspace(2.40, 4.00, 100);
+      x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
+      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
+        set("v", 0)->bind("E")->vect(x);
+
+      result = BEreq::lnL(5, x, y);
+
+      logger() << "GamLike CTA GC likelihood is lnL = " << result << std::endl;
     }
 
     /*! \brief Fermi LAT galactic center likelihoods, using gamLike backend.
@@ -136,17 +183,24 @@ namespace Gambit {
       using namespace Pipes::lnL_FermiGC_gamLike;
 
       double fraction = *Dep::RD_fraction;
+      int mode = 0;
       result = 0;
 
-      // from 0.1 to 500 GeV
-      std::vector<double> x = daFunk::logspace(-1, 2.698, 100);
+      std::string version = runOptions->getValueOrDef<std::string>("fixedJ", "version");
+      if ( version == "fixedJ" ) mode = 2;
+      else if ( version == "margJ" ) mode = 3;
+      else if ( version == "margJ_HEP" ) mode = 4;
+      else DarkBit_error().raise(LOCAL_INFO, "Fermi LAT GC likelihood version unknown.");
+
+      // from 0.3 to 500 GeV
+      std::vector<double> x = daFunk::logspace(-0.523, 2.699, 100);
       x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
-      result += BEreq::lnL(2, x, y);
+      result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << "GamLike likelihood is lnL = " << result << std::endl;
+      logger() << "GamLike Fermi GC likelihood is lnL = " << result << std::endl;
     }
 
     /// \brief Likelihood for cosmological relic density constraints.
