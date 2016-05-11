@@ -24,6 +24,7 @@
 
 #include <string>
 #include <sstream>
+#include <cmath>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
