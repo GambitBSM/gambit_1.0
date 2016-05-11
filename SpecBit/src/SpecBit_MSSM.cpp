@@ -391,8 +391,8 @@ namespace Gambit
       double msl   = result->get(Par::Pole_Mass, 1000011, 0);
       double msneu = result->get(Par::Pole_Mass, 1000012, 0);
       double mglui = result->get(Par::Pole_Mass, 1000021, 0);
-      double mchi0 = result->get(Par::Pole_Mass, 1000022, 0);
-      double mchip = result->get(Par::Pole_Mass, 1000024, 0);
+      double mchi0 = std::abs(result->get(Par::Pole_Mass, 1000022, 0));
+      double mchip = std::abs(result->get(Par::Pole_Mass, 1000024, 0));
 
       return mchi0 < mchip &&
              mchi0 < mglui &&
