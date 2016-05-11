@@ -44,7 +44,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-//#define DUMP_LIMIT_PLOT_DATA
+//#define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -774,17 +774,17 @@ namespace Gambit
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
-          logger() << endl;
-          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
-          logger() << "  NEvents, not scaled to luminosity :" << endl;
-          logger() << "    " << srData.n_signal << endl;
-          logger() << "  NEvents, scaled  to luminosity :  " << endl;
-
-          logger() << "    " << srData.n_signal_at_lumi << endl;
-
-          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
-          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
-                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          #ifdef COLLIDERBIT_DEBUG
+            logger() << endl;
+            logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+            logger() << "  NEvents, not scaled to luminosity :" << endl;
+            logger() << "    " << srData.n_signal << endl;
+            logger() << "  NEvents, scaled  to luminosity :  " << endl;
+            logger() << "    " << srData.n_signal_at_lumi << endl;
+            logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+            logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          #endif
 
           double llb_exp = 0, llsb_exp = 0, llb_obs = 0, llsb_obs = 0;
           // Use a log-normal distribution for the nuisance parameter (more correct)
@@ -809,18 +809,20 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
-          /* The following was used for some final tests of ColliderBit:
-          logger() << endl;
-          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
-          logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
-          logger() << "    " << llb_exp << " " << llsb_exp << " "
-                   << llb_obs << " " << llsb_obs << endl;
-          logger() << "  NEvents, not scaled to luminosity :" << endl;
-          logger() << "    " << srData.n_signal << endl;
-          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
-          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
-                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
-          */
+          // The following was used for some final tests of ColliderBit:
+          #ifdef COLLIDERBIT_DEBUG
+            logger() << endl;
+            logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+            logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
+            logger() << "    " << llb_exp << " " << llsb_exp << " "
+                     << llb_obs << " " << llsb_obs << endl;
+            logger() << "  NEvents, not scaled to luminosity :" << endl;
+            logger() << "    " << srData.n_signal << endl;
+            logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+            logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          #endif
+
         } // end SR loop
 
         // Update the total obs dll
@@ -829,8 +831,10 @@ namespace Gambit
 
       } // end ana loop
 
+      #ifdef COLLIDERBIT_DEBUG
+        std::cout << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << std::endl;
+      #endif
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
-      std::cout << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << std::endl;
       result = -total_dll_obs;
     }
 
@@ -1872,7 +1876,7 @@ namespace Gambit
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
       static const ALEPHSelectronLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -1939,7 +1943,7 @@ namespace Gambit
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
       static const ALEPHSmuonLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2006,7 +2010,7 @@ namespace Gambit
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
       static const ALEPHStauLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2074,7 +2078,7 @@ namespace Gambit
     void L3_Selectron_Conservative_LLike(double& result)
     {
       static const L3SelectronLimitAt205GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2142,7 +2146,7 @@ namespace Gambit
     void L3_Smuon_Conservative_LLike(double& result)
     {
       static const L3SmuonLimitAt205GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2209,7 +2213,7 @@ namespace Gambit
     void L3_Stau_Conservative_LLike(double& result)
     {
       static const L3StauLimitAt205GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2280,7 +2284,7 @@ namespace Gambit
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
       static const L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(0., 200., 0., 100.,
@@ -2404,7 +2408,7 @@ namespace Gambit
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
       static const L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(0., 200., 0., 100.,
@@ -2519,7 +2523,7 @@ namespace Gambit
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static const L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 100., 0., 100.,
@@ -2599,7 +2603,7 @@ namespace Gambit
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static const L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 100., 0., 100.,
@@ -2685,7 +2689,7 @@ namespace Gambit
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
       static const OPALCharginoHadronicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -2763,7 +2767,7 @@ namespace Gambit
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
       static const OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -2890,7 +2894,7 @@ namespace Gambit
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static const OPALCharginoLeptonicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -2995,7 +2999,7 @@ namespace Gambit
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static const OPALCharginoAllChannelsLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -3094,7 +3098,7 @@ namespace Gambit
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
       static const OPALNeutralinoHadronicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(0., 200., 0., 100.,
