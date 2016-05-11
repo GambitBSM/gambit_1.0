@@ -456,7 +456,7 @@ namespace daFunk
                     if ( size == 1 ) size = it->size();
                     if ( size != it->size() )
                     {
-                        std::cout << "FunkBase WARNING: Inconsistent vector lengths." << std::endl;
+                        std::cout << "daFunk::FunkBase WARNING: Inconsistent vector lengths." << std::endl;
                         return vec<double>();
                     }
                 }
@@ -678,7 +678,7 @@ namespace daFunk
                 functions = vec(f, g);
                 Singularities tmp_singl = f->getSingl();
                 if ( tmp_singl.erase(arg) > 0 )
-                    std::cout << "FunkBase WARNING: Loosing singularity information while setting " << arg << std::endl;
+                    std::cout << "daFunk::FunkBase WARNING: Loosing singularity information while setting " << arg << std::endl;
                 singularities = joinSingl(g->getSingl(), tmp_singl);
                 arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
             };
@@ -1006,7 +1006,7 @@ namespace daFunk
         }
         else
         {
-            std::cout << "FunkBase WARNING: Ignoring \"" << arg << "\" = function." << std::endl;
+            std::cout << "daFunk::FunkBase WARNING: Ignoring \"" << arg << "\" = function." << std::endl;
         }
         return f->set(args...);
     }
@@ -1584,7 +1584,7 @@ namespace daFunk
                             double z0 = mean - singl_factor*sigma;
                             double z1 = mean + singl_factor*sigma;
                             if ( z0 == z1 )
-                                std::cout << "FunkBase WARNING: Singularity width is beyond machine precision." << std::endl;
+                                std::cout << "daFunk::FunkBase WARNING: Singularity width is beyond machine precision." << std::endl;
                             if ( z0 > x0 and z0 < x1 ) ranges.push_back(z0);
                             if ( z1 > x0 and z1 < x1 ) ranges.push_back(z1);
                         }
@@ -1600,7 +1600,7 @@ namespace daFunk
                     // FIXME: Implement flags to optionally throw an error
                     if (status)
                     {
-                        std::cout << "FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
+                        std::cout << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
                         std::cout << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
                         std::cout << "Details about the integrand:" << std::endl;
                         functions[0]->help();
