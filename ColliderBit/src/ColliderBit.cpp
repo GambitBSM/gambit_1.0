@@ -178,6 +178,10 @@ namespace Gambit
       }
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
+
+      // Check for exceptions 
+      piped_invalid_point.check();
+
       Loop::executeIteration(FINALIZE);
     }
 
