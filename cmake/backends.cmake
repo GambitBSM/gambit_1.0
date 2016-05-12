@@ -204,8 +204,7 @@ option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimiz
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  # set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g -diag-disable 654")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -g -diag-disable 654")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -ipo -O3 -no-prec-div -fp-model fast=2 -xHost -diag-disable 654")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -fno-math-errno -funsafe-math-optimizations -fno-rounding-math -fno-signaling-nans -fcx-limited-range")
 endif()
