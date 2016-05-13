@@ -44,7 +44,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-//#define DUMP_LIMIT_PLOT_DATA
+//#define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -114,7 +114,7 @@ namespace Gambit
     std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
     bool eventsGenerated;
-    int nEvents;
+    int nEvents, seedBase;
     /// Analysis stuff
     bool useATLAS;
     std::vector<std::string> analysisNamesATLAS;
@@ -137,6 +137,8 @@ namespace Gambit
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
       int currentEvent;
       nEvents = 0;
+      // Pythia random number seed will be set properly during BASE_INIT.
+      seedBase = 0; // This just prevents a warning.
       // Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
 
@@ -162,6 +164,8 @@ namespace Gambit
           Loop::executeIteration(START_SUBPROCESS);
           // main event loop
           while(currentEvent<nEvents and not *Loop::done) {
+            if (!eventsGenerated)
+              eventsGenerated = true;
             try {
               Loop::executeIteration(currentEvent);
               currentEvent++;
@@ -174,6 +178,10 @@ namespace Gambit
       }
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
+
+      // Check for exceptions 
+      piped_invalid_point.check();
+
       Loop::executeIteration(FINALIZE);
     }
 
@@ -190,12 +198,6 @@ namespace Gambit
       static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
-      int seedBase;
-      // variables for xsec veto
-      std::stringstream processLevelOutput;
-      std::string _junk, readline;
-      int code, nxsec;
-      double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -248,14 +250,21 @@ namespace Gambit
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
+        // variables for xsec veto
+        std::stringstream processLevelOutput;
+        std::string _junk, readline;
+        int code, nxsec;
+        double xsec, totalxsec;
+
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
+        // Although we capture all couts, still we tell Pythia to be quiet....
         pythiaOptions.push_back("Print:quiet = on");
+        // .... except for showProcesses, which we need for the xsec veto.
+        pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
-        if (omp_get_thread_num() == 0)
-          pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
@@ -264,21 +273,14 @@ namespace Gambit
 
         try
         {
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions, &slha);
+          result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(
-                   int(Random::draw() * 899990000.) + omp_get_thread_num()));
+          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
           try
           {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions, &slha);
+            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
           }
           catch (SpecializablePythia::InitializationError &e)
           {
@@ -290,29 +292,25 @@ namespace Gambit
 
 
         // xsec veto
-        if (omp_get_thread_num() == 0)
+        code = -1;
+        nxsec = 0;
+        totalxsec = 0.;
+        while(true)
         {
-          code = -1;
-          nxsec = 0;
-          totalxsec = 0.;
-          while(true)
-          {
-            std::getline(processLevelOutput, readline);
-            std::istringstream issPtr(readline);
-            issPtr.seekg(47, issPtr.beg);
-            issPtr >> code;
-            if (!issPtr.good() && nxsec > 0) break;
-            issPtr >> _junk >> xsec;
-            if (issPtr.good()) {
-              totalxsec += xsec;
-              nxsec++;
-            }
+          std::getline(processLevelOutput, readline);
+          std::istringstream issPtr(readline);
+          issPtr.seekg(47, issPtr.beg);
+          issPtr >> code;
+          if (!issPtr.good() && nxsec > 0) break;
+          issPtr >> _junk >> xsec;
+          if (issPtr.good()) {
+            totalxsec += xsec;
+            nxsec++;
           }
-
-          /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
-          if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
-          else eventsGenerated = true;
         }
+
+        /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
+        if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
 
       }
     }
@@ -326,12 +324,6 @@ namespace Gambit
       static std::string pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = -1;
-      int seedBase;
-      // variables for xsec veto
-      std::stringstream processLevelOutput;
-      std::string _junk, readline;
-      int code, nxsec;
-      double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -365,14 +357,21 @@ namespace Gambit
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
+        // variables for xsec veto
+        std::stringstream processLevelOutput;
+        std::string _junk, readline;
+        int code, nxsec;
+        double xsec, totalxsec;
+
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
+        // Although we capture all couts, still we tell Pythia to be quiet....
         pythiaOptions.push_back("Print:quiet = on");
+        // .... except for showProcesses, which we need for the xsec veto.
+        pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
-        if (omp_get_thread_num() == 0)
-          pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
@@ -383,21 +382,14 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         try
         {
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions);
+          result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(
-                   int(Random::draw() * 899990000.) + omp_get_thread_num()));
+          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
           try
           {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions);
+            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
           }
           catch (SpecializablePythia::InitializationError &e)
           {
@@ -408,29 +400,25 @@ namespace Gambit
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0)
+        code = -1;
+        nxsec = 0;
+        totalxsec = 0.;
+        while(true)
         {
-          code = -1;
-          nxsec = 0;
-          totalxsec = 0.;
-          while(true)
-          {
-            std::getline(processLevelOutput, readline);
-            std::istringstream issPtr(readline);
-            issPtr.seekg(47, issPtr.beg);
-            issPtr >> code;
-            if (!issPtr.good() && nxsec > 0) break;
-            issPtr >> _junk >> xsec;
-            if (issPtr.good()) {
-              totalxsec += xsec;
-              nxsec++;
-            }
+          std::getline(processLevelOutput, readline);
+          std::istringstream issPtr(readline);
+          issPtr.seekg(47, issPtr.beg);
+          issPtr >> code;
+          if (!issPtr.good() && nxsec > 0) break;
+          issPtr >> _junk >> xsec;
+          if (issPtr.good()) {
+            totalxsec += xsec;
+            nxsec++;
           }
-
-          /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
-          if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
-          else eventsGenerated = true;
         }
+
+        /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
+        if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
 
       }
     }
@@ -790,19 +778,19 @@ namespace Gambit
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
-          logger() << endl;
-          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
-          logger() << "  NEvents, not scaled to luminosity :" << endl;
-          logger() << "    " << srData.n_signal << endl;
-          logger() << "  NEvents, scaled  to luminosity :  " << endl;
+          #ifdef COLLIDERBIT_DEBUG
+            logger() << endl;
+            logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+            logger() << "  NEvents, not scaled to luminosity :" << endl;
+            logger() << "    " << srData.n_signal << endl;
+            logger() << "  NEvents, scaled  to luminosity :  " << endl;
+            logger() << "    " << srData.n_signal_at_lumi << endl;
+            logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+            logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          #endif
 
-          logger() << "    " << srData.n_signal_at_lumi << endl;
-
-          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
-          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
-                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
-
-          double llb_exp, llsb_exp, llb_obs, llsb_obs;
+          double llb_exp = 0, llsb_exp = 0, llb_obs = 0, llsb_obs = 0;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
@@ -825,18 +813,20 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
-          /* The following was used for some final tests of ColliderBit:
-          logger() << endl;
-          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
-          logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
-          logger() << "    " << llb_exp << " " << llsb_exp << " "
-                   << llb_obs << " " << llsb_obs << endl;
-          logger() << "  NEvents, not scaled to luminosity :" << endl;
-          logger() << "    " << srData.n_signal << endl;
-          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
-          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
-                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
-          */
+          // The following was used for some final tests of ColliderBit:
+          #ifdef COLLIDERBIT_DEBUG
+            logger() << endl;
+            logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+            logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
+            logger() << "    " << llb_exp << " " << llsb_exp << " "
+                     << llb_obs << " " << llsb_obs << endl;
+            logger() << "  NEvents, not scaled to luminosity :" << endl;
+            logger() << "    " << srData.n_signal << endl;
+            logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+            logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          #endif
+
         } // end SR loop
 
         // Update the total obs dll
@@ -845,8 +835,10 @@ namespace Gambit
 
       } // end ana loop
 
+      #ifdef COLLIDERBIT_DEBUG
+        std::cout << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << std::endl;
+      #endif
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
-      std::cout << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << std::endl;
       result = -total_dll_obs;
     }
 
@@ -1888,7 +1880,7 @@ namespace Gambit
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
       static const ALEPHSelectronLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -1955,7 +1947,7 @@ namespace Gambit
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
       static const ALEPHSmuonLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2022,7 +2014,7 @@ namespace Gambit
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
       static const ALEPHStauLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2090,7 +2082,7 @@ namespace Gambit
     void L3_Selectron_Conservative_LLike(double& result)
     {
       static const L3SelectronLimitAt205GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2158,7 +2150,7 @@ namespace Gambit
     void L3_Smuon_Conservative_LLike(double& result)
     {
       static const L3SmuonLimitAt205GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2225,7 +2217,7 @@ namespace Gambit
     void L3_Stau_Conservative_LLike(double& result)
     {
       static const L3StauLimitAt205GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 115., 0., 100.,
@@ -2296,7 +2288,7 @@ namespace Gambit
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
       static const L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(0., 200., 0., 100.,
@@ -2420,7 +2412,7 @@ namespace Gambit
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
       static const L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(0., 200., 0., 100.,
@@ -2535,7 +2527,7 @@ namespace Gambit
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static const L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 100., 0., 100.,
@@ -2615,7 +2607,7 @@ namespace Gambit
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static const L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(45., 100., 0., 100.,
@@ -2701,7 +2693,7 @@ namespace Gambit
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
       static const OPALCharginoHadronicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -2779,7 +2771,7 @@ namespace Gambit
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
       static const OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -2906,7 +2898,7 @@ namespace Gambit
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static const OPALCharginoLeptonicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -3011,7 +3003,7 @@ namespace Gambit
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static const OPALCharginoAllChannelsLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(75., 105., 0., 105.,
@@ -3110,7 +3102,7 @@ namespace Gambit
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
       static const OPALNeutralinoHadronicLimitAt208GeV limitContainer;
-#ifdef DUMP_LIMIT_PLOT_DATA
+#ifdef COLLIDERBIT_DEBUG
       static bool dumped=false;
       if(!dumped) {
         limitContainer.dumpPlotData(0., 200., 0., 100.,

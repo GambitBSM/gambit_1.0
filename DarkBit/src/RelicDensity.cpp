@@ -587,11 +587,10 @@ namespace Gambit {
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
 
-// FIXME: Should be commented out
-//#ifdef DARKBIT_DEBUG
+#ifdef DARKBIT_DEBUG
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
-//#endif
+#endif
 
 #ifdef DARKBIT_RD_DEBUG
       if (tbtest==1) {exit(1);}

@@ -194,11 +194,11 @@ ObsLikes:
       function: lnL_oh2_upperlimit
 
 # XENON100 2012 direct detection likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose: LogLike
 
 # LUX 2013 direct detection likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 
 # SI nuclear parameters likelihood
