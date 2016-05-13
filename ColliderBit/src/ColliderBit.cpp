@@ -208,8 +208,8 @@ namespace Gambit
                              Backends::backendInfo().default_version("Pythia") +
                              "/share/Pythia8/xmldoc/";
           pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
-          // Get one thread to print the Pythia banner.
-          if (omp_get_thread_num() == 0) result.banner(pythia_doc_path);
+          // Print the Pythia banner once.
+          result.banner(pythia_doc_path);
           pythia_doc_path_needs_setting = false;
         }
 
@@ -321,6 +321,7 @@ namespace Gambit
       using namespace Pipes::getPythiaFileReader;
 
       static std::vector<std::string> filenames;
+      static std::string default_doc_path;
       static std::string pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = -1;
@@ -330,9 +331,12 @@ namespace Gambit
         // Setup the Pythia documentation path
         if (pythia_doc_path_needs_setting)
         {
-          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          // Get one thread to print the Pythia banner.
-          if (omp_get_thread_num() == 0) result.banner(pythia_doc_path);
+          default_doc_path = "Backends/installed/Pythia/" + 
+                             Backends::backendInfo().default_version("Pythia") +
+                             "/share/Pythia8/xmldoc/";
+          pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
+          // Print the Pythia banner once.
+          result.banner(pythia_doc_path);
           pythia_doc_path_needs_setting = false;
         }
         // If there are no debug filenames set, look for them.
