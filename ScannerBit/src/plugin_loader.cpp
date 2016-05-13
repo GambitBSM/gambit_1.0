@@ -69,14 +69,17 @@ namespace Gambit
                 {
                     char path_buffer[1024];
                     int p_n;
+                    std::stringstream p_ss;
+
                     while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
                     {
-                        std::stringstream p_ss(std::string(path_buffer, p_n));
-                        while (p_ss >> p_str)
-                        {
-                            if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
-                                loadLibrary (path + p_str);
-                        }
+                        p_ss << std::string(path_buffer, p_n);
+                    }
+
+                    while (p_ss >> p_str)
+                    {
+                        if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
+                            loadLibrary (path + p_str);
                     }
                     
                     pclose(p_f);
@@ -173,25 +176,27 @@ namespace Gambit
                 {
                     char buffer[1024];
                     int n;
+                    std::stringstream ss;
                     
                     while ((n = fread(buffer, 1, sizeof buffer, f)) > 0)
                     {
-                        std::stringstream ss(std::string(buffer, n));
-                        while(std::getline(ss, str))
-                        {
-                            std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
+                        ss << std::string(buffer, n);
+                    }
+
+                    while(std::getline(ss, str))
+                    {
+                        std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
                             
-                            if (pos != std::string::npos && 
-                                    (str.rfind(" T ", pos) != std::string::npos || str.rfind(" t ", pos) != std::string::npos))
-                            {
-                                Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
+                        if (pos != std::string::npos && 
+                                (str.rfind(" T ", pos) != std::string::npos || str.rfind(" t ", pos) != std::string::npos))
+                        {
+                            Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                 
-                                if (plug == "" || temp.plugin == plug)
-                                {
-                                    temp.path = p_str;
-                                    plugins.push_back(temp);
-                                    total_plugins.push_back(temp);
-                                }
+                            if (plug == "" || temp.plugin == plug)
+                            {
+                                temp.path = p_str;
+                                plugins.push_back(temp);
+                                total_plugins.push_back(temp);
                             }
                         }
                     }
