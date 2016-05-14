@@ -65,17 +65,41 @@ namespace Gambit
     using namespace SpecBit;
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
     double step = scale / pts;
-    bool nperturbative = 0;
+    //bool nperturbative = 0;
     double ul=3.5449077018110318; // sqrt(4*Pi), maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
     for (int i=1;i<pts;i++)
     {
     SingletDM -> RunToScale(step*float(i));
-    bool p1 = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
-    bool p2 = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
-    bool p3 = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
-    nperturbative =!(p1 | p2 | p3);
-    }
-    return !nperturbative;
+//    bool p1 = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
+//    bool p2 = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
+//    bool p3 = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
+//    nperturbative =!(p1 | p2 | p3);
+//    }
+   
+    static const SpectrumContents::SingletDM contents;
+    static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters_with_tag(Par::dimensionless);
+      
+    for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+          it != required_parameters.end(); ++it)
+      {
+         const Par::Tags        tag   = it->tag();
+         const std::string      name  = it->name();
+         const std::vector<int> shape = it->shape();
+
+           std::ostringstream label;
+           label << name <<" "<< Par::toString.at(tag);
+           if (abs(SingletDM->get(tag,name))>ul)
+           {
+            return false;
+           }
+      }
+      }
+
+
+      
+      
+      
+    return true;
     }
     
     double run_lambda(const Spectrum*  spec,double scale)

@@ -20,7 +20,7 @@ Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
          #range: [160.071,160.071]
-         range: [160,180]
+         range: [170,173]
          #prior_type: flat
 
       # SLHA1
@@ -65,14 +65,14 @@ Parameters:
     StandardModel_Higgs_running:
       mH:
         #range: [100.098,100.098]
-        range: [100,150]
+        range: [120,120]
         #prior_type: flat
       QEWSB: 173
 
 
     SingletDM:
       mS: 620
-      lambda_hS: 0.585 #0.30
+      lambda_hS: 2.25 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -93,8 +93,8 @@ Printer:
   options:
     output_file: "gambit_output.hdf5"
     group: "/singlet"
-    delete_file_if_exists: false
-    delete_file_on_restart: false
+    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 
@@ -105,7 +105,7 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: multinest
+  use_scanner: grid
 
 # Scanners
 
@@ -171,8 +171,8 @@ ObsLikes:
     - capability: VS_likelihood
       purpose: LogLike
 
-#    - capability: check_perturb_min_lambda
-#      purpose: Observable
+    - capability: check_perturb_min_lambda
+      purpose: Observable
 
  #   - capability: check_perturb
  #     purpose: Observable
@@ -180,8 +180,8 @@ ObsLikes:
  #   - capability: expected_lifetime
  #     purpose: Observable
 
-    - capability: LHC_Higgs_LogLike
-      purpose:  LogLike
+#    - capability: LHC_Higgs_LogLike
+#      purpose:  LogLike
 
     - capability: print_SingletDM_spectrum
       purpose: observable
@@ -273,5 +273,5 @@ KeyValues:
 
   enable_testing: false
 
-  default_output_path: "runs/vacuum_stability2/"
+  default_output_path: "runs/vacuum_stability3/"
 
