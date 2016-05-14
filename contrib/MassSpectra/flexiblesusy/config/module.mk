@@ -66,6 +66,6 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DEPGEN_EXE): $(DEPGEN_OBJ)
-		$(CXX) -o $@ $^
+		$(CXX) $(LDFLAGS) -o $@ $^
 
 ALLEXE += $(DEPGEN_EXE)
