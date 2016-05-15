@@ -92,7 +92,9 @@ namespace Gambit
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        if (!_pythiaBase->init(os)) throw InitializationError();
+        // TODO: I think this init is unneccessary, and possibly even incorrect...
+        //       remove it permanently after testing.
+        // if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
@@ -126,7 +128,9 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        if (!_pythiaBase->init(os)) throw InitializationError();
+        // TODO: I think this init is unneccessary, and possibly even incorrect...
+        //       remove it permanently after testing.
+        // if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
