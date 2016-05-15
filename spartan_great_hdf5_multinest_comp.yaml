@@ -1,6 +1,8 @@
 # GreAT version of ultra-minimal GAMBIT Initialization file (in YAML)
 # Only needs ExampleBit_A and GreAT.
 #
+# MultiNest comparison version.
+#
 # Pat Scott <p.scott@imperial.ac.uk>
 # Jun 2015
 #
@@ -25,19 +27,25 @@ Priors:
 Printer:
   printer: hdf5
   options:
-     output_file: "gambit_great_output.hdf5"
+     output_file: "gambit_mnest_output.hdf5"
      delete_file_on_restart: true
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner: mcmc
+  use_scanner: multinest
 
   scanners:
-    mcmc:
-      plugin: GreAT
-      nTrialLists: 5
-      nTrials: 40000
-      like: Likelihood
+    multinest:
+      plugin: MultiNest
+      like:  Likelihood
+      nlive: 1000
+      tol: 0.1
+
+#    mcmc:
+#      plugin: GreAT
+#      nTrialLists: 5
+#      nTrials: 10000
+#      like: Likelihood
 
 #======== Observables of interest ========
 ObsLikes:
@@ -60,7 +68,7 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_great"
+  default_output_path: "runs/spartan_great_multinest_comp"
 
   rng: ranlux48
 
