@@ -208,8 +208,6 @@ Rules:
 
     - capability: Higgs_decay_rates
       function: SingletDM_Higgs_decays
-      options:
-        invalid_point_for_Higgs_mass: true
 
 #########################
 # Logging setup

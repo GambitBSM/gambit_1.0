@@ -140,7 +140,7 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: twalk
+  use_scanner: multinest
 
   scanners:
 
@@ -246,19 +246,12 @@ Rules:
     options:
         cMC_finalStates:
             - gamma
+
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
 
-  - capability: Higgs_decay_rates
-    function: SS_Higgs_decays
-    dependencies:
-        - capability: SingletDM_spectrum
-          function: get_SingletDM_spectrum
-        - capability: Higgs_decay_rates
-          function: SingletDM_Higgs_decays
   - capability: SingletDM_spectrum
     function: get_SingletDM_spectrum
-
 
   - capability: DD_couplings
     function: DD_couplings_SingletDM
@@ -388,4 +381,4 @@ KeyValues:
 
   default_output_path: "runs/singletDM_ScannerBit_test4/"
 
-
+  #debug: true

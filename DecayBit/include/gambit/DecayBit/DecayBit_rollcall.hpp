@@ -62,7 +62,7 @@ START_MODULE
     #define FUNCTION SingletDM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(SingletDM_spectrum, const Spectrum*)
-    ALLOW_MODEL(SingletDM,SingletDM_running)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
     #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
@@ -80,13 +80,6 @@ START_MODULE
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
      DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-
-    #define FUNCTION SS_Higgs_decays
-    START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SingletDM_spectrum, const Spectrum*) 
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    ALLOW_MODEL(SingletDM,SingletDM_running)
     #undef FUNCTION
 
   #undef CAPABILITY
