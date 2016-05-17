@@ -640,13 +640,11 @@ START_MODULE
 
 
   #define CAPABILITY SLHA1_violation
-  START_CAPABILITY
-  
+  START_CAPABILITY 
     #define FUNCTION check_first_sec_gen_mixing
     START_FUNCTION(int)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     #undef FUNCTION
-    
   #undef CAPABILITY
 
 
@@ -655,7 +653,6 @@ START_MODULE
     #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
-    DEPENDENCY(SLHA1_violation, int)
     #undef FUNCTION
   #undef CAPABILITY
 
