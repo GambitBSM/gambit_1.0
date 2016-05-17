@@ -2621,8 +2621,8 @@ namespace Gambit
       using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
 
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");
       result.refill(mssm, tol, pt_error, debug);
     }
@@ -2635,7 +2635,7 @@ namespace Gambit
     void check_first_sec_gen_mixing (int& result)
     {
       using namespace Pipes::check_first_sec_gen_mixing;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       result = 0;
       double max_mixing;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();

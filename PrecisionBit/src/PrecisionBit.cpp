@@ -680,8 +680,6 @@ namespace Gambit
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
-      // const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
-      
       /// fill pole masses.
       /// note: that the indices start from 0 in gm2calc,
       /// gambit indices start from 1, hence the offsets here
@@ -689,10 +687,9 @@ namespace Gambit
       str msm1, msm2;
       // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
       // If we get a successful convergence to the pole mass scheme in the end it's OK  
-      const static double tol = runOptions->getValueOrDef<double>(1e-1, "off_diagonal_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
-      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol,
-					LOCAL_INFO, pt_error);
+      const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
       model.get_physical().MSm(0)  =  mssm->get(Par::Pole_Mass, msm1); // 1L
       model.get_physical().MSm(1)  =  mssm->get(Par::Pole_Mass, msm2); // 1L
       
@@ -788,8 +785,8 @@ namespace Gambit
       str msm1, msm2;
       // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
       // If we get a successful convergence to the pole mass scheme in the end it's OK  
-      const static double tol = runOptions->getValueOrDef<double>(1e-1, "off_diagonal_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
       slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
       BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, msm1));   /* 1L */
       BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, msm2));   /* 1L */
