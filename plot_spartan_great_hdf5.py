@@ -97,10 +97,16 @@ print "Plotting posterior..."
 mask = multi.valid() & mu.valid() & sigma.valid() & LnL.valid()
 
 print "valid independent samples: ", np.sum(multi.valid())
+print "sum of multiplicities of independent samples:", np.sum(multi.data()[multi.valid()])
 
 # Binning up the posterior
 H, xedges, yedges = np.histogram2d(mu.data()[mask], sigma.data()[mask], bins=30, 
-                        range=[[5, 35], [-8, 8]], normed=True, weights=multi.data()[mask])
+                   range=[[18, 24], [0, 5]], normed=True, weights=multi.data()[mask])
+
+# Raw version (no weights or mask)
+#H, xedges, yedges = np.histogram2d(mu.data()[mask], sigma.data()[mask], bins=30, 
+#                        range=[[5, 35], [-8, 8]], normed=True, weights=multi.data()[mask])
+
 H = H.T # For some reason I seem to have to do this to get correct alignment
 X, Y = np.meshgrid(xedges, yedges)
 
@@ -112,6 +118,8 @@ H = H*dA
 print H
 print xedges
 print yedges
+
+print 
 
 print "X range: ", np.min(X), np.max(X)
 print "Y range: ", np.min(Y), np.max(Y)

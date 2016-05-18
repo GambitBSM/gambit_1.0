@@ -168,7 +168,7 @@ namespace Gambit
     double LogLikelihoodFunction(TGreatPoint& point)
     {
       std::vector<double> parameter_vector = point.GetPoint();
-      point.SetID(data.likelihood_function->getPtID());
+      point.SetID(data.likelihood_function->getNextPtID()); // Need to use the *next* PtID because PtID will not move on until the likelihood function is called.
       return data.likelihood_function(parameter_vector);
     }
   }
