@@ -57,12 +57,14 @@ void dump_array_to_file(const std::string & filename, const
   file.close();
 }
 
-void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<double> brList)
+void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<double> brList, double mPhi = -1)
 {
   DarkMatter_ID_WIMP.reset_and_calculate();
   TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", brList);
   TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", mWIMP);
   TH_ProcessCatalog_WIMP.setOption<double>("sv", sv);
+  if (mPhi != -1)
+    TH_ProcessCatalog_WIMP.setOption<double>("mPhi", mPhi);
   TH_ProcessCatalog_WIMP.reset_and_calculate();
   RD_fraction_fixed.reset_and_calculate();
   SimYieldTable_DarkSUSY.reset_and_calculate();
@@ -109,6 +111,8 @@ namespace Gambit
       double b = 0;  // defined as sv(v) = sv(v=0) + b*(sv=0)*v**2
       /// Option brList<std::vector<double>>: List of branching ratios (required)
       auto brList = runOptions->getValue<std::vector<double>>("brList");
+      /// Option mWIMP<double>: WIMP mass in GeV (required)
+      double mPhi = runOptions->getValueOrDef<double>(59.0, "mPhi");
 
       // FIXME: Use various channels include 3-body and complicated cascade
       // decay
@@ -120,25 +124,27 @@ namespace Gambit
       addParticle("tau-", 1.8,  1)
       addParticle("b", 4.9,  1)
       addParticle("bbar", 4.9,  1)
+      addParticle("d_3", 4.9,  1)
+      addParticle("dbar_3", 4.9,  1)
 
       addParticle("WIMP", mWIMP,  0)
-      addParticle("phi",  59.0,  0)
+      addParticle("phi",  mPhi,  0)
       addParticle("phi1", 99.99,  0)
-      addParticle("phi2", 49.99,  0)
+      addParticle("phi2", 99.99,  0)
 #undef addParticle
 
       TH_Channel dec_channel(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
 
-      TH_Channel dec_channel1(daFunk::vec<string>("phi2", "phi2"), daFunk::cnst(1.));
+      TH_Channel dec_channel1(daFunk::vec<string>("tau+", "tau-"), daFunk::cnst(1.));
       process_dec1.channelList.push_back(dec_channel1);
 
-      TH_Channel dec_channel2(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
+      TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = daFunk::vec<string>("b", "gamma", "gamma", "phi", "phi1");
-      auto p2 = daFunk::vec<string>("bbar", "Z0", "gamma", "phi", "phi1");
+      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "d_3", "phi");
+      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "dbar_3", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
@@ -147,6 +153,7 @@ namespace Gambit
             catalog.getParticleProperty(p2[i]).mass;
           if ( mWIMP*2 > mtot_final * 0)
           {
+            std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
             daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
                 daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
@@ -292,7 +299,7 @@ int main(int argc, char* argv[])
   // Set up MC loop manager for cascade MC
   // FIXME: Systematically test accuracy and dependence on setup parameters
   // FIXME: Add maximum width for energy bins
-  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10);
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
@@ -416,6 +423,15 @@ int main(int argc, char* argv[])
     if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
     if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.));
     if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
+  }
+
+  if (mode >= 10)
+  {
+    std::cout << "Producing test spectra." << std::endl;
+    double mass = 100.;
+    double sv = 3e-26;
+    std::string filename = "dNdE_FCMC_" + std::to_string(mode) + ".dat";
+    dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.), mode);
   }
 
   if (mode==6)
