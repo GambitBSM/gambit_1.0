@@ -688,7 +688,7 @@ namespace Gambit {
 #endif
     }
 
-
+    /*
     void cascadeMC_PrintResult(bool &dummy)
     {
       dummy=true;
@@ -722,6 +722,7 @@ namespace Gambit {
       }
       logger() << "************************" << std::endl;
     }
+    */
   } 
 }
 
