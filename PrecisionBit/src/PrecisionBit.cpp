@@ -131,14 +131,19 @@ namespace Gambit
 
     /// FeynHiggs precision extractors
     /// @{
-    void FH_precision_gm2     (double &result) { result = Pipes::FH_precision_gm2::Dep::FH_Precision->gmu2;          }
     void FH_precision_edm_e   (double &result) { result = Pipes::FH_precision_edm_e::Dep::FH_Precision->edm_ele;     }
     void FH_precision_edm_n   (double &result) { result = Pipes::FH_precision_edm_n::Dep::FH_Precision->edm_neu;     }
     void FH_precision_edm_hg  (double &result) { result = Pipes::FH_precision_edm_hg::Dep::FH_Precision->edm_Hg;     }
+    void FH_precision_gm2(triplet<double> &result)
+    {
+      result.central = Pipes::FH_precision_gm2::Dep::FH_Precision->gmu2;
+      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      result.lower = result.upper;
+    }
     void FH_precision_deltarho(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_deltarho::Dep::FH_Precision->deltaRho;
-      result.upper = result.central*0.1; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
       result.lower = result.upper;
     }
     void FH_precision_mw(triplet<double> &result)
@@ -150,7 +155,7 @@ namespace Gambit
     void FH_precision_sinW2   (triplet<double> &result)
     {
       result.central = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;
-      result.upper = result.central*0.1; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
       result.lower = result.upper;
     }
     /// @}
@@ -560,8 +565,9 @@ namespace Gambit
     }
 
     /// \brief Likelihoods for light quark mass ratios. At the moment, all are just gaussians.
-    /// Default data from PDG http://PDG.LBL.GOV 10/6/2015
-    /// m_u/m_d = 0.38-0.58
+    /// Default data from PDG http://PDG.LBL.GOV 10/6/2015.
+    /// Likelihoods apply to MSbar masses at the scale mu = 2 GeV.
+    /// m_u/m_d = 0.38-0.58 
     /// m_s / ((m_u + m_d)/2) = 27.5 +/- 1.0
     /// m_s = 95 +/- 5 GeV
     void lnL_light_quark_masses_chi2 (double &result)
@@ -640,15 +646,13 @@ namespace Gambit
     
 
     
-    /// g-2 likelihoods? (TODO Do these belong here or in FlavBit?)
-    void lnL_mssm_gm2_chi2(double &result)
+    /// g-2 likelihood
+    void lnL_gm2_chi2(double &result)
     {
-      using namespace Pipes::lnL_mssm_gm2_chi2;
-      double amu_susy = Dep::a_mu_SUSY_c->central; 
-      /// and sets this as the error on the susy calculation
-      /// change this to new capability so that can be independent of gm2calc 
-      double amu_mssm_error = std::max(Dep::a_mu_SUSY_c->upper,
-				       Dep::a_mu_SUSY_c->lower); 
+      using namespace Pipes::lnL_gm2_chi2;
+      double amu_bsm = 0.5*Dep::muon_gm2->central; 
+      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper,
+				       Dep::muon_gm2->lower); 
       /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
       double amu_sm  = 11659180.2e-10;
       double amu_sm_error = 4.9e-10;
@@ -656,45 +660,18 @@ namespace Gambit
       double amu_exp = 11659208.9e-10;
       // Combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.  
       double amu_exp_error = 6.3e-10;
-      double amu_theory = amu_sm + amu_susy;
+      double amu_theory = amu_sm + amu_bsm;
       double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
-				     + Gambit::Utils::sqr(amu_mssm_error) );
-      
+				     + Gambit::Utils::sqr(amu_bsm_error) );
       result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
       					     amu_theory_err, amu_exp_error);
-
-      
-    }
-
-
-    /// This function is unfinished because SUSY-POPE is buggy.
-    void SP_PrecisionObs(double &result)
-    {
-      using namespace Pipes::SP_PrecisionObs;
-      int error = 0;
-      Farray<Fdouble,1,35> SM_Obs;
-      Farray<Fdouble,1,35> MSSM_Obs;
-
-      BEreq::CalcObs_SUSYPOPE(error, SM_Obs, MSSM_Obs);
-      if(error != 0)
-      {
-        std::cout << "something went wrong" << std::endl;
-      }
-      else
-      {
-        std::cout << " MW in SM = " << SM_Obs(1) << std::endl;
-        std::cout << " MW in MSSM = " << MSSM_Obs(1) << std::endl;
-      }
-      result = 0.1;
-      return;
-
     }
 
 
     /// Calculate a_mu_SUSY using the gm2calc backend.
-    void a_mu_SUSY(triplet<double> &result)
+    void GM2C_SUSY(triplet<double> &result)
     {
-      using namespace Pipes::a_mu_SUSY;
+      using namespace Pipes::GM2C_SUSY;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
@@ -778,20 +755,20 @@ namespace Gambit
       
       double amumssm = BEreq::calculate_amu_1loop(model) 
                        + BEreq::calculate_amu_2loop(model);
-      
-      result.central = amumssm;
-      result.upper = error;
-      result.lower = error;
+
+      // Convert from a_mu to g-2
+      result.central = 2.0*amumssm;
+      result.upper = 2.0*error;
+      result.lower = 2.0*error;
       
       return;
     }
 
 
-
     /// Calculate a_mu_SUSY using the gm2calc_c backend (C version of gm2calc).
-    void a_mu_SUSY_c(triplet<double> &result)
+    void GM2C_SUSY_c(triplet<double> &result)
     {
-      using namespace Pipes::a_mu_SUSY_c;
+      using namespace Pipes::GM2C_SUSY_c;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
 
       /// Note for the C backend to gm2calc: An extra ".pointer()" is needed for functions that take the pointer "model" as input.
@@ -870,11 +847,68 @@ namespace Gambit
 
       double uncertainty = BEreq::gm2calc_mssmnofv_calculate_uncertainty_amu_2loop.pointer()(model);
       
-      result.central = amu;
-      result.upper = uncertainty;
-      result.lower = uncertainty;
+      // Convert from a_mu to g-2
+      result.central = 2.0*amu;
+      result.upper = 2.0*uncertainty;
+      result.lower = 2.0*uncertainty;
       
       return;
+    }
+
+
+    /// Calculation of g-2 with SuperIso
+    void SI_muon_gm2(triplet<double> &result)
+    {
+      using namespace Pipes::SI_muon_gm2;
+
+      #ifdef PRECISIONBIT_DEBUG
+        cout<<"Starting SI_muon_gm2"<<endl;
+      #endif
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      if (param.model < 0)
+      {
+        result.central = 0.0;
+        result.upper   = 0.0;
+        result.upper   = 0.0;
+      }
+      else
+      {
+        result.central = BEreq::muon_gm2(&param);
+        result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> ask Nazila
+        result.lower = result.upper;
+      }
+
+      #ifdef PRECISIONBIT_DEBUG
+        printf("(g-2)_mu=%.3e\n",result.central);
+        cout<<"Finished SI_muon_gm2"<<endl;
+      #endif
+    }
+
+ 
+    /// Precision observables from SUSY-POPE
+    /// This function is unfinished because SUSY-POPE is buggy.
+    void SP_PrecisionObs(double &result)
+    {
+      using namespace Pipes::SP_PrecisionObs;
+      int error = 0;
+      Farray<Fdouble,1,35> SM_Obs;
+      Farray<Fdouble,1,35> MSSM_Obs;
+
+      BEreq::CalcObs_SUSYPOPE(error, SM_Obs, MSSM_Obs);
+      if(error != 0)
+      {
+        std::cout << "something went wrong" << std::endl;
+      }
+      else
+      {
+        std::cout << " MW in SM = " << SM_Obs(1) << std::endl;
+        std::cout << " MW in MSSM = " << MSSM_Obs(1) << std::endl;
+      }
+      result = 0.1;
+      return;
+
     }
 
   }
