@@ -268,6 +268,39 @@ namespace Gambit {
         logger() << "lnL for SI nuclear parameters is " << result << EOM;
     }
 
+    /// \brief Likelihoods for spin dependent nuclear parameters. Follows treatment
+    /// of Akrami, et. al. JCAP04 (2011) 012. (Note that all deltaq are for proton.)
+    /// Default data:
+    ///  a3 = deltau - deltad = 1.2695 +/- 0.0029
+    ///  a8 = deltau + deltad - 2*deltas = 0.585 +/- 0.025
+    ///  deltas = -0.09 +/- 0.03
+    void lnL_deltaq(double &result)
+    {
+        using namespace Pipes::lnL_deltaq;
+        double deltad = *Param["deltad"];
+        double deltau = *Param["deltau"];
+        double deltas = *Param["deltas"];
+        double a3 = deltau - deltad;
+        double a8 = deltau + deltad - 2*deltas;
+
+      // FIXME: Add getValue documentation
+        double a3_central = runOptions->getValueOrDef<double>(1.2695, "a3_central");
+      // FIXME: Add getValue documentation
+        double a3_error = runOptions->getValueOrDef<double>(0.0029, "a3_error");
+      // FIXME: Add getValue documentation
+        double a8_central = runOptions->getValueOrDef<double>(0.585, "a8_central");
+      // FIXME: Add getValue documentation
+        double a8_error = runOptions->getValueOrDef<double>(0.025, "a8_error");
+      // FIXME: Add getValue documentation
+        double deltas_central = runOptions->getValueOrDef<double>(-0.09, "deltas_central");
+      // FIXME: Add getValue documentation
+         double deltas_error = runOptions->getValueOrDef<double>(0.03, "deltas_error");
+
+        result = Stats::gaussian_loglikelihood(a3, a3_central, 0, a3_error) +
+                 Stats::gaussian_loglikelihood(a8, a8_central, 0, a8_error) +
+                 Stats::gaussian_loglikelihood(deltas, deltas_central, 0, deltas_error);
+    }
+
     /// \brief Likelihoods for halo parameters. The likelihood for the local DM density follows a
     /// log normal distribution while for the velocities the distribution is Gaussian.
     /// For discussion of the default values for measured halo paramters and their errors,

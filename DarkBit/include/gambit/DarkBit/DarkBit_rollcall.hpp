@@ -1019,6 +1019,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY lnL_SD_nuclear_parameters
+  START_CAPABILITY
+    #define FUNCTION lnL_deltaq
+      START_FUNCTION(double)
+      ALLOW_MODELS(nuclear_params_fnq)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // INDIRECT DETECTION: NEUTRINOS =====================================
  
   // Solar capture ------------------------
