@@ -294,7 +294,7 @@ START_MODULE
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
-
+  /*
   // Function for printing test result of cascade decays
   #define CAPABILITY cascadeMC_PrintResult
   START_CAPABILITY
@@ -304,6 +304,7 @@ START_MODULE
       DEPENDENCY(cascadeMC_EventCount, DarkBit::stringIntMap)
     #undef FUNCTION
   #undef CAPABILITY
+  */
 
   /*
   // Process catalog for testing purposes
@@ -387,11 +388,11 @@ START_MODULE
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
-    #define FUNCTION lnL_FermiLATdwarfsSimple
-      START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, daFunk::Funk)
-      DEPENDENCY(RD_fraction, double)
-    #undef FUNCTION
+//    #define FUNCTION lnL_FermiLATdwarfsSimple
+//      START_FUNCTION(double)
+//      DEPENDENCY(GA_AnnYield, daFunk::Funk)
+//      DEPENDENCY(RD_fraction, double)
+//    #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
