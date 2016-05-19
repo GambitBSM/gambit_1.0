@@ -6,6 +6,11 @@
 // Function definitions (not found in the header) for the ProcessLevel class.
 
 #include "Pythia8/ProcessLevel.h"
+// NOTE: Gambit hack to limit infinite loops using threadsafe timers.
+#include <boost/chrono.hpp>
+typedef boost::chrono::milliseconds ms;
+typedef boost::chrono::thread_clock thread_cl;
+typedef boost::chrono::thread_clock::time_point thread_tp;
 
 namespace Pythia8 {
 
@@ -182,8 +187,22 @@ bool ProcessLevel::init( Info* infoPtrIn, Settings& settings,
       &resonanceDecays, slhaInterfacePtr, userHooksPtr)) ++numberOn;
 
   // Sum maxima for Monte Carlo choice.
+  // NOTE: Gambit hack: Catch nans and infinities while summing up sigmas.
   sigmaMaxSum = 0.;
-  for (int i = 0; i < int(containerPtrs.size()); ++i) sigmaMaxSum += containerPtrs[i]->sigmaMax();
+  for (int i = 0; i < int(containerPtrs.size()); ++i) {
+    if(std::isfinite(containerPtrs[i]->sigmaMax()))
+      sigmaMaxSum += containerPtrs[i]->sigmaMax();
+    else {
+      std::cerr<<"\n\n\n WARNING: in Pythia8::ProcessLevel::init:\n";
+      std::cerr<<"   Non-finite xsec: "<<containerPtrs[i]->sigmaMax()<<"\n";
+      std::cerr<<"   Process code: "<<containerPtrs[i]->code();
+      std::cerr<<",  Process: "<<containerPtrs[i]->name()<<"\n";
+      std::cerr<<"This process will be removed.\n\n\n";
+      delete containerPtrs[i];
+      containerPtrs.erase(containerPtrs.begin() + i);
+      i--;
+    }
+  }
 
   // Option to pick a second hard interaction: repeat as above.
   int number2On = 0;
@@ -616,8 +635,15 @@ bool ProcessLevel::nextOne( Event& process) {
     physical = true;
 
     // Loop over tries until trial event succeeds.
-    for ( ; ; ) {
-
+    // NOTE: Gambit hack to limit infinite loops using threadsafe timers.
+    // TODO: configurable msTimeLimit...
+    double msTimer=0.;
+    double msTimeLimit = 1000.;
+    ms msDelta;
+    for (thread_tp start = thread_cl::now(); msTimer < msTimeLimit;
+         msDelta = boost::chrono::duration_cast<ms>(thread_cl::now() - start),
+         msTimer = msDelta.count())
+    {
       // Pick one of the subprocesses.
       double sigmaMaxNow = sigmaMaxSum * rndmPtr->flat();
       int iMax = containerPtrs.size() - 1;
@@ -630,6 +656,11 @@ bool ProcessLevel::nextOne( Event& process) {
 
       // Check for end-of-file condition for Les Houches events.
       if (infoPtr->atEndOfFile()) return false;
+    }
+    if (msTimer >= msTimeLimit) {
+      std::cerr<<"\n\n\n WARNING: in Pythia8::ProcessLevel::next:\n";
+      std::cerr<<"   Trial event stuck. Aborting event generation\n\n\n";
+      return false;
     }
 
     // Update sum of maxima if current maximum violated.
