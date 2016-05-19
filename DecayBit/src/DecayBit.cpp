@@ -58,31 +58,6 @@ namespace Gambit
       }
     }
 
-    /// Helper function for SM Higgs decays
-    void set_SM_Higgs_decays(double& mh, double& minmass, double& maxmass, DecayTable::Entry& result)
-    {
-      if (mh < minmass or mh > maxmass)
-      {
-        std::stringstream msg;
-        msg << "Requested Higgs virtuality is " << mh << "; allowed range is " << minmass << "--" << maxmass << " GeV.";
-        invalid_point().raise(msg.str());
-      } 
-      result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
-      result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
-      result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
-      result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
-      result.set_BF(virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
-      result.set_BF(virtual_SMHiggs_widths("ss",mh), 0.0, "s", "sbar");
-      result.set_BF(virtual_SMHiggs_widths("cc",mh), 0.0, "c", "cbar");
-      result.set_BF(virtual_SMHiggs_widths("tt",mh), 0.0, "t", "tbar");
-      result.set_BF(virtual_SMHiggs_widths("gg",mh), 0.0, "g", "g");
-      result.set_BF(virtual_SMHiggs_widths("gammagamma",mh), 0.0, "gamma", "gamma");
-      result.set_BF(virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
-      result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
-      result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
-    }
-
     /// @}
 
     
@@ -267,18 +242,53 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs
     }
 
+    /// Reference SM Higgs decays from Dittmaier tables.
+    /// This function is given a different capability to regular decay
+    /// functions, to allow other module functions to specifically depend
+    /// on the SM values for reference, even when scanning another model.
+    void Ref_SM_Higgs_decays_table(DecayTable::Entry& result)
+    {
+      using namespace Pipes::Ref_SM_Higgs_decays_table;
+    
+      // Get the Higgs pole mass
+      double mh = *Dep::mh;
+      
+      // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al. 
+      double minmass = runOptions->getValueOrDef
+                       <double>(90.0, "higgs_minmass");
+      double maxmass = runOptions->getValueOrDef
+                       <double>(160.0, "higgs_maxmass");
+      if (mh < minmass or mh > maxmass)
+      {
+        std::stringstream msg;
+        msg << "Requested Higgs virtuality is " << mh
+            << "; allowed range is " << minmass << "--"
+            << maxmass << " GeV.";
+        invalid_point().raise(msg.str());
+      } 
+    
+      // Set the contents of the Entry
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = gambit_version;
+      result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
+      result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
+      result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
+      result.set_BF(virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
+      result.set_BF(virtual_SMHiggs_widths("ss",mh), 0.0, "s", "sbar");
+      result.set_BF(virtual_SMHiggs_widths("cc",mh), 0.0, "c", "cbar");
+      result.set_BF(virtual_SMHiggs_widths("tt",mh), 0.0, "t", "tbar");
+      result.set_BF(virtual_SMHiggs_widths("gg",mh), 0.0, "g", "g");
+      result.set_BF(virtual_SMHiggs_widths("gammagamma",mh), 0.0, "gamma", "gamma");
+      result.set_BF(virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
+      result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
+      result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
+    }
+
     /// SM decays: Higgs
     void SM_Higgs_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::SM_Higgs_decays;
-      double mh = (*Dep::SM_spectrum)->get(Par::Pole_Mass,"h0_1");
-      // Invalidate point if Higgs mass is outside a range acceptable for virtual_SMHiggs_widths (choose a smaller range to speed things up)
-      double minmass = runOptions->getValueOrDef<double>(90.0, "higgs_minmass");
-      double maxmass = runOptions->getValueOrDef<double>(160.0, "higgs_maxmass");
-      set_SM_Higgs_decays(mh, minmass, maxmass, result);
+      result = *Pipes::SM_Higgs_decays::Dep::Reference_SM_Higgs_decay_rates;
     }
-
-
 
 
     //////////// MSSM /////////////////////
@@ -2453,21 +2463,16 @@ namespace Gambit
       double v0 = he->get(Par::mass1,"vev");
       double mhpole = spec->get(Par::Pole_Mass,"h0_1");
 
-      // Invalidate point if Higgs mass is outside a range acceptable for virtual_SMHiggs_widths (choose a smaller range to speed things up)
-      double minmass = runOptions->getValueOrDef<double>(90.0, "higgs_minmass");
-      double maxmass = runOptions->getValueOrDef<double>(160.0, "higgs_maxmass");
-
-      // Get the plain SM Higgs decays
-      set_SM_Higgs_decays(mhpole, minmass, maxmass, result);
+      // Get the reference SM Higgs decays
+      result = *Dep::Reference_SM_Higgs_decay_rates;
 
       // Add the h->SS width to the total
       double massratio2 = pow(mass/mhpole,2);
       double gamma = (2.0*mass <= mhpole) ? pow(lambda*v0,2)/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;
-      double oldwidth = result.width_in_GeV;
-      result.width_in_GeV = oldwidth + gamma;
+      result.width_in_GeV = result.width_in_GeV + gamma;
 
-      // Get the SM decays and rescale them
-      double wscaling = oldwidth/result.width_in_GeV;
+      // Rescale the SM decay branching fractions.
+      double wscaling = Dep::Reference_SM_Higgs_decay_rates->width_in_GeV/result.width_in_GeV;
       for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
       {
         it->second.first  *= wscaling; // rescale BF
@@ -2477,7 +2482,7 @@ namespace Gambit
       // Add the h->SS branching fraction
       result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S");
       
-      // Make sure the width is cool.
+      // Make sure the width is sensible.
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
    }
 

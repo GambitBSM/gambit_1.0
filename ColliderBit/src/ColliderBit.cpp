@@ -3374,8 +3374,16 @@ namespace Gambit
       result.BR_Hpjcb = 0.;
       result.BR_Hptaunu = 0.;
       result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
-
-      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      try
+      {
+        double upper = spec->get(Par::Pole_Mass_1srd_high, 25, 0);
+        double lower = spec->get(Par::Pole_Mass_1srd_low, 25, 0);
+        result.deltaMh[0] = std::sqrt(upper*lower);
+      }
+      catch(Gambit::exception)
+      {
+        result.deltaMh[0] = 0.;
+      }
       result.hGammaTot[0] = decays->width_in_GeV;
       result.CP[0] = 1;
       result.CS_lep_hjZ_ratio[0] = 1.;
@@ -3454,7 +3462,9 @@ namespace Gambit
       {
         // Higgs masses and errors
         result.Mh[i] = spec->get(Par::Pole_Mass,sHneut[i]);
-        result.deltaMh[i] = 0.;
+        double upper = spec->get(Par::Pole_Mass_1srd_high,sHneut[i]);
+        double lower = spec->get(Par::Pole_Mass_1srd_low,sHneut[i]);
+        result.deltaMh[i] = std::sqrt(upper*lower);
       }
 
       // invisible LSP?
@@ -3538,7 +3548,9 @@ namespace Gambit
       }
 
       result.MHplus = spec->get(Par::Pole_Mass,"H+");
-      result.deltaMHplus = 0.;
+      double upper = spec->get(Par::Pole_Mass_1srd_high,"H+");
+      double lower = spec->get(Par::Pole_Mass_1srd_low,"H+");
+      result.deltaMHplus = std::sqrt(upper*lower);
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
       const DecayTable::Entry* top_decays = &(decaytable("t"));

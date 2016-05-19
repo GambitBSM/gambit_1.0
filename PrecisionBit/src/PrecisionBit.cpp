@@ -477,16 +477,8 @@ namespace Gambit
 
     }
 
-    /// Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods below
+    /// Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
     /// @{
-    void mw_from_MSSM_spectrum(triplet<double> &result)
-    {
-      using namespace Pipes::mw_from_MSSM_spectrum;
-      const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
-      result.central = HE->get(Par::Pole_Mass, "W+");;
-      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
-    }
     void mw_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SM_spectrum;
@@ -498,10 +490,36 @@ namespace Gambit
     void mw_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SS_spectrum;
-      const SubSpectrum* HE = (*Pipes::mw_from_SS_spectrum::Dep::SingletDM_spectrum)->get_HE();
+      const SubSpectrum* HE = (*Dep::SingletDM_spectrum)->get_HE();
       result.central = HE->get(Par::Pole_Mass, "W+");;
       result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
       result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
+    }
+    void mw_from_MSSM_spectrum(triplet<double> &result)
+    {
+      using namespace Pipes::mw_from_MSSM_spectrum;
+      const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
+      result.central = HE->get(Par::Pole_Mass, "W+");
+      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
+    }
+    void mh_from_SM_spectrum(double &result)
+    {
+      using namespace Pipes::mh_from_SM_spectrum;
+      const SubSpectrum* HE = (*Dep::SM_spectrum)->get_HE();
+      result = HE->get(Par::Pole_Mass, 25, 0);
+    }
+    void mh_from_SS_spectrum(double &result)
+    {
+      using namespace Pipes::mh_from_SS_spectrum;
+      const SubSpectrum* HE = (*Dep::SingletDM_spectrum)->get_HE();
+      result = HE->get(Par::Pole_Mass, 25, 0);
+    }
+    void mh_from_MSSM_spectrum(double &result)
+    {
+      using namespace Pipes::mh_from_MSSM_spectrum;
+      const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
+      result = HE->get(Par::Pole_Mass, 25, 0);
     }
     /// @}
 
