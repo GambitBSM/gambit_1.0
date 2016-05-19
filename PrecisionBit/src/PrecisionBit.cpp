@@ -187,7 +187,7 @@ namespace Gambit
       //  1 = from precision calculator
       //  2 = from spectrum calculator
       //  3 = mean of precision mass and mass from spectrum calculator
-      static int central = runOptions->getValueOrDef<double>(1, "Higgs_predictions_source");
+      static int central = runOptions->getValueOrDef<int>(1, "Higgs_predictions_source");
       // FIXME switch to this once the setters take pdg pairs
       //const std::pair<int,int> higgses[4] = {std::pair<int,int>(25,0),
       //                                 std::pair<int,int>(35,0),
@@ -241,7 +241,7 @@ namespace Gambit
       //  3 = RACC, with 1/2 * D_g taken at both edges.
       //  4 = RACC, with 1/2 * D_g taken at the spectrum-generator edge, D_p taken at the other edge.
       //  5 = RACC, with 1/2 * D_g taken at the precision-calculator edge, D_s taken at the other edge.
-      static int error = runOptions->getValueOrDef<double>(2, "Higgs_predictions_error_method");
+      static int error = runOptions->getValueOrDef<int>(2, "Higgs_predictions_error_method");
       const double D_g[4] = {Dep::prec_HiggsMasses->MH[0] - mh_s[0],
                              Dep::prec_HiggsMasses->MH[1] - mh_s[1],
                              Dep::prec_HiggsMasses->MH[2] - mh_s[2],
