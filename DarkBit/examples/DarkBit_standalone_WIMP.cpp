@@ -68,6 +68,7 @@ void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<dou
   TH_ProcessCatalog_WIMP.reset_and_calculate();
   RD_fraction_fixed.reset_and_calculate();
   SimYieldTable_DarkSUSY.reset_and_calculate();
+  SimYieldTable_MicrOmegas.reset_and_calculate();
   GA_missingFinalStates.reset_and_calculate();
   cascadeMC_FinalStates.reset_and_calculate();
   cascadeMC_DecayTable.reset_and_calculate();
@@ -171,7 +172,7 @@ namespace Gambit
       if ( brList[5] > 0. )
       {
         auto E = daFunk::var("E");
-        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
+        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[5];
         // FIXME: Include second gamma in AnnYield (currently ignored)
         TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
@@ -259,6 +260,10 @@ int main(int argc, char* argv[])
   // Initialize DarkSUSY backend
   DarkSUSY_5_1_3_init.reset_and_calculate();
 
+  // Initialize MicrOmegas backend
+  MicrOmegas_3_6_9_2_init.notifyOfModel("LocalHalo");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+  MicrOmegas_3_6_9_2_init.reset_and_calculate();
+
   // Initialize DDCalc0 backend
   Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
   DDCalc0_0_0_init.notifyOfModel("LocalHalo");
@@ -283,10 +288,15 @@ int main(int argc, char* argv[])
   // Initialize tabulated gamma-ray yields
   // FIXME: Use three different simyieldtables
   SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
+  SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::dNdE);
+
+  // Select SimYieldTable
+  auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;
+  //auto SimYieldTablePointer = &SimYieldTable_DarkSUSY;
 
   // Collect missing final states for simulation in cascade MC
   GA_missingFinalStates.resolveDependency(&TH_ProcessCatalog_WIMP);
-  GA_missingFinalStates.resolveDependency(&SimYieldTable_DarkSUSY);
+  GA_missingFinalStates.resolveDependency(SimYieldTablePointer);
   GA_missingFinalStates.resolveDependency(&DarkMatter_ID_WIMP);
 
   // Infer for which type of final states particles MC should be performed
@@ -294,7 +304,7 @@ int main(int argc, char* argv[])
 
   // Collect decay information for cascade MC
   cascadeMC_DecayTable.resolveDependency(&TH_ProcessCatalog_WIMP);
-  cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
+  cascadeMC_DecayTable.resolveDependency(SimYieldTablePointer);
 
   // Set up MC loop manager for cascade MC
   // FIXME: Systematically test accuracy and dependence on setup parameters
@@ -302,7 +312,7 @@ int main(int argc, char* argv[])
   cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-  cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
+  cascadeMC_LoopManager.resolveDependency(SimYieldTablePointer);
   cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_WIMP);
   std::vector<functor*> nested_functions = initVector<functor*>(
       &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
@@ -325,7 +335,7 @@ int main(int argc, char* argv[])
   cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
   cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_WIMP);
-  cascadeMC_Histograms.resolveDependency(&SimYieldTable_DarkSUSY);
+  cascadeMC_Histograms.resolveDependency(SimYieldTablePointer);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_FinalStates);
   cascadeMC_Histograms.resolveLoopManager(&cascadeMC_LoopManager);
   //cascadeMC_Histograms.reset_and_calculate();
@@ -346,7 +356,7 @@ int main(int argc, char* argv[])
 
   // Calculate total gamma-ray yield (cascade MC + tabulated results)
   GA_AnnYield_General.resolveDependency(&TH_ProcessCatalog_WIMP);
-  GA_AnnYield_General.resolveDependency(&SimYieldTable_DarkSUSY);
+  GA_AnnYield_General.resolveDependency(SimYieldTablePointer);
   GA_AnnYield_General.resolveDependency(&DarkMatter_ID_WIMP);
   GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
 
@@ -413,16 +423,17 @@ int main(int argc, char* argv[])
   sigma_SI_p_simple.resolveDependency(&mwimp_generic);
 
   // Spectral tests
-  if ( (mode > 0) and (mode < 6) )
+  if ( (mode >= 0) and (mode < 6) )
   {
     std::cout << "Producing test spectra." << std::endl;
     double mass = 100.;
     double sv = 3e-26;
+    if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
     if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.));
     if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
     if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
     if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.));
-    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
+    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
   }
 
   if (mode >= 10)
@@ -457,6 +468,7 @@ int main(int argc, char* argv[])
         TH_ProcessCatalog_WIMP.reset_and_calculate();
         RD_fraction_fixed.reset_and_calculate();
         SimYieldTable_DarkSUSY.reset_and_calculate();
+        SimYieldTable_MicrOmegas.reset_and_calculate();
         GA_missingFinalStates.reset_and_calculate();
         cascadeMC_FinalStates.reset_and_calculate();
         cascadeMC_DecayTable.reset_and_calculate();

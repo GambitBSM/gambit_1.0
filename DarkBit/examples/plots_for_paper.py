@@ -40,11 +40,13 @@ def plotSpectraValidation():
     plt.clf()
     plt.figure(figsize=(5, 4))
     for filename, label in [ 
+            ['dNdE0_DS.dat', r'$\chi\chi\to \bar b b\rm\, (DS)$'],
+            ['dNdE0_MO.dat', r'$\chi\chi\to \bar b b\rm\, (MO) \times\, 2$'],
             ['dNdE1.dat', r'$\chi\chi\to Z^0\!\gamma$'],
             ['dNdE2.dat', r'$\chi\chi\to \gamma\gamma$'],
 #            ['dNdE3.dat', 'phi phi->gggg'],
 #            ['dNdE4.dat', '2 x phi1 -> 4 x phi2 -> 8 x g'],
-#            ['dNdE5.dat', '3-body'],
+            ['dNdE5.dat', r'$\chi\chi\to\gamma\nu\nu$'],
 #            ['dNdE_MSSM.dat', 'input.slha'],
 #            ['FMCp03000765.gaspec', 'input.slha'],
             ]:
@@ -54,13 +56,14 @@ def plotSpectraValidation():
 #            factor = 1/250**2
 #        else:
 #            factor = 1.
-        plt.loglog(x, y*x*x+1e-50, label=label)
-    plt.ylim([1e-33, 1e-24])
+        factor = 2 if "MO" in filename else 1
+        plt.loglog(x, factor*y*x*x+1e-50, label=label)
+    plt.ylim([1e-32, 1e-26])
     plt.xlim([1e0, 2e2])
     plt.xlabel(r"$E\, [\rmGeV]$")
     plt.ylabel("$E^2 d\Phi/dE$")
     plt.tight_layout(pad=0.3)
-    plt.legend(loc=2, frameon=False, fontsize=11)
+    plt.legend(loc=3, frameon=False, fontsize=11)
     plt.savefig("DarkBit_spectra_validation.eps")
 
 def plotLimits():
@@ -108,6 +111,6 @@ def plotLUX():
 
 if __name__ == '__main__':
     #plotLimits()
-    #plotSpectraValidation()
-    plotSpectraCascade()
+    plotSpectraValidation()
+    #plotSpectraCascade()
     #plotLUX()
