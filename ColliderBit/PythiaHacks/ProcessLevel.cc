@@ -7,10 +7,13 @@
 
 #include "Pythia8/ProcessLevel.h"
 // NOTE: Gambit hack to limit infinite loops using threadsafe timers.
+#ifndef BOOST_CHRONO_HEADER_ONLY
+#define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
 typedef boost::chrono::milliseconds ms;
 typedef boost::chrono::thread_clock thread_cl;
 typedef boost::chrono::thread_clock::time_point thread_tp;
+#endif // BOOST_CHRONO_HEADER_ONLY
 
 namespace Pythia8 {
 
