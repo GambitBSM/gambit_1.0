@@ -57,15 +57,18 @@ void dump_array_to_file(const std::string & filename, const
   file.close();
 }
 
-void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<double> brList)
+void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<double> brList, double mPhi = -1)
 {
   DarkMatter_ID_WIMP.reset_and_calculate();
   TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", brList);
   TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", mWIMP);
   TH_ProcessCatalog_WIMP.setOption<double>("sv", sv);
+  if (mPhi != -1)
+    TH_ProcessCatalog_WIMP.setOption<double>("mPhi", mPhi);
   TH_ProcessCatalog_WIMP.reset_and_calculate();
   RD_fraction_fixed.reset_and_calculate();
   SimYieldTable_DarkSUSY.reset_and_calculate();
+  SimYieldTable_MicrOmegas.reset_and_calculate();
   GA_missingFinalStates.reset_and_calculate();
   cascadeMC_FinalStates.reset_and_calculate();
   cascadeMC_DecayTable.reset_and_calculate();
@@ -109,6 +112,8 @@ namespace Gambit
       double b = 0;  // defined as sv(v) = sv(v=0) + b*(sv=0)*v**2
       /// Option brList<std::vector<double>>: List of branching ratios (required)
       auto brList = runOptions->getValue<std::vector<double>>("brList");
+      /// Option mWIMP<double>: WIMP mass in GeV (required)
+      double mPhi = runOptions->getValueOrDef<double>(59.0, "mPhi");
 
       // FIXME: Use various channels include 3-body and complicated cascade
       // decay
@@ -120,25 +125,27 @@ namespace Gambit
       addParticle("tau-", 1.8,  1)
       addParticle("b", 4.9,  1)
       addParticle("bbar", 4.9,  1)
+      addParticle("d_3", 4.9,  1)
+      addParticle("dbar_3", 4.9,  1)
 
       addParticle("WIMP", mWIMP,  0)
-      addParticle("phi",  59.0,  0)
+      addParticle("phi",  mPhi,  0)
       addParticle("phi1", 99.99,  0)
-      addParticle("phi2", 49.99,  0)
+      addParticle("phi2", 99.99,  0)
 #undef addParticle
 
       TH_Channel dec_channel(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
 
-      TH_Channel dec_channel1(daFunk::vec<string>("phi2", "phi2"), daFunk::cnst(1.));
+      TH_Channel dec_channel1(daFunk::vec<string>("tau+", "tau-"), daFunk::cnst(1.));
       process_dec1.channelList.push_back(dec_channel1);
 
-      TH_Channel dec_channel2(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
+      TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = daFunk::vec<string>("b", "gamma", "gamma", "phi", "phi1");
-      auto p2 = daFunk::vec<string>("bbar", "Z0", "gamma", "phi", "phi1");
+      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "d_3", "phi");
+      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "dbar_3", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
@@ -147,6 +154,7 @@ namespace Gambit
             catalog.getParticleProperty(p2[i]).mass;
           if ( mWIMP*2 > mtot_final * 0)
           {
+            std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
             daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
                 daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
@@ -164,7 +172,7 @@ namespace Gambit
       if ( brList[5] > 0. )
       {
         auto E = daFunk::var("E");
-        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
+        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[5];
         // FIXME: Include second gamma in AnnYield (currently ignored)
         TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
@@ -243,6 +251,8 @@ int main(int argc, char* argv[])
   LocalHalo_primary_parameters->setValue("vesc", 550.);
   LocalHalo_primary_parameters->setValue("vearth", 29.78);
 
+  // ---- Initialize backends ----
+
   // Set up DDCalc backend initialization
   Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
   Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
@@ -252,6 +262,18 @@ int main(int argc, char* argv[])
   DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
   DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
   DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP); // Use DarkSUSY for DD couplings
+
+
+  // Initialize gamLike backend
+  gamLike_1_0_0_init.reset_and_calculate();
+
+  // Initialize DarkSUSY backend
+  DarkSUSY_5_1_3_init.reset_and_calculate();
+
+  // Initialize MicrOmegas backend
+  MicrOmegas_3_6_9_2_init.notifyOfModel("LocalHalo");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+  MicrOmegas_3_6_9_2_init.reset_and_calculate();
+
 
 
   // ---- Set up basic internal structures for direct & indirect detection ----
@@ -270,10 +292,15 @@ int main(int argc, char* argv[])
   // Initialize tabulated gamma-ray yields
   // FIXME: Use three different simyieldtables
   SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
+  SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::dNdE);
+
+  // Select SimYieldTable
+  auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;
+  //auto SimYieldTablePointer = &SimYieldTable_DarkSUSY;
 
   // Collect missing final states for simulation in cascade MC
   GA_missingFinalStates.resolveDependency(&TH_ProcessCatalog_WIMP);
-  GA_missingFinalStates.resolveDependency(&SimYieldTable_DarkSUSY);
+  GA_missingFinalStates.resolveDependency(SimYieldTablePointer);
   GA_missingFinalStates.resolveDependency(&DarkMatter_ID_WIMP);
 
   // Infer for which type of final states particles MC should be performed
@@ -281,15 +308,15 @@ int main(int argc, char* argv[])
 
   // Collect decay information for cascade MC
   cascadeMC_DecayTable.resolveDependency(&TH_ProcessCatalog_WIMP);
-  cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
+  cascadeMC_DecayTable.resolveDependency(SimYieldTablePointer);
 
   // Set up MC loop manager for cascade MC
   // FIXME: Systematically test accuracy and dependence on setup parameters
   // FIXME: Add maximum width for energy bins
-  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10);
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-  cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
+  cascadeMC_LoopManager.resolveDependency(SimYieldTablePointer);
   cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_WIMP);
   std::vector<functor*> nested_functions = initVector<functor*>(
       &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
@@ -312,7 +339,7 @@ int main(int argc, char* argv[])
   cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
   cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_WIMP);
-  cascadeMC_Histograms.resolveDependency(&SimYieldTable_DarkSUSY);
+  cascadeMC_Histograms.resolveDependency(SimYieldTablePointer);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_FinalStates);
   cascadeMC_Histograms.resolveLoopManager(&cascadeMC_LoopManager);
   //cascadeMC_Histograms.reset_and_calculate();
@@ -333,7 +360,7 @@ int main(int argc, char* argv[])
 
   // Calculate total gamma-ray yield (cascade MC + tabulated results)
   GA_AnnYield_General.resolveDependency(&TH_ProcessCatalog_WIMP);
-  GA_AnnYield_General.resolveDependency(&SimYieldTable_DarkSUSY);
+  GA_AnnYield_General.resolveDependency(SimYieldTablePointer);
   GA_AnnYield_General.resolveDependency(&DarkMatter_ID_WIMP);
   GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
 
@@ -393,16 +420,26 @@ int main(int argc, char* argv[])
   sigma_SI_p_simple.resolveDependency(&mwimp_generic);
 
   // Spectral tests
-  if ( (mode > 0) and (mode < 6) )
+  if ( (mode >= 0) and (mode < 6) )
   {
     std::cout << "Producing test spectra." << std::endl;
     double mass = 100.;
     double sv = 3e-26;
+    if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
     if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.));
     if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
     if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
     if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.));
-    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
+    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
+  }
+
+  if (mode >= 10)
+  {
+    std::cout << "Producing test spectra." << std::endl;
+    double mass = 100.;
+    double sv = 3e-26;
+    std::string filename = "dNdE_FCMC_" + std::to_string(mode) + ".dat";
+    dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.), mode);
   }
 
   if (mode==6)
@@ -428,6 +465,7 @@ int main(int argc, char* argv[])
         TH_ProcessCatalog_WIMP.reset_and_calculate();
         RD_fraction_fixed.reset_and_calculate();
         SimYieldTable_DarkSUSY.reset_and_calculate();
+        SimYieldTable_MicrOmegas.reset_and_calculate();
         GA_missingFinalStates.reset_and_calculate();
         cascadeMC_FinalStates.reset_and_calculate();
         cascadeMC_DecayTable.reset_and_calculate();

@@ -287,7 +287,7 @@ namespace Gambit {
       // the histograms.  Limits are chosen such that we only sample energies
       // that can contribute to histogram bins.
       const double Ecmin = std::max( gamma*histEmin 
-          - gammaBeta*sqrt(histEmin*histEmin-msq) , chn.Ecm_min );
+          - gammaBeta*sqrt(histEmin*histEmin-msq) , 0*chn.Ecm_min );  // CW: chn.Ecm_min refers to initial not final energies
       const double Ecmax = std::min(std::min( 
             // Highest energy that can contribute to the histogram
             gamma*histEmax + gammaBeta*sqrt(histEmax*histEmax-msq),
