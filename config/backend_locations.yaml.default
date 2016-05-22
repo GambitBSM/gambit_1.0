@@ -18,8 +18,8 @@ DarkSUSY:
 SuperIso:
   3.4:         ./Backends/installed/SuperIso/3.4/libsuperiso.so
 
-DDCalc0:
-  0.0:         ./Backends/installed/DDCalc/0.0/libDDCalc0.so
+DDCalc:
+  1.0.0:       ./Backends/installed/DDCalc/1.0.0/lib/libDDCalc.so
 
 HiggsBounds:
   4.2.1:       ./Backends/installed/HiggsBounds/4.2.1/lib/libhiggsbounds.so

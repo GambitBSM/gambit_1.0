@@ -119,7 +119,7 @@ namespace Gambit
     // Neutrino telescope data structures
     //////////////////////////////////////////////
 
-    // Neutrino telescope yield info container
+    /// Neutrino telescope yield info container
     struct nuyield_info
     {
       public:
@@ -127,7 +127,7 @@ namespace Gambit
         nuyield_function_pointer pointer;
     };
     
-    // Neutrino telescope data container
+    /// Neutrino telescope data container
     struct nudata
     {
       public:
@@ -145,7 +145,7 @@ namespace Gambit
     //////////////////////////////////////////////
     
     // NOTE:
-    // Except for DD_couplings, the structures here are
+    // The structures here are
     // preliminary ideas for generic, robust means of
     // specifying the DM particle(s), interactions, and
     // distributions in the local halo.  These structures
@@ -160,19 +160,7 @@ namespace Gambit
     // Velocities are typically specified in the Galactic
     // rest frame, i.e. the frame with no rotation.
 
-    //------------------------------------------------------
-    // Initial DM coupling structure definition used for early
-    // GAMBIT development; to be superceded by structures below.
-    struct DD_couplings
-    {
-      double gps;
-      double gns;
-      double gpa;
-      double gna;
-    };
-
-
-    /*  NOTE: These structures are currently not used in the code
+    /*
 
     //------------------------------------------------------
     // Structure to contain the Sun & Earth's motion relative

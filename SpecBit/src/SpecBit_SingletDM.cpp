@@ -231,6 +231,8 @@ namespace Gambit
             invalid_point().raise(msg.str()); //TODO: This message isn't ending up in the logs.
          }
       }
+      
+      
       static Spectrum matched_spectra;
       matched_spectra = Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
     
@@ -290,32 +292,6 @@ namespace Gambit
 
     }
 
-
-    void get_pole_mh(double &result)
-    {
-      using namespace flexiblesusy;
-      using namespace softsusy;
-      namespace myPipe = Pipes::get_pole_mh;//get_SingletDM_spectrum;
-      using namespace Gambit;
-      using namespace SpecBit;
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-      result=spec->get(Par::Pole_Mass,"h0");
-    }
-
-
-    void get_pole_ms(double &result)
-    {
-      using namespace flexiblesusy;
-      using namespace softsusy;
-      namespace myPipe = Pipes::get_pole_ms;//get_SingletDM_spectrum;
-      using namespace Gambit;
-      using namespace SpecBit;
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-      result=spec->get(Par::Pole_Mass,"s0");
-    }
-    
     
     // simple function for generating a spectrum up to a given high scale, this does not save the spectrum object, so only used when the spectrum was already
     // calculated before hand for use with find_min_lambda for vacuum stability
@@ -366,7 +342,11 @@ namespace Gambit
     const Options& runOptions=*myPipe::runOptions;
     double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
     const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-    cout<< "checking perturbativity to scale =  " << scale << endl;
+    
+    #ifdef SPECBIT_DEBUG
+        std::cout<<"checking perturbativity to scale =  " << scale<<std::endl;
+    #endif
+    
     SingletDM_input_parameters input;
     fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
     if(check_perturb_func_SingletDM(input,sminputs)){lnlike=1e-300;}
@@ -387,6 +367,71 @@ namespace Gambit
     else{lnlike=0;}
     }
     
+    
+    // print spectrum out, stripped down copy from MSSM version with variable names changed
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>&, const Spectrum*);
+   
+    void get_SingletDM_spectrum_as_map (std::map<std::string,double>& specmap)
+    {
+      namespace myPipe = Pipes::get_SingletDM_spectrum_as_map;
+      const Spectrum* singletdmspec(*myPipe::Dep::SingletDM_spectrum);
+      fill_map_from_SingletDMspectrum(specmap, singletdmspec);
+    }
+    
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>& specmap, const Spectrum* singletdmspec)
+    {
+      /// Add everything... use spectrum contents routines to automate task
+      static const SpectrumContents::SingletDM contents;
+      static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
+      
+      for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+           it != required_parameters.end(); ++it)
+      {
+         const Par::Tags        tag   = it->tag();
+         const std::string      name  = it->name();
+         const std::vector<int> shape = it->shape();
+
+         /// Verification routine should have taken care of invalid shapes etc, so won't check for that here.
+
+         // Check scalar case
+         if(shape.size()==1 and shape[0]==1)
+         {
+           std::ostringstream label;
+           label << name <<" "<< Par::toString.at(tag);
+           specmap[label.str()] = singletdmspec->get_HE()->get(tag,name);
+         }
+         // Check vector case
+         else if(shape.size()==1 and shape[0]>1)
+         {
+           for(int i = 1; i<=shape[0]; ++i) {
+             std::ostringstream label;
+             label << name <<"_"<<i<<" "<< Par::toString.at(tag);
+             specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i);
+           }
+         }
+         // Check matrix case
+         else if(shape.size()==2)
+         {
+           for(int i = 1; i<=shape[0]; ++i) {
+             for(int j = 1; j<=shape[0]; ++j) {
+               std::ostringstream label;
+               label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
+               specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i,j);
+             }  
+           }
+         }
+         // Deal with all other cases
+         else
+         {
+           // ERROR
+           std::ostringstream errmsg;           
+           errmsg << "Error, invalid parameter received while converting SingletDMspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
+           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape; 
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());
+         }
+      }
+
+    }
     
 //    void check_perturb_to_min_lambda_SingletDMZ3(double &error)
 //    {

@@ -1,62 +1,50 @@
 Parameters:
 
-  #SM nuisance parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
-
-  #Nuclear matrix parameters.
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      range:  [19, 67]
-    sigmal:
-      range:  [31, 85]
-    deltau:
-      fixed_value:  0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
-
-  MSSM7atQ:
-    Qin:
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
-    Ad_3:
-      range: [1e2, 1e4]
-      prior_type: log
-    Au_3:
-      range: [1e2, 1e4]
-      prior_type: log
-    M2:
-      range: [1e2, 1e4]
-      prior_type: log
-    TanBeta:
-      range: [3.0, 70.0]
-      prior_type: flat
-    mHd2:
-      range: [1e4, 1e8]
-      prior_type: log    
-    mHu2:
-      range: [1e4, 1e8]
-      prior_type: log
-    mf2:
-      range: [1e4, 1e8]
-      prior_type: log
-
-
+  CMSSM:
+    A0: 7955.71
+    M0: 3406.17
+    M12: 8960.77
+    SignMu: 1
+    TanBeta: 10.6419
   LocalHalo:
-    rho0: # Local dark matter density
-      fixed_value: .4 # GeV/cm^3
-      #range: [.2, .8]
-      #prior_type: flat
-    vrot: # Local disk rotation speed
-      fixed_value: 235 # km/s
-    v0: # Maxwellian most-probable speed
-      fixed_value: 235 # km/s
-    vesc: # Local galactic escape speed
-      fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
+    rho0: 0.4
+    v0: 235
+    vearth: 29.78
+    vesc: 550
+    vrot: 235
+  StandardModel_SLHA2:
+    CKM_A: 0.814
+    CKM_etabar: 0.353
+    CKM_lambda: 0.22537
+    CKM_rhobar: 0.117
+    GF: 1.16638e-05
+    alpha1: 0
+    alpha2: 0
+    alphaS: 0.1185
+    alphainv: 127.94
+    delta13: 0
+    mBmB: 4.18
+    mCmC: 1.275
+    mD: 0.0048
+    mE: 0.000510999
+    mMu: 0.105658
+    mNu1: 0
+    mNu2: 0
+    mNu3: 0
+    mS: 0.095
+    mT: 173.34
+    mTau: 1.77682
+    mU: 0.0023
+    mZ: 91.1876
+    theta12: 0.58376
+    theta13: 0.15495
+    theta23: 0.76958
+  nuclear_params_sigmas_sigmal:
+    deltad: -0.427
+    deltas: -0.085
+    deltau: 0.842
+    sigmal: 58
+    sigmas: 43
 
 Priors:
 
@@ -67,8 +55,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "CMSSM.hdf5"
+    group: "/CMSSM"
 
 Scanner:
 
@@ -80,6 +68,12 @@ Scanner:
       like:  LogLike
       nlive: 4000
       tol: 0.5
+
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 2000
+      verbosity: 1
 
 ObsLikes:
 
@@ -93,12 +87,6 @@ ObsLikes:
       purpose:    LogLike
 
     - capability: LUX_2013_LogLikelihood
-      purpose:    LogLike
-
-    - capability: SuperCDMS_2014_LogLikelihood
-      purpose:    LogLike
-
-    - capability: SIMPLE_2014_LogLikelihood
       purpose:    LogLike
 
     - capability: IC79_loglike
@@ -125,9 +113,6 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
-    - capability:  lnL_gm2
-      purpose:     LogLike
-
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:    LogLike
@@ -139,16 +124,16 @@ ObsLikes:
     # DM Local Halo likelihoods
     - capability: lnL_rho0
       purpose: LogLike
-
+      
     - capability: lnL_vrot
       purpose: LogLike
-
+      
     - capability: lnL_v0
       purpose: LogLike
-
+      
     - capability: lnL_vesc
       purpose: LogLike
-
+      
     # FlavBit likelihoods
     - purpose:    LogLike
       capability: b2ll_LL
@@ -292,8 +277,10 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -431,6 +418,9 @@ Rules:
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
+  - capability: ConvertedScatteringEvent
+    function: convertPythia8ParticleEvent
+
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
@@ -446,10 +436,9 @@ Rules:
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
-      ###   backend. So, this must only be set if the user chooses a different Pythia.
-      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+      # Change to absolute paths below when running outside of the gambit/modules directory
+      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = off",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = on",
@@ -462,6 +451,8 @@ Rules:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
 Logger:
+
+  debug: true
 
   redirection:
     [Debug] : "debug.log"
@@ -483,4 +474,4 @@ KeyValues:
     model_invalid_for_lnlike_below: -1e4
     debug: true
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM_LHC/"

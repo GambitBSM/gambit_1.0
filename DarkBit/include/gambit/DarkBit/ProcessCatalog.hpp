@@ -103,7 +103,7 @@ namespace Gambit
         std::vector<std::string> finalStateIDs;
 
         /// Number of final state particles in this channel
-        int nFinalStates;
+        unsigned int nFinalStates;
 
         /// Energy dependence of final state particles. Includes v_rel ("v") as last argument in case of annihilation
         daFunk::Funk genRate = daFunk::zero("dummyArgument");

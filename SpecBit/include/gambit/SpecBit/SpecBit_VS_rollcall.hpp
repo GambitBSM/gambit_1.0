@@ -27,7 +27,7 @@
     #define FUNCTION find_min_lambda
     START_FUNCTION(triplet<double>)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SingletDM_pole_mh, double)
+    //DEPENDENCY(SingletDM_pole_mh, double)
     DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SingletDMZ3)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))

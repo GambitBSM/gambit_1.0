@@ -498,518 +498,47 @@ START_MODULE
 
   // DIRECT DETECTION ==================================================
 
-  // WIMP-nucleon couplings ---------------------------------------
-
-  // Determine the WIMP mass and couplings
+  // Determine the DM-nucleon couplings
   #define CAPABILITY DD_couplings
   START_CAPABILITY
+
     #define FUNCTION DD_couplings_DarkSUSY
-      START_FUNCTION(DarkBit::DD_couplings)
+      START_FUNCTION(DM_nucleon_couplings)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
       ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
+
     #define FUNCTION DD_couplings_MicrOmegas
-      START_FUNCTION(DarkBit::DD_couplings)
-      BACKEND_REQ(nucleonAmplitudes, (backends), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
-      BACKEND_REQ(FeScLoop, (backends), double, (double, double, double, double))
-      BACKEND_REQ(MOcommon, (backends), MicrOmegas::MOcommonSTR)
+      START_FUNCTION(DM_nucleon_couplings)
+      BACKEND_REQ(nucleonAmplitudes, (gimmemicro), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (gimmemicro), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (gimmemicro), MicrOmegas::MOcommonSTR)
       ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM30atQ, MSSM30atMGUT, SingletDM)
       MODEL_GROUP(group1, (nuclear_params_fnq))
       MODEL_GROUP(group2, (MSSM30atQ, MSSM30atMGUT, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
-      BACKEND_OPTION((MicrOmegas),(backends))
-      BACKEND_OPTION((MicrOmegasSingletDM),(backends))
-      FORCE_SAME_BACKEND(backends)
+      BACKEND_OPTION((MicrOmegas),(gimmemicro))
+      BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
+      FORCE_SAME_BACKEND(gimmemicro)
     #undef FUNCTION
+
     #define FUNCTION DD_couplings_SingletDM
-      START_FUNCTION(DarkBit::DD_couplings)
+      START_FUNCTION(DM_nucleon_couplings)
       DEPENDENCY(SingletDM_spectrum, const Spectrum*)
       //DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
+
   #undef CAPABILITY
 
   // Simple calculators of the spin-(in)dependent WIMP-proton and WIMP-neutron cross-sections 
-  QUICK_FUNCTION(DarkBit, sigma_SI_p, NEW_CAPABILITY, sigma_SI_p_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
-  QUICK_FUNCTION(DarkBit, sigma_SI_n, NEW_CAPABILITY, sigma_SI_n_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
-  QUICK_FUNCTION(DarkBit, sigma_SD_p, NEW_CAPABILITY, sigma_SD_p_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
-  QUICK_FUNCTION(DarkBit, sigma_SD_n, NEW_CAPABILITY, sigma_SD_n_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
-
-  // DDCalc0 dependencies ----------------------------------
-  // Intermediate routines that must be called when intending
-  // to retrieve likelihoods or observables from DDCalc0.
-  // The bool result to these functions is currently meaningless.
-
-  // Set the WIMP mass and couplings
-  #define CAPABILITY SetWIMP_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION SetWIMP_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(DD_couplings, DarkBit::DD_couplings)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, std::string)
-      BACKEND_REQ(DDCalc0_SetWIMP_mG, (DDCalc0), void, (double*,double*,double*,double*,double*))
-      // Following only used for logging (not necessary for capability)
-      BACKEND_REQ(DDCalc0_GetWIMP_msigma, (DDCalc0), void, (double*,double*,double*,double*,double*))
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Perform rate calculations for the XENON100 2012 result
-  // at the current model point.
-  #define CAPABILITY CalcRates_XENON100_2012_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION CalcRates_XENON100_2012_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(SetWIMP_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_CalcRates, (DDCalc0), void, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Perform rate calculations for the LUX 2013 result
-  // at the current model point.
-  #define CAPABILITY CalcRates_LUX_2013_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION CalcRates_LUX_2013_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(SetWIMP_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_CalcRates, (DDCalc0), void, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Perform rate calculations for the SuperCDMS 2014 result
-  // at the current model point.
-  #define CAPABILITY CalcRates_SuperCDMS_2014_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION CalcRates_SuperCDMS_2014_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(SetWIMP_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_CalcRates, (DDCalc0), void, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Perform rate calculations for the SIMPLE 2014 result
-  // at the current model point.
-  #define CAPABILITY CalcRates_SIMPLE_2014_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION CalcRates_SIMPLE_2014_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(SetWIMP_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_CalcRates, (DDCalc0), void, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Perform rate calculations for the future argon-based DARWIN
-  // experiment (estimated sensitivity, as of 2015) at the current
-  // model point.
-  #define CAPABILITY CalcRates_DARWIN_Ar_2015_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION CalcRates_DARWIN_Ar_2015_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(SetWIMP_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_CalcRates, (DDCalc0), void, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Perform rate calculations for the future xenon-based DARWIN
-  // experiment (estimated sensitivity, as of 2015) at the current
-  // model point.
-  #define CAPABILITY CalcRates_DARWIN_Xe_2015_DDCalc0
-  START_CAPABILITY
-    #define FUNCTION CalcRates_DARWIN_Xe_2015_DDCalc0
-      START_FUNCTION(bool)
-      DEPENDENCY(SetWIMP_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_CalcRates, (DDCalc0), void, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  // XENON100 2012 likelihood/observables ------------------
-  // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
- 
-  // Log-likelihood
-  #define CAPABILITY lnL_XENON100_2012
-  START_CAPABILITY
-    #define FUNCTION XENON100_2012_LogLikelihood_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_XENON100_2012_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_LogLikelihood, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Observed events (integer)
-  #define CAPABILITY XENON100_2012_Events
-  START_CAPABILITY
-    #define FUNCTION XENON100_2012_Events_DDCalc0
-      START_FUNCTION(int)
-      DEPENDENCY(CalcRates_XENON100_2012_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_Events, (DDCalc0), int, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Background expectation
-  #define CAPABILITY XENON100_2012_Background
-  START_CAPABILITY
-    #define FUNCTION XENON100_2012_Background_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_XENON100_2012_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_Background, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation
-  #define CAPABILITY XENON100_2012_Signal
-  START_CAPABILITY
-    #define FUNCTION XENON100_2012_Signal_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_XENON100_2012_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_Signal, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-independent)
-  #define CAPABILITY XENON100_2012_SignalSI
-  START_CAPABILITY
-    #define FUNCTION XENON100_2012_SignalSI_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_XENON100_2012_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_SignalSI, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-dependent)
-  #define CAPABILITY XENON100_2012_SignalSD
-  START_CAPABILITY
-    #define FUNCTION XENON100_2012_SignalSD_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_XENON100_2012_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_XENON100_2012_SignalSD, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  // LUX 2013 likelihood/observables -----------------------
-  // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
- 
-  // Log-likelihood
-  #define CAPABILITY lnL_LUX_2013
-  START_CAPABILITY
-    #define FUNCTION LUX_2013_LogLikelihood_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_LogLikelihood, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Observed events (integer)
-  #define CAPABILITY LUX_2013_Events
-  START_CAPABILITY
-    #define FUNCTION LUX_2013_Events_DDCalc0
-      START_FUNCTION(int)
-      DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_Events, (DDCalc0), int, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Background expectation
-  #define CAPABILITY LUX_2013_Background
-  START_CAPABILITY
-    #define FUNCTION LUX_2013_Background_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_Background, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation
-  #define CAPABILITY LUX_2013_Signal
-  START_CAPABILITY
-    #define FUNCTION LUX_2013_Signal_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_Signal, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-independent)
-  #define CAPABILITY LUX_2013_SignalSI
-  START_CAPABILITY
-    #define FUNCTION LUX_2013_SignalSI_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_SignalSI, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-dependent)
-  #define CAPABILITY LUX_2013_SignalSD
-  START_CAPABILITY
-    #define FUNCTION LUX_2013_SignalSD_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_LUX_2013_SignalSD, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  // SuperCDMS 2014 likelihood/observables -----------------
-  // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
- 
-  // Log-likelihood
-  #define CAPABILITY lnL_SuperCDMS_2014
-  START_CAPABILITY
-    #define FUNCTION SuperCDMS_2014_LogLikelihood_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_LogLikelihood, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Observed events (integer)
-  #define CAPABILITY SuperCDMS_2014_Events
-  START_CAPABILITY
-    #define FUNCTION SuperCDMS_2014_Events_DDCalc0
-      START_FUNCTION(int)
-      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_Events, (DDCalc0), int, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Background expectation
-  #define CAPABILITY SuperCDMS_2014_Background
-  START_CAPABILITY
-    #define FUNCTION SuperCDMS_2014_Background_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_Background, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation
-  #define CAPABILITY SuperCDMS_2014_Signal
-  START_CAPABILITY
-    #define FUNCTION SuperCDMS_2014_Signal_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_Signal, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-independent)
-  #define CAPABILITY SuperCDMS_2014_SignalSI
-  START_CAPABILITY
-    #define FUNCTION SuperCDMS_2014_SignalSI_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_SignalSI, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-dependent)
-  #define CAPABILITY SuperCDMS_2014_SignalSD
-  START_CAPABILITY
-    #define FUNCTION SuperCDMS_2014_SignalSD_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SuperCDMS_2014_SignalSD, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  // SIMPLE 2014 likelihood/observables --------------------
-  // Felizardo et al., PRD 89, 072013 (2014) [arxiv:1404.4309]
- 
-  // Log-likelihood
-  #define CAPABILITY lnL_SIMPLE_2014
-  START_CAPABILITY
-    #define FUNCTION SIMPLE_2014_LogLikelihood_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_LogLikelihood, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Observed events (integer)
-  #define CAPABILITY SIMPLE_2014_Events
-  START_CAPABILITY
-    #define FUNCTION SIMPLE_2014_Events_DDCalc0
-      START_FUNCTION(int)
-      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_Events, (DDCalc0), int, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Background expectation
-  #define CAPABILITY SIMPLE_2014_Background
-  START_CAPABILITY
-    #define FUNCTION SIMPLE_2014_Background_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_Background, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation
-  #define CAPABILITY SIMPLE_2014_Signal
-  START_CAPABILITY
-    #define FUNCTION SIMPLE_2014_Signal_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_Signal, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-independent)
-  #define CAPABILITY SIMPLE_2014_SignalSI
-  START_CAPABILITY
-    #define FUNCTION SIMPLE_2014_SignalSI_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_SignalSI, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-dependent)
-  #define CAPABILITY SIMPLE_2014_SignalSD
-  START_CAPABILITY
-    #define FUNCTION SIMPLE_2014_SignalSD_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_SIMPLE_2014_SignalSD, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  // DARWIN argon-based likelihood/observables -------------
-  // Estimated argon-based DARWIN sensitivity (as of 2015):
-  //   Conrad et al., arxiv:15MM.NNNNN
- 
-  // Log-likelihood
-  #define CAPABILITY lnL_DARWIN_Ar_2015
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Ar_2015_LogLikelihood_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Ar_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_LogLikelihood, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Observed events (integer)
-  #define CAPABILITY DARWIN_Ar_2015_Events
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Ar_2015_Events_DDCalc0
-      START_FUNCTION(int)
-      DEPENDENCY(CalcRates_DARWIN_Ar_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_Events, (DDCalc0), int, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Background expectation
-  #define CAPABILITY DARWIN_Ar_2015_Background
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Ar_2015_Background_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Ar_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_Background, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation
-  #define CAPABILITY DARWIN_Ar_2015_Signal
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Ar_2015_Signal_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Ar_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_Signal, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-independent)
-  #define CAPABILITY DARWIN_Ar_2015_SignalSI
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Ar_2015_SignalSI_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Ar_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_SignalSI, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-dependent)
-  #define CAPABILITY DARWIN_Ar_2015_SignalSD
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Ar_2015_SignalSD_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Ar_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_SignalSD, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  // DARWIN xenon-based likelihood/observables -------------
-  // Estimated xenon-based DARWIN sensitivity (as of 2015):
-  //   Conrad et al., arxiv:15MM.NNNNN
- 
-  // Log-likelihood
-  #define CAPABILITY lnL_DARWIN_Xe_2015
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Xe_2015_LogLikelihood_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Xe_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_LogLikelihood, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Observed events (integer)
-  #define CAPABILITY DARWIN_Xe_2015_Events
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Xe_2015_Events_DDCalc0
-      START_FUNCTION(int)
-      DEPENDENCY(CalcRates_DARWIN_Xe_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_Events, (DDCalc0), int, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Background expectation
-  #define CAPABILITY DARWIN_Xe_2015_Background
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Xe_2015_Background_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Xe_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_Background, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation
-  #define CAPABILITY DARWIN_Xe_2015_Signal
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Xe_2015_Signal_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Xe_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_Signal, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-independent)
-  #define CAPABILITY DARWIN_Xe_2015_SignalSI
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Xe_2015_SignalSI_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Xe_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_SignalSI, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Signal expectation (spin-dependent)
-  #define CAPABILITY DARWIN_Xe_2015_SignalSD
-  START_CAPABILITY
-    #define FUNCTION DARWIN_Xe_2015_SignalSD_DDCalc0
-      START_FUNCTION(double)
-      DEPENDENCY(CalcRates_DARWIN_Xe_2015_DDCalc0, bool)
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_SignalSD, (DDCalc0), double, ())
-    #undef FUNCTION
-  #undef CAPABILITY
+  QUICK_FUNCTION(DarkBit, sigma_SI_p, NEW_CAPABILITY, sigma_SI_p_simple, double, (), (DD_couplings, DM_nucleon_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SI_n, NEW_CAPABILITY, sigma_SI_n_simple, double, (), (DD_couplings, DM_nucleon_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SD_p, NEW_CAPABILITY, sigma_SD_p_simple, double, (), (DD_couplings, DM_nucleon_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SD_n, NEW_CAPABILITY, sigma_SD_n_simple, double, (), (DD_couplings, DM_nucleon_couplings), (mwimp, double))
 
   // Likelihoods for nuclear parameters:
   #define CAPABILITY lnL_SI_nuclear_parameters
@@ -1027,6 +556,41 @@ START_MODULE
       ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
   #undef CAPABILITY
+
+  // DD rate and likelihood calculations. Don't try this one at home kids.
+  #define DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,TYPE,NAME)                    \
+  LONG_START_CAPABILITY(MODULE, CAT_3(EXPERIMENT,_,NAME))                     \
+  LONG_DECLARE_FUNCTION(MODULE, CAT_3(EXPERIMENT,_,NAME),                     \
+   CAT_3(EXPERIMENT,_Get,NAME), TYPE, 0)                                      \
+  LONG_DEPENDENCY(MODULE, CAT_3(EXPERIMENT,_Get,NAME),                        \
+   CAT(EXPERIMENT,_Calculate), bool)                                          \
+  LONG_BACKEND_REQ(MODULE, CAT_3(EXPERIMENT,_,NAME),                          \
+   CAT_3(EXPERIMENT,_Get,NAME), DD_Experiment, (DDCalc), int, (const str&))   \
+  LONG_BACKEND_REQ(MODULE, CAT_3(EXPERIMENT,_,NAME),                          \
+   CAT_3(EXPERIMENT,_Get,NAME), CAT(DD_,NAME), (DDCalc), TYPE, (const int&))
+  #define DD_DECLARE_EXPERIMENT(EXPERIMENT)                                   \
+  LONG_START_CAPABILITY(MODULE, CAT(EXPERIMENT,_Calculate))                   \
+  LONG_DECLARE_FUNCTION(MODULE, CAT(EXPERIMENT,_Calculate),                   \
+   CAT(EXPERIMENT,_Calc), bool, 0)                                            \
+  LONG_BACKEND_REQ(MODULE, CAT(EXPERIMENT,_Calculate),                        \
+   CAT(EXPERIMENT,_Calc), DD_Experiment, (DDCalc), int, (const str&))         \
+  LONG_BACKEND_REQ(MODULE, CAT(EXPERIMENT,_Calculate),                        \
+   CAT(EXPERIMENT,_Calc), DD_CalcRates, (DDCalc), void, (const int&))         \
+  DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,int,Events)                           \
+  DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,double,Background)                    \
+  DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,double,Signal)                        \
+  DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,double,SignalSI)                      \
+  DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,double,SignalSD)                      \
+  DD_DECLARE_RESULT_FUNCTION(EXPERIMENT,double,LogLikelihood)                 \
+
+  // Declare different DD experiments that exist in DDCalc.
+  DD_DECLARE_EXPERIMENT(XENON100_2012)
+  DD_DECLARE_EXPERIMENT(LUX_2013)
+  DD_DECLARE_EXPERIMENT(SuperCDMS_2014)
+  DD_DECLARE_EXPERIMENT(SIMPLE_2014)
+  DD_DECLARE_EXPERIMENT(DARWIN_Ar)
+  DD_DECLARE_EXPERIMENT(DARWIN_Xe)
+  
 
   // INDIRECT DETECTION: NEUTRINOS =====================================
  
@@ -1377,7 +941,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION UnitTest_DarkBit
     START_FUNCTION(int)
-    DEPENDENCY(DD_couplings, DarkBit::DD_couplings)
+    DEPENDENCY(DD_couplings, DM_nucleon_couplings)
     DEPENDENCY(RD_oh2, double)
     DEPENDENCY(GA_AnnYield, daFunk::Funk)
     DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
