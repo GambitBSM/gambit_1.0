@@ -3378,7 +3378,7 @@ namespace Gambit
       {
         double upper = spec->get(Par::Pole_Mass_1srd_high, 25, 0);
         double lower = spec->get(Par::Pole_Mass_1srd_low, 25, 0);
-        result.deltaMh[0] = std::sqrt(upper*lower);
+        result.deltaMh[0] = std::max(upper,lower);
       }
       catch(Gambit::exception)
       {
@@ -3464,7 +3464,7 @@ namespace Gambit
         result.Mh[i] = spec->get(Par::Pole_Mass,sHneut[i]);
         double upper = spec->get(Par::Pole_Mass_1srd_high,sHneut[i]);
         double lower = spec->get(Par::Pole_Mass_1srd_low,sHneut[i]);
-        result.deltaMh[i] = std::sqrt(upper*lower);
+        result.deltaMh[i] = std::max(upper,lower);
       }
 
       // invisible LSP?
@@ -3550,7 +3550,7 @@ namespace Gambit
       result.MHplus = spec->get(Par::Pole_Mass,"H+");
       double upper = spec->get(Par::Pole_Mass_1srd_high,"H+");
       double lower = spec->get(Par::Pole_Mass_1srd_low,"H+");
-      result.deltaMHplus = std::sqrt(upper*lower);
+      result.deltaMHplus = std::max(upper,lower);
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
       const DecayTable::Entry* top_decays = &(decaytable("t"));
