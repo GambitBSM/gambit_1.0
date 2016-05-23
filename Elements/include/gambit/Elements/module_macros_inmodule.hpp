@@ -137,7 +137,7 @@
             BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                        \
               /* Create a pointer to the single iteration of the loop that can \
               be executed by this functor */                                   \
-              extern void (*executeIteration)(int);                            \
+              extern void (*executeIteration)(long long);                      \
               /* Declare a safe pointer to the flag indicating that a managed  \
               loop is ready for breaking. */                                   \
               extern safe_ptr<bool> done;                                      \
@@ -169,7 +169,7 @@
           {                                                                    \
             /* Declare the safe pointer to the iteration number of the loop    \
             this functor is running within, as external. */                    \
-            extern omp_safe_ptr<int> iteration;                                \
+            extern omp_safe_ptr<long long> iteration;                          \
             /* Create a loop-breaking function that can be called to tell the  \
             functor's loop manager that it is time to break. */                \
             extern void wrapup();                                              \

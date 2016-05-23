@@ -373,22 +373,22 @@ int main(int argc, char* argv[])
   // ---- IceCube limits ----
 
   // Infer WIMP capture rate in Sun
-  capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
-  capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
-  capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);
-  capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
-  capture_rate_Sun_constant_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
-  capture_rate_Sun_constant_xsec.reset_and_calculate();
+  capture_rate_Sun_const_xsec.resolveDependency(&mwimp_generic);
+  capture_rate_Sun_const_xsec.resolveDependency(&sigma_SI_p_simple);
+  capture_rate_Sun_const_xsec.resolveDependency(&sigma_SD_p_simple);
+  capture_rate_Sun_const_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
+  capture_rate_Sun_const_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
+  capture_rate_Sun_const_xsec.reset_and_calculate();
 
   // Infer WIMP equilibration time in Sun
   equilibration_time_Sun.resolveDependency(&sigmav_late_universe);
   equilibration_time_Sun.resolveDependency(&mwimp_generic);
-  equilibration_time_Sun.resolveDependency(&capture_rate_Sun_constant_xsec);
+  equilibration_time_Sun.resolveDependency(&capture_rate_Sun_const_xsec);
   equilibration_time_Sun.reset_and_calculate();
 
   // Infer WIMP annihilation rate in Sun
   annihilation_rate_Sun.resolveDependency(&equilibration_time_Sun);
-  annihilation_rate_Sun.resolveDependency(&capture_rate_Sun_constant_xsec);
+  annihilation_rate_Sun.resolveDependency(&capture_rate_Sun_const_xsec);
   annihilation_rate_Sun.reset_and_calculate();
 
   // Infer neutrino yield from Sun
