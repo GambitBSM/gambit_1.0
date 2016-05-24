@@ -137,7 +137,7 @@ namespace Gambit
     void FH_precision_gm2(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_gm2::Dep::FH_Precision->gmu2;
-      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = std::max(std::abs(result.central)*0.3, 6e-10); //Based on hep-ph/0609168v1 eqs 84 & 85
       result.lower = result.upper;
     }
     void FH_precision_deltarho(triplet<double> &result)
@@ -876,7 +876,7 @@ namespace Gambit
       else
       {
         result.central = BEreq::muon_gm2(&param);
-        result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> ask Nazila
+        result.upper = std::max(std::abs(result.central)*0.3, 6e-10); //Based on hep-ph/0609168v1 eqs 84 & 85
         result.lower = result.upper;
       }
 
