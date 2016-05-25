@@ -1049,8 +1049,8 @@ def generateFrontendFunction(f_dict, parameter_defs):
         except RuntimeError:
             print "    ERROR: Failed to translate the argument '%s' in %s '%s' to C type." % (arg_name, f_dict['category'], f_name_short)
             raise
-        arg_bracket += c_type_name + ', '
-    arg_bracket.rstrip(', ')
+        arg_bracket += c_type_name + '&, '
+    arg_bracket = arg_bracket.rstrip(', ')
     arg_bracket += ')'
 
     # Generate BE_FUNCTION macro call
