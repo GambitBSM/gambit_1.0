@@ -109,8 +109,17 @@ def plotLUX():
     plt.tight_layout(pad=0.3)
     plt.savefig("DarkBit_LUX2013.eps")
 
+def plotMSSM7():
+    data = genfromtxt("runs/MSSM7/samples/runs/MSSM7/samples/MSSM7.hdf5_0")[2]
+    mwimp = data[49]
+    oh2 = data[47]
+    sigma_SI_p, sigma_SI_n, sigma_SD_p, sigma_SD_n = data[51:55]
+    sigmav = data[50]
+    print mwimp, oh2, sigma_SI_p, sigmav
+
 if __name__ == '__main__':
+    plotMSSM7()
     #plotLimits()
-    plotSpectraValidation()
+    #plotSpectraValidation()
     #plotSpectraCascade()
     #plotLUX()
