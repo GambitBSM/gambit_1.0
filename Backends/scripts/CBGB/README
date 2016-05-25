@@ -7,12 +7,12 @@
 
 Quick guide:
 
-  1. Construct a configuration file and place it in the directory 'configs', e.g., configs/cfg-mycode.py. 
+  1. Construct a configuration file and place it in the directory 'configs', e.g., configs/example.py. 
 
 
   2. Run cbgb.py with the configuration file as input argument:
      
-       python cbgb.py configs/cfg-mycode.py
+       python cbgb.py configs/example.py
 
 
   3. The generated code needed for GAMBIT is stored in the following output files: 
