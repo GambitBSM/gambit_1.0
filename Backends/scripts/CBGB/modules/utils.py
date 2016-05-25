@@ -115,6 +115,54 @@ def removeStatementLabels(code_lines):
 
 
 
+# ====== removeKeywords ========
+
+# Replaces Fortran keywords that CBGB doesn't 
+# care about with empty spaces.
+
+def removeKeywords(code_lines):
+
+    for i in range(len(code_lines)):
+
+        line = code_lines[i]
+
+        line = line.replace("::", " ")
+
+        line = line.replace("intent(in)", " ")
+        line = line.replace("intent(out)", " ")
+        line = line.replace("intent (in)", " ")
+        line = line.replace("intent (out)", " ")
+
+        # Add more keywords here...
+
+        code_lines[i] = line
+
+    return code_lines
+
+# ====== END: removeKeywords ========
+
+
+
+# ====== allSingleSpace ========
+
+# Replaces multiple spaces with a single space.
+
+def allSingleSpace(code_lines):
+
+    for i in range(len(code_lines)):
+
+        line = code_lines[i]
+
+        line = ' '.join(line.split())
+
+        code_lines[i] = line
+
+    return code_lines
+
+# ====== END: allSingleSpace ========
+
+
+
 # ====== joinContinuedLines ========
 
 def joinContinuedLines(code_lines):
@@ -545,7 +593,7 @@ def isVariableDecl(line_in, return_type=False):
     type_size = 1
 
     line = line_in
-    line = line.replace(',',' ').replace('*',' * ')
+    line = line.replace(',',' ').replace('*',' * ').replace('::',' ')
     line = line.replace('(', ' (').replace(')',') ')
     line = ' '.join(line.split())
 
@@ -553,6 +601,7 @@ def isVariableDecl(line_in, return_type=False):
     for i in [3,2,1]:
         check_type = ''.join(line_list[:i]).lower()
 
+        print 'DEBUG: Is this a type? : ', [line_in], [check_type]
 
         # Check that we can deal with this Fortran type.
         if check_type in gb.type_translation_dict.keys():
@@ -570,6 +619,7 @@ def isVariableDecl(line_in, return_type=False):
                 type_name = check_type
 
             is_variable_decl = True
+            print 'DEBUG: --- YES!'
             break
 
     if return_type:

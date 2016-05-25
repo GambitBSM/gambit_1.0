@@ -179,6 +179,12 @@ src_lines = utils.joinContinuedLines(src_lines)
 # Remove leading and trailing blanks
 src_lines = utils.removeLeadingTrailingBlanks(src_lines)
 
+# Replace multiple spaces with single spaces.
+src_lines = utils.allSingleSpace(src_lines)
+
+# Remove keywords we don't care about.
+src_lines = utils.removeKeywords(src_lines)
+
 
 
 # Identify the various parts of the code: program, functions and subroutines.
