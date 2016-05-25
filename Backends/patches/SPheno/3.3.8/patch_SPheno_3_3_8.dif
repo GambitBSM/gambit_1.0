@@ -1,4 +1,67 @@
---- Makefile	2016-04-14 17:30:00.404218601 +0200
+--- src/Makefile	2016-04-19 17:54:48.383309519 +0200
++++ src/Makefile_patched	2016-04-19 17:51:34.139303757 +0200
+@@ -4,15 +4,17 @@ PreDef = -DGENERATIONMIXING  -DONLYDOUBL
+ InDir = ../include
+ Mdir = ${InDir}
+ name = ../lib/libSPheno.a
++shared = lib/libSPheno.so # Added by GAMBIT
++objs = Control.o Mathematics.o RGEs.o MathematicsQP.o LoopFunctions.o StandardModel.o Model_Data.o Couplings.o SusyMasses.o LoopCouplings.o DecayFunctions.o SusyDecays.o ThreeBodyPhaseSpace.o ThreeBodyPhaseSpaceS.o Chargino3.o Gluino3.o Neutralino3.o Stop3BodyDecays.o Slepton3Body.o BranchingRatios.o EplusEminusProduction.o TwoLoopHiggsMass.o LoopMasses.o SugraRuns.o Experiment.o LowEnergy.o NMSSM_tools.o RPtools.o LHC_observables.o InputOutput.o SPheno3.o # Added by GAMBIT
+ 
+ #
+ # options for various compilers
+ #
+ 
+ # Intels ifort, default in optimized mode
+-F90 = ifort
+-comp = -c -O -module ${Mdir} -I${InDir} 
+-LFlagsB = -O  
++#F90 = ifort
++#comp = -c -O -module ${Mdir} -I${InDir} 
++#LFlagsB = -O  
+ 
+ # Intels ifort, debug modus
+ ifeq (${F90},ifortg)
+@@ -23,8 +25,8 @@ endif
+ 
+ # gfortran
+ ifeq (${F90},gfortran)
+- comp = -c -O -J${Mdir} -I${InDir}
+- LFlagsB = -O  
++ LFlagsB = -w -O2 -fPIC # Modified by GAMBIT
++ comp = -c ${LFlagsB} -J${Mdir} -I${InDir} # Modified by GAMBIT  
+ endif
+ 
+ # g95 
+@@ -46,8 +48,10 @@ ifeq (${F90},nagfor)
+ endif
+  
+ .SUFFIXES : .o .ps .f90 .F90 .a
++${shared}: ${objs}
++	${F90} -shared -o ../${shared} $^ ${LFlagsB}
+ bin/SPheno: ${name} SPheno3.o
+-	${F90} -o SPheno ${LFlagsB} SPheno3.o ../lib/${name}
++	${F90} -o SPheno ${LFlagsB} SPheno3.o ${name} 
+ 	mv SPheno ../bin
+ ${name}: ${name}(Control.o)  ${name}(Mathematics.o)  ${name}(RGEs.o)       \
+     ${name}(MathematicsQP.o)  ${name}(LoopFunctions.o) ${name}(StandardModel.o) \
+@@ -61,6 +65,7 @@ ${name}: ${name}(Control.o)  ${name}(Mat
+   ${name}(LoopMasses.o) ${name}(SugraRuns.o) ${name}(Experiment.o) \
+   ${name}(LowEnergy.o) ${name}(NMSSM_tools.o) ${name}(RPtools.o) \
+   ${name}(LHC_observables.o) ${name}(InputOutput.o) 
++
+ clean:
+ 	rm -f *.o *~ */*.o */*~
+ cleanall:
+@@ -78,6 +83,8 @@ cleanall:
+ 	rm -f $*.o
+ .f90.o: 
+ 	${F90} ${comp}  $< 
++.F90.o:
++	${F90} ${comp} ${PreDef} $< # Added by GAMBIT
+ .f90.ps:
+ 	a2ps  -o $*.ps $<
+ .h.ps:
+--- Makefile	2016-04-19 17:56:29.763312526 +0200
 +++ Makefile_patched	2016-04-14 15:23:26.335977690 +0200
 @@ -3,16 +3,19 @@
  # cases NAG's nagfor, gfortran, g95, Lahey's lf95 and Intels ifort
@@ -25,60 +88,7 @@
 -.PHONY: bin/SPheno clean cleanall
 +	rm -f bin/SPheno lib/*.a lib/*.so *.o *~ */*.o */*~ include/*
 +.PHONY: bin/SPheno lib/libSPheno.so clean cleanall
---- src/Makefile	2016-04-14 17:22:19.184203969 +0200
-+++ src/Makefile_patched	2016-04-14 18:03:26.636282245 +0200
-@@ -4,15 +4,16 @@ PreDef = -DGENERATIONMIXING  -DONLYDOUBL
- InDir = ../include
- Mdir = ${InDir}
- name = ../lib/libSPheno.a
-+shared = lib/libSPheno.so # Added by GAMBIT
- 
- #
- # options for various compilers
- #
- 
- # Intels ifort, default in optimized mode
--F90 = ifort
--comp = -c -O -module ${Mdir} -I${InDir} 
--LFlagsB = -O  
-+#F90 = ifort
-+#comp = -c -O -module ${Mdir} -I${InDir} 
-+#LFlagsB = -O  
- 
- # Intels ifort, debug modus
- ifeq (${F90},ifortg)
-@@ -23,8 +24,8 @@ endif
- 
- # gfortran
- ifeq (${F90},gfortran)
-- comp = -c -O -J${Mdir} -I${InDir}
-- LFlagsB = -O  
-+ LFlagsB = -w -O2 -fPIC # Modified by GAMBIT
-+ comp = -c ${LFlagsB} -J${Mdir} -I${InDir} # Modified by GAMBIT  
- endif
- 
- # g95 
-@@ -46,8 +47,10 @@ ifeq (${F90},nagfor)
- endif
-  
- .SUFFIXES : .o .ps .f90 .F90 .a
-+${shared}: ${name} SPheno3.o
-+	${F90} -shared -o ../${shared} $^ ${LFlagsB}
- bin/SPheno: ${name} SPheno3.o
--	${F90} -o SPheno ${LFlagsB} SPheno3.o ../lib/${name}
-+	${F90} -o SPheno ${LFlagsB} SPheno3.o ${name} 
- 	mv SPheno ../bin
- ${name}: ${name}(Control.o)  ${name}(Mathematics.o)  ${name}(RGEs.o)       \
-     ${name}(MathematicsQP.o)  ${name}(LoopFunctions.o) ${name}(StandardModel.o) \
-@@ -61,6 +64,7 @@ ${name}: ${name}(Control.o)  ${name}(Mat
-   ${name}(LoopMasses.o) ${name}(SugraRuns.o) ${name}(Experiment.o) \
-   ${name}(LowEnergy.o) ${name}(NMSSM_tools.o) ${name}(RPtools.o) \
-   ${name}(LHC_observables.o) ${name}(InputOutput.o) 
-+
- clean:
- 	rm -f *.o *~ */*.o */*~
- cleanall:
---- src/SPheno3.f90	2016-04-14 17:22:33.780204432 +0200
+--- src/SPheno3.f90	2016-04-19 17:56:14.619312077 +0200
 +++ src/SPheno3_patched.f90	2016-04-14 16:44:57.476132854 +0200
 @@ -12,7 +12,9 @@
  !     the email above, if possible with a copy of the screen output 

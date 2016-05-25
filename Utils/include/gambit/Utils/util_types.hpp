@@ -28,6 +28,10 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Jan, Mar
 ///  \date 2015 Jan, Feb
+///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 May
 ///  *********************************************
 
 #ifndef __util_types_hpp__
@@ -326,6 +330,21 @@ namespace Gambit
         }        
         return *this;
       }        
+      Farray(const T val)
+      {
+        for (int i=0; i<nElem::val; i++)
+        {
+          array[i] = val;
+        }
+      }
+      Farray<T,lims... >& operator=(const T val)
+      {
+        for (int i=0; i<nElem::val; ++i)
+        {
+          array[i] = val;
+        }
+        return *this;
+      }
   };
   
   /// Farray specialization for Fortran strings. This is a 1-dimensional char array with indices 1 to len.
@@ -394,6 +413,11 @@ namespace Gambit
         }
         return std::string(Farray<char,1,len>::array,idx+1);
       }        
+      // Overloaded == operator with std::strings
+      bool operator== (std::string str)
+      {
+        return this->trimmed_str() == str;
+      }
   };
 
   /// Farray specialization for Fortran arrays of strings.
@@ -495,6 +519,41 @@ namespace Gambit
       operator std::complex<T>()
       {
         return std::complex<T>(re, im);
+      }
+      // Abs of a Fortran complex type
+      T abs() const
+      {
+        return sqrt(re*re + im*im);
+      }
+      // Overloaded * operator
+      template<typename T2>
+      FcomplexT operator * (const FcomplexT<T2> &in)
+      {
+        FcomplexT out;
+     
+        out.re = re*in.re - im*in.im;
+        out.im = re*in.im + im*in.re;
+
+        return out;
+      }
+      // Overloaded / operator
+      template<typename T2>
+      FcomplexT operator / (const FcomplexT<T2> &in)
+      {
+        FcomplexT out = (*this)*in;
+        
+        if(in.abs() != 0)
+        {
+          out.re /= in.abs();
+          out.im /= in.abs();
+        }
+        else
+        {
+          out.re = 0;
+          out.im = 0;
+        }
+       
+        return out;
       }
   };
 

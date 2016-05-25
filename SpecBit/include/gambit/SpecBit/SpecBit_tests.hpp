@@ -12,6 +12,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Aug
 ///  
+///  \author Tomas Gonzalo
+///	     (t.e.gonzalo@fys.uio.no)
+///  \date 2016 Mar
+/// 
 ///  *********************************************
 
 #ifndef __SpecBit_tests_hpp__
@@ -26,7 +30,16 @@
      START_FUNCTION(bool)                  
      DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
-   
+ 
+     #define FUNCTION SPheno_MSSMspectrum_test
+     START_FUNCTION(bool)
+     DEPENDENCY(SMINPUTS, SMInputs)
+     ALLOW_MODEL(CMSSM)
+     BACKEND_REQ(libFarrayTest_testcomplex, (libFarrayTest), void, (Fcomplex16&, Freal8&, Freal8&) )
+     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), void, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
+     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
+     #undef FUNCTION
+  
    #undef CAPABILITY
  
    #define CAPABILITY run_light_quark_test

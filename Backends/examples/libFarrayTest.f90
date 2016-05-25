@@ -129,4 +129,17 @@ end module testmodule
     return
   end function
 
+  subroutine testcomplex(z, re, im)
+    implicit none
+    complex(8), intent(in) :: z
+    real(8), intent(out) :: re, im
 
+    !Write(*,*) z
+    !Write(*,*) Real(z)
+    !Write(*,*) Aimag(z)
+
+    re = Real(z)
+    im = Aimag(z)
+
+  end subroutine
+    

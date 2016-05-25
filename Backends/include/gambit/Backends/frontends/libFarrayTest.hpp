@@ -32,6 +32,8 @@ BE_FUNCTION(doubleFuncArray2, Fdouble, (Fdouble*), "doublefuncarray2_", "libFarr
 
 BE_FUNCTION(doubleFuncArray3, Fdouble, (Farray<Fdouble, 1,2, 2,3>&), "doublefuncarray3_", "libFarrayTest_doubleFuncArray3")
 
+BE_FUNCTION(testcomplex, void, (Fcomplex16&, Freal8&, Freal8&), "testcomplex_", "libFarrayTest_testcomplex")
+
 namespace Gambit
 {
   namespace Backends

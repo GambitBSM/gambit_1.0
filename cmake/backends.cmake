@@ -462,8 +462,8 @@ ExternalProject_Add(higgssignals
 add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssignals_dl} hyperclean)
 
 # SPheno
-set(spheno_ver "3\\.3\\.8")
-set(spheno_lib "lib/libSPheno")
+set(spheno_ver "3.3.8")
+set(spheno_lib "lib/libSPheno.so")
 set(spheno_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SPheno/3.3.8")
 set(spheno_short_dir "./Backends/installed/SPheno/3.3.8")
 set(spheno_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SPheno/3.3.8")
@@ -477,7 +477,7 @@ ExternalProject_Add(spheno
   DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -bp0 --ignore-whitespace < ${spheno_patch}/patch_SPheno_3_3_8.dif
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${spheno_lib}.so  
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${spheno_lib}  
   INSTALL_COMMAND ""
 )
 add_extra_targets(spheno ${spheno_dir} ${backend_download}/${spheno_dl} clean)
