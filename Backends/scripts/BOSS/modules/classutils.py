@@ -84,14 +84,13 @@ def constrTemplForwDecl(class_name_short, namespaces, template_bracket, indent=4
 
 # ====== constrAbstractClassDecl ========
 
-def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, indent=4, template_types=[], construct_assignment_operator=True):
+def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, indent=4, file_for_gambit=False, template_types=[], construct_assignment_operator=True):
 
     n_indents = len(namespaces)
 
     # Check template_types argument:
     if len(template_types) > 0:
         is_template = True
-        print '--> This is a template class'
 
     else:
         is_template = False
@@ -311,6 +310,8 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
         else:
             pass
     
+    # - Member functions of the abstract class living in GAMBIT should never be called. If that happens, something is very wrong. 
+    general_boss_warning = 'BOSS WARNING: Problem detected with the BOSSed class %s from backend %s. The function %s::%s in GAMBIT should never have been called...'
 
     # - Construct 'pointer_assign' and 'pointer_copy' functions
     if class_name['long_templ'] in gb.contains_pure_virtual_members:
@@ -389,12 +390,16 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += '\n'
     class_decl += ' '*(n_indents+2)*indent + 'virtual void init_wrapper()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
-    class_decl += ' '*(n_indents+3)*indent + 'if (wptr == 0)\n'
-    class_decl += ' '*(n_indents+3)*indent + '{\n'
-    class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
-    # class_decl += ' '*(n_indents+4)*indent + 'wrapper_creator(this);\n'
-    class_decl += ' '*(n_indents+4)*indent + 'delete_wrapper = true;\n'
-    class_decl += ' '*(n_indents+3)*indent + '}\n'
+    if file_for_gambit:
+        boss_warning = general_boss_warning % (class_name['long'], gb.gambit_backend_name_full, abstr_class_name['short'], 'init_wrapper()')
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "' + boss_warning + '" << std::endl;\n'
+    else:
+        class_decl += ' '*(n_indents+3)*indent + 'if (wptr == 0)\n'
+        class_decl += ' '*(n_indents+3)*indent + '{\n'
+        class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
+        # class_decl += ' '*(n_indents+4)*indent + 'wrapper_creator(this);\n'
+        class_decl += ' '*(n_indents+4)*indent + 'delete_wrapper = true;\n'
+        class_decl += ' '*(n_indents+3)*indent + '}\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
 
     # - Function get_init_wptr()
@@ -417,24 +422,28 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += '\n'
     class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name['short'] + '()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
-    if gb.debug_mode:
-        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (BEGIN)" << std::endl;\n' 
-    class_decl += ' '*(n_indents+3)*indent + 'if (wptr != 0)\n'
-    class_decl += ' '*(n_indents+3)*indent + '{\n'
-    class_decl += ' '*(n_indents+4)*indent + 'set_delete_BEptr(wptr, false);\n'
-    class_decl += ' '*(n_indents+4)*indent + 'if (delete_wrapper == true)\n'
-    class_decl += ' '*(n_indents+4)*indent + '{\n'
-    class_decl += ' '*(n_indents+5)*indent + 'wrapper_deleter(wptr);\n'
-    class_decl += ' '*(n_indents+5)*indent + 'wptr = 0;\n'
-    # Set wptr = 0 in all parent classes as well
-    for parent_dict in all_parent_classes:
-        if parent_dict['loaded']:
-            class_decl += ' '*(n_indents+5)*indent + parent_dict['abstr_class_name']['long_templ'] + '::set_wptr(0);\n'
-    class_decl += ' '*(n_indents+5)*indent + 'delete_wrapper = false;\n'
-    class_decl += ' '*(n_indents+4)*indent + '}\n'
-    class_decl += ' '*(n_indents+3)*indent + '}\n'
-    if gb.debug_mode:
-        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (END)" << std::endl;\n' 
+    if file_for_gambit:
+        boss_warning = general_boss_warning % (class_name['long'], gb.gambit_backend_name_full, abstr_class_name['short'], '~'+abstr_class_name['short'] )
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "' + boss_warning + '" << std::endl;\n'
+    else:
+        if gb.debug_mode:
+            class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (BEGIN)" << std::endl;\n' 
+        class_decl += ' '*(n_indents+3)*indent + 'if (wptr != 0)\n'
+        class_decl += ' '*(n_indents+3)*indent + '{\n'
+        class_decl += ' '*(n_indents+4)*indent + 'set_delete_BEptr(wptr, false);\n'
+        class_decl += ' '*(n_indents+4)*indent + 'if (delete_wrapper == true)\n'
+        class_decl += ' '*(n_indents+4)*indent + '{\n'
+        class_decl += ' '*(n_indents+5)*indent + 'wrapper_deleter(wptr);\n'
+        class_decl += ' '*(n_indents+5)*indent + 'wptr = 0;\n'
+        # Set wptr = 0 in all parent classes as well
+        for parent_dict in all_parent_classes:
+            if parent_dict['loaded']:
+                class_decl += ' '*(n_indents+5)*indent + parent_dict['abstr_class_name']['long_templ'] + '::set_wptr(0);\n'
+        class_decl += ' '*(n_indents+5)*indent + 'delete_wrapper = false;\n'
+        class_decl += ' '*(n_indents+4)*indent + '}\n'
+        class_decl += ' '*(n_indents+3)*indent + '}\n'
+        if gb.debug_mode:
+            class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (END)" << std::endl;\n' 
     class_decl += ' '*(n_indents+2)*indent + '}\n'
 
 
@@ -450,30 +459,33 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
 
 
     # - Add forward declaration of wrapper_creator function (needed by the 'destructor pattern')
-    frwd_decl_creator  = '\n'
-    frwd_decl_creator += '// Forward declaration for wrapper_creator.\n'
-    frwd_decl_creator += gb.gambit_backend_namespace + '::' + class_name['long'] + '* wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
-    # frwd_decl_creator += 'void wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
-    frwd_decl_creator += '\n'
+    if not file_for_gambit:
+        frwd_decl_creator  = '\n'
+        frwd_decl_creator += '// Forward declaration for wrapper_creator.\n'
+        frwd_decl_creator += gb.gambit_backend_namespace + '::' + class_name['long'] + '* wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
+        # frwd_decl_creator += 'void wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
+        frwd_decl_creator += '\n'
 
-    class_decl = frwd_decl_creator + class_decl
+        class_decl = frwd_decl_creator + class_decl
 
 
     # - Add forward declaration of wrapper_deleter function (needed by the 'destructor pattern')
-    frwd_decl_deleter  = '\n'
-    frwd_decl_deleter += '// Forward declaration needed by the destructor pattern.\n'
-    frwd_decl_deleter += 'void wrapper_deleter(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*);\n'
-    frwd_decl_deleter += '\n'
+    if not file_for_gambit:
+        frwd_decl_deleter  = '\n'
+        frwd_decl_deleter += '// Forward declaration needed by the destructor pattern.\n'
+        frwd_decl_deleter += 'void wrapper_deleter(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*);\n'
+        frwd_decl_deleter += '\n'
 
-    class_decl = frwd_decl_deleter + class_decl
+        class_decl = frwd_decl_deleter + class_decl
 
     # - Add forward declaration of set_delete_BEptr function (needed by the 'destructor pattern')
-    frwd_decl_setdel  = '\n'
-    frwd_decl_setdel += '// Forward declaration needed by the destructor pattern.\n'
-    frwd_decl_setdel += 'void set_delete_BEptr(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*, bool);\n'
-    frwd_decl_setdel += '\n'
+    if not file_for_gambit:
+        frwd_decl_setdel  = '\n'
+        frwd_decl_setdel += '// Forward declaration needed by the destructor pattern.\n'
+        frwd_decl_setdel += 'void set_delete_BEptr(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*, bool);\n'
+        frwd_decl_setdel += '\n'
 
-    class_decl = frwd_decl_setdel + class_decl
+        class_decl = frwd_decl_setdel + class_decl
 
 
     # Insert include statements needed by GAMBIT

@@ -32,7 +32,7 @@ def createOutputDirectories(selected_dirs=['all']):
 
     if ('extra_output_dir' in selected_dirs) or ('all' in selected_dirs):
         try:
-            os.mkdir(cfg.extra_output_dir)
+            os.makedirs(cfg.extra_output_dir)
         except OSError, e:
             if e.errno == 17:
                 pass
@@ -42,7 +42,7 @@ def createOutputDirectories(selected_dirs=['all']):
     if ('temp' in selected_dirs) or ('all' in selected_dirs):
         if gb.boss_temp_dir != '':
             try:
-                os.mkdir(gb.boss_temp_dir)
+                os.makedirs(gb.boss_temp_dir)
             except OSError, e:
                 if e.errno == 17:
                     pass
@@ -50,26 +50,44 @@ def createOutputDirectories(selected_dirs=['all']):
                     raise
 
     if ('backend_types_basedir' in selected_dirs) or ('all' in selected_dirs):
-        if gb.gambit_backend_types_basedir != '':
+        if gb.backend_types_basedir != '':
             try:
-                os.mkdir( os.path.join(cfg.extra_output_dir, gb.gambit_backend_types_basedir) )
+                os.makedirs( os.path.join(cfg.extra_output_dir, gb.backend_types_basedir) )
             except OSError, e:
                 if e.errno == 17:
                     pass
                 else:
                     raise
-    if ('gambit_backend_dir_complete' in selected_dirs) or ('all' in selected_dirs):
+    if ('backend_types_dir_complete' in selected_dirs) or ('all' in selected_dirs):
         try:
-            os.mkdir( gb.gambit_backend_dir_complete )
+            os.makedirs( gb.backend_types_dir_complete )
         except OSError, e:
             if e.errno == 17:
                 pass
             else:
                 raise
 
-    if ('gambit_frontend_dir_complete' in selected_dirs) or ('all' in selected_dirs):
+    if ('for_gambit_basedir' in selected_dirs) or ('all' in selected_dirs):
         try:
-            os.mkdir( gb.gambit_frontend_dir_complete )
+            os.makedirs( gb.for_gambit_basedir )
+        except OSError, e:
+            if e.errno == 17:
+                pass
+            else:
+                raise
+
+    if ('for_gambit_backend_types_dir_complete' in selected_dirs) or ('all' in selected_dirs):
+        try:
+            os.makedirs( gb.for_gambit_backend_types_dir_complete )
+        except OSError, e:
+            if e.errno == 17:
+                pass
+            else:
+                raise
+
+    if ('frontend_dir_complete' in selected_dirs) or ('all' in selected_dirs):
+        try:
+            os.makedirs( gb.frontend_dir_complete )
         except OSError, e:
             if e.errno == 17:
                 pass
@@ -82,33 +100,119 @@ def createOutputDirectories(selected_dirs=['all']):
 
 # ====== moveFilesAround ========
 
-# Move files to their correct subdirectories within cfg.extra_output_dir.
+# Copy & move files to their correct subdirectories within cfg.extra_output_dir.
 
 def moveFilesAround():
 
-    # - To gb.gambit_backend_dir_complete
-    move_files_list  = []
+    #
+    # Copy files to gb.backend_types_dir_complete
+    #
+    files_list  = []
 
     # -- abstract class headers    
-    move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*') )
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension) )
 
     # -- wrapper class headers
-    move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.wrapper_header_prefix + '*') )
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.wrapper_header_prefix + '*' + cfg.header_extension) )
 
     # -- header with forward declarations for all abstract classes
-    move_files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_abs_fname + cfg.header_extension) ]
+    files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_abs_fname + cfg.header_extension) ]
 
     # -- header with forward declarations for all wrapper classes
-    move_files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_wrp_fname + cfg.header_extension) ]
+    files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_wrp_fname + cfg.header_extension) ]
 
     # # -- header with copies of all enum type declarations
-    # move_files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
+    # files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
 
     # -- identification.hpp
-    move_files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
 
-    for mv_file in move_files_list:
-        shutil.move(mv_file, gb.gambit_backend_dir_complete)
+    for cp_source in files_list:
+        cp_target = os.path.join(gb.backend_types_dir_complete, os.path.basename(cp_source)) 
+        shutil.copy(cp_source, cp_target)
+
+
+    #
+    # Copy files to gb.for_gambit_backend_types_dir_complete
+    #
+    files_list  = []
+
+    # -- abstract class headers    
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension + '.FOR_GAMBIT') )
+
+    # -- wrapper class headers
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.wrapper_header_prefix + '*' + cfg.header_extension) )
+
+    # -- header with forward declarations for all abstract classes
+    files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_abs_fname + cfg.header_extension) ]
+
+    # -- header with forward declarations for all wrapper classes
+    files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_wrp_fname + cfg.header_extension) ]
+
+    # # -- header with copies of all enum type declarations
+    # files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
+
+    # -- identification.hpp
+    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+
+    for cp_source in files_list:
+        cp_target = os.path.join(gb.for_gambit_backend_types_dir_complete, os.path.basename(cp_source).rstrip('.FOR_GAMBIT')) 
+        shutil.copy(cp_source, cp_target)
+
+
+
+    #
+    # Delete files from gb.extra_output_dir
+    #
+    files_list  = []
+
+    # -- abstract class headers    
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension) )
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension + '.FOR_GAMBIT') )
+
+    # -- wrapper class headers
+    files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.wrapper_header_prefix + '*' + cfg.header_extension) )
+
+    # -- header with forward declarations for all abstract classes
+    files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_abs_fname + cfg.header_extension) ]
+
+    # -- header with forward declarations for all wrapper classes
+    files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_wrp_fname + cfg.header_extension) ]
+
+    # # -- header with copies of all enum type declarations
+    # files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
+
+    # -- identification.hpp
+    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+
+    for rm_target in files_list:
+        print 'DEBUG: Deleting file: ', rm_target
+        os.remove(rm_target)
+
+
+    # # - To gb.backend_types_dir_complete
+    # move_files_list  = []
+
+    # # -- abstract class headers    
+    # move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*') )
+
+    # # -- wrapper class headers
+    # move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.wrapper_header_prefix + '*') )
+
+    # # -- header with forward declarations for all abstract classes
+    # move_files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_abs_fname + cfg.header_extension) ]
+
+    # # -- header with forward declarations for all wrapper classes
+    # move_files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_wrp_fname + cfg.header_extension) ]
+
+    # # # -- header with copies of all enum type declarations
+    # # move_files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
+
+    # # -- identification.hpp
+    # move_files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+
+    # for mv_file in move_files_list:
+    #     shutil.move(mv_file, gb.backend_types_dir_complete)
 
 # ====== END: moveFilesAround ========
 
@@ -125,7 +229,7 @@ def createCommonHeaders():
     if len(gb.classes_done) > 0:
         source_file_name = 'common_headers/abstractbase.hpp'
         target_file_name = os.path.join(cfg.extra_output_dir, 'abstractbase.hpp')
-        shutil.copyfile(source_file_name, target_file_name)
+        shutil.copy(source_file_name, target_file_name)
 
 
     # - wrapperbase.hpp
@@ -157,21 +261,21 @@ def createCommonHeaders():
 
     source_file_name = 'common_headers/cats.hpp'
     target_file_name = os.path.join(cfg.extra_output_dir, 'cats.hpp')    
-    shutil.copyfile(source_file_name, target_file_name)    
+    shutil.copy(source_file_name, target_file_name)    
     
 
     # - backend_undefs.hpp
 
     source_file_name = 'common_headers/backend_undefs.hpp'
     target_file_name = os.path.join(cfg.extra_output_dir, 'backend_undefs.hpp')    
-    shutil.copyfile(source_file_name, target_file_name)    
+    shutil.copy(source_file_name, target_file_name)    
 
 
     # - function_return_utils.hpp
     if len(gb.functions_done) > 0:
         source_file_name = 'common_headers/function_return_utils.hpp'
         target_file_name = os.path.join(cfg.extra_output_dir, 'function_return_utils.hpp')    
-        shutil.copyfile(source_file_name, target_file_name)    
+        shutil.copy(source_file_name, target_file_name)    
 
 
 # ====== END: createCommonHeaders ========
@@ -189,7 +293,7 @@ def createCommonSourceFiles():
     if len(gb.functions_done) > 0:
         source_file_name = 'common_source_files/function_return_utils.cpp'
         target_file_name = os.path.join(cfg.extra_output_dir, gb.func_return_utils_fname + cfg.source_extension)    
-        shutil.copyfile(source_file_name, target_file_name)    
+        shutil.copy(source_file_name, target_file_name)    
 
 
 # ====== END: createCommonSourceFiles ========
@@ -378,13 +482,13 @@ def copyFilesToSourceTree(verbose=False):
     # - Add all files in the backend_types/ directory. 
     #   Will create a similar directory in the include path of the original source tree
     if len(gb.classes_done) > 0:    
-        source_dir = os.path.join(cfg.extra_output_dir, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full)
-        target_dir = os.path.join(cfg.header_files_to, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full)
+        source_dir = os.path.join(cfg.extra_output_dir, gb.backend_types_basedir, gb.gambit_backend_name_full)
+        target_dir = os.path.join(cfg.header_files_to, gb.backend_types_basedir, gb.gambit_backend_name_full)
         source_files = [ os.path.join(source_dir,f) for f in os.listdir(source_dir) if os.path.isfile( os.path.join(source_dir,f) ) ]
         for file_path in source_files:
             target_file_name = os.path.basename(file_path)
             cp_source = file_path
-            cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, target_file_name)
+            cp_target = os.path.join(cfg.header_files_to, gb.backend_types_basedir, gb.gambit_backend_name_full, target_file_name)
             source_target_tuples.append( (cp_source, cp_target) )
             new_files.append(cp_target)
 
@@ -396,7 +500,7 @@ def copyFilesToSourceTree(verbose=False):
             target_dir_name = os.path.dirname(cp_target)
             if not os.path.exists(target_dir_name): 
                 os.makedirs(target_dir_name)
-            shutil.copyfile(cp_source, cp_target)
+            shutil.copy(cp_source, cp_target)
 
         elif os.path.isdir(cp_source):
             shutil.copytree(cp_source, cp_target)
@@ -418,7 +522,7 @@ def copyFilesToSourceTree(verbose=False):
     new_dirs = [ 
                   os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir),
                   os.path.join(cfg.header_files_to, gb.gambit_utils_incl_dir),
-                  os.path.join(cfg.header_files_to, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full),
+                  os.path.join(cfg.header_files_to, gb.backend_types_basedir, gb.gambit_backend_name_full),
                ]    
 
     # Return the list of manipulated file, new files and new directories
@@ -507,7 +611,7 @@ def createLoadedTypesHeader(factory_xml_files_dict):
     loaded_types_header_content = utils.constrLoadedTypesHeaderContent()
 
     # Write to file
-    loaded_types_output_path = os.path.join(gb.gambit_backend_dir_complete, 'loaded_types.hpp')
+    loaded_types_output_path = os.path.join(gb.for_gambit_backend_types_dir_complete, 'loaded_types.hpp')
     f = open(loaded_types_output_path, 'w')
     f.write(loaded_types_header_content)
     f.close()
@@ -680,7 +784,7 @@ def createFrontendHeader(function_xml_files_dict):
 
     # - Include statement for the identification header
     frontend_content += '\n'
-    frontend_content += '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
+    frontend_content += '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
    
     # - LOAD_LIBRARY macro
     frontend_content += '\n'

@@ -16,9 +16,6 @@
 #include <csignal>
 
 #include "gambit/Core/gambit.hpp"
-
-// FIXME this shouldn't be needed after the call to GMPI::Init() below is shifted to scannerbit
-// MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
 
@@ -70,9 +67,8 @@ void do_emergency_MPI_shutdown(GMPI::Comm& errorComm)
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
-  cout << std::setprecision(8);
+  cout << std::setprecision(Core().get_outprec());
 
-  // FIXME this is to be shifted to ScannerBit
   #ifdef WITH_MPI
     GMPI::Init();
   #endif

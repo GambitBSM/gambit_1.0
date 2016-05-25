@@ -19,8 +19,9 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [173.15,173.16]
-         prior_type: flat
+         #range: [160.071,160.071]
+         range: [170,173]
+         #prior_type: flat
 
       # SLHA1
       alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
@@ -63,14 +64,15 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [146.1, 146.66]
-        prior_type: flat
+        #range: [100.098,100.098]
+        range: [120,120]
+        #prior_type: flat
       QEWSB: 173
 
 
     SingletDM:
-      mS: 80
-      lambda_hS: 0.5 #0.30
+      mS: 620
+      lambda_hS: 2.25 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -87,20 +89,12 @@ Parameters:
 ##############################
 
 Printer:
-
-  # Select printer to use via string tag
-  printer: ascii
-
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
+  printer: hdf5
   options:
-    # name of output file
-    output_file: "gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "gambit_output.info"
-    buffer_length: 50
+    output_file: "gambit_output.hdf5"
+    group: "/singlet"
+    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 
@@ -136,18 +130,19 @@ Scanner:
       plugin: grid
       version: ">=1.0"
       like:  LogLike
-      grid_pts: [2,2]
+      grid_pts: [1,1]
 
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 5000
+      nlive: 2000
       tol: 0.1
-      outfile: 0
-      root: "runs/SSDM/samples/native-"
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
+
+    twalk:
+      plugin: twalk
+      tolerance: 1.001
+      projection_dimension: 4
+      chain_number: 10
 
   objectives:
 
@@ -168,23 +163,29 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-    - capability: vacuum_stability
-      purpose: Observable
-      function: find_min_lambda
-    - capability: SingletDM_pole_mh
-      purpose: Observable
+  #  - capability: vacuum_stability
+  #    purpose: Observable
+  #    function: find_min_lambda
+
 
     - capability: VS_likelihood
-      purpose: Observable
+      purpose: LogLike
 
     - capability: check_perturb_min_lambda
       purpose: Observable
 
-    - capability: check_perturb
-      purpose: Observable
+ #   - capability: check_perturb
+ #     purpose: Observable
 
-    - capability: expected_lifetime
-      purpose: Observable
+ #   - capability: expected_lifetime
+ #     purpose: Observable
+
+#    - capability: LHC_Higgs_LogLike
+#      purpose:  LogLike
+
+    - capability: print_SingletDM_spectrum
+      purpose: observable
+
 
 
 
@@ -193,17 +194,20 @@ ObsLikes:
 #########################
 
 Rules:
-    - capability: check_perturb
-      purpose: Observable
-      function: check_perturb_SingletDM #or check_perturb_simple
-      options:
-        set_high_scale: 1e18  #option can be used with check_perturb_simple only
+  #  - capability: check_perturb
+ #     purpose: Observable
+#      function: check_perturb_SingletDM #or check_perturb_simple
+    #  options:
+    #    set_high_scale: 1e18  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum_pole
-      options:
-        set_high_scale: 200
-        check_perturb_pts: 10
+   #   options:
+   #     set_high_scale: 1e20
+   #     check_perturb_pts: 10
+
+    - capability: Higgs_decay_rates
+      function: SingletDM_Higgs_decays
 
 #########################
 # Logging setup
@@ -233,13 +237,6 @@ Logger:
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
 
-###############################
-## Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
 
 ##########################
 # Name/Value Section
@@ -268,8 +265,11 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
     ExampleBit_A_error: non-fatal
+    DecayBit_error: non-fatal
+    utils_error: non-fatal
+    invalid_point_fatal: false
 
   enable_testing: false
 
-  default_output_path: "runs/SingletDM/"
+  default_output_path: "runs/vacuum_stability3/"
 

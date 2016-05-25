@@ -307,7 +307,7 @@ macro(BOSS_backend cmake_project backend_name backend_version)
       # Run BOSS
       COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
-      COMMAND cp -r ${BOSS_dir}/BOSS_output/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
+      COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
       COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp
       DEPENDEES patch
       DEPENDERS configure

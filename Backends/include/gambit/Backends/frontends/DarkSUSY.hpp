@@ -75,7 +75,7 @@ BE_FUNCTION(dsddgpgn, void, (double&, double&, double&, double&), "dsddgpgn_", "
 BE_FUNCTION(dsSLHAread, void, (const char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
 BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
-BE_FUNCTION(dsntcapsuntab, double, (const double&, const double&, const double&), "dsntcapsuntab_", "capture_rate_Sun")
+BE_FUNCTION(dsntcapsuntab, double, (const double&, const double&, const double&), "dsntcapsuntab_", "cap_Sun_v0q0_isoscalar")
 BE_FUNCTION(dsntmuonyield, double, (const double&, const double&, const char&, const int&, const int&, const int&, const int&), "dsntmuonyield_", "raw_muonyield")
 BE_FUNCTION(dswspectrum, void, (int&), "dswspectrum_", "dswspectrum")
 BE_FUNCTION(dswwidth, void, (int&), "dswwidth_", "dswwidth")
@@ -85,44 +85,44 @@ BE_FUNCTION(dshigwid, void, (), "dshigwid_", "dshigwid")
 BE_FUNCTION(dsspwid, void, (), "dsspwid_", "dsspwid")
 
 // Variables
-BE_VARIABLE(DS_PACODES, pacodes, "pacodes_", "pacodes")
-BE_VARIABLE(DS_MSSMIUSEFUL, mssmiuseful, "mssmiuseful_", "mssmiuseful")
-BE_VARIABLE(DS_MSPCTM, mspctm, "mspctm_", "mspctm")
-BE_VARIABLE(DS_WIDTHS, widths, "widths_", "widths")
-BE_VARIABLE(DS_INTDOF, intdof, "intdof_", "intdof")
-BE_VARIABLE(DS_VRTXS, vrtxs, "vrtxs_", "vrtxs")
-BE_VARIABLE(DS_SMRUSEFUL, smruseful, "smruseful_", "smruseful")
-BE_VARIABLE(DS_SMCUSEFUL, smcuseful, "smcuseful_", "smcuseful")
-BE_VARIABLE(DS_COUPLINGCONSTANTS, couplingconstants, "couplingconstants_", "couplingconstants")
-BE_VARIABLE(DS_SCKM, sckm, "sckm_", "sckm")
-BE_VARIABLE(DS_MIXING, mixing, "mixing_", "mixing")
-BE_VARIABLE(DS_MSSMTYPE, mssmtype, "mssmtype_", "mssmtype")
-BE_VARIABLE(DS_MSSMPAR, mssmpar, "mssmpar_", "mssmpar")
-BE_VARIABLE(DS_MSSMSWITCH, mssmswitch, "mssmswitch_", "mssmswitch")
-BE_VARIABLE(DS_SFERMIONMASS, sfermionmass, "sfermionmass_", "sfermionmass")
-BE_VARIABLE(DS_MSSMWIDTHS, mssmwidths, "mssmwidths_", "mssmwidths")
-BE_VARIABLE(DS_MSSMMIXING, mssmmixing, "mssmmixing_", "mssmmixing")
+BE_VARIABLE(pacodes, DS_PACODES, "pacodes_", "pacodes")
+BE_VARIABLE(mssmiuseful, DS_MSSMIUSEFUL, "mssmiuseful_", "mssmiuseful")
+BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_", "mspctm")
+BE_VARIABLE(widths, DS_WIDTHS, "widths_", "widths")
+BE_VARIABLE(intdof, DS_INTDOF, "intdof_", "intdof")
+BE_VARIABLE(vrtxs, DS_VRTXS, "vrtxs_", "vrtxs")
+BE_VARIABLE(smruseful, DS_SMRUSEFUL, "smruseful_", "smruseful")
+BE_VARIABLE(smcuseful, DS_SMCUSEFUL, "smcuseful_", "smcuseful")
+BE_VARIABLE(couplingconstants, DS_COUPLINGCONSTANTS, "couplingconstants_", "couplingconstants")
+BE_VARIABLE(sckm, DS_SCKM, "sckm_", "sckm")
+BE_VARIABLE(mixing, DS_MIXING, "mixing_", "mixing")
+BE_VARIABLE(mssmtype, DS_MSSMTYPE, "mssmtype_", "mssmtype")
+BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_", "mssmpar")
+BE_VARIABLE(mssmswitch, DS_MSSMSWITCH, "mssmswitch_", "mssmswitch")
+BE_VARIABLE(sfermionmass, DS_SFERMIONMASS, "sfermionmass_", "sfermionmass")
+BE_VARIABLE(mssmwidths, DS_MSSMWIDTHS, "mssmwidths_", "mssmwidths")
+BE_VARIABLE(mssmmixing, DS_MSSMMIXING, "mssmmixing_", "mssmmixing")
 // Used in RD_eff_annrate_SUSY_DSprep_func, RD_oh2_general and RD_thresholds_resonances_SingletDM
-BE_VARIABLE(DS_RDMGEV, rdmgev,     "rdmgev_",    "rdmgev")    // Contains information about coannihilation
+BE_VARIABLE(rdmgev, DS_RDMGEV,     "rdmgev_",    "rdmgev")    // Contains information about coannihilation
 // Appears only in RD_oh2_general
-BE_VARIABLE(DS_RDPTH, rdpth,       "rdpth_",     "rdpth")     // gRD thresholds
-BE_VARIABLE(DS_RDDOF, rddof,       "rddof_",     "rddof")     // gRD dofs
-BE_VARIABLE(DS_RDERRORS, rderrors, "rderrors_", "rderrors")   // gRD errors
-BE_VARIABLE(DS_RDPARS, rdpars,     "rdpars_",    "rdpars")    // gRD Parameters 
-BE_VARIABLE(DS_RDSWITCH, rdswitch, "rdswitch_",  "rdswitch")  // gRD Switches
-BE_VARIABLE(DS_RDLUN, rdlun,       "rdlun_",     "rdlun")     // gRD I/O
-BE_VARIABLE(DS_RDPADD, rdpadd,     "rdpadd_",    "rdpadd")    // gRD I/O
+BE_VARIABLE(rdpth, DS_RDPTH,       "rdpth_",     "rdpth")     // gRD thresholds
+BE_VARIABLE(rddof, DS_RDDOF,       "rddof_",     "rddof")     // gRD dofs
+BE_VARIABLE(rderrors, DS_RDERRORS, "rderrors_", "rderrors")   // gRD errors
+BE_VARIABLE(rdpars, DS_RDPARS,     "rdpars_",    "rdpars")    // gRD Parameters 
+BE_VARIABLE(rdswitch, DS_RDSWITCH, "rdswitch_",  "rdswitch")  // gRD Switches
+BE_VARIABLE(rdlun, DS_RDLUN,       "rdlun_",     "rdlun")     // gRD I/O
+BE_VARIABLE(rdpadd, DS_RDPADD,     "rdpadd_",    "rdpadd")    // gRD I/O
 // IB stuff
-BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars")
+BE_VARIABLE(IBintvars, DS_IBINTVARS,"ibintvars_", "IBintvars")
 // Direct detection 
-BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
+BE_VARIABLE(ddcom, DS_DDCOM, "ddcom_",    "ddcom")
 // Neutrino detection
-BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
+BE_VARIABLE(wabranch, DS_NUCOM, "wabranch_", "nu_common_block")
 // Halo model common blocks
-BE_VARIABLE(DS_HMCOM, dshmcom, "dshmcom_", "dshmcom")
-BE_VARIABLE(DS_HMFRAMEVELCOM, dshmframevelcom, "dshmframevelcom_", "dshmframevelcom")
-BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisodf")
-BE_VARIABLE(DS_HMNOCLUE, dshmnoclue, "dshmnoclue_", "dshmnoclue")
+BE_VARIABLE(dshmcom, DS_HMCOM, "dshmcom_", "dshmcom")
+BE_VARIABLE(dshmframevelcom, DS_HMFRAMEVELCOM, "dshmframevelcom_", "dshmframevelcom")
+BE_VARIABLE(dshmisodf, DS_HMISODF, "dshmisodf_", "dshmisodf")
+BE_VARIABLE(dshmnoclue, DS_HMNOCLUE, "dshmnoclue_", "dshmnoclue")
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")

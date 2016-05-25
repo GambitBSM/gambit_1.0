@@ -61,8 +61,8 @@ namespace Gambit
     ///  If l_are_gauge_es = F, then l(bar)_chirality = 1 => (anti-)slepton is lightest family state
     ///                                               = 2 => (anti-)slepton is heaviest family state
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
-                         const int lbar_chirality, const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ,
-                         const bool l_are_gauge_es);
+                         const int lbar_chirality, const double gtol, const double ftol, const bool gpt_error,
+                         const bool fpt_error, const Spectrum* spec, const double gammaZ, const bool l_are_gauge_es);
     /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
     void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
                             const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ);

@@ -35,7 +35,7 @@ Printer:
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
   #printer: ascii
 
@@ -219,6 +219,7 @@ Rules:
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
+      # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: false
       antiktR: 0.4
 
@@ -227,6 +228,7 @@ Rules:
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
+      # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: false
       antiktR: 0.5
 
@@ -249,10 +251,6 @@ Rules:
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
 
-  # Choose which type of event to use: for parton level, change to "convertPythia8PartonEvent"
-  - capability: ConvertedScatteringEvent
-    function: convertPythia8ParticleEvent
-
   # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -264,10 +262,8 @@ Rules:
   - options:
       gauge_mixing_tolerance: 0.5
       family_mixing_tolerance: 0.5
-      off_diagonal_tolerance: 0.5
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
-      #off_diagonal_tolerance_invalidates_point_only: false
 
   # Choose which getPythia to use
   # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)
@@ -276,8 +272,9 @@ Rules:
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",

@@ -103,7 +103,7 @@ else()
   message("${BoldCyan}   LAPACK linking commands provided by hand; skipping cmake search and assuming no LAPACK-dependent components need to be ditched.${ColourReset}")
 endif()
 string( REGEX MATCH "\\.l*a[:space:]*$" LAPACK_STATIC "${LAPACK_LINKLIBS}" )  
-if(LAPACK_STATIC OR NOT LAPACK_FOUND)
+if(LAPACK_STATIC OR (NOT LAPACK_LINKLIBS AND NOT LAPACK_FOUND))
   message(FATAL_ERROR "${BoldRed}LAPACK shared libraries are currently required in order to build GAMBIT.${ColourReset}")
   # In future MN and FS need to be ditched if lapack cannot be found, and the build allowed to continue.
   message("${BoldRed}   LAPACK shared library not found. Excluding FlexibleSUSY and MultiNest from GAMBIT configuration. ${ColourReset}")
