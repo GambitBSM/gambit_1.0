@@ -30,9 +30,16 @@
 
 /// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
 /// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+/// @{
 const double mw_central_observed = 80.385;
 const double mw_err_observed = 0.015;
-const double mw_relerr_theory = 0.05; //FIXME need to add more serious theory uncertainty --> check FH papers
+/// @}
+
+/// EWPO theoretical uncertainties on FeynHiggs calculations; based on hep-ph/0412214 Eq 3.1. 
+/// @{
+const double abserr_mw = 1e-2; //10 MeV
+const double abserr_sinW2eff = 12e-5; 
+/// @}
 
 namespace Gambit
 {
@@ -73,7 +80,7 @@ namespace Gambit
       // Just scrub this point now if it's more than 7 sigma off in mW,
       // as extreme values of mW can cause instability in other routines.
       const double obserrsq = mw_err_observed*mw_err_observed;
-      double theoryerrsq = MWMSSM*MWMSSM*mw_relerr_theory*mw_relerr_theory;
+      const double theoryerrsq = abserr_mw*abserr_mw;
       if (std::abs(mw_central_observed - MWMSSM) > 7.0*sqrt(obserrsq + theoryerrsq))
       {
         std::ostringstream err;
@@ -142,20 +149,23 @@ namespace Gambit
     }
     void FH_precision_deltarho(triplet<double> &result)
     {
+      double mw = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;
+      double sintw2eff = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;      
       result.central = Pipes::FH_precision_deltarho::Dep::FH_Precision->deltaRho;
-      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      //Follows approximately from tree level relations, where delta{M_W, sintthetaW^2} go as deltarho
+      result.upper = std::max(abserr_mw/mw, abserr_sinW2eff/sintw2eff); 
       result.lower = result.upper;
     }
     void FH_precision_mw(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;
-      result.upper = mw_relerr_theory * result.central;
+      result.upper = abserr_mw;
       result.lower = result.upper;
     }
     void FH_precision_sinW2   (triplet<double> &result)
     {
       result.central = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;
-      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = abserr_sinW2eff;
       result.lower = result.upper;
     }
     /// @}
