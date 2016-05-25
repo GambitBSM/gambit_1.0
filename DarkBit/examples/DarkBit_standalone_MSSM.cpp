@@ -141,8 +141,8 @@ int main(int argc, char* argv[])
   // ---- Initialize backends ----
 
   // Initialize nulike backend
-  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);
-  nulike_1_0_2_init.reset_and_calculate();
+  Backends::nulike_1_0_3::Functown::nulike_bounds.setStatus(2);
+  nulike_1_0_3_init.reset_and_calculate();
 
   // Initialize gamLike backend
   gamLike_1_0_0_init.reset_and_calculate();
@@ -408,7 +408,7 @@ int main(int argc, char* argv[])
   IC79WH_full.resolveDependency(&mwimp_generic);
   IC79WH_full.resolveDependency(&annihilation_rate_Sun);
   IC79WH_full.resolveDependency(&nuyield_from_DS);
-  IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_bounds);
+  IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_3::Functown::nulike_bounds);
   IC79WH_full.reset_and_calculate();
 
   // Calculate IceCube likelihood
