@@ -307,7 +307,7 @@ BOSS_backend(pythiaEM Pythia 8.212.EM)
 add_extra_targets(pythiaEM ${pythiaEM_dir} ${backend_download}/${pythia_dl} distclean)
 
 # Nulike
-set(nulike_ver "1.0.2")
+set(nulike_ver "1.0.3")
 set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
@@ -315,7 +315,7 @@ set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   URL ${nulike_location}
-  URL_MD5 e4f68df1b53e93854dc10a2d28b8b67f
+  URL_MD5 2e77fe4b18891e4838f8af8d861c341b
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
