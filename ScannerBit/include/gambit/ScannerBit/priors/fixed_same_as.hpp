@@ -31,11 +31,10 @@ namespace Gambit
         {
         private:
             std::vector<double> value;
-            std::vector<std::string> names;
             mutable int iter;
                 
         public:
-            FixedPrior(const std::vector<std::string>& param, const Options& options) : names(param), iter(0)
+            FixedPrior(const std::vector<std::string>& param, const Options& options) : BasePrior(param), iter(0)
             {
                 if (options.hasKey("fixed_value"))
                 {
@@ -49,18 +48,16 @@ namespace Gambit
                     }
                     else
                     {
-                        scan_err << "fixed_value input for parameter " << names[0] << " is neither scalar nor sequence" << scan_end;
+                        scan_err << "fixed_value input for parameter " << param_names[0] << " is neither scalar nor sequence" << scan_end;
                     }
                 }
                 else
                 {
-                    std::stringstream err;
-                    err << "Did not give fixed_value for parameter " << names[0] << "..." << std::endl;
-                    Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                    scan_err << "Did not give fixed_value for parameter " << param_names[0] << "..." << scan_end;
                 }
             }
             
-            FixedPrior(const std::string& param, const Options& options) : names(1, param), iter(0)
+            FixedPrior(const std::string& param, const Options& options) : BasePrior(param), iter(0)
             {
                 if (options.getNode().IsScalar())
                 {
@@ -72,15 +69,15 @@ namespace Gambit
                 }
                 else
                 {
-                    scan_err << "fixed_value input for parameter " << names[0] << " is neither scalar nor sequence" << scan_end;
+                    scan_err << "fixed_value input for parameter " << param_names[0] << " is neither scalar nor sequence" << scan_end;
                 }
             }
                 
-            FixedPrior(std::string name, double value) : value(1, value), names(1, name), iter(0) {}
+            FixedPrior(const std::string &name, double value) : BasePrior(name), value(1, value), iter(0) {}
             
             void transform(const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
             {
-                for (auto it = names.begin(), end = names.end(); it != end; it++)
+                for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
                 {
                     outputMap[*it] = value[iter];
                 }
@@ -94,11 +91,10 @@ namespace Gambit
         {
         private:
             std::string name;
-            std::vector <std::string> names;
             std::vector<double> scale, shift;
                 
         public:
-            MultiPriors(const std::vector<std::string>& param, const Options& options) : scale(param.size(), 1.0), shift(param.size(), 0.0)
+            MultiPriors(const std::vector<std::string>& param, const Options& options) : BasePrior(param), scale(param.size(), 1.0), shift(param.size(), 0.0)
             {
                 if (options.hasKey("same_as"))
                 {
@@ -119,8 +115,6 @@ namespace Gambit
                 {
                     shift = options.getValue<std::vector<double>>("shift");
                 }
-                
-                names = param;
             }
                 
             MultiPriors(std::string name_in, std::unordered_map<std::string, std::pair<double, double> > &map_in)
@@ -130,7 +124,7 @@ namespace Gambit
                 while (pos != std::string::npos)
                 {
                     std::string p_name = name_in.substr(pos_old, (pos-pos_old));
-                    names.push_back(p_name);
+                    param_names.push_back(p_name);
                     if (map_in.find(p_name) == map_in.end())
                     {
                         scale.push_back(1.0);
@@ -146,7 +140,7 @@ namespace Gambit
                 }
                 
                 name = name_in.substr(pos_old);
-                names.push_back(name_in);
+                param_names.push_back(name_in);
             }
             
             void transform (const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
@@ -154,7 +148,7 @@ namespace Gambit
                 double value = outputMap[name];
                 
                 auto it1 = scale.begin(), it2 = shift.begin();
-                for (auto it = names.begin(), end = names.end(); it != end; ++it, ++it1, ++it2)
+                for (auto it = param_names.begin(), end = param_names.end(); it != end; ++it, ++it1, ++it2)
                 {
                     outputMap[*it] = (*it1)*value + *it2;
                 }

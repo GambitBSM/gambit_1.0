@@ -43,11 +43,19 @@
    #include "gambit/Elements/printable_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   #include "gambit/ScannerBit/printable_types.hpp"
+   //#include "gambit/ScannerBit/printable_types.hpp"
+
+   // Already dealt with in basebaseprinter? Can possibly do this to deal with
+   // lack of new types, rest will be inherited anyway.
+   #define PRINTABLE_TYPES (double)
+   #define RETRIEVABLE_TYPES (double)
 #endif
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)
+
+// This macro registers each reader so that they can be constructed automatically from inifile instructions
+#define LOAD_READER(tag, ...) REGISTER(reader_creators, tag, __VA_ARGS__)
 
 // Code!
 namespace Gambit
@@ -139,14 +147,48 @@ namespace Gambit
 
     };
 
-    /// Map in which to keep factory functions for the printers (printer_creators)
+    /// BASE READER CLASS
+    class BaseReader: public BaseBaseReader
+    {
+      public:
+        BaseReader() {}
+    
+        /// Destructor
+        virtual ~BaseReader() {}
+
+        // retrieve function dispatch
+        template<typename T>
+        void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        {
+          _retrieve(out, label, rank, pointID);
+        }
+    
+      protected:
+        using BaseBaseReader::_retrieve; //unhide the default function in the base class
+    
+        // We need to have a virtual 'retrieve' method for every type that we want to
+        // be able to retrieve. The list of these types is maintained in 
+        // "gambit/Elements/printable_types.hpp"
+        // Run the macro; add all the print functions
+        ADD_VIRTUAL_RETRIEVALS(RETRIEVABLE_TYPES) 
+    
+    };
+
+
+    /// Maps in which to keep factory functions for the printers (printer_creators)
+    /// and readers (reader_creators)
     // (uses the same machinery as in priors.hpp)
+    // Note: Arguments to e.g printer_creators need to match constructor for printer object
+    // e.g. printer_creators.at(tag)(args...)
+    // (this is set up by the typedef)
     registry
     {
-            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&); //arguments need to match constructor for printer object
+            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&); 
             reg_elem <create_printer_function> printer_creators;
+ 
+            typedef BaseReader* create_reader_function(const Options&);
+            reg_elem <create_reader_function> reader_creators;
     }
-
 
   } //end namespace Printers
 } // end namespace Gambit
