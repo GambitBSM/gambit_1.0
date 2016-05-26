@@ -26,7 +26,6 @@ BE_NAMESPACE
   // Run SPheno
   void run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
   {
-    //Spectrum *spectrum;
    
     Set_All_Parameters_0();
 
@@ -133,11 +132,11 @@ BE_NAMESPACE
  
     //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, m2P0, m2S0, m2Spm, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
 
-   spectrum = Spectrum_Out(sminputs, Param);
+   spectrum = Spectrum_Out(Param);
 
   }
 
-  Spectrum Spectrum_Out(const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& input_Param)
+  Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
   {
 
     SLHAstruct slha;

@@ -260,7 +260,7 @@ BE_VARIABLE(Atau_save, Fcomplex16, "__model_data_MOD_ab_save", "SPheno_MSSMspect
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(run_SPheno, void, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
-BE_CONV_FUNCTION(Spectrum_Out, Spectrum, (const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
+BE_CONV_FUNCTION(Spectrum_Out, Spectrum, (const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
 BE_CONV_FUNCTION(ReadingData, void, (const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
 BE_CONV_FUNCTION(InitializeStandardModel, void, (const SMInputs&), "SPheno_MSSMspectrum")
 
