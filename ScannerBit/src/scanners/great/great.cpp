@@ -72,6 +72,8 @@ scanner_plugin(GreAT, version(1, 0, 0))
     int nTrialLists = get_inifile_value<int> ("nTrialLists", 10); // Number of trial lists (e.g. Markov chains)
     int nTrials     = get_inifile_value<int> ("nTrials",  20000); // Number of trials (e.g. Markov steps)
 
+    static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
+
     // Creating GreAT Model, i.e. parameter space and function to be minimised
     TGreatModel* MyModel = new TGreatModel();
 
@@ -97,7 +99,9 @@ scanner_plugin(GreAT, version(1, 0, 0))
     MyManager.GetAlgorithm()->SetUpdateStatus(true);
     // Set the output path, file name, and name for the TTree
     std::string defpath = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT-native/");
-    std::string filename = defpath + "MCMC.root";
+    std::ostringstream ss; 
+    ss << defpath << "MCMC_" << MPIrank << ".root";
+    std::string filename = ss.str();
     MyManager.SetOutputFileName(filename);
     MyManager.SetTreeName("mcmc");
     // Set number of trials (steps) and triallists (chains)
@@ -105,6 +109,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
     MyManager.SetNTrials(nTrials);
     // Run GreAT
     std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
+    MyManager.ActivateMultiRun();
     MyManager.Run();
 
     // Analyse
@@ -120,7 +125,6 @@ scanner_plugin(GreAT, version(1, 0, 0))
     estimator->ShowStatistics();
 
     // Setup auxilliary stream. It is only needed by the master process
-    static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
     if(MPIrank == 0)
     {
       Gambit::Options ind_samples_options;// = get_inifile_node("aux_printer_ind_samples_options");
