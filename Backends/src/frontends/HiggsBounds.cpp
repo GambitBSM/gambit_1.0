@@ -36,7 +36,8 @@ BE_INI_FUNCTION
     int ANA = 1;    // indicates LEP-only analysis
     // Initialize HiggsBounds. Do this one-by-one for each MPI process with
     // locks, as HB writes files here then reads them back in later (crazy). 
-    Utils::FileLock mylock("HiggsBounds_" STRINGIFY(SAFE_VERSION) "_init");
+    //Utils::FileLock mylock("HiggsBounds_" STRINGIFY(SAFE_VERSION) "_init");
+    Utils::FileLock mylock("HiggsBounds_init");
     mylock.get_lock();
     // --braces just for dramatic effect--
     { 

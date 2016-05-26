@@ -30,8 +30,17 @@ BE_INI_FUNCTION
     int nHplus = 1; // number of charged higgses
     int pdf = 2;    // choose which pdf style to use for Higgs lineshape; 2 = Gaussian
     // Initialize HiggsSignals. Do this one-by-one for each MPI process with
-    // locks, as HS writes files here then reads them back in later (crazy). 
-    Utils::FileLock mylock("HiggsSignals_" STRINGIFY(SAFE_VERSION) "_init");
+    // locks, as HS calls HB, which writes files then reads them back in later (crazy).
+    // Note that this is the Higgs*Bounds* lock, as in the HiggsBounds ini function,
+    // because we need to make sure that neither this function nor the HB ini function
+    // run at the same time, beccause both of them cause the HiggsBounds files to be
+    // written.
+
+    // Find all the versions of HiggsBounds that have been successfully loaded, and get
+    // their locks.
+    // --later.
+    
+    Utils::FileLock mylock("HiggsBounds_init");
     mylock.get_lock();
     { 
       // initialize HiggsSignals with the latest results and set pdf shape
