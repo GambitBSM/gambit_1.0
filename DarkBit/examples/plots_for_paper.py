@@ -117,6 +117,37 @@ def plotMSSM7():
     sigmav = data[50]
     print mwimp, oh2, sigma_SI_p, sigmav
 
+    N = 5
+    data = genfromtxt("runs/MSSM7/samples/runs/MSSM7/samples/MSSM7.hdf5_0")
+    mwimp = data[0:N,49]
+    oh2 = data[0:N,47]
+    sigma_SI_p = data[0:N,51]
+    sigma_SI_n = data[0:N,52]
+    sigma_SD_p = data[0:N,53]
+    sigma_SD_n = data[0:N,54]
+    sigmav = data[0:N,50]  
+
+    plt.clf()
+    plt.scatter(mwimp,sigma_SI_p)
+    plt.xlabel("m [GeV]")
+    plt.ylabel("sigma_SI_p [cm^2]")
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=5,xmax=10000)
+    plt.gca().set_ylim(ymin=10**-53,ymax=10**-43)
+    plt.show()
+
+    plt.clf()
+    plt.scatter(mwimp,sigma_SD_p)
+    plt.xlabel("m [GeV]")
+    plt.ylabel("sigma_SD_p [cm^2]")
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=5,xmax=10000)
+    plt.gca().set_ylim(ymin=10**-53,ymax=10**-43)
+    plt.show()
+
+
 if __name__ == '__main__':
     plotMSSM7()
     #plotLimits()
