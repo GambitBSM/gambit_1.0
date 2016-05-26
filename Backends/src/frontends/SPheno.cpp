@@ -16,6 +16,8 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/SPheno.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Elements/spectrum_factories.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 // Convenience functions (definition)
 BE_NAMESPACE
@@ -25,7 +27,6 @@ BE_NAMESPACE
   void run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
   {
     //Spectrum *spectrum;
-    std::cout <<  "running spheno" << std::endl;
    
     Set_All_Parameters_0();
 
@@ -138,28 +139,6 @@ BE_NAMESPACE
 
   Spectrum Spectrum_Out(const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& input_Param)
   {
-
-    Spectrum spectrum;
-
-/*  typedef SpecBit::CMSSM_interface<SpecBit::ALGORITHM1> MI;
-    
-    MI::InputParameters input;
-
-    softsusy::QedQcd oneset;
-    SpecBit::setup_QedQcd(oneset, sminputs);
-    oneset.toMz();
-
-    typename MI::SpectrumGenerator spectrum_generator;
-
-    //MI model_interface(spectrum_generator, oneset, input);
-
-    //SpecBit::MSSMSpec<MI> mssmspec(model_interface, "SPheno", "3.3.8");
-
-    //SpecBit::QedQcdWrapper qedqcdspec(oneset,sminputs);
-
-    //spectrum = Spectrum(qedqcdspec, mssmspec, sminputs, &input_Param);
-
-*/ 
 
     SLHAstruct slha;
 
@@ -626,7 +605,9 @@ BE_NAMESPACE
 
     // Missing Low Energy Observables
 
-    std::cout << slha << std::endl;
+    // Create Spectrum object from the slhaea object
+    Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha);    
+
     return spectrum;
 
   }
@@ -891,7 +872,6 @@ BE_NAMESPACE
 
     CalculateRunningMasses(*mf_l, *mf_d, *mf_u, *Q_light_quarks, *Alpha_mZ, *AlphaS_mZ, *mZ, *mf_l_mZ, *mf_d_mZ, *mf_u_mZ, *kont);
 
-    std::cout << "standard model initialised" << std::endl;
   }  
 
 }

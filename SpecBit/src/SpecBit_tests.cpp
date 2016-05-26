@@ -55,24 +55,11 @@ namespace Gambit
       namespace myPipe = Pipes::SPheno_MSSMspectrum_test;
       const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
 
-      /*
-      Fcomplex16 z;
-      Freal8 re, im;
-
-      z.re = 1.10;
-      z.im = 0.00456;
-
-      myPipe::BEreq::libFarrayTest_testcomplex(z,re,im);
-
-      std::cout << "z = " << z.re << ", " << z.im << std::endl;
-      std::cout << "re = " << re << ", im = " << im << std::endl;
-      */
       Spectrum spectrum;
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
-      //myPipe::BEreq::SPheno_MSSMspectrum(sminputs, myPipe::Param);
 
-      //std::cout << spectrum->getSLHAea() << std::endl;
+      std::cout << spectrum.getSLHAea() << std::endl;
     }
     
     /// Verify consistency of the contents of a Spectrum object of capability MSSMspectrum. 
