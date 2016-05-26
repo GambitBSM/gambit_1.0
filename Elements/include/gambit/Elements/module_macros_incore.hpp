@@ -151,7 +151,9 @@
 /// members of the same \em GROUP.  Note that \em GROUPs are automatically declared the 
 /// first time that they are mentioned in a BACKEND_REQ statement.
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
-                                                          CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+                                                          CORE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+#define LONG_DECLARE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
+                                                          CORE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 
 /// Declare a backend group, from which one backend requirement must be activated.
 #define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
@@ -558,7 +560,7 @@
     /* Set up a helper function to call the iterate method if the functor is   \
     able to manage loops. */                                                   \
     BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                                \
-     void CAT(FUNCTION,_iterate)(int it) { FUNCTION.iterate(it); }             \
+     void CAT(FUNCTION,_iterate)(long long it) { FUNCTION.iterate(it); }       \
     ,)                                                                         \
     /* Create a helper function to indicate whether a given model is in use. */\
     BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                              \
@@ -587,7 +589,7 @@
        {                                                                       \
          /* Create a pointer to the single iteration of the loop that can      \
          be executed by this functor */                                        \
-         void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate);    \
+         void (*executeIteration)(long long)=&Functown::CAT(FUNCTION,_iterate);\
          /* Declare a safe pointer to the flag indicating that a managed loop  \
          is ready for breaking. */                                             \
          safe_ptr<bool> done;                                                  \
@@ -644,7 +646,7 @@
           {                                                                    \
             /* Create a safe pointer to the iteration number of the loop this  \
             functor is running within. */                                      \
-            omp_safe_ptr<int> iteration;                                       \
+            omp_safe_ptr<long long> iteration;                                 \
             /* Create a loop-breaking function that can be called to tell the  \
             functor's loop manager that it is time to break. */                \
             void wrapup() { Functown::FUNCTION.breakLoopFromManagedFunctor(); }\
@@ -1050,7 +1052,8 @@
 
 /// Redirection of BACKEND_REQ(GROUP, REQUIREMENT, (TAGS), TYPE, [(ARGS)]) 
 /// for declaring backend requirements when invoked from within the Core.
-#define CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE)    \
+#define CORE_BACKEND_REQ(MODULE, CAPABILITY, FUNCTION, GROUP, REQUIREMENT,     \
+                         TAGS, TYPE, ARGS, IS_VARIABLE)                        \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "BACKEND_REQ."))                                                            \

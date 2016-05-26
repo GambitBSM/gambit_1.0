@@ -236,7 +236,7 @@ namespace Gambit {
         cutFlowVector_str[27] = "6jl: meff incl > 900. ";
         cutFlowVector_str[28] = "6jt: met/meff6j > 0.25 ";
         cutFlowVector_str[29] = "6jt: meff incl > 1500. ";
-
+      
         for (size_t j=0;j<NCUTS;j++){
           if(
              (j==0) ||

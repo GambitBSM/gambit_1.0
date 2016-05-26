@@ -51,12 +51,38 @@ START_MODULE
 
   #undef CAPABILITY
 
+
+  #define CAPABILITY Reference_SM_Higgs_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION Ref_SM_Higgs_decays_table
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(mh, double)
+    #undef FUNCTION
+
+    //#define FUNCTION Ref_SM_Higgs_decays_FH
+    //START_FUNCTION(DecayTable::Entry)
+    //DEPENDENCY(mh, double)
+    //BACKEND_REQ(xxx, (fh_reqd), xxx)
+    //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
+    //#undef FUNCTION
+
+  #undef CAPABILITY
+  
+
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
 
     #define FUNCTION SM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, const Spectrum*)
+    DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+    #define FUNCTION SingletDM_Higgs_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
+    DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
     #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
@@ -74,13 +100,6 @@ START_MODULE
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
      DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-
-    #define FUNCTION SS_Higgs_decays
-    START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SingletDM_spectrum, const Spectrum*) 
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    ALLOW_MODEL(SingletDM)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -641,13 +660,11 @@ START_MODULE
 
 
   #define CAPABILITY SLHA1_violation
-  START_CAPABILITY
-  
+  START_CAPABILITY 
     #define FUNCTION check_first_sec_gen_mixing
     START_FUNCTION(int)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     #undef FUNCTION
-    
   #undef CAPABILITY
 
 
@@ -656,7 +673,6 @@ START_MODULE
     #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
-    DEPENDENCY(SLHA1_violation, int)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -709,7 +725,7 @@ QUICK_FUNCTION(DecayBit, charginominus_1_decay_rates,  NEW_CAPABILITY, charginom
 QUICK_FUNCTION(DecayBit, charginominus_2_decay_rates,  NEW_CAPABILITY, charginominus_2_decays,  DecayTable::Entry, (MSSM63atQ, MSSM63atMGUT), (charginoplus_2_decay_rates, DecayTable::Entry)) 
 
 // Likelihoods
-QUICK_FUNCTION(DecayBit, lnL_Higgs_invWidth, NEW_CAPABILITY, lnL_Higgs_invWidth_SMonly, double, (SingletDM), (Higgs_decay_rates, DecayTable::Entry)) 
+QUICK_FUNCTION(DecayBit, lnL_Higgs_invWidth, NEW_CAPABILITY, lnL_Higgs_invWidth_SMonly, double, (SingletDM, SingletDMZ3), (Higgs_decay_rates, DecayTable::Entry)) 
  
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 

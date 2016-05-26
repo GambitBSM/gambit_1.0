@@ -18,8 +18,8 @@ DarkSUSY:
 SuperIso:
   3.4:         ./Backends/installed/SuperIso/3.4/libsuperiso.so
 
-DDCalc0:
-  0.0:         ./Backends/installed/DDCalc/0.0/libDDCalc0.so
+DDCalc:
+  1.0.0:       ./Backends/installed/DDCalc/1.0.0/lib/libDDCalc.so
 
 HiggsBounds:
   4.2.1:       ./Backends/installed/HiggsBounds/4.2.1/lib/libhiggsbounds.so
@@ -60,7 +60,7 @@ MicrOmegasSingletDM:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/SingletDM/SingletDM/libmicromegas.so
 
 nulike:
-  1.0.2:       ./Backends/installed/nulike/1.0.2/lib/libnulike.so
+  1.0.3:       ./Backends/installed/nulike/1.0.3/lib/libnulike.so
 
 SUSY_HIT:
   1.5:         ./Backends/installed/SUSY-HIT/1.5/libsusyhit.so

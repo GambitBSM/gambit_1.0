@@ -34,7 +34,9 @@ namespace Gambit
     double gaussian_loglikelihood(double theory, double obs, double theoryerr, double obserr)
     {
       double errsq = theoryerr*theoryerr + obserr*obserr;
-      return (log(theory/sqrt(errsq*2*pi)) - 0.5*pow(theory-obs,2)/errsq);
+      return - 0.5*pow(theory-obs,2)/errsq;
+      // Naive normalisation for constant errsq: +log(theory/sqrt(errsq*2*pi))
+      // Proper application for the AIC would require taking into account that errsq varies with theory value.
     }
 
     /// Use a detection to compute a simple chi-square likelihood for the case
@@ -43,12 +45,11 @@ namespace Gambit
     /// (returns log-likelihood)
     double lognormal_loglikelihood(double theory, double obs, double theoryerr, double obserr)
     {
-
-        double errsq_prime = (theoryerr*theoryerr + obserr*obserr) / (theory*theory);
-        double obs_prime = obs / theory;
-
-        return (-log(sqrt(errsq_prime*2*pi)) - log(obs_prime)
-                - 0.5*pow(log(obs_prime),2)/errsq_prime);
+      double errsq_prime = (theoryerr*theoryerr + obserr*obserr) / (theory*theory);
+      double obs_prime = obs / theory;
+      return -log(obs_prime) - 0.5*pow(log(obs_prime),2)/errsq_prime;
+      // Naive normalisation for constant errsq: -log(sqrt(errsq_prime*2*pi))
+      // Proper application for the AIC would require taking into account that errsq varies with theory value.
     }
 
     /// Use a detection to compute a log-likelihood for an upper limit

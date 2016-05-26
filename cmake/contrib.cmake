@@ -140,6 +140,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(FS_OPTIONS ${FS_OPTIONS}
        --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxxflags=${FS_CXX_FLAGS}
+       --with-ldflags=${OpenMP_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
        --with-fflags=${FS_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}

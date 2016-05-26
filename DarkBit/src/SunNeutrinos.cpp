@@ -34,17 +34,18 @@ namespace Gambit
     /*! \brief Capture rate of regular dark matter in the Sun (no v-dependent
      *         or q-dependent cross-sections) (s^-1).
      */
-    void capture_rate_Sun_constant_xsec(double &result)
+    void capture_rate_Sun_const_xsec(double &result)
     {
-      using namespace Pipes::capture_rate_Sun_constant_xsec;
+      using namespace Pipes::capture_rate_Sun_const_xsec;
 
-      if (BEreq::capture_rate_Sun.origin()=="DarkSUSY")
+      if (BEreq::cap_Sun_v0q0_isoscalar.origin()=="DarkSUSY")
         if(!(*Dep::DarkSUSY_PointInit_LocalHalo))
           DarkBit_error().raise(LOCAL_INFO,"DarkSUSY halo model not initialized!");
 
-      // Here we assume that the proton and neutron scattering cross-sections
-      // are the same.
-      result = BEreq::capture_rate_Sun(
+      // When calculating the solar capture rate, DarkSUSY assumes that the
+      // proton and neutron scattering cross-sections are the same; we
+      // assume that whichever backend has been hooked up here does so too. 
+      result = BEreq::cap_Sun_v0q0_isoscalar(
           *Dep::mwimp, *Dep::sigma_SI_p, *Dep::sigma_SD_p);
     }
 
