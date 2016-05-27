@@ -28,6 +28,9 @@ namespace Gambit
    {
       /// Simple extension of the SMHiggsSimpleSpec "model object"
       /// to include scalar singlet DM parameters
+      /// We could easily just put these in the wrapper itself, but
+      /// I am leaving them in a separate struct for the sake of building
+      /// up examples towards a more complicated "model" object
       struct SingletDMModel
       {
          double HiggsPoleMass;
@@ -54,13 +57,13 @@ namespace Gambit
       class ScalarSingletDMSimpleSpec : public Spec<ScalarSingletDMSimpleSpec> 
       {
          private:
-            ScalarSingletDMSimpleSpec params;
+            SingletDMModel params;
 
             typedef ScalarSingletDMSimpleSpec Self;
 
          public:
             /// @{ Constructors/destructors
-            ScalarSingletDMSimpleSpec(const ScalarSingletDMSimpleSpec& p)
+            ScalarSingletDMSimpleSpec(const SingletDMModel& p)
              : params(p)
             {}
             /// @}
