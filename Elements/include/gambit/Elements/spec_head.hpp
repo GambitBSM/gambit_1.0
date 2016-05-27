@@ -38,6 +38,13 @@ namespace Gambit
    template <class>
    class Spec;
 
+   /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
+   /// are not needed by the getters.
+   /// @{
+   class DummyModel {};
+   class DummyInput {};
+   /// @}
+ 
    /// Helper for the static_assert below
    template< typename T >
    struct always_false { 
@@ -52,6 +59,13 @@ namespace Gambit
    struct SpecTraits
    {
       static_assert(always_false<T>::value, "Failed to find appropriate specialisation of SpecTraits! Did you define one along with your SubSpectrum wrapper? If so, please be sure that the template parameter matches the name of your wrapper class.");
+   };
+
+   /// Default values for traits. Specialisations of SpecTraits should inherit from this, and then override the traits that they want to customise.
+   struct DefaultTraits
+   {
+      typedef DummyModel Model;
+      typedef DummyInput Input;
    };
 
    /// Forward declarations related to FptrFinder class
@@ -207,6 +221,15 @@ namespace Gambit
          ///    Might as well use static polymorphism rather than virtual functions,
          ///    since we are using the CRTP already anyway.
 
+         /// Default "null" versions of get_Model and get_Input, to be used if
+         /// wrapper does not override them.
+         DummyModel dummymodel;
+         DummyInput dummyinput;
+         Model& get_Model() { return dummymodel; }
+         Input& get_Input() { return dummyinput; }
+         const Model& get_Model() const { return dummymodel; }
+         const Input& get_Input() const { return dummyinput; }
+
          /// Get model object on which to call function pointers
          Model& model() { return static_cast<DerivedSpec*>(this)->get_Model(); }
          /// Return it as const if we are a const object
@@ -235,15 +258,7 @@ namespace Gambit
 
    template <class D>
    const typename Spec<D>::SetterMaps Spec<D>::setter_maps(Spec<D>::final_fill_setter_maps());
-
-
-   /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
-   /// are not needed by the getters.
-   /// @{
-   class DummyModel {};
-   class DummyInput {};
-   /// @}
-  
+ 
 } // end namespace Gambit
 
 // Undef the various helper macros to avoid contaminating other files
