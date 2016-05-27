@@ -83,13 +83,20 @@ namespace Gambit
             const Model& get_Model() const { return model; }
             const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
+            /// Test wrapper-side helper function (that does nothing important but replaces the model-side function)
+            double get_converted_lambda()
+            {
+              return 1. * model.get_lambda_hS;
+            }
+
             /// @{ Map fillers
             static GetterMaps fill_getter_maps()
             {
                GetterMaps map_collection; 
 
                map_collection[Par::mass1].map0["vev"]       = &Model::get_HiggsVEV;
-               map_collection[Par::dimensionless].map0["lambda_hS"] = &Model::get_lambda_hS;
+               //map_collection[Par::dimensionless].map0["lambda_hS"] = &Model::get_lambda_hS;
+               map_collection[Par::dimensionless].map0W["lambda_hS"] = &get_converted_lambda;
 
                map_collection[Par::Pole_Mass].map0["h0"]    = &Model::get_HiggsPoleMass;
                map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::get_HiggsPoleMass;

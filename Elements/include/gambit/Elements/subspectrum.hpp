@@ -57,13 +57,16 @@ namespace Gambit
    struct MapCollection
    {
       typename MapTypes::fmap0        map0;
-      typename MapTypes::fmap0_extraM map0_extraM;
-      typename MapTypes::fmap0_extraI map0_extraI;
       typename MapTypes::fmap1        map1;    
-      typename MapTypes::fmap1_extraM map1_extraM;
-      typename MapTypes::fmap1_extraI map1_extraI;
       typename MapTypes::fmap2        map2;    
+      typename MapTypes::fmap0W       map0W;
+      typename MapTypes::fmap1W       map1W;    
+      typename MapTypes::fmap2W       map2W;    
+      typename MapTypes::fmap0_extraM map0_extraM;
+      typename MapTypes::fmap1_extraM map1_extraM;
       typename MapTypes::fmap2_extraM map2_extraM;
+      typename MapTypes::fmap0_extraI map0_extraI;
+      typename MapTypes::fmap1_extraI map1_extraI;
       typename MapTypes::fmap2_extraI map2_extraI;
    };
 

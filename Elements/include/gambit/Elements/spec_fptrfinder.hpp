@@ -47,13 +47,16 @@ namespace Gambit {
           , const_fakethis_(fakethis)
           , override_only_(false)
           , map0_(NULL)
-          , map0M_(NULL)
-          , map0I_(NULL)
           , map1_(NULL)
-          , map1M_(NULL)
-          , map1I_(NULL)
           , map2_(NULL)
+          , map0W_(NULL)
+          , map1W_(NULL)
+          , map2W_(NULL)
+          , map0M_(NULL)
+          , map1M_(NULL)
           , map2M_(NULL)
+          , map0I_(NULL)
+          , map1I_(NULL)
           , map2I_(NULL)
           , omap0_(NULL)
           , omap1_(NULL)
@@ -67,13 +70,16 @@ namespace Gambit {
           , const_fakethis_(fakethis)
           , override_only_(false)
           , map0_(NULL)
-          , map0M_(NULL)
-          , map0I_(NULL)
           , map1_(NULL)
-          , map1M_(NULL)
-          , map1I_(NULL)
           , map2_(NULL)
+          , map0W_(NULL)
+          , map1W_(NULL)
+          , map2W_(NULL)
+          , map0M_(NULL)
+          , map1M_(NULL)
           , map2M_(NULL)
+          , map0I_(NULL)
+          , map1I_(NULL)
           , map2I_(NULL)
           , omap0_(NULL)
           , omap1_(NULL)
@@ -85,13 +91,16 @@ namespace Gambit {
 
          /// derived class maps
          SetMaps& map0 (const typename MapTypes<D,MTag>::fmap0&        map0) { map0_ =&map0;  return *this; }
-         SetMaps& map0M(const typename MapTypes<D,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
-         SetMaps& map0I(const typename MapTypes<D,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
          SetMaps& map1 (const typename MapTypes<D,MTag>::fmap1&        map1) { map1_ =&map1;  return *this; }
-         SetMaps& map1M(const typename MapTypes<D,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
-         SetMaps& map1I(const typename MapTypes<D,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
          SetMaps& map2 (const typename MapTypes<D,MTag>::fmap2&        map2) { map2_ =&map2;  return *this; }
+         SetMaps& map0W(const typename MapTypes<D,MTag>::fmap0W&       map0W){ map0W_=&map0W; return *this; }
+         SetMaps& map1W(const typename MapTypes<D,MTag>::fmap1W&       map1W){ map1W_=&map1W; return *this; }
+         SetMaps& map2W(const typename MapTypes<D,MTag>::fmap2W&       map2W){ map2W_=&map2W; return *this; }
+         SetMaps& map0M(const typename MapTypes<D,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
+         SetMaps& map1M(const typename MapTypes<D,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
          SetMaps& map2M(const typename MapTypes<D,MTag>::fmap2_extraM& map2M){ map2M_=&map2M; return *this; }
+         SetMaps& map0I(const typename MapTypes<D,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
+         SetMaps& map1I(const typename MapTypes<D,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
          SetMaps& map2I(const typename MapTypes<D,MTag>::fmap2_extraI& map2I){ map2I_=&map2I; return *this; }
          /// base class override maps
          SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
@@ -109,13 +118,16 @@ namespace Gambit {
 
          /// Maps from derived class
          const typename MapTypes<D,MTag>::fmap0*        map0_;
-         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
-         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
          const typename MapTypes<D,MTag>::fmap1*        map1_; 
-         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
-         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2*        map2_; 
+         const typename MapTypes<D,MTag>::fmap0W*       map0W_;
+         const typename MapTypes<D,MTag>::fmap1W*       map1W_; 
+         const typename MapTypes<D,MTag>::fmap2W*       map2W_; 
+         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
          const typename MapTypes<D,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2_extraI* map2I_; 
           
          /// Maps from base class (override maps, only used in getter case)
@@ -160,13 +172,16 @@ namespace Gambit {
          const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
          /// Maps filled by derived (wrapper) classes
          const typename MapTypes<D,MTag>::fmap0*        map0_;
-         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
-         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
          const typename MapTypes<D,MTag>::fmap1*        map1_; 
-         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
-         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2*        map2_; 
+         const typename MapTypes<D,MTag>::fmap0W*       map0W_;
+         const typename MapTypes<D,MTag>::fmap1W*       map1W_; 
+         const typename MapTypes<D,MTag>::fmap2W*       map2W_; 
+         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
          const typename MapTypes<D,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2_extraI* map2I_; 
 
          /// Iterators needed for storing locatation of search result
@@ -176,13 +191,16 @@ namespace Gambit {
          std::map<std::string,std::map<int,std::map<int,double>>>::const_iterator ito2; // 2
          /// ...for derived class values
          typename MapTypes<D,MTag>::fmap0::const_iterator        it0;  // 3
-         typename MapTypes<D,MTag>::fmap0_extraM::const_iterator it0M; // 4
-         typename MapTypes<D,MTag>::fmap0_extraI::const_iterator it0I; // 5
          typename MapTypes<D,MTag>::fmap1::const_iterator        it1;  // 6
-         typename MapTypes<D,MTag>::fmap1_extraM::const_iterator it1M; // 7
-         typename MapTypes<D,MTag>::fmap1_extraI::const_iterator it1I; // 8
          typename MapTypes<D,MTag>::fmap2::const_iterator        it2;  // 9 //was 7
+         typename MapTypes<D,MTag>::fmap0W::const_iterator       it0W; // ? 12
+         typename MapTypes<D,MTag>::fmap1W::const_iterator       it1W; // ? 13
+         typename MapTypes<D,MTag>::fmap2W::const_iterator       it2W; // ? 14
+         typename MapTypes<D,MTag>::fmap0_extraM::const_iterator it0M; // 4
+         typename MapTypes<D,MTag>::fmap1_extraM::const_iterator it1M; // 7
          typename MapTypes<D,MTag>::fmap2_extraM::const_iterator it2M; // 10
+         typename MapTypes<D,MTag>::fmap0_extraI::const_iterator it0I; // 5
+         typename MapTypes<D,MTag>::fmap1_extraI::const_iterator it1I; // 8
          typename MapTypes<D,MTag>::fmap2_extraI::const_iterator it2I; // 11
 
          /// empty maps used to initialise the above iterators
@@ -190,13 +208,16 @@ namespace Gambit {
          static const std::map<std::string,std::map<int,double>>  nullmap_ito1; // 1
          static const std::map<std::string,std::map<int,std::map<int,double>>> nullmap_ito2; // 2
          static const typename MapTypes<D,MTag>::fmap0        nullmap_it0;  // 3
-         static const typename MapTypes<D,MTag>::fmap0_extraM nullmap_it0M; // 4
-         static const typename MapTypes<D,MTag>::fmap0_extraI nullmap_it0I; // 5
          static const typename MapTypes<D,MTag>::fmap1        nullmap_it1;  // 6
-         static const typename MapTypes<D,MTag>::fmap1_extraM nullmap_it1M; // 7
-         static const typename MapTypes<D,MTag>::fmap1_extraI nullmap_it1I; // 8
          static const typename MapTypes<D,MTag>::fmap2        nullmap_it2;  // 9 //was 7
+         static const typename MapTypes<D,MTag>::fmap0W       nullmap_it0W;  // ? 12
+         static const typename MapTypes<D,MTag>::fmap1W       nullmap_it1W;  // ? 13
+         static const typename MapTypes<D,MTag>::fmap2w       nullmap_it2W;  // ? 14
+         static const typename MapTypes<D,MTag>::fmap0_extraM nullmap_it0M; // 4
+         static const typename MapTypes<D,MTag>::fmap1_extraM nullmap_it1M; // 7
          static const typename MapTypes<D,MTag>::fmap2_extraM nullmap_it2M; // 10
+         static const typename MapTypes<D,MTag>::fmap0_extraI nullmap_it0I; // 5
+         static const typename MapTypes<D,MTag>::fmap1_extraI nullmap_it1I; // 8
          static const typename MapTypes<D,MTag>::fmap2_extraI nullmap_it2I; // 11
 
          /// Functions to check whether or not it is safe to dereference the above iterators
@@ -204,13 +225,16 @@ namespace Gambit {
          bool ito1_safe() { return ito1 != nullmap_ito1.end(); };
          bool ito2_safe() { return ito2 != nullmap_ito2.end(); };
          bool it0_safe()  { return it0  != nullmap_it0.end(); };
-         bool it0M_safe() { return it0M != nullmap_it0M.end(); };
-         bool it0I_safe() { return it0I != nullmap_it0I.end(); };
          bool it1_safe()  { return it1  != nullmap_it1.end(); };
-         bool it1M_safe() { return it1M != nullmap_it1M.end(); };
-         bool it1I_safe() { return it1I != nullmap_it1I.end(); };
          bool it2_safe()  { return it2  != nullmap_it2.end(); };
+         bool it0W_safe() { return it0W != nullmap_it0W.end(); };
+         bool it1W_safe() { return it1W != nullmap_it1W.end(); };
+         bool it2W_safe() { return it2W != nullmap_it2W.end(); };
+         bool it0M_safe() { return it0M != nullmap_it0M.end(); };
+         bool it1M_safe() { return it1M != nullmap_it1M.end(); };
          bool it2M_safe() { return it2M != nullmap_it2M.end(); };
+         bool it0I_safe() { return it0I != nullmap_it0I.end(); };
+         bool it1I_safe() { return it1I != nullmap_it1I.end(); };
          bool it2I_safe() { return it2I != nullmap_it2I.end(); };
 
          // int which records which iterator points to the search result 
@@ -251,25 +275,31 @@ namespace Gambit {
            , omap1_(params.omap1_)   
            , omap2_(params.omap2_)   
            , map0_ (params.map0_)   
+           , map1_ (params.map1_)
+           , map2_ (params.map2_)
+           , map0W_(params.map0W_)   
+           , map1W_(params.map1W_)
+           , map2W_(params.map2W_)
            , map0M_(params.map0M_)
-           , map0I_(params.map0I_)
-           , map1_(params.map1_)
            , map1M_(params.map1M_)
-           , map1I_(params.map1I_)
-           , map2_(params.map2_)
            , map2M_(params.map2M_)
+           , map0I_(params.map0I_)
+           , map1I_(params.map1I_)
            , map2I_(params.map2I_)
            , ito0(nullmap_ito0.end())
            , ito1(nullmap_ito1.end())
            , ito2(nullmap_ito2.end())
            , it0 (nullmap_it0.end())
-           , it0M(nullmap_it0M.end())
-           , it0I(nullmap_it0I.end())
            , it1 (nullmap_it1.end())
-           , it1M(nullmap_it1M.end())
-           , it1I(nullmap_it1I.end())
            , it2 (nullmap_it2.end())
+           , it0W(nullmap_it0W.end())
+           , it1W(nullmap_it1W.end())
+           , it2W(nullmap_it2W.end())
+           , it0M(nullmap_it0M.end())
+           , it1M(nullmap_it1M.end())
            , it2M(nullmap_it2M.end())
+           , it0I(nullmap_it0I.end())
+           , it1I(nullmap_it1I.end())
            , it2I(nullmap_it2I.end())
            , whichiter(-1)
            , index1(-1)
@@ -411,6 +441,11 @@ namespace Gambit {
                if     ( search_map(name,map0_,it0)   ){ found=true; whichiter=3; 
                   #ifdef CHECK_WHERE_FOUND
                   std::cout<<"   Found "<<name<<" in found in 0-index map (type O)"<<std::endl;
+                  #endif
+               }
+               else if( search_map(name,map0W_,it0W) ){ found=true; whichiter=12; 
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Found "<<name<<" in found in 0-index map (type OW)"<<std::endl;
                   #endif
                }
                else if( search_map(name,map0M_,it0M) ){ found=true; whichiter=4;
@@ -652,13 +687,16 @@ namespace Gambit {
    template<class HS, class MT> const std::map<std::string,std::map<int,std::map<int,double>>> FptrFinder<HS,MT>::nullmap_ito2 = std::map<std::string,std::map<int,std::map<int,double>>>(); // 2
    /// ...for derived class values
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0        FptrFinder<HS,MT>::nullmap_it0  = typename MapTypes<typename HS::D,MT>::fmap0       (); // 3
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraM FptrFinder<HS,MT>::nullmap_it0M = typename MapTypes<typename HS::D,MT>::fmap0_extraM(); // 4
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraI FptrFinder<HS,MT>::nullmap_it0I = typename MapTypes<typename HS::D,MT>::fmap0_extraI(); // 5
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1        FptrFinder<HS,MT>::nullmap_it1  = typename MapTypes<typename HS::D,MT>::fmap1       (); // 6
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraM FptrFinder<HS,MT>::nullmap_it1M = typename MapTypes<typename HS::D,MT>::fmap1_extraM(); // 7
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraI FptrFinder<HS,MT>::nullmap_it1I = typename MapTypes<typename HS::D,MT>::fmap1_extraI(); // 8
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2        FptrFinder<HS,MT>::nullmap_it2  = typename MapTypes<typename HS::D,MT>::fmap2       (); // 9 //was 7
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0W       FptrFinder<HS,MT>::nullmap_it0W = typename MapTypes<typename HS::D,MT>::fmap0W      (); // 12
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1W       FptrFinder<HS,MT>::nullmap_it1W = typename MapTypes<typename HS::D,MT>::fmap1W      (); // 13
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2W       FptrFinder<HS,MT>::nullmap_it2W = typename MapTypes<typename HS::D,MT>::fmap2W      (); // 14
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraM FptrFinder<HS,MT>::nullmap_it0M = typename MapTypes<typename HS::D,MT>::fmap0_extraM(); // 4
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraM FptrFinder<HS,MT>::nullmap_it1M = typename MapTypes<typename HS::D,MT>::fmap1_extraM(); // 7
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2_extraM FptrFinder<HS,MT>::nullmap_it2M = typename MapTypes<typename HS::D,MT>::fmap2_extraM(); // 10
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraI FptrFinder<HS,MT>::nullmap_it0I = typename MapTypes<typename HS::D,MT>::fmap0_extraI(); // 5
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraI FptrFinder<HS,MT>::nullmap_it1I = typename MapTypes<typename HS::D,MT>::fmap1_extraI(); // 8
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2_extraI FptrFinder<HS,MT>::nullmap_it2I = typename MapTypes<typename HS::D,MT>::fmap2_extraI(); // 11
 
 
@@ -759,6 +797,31 @@ namespace Gambit {
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
                  result = (*f)(input,ff->index1,ff->index2);
+                 break;}
+               case 12: {
+                 ff->check(ff->it0W_safe());
+                 typename MT::FSptrW f = ff->it0W->second;
+                 // These are member functions of DerivedSpec, but "HostSpec" 
+                 // (and therefore the fakethis pointers) is going to be of 
+                 // type Spec<DerivedSpec>. Therefore need to cast to the
+                 // derived type to call the function.
+                 const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
+                 result = (wrapper.*f)();
+                 break;}
+               case 13: {
+                 ff->check(ff->it1W_safe());
+                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 typename MT::FSptr1W f = ff->it1W->second.fptr;
+                 const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
+                 result = (wrapper.*f)(ff->index1);
+                 break;}
+               case 14: {
+                 ff->check(ff->it2W_safe());
+                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 typename MT::FSptr2W f = ff->it2W->second.fptr;
+                 const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
+                 result = (wrapper.*f)(ff->index1,ff->index2);
                  break;}
               default:{
                  std::ostringstream errmsg;
