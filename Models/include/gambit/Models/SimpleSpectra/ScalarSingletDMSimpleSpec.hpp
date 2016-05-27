@@ -54,27 +54,27 @@ namespace Gambit
       class ScalarSingletDMSimpleSpec : public Spec<ScalarSingletDMSimpleSpec> 
       {
          private:
-            Model model;
+            ScalarSingletDMSimpleSpec params;
 
             typedef ScalarSingletDMSimpleSpec Self;
 
          public:
             /// @{ Constructors/destructors
-            ScalarSingletDMSimpleSpec(const Model& m)
-             : model(m)
+            ScalarSingletDMSimpleSpec(const ScalarSingletDMSimpleSpec& p)
+             : params(p)
             {}
             /// @}
  
             /// Wrapper-side interface functions to Model
-            double get_HiggsPoleMass()   const { return model.HiggsPoleMass; } 
-            double get_HiggsVEV()        const { return model.HiggsVEV;      } 
-            double get_SingletPoleMass() const { return model.SingletPoleMass; } 
-            double get_lambda_hS()       const { return model.SingletLambda; } 
+            double get_HiggsPoleMass()   const { return params.HiggsPoleMass; } 
+            double get_HiggsVEV()        const { return params.HiggsVEV;      } 
+            double get_SingletPoleMass() const { return params.SingletPoleMass; } 
+            double get_lambda_hS()       const { return params.SingletLambda; } 
 
-            void set_HiggsPoleMass(double in)   { model.HiggsPoleMass=in; } 
-            void set_HiggsVEV(double in)        { model.HiggsVEV=in;      } 
-            void set_SingletPoleMass(double in) { model.SingletPoleMass=in; } 
-            void set_lambda_hS(double in)       { model.SingletLambda=in; }  
+            void set_HiggsPoleMass(double in)   { params.HiggsPoleMass=in; } 
+            void set_HiggsVEV(double in)        { params.HiggsVEV=in;      } 
+            void set_SingletPoleMass(double in) { params.SingletPoleMass=in; } 
+            void set_lambda_hS(double in)       { params.SingletLambda=in; }  
 
             /// @{ Map fillers
             static GetterMaps fill_getter_maps()
