@@ -677,7 +677,8 @@ namespace Gambit
     void a_mu_SUSY(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      const Spectrum* spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
       // const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
@@ -736,6 +737,26 @@ namespace Gambit
           model.set_Ae(i-1, j-1, Ae);
         }
       }
+      
+      const SMInputs& smin = spec->get_SMInputs();
+
+      model.get_physical().MVZ =smin.mZ;
+      model.get_physical().MFb =smin.mBmB;  /// MSbar - is this right?
+      model.get_physical().MFt =smin.mT; 
+      model.get_physical().MFtau =smin.mTau; 
+      model.get_physical().MVWm =mssm->get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
+      model.get_physical().MFm =smin.mMu; 
+      //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
+      // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
+      model.set_g3(std::sqrt(4*M_PI*smin.alphaS));
+      
+      // these are not currently used but may be in future updates so set them anyway 
+      model.get_physical().MFe =smin.mE; 
+      model.get_physical().MFd =smin.mD; //MSbar
+      model.get_physical().MFs =smin.mS; //MSbar
+      model.get_physical().MFu =smin.mU; //MSbar
+      model.get_physical().MFc =smin.mCmC; // MSbar
+
       
       model.set_scale(mssm->GetScale());                   // 2L
      
