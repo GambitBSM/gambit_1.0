@@ -40,7 +40,14 @@ ObsLikes:
     function:     SPheno_MSSMspectrum_test
 
 Rules:
-
+  - capability:   SPheno_MSSMspectrum
+    type:         void
+    function:     run_SPheno
+    options:
+      ErrorLevel:                 -1
+      SPA_convention:             true
+      Calculate_Branching_Ratios: false
+      Calculate_Cross_Sections:   false
 
 Logger:
 

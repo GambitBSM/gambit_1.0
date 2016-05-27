@@ -51,89 +51,95 @@ BE_NAMESPACE
     //}
     //}
     else if(!*kont)
+    {
 	Initialize_MSSM(*GenerationMixing, *id_gl, *id_ph, *id_Z, *id_W, *id_nu, *id_l, *id_d, *id_u, *id_grav);
    
-    // Variables needed to get masses of sparticles
-    Farray_Freal8_1_2 mChiPm;
-    Farray_Freal8_1_4 mChi0;
-    Farray_Freal8_1_2 mS0;
-    Farray_Freal8_1_2 m2S0;
-    Farray_Freal8_1_2 mP0;
-    Farray_Freal8_1_2 m2P0;
-    Farray_Freal8_1_2 mSpm;
-    Farray_Freal8_1_2 m2Spm;
-    Farray_Freal8_1_6 mSdown;
-    Farray_Freal8_1_6 m2Sdown;
-    Farray_Freal8_1_6 mSup;
-    Farray_Freal8_1_6 m2Sup;
-    Farray_Freal8_1_6 mSlepton;
-    Farray_Freal8_1_6 m2Slepton;
-    Farray_Freal8_1_3 mSneut;
-    Farray_Freal8_1_3 m2Sneut;
-    Freal8 mGlu;
+      // Variables needed to get masses of sparticles
+      Farray_Freal8_1_2 mChiPm;
+      Farray_Freal8_1_4 mChi0;
+      Farray_Freal8_1_2 mS0;
+      Farray_Freal8_1_2 m2S0;
+      Farray_Freal8_1_2 mP0;
+      Farray_Freal8_1_2 m2P0;
+      Farray_Freal8_1_2 mSpm;
+      Farray_Freal8_1_2 m2Spm;
+      Farray_Freal8_1_6 mSdown;
+      Farray_Freal8_1_6 m2Sdown;
+      Farray_Freal8_1_6 mSup;
+      Farray_Freal8_1_6 m2Sup;
+      Farray_Freal8_1_6 mSlepton;
+      Farray_Freal8_1_6 m2Slepton;
+      Farray_Freal8_1_3 mSneut;
+      Farray_Freal8_1_3 m2Sneut;
+      Freal8 mGlu;
 
-    mChiPm = 0;
-    mChi0 = 0;
-    mS0 = 0;
-    m2S0 = 0;
-    mP0 = 0;
-    m2P0 = 0;
-    mSpm = 0;
-    m2Spm = 0;
-    mSdown = 0;
-    m2Sdown = 0;
-    mSup = 0;
-    m2Sup = 0;
-    mSlepton = 0;
-    m2Slepton = 0;
-    mSneut = 0;
-    m2Sneut = 0;
-    mGlu = 0;
-    
-    CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, m2S0, *RS0, mP0, m2P0, *RP0, mSpm, m2Spm, *RSpm, mSdown, m2Sdown, *RSdown, mSup, m2Sup, *RSup, mSlepton, m2Slepton, *RSlepton, mSneut, m2Sneut, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
+      mChiPm = 0;
+      mChi0 = 0;
+      mS0 = 0;
+      m2S0 = 0;
+      mP0 = 0;
+      m2P0 = 0;
+      mSpm = 0;
+      m2Spm = 0;
+      mSdown = 0;
+      m2Sdown = 0;
+      mSup = 0;
+      m2Sup = 0;
+      mSlepton = 0;
+      m2Slepton = 0;
+      mSneut = 0;
+      m2Sneut = 0;
+      mGlu = 0;
+     
+      CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, m2S0, *RS0, mP0, m2P0, *RP0, mSpm, m2Spm, *RSpm, mSdown, m2Sdown, *RSdown, mSup, m2Sup, *RSup, mSlepton, m2Slepton, *RSlepton, mSneut, m2Sneut, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
 
+      if(!*kont)
+      {
+        for(int i=1; i<=2; i++)
+        {
+          (*ChiPm)(i).m = mChiPm(i);
+          (*ChiPm)(i).m2 = pow(mChiPm(i),2);
+          (*S0)(i).m = mS0(i);
+          (*S0)(i).m2 = m2S0(i);
+          (*P0)(i).m = mP0(i);
+          (*P0)(i).m2 = m2P0(i);
+          (*Spm)(i).m = mSpm(i);
+          (*Spm)(i).m2 = m2Spm(i);
+        }
+        for(int i=1; i<=3; i++)
+        {
+          (*Sneut)(i).m = mSneut(i);
+          (*Sneut)(i).m2 = m2Sneut(i);
+        }
+        for(int i=1; i<=4; i++)
+        {
+          (*Chi0)(i).m = mChi0(i);
+          (*Chi0)(i).m2 = pow(mChi0(i),2);
+        }
+        for(int i=1; i<=6; i++)
+        {
+          (*Sdown)(i).m = mSdown(i);
+          (*Sdown)(i).m2 = m2Sdown(i);
+          (*Sup)(i).m = mSup(i);
+          (*Sup)(i).m2 = m2Sup(i);
+          (*Slepton)(i).m = mSlepton(i);
+          (*Slepton)(i).m2 = m2Slepton(i);
+        }
+        Glu->m = mGlu;
+        Glu->m2 = pow(mGlu,2);
 
-    for(int i=1; i<=2; i++)
-    {
-      (*ChiPm)(i).m = mChiPm(i);
-      (*ChiPm)(i).m2 = pow(mChiPm(i),2);
-      (*S0)(i).m = mS0(i);
-      (*S0)(i).m2 = m2S0(i);
-      (*P0)(i).m = mP0(i);
-      (*P0)(i).m2 = m2P0(i);
-      (*Spm)(i).m = mSpm(i);
-      (*Spm)(i).m2 = m2Spm(i);
-    }
-    for(int i=1; i<=3; i++)
-    {
-      (*Sneut)(i).m = mSneut(i);
-      (*Sneut)(i).m2 = m2Sneut(i);
-    }
-    for(int i=1; i<=4; i++)
-    {
-      (*Chi0)(i).m = mChi0(i);
-      (*Chi0)(i).m2 = pow(mChi0(i),2);
-    }
-    for(int i=1; i<=6; i++)
-    {
-      (*Sdown)(i).m = mSdown(i);
-      (*Sdown)(i).m2 = m2Sdown(i);
-      (*Sup)(i).m = mSup(i);
-      (*Sup)(i).m2 = m2Sup(i);
-      (*Slepton)(i).m = mSlepton(i);
-      (*Slepton)(i).m2 = m2Slepton(i);
-    }
-    Glu->m = mGlu;
-    Glu->m2 = pow(mGlu,2);
-
-    *Q_in = sqrt(GetRenormalizationScale());
+        *Q_in = sqrt(GetRenormalizationScale());
 
 
  
-    //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, m2P0, m2S0, m2Spm, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
+        //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, m2P0, m2S0, m2Spm, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
 
-   spectrum = Spectrum_Out(Param);
-
+       spectrum = Spectrum_Out(Param);
+     }
+   }
+   
+   if(*kont != 0)
+     return ;
   }
 
   Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
@@ -698,12 +704,172 @@ BE_NAMESPACE
     // Nothing here right now
 
     // Block SPHENOINPUT
-    *ErrorLevel = -1;
-    *SPA_convention = true;
+    // 1
+    *ErrorLevel = options.getValueOrDef<Finteger>(-1, "ErrorLevel");
+
+    // 2
+    *SPA_convention = options.getValueOrDef<Flogical>(true, "SPA_convention");
     Freal8 scale = 1000000;
     SetRGEScale(scale);
-    *L_BR = false;
-    *L_CS = false;
+
+    // 3
+    *External_Spectrum = options.getValueOrDef<Flogical>(false, "External_Spectrum");
+    *External_Higgs = options.getValueOrDef<Flogical>(false, "External_Spectrum");
+
+    // 4
+    *Use_Flavour_States = options.getValueOrDef<Flogical>(false, "Use_Flavour_States");
+
+    // 5
+    *FermionMassResummation = options.getValueOrDef<Flogical>(true, "FermionMassResummation");
+
+    // 6
+    *Ynu_at_MR3 = options.getValueOrDef<Flogical>(false, "Ynu_at_MR3");
+    *Fixed_Nu_Yukawas = !options.getValueOrDef<Flogical>(true, "Ynu_at_MR3");
+
+    // 7
+    *Only_1loop_Higgsmass = options.getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
+
+    // 8, Calculates Masses for extra scales if required
+    *Calc_Mass = options.getValueOrDef<Flogical>(false, "Calc_Mass");
+
+    // 9, Use old version of BoundaryEW
+    *UseNewBoundaryEW = options.getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
+
+    // 10, use old version to calculate scale
+    *UseNewScale = options.getValueOrDef<Flogical>(true, "UseNewScale");
+
+    // 11, whether to calculate branching ratios or not
+    *L_BR = options.getValueOrDef<Flogical>(false, "L_BR");
+
+    // 12, minimal value such that a branching ratio is written out
+    Freal8 BrMin = options.getValueOrDef<Freal8>(0.0, "BRMin");
+    if(BrMin > 0.0)
+      SetWriteMinBR(BrMin);
+
+    // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
+    *BR_Higgs_with_offshell_V = options.getValueOrDef(false, "BR_Higgs_with_offshell_V");
+
+    // 21, whether to calculate cross sections or not
+    *L_CS = options.getValueOrDef<Flogical>(false, "L_CS");
+
+    // 22, CMS energy
+    // TODO: Perhaps there is the option of setting more than one Ecms
+    // TODO: Error handling
+    *p_max = Ecms->nElem;
+    static p_act = 0;
+    p_act ++1;
+    if(p_act <= *p_max)
+      (*Ecms)(p_act) = options.getValueOrDef<Freal8>(0.0, "Ecms");
+
+    // 23, polarisation of incoming e- beam
+    if(p_act <= *p_max)
+      (*Pm)(p_act) = options.getValueOrDef<Freal8>(0.0, "Pm");
+    if((*Pm)(p_act) > 1)
+    {
+      // TODO: Error handling
+      (*Pm)(p_act) = 0;
+    }
+
+    // 24, polarisation of incoming e+ beam
+    if(p_act <= *p_max)
+      (*Pp)(p_act) = options.getValueOrDef<Freal8>(0.0, "Pp");
+    if((*Pp)(p_act) > 1)
+    {
+      // TODO: Error handling
+      (*Pp)(p_act) = 0;
+    }
+
+    // 25, caluclate initial state radiation
+    if(p_act <= *p_max)
+      (*ISR)(p_act) = options.getValueOrDef<Flogical>(false, "ISR");
+
+    // 26, minimal value such that a cross section is written out
+    Freal8 SigMin = options.getValueOrDef<Freal8>(0.0, "SigMin")
+    if(SigMin > 0.0)
+      SetWriteMinSig(SigMin);
+
+    // 31, setting a fixed GUT scale
+    Freal8 GUTScale = options.getValueOrDef<Freal8>(0.0, "GUTScale");
+    if(GUTScale > 0.0)
+      SetGUTScale(GUTScale); 
+
+    // 32, requires strict unification
+    Flogical StrictUnification = options.getValueOrDef<Flogical>(false, "StrictUnification");
+    if(StrictUnification)
+      SetStrictUnification(StrictUnification);
+
+    // 34, precision of mass calculation
+    *delta_mass = options.getValueOrDef<Freal8>(0.00001, "delta_mass");
+
+    // 35, maximal number of iterations
+    *n_run = options.getValueOrDef<Finteger>(40, "n_run");
+
+    // 36, write out debug information
+    *WriteOut = options.getValueOrDef<Flogical>(false, "WriteOut");
+
+    // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
+    Finteger YukawaScheme = options.getValueOrDef<Finteger>(0, "YukawaScheme");
+    if(YukawaScheme > 0)
+      SetYukawaScheme(YukawaScheme);   
+    
+    // 38, set looplevel of RGEs
+    *TwoLoopRGE = options.getValueOrDef<Flogical>(false, "TwoLoopRGE");
+
+    // 39, write additional SLHA1 file
+    // GABMIT: Always false, no file output
+    *Write_SLHA1 = false;
+
+    // 40, alpha(0)
+    // TODO: default
+    (*check_alpha)(2) = true;
+    *Alpha = 1.0 / options.getValueOrDef<Freal8>(1, "Alpha");
+
+    // 41, Z-boson width
+    // TODO: default
+    *gamZ = options.getValueOrDef<Freal8>(0, "gamZ");
+
+    // 42, W-boson width
+    // TODO: default
+    *gamW = options.getValueOrDef<Freal8>(0, "gamW");
+
+    // 80, exit for sure with non-zero value if problem occurs
+    *Non_Zero_Exit = options.getValueOrDef<Flogical>(false, "Non_Zero_Exit");
+
+    // 81, quick and dirty way to implement model by Suchita Kulkarni
+    *Model_Suchita = options.getValueOrDef<Flogical>(false, "Model_Suchita");
+
+    // 90, add R-parity at low energies
+    *Add_RParity = options.getValueOrDef<Flogical>(false, "Add_RParity");
+
+    // 91, fit RP parameters such that neutrino data are ok
+    *L_Fit_RP_Parameters = options.getValueOrDef<Flobical>(false, "L_Fit_RP_Parameters");
+
+    // 92, for Pythia input
+    *L_RP_Pythia = options.getValueOrDef<Flogical>(false, "L_RP_Pythia");
+
+    // 93, calculates cross sectionin case of RP, only partially implemented
+    *L_CSrp = options.getValueOrDef<Flogical>(false, "L_CSrp");
+
+    // 94, io_RP
+    *io_RP = options.getValueOrDef<Finteger>(0, "io_RP");
+
+    // 99, MADGraph output style, some additional information
+    // GAMBIT: always false, no file output
+    *MADGraph_style = false;
+ 
+    // 100, use bsstep instead of rkqs
+    Flogical bsstep = options.getValueOrDef<Flogical>(false, "Use_bsstep_instead_of_rkqs");
+    if(bsstep)
+      Set_Use_bsstep_instead_of_rkqs(bsstep);    
+
+    // 101, use rzextr instead of pzextr
+    Flogical rzextr = options.getValueOrDef<Flogical>(false, "Use_rzextr_instead_of_pzextr");
+    if(rzextr)
+      Set_Use_bsstep_instead_of_pzextr(rzextr);
+
+    // 110, write ouput for LHC observables
+    *LWrite_LHC_Observables = options.getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
+    
 
     // Block SPINFO, missing
 
