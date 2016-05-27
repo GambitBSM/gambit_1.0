@@ -84,7 +84,7 @@ namespace Gambit
             const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             /// Test wrapper-side helper function (that does nothing important but replaces the model-side function)
-            double get_converted_lambda()
+            double get_converted_lambda() const
             {
               return 1. * model.get_lambda_hS();
             }
