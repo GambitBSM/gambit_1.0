@@ -57,21 +57,21 @@ void NjettinessPlugin::run_clustering(ClusterSequence& cs) const
          int merge_j = indices.back(); indices.pop_back();
          int newIndex;
          double fakeDij = -1.0;
-      
+
          cs.plugin_record_ij_recombination(merge_i, merge_j, fakeDij, newIndex);
 
          indices.push_back(newIndex);
       }
       double fakeDib = -1.0;
-      
+
       int finalJet = indices.back();
       cs.plugin_record_iB_recombination(finalJet, fakeDib);
       jet_indices_for_extras.push_back(cs.jets()[finalJet]);  // Get the four vector for the final jets to compare later.
    }
 
    NjettinessExtras * extras = new NjettinessExtras(_njettinessFinder.currentTauComponents(),jet_indices_for_extras,_njettinessFinder.currentAxes());
-   cs.plugin_associate_extras(std::auto_ptr<ClusterSequence::Extras>(extras));
-   
+   cs.plugin_associate_extras(std::unique_ptr<ClusterSequence::Extras>(extras));
+
 }
 
 

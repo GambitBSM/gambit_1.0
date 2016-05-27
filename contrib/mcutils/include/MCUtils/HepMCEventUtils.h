@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.
@@ -215,16 +215,16 @@ namespace MCUtils {
     else if (genEvent->signal_process_vertex() != NULL) {
       return genEvent->signal_process_vertex()->point3d();
     }
-    // Or get the vertex of a final particle whose status is not 1 or 2
+    // Or get the production vertex of a final particle whose status is not 1 or 2
     else if (!genEvent->particles_empty()) {
-      const HepMC::GenParticle* p;
       for (HepMC::GenEvent::particle_const_iterator ip = genEvent->particles_begin(); ip != genEvent->particles_end(); ++ip) {
         if ((*ip)->status() != 1 && (*ip)->status() != 2) {
+          const HepMC::GenParticle* p = *ip;
           if (p->production_vertex() != NULL) return p->production_vertex()->point3d();
         }
       }
     }
-    // Or get the vertex of the particle with barcode == 1
+    // Or get the vertex (either begin or end!) of the particle with barcode == 1
     else {
       HepMC::GenParticle* p = genEvent->barcode_to_particle(1);
       if (p != NULL) {

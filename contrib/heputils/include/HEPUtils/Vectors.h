@@ -385,10 +385,12 @@ namespace HEPUtils {
     /// @name Calculations w.r.t. other P4 vectors
     //@{
 
+    /// Spatial dot product
+    double dot3(const P4& v) const { return px()*v.px() + py()*v.py() + pz()*v.pz(); }
     /// Lorentz dot product with the positive metric term on E
-    double dot(const P4& v) const { return E()*v.E() - px()*v.px() - py()*v.py() - pz()*v.pz(); }
+    double dot(const P4& v) const { return E()*v.E() - dot3(v); }
     /// Spatial angle to another P4 vector
-    double angleTo(const P4& v) const { return acos(px()*v.px() + py()*v.py() + pz()*v.pz()) / ( p()*v.p() ); }
+    double angleTo(const P4& v) const { return acos( dot3(v) /p()/v.p() ); }
     /// Difference in phi between two vectors
     double deltaPhi(const P4& v) const { return deltaphi(phi(), v.phi()); }
     /// Difference in pseudorapidity between two vectors

@@ -7,20 +7,9 @@
 #include "wrapper_MSSMNoFV_onshell_mass_eigenstates_decl.hpp"
 #include <Eigen/Core>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -164,11 +153,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual void init_wrapper()
             {
-               if (wptr == 0)
-               {
-                  wptr = wrapper_creator(this);
-                  delete_wrapper = true;
-               }
+               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell from backend gm2calc_1_0_0. The function Abstract_MSSMNoFV_onshell::init_wrapper() in GAMBIT should never have been called..." << std::endl;
             }
    
             MSSMNoFV_onshell* get_init_wptr()
@@ -185,19 +170,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual ~Abstract_MSSMNoFV_onshell()
             {
-               if (wptr != 0)
-               {
-                  set_delete_BEptr(wptr, false);
-                  if (delete_wrapper == true)
-                  {
-                     wrapper_deleter(wptr);
-                     wptr = 0;
-                     gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters::set_wptr(0);
-                     gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters::set_wptr(0);
-                     gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates::set_wptr(0);
-                     delete_wrapper = false;
-                  }
-               }
+               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell from backend gm2calc_1_0_0. The function Abstract_MSSMNoFV_onshell::~Abstract_MSSMNoFV_onshell in GAMBIT should never have been called..." << std::endl;
             }
       };
    }

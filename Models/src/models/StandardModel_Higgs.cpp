@@ -33,7 +33,7 @@
 #include "gambit/Models/models/StandardModel_Higgs_running.hpp"
 
 // Activate debug output
-#define SMHIGGS_DBUG
+//#define SMHIGGS_DBUG
 
 using namespace Gambit::Utils;
 

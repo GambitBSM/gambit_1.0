@@ -96,8 +96,6 @@ namespace Gambit {
        * afterwards can be checked against the expectations.
        */
 
-      static unsigned int counter = 0;
-
       double M_DM = 
         Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double Gps = (*Dep::DD_couplings).gps;
@@ -112,6 +110,7 @@ namespace Gambit {
 
       std::ostringstream filename;
       /*
+      static unsigned int counter = 0;
       filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit",
           "fileroot");
       filename << "_" << counter << ".yml";

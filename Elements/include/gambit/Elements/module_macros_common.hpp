@@ -154,6 +154,11 @@
 #define BACKEND_REQ_3(_1, _2, _3)                    DECLARE_BACKEND_REQ(none, _1, _2, _3, (), 1) 
 #define BACKEND_REQ(...)                             VARARG(BACKEND_REQ, __VA_ARGS__)
 
+/// \name Variadic redirection macro for LONG_BACKEND_REQ(CAPABILITY, (TAGS), TYPE, [(ARGS)])
+#define LONG_BACKEND_REQ_7(_1, _2, _3, _4, _5, _6, _7) LONG_DECLARE_BACKEND_REQ(_1, _2, _3, none, _4, _5, _6, _7, 0)  
+#define LONG_BACKEND_REQ_6(_1, _2, _3, _4, _5, _6)     LONG_DECLARE_BACKEND_REQ(_1, _2, _3, none, _4, _5, _6, (), 1) 
+#define LONG_BACKEND_REQ(...)                          VARARG(LONG_BACKEND_REQ, __VA_ARGS__)
+
 /// NEEDS_CLASSES_FROM() called with no versions; use default
 #define CLASSLOAD_NEEDED_0(_1)      CLASSLOAD_NEEDED(_1, "default")
 /// CLASSLOAD_NEEDED() called with one or more versions; require specified backend versions

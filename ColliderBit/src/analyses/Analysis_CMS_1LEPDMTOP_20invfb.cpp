@@ -3,11 +3,11 @@
 #include <memory>
 #include <iomanip>
 
+#include <iostream>
+
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2w.h"
-
-/// @todo Remove the ROOT classes...
 
 using namespace std;
 
@@ -59,15 +59,15 @@ namespace Gambit {
 
       double SmallestdPhi(std::vector<HEPUtils::Jet *> jets,double phi_met)
       {
-	if (jets.size()<2) return(999);
-	double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
-	double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
-	// double dphi3 = 999;
-	//if (jets.size() > 2 && jets[2]->pT() > 40.)
-	//  dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
-	double min1 = std::min(dphi1, dphi2);
+        if (jets.size()<2) return(999);
+        double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
+        double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
+        // double dphi3 = 999;
+        //if (jets.size() > 2 && jets[2]->pT() > 40.)
+        //  dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
+        double min1 = std::min(dphi1, dphi2);
 
-	return min1;
+        return min1;
 
       }
 
@@ -79,49 +79,49 @@ namespace Gambit {
         double met = event->met();
 
         // Now define vectors of baseline objects
-	vector<HEPUtils::Particle*> baselineLeptons;
+        vector<HEPUtils::Particle*> baselineLeptons;
 
         vector<HEPUtils::Particle*> baselineElectrons;
         for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 30. && fabs(electron->eta()) < 2.5) {
-	    baselineElectrons.push_back(electron);
-	    baselineLeptons.push_back(electron);
-	  }
+            baselineElectrons.push_back(electron);
+            baselineLeptons.push_back(electron);
+          }
         }
         vector<HEPUtils::Particle*> baselineMuons;
         for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 30. && fabs(muon->eta()) < 2.1) {
-	    baselineMuons.push_back(muon);
-	    baselineLeptons.push_back(muon);
-	  }
+            baselineMuons.push_back(muon);
+            baselineLeptons.push_back(muon);
+          }
         }
 
         vector<HEPUtils::Jet*> baselineJets;
-	//vector<LorentzVector> jets;
-	vector<HEPUtils::P4> jets;
+        //vector<LorentzVector> jets;
+        vector<HEPUtils::P4> jets;
         vector<HEPUtils::Jet*> bJets;
-	vector<bool> btag;
+        vector<bool> btag;
 
-	const std::vector<double>  a = {0,10.};
+        const std::vector<double>  a = {0,10.};
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.60};
         HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
 
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 4.0) {
-	    baselineJets.push_back(jet);
-	    //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ;
-	    //jets.push_back(j1);
-	    jets.push_back(jet->mom());
-	    bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
-	    bool isB=false;
+            baselineJets.push_back(jet);
+            //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ;
+            //jets.push_back(j1);
+            jets.push_back(jet->mom());
+            bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
+            bool isB=false;
 
-	    if(jet->btag() && hasTag && fabs(jet->eta()) < 2.4 && jet->pT() > 30.) {
-	      isB=true;
-	      bJets.push_back(jet);
-	    }
-	    btag.push_back(isB);
-	  }
+            if(jet->btag() && hasTag && fabs(jet->eta()) < 2.4 && jet->pT() > 30.) {
+              isB=true;
+              bJets.push_back(jet);
+            }
+            btag.push_back(isB);
+          }
         }
 
         // Calculate common variables and cuts first
@@ -131,46 +131,46 @@ namespace Gambit {
         //int nMuons = signalMuons.size();
         int nJets = baselineJets.size();
         int nLeptons = baselineLeptons.size();
-	int nBJets = bJets.size();
+        int nBJets = bJets.size();
 
-	//Preselection cuts
-	bool passPresel=false;
-	if(nLeptons==1 &&
-	   nJets>=3 &&
-	   nBJets>=1 &&
-	   met > 160.)passPresel=true;
+        //Preselection cuts
+        bool passPresel=false;
+        if(nLeptons==1 &&
+           nJets>=3 &&
+           nBJets>=1 &&
+           met > 160.)passPresel=true;
 
-	//Calculate mT
-	HEPUtils::P4 lepVec;
-	double mT=0;
-	if(nLeptons==1){
-	  lepVec=baselineLeptons[0]->mom();
-	  mT=sqrt(2.*lepVec.pT()*met*(1. - cos(_Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
-	}
+        //Calculate mT
+        HEPUtils::P4 lepVec;
+        double mT=0;
+        if(nLeptons==1){
+          lepVec=baselineLeptons[0]->mom();
+          mT=sqrt(2.*lepVec.pT()*met*(1. - cos(_Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
+        }
 
-	//Calculate MT2W
-	double MT2W=0;
-	// double MT2W_HU=0;
-	if (nJets > 1 && nLeptons==1) {
+        //Calculate MT2W
+        double MT2W=0;
+        // double MT2W_HU=0;
+        if (nJets > 1 && nLeptons==1) {
           HEPUtils::P4 lepVec;
-	  lepVec=baselineLeptons[0]->mom();
+          lepVec=baselineLeptons[0]->mom();
           //LorentzVector lep (lepVec.px(),lepVec.py(),lepVec.pz(),lepVec.E());
-	  float phi=float (ptot.phi());
+          float phi=float (ptot.phi());
           //MT2W=calculateMT2w(jets, btag, lep, met, phi);
-	  MT2W=calculateMT2wHepUtils(jets,btag,lepVec,met,phi);
-	}
+          MT2W=calculateMT2wHepUtils(jets,btag,lepVec,met,phi);
+        }
 
-	//Calculate dPhi variable
-	float  phi=float (ptot.phi());
-	double dPhiMin12=SmallestdPhi(baselineJets,phi);
+        //Calculate dPhi variable
+        float  phi=float (ptot.phi());
+        double dPhiMin12=SmallestdPhi(baselineJets,phi);
 
-	//Cuts
-	//MET > 320
-	//MT > 160
-	//MT2W > 300
-	//dPhiMin12 > 1.2
+        //Cuts
+        //MET > 320
+        //MT > 160
+        //MT2W > 300
+        //dPhiMin12 > 1.2
 
-	cutFlowVector_str[0] = "No cuts ";
+        cutFlowVector_str[0] = "No cuts ";
         cutFlowVector_str[1] = "Presel ";
         cutFlowVector_str[2] = "MET > 320 GeV ";
         cutFlowVector_str[3] = "MT > 160 GeV ";
@@ -208,7 +208,7 @@ namespace Gambit {
         HEPUtilsAnalysis::add(other);
 
         Analysis_CMS_1LEPDMTOP_20invfb* specificOther
-                = dynamic_cast<Analysis_CMS_1LEPDMTOP_20invfb*>(other);
+          = dynamic_cast<Analysis_CMS_1LEPDMTOP_20invfb*>(other);
 
         // Here we will add the subclass member variables:
         if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
@@ -227,13 +227,13 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_SR;
-        results_SR.set_analysis_name("Analysis_CMS_1LEPDMTOP_20invfb");
-        results_SR.set_sr_label("SR");
-        results_SR.set_observation(18.);
-        results_SR.set_background(16.4);
-        results_SR.set_backgroundsys(3.48);
-        results_SR.set_signalsys(0.);
-        results_SR.set_signal(_numSR);
+        results_SR.analysis_name = "Analysis_CMS_1LEPDMTOP_20invfb";
+        results_SR.sr_label = "SR";
+        results_SR.n_observed = 18.;
+        results_SR.n_background = 16.4;
+        results_SR.background_sys = 3.48;
+        results_SR.signal_sys = 0.;
+        results_SR.n_signal = _numSR;
 
         add_result(results_SR);
 
