@@ -81,14 +81,14 @@ namespace Gambit
             {
                GetterMaps map_collection; 
 
-               map_collection[Par::mass1].map0["vev"]       = &Self::get_HiggsVEV;
-               map_collection[Par::dimensionless].map0["lambda_hS"] = &Self::get_lambda_hS;
+               map_collection[Par::mass1].map0W["vev"]       = &Self::get_HiggsVEV;
+               map_collection[Par::dimensionless].map0W["lambda_hS"] = &Self::get_lambda_hS;
 
-               map_collection[Par::Pole_Mass].map0["h0"]    = &Self::get_HiggsPoleMass;
-               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Self::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0W["h0"]    = &Self::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0W["h0_1"]  = &Self::get_HiggsPoleMass;
  
-               map_collection[Par::Pole_Mass].map0["S"]       = &Self::get_SingletPoleMass; 
-               map_collection[Par::Pole_Mass].map0["Singlet"] = &Self::get_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0W["S"]       = &Self::get_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0W["Singlet"] = &Self::get_SingletPoleMass; 
    
                return map_collection;
             }
@@ -97,14 +97,14 @@ namespace Gambit
             {
                SetterMaps map_collection; 
 
-               map_collection[Par::mass1].map0["vev"]       = &Self::set_HiggsVEV;
-               map_collection[Par::dimensionless].map0["lambda_hS"] = &Self::set_lambda_hS;
+               map_collection[Par::mass1].map0W["vev"]       = &Self::set_HiggsVEV;
+               map_collection[Par::dimensionless].map0W["lambda_hS"] = &Self::set_lambda_hS;
 
-               map_collection[Par::Pole_Mass].map0["h0"]    = &Self::set_HiggsPoleMass;
-               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Self::set_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0W["h0"]    = &Self::set_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0W["h0_1"]  = &Self::set_HiggsPoleMass;
  
-               map_collection[Par::Pole_Mass].map0["S"]       = &Self::set_SingletPoleMass; 
-               map_collection[Par::Pole_Mass].map0["Singlet"] = &Self::set_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0W["S"]       = &Self::set_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0W["Singlet"] = &Self::set_SingletPoleMass; 
    
                return map_collection;
             }
