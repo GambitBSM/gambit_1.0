@@ -212,7 +212,7 @@ namespace Gambit {
          static const typename MapTypes<D,MTag>::fmap2        nullmap_it2;  // 9 //was 7
          static const typename MapTypes<D,MTag>::fmap0W       nullmap_it0W;  // ? 12
          static const typename MapTypes<D,MTag>::fmap1W       nullmap_it1W;  // ? 13
-         static const typename MapTypes<D,MTag>::fmap2w       nullmap_it2W;  // ? 14
+         static const typename MapTypes<D,MTag>::fmap2W       nullmap_it2W;  // ? 14
          static const typename MapTypes<D,MTag>::fmap0_extraM nullmap_it0M; // 4
          static const typename MapTypes<D,MTag>::fmap1_extraM nullmap_it1M; // 7
          static const typename MapTypes<D,MTag>::fmap2_extraM nullmap_it2M; // 10
@@ -806,14 +806,14 @@ namespace Gambit {
                  // type Spec<DerivedSpec>. Therefore need to cast to the
                  // derived type to call the function.
                  const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
-                 result = (wrapper.*f)();
+                 result = (wrapper->*f)();
                  break;}
                case 13: {
                  ff->check(ff->it1W_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  typename MT::FSptr1W f = ff->it1W->second.fptr;
                  const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
-                 result = (wrapper.*f)(ff->index1);
+                 result = (wrapper->*f)(ff->index1);
                  break;}
                case 14: {
                  ff->check(ff->it2W_safe());
@@ -821,7 +821,7 @@ namespace Gambit {
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::FSptr2W f = ff->it2W->second.fptr;
                  const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
-                 result = (wrapper.*f)(ff->index1,ff->index2);
+                 result = (wrapper->*f)(ff->index1,ff->index2);
                  break;}
               default:{
                  std::ostringstream errmsg;
