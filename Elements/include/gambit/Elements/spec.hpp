@@ -50,10 +50,12 @@ namespace Gambit {
                               .omap0(  overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+			      .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
       return finder.find(name,true,check_antiparticle);                                             
    }                                                                        
@@ -71,10 +73,12 @@ namespace Gambit {
                               .omap0(  overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
       if( finder.find(name,true,check_antiparticle) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
@@ -109,10 +113,12 @@ namespace Gambit {
       FptrFinder<Spec<DerivedSpec>,MapTag::Set> finder =                                
                        SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
       if( finder.find(name,true,check_antiparticle) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
@@ -132,10 +138,12 @@ namespace Gambit {
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
       return finder.find(name,i,true,check_antiparticle);                                             
    }                                                                        
@@ -153,10 +161,12 @@ namespace Gambit {
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
      if( finder.find(name,i,true,check_antiparticle) ){ return finder.callfcn(); }
      finder.raise_error(LOCAL_INFO);
@@ -191,10 +201,12 @@ namespace Gambit {
       FptrFinder<Spec<DerivedSpec>,MapTag::Set> finder =                                
                        SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 ) 
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W ) 
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
      if( finder.find(name,i,true,check_antiparticle) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
@@ -215,6 +227,7 @@ namespace Gambit {
                        SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap2( overridecoll.m2 )
                               .map2(  mapcoll.map2 )
+                              .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
      return finder.find(name,i,j);
@@ -232,6 +245,7 @@ namespace Gambit {
                        SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap2( overridecoll.m2 )
                               .map2(  mapcoll.map2 )
+                              .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
       if( finder.find(name,i,j) ){ return finder.callfcn(); }
@@ -249,6 +263,7 @@ namespace Gambit {
       FptrFinder<Spec<DerivedSpec>,MapTag::Set> finder =                                
                        SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .map2(  mapcoll.map2 )
+                              .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
       if( finder.find(name,i,j) ){ finder.callfcn(set_value); }
