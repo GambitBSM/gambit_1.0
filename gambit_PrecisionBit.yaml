@@ -67,13 +67,11 @@ ObsLikes:
     capability:  lnL_sinW2_eff
   - purpose:  Likelihood
     capability:  lnL_deltarho
+  - purpose:    Observable
+    capability: muon_gm2
+    function: GM2C_SUSY
   - purpose:  Likelihood
     capability:  lnL_gm2
-  - purpose:    Observable
-    capability: a_mu_SUSY
-  - purpose:    Observable
-    capability: a_mu_SUSY_c
-    
 
 Rules:
 
@@ -99,7 +97,13 @@ Rules:
     
   - capability: decay_rates
     function: all_decays
-      
+
+  - capability: lnL_gm2
+    function: lnL_gm2_chi2
+    dependencies:
+      - capability: muon_gm2
+        function: GM2C_SUSY
+
 ##############################
 # Printer setup
 ##############################
