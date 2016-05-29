@@ -201,6 +201,8 @@ START_MODULE
     BACKEND_REQ(gm2calc_mssmnofv_set_ML_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_MW_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_MZ_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_alpha_MZ, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_alpha_thompson, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_scale, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     // 
     BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))

@@ -752,7 +752,6 @@ namespace Gambit
       //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
       // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
       model.set_g3(std::sqrt(4*M_PI*smin.alphaS));
-      
       // these are not currently used but may be in future updates so set them anyway 
       model.get_physical().MFe =smin.mE; 
       model.get_physical().MFd =smin.mD; //MSbar
@@ -760,6 +759,19 @@ namespace Gambit
       model.get_physical().MFu =smin.mU; //MSbar
       model.get_physical().MFc =smin.mCmC; // MSbar
 
+      /// Use hardcoded values as reccommended by GM2Calc authours
+      /// unless the user really wants to change these
+      double alpha_MZ = runOptions->getValueOrDef
+	<double>(0.00729735, "GM2Calc_extra_alpha_e_MZ");
+      double alpha_thompson = runOptions->getValueOrDef
+	<double>(0.00775531, "GM2Calc_extra_alpha_e_thompson_limit");
+      
+      if (alpha_MZ > std::numeric_limits<double>::epsilon())
+	model.set_alpha_MZ(alpha_MZ);
+
+      if (alpha_thompson > std::numeric_limits<double>::epsilon())
+	model.set_alpha_thompson(alpha_thompson);
+      
       
       model.set_scale(mssm->GetScale());                   // 2L
      
@@ -868,7 +880,19 @@ namespace Gambit
       BEreq::gm2calc_mssmnofv_set_ML_pole.pointer()(model,smin.mTau);                 
       BEreq::gm2calc_mssmnofv_set_MW_pole.pointer()(model,mssm->get(Par::Pole_Mass, "W+"));
       BEreq::gm2calc_mssmnofv_set_MZ_pole.pointer()(model,smin.mZ);               
-			      
+
+      /// Use hardcoded values as reccommended by GM2Calc authours
+      /// unless the user really wants to change these
+      double alpha_MZ = runOptions->getValueOrDef
+	<double>(0.00729735, "GM2Calc_extra_alpha_e_MZ");
+      double alpha_thompson = runOptions->getValueOrDef
+	<double>(0.00775531, "GM2Calc_extra_alpha_e_thompson_limit");
+      
+      if (alpha_MZ > std::numeric_limits<double>::epsilon())
+	BEreq::gm2calc_mssmnofv_set_alpha_MZ.pointer()(model,alpha_MZ);
+
+      if (alpha_thompson > std::numeric_limits<double>::epsilon())
+	BEreq::gm2calc_mssmnofv_set_alpha_thompson.pointer()(model,alpha_thompson);      
       BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm->GetScale());
       
       /// convert DR-bar parameters to on-shell
