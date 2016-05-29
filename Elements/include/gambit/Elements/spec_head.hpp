@@ -112,20 +112,20 @@ namespace Gambit
          std::string getName() const { return SpecTraits<D>::name(); };
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-         double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-         bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-         double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-         bool   has(const Par::Tags, const str&, int, int) const;
-         double get(const Par::Tags, const str&, int, int) const;
+         bool   has(const Par::Tags, const str&, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, int, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, int, SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, int, int, SafeBool=SafeBool(true)) const;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
-         void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
+         void set(const Par::Tags, const double, const str&, SafeBool=SafeBool(true));
+         void set(const Par::Tags, const double, const str&, int, SafeBool=SafeBool(true));
          void set(const Par::Tags, const double, const str&, int, int);
 
          /// @{ Default (empty) map filler functions

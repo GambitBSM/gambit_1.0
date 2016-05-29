@@ -598,14 +598,20 @@ namespace Gambit
          cout << "Original M1:" << clonedspec->get(Par::mass1,"M1") << endl;
          clonedspec->set_override(Par::mass1,-666,"M1");
          cout << "Override M1:" << clonedspec->get(Par::mass1,"M1") << endl;
+          // Check that original can still be accessed using special optional argument
+         cout << "Original M1 via no_overrides:" << clonedspec->get(Par::mass1,"M1",SafeBool(true)) << endl;
 
          cout << "Original ~e-(1):" << clonedspec->get(Par::Pole_Mass,"~e-",1) << endl;
          clonedspec->set_override(Par::Pole_Mass,-667,"~e-",1);
          cout << "Override ~e-(1):" << clonedspec->get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << "Original ~e-(1) via no_overrides:" << clonedspec->get(Par::Pole_Mass,"~e-",1,SafeBool(true)) << endl;
+
 
          cout << "Original ml2(1,1):" << clonedspec->get(Par::mass2,"ml2",1,1) << endl;
          clonedspec->set_override(Par::mass2,-668,"ml2",1,1);
          cout << "Override ml2(1,1):" << clonedspec->get(Par::mass2,"ml2",1,1) << endl;
+         cout << "Original ml2(1,1) via no_overrides:" << clonedspec->get(Par::mass2,"ml2",1,1,SafeBool(true)) << endl;
+
 
          /// Now add some entry that didn't exist before
          cout << "has 'new_entry'? " << clonedspec->has(Par::mass1,"new_entry") << endl;

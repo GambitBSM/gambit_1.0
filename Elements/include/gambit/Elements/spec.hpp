@@ -33,7 +33,7 @@ namespace Gambit {
 
    /// @{ No indices
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, SafeBool check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
       /// TODO: Could avoid dismantling the MapCollection struct by just letting the
@@ -61,7 +61,7 @@ namespace Gambit {
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, SafeBool check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
@@ -126,7 +126,7 @@ namespace Gambit {
    /// @}
    /// @{ One index
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, SafeBool check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
@@ -149,7 +149,7 @@ namespace Gambit {
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, SafeBool check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
@@ -216,7 +216,7 @@ namespace Gambit {
    /// @{ Two indices
 
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, int j) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, int j, SafeBool check_overrides) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
@@ -234,7 +234,7 @@ namespace Gambit {
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, int j) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, int j, SafeBool check_overrides) const
    {
       typedef typename DerivedSpec::MTget MTget;
 

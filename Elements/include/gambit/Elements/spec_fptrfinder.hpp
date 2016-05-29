@@ -45,6 +45,7 @@ namespace Gambit {
           : label_(label) 
           , fakethis_(fakethis)
           , const_fakethis_(fakethis)
+          , no_overrides_(false)
           , override_only_(false)
           , map0_(NULL)
           , map1_(NULL)
@@ -68,6 +69,7 @@ namespace Gambit {
           : label_(label) 
           , fakethis_(NULL) // CANNOT USE WHEN HOST IS CONST
           , const_fakethis_(fakethis)
+          , no_overrides_(false)
           , override_only_(false)
           , map0_(NULL)
           , map1_(NULL)
@@ -106,14 +108,18 @@ namespace Gambit {
          SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
          SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
          SetMaps& omap2(const std::map<std::string,std::map<int,std::map<int,double>>>& om2){ omap2_=&om2; return *this;}
+         /// Flag to disable searching of override maps (for retrieving original, unoverriden values)
+         SetMaps& no_overrides(const bool flag) { no_overrides_=flag; return *this;}
          /// Flag to permit searching only override maps
          SetMaps& override_only(const bool flag) { override_only_=flag; return *this;}
+         // (Obviously don't set both of the above flags at once, or else there will be no maps to search...)
 
       private:
          friend class FptrFinder<HostSpec,MTag>; 
          const std::string label_;
          HostSpec* const fakethis_;
          const HostSpec* const const_fakethis_;
+         bool no_overrides_;
          bool override_only_;
 
          /// Maps from derived class
@@ -162,6 +168,9 @@ namespace Gambit {
          /// Get type of the derived spectrum wrapper from HostSpec
          typedef typename HostSpec::D D; // D for "DerivedSpec"
        
+         /// Flag to disable searching of override maps (for retrieving original, unoverriden values)
+         const bool no_overrides_;
+
          /// Flag to permit searching only override maps
          const bool override_only_;
 
@@ -270,6 +279,7 @@ namespace Gambit {
            , lastname("NONE")
            , fakethis(params.fakethis_)
            , const_fakethis(params.const_fakethis_)
+           , no_overrides_(params.no_overrides_)
            , override_only_(params.override_only_)
            , omap0_(params.omap0_)   
            , omap1_(params.omap1_)   
@@ -396,7 +406,7 @@ namespace Gambit {
             #endif
 
             //  Search override maps first
-            if(doublecheck)
+            if(doublecheck and not no_overrides)
             {
                #ifdef CHECK_WHERE_FOUND
                std::cout<<"   Searching override maps for "<<name<<std::endl;
@@ -527,7 +537,7 @@ namespace Gambit {
             //  Search maps for function; if found then store it
 
             //  Search override maps first
-            if(doublecheck)
+            if(doublecheck and not no_overrides)
             {
                #ifdef CHECK_WHERE_FOUND
                std::cout<<"   Searching override maps for ("<<name<<","<<i<<")"<<std::endl;
@@ -645,7 +655,7 @@ namespace Gambit {
             //  Search maps for function; if found then store it
 
             //  Search override maps first
-            if( omap2_!=NULL and search_map(name,omap2_,ito2) )
+            if( not no_overrides and omap2_!=NULL and search_map(name,omap2_,ito2) )
             {  
                // Check that first index (key) exists in inner map
                std::map<int,std::map<int,double>>::const_iterator jt = ito2->second.find(i);

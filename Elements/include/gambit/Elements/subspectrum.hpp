@@ -150,22 +150,24 @@ namespace Gambit
          
          /// Getters/Setters etc.        
 
-         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         /* note: set check_antiparticle = SafeBool(false) to disable matching on antiparticle entries */
-         virtual bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual bool   has(const Par::Tags, const str&, int, int) const = 0;
-         virtual double get(const Par::Tags, const str&, int, int) const = 0;
+         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices
+            Note optional arguments (default values set in derived class "Spec", in spec_head.hpp): 
+             first bool; "check_overrides". Set to SafeBool(false) to disable matching on override entries
+             second bool; "check_antiparticle". Set to SafeBool(false) to disable matching on antiparticle entries */
+         virtual bool   has(const Par::Tags, const str&, SafeBool check_overrides, SafeBool check_antiparticle) const = 0;
+         virtual double get(const Par::Tags, const str&, SafeBool check_overrides, SafeBool check_antiparticle) const = 0;
+         virtual bool   has(const Par::Tags, const str&, int, SafeBool check_overrides, SafeBool check_antiparticle) const = 0;
+         virtual double get(const Par::Tags, const str&, int, SafeBool check_overrides, SafeBool check_antiparticle) const = 0;
+         virtual bool   has(const Par::Tags, const str&, int, int, SafeBool check_overrides) const = 0;
+         virtual double get(const Par::Tags, const str&, int, int, SafeBool check_overrides) const = 0;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         virtual void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true)) = 0;
-         virtual void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle) = 0;
+         virtual void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle) = 0;
          virtual void set(const Par::Tags, const double, const str&, int, int) = 0;
 
          /* The parameter overrides are handled entirely by this base class, so
@@ -185,21 +187,53 @@ namespace Gambit
          /* Overloads of getter/checker functions to allow access using PDG codes */
          /* as defined in Models/src/particle_database.cpp */
          /* These don't have to be virtual; they just call the virtual functions in the end. */
-         bool   has(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         double get(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         bool   has(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         double get(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         bool   has(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
-         double get(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         bool   has(const Par::Tags, const int, const int, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+
+         double get(const Par::Tags, const int, const int, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+
+         bool   has(const Par::Tags, const std::pair<int,int>, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+
+         double get(const Par::Tags, const std::pair<int,int>, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+
+         bool   has(const Par::Tags, const std::pair<str,int>, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         double get(const Par::Tags, const std::pair<str,int>, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
 
          /* Getters which first check the sanity of the thing they are returning */
          /* These don't have to be virtual; they just call the virtual functions in the end. */
-         double safeget(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-         double safeget(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         double safeget(const Par::Tags, const str&, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const;
+
+         double safeget(const Par::Tags, const str&, int, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const;
+
          double safeget(const Par::Tags, const str&, int, int) const;
-         double safeget(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         double safeget(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         double safeget(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         double safeget(const Par::Tags, const int, const int, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+
+         double safeget(const Par::Tags, const std::pair<int,int>, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+
+         double safeget(const Par::Tags, const std::pair<str,int>, 
+              SafeBool check_overrides    = SafeBool(true), 
+              SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
 
          /// @{ PDB overloads for setters
 

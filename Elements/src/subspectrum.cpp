@@ -74,60 +74,72 @@ namespace Gambit
 
    /* Input PDG code plus context integer as separate arguments */
    bool SubSpectrum::has(const Par::Tags partype, 
-                        const int pdg_code, const int context, SafeBool check_antiparticle) const
+                         const int pdg_code, const int context, 
+                         SafeBool check_overrides, 
+                         SafeBool check_antiparticle) const
    {
-      return has( partype, std::make_pair(pdg_code,context), check_antiparticle );
+      return has( partype, std::make_pair(pdg_code,context), check_overrides, check_antiparticle );
    }
 
    /* Input PDG code plus context integer as separate arguments */
    double SubSpectrum::get(const Par::Tags partype, 
-                        const int pdg_code, const int context, SafeBool check_antiparticle) const
+                           const int pdg_code, const int context, 
+                           SafeBool check_overrides, 
+                           SafeBool check_antiparticle) const
    {
-      return get( partype, std::make_pair(pdg_code,context), check_antiparticle );
+      return get( partype, std::make_pair(pdg_code,context), check_overrides, check_antiparticle );
    }
 
    /* Input PDG code plus context integer as pair */
    bool SubSpectrum::has(const Par::Tags partype, 
-                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
+                         const std::pair<int,int> pdgpr, 
+                         SafeBool check_overrides, 
+                         SafeBool check_antiparticle) const
    {
       /* If there is a short name, then retrieve that plus the index */      
       if( Models::ParticleDB().has_short_name(pdgpr) )                       
       {                                                                      
-        return has( partype, Models::ParticleDB().short_name_pair(pdgpr), check_antiparticle );
+        return has( partype, Models::ParticleDB().short_name_pair(pdgpr), check_overrides, check_antiparticle );
       }                                                                      
       else /* Use the long name with no index instead */                     
       {                                                                      
-        return has( partype, Models::ParticleDB().long_name(pdgpr), check_antiparticle );      
+        return has( partype, Models::ParticleDB().long_name(pdgpr), check_overrides, check_antiparticle );      
       }                                                                      
    }
 
    /* Input PDG code plus context integer as pair */
    double SubSpectrum::get(const Par::Tags partype, 
-                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
+                           const std::pair<int,int> pdgpr, 
+                           SafeBool check_overrides, 
+                           SafeBool check_antiparticle) const
    {
       /* If there is a short name, then retrieve that plus the index */      
       if( Models::ParticleDB().has_short_name(pdgpr) )                       
       {                                                                      
-        return get( partype, Models::ParticleDB().short_name_pair(pdgpr), check_antiparticle );
+        return get( partype, Models::ParticleDB().short_name_pair(pdgpr), check_overrides, check_antiparticle );
       }                                                                      
       else /* Use the long name with no index instead */                     
       {                                                                      
-        return get( partype, Models::ParticleDB().long_name(pdgpr), check_antiparticle );      
+        return get( partype, Models::ParticleDB().long_name(pdgpr), check_overrides, check_antiparticle );      
       }                                                                      
    }
 
    /* Input short name plus index as pair */
    bool SubSpectrum::has(const Par::Tags partype, 
-                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
+                         const std::pair<str,int> shortpr, 
+                         SafeBool check_overrides, 
+                         SafeBool check_antiparticle) const
    {
-      return has( partype, shortpr.first, shortpr.second, check_antiparticle);
+      return has( partype, shortpr.first, shortpr.second, check_overrides, check_antiparticle);
    }
 
    /* Input short name plus index as pair */
    double SubSpectrum::get(const Par::Tags partype, 
-                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
+                           const std::pair<str,int> shortpr, 
+                           SafeBool check_overrides, 
+                           SafeBool check_antiparticle) const
    {
-      return get( partype, shortpr.first, shortpr.second, check_antiparticle);
+      return get( partype, shortpr.first, shortpr.second, check_overrides, check_antiparticle);
    }
 
    /// @}
@@ -135,18 +147,22 @@ namespace Gambit
    /// @{ safeget functions, by Abram
 
    double SubSpectrum::safeget(const Par::Tags partype, 
-                        const str& mass, SafeBool check_antiparticle) const
+                               const str& mass, 
+                               SafeBool check_overrides, 
+                               SafeBool check_antiparticle) const
    {
-      double result = get( partype, mass, check_antiparticle);
+      double result = get( partype, mass, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
          utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
       return result;
    }
 
    double SubSpectrum::safeget(const Par::Tags partype, 
-                        const str& mass, int index, SafeBool check_antiparticle) const
+                               const str& mass, int index, 
+                               SafeBool check_overrides, 
+                               SafeBool check_antiparticle) const
    {
-      double result = get( partype, mass, index, check_antiparticle);
+      double result = get( partype, mass, index, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
          utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
       return result;
@@ -154,36 +170,43 @@ namespace Gambit
 
    /// @TODO: correct variable names? --Abram
    double SubSpectrum::safeget(const Par::Tags partype,
-                        const str& mass, int pdg_code, int context) const
+                               const str& mass, int pdg_code, int context,
+                               SafeBool check_overrides) const
    {
-      double result = get( partype, mass, pdg_code, context);
+      double result = get( partype, mass, pdg_code, context, check_overrides);
       if (Utils::isnan(result))
          utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
       return result;
    }
 
    double SubSpectrum::safeget(const Par::Tags partype, 
-                        const int pdg_code, const int context, SafeBool check_antiparticle) const
+                               const int pdg_code, const int context, 
+                               SafeBool check_overrides, 
+                               SafeBool check_antiparticle) const
    {
-      double result = get( partype, pdg_code, context, check_antiparticle);
+      double result = get( partype, pdg_code, context, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
          utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
       return result;
    }
 
    double SubSpectrum::safeget(const Par::Tags partype, 
-                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
+                               const std::pair<int,int> pdgpr,
+                               SafeBool check_overrides, 
+                               SafeBool check_antiparticle) const
    {
-      double result = get( partype, pdgpr, check_antiparticle);
+      double result = get( partype, pdgpr, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
          utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
       return result;
    }
 
    double SubSpectrum::safeget(const Par::Tags partype, 
-                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
+                               const std::pair<str,int> shortpr, 
+                               SafeBool check_overrides, 
+                               SafeBool check_antiparticle) const
    {
-      double result = get( partype, shortpr, check_antiparticle);
+      double result = get( partype, shortpr, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
          utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
       return result;
