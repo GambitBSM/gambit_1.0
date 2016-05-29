@@ -56,7 +56,8 @@ namespace Gambit {
                               .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
 			      .map0I( mapcoll.map0_extraI )
-                              .map1I( mapcoll.map1_extraI );
+                              .map1I( mapcoll.map1_extraI )
+                              .no_overrides(not check_overrides);
       return finder.find(name,true,check_antiparticle);                                             
    }                                                                        
 
@@ -80,6 +81,7 @@ namespace Gambit {
                               .map1M( mapcoll.map1_extraM )
                               .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
+                              .no_overrides(not check_overrides);
       if( finder.find(name,true,check_antiparticle) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
       return 0;
@@ -145,6 +147,7 @@ namespace Gambit {
                               .map1M( mapcoll.map1_extraM )
                               .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
+                              .no_overrides(not check_overrides);
       return finder.find(name,i,true,check_antiparticle);                                             
    }                                                                        
 
@@ -168,6 +171,7 @@ namespace Gambit {
                               .map1M( mapcoll.map1_extraM )
                               .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
+                              .no_overrides(not check_overrides);
      if( finder.find(name,i,true,check_antiparticle) ){ return finder.callfcn(); }
      finder.raise_error(LOCAL_INFO);
      return 0;
@@ -230,6 +234,7 @@ namespace Gambit {
                               .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
+                              .no_overrides(not check_overrides);
      return finder.find(name,i,j);
    }                                                                        
 
@@ -248,6 +253,7 @@ namespace Gambit {
                               .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
+                              .no_overrides(not check_overrides);
       if( finder.find(name,i,j) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
       return 0;
