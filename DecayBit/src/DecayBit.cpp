@@ -261,8 +261,8 @@ namespace Gambit
       if (mh < minmass or mh > maxmass)
       {
         std::stringstream msg;
-        msg << "Requested Higgs virtuality is " << mh
-            << "; allowed range is " << minmass << "--"
+        msg << "Computed Higgs mass is " << mh
+            << "; This is outside of the allowed range for tables from Dittmaier et al, which is " << minmass << "--"
             << maxmass << " GeV.";
         invalid_point().raise(msg.str());
       } 
