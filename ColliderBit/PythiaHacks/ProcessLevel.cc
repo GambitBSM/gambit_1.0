@@ -198,19 +198,25 @@ bool ProcessLevel::init( Info* infoPtrIn, Settings& settings,
   // Sum maxima for Monte Carlo choice.
   // NOTE: Gambit hack: Catch nans and infinities while summing up sigmas.
   sigmaMaxSum = 0.;
+  bool valid = true;
   for (int i = 0; i < int(containerPtrs.size()); ++i) {
     if(std::isfinite(containerPtrs[i]->sigmaMax()))
       sigmaMaxSum += containerPtrs[i]->sigmaMax();
     else {
-      std::cerr<<"\n\n\n WARNING: in Pythia8::ProcessLevel::init:\n";
+      std::cerr<<"\n\n\n ERROR: in Pythia8::ProcessLevel::init:\n";
       std::cerr<<"   Non-finite xsec: "<<containerPtrs[i]->sigmaMax()<<"\n";
       std::cerr<<"   Process code: "<<containerPtrs[i]->code();
       std::cerr<<",  Process: "<<containerPtrs[i]->name()<<"\n";
-      std::cerr<<"This process will be removed.\n\n\n";
+      std::cerr<<"This model is invalid.\n\n\n";
       delete containerPtrs[i];
       containerPtrs.erase(containerPtrs.begin() + i);
       i--;
+      valid = false;
     }
+  }
+  if (!valid) {
+    infoPtr->errorMsg("Error in ProcessLevel::init: Non-finite xsecs");
+    return false;
   }
 
   // Option to pick a second hard interaction: repeat as above.
