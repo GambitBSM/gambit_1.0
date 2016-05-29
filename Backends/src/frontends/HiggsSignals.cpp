@@ -38,7 +38,7 @@ BE_INI_FUNCTION
 
     // Find all the versions of HiggsBounds that have been successfully loaded, and get
     // their locks.
-    // --later.
+    std::vector<str> hbversions = backend_info().working_safe_versions("Pythia");
     
     Utils::FileLock mylock("HiggsBounds_init");
     mylock.get_lock();

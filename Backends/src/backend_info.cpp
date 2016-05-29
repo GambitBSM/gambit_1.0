@@ -204,6 +204,42 @@ namespace Gambit
     return default_versions.at(be);
   }
 
+  /// Get all versions of a given backend that are successfully loaded.
+  std::vector<str> Backends::backend_info::working_versions(const str& be)
+  {
+    std::vector<str> working_versions;
+    // Retrieve the versions known of the given backend.
+    if (safe_version_map.find(be) == safe_version_map.end())
+    {
+      std::ostringstream msg;
+      msg << "The backend \"" << be << "\" is not known to GAMBIT."; 
+      backend_error().raise(LOCAL_INFO, msg.str());
+    }
+    std::map<str,str> versions = safe_version_map[be].second;
+    // Iterate over all known versions of the given backend, retaining only those that work.
+    for (auto it = versions.begin(); it != versions.end(); ++it)
+    {
+      cout << be + it->first;
+      if (works.at(be + it->first)) {working_versions.push_back(it->first); cout << " works";} cout << endl;
+    }
+    return working_versions;
+  }
+  
+
+  /// Get all safe versions of a given backend that are successfully loaded.
+  std::vector<str> Backends::backend_info::working_safe_versions(const str& be)
+  {
+    // Get the working versions, then iterate over them and convert them to safe versions.
+    std::vector<str> safe_versions;
+    const std::vector<str> versions = working_safe_versions(be);
+    for (auto it = versions.begin(); it != versions.end(); ++it)
+    {
+      safe_versions.push_back(safe_version_from_version(be, *it));
+    }
+    return safe_versions;
+  }
+
+
 }
 
 
