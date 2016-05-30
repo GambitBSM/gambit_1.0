@@ -3657,9 +3657,9 @@ namespace Gambit
         result.CS_ud_hjWm_ratio[i] = g2hjWW;
         result.CS_cs_hjWm_ratio[i] = g2hjWW;
 
-        result.CS_tev_vbf_ratio[i]   = g2hjWW;
-        result.CS_lhc7_vbf_ratio[i]  = g2hjWW;
-        result.CS_lhc8_tthj_ratio[i] = g2hjWW;
+        result.CS_tev_vbf_ratio[i]  = g2hjWW;
+        result.CS_lhc7_vbf_ratio[i] = g2hjWW;
+        result.CS_lhc8_vbf_ratio[i] = g2hjWW;
       }
 
       // higgs to higgs + V xsection ratios
@@ -3811,7 +3811,6 @@ namespace Gambit
       double csqmu, csqmh, csqtot, Pvalue;
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
-
 
       result = -0.5*csqtot;
       //std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
