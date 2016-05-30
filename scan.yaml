@@ -381,9 +381,9 @@ Scanner:
       purpose: LogLike
       parameters:
         param_0:
-          prior_type: none
+          #prior_type: none
           #plugin: flat
-          #range: [0, 1]
+          range: [0, 1]
         param_1:
           range: [0, 1]
           
