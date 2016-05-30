@@ -65,7 +65,9 @@
 
 #define BE_GROUP(GROUP)                                   MODULE_BE_GROUP(GROUP)
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
-                                                          MODULE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+                                                          MODULE_BACKEND_REQ(MODULE, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+#define LONG_DECLARE_BACKEND_REQ(MODULE, C, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
+                                                          MODULE_BACKEND_REQ(MODULE, FUNCTION, GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 #define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      DUMMYARG(MODELS,TAGS)                   
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE, MODULE, FUNCTION, NOT_MODEL)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
@@ -135,7 +137,7 @@
             BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                        \
               /* Create a pointer to the single iteration of the loop that can \
               be executed by this functor */                                   \
-              extern void (*executeIteration)(int);                            \
+              extern void (*executeIteration)(long long);                      \
               /* Declare a safe pointer to the flag indicating that a managed  \
               loop is ready for breaking. */                                   \
               extern safe_ptr<bool> done;                                      \
@@ -167,7 +169,7 @@
           {                                                                    \
             /* Declare the safe pointer to the iteration number of the loop    \
             this functor is running within, as external. */                    \
-            extern omp_safe_ptr<int> iteration;                                \
+            extern omp_safe_ptr<long long> iteration;                          \
             /* Create a loop-breaking function that can be called to tell the  \
             functor's loop manager that it is time to break. */                \
             extern void wrapup();                                              \
@@ -260,7 +262,8 @@
 
 /// Redirection of BACKEND_REQ(GROUP, REQUIREMENT, (TAGS), TYPE, [(ARGS)]) 
 /// for declaring backend requirements when invoked from within a module.
-#define MODULE_BACKEND_REQ(GROUP, REQ, TAGS, TYPE, ARGS, IS_VARIABLE)          \
+#define MODULE_BACKEND_REQ(MODULE, FUNCTION, GROUP, REQ, TAGS, TYPE, ARGS,     \
+                           IS_VARIABLE)                                        \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \

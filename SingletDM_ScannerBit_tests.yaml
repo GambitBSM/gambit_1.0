@@ -132,6 +132,7 @@ Printer:
     output_file: "gambit_output.hdf5"
     group: "/sing/let"
     delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 ##############################
@@ -161,7 +162,18 @@ Scanner:
       #projection_dimension: 4
       #chain_number:
 
-    #great:
+    mcmc:
+      plugin: GreAT
+      nTrialLists: 5
+      nTrials: 40000
+      like: Likelihood
+      aux_printer_ind_samples_options:
+    
+#twalk:
+#      plugin: twalk
+#      tolerance: 1.001
+#      projection_dimension: 4
+#      chain_number: 10
 
 
 ###############################
@@ -181,19 +193,19 @@ ObsLikes:
     - capability: lnL_Higgs_invWidth
       purpose: LogLike
 
-# Simple gaussian relic density likelihood
+# Simple one-sided gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
     - capability: lnL_oh2
       purpose: LogLike
-      function: lnL_oh2_Simple
+      function: lnL_oh2_upperlimit
 
 # XENON100 2012 direct detection likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose: LogLike
 
 # LUX 2013 direct detection likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 
 # SI nuclear parameters likelihood
@@ -230,9 +242,6 @@ ObsLikes:
 
 Rules:
 
-  - capability: RD_fraction
-    function: RD_fraction_from_oh2
-
   - capability: GA_AnnYield
     function: GA_AnnYield_General
     options:
@@ -242,14 +251,12 @@ Rules:
     options:
         cMC_finalStates:
             - gamma
+
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
 
-  - capability: Higgs_decay_rates
-    function: SS_Higgs_decays
-    dependencies:
-        - capability: SingletDM_spectrum
-          function: get_SingletDM_spectrum
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum
 
   - capability: DD_couplings
     function: DD_couplings_SingletDM
@@ -264,30 +271,22 @@ Rules:
           function: get_SingletDM_spectrum
 
   # Relic density ----------------------
-  - capability: RD_oh2
-    options:
-      fast: 1  # Accuracy options (used by micromegas)
-      Beps: 1e-2
-    function: RD_oh2_general   # general routines (DS backend)
-    #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_MicrOmegas  # micromegas backend
-  - capability: RD_spectrum
-    options:
-      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
-
-#  - capability: RD_thresholds_resonances
-#    function: RD_thresholds_resonances_from_spectrum
-
-  - capability: lnL_oh2
-    function: lnL_oh2_Simple
-    options:
-       #oh2_mean: 0.11
-       #oh2_err: 0.07
-
   - capability: RD_fraction
     function: RD_fraction_from_oh2
     options:
       mode: leq_one
+
+  - capability: RD_oh2
+    function: RD_oh2_general   # general routines (DS backend)
+    #function: RD_oh2_DarkSUSY   # darksusy backend
+    #function: RD_oh2_MicrOmegas  # micromegas backend
+    options:
+      fast: 1  # Accuracy options (used by micromegas)
+      Beps: 1e-2
+
+  - capability: RD_spectrum
+    options:
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
 
 
   # Direct detection -------------------
@@ -385,6 +384,6 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e4
 
-  default_output_path: "runs/singletDM_ScannerBit_test/"
+  default_output_path: "runs/singletDM_ScannerBit_test4/"
 
-
+  #debug: true

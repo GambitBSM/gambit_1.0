@@ -42,6 +42,7 @@ void *get_purpose(const std::string &purpose)                                   
     void *ptr = (get_input_value<Factory_Base>(1))(purpose);                                \
     static_cast <Function_Base<void(void)>*>(ptr)->setPurpose(purpose);                     \
     static_cast <Function_Base<void(void)>*>(ptr)->setPrinter(get_printer().get_stream());  \
+    static_cast <Function_Base<void(void)>*>(ptr)->setPrior(&get_prior());                  \
     assign_aux_numbers(purpose, "pointID", "MPIrank");                                      \
                                                                                             \
     return ptr;                                                                             \

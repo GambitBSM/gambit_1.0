@@ -53,9 +53,10 @@ START_MODULE
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
-  
+
+
   // Extractors for FeynHiggs EWK precision observables
-  QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, deltarho,       NEW_CAPABILITY, FH_precision_deltarho, triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, prec_mw,        NEW_CAPABILITY, FH_precision_mw,       triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, prec_sinW2_eff, NEW_CAPABILITY, FH_precision_sinW2,    triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
@@ -74,10 +75,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
   
-  // Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods
+  // Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
   QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, const Spectrum*))
-  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM), (SingletDM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, const Spectrum*))
   QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, triplet<double>, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mh, NEW_CAPABILITY, mh_from_SM_spectrum,   double, (), (SM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_SS_spectrum,   double, (SingletDM, SingletDMZ3), (SingletDM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_MSSM_spectrum, double, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, const Spectrum*))
 
   // SM nuisance likelihoods
   QUICK_FUNCTION(PrecisionBit, lnL_Z_mass,   NEW_CAPABILITY, lnL_Z_mass_chi2,   double, (), (SMINPUTS, SMInputs))
@@ -110,12 +114,12 @@ START_MODULE
   #undef CAPABILITY
 
 
-// precision likelihood: (g-2)_\mu
+  // Precision likelihood: (g-2)_\mu
   #define CAPABILITY lnL_gm2
   START_CAPABILITY
-    #define FUNCTION lnL_mssm_gm2_chi2
+    #define FUNCTION lnL_gm2_chi2
     START_FUNCTION(double)
-  DEPENDENCY(a_mu_SUSY_c, triplet<double>)
+    DEPENDENCY(muon_gm2, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
   
@@ -141,11 +145,20 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-  // Muon g-2
-  #define CAPABILITY a_mu_SUSY
-  START_CAPABILITY
-    #define FUNCTION a_mu_SUSY
-  START_FUNCTION(triplet<double>)
+  // Observable: (g-2)_mu
+  #define CAPABILITY muon_gm2
+
+    // Muon g-2 -- Using SuperIso
+    #define FUNCTION SI_muon_gm2
+    START_FUNCTION(triplet<double>)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
+    BACKEND_REQ(muon_gm2, (libsuperiso), double, (struct parameters*))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+
+    // Muon g-2 -- Using the C++ interface to gm2calc
+    #define FUNCTION GM2C_SUSY
+    START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 
@@ -155,15 +168,11 @@ START_MODULE
     BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, 
                              (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
     BACKEND_OPTION( (gm2calc), (libgm2calc) )
-  
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
-  #undef CAPABILITY 
 
-// Muon g-2 -- Using the C interface to gm2calc
-  #define CAPABILITY a_mu_SUSY_c
-  START_CAPABILITY
-    #define FUNCTION a_mu_SUSY_c
+    // Muon g-2 -- Using the C interface to gm2calc
+    #define FUNCTION GM2C_SUSY_c
     START_FUNCTION(triplet<double>)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(gm2calc_mssmnofv_new, (libgm2calc), gm2calc_c::MSSMNoFV_onshell*, ())

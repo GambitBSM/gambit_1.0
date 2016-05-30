@@ -102,7 +102,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 100
+      point_number: 10008
       like: LogLike
           
     toy:
@@ -127,15 +127,19 @@ Scanner:
       like: LogLike
       nlive: 2000
       tol: 0.1
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
           
     gnest:
       plugin: gnest
       file_name: "output_file"
       like: LogLike
       live_number: 2000
+      
+    raster:
+      plugin: raster
+      like: LogLike
+      parameters:
+        "EggBox::param_0": 3.14
+        #"EggBox::param_1": [.2, .3]
           
     bin_grid:
       plugin: bin_grid
@@ -341,11 +345,10 @@ Scanner:
     object_detection:
       plugin: object_detection
       purpose: LogLike
-      options:
-        psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
-        image_file: "/home/gmartine/fits/c0052.fits"
-        grid_file: "/home/gmartine/fits/grid.fits"
-        min_pixel_number: -1
+      psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
+      image_file: "/home/gmartine/fits/c0052.fits"
+      grid_file: "/home/gmartine/fits/grid.fits"
+      min_pixel_number: -1
       parameters:
         pos_x:
           range: [200, 800]
@@ -376,19 +379,21 @@ Scanner:
     EggBox:
       plugin: EggBox
       purpose: LogLike
-      options:
-        Printer:
-          printer: ascii
-          #options:
-          output_file: "gambit_output2.txt"
       parameters:
-        param...2:
-          prior_type: flat
+        param_0:
+          prior_type: none
+          #plugin: flat
+          #range: [0, 1]
+        param_1:
           range: [0, 1]
+          
+    flat:
+      plugin: flat_prior
+      range: [0, 1]
 
     gaussian:
       plugin: gaussian
-      purpose: LogLike2
+      purpose: LogLike
       #options:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
@@ -397,7 +402,7 @@ Scanner:
         ##  same_as: "gaussian::param_0"
         ##  scale: -2
         ##  shift: -1
-        param...2:
+        param...20:
           range: [-5, 5]
         params...2: 
           fixed_value: [-1, 1]

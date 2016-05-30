@@ -163,21 +163,32 @@ int main()
 
     // Set up the LHC likelihood calculations
     calc_LHC_LogLike.resolveDependency(&runATLASAnalyses);
-    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+    calc_LHC_LogLike.resolveDependency(&runCMSAnalyses);
+    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_3::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
     runATLASAnalyses.resolveDependency(&getATLASAnalysisContainer);
     runATLASAnalyses.resolveDependency(&getPythiaFileReader);
     runATLASAnalyses.resolveDependency(&smearEventATLAS);
+    runCMSAnalyses.resolveDependency(&getCMSAnalysisContainer);
+    runCMSAnalyses.resolveDependency(&getPythiaFileReader);
+    runCMSAnalyses.resolveDependency(&smearEventCMS);
     getATLASAnalysisContainer.resolveDependency(&getPythiaFileReader);
+    getCMSAnalysisContainer.resolveDependency(&getPythiaFileReader);
     smearEventATLAS.resolveDependency(&generatePythia8Event);
     smearEventATLAS.resolveDependency(&getBuckFastATLAS);
+    smearEventCMS.resolveDependency(&generatePythia8Event);
+    smearEventCMS.resolveDependency(&getBuckFastCMS);
     generatePythia8Event.resolveDependency(&getPythiaFileReader);
     getPythiaFileReader.resolveLoopManager(&operateLHCLoop);
     getBuckFastATLAS.resolveLoopManager(&operateLHCLoop);
+    getBuckFastCMS.resolveLoopManager(&operateLHCLoop);
     getATLASAnalysisContainer.resolveLoopManager(&operateLHCLoop);
+    getCMSAnalysisContainer.resolveLoopManager(&operateLHCLoop);
     generatePythia8Event.resolveLoopManager(&operateLHCLoop);
     smearEventATLAS.resolveLoopManager(&operateLHCLoop);
+    smearEventCMS.resolveLoopManager(&operateLHCLoop);
     runATLASAnalyses.resolveLoopManager(&operateLHCLoop);
-    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFastATLAS, &getATLASAnalysisContainer, &generatePythia8Event, &smearEventATLAS, &runATLASAnalyses);
+    runCMSAnalyses.resolveLoopManager(&operateLHCLoop);
+    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFastATLAS, &getBuckFastCMS, &getATLASAnalysisContainer, &getCMSAnalysisContainer, &generatePythia8Event, &smearEventATLAS, &smearEventCMS, &runATLASAnalyses, &runCMSAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
           
     // ALEPH selectron limits
@@ -300,24 +311,45 @@ int main()
     std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on ATLASAnalysisNumbers filled by:" << endl;
     std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.origin() << "::";
     std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.name() << std::endl;
+    std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on CMSAnalysisNumbers filled by:" << endl;
+    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::CMSAnalysisNumbers.origin() << "::";
+    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::CMSAnalysisNumbers.name() << std::endl;
+    std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << std::endl;
     std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
     std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
     std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << std::endl;
     std::cout << std::endl << "My function runATLASAnalyses has had its dependency on HardScatteringSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::HardScatteringSim.origin() << "::";
     std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::HardScatteringSim.name() << std::endl;
+    std::cout << std::endl << "My function runCMSAnalyses has had its dependency on HardScatteringSim filled by:" << endl;
+    std::cout << ColliderBit::Pipes::runCMSAnalyses::Dep::HardScatteringSim.origin() << "::";
+    std::cout << ColliderBit::Pipes::runCMSAnalyses::Dep::HardScatteringSim.name() << std::endl;
     std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASAnalysisContainer filled by:" << endl;
     std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASAnalysisContainer.origin() << "::";
     std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASAnalysisContainer.name() << std::endl;
+    std::cout << std::endl << "My function runCMSAnalyses has had its dependency on CMSAnalysisContainer filled by:" << endl;
+    std::cout << ColliderBit::Pipes::runCMSAnalyses::Dep::CMSAnalysisContainer.origin() << "::";
+    std::cout << ColliderBit::Pipes::runCMSAnalyses::Dep::CMSAnalysisContainer.name() << std::endl;
     std::cout << std::endl << "My function getATLASAnalysisContainer has had its dependency on HardScatteringSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::getATLASAnalysisContainer::Dep::HardScatteringSim.origin() << "::";
     std::cout << ColliderBit::Pipes::getATLASAnalysisContainer::Dep::HardScatteringSim.name() << std::endl;
+    std::cout << std::endl << "My function getCMSAnalysisContainer has had its dependency on HardScatteringSim filled by:" << endl;
+    std::cout << ColliderBit::Pipes::getCMSAnalysisContainer::Dep::HardScatteringSim.origin() << "::";
+    std::cout << ColliderBit::Pipes::getCMSAnalysisContainer::Dep::HardScatteringSim.name() << std::endl;
     std::cout << std::endl << "My function smearEventATLAS has had its dependency on ConvertedScatteringEvent filled by:" << endl;
     std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::HardScatteringEvent.origin() << "::";
     std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::HardScatteringEvent.name() << std::endl;
+    std::cout << std::endl << "My function smearEventCMS has had its dependency on ConvertedScatteringEvent filled by:" << endl;
+    std::cout << ColliderBit::Pipes::smearEventCMS::Dep::HardScatteringEvent.origin() << "::";
+    std::cout << ColliderBit::Pipes::smearEventCMS::Dep::HardScatteringEvent.name() << std::endl;
     std::cout << std::endl << "My function smearEventATLAS has had its dependency on SimpleSmearingSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::SimpleSmearingSim.origin() << "::";
     std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::SimpleSmearingSim.name() << std::endl;
+    std::cout << std::endl << "My function smearEventCMS has had its dependency on SimpleSmearingSim filled by:" << endl;
+    std::cout << ColliderBit::Pipes::smearEventCMS::Dep::SimpleSmearingSim.origin() << "::";
+    std::cout << ColliderBit::Pipes::smearEventCMS::Dep::SimpleSmearingSim.name() << std::endl;
     std::cout << std::endl << "My function generatePythia8Event has had its dependency on HardScatteringSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.origin() << "::";
     std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.name() << std::endl;
@@ -326,10 +358,11 @@ int main()
     // User can edit this section to configure ColliderBit
     // See the ColiderBit manual for available options
     
-    // First we have the LHC options
-    std::vector<std::string> runTheseAnalyses;
-    runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
-    getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
+    // First we have the LHC options - here we choose to run only one ATLAS analysis
+    std::vector<std::string> runTheseATLASAnalyses;
+    runTheseATLASAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which ATLAS analyses to run
+    getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesATLAS",runTheseATLASAnalyses);
+    getCMSAnalysisContainer.setOption<bool>("useCMS",false);
 
     // The standalone Pythia instance is given a name
     // Can be set to anything, provided it matches the same name given below
@@ -358,8 +391,7 @@ int main()
     {
       
       // Call the initialisation functions for all backends that are in use. 
-      nulike_1_0_2_init.reset_and_calculate();
-
+      nulike_1_0_3_init.reset_and_calculate();
       
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();

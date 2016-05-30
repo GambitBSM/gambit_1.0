@@ -70,7 +70,7 @@ namespace Gambit                                                            \
 /// Closer for convenience function definitional boilerplate.
 #define END_BE_NAMESPACE }}
 
-/// \name Variadic redirection macro for BE_VARIABLE(TYPE, NAME, SYMBOLNAME, CAPABILITY, [(ALLOWED_MODELS)])
+/// \name Variadic redirection macro for BE_VARIABLE(NAME, TYPE, SYMBOLNAME, CAPABILITY, [(ALLOWED_MODELS)])
 #define BE_VARIABLE_5(_1, _2, _3, _4, _5)      BE_VARIABLE_I(_1, _2, _3, _4, _5)  
 #define BE_VARIABLE_4(_1, _2, _3, _4)          BE_VARIABLE_I(_1, _2, _3, _4, ()) 
 #define BE_VARIABLE(...)                       VARARG(BE_VARIABLE, __VA_ARGS__)

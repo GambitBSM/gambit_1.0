@@ -298,7 +298,7 @@ ObsLikes:
   ## Test DarkBit DD couplings with micrOMEGAs and DarkSUSY
   #- purpose:      Observable
   #  capability:   DD_couplings
-  #  type:         DarkBit::DD_couplings
+  #  type:         DM_nucleon_couplings
   #  function:     DD_couplings_micrOMEGAs
   #  function:     DD_couplings_DarkSUSY
 

@@ -38,7 +38,6 @@ namespace Gambit
                 class Cauchy : public BasePrior
                 {
                 private:
-                        std::vector <std::string> param;
                         std::vector <double> mean;
                         mutable Cholesky col;
                         
@@ -61,7 +60,7 @@ namespace Gambit
                                 
                                 v_it = vec.begin();
                                 auto m_it = mean.begin();
-                                for (auto str_it = param.begin(), str_end = param.end(); str_it != str_end; str_it++)
+                                for (auto str_it = param_names.begin(), str_end = param_names.end(); str_it != str_end; str_it++)
                                 {
                                         outputMap[*str_it] = *(v_it++) + *(m_it++);
                                 }

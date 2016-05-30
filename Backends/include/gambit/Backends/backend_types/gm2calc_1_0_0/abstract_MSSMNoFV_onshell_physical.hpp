@@ -7,20 +7,9 @@
 #include <ostream>
 #include <Eigen/Core>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_physical*, bool);
-
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_physical*);
-
-
-// Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_physical* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_physical*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -168,11 +157,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual void init_wrapper()
             {
-               if (wptr == 0)
-               {
-                  wptr = wrapper_creator(this);
-                  delete_wrapper = true;
-               }
+               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell_physical from backend gm2calc_1_0_0. The function Abstract_MSSMNoFV_onshell_physical::init_wrapper() in GAMBIT should never have been called..." << std::endl;
             }
    
             MSSMNoFV_onshell_physical* get_init_wptr()
@@ -189,16 +174,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual ~Abstract_MSSMNoFV_onshell_physical()
             {
-               if (wptr != 0)
-               {
-                  set_delete_BEptr(wptr, false);
-                  if (delete_wrapper == true)
-                  {
-                     wrapper_deleter(wptr);
-                     wptr = 0;
-                     delete_wrapper = false;
-                  }
-               }
+               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell_physical from backend gm2calc_1_0_0. The function Abstract_MSSMNoFV_onshell_physical::~Abstract_MSSMNoFV_onshell_physical in GAMBIT should never have been called..." << std::endl;
             }
       };
    }

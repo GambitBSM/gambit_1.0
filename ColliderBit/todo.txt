@@ -1,15 +1,12 @@
 ColliderBit cleanup TODOs:
 ==========================
 
-1.) Make a default value for the Pythia xml doc directory in the code.
+1.) Add DELPHES instructions (commented out) to gambit_Collider_CMSSM.yaml.
 
-2.) Remove obsolete yaml files.
+2.) Test and cleanup the doxygen comments in the code.
 
-3.) Add DELPHES instructions (commented out) to gambit_Collider_CMSSM.yaml.
-
-4.) Fix the ColliderBit_standalone example (it needs to use the new capability structure).
-
-5.) Test and cleanup the doxygen comments in the code.
+3.) SpecializablePythia::init_external seems poorly named. Rename it somehow,
+    and then remove the @todo's in the doxygen comments.
 
 
 ** I guess we're done with memory leak hunting, but just in case...
