@@ -1,7 +1,7 @@
 # GAMBIT central capabilities description database
 #
-# GAMBIT will parse this file and try to match the entries 
-# to the capabilities it has registered. If there are any 
+# GAMBIT will parse this file and try to match the entries
+# to the capabilities it has registered. If there are any
 # conflicts it will report them, and if any capabilities
 # are lacking descriptions those will be reported too.
 # This is then merged with internally known information
@@ -37,7 +37,7 @@ vSigma: |
 widths: |
    The width of some particle or other
 
-xsection: |        
+xsection: |
    Another mystery cross-section
 
 #-------------------------------------
@@ -118,3 +118,179 @@ MSSM_spectrum: |
 
 
 
+#-------------------------------------
+#  ColliderBit capabilities
+#-------------------------------------
+
+ColliderOperator: |
+   Controls the parallelization and execution of the entire
+   event loop of the collider simulation.
+
+LHC_Combined_LogLike: |
+   Combines the results from AnalysisNumbers together into
+   a single delta-log-likelihood value.
+
+HardScatteringSim: |
+   Provides a Pythia 8 instance within a container which is
+   ready to simulate collision events for a model chosen by ScannerBit.
+
+HardScatteringEvent: |
+   Uses the given HardScatteringSim to generate the next event
+   of the collider simulation chain.
+
+DetectorSim: |
+   Provides a Delphes instance within a container which is
+   ready to perform detector simulation.
+
+SimpleSmearingSim: |
+   Provides a set of BuckFast functions within a container
+   which is ready to apply ATLAS smearing and reconstruction
+   efficiencies to an event.
+
+ReconstructedEvent: |
+   Uses the given DetectorSim to perform detector simulation
+   upon the given HardScatteringEvent.
+
+ATLASSmearedEvent: |
+   Uses the given SimpleSmearingSim to apply smearing and
+   reconstruction efficiencies upon the given HardScatteringEvent.
+
+CMSSmearedEvent: |
+   Uses the given SimpleSmearingSim to apply smearing and
+   reconstruction efficiencies upon the given HardScatteringEvent.
+
+CopiedEvent: |
+   Uses the given SimpleSmearingSim to do absolutely nothing to
+   the given HardScatteringEvent.
+
+AnalysisContainer: |
+   Provides a list of analyses within a container which is ready
+   to apply each analysis to an event.
+
+ATLASAnalysisNumbers: |
+   Uses the given ATLASAnalysisContainer to perform all its
+   analyses upon the given ATLASSmearedEvent.
+
+CMSAnalysisNumbers: |
+   Uses the given CMSAnalysisContainer to perform all its analyses
+   upon the given CMSSmearedEvent.
+
+ALEPH_Selectron_LLike: |
+   Compares the cross section times branching ratio
+   for selectron pair production to the model-independent limit according
+   to the ALEPH collaboration. Returns a log likelihood value.
+
+ALEPH_Smuon_LLike: |
+   Compares the cross section times branching ratio for smuon pair
+   production to the model-independent limit according to the ALEPH
+   collaboration. Returns a log likelihood value.
+
+ALEPH_Stau_LLike: |
+   Compares the cross section times branching ratio for stau pair
+   production to the model-independent limit according to the ALEPH
+   collaboration. Returns a log likelihood value.
+
+L3_Selectron_LLike: |
+   Compares the cross section times branching ratio for selectron pair
+   production to the model-independent limit according to the L3
+   collaboration. Returns a log likelihood value.
+
+L3_Smuon_LLike: |
+    Compares the cross section times branching ratio for smuon pair
+    production to the model-independent limit according to the L3
+    collaboration. Returns a log likelihood value.
+
+L3_Stau_LLike: |
+    Compares the cross section times branching ratio for stau pair
+    production to the model-independent limit according to the L3
+    collaboration. Returns a log likelihood value.
+
+L3_Neutralino_All_Channels_LLike: |
+   Compares the cross section times branching ratio for neutralino
+   pair production to the model-independent limit according to the
+   L3 collaboration. Returns a log likelihood value.
+
+L3_Neutralino_Leptonic_LLike: |
+   Compares the cross section times branching ratio for neutralino
+   pair production (with leptonically decaying Z bosons) to the
+   model-independent limit according to the L3 collaboration.
+   Returns a log likelihood value.
+
+L3_Chargino_All_Channels_LLike: |
+   Compares the cross section times branching ratio for chargino
+   pair production to the model-independent limit according to the
+   L3 collaboration. Returns a log likelihood value.
+
+L3_Chargino_Leptonic_LLike: |
+   Compares the cross section times branching ratio for chargino
+   pair production (with leptonically decaying W bosons) to the
+   model-independent limit according to the L3 collaboration.
+   Returns a log likelihood value.
+
+OPAL_Neutralino_Hadronic_LLike: |
+    Compares the cross section times branching ratio for neutralino
+    pair production (with hadronically decaying Z bosons) to the
+    model-independent limit according to the OPAL collaboration.
+    Returns a log likelihood value.
+
+OPAL_Chargino_All_Channels_LLike: |
+   Compares the cross section times branching ratio for chargino
+   pair production to the model-independent limit according to
+   the OPAL collaboration. Returns a log likelihood value.
+
+OPAL_Chargino_Hadronic_LLike: |
+   Compares the cross section times branching ratio for chargino
+   pair production (with hadronically decaying W bosons) to the
+   model-independent limit according to the OPAL collaboration.
+   Returns a log likelihood value.
+
+OPAL_Chargino_Leptonic_LLike: |
+   Compares the cross section times branching ratio for chargino
+   pair production (with leptonically decaying W bosons) to the
+   model-independent limit according to the OPAL collaboration.
+   Returns a log likelihood value.
+
+OPAL_Chargino_SemiLeptonic_LLike: |
+   Compares the cross section times branching ratio for chargino
+   pair production (with one leptonic and one hadronic decaying W boson)
+   to the model-independent limit according to the OPAL collaboration.
+   Returns a log likelihood value.
+
+LEP_Higgs_LogLike: |
+    Provides log-likelihood for combined model-independent LEP
+    neutral Higgs searches.
+
+LHC_Higgs_LogLike: |
+   Provides log-likelihood for LHC Higgs mass and signal
+   strength measurements.
+
+HB_ModelParameters: |
+   Provides SM and MSSM input parameters for LEP and LHC Higgs
+   likelihood calculations.
+
+FH_HiggsProd: |
+   Provides estimated MSSM Higgs production cross sections through
+   an interface to FeynHiggs.
+
+
+# LEP}$E$_xsec_se}$X$se}$Y$bar}
+#             Calculates the LEP selectron pair production
+#             cross-section for centre of mass energy $E$, with selectron
+#             eigenstates $X$ and $Y$.
+# LEP}$E$_xsec_smu}$X$smu}$Y$bar}
+#             Calculates the LEP smuon pair production
+#             cross-section for centre of mass energy $E$, with smuon
+#             eigenstates $X$ and $Y$.
+# LEP}$E$_xsec_stau}$X$stau}$Y$bar}
+#             Calculates the LEP stau pair production
+#             cross-section for centre of mass energy $E$, with stau
+#             eigenstates $X$ and $Y$.
+# LEP}$E$_xsec_chi00_}$XY$bar}
+#             Calculates the LEP neutralino pair production
+#             cross-section for centre of mass energy $E$, with neutralino
+#             mass eigenstates $X$ and $Y$.
+# LEP}$E$_xsec_chipm_}$XY$bar}
+#             Calculates the LEP chargino pair production
+#             cross-section for centre of mass energy $E$, with chargino
+#             mass eigenstates $X$ and $Y$.
+>>>>>>> e1c74cc03e97f83c3e8611044c074ef5d3685479
