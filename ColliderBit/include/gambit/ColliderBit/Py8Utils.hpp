@@ -6,7 +6,6 @@
 #include "HEPUtils/FastJet.h"
 #include "MCUtils/PIDUtils.h"
 
-
 namespace Gambit {
   namespace ColliderBit {
 
@@ -15,23 +14,23 @@ namespace Gambit {
     /// @name Converters to/from Pythia8's native 4-vector
     //@{
 
-    inline fastjet::PseudoJet mk_pseudojet(const Pythia8::Vec4& p) {
-      return fastjet::PseudoJet(p.px(), p.py(), p.pz(), p.e());
+    inline FJNS::PseudoJet mk_pseudojet(const Pythia8::Vec4& p) {
+      return FJNS::PseudoJet(p.px(), p.py(), p.pz(), p.e());
     }
 
     inline HEPUtils::P4 mk_p4(const Pythia8::Vec4& p) {
       const double m = p.mCalc();
-      assert(m > -5e-2 && "Negative mass vector from Pythia8");
+      if (m < -5e-3) throw std::domain_error("Negative mass vector from Pythia8");
       return HEPUtils::P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
     }
 
     inline HEPUtils::P4 mk_p4(const Pythia8::Particle& p) {
       const double m = p.m();
-      assert(m >= 0);
+      if (m < 0) throw std::domain_error("Negative mass vector from Pythia8");
       return HEPUtils::P4::mkXYZM(p.px(), p.py(), p.pz(), m);
     }
 
-    inline Pythia8::Vec4 mk_vec4(const fastjet::PseudoJet& p) {
+    inline Pythia8::Vec4 mk_vec4(const FJNS::PseudoJet& p) {
       Pythia8::Vec4 rtn;
       rtn.p(p.px(), p.py(), p.pz(), p.e());
       return rtn;
@@ -228,8 +227,8 @@ namespace Gambit {
     // /// Fill a Gambit::Event from a Pythia8 event
     // inline void fillGambitEvent(const Pythia8::Event& pevt, HEPUtils::Event& gevt) {
     //   Pythia8::Vec4 ptot;
-    //   std::vector<fastjet::PseudoJet> jetparticles;
-    //   std::vector<fastjet::PseudoJet> bhadrons, taus;
+    //   std::vector<FJNS::PseudoJet> jetparticles;
+    //   std::vector<FJNS::PseudoJet> bhadrons, taus;
     //
     //   // Make a first pass to gather unstable final B hadrons and taus
     //   for (int i = 0; i < pevt.size(); ++i) {
@@ -274,9 +273,9 @@ namespace Gambit {
     //
     //   // Jet finding
     //   // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
-    //   const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
-    //   fastjet::ClusterSequence cseq(jetparticles, jet_def);
-    //   std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+    //   const FJNS::JetDefinition jet_def(FJNS::antikt_algorithm, 0.4);
+    //   FJNS::ClusterSequence cseq(jetparticles, jet_def);
+    //   std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
     //
     //   // Do jet b-tagging, etc. and add to the Event
     //   for (auto& pj : pjets) {

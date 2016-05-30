@@ -94,13 +94,13 @@ namespace Gambit {
         // We have made up a number of observed events
 	// We have also made up a number of predicted background events (with a made up uncertainty)
         SignalRegionData results_SR;
-        results_SR.set_analysis_name("Analysis_Minimum");
-        results_SR.set_sr_label("SR"); // label must be unique for each signal region
-        results_SR.set_observation(100.); // set number of observed events (in LHC paper)
-        results_SR.set_background(95.); // set number of predicted background events (in LHC paper)
-        results_SR.set_backgroundsys(9.5); // set background uncertainty (in LHC paper)
-        results_SR.set_signalsys(0.); // set signal uncertainty
-        results_SR.set_signal(_numSR); // set this to number of signal events incremented in the analysis above
+        results_SR.analysis_name = "Analysis_Minimum";
+        results_SR.sr_label = "SR"; // label must be unique for each signal region
+        results_SR.n_observed = 100.; // set number of observed events (in LHC paper)
+        results_SR.n_background = 95.; // set number of predicted background events (in LHC paper)
+        results_SR.background_sys = 9.5; // set background uncertainty (in LHC paper)
+        results_SR.signal_sys = 0.; // set signal uncertainty
+        results_SR.n_signal = _numSR; // set this to number of signal events incremented in the analysis above
         add_result(results_SR);
 	
       }

@@ -14,12 +14,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class DecayChannel : public WrapperBase<Pythia8::Abstract_DecayChannel>
+        class DecayChannel : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_DecayChannel> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_DecayChannel>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -106,7 +102,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 DecayChannel(Pythia8::Abstract_DecayChannel* in);
-                DecayChannel(Pythia8::Abstract_DecayChannel* const & in, bool);
         
                 // Copy constructor: 
                 DecayChannel(const DecayChannel& in);
@@ -117,9 +112,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~DecayChannel();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_DecayChannel* get_BEptr() const;
         
         };
     }

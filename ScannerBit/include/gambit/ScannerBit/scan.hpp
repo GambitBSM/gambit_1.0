@@ -29,27 +29,28 @@
 #include "gambit/ScannerBit/factory_defs.hpp"
 #include "gambit/ScannerBit/priors/composite.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/yaml_parser_base.hpp"
 
 namespace Gambit
 {
-        namespace Scanner
-        {       
-                class Scan_Manager
-                {
-                  private:
-                        const Factory_Base *factory;
-                        const Options options;
-                        const Priors::CompositePrior *prior;
-                        printer_interface *printerInterface;
-                        // Flag to indicate whether or not the prior and factory need deleting in the destructor.  Do not reset!
-                        bool has_local_prior_and_factory;
+    namespace Scanner
+    {       
+        class Scan_Manager
+        {
+        private:
+            const Factory_Base *factory;
+            Options options;
+            Priors::CompositePrior *prior;
+            printer_interface *printerInterface;
+            // Flag to indicate whether or not the factory needs deleting in the destructor.  Do not reset!
+            bool has_local_factory;
 
-                  public:
-                        Scan_Manager (const Factory_Base*, const Options, const Priors::CompositePrior*, printer_interface* = 0);
-                        ~Scan_Manager();
-                        int Run();                       
-                };             
-        }
+        public:
+            Scan_Manager (const YAML::Node &node, printer_interface*, const Factory_Base* factory = 0);
+            ~Scan_Manager();
+            int Run();                       
+        };             
+    }
 }
 
 #endif

@@ -105,9 +105,9 @@ ObsLikes:
 #   - capability: lnL_FermiGC
 #     purpose:  LogLike
 #
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose:  LogLike
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 #    - capability: lnL_DARWIN_Ar_2015
 #      purpose:  Observable

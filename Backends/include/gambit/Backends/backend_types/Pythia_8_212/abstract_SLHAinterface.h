@@ -13,12 +13,9 @@
 #include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_CoupSUSY_decl.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::SLHAinterface*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -26,7 +23,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_SLHAinterface : virtual public AbstractBase
+        class Abstract_SLHAinterface : public virtual AbstractBase
         {
             public:
     
@@ -45,36 +42,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual int& meMode_ref__BOSS() =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_SLHAinterface*) =0;
-                virtual Abstract_SLHAinterface* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_SLHAinterface*) =0;
+                virtual Abstract_SLHAinterface* pointer_copy__BOSS() =0;
     
             private:
-                mutable SLHAinterface* wptr;
+                SLHAinterface* wptr;
+                bool delete_wrapper;
+            public:
+                SLHAinterface* get_wptr() { return wptr; }
+                void set_wptr(SLHAinterface* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_SLHAinterface()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(SLHAinterface* wptr_in)
+                Abstract_SLHAinterface(const Abstract_SLHAinterface&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                SLHAinterface* wrapper__BOSS()
+                Abstract_SLHAinterface& operator=(const Abstract_SLHAinterface&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SLHAinterface from backend Pythia_8_212. The function Abstract_SLHAinterface::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                SLHAinterface* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                SLHAinterface& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_SLHAinterface()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SLHAinterface from backend Pythia_8_212. The function Abstract_SLHAinterface::~Abstract_SLHAinterface in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

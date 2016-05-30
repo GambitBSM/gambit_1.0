@@ -529,12 +529,18 @@ namespace Gambit {
         start = std::chrono::system_clock::now();
 #endif
 
-        // tabulate invariant rate
-        //logger() << "Tabulating RD_eff_annrate..." << std::endl;
+#ifdef DARKBIT_RD_DEBUG
+        logger() << "Tabulating RD_eff_annrate..." << std::endl;
         std::cout << "Starting dsrdtab..." << std::endl;
+#endif
+
+        // Tabulate invariant rate
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+
+#ifdef DARKBIT_RD_DEBUG
         std::cout << "...done" << std::endl;
-        //logger() << "...done!" << std::endl;
+        logger() << "...done!" << std::endl;
+#endif
 
 #ifdef DARKBIT_RD_DEBUG
         // Get runtime
@@ -587,11 +593,11 @@ namespace Gambit {
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
 
-// FIXME: Should be commented out
-//#ifdef DARKBIT_DEBUG
+
+#ifdef DARKBIT_DEBUG
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
-//#endif
+#endif
 
 #ifdef DARKBIT_RD_DEBUG
       if (tbtest==1) {exit(1);}

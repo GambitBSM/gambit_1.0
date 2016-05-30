@@ -40,73 +40,73 @@
 
 #define REGISTER(reg_map, tag, ...) REGISTER_ELEM(reg_map, #tag, __VA_ARGS__)
 
-#define REGISTER_ELEM(reg_map, tag, ...)                                                                        \
-namespace __gambit_registry__                                                                                   \
-{                                                                                                               \
-        namespace                                                                                               \
-        {                                                                                                       \
-                template<>                                                                                      \
-                class __create_class__ < __VA_ARGS__ >                                                          \
-                {                                                                                               \
-                public:                                                                                         \
-                        __create_class__(decltype(reg_map) &creators)                                           \
-                        {                                                                                       \
-                                creators[ tag ] = __create_class__< __VA_ARGS__ >::init;                        \
-                        }                                                                                       \
-                                                                                                                \
-                        template<typename T, typename... args>                                                  \
-                        static T *init(args... params)                                                        \
-                        {                                                                                       \
-                                return static_cast<T *>(new __VA_ARGS__ (std::forward<args>(params)...));       \
-                        }                                                                                       \
-                };                                                                                              \
-                                                                                                                \
-                template <>                                                                                     \
-                __create_class__ < __VA_ARGS__ > __reg_init__ < __VA_ARGS__ >::reg(reg_map);                    \
-        }                                                                                                       \
+#define REGISTER_ELEM(reg_map, tag, ...)                                                        \
+namespace __gambit_registry__                                                                   \
+{                                                                                               \
+    namespace                                                                                   \
+    {                                                                                           \
+        template<>                                                                              \
+        class __create_class__ < __VA_ARGS__ >                                                  \
+        {                                                                                       \
+        public:                                                                                 \
+            __create_class__(decltype(reg_map) &creators)                                       \
+            {                                                                                   \
+                creators[ tag ] = __create_class__< __VA_ARGS__ >::init;                        \
+            }                                                                                   \
+                                                                                                \
+            template<typename T, typename... args>                                              \
+            static T *init(args... params)                                                      \
+            {                                                                                   \
+                return static_cast<T *>(new __VA_ARGS__ (std::forward<args>(params)...));       \
+            }                                                                                   \
+        };                                                                                      \
+                                                                                                \
+        template <>                                                                             \
+        __create_class__ < __VA_ARGS__ > __reg_init__ < __VA_ARGS__ >::reg(reg_map);            \
+    }                                                                                           \
 }                                                                                                               \
 
-#define registry                                                \
-namespace __gambit_registry__                                   \
-{                                                               \
-        namespace                                               \
-        {                                                       \
-                template <class T>                              \
-                class __create_class__ {};                      \
-                                                                \
-                template <class T>                              \
-                struct __reg_init__                             \
-                {                                               \
-                        static __create_class__ <T> reg;        \
-                };                                              \
-        }                                                       \
-}                                                               \
-                                                                \
-namespace                                                       \
+#define registry                                    \
+namespace __gambit_registry__                       \
+{                                                   \
+    namespace                                       \
+    {                                               \
+        template <class T>                          \
+        class __create_class__ {};                  \
+                                                    \
+        template <class T>                          \
+        struct __reg_init__                         \
+        {                                           \
+            static __create_class__ <T> reg;        \
+        };                                          \
+    }                                               \
+}                                                   \
+                                                    \
+namespace                                           \
 
 
 namespace Gambit
 {
 
-        template <typename T>
-        class reg_elem : public std::unordered_map<std::string, T *>
+    template <typename T>
+    class reg_elem : public std::unordered_map<std::string, T *>
+    {
+    private:
+            
+    public:
+        std::string print()
         {
-        private:
-                
-        public:
-                std::string print()
-                {
-                        std::ostringstream out;
-                        
-                        out << "The options are:  \n";
-                        for (auto it = this->begin(); it != this->end(); it++)
-                        {
-                                out << "\t" << it->first << "\n";
-                        }
-                        
-                        return out.str();
-                }
-        };
+            std::ostringstream out;
+            
+            out << "The options are:  \n";
+            for (auto it = this->begin(); it != this->end(); it++)
+            {
+                    out << "\t" << it->first << "\n";
+            }
+            
+            return out.str();
+        }
+    };
 }
 
 #endif

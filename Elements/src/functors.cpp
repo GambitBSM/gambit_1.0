@@ -176,7 +176,7 @@ namespace Gambit
     }
 
     /// Set the iteration number in a loop in which this functor runs
-    void functor::setIteration (int)
+    void functor::setIteration (long long)
     {
       utils_error().raise(LOCAL_INFO,"The setIteration method has not been defined in this class.");
     }
@@ -703,7 +703,7 @@ namespace Gambit
     }
 
     /// Execute a single iteration in the loop managed by this functor.
-    void module_functor_common::iterate(int iteration)
+    void module_functor_common::iterate(long long iteration)
     {
       if (not myNestedFunctorList.empty())
       {
@@ -736,7 +736,7 @@ namespace Gambit
             // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
             int nslots = (iRunNested ? globlMaxThreads : 1);
             // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-            myCurrentIteration = new int[nslots];
+            myCurrentIteration = new long long[nslots];
             // Zero them to start off
             std::fill(myCurrentIteration, myCurrentIteration+nslots, 0);
           }
@@ -786,18 +786,18 @@ namespace Gambit
     }
 
     /// Setter for setting the iteration number in the loop in which this functor runs
-    void module_functor_common::setIteration (int iteration)
+    void module_functor_common::setIteration (long long iteration)
     {
       init_myCurrentIteration_if_NULL(); // Init memory if this is the first run through.
       myCurrentIteration[omp_get_thread_num()] = iteration;
     }
 
     /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-    omp_safe_ptr<int> module_functor_common::iterationPtr()
+    omp_safe_ptr<long long> module_functor_common::iterationPtr()
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
       init_myCurrentIteration_if_NULL();  // Init memory if this is the first run through.
-      return omp_safe_ptr<int>(myCurrentIteration);
+      return omp_safe_ptr<long long>(myCurrentIteration);
     }
 
     /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.

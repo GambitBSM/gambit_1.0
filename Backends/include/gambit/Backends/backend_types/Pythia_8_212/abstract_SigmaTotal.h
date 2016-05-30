@@ -8,12 +8,9 @@
 #include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::SigmaTotal*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -21,7 +18,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_SigmaTotal : virtual public AbstractBase
+        class Abstract_SigmaTotal : public virtual AbstractBase
         {
             public:
     
@@ -82,36 +79,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double bMinSlopeXX() const =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_SigmaTotal*) =0;
-                virtual Abstract_SigmaTotal* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_SigmaTotal*) =0;
+                virtual Abstract_SigmaTotal* pointer_copy__BOSS() =0;
     
             private:
-                mutable SigmaTotal* wptr;
+                SigmaTotal* wptr;
+                bool delete_wrapper;
+            public:
+                SigmaTotal* get_wptr() { return wptr; }
+                void set_wptr(SigmaTotal* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_SigmaTotal()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(SigmaTotal* wptr_in)
+                Abstract_SigmaTotal(const Abstract_SigmaTotal&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                SigmaTotal* wrapper__BOSS()
+                Abstract_SigmaTotal& operator=(const Abstract_SigmaTotal&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SigmaTotal from backend Pythia_8_212. The function Abstract_SigmaTotal::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                SigmaTotal* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                SigmaTotal& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_SigmaTotal()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SigmaTotal from backend Pythia_8_212. The function Abstract_SigmaTotal::~Abstract_SigmaTotal in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

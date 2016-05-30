@@ -19,79 +19,67 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void SLHAinterface::setPtr(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn)
+        inline void SLHAinterface::setPtr(Pythia8::Info* infoPtrIn)
         {
-            wrapperbase::BEptr->setPtr__BOSS((*infoPtrIn).BEptr);
+            get_BEptr()->setPtr__BOSS((*infoPtrIn).get_BEptr());
         }
         
-        inline void SLHAinterface::init(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtr, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr, bool& useSHLAcouplings, ::std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >& ParticleDataBuffer)
+        inline void SLHAinterface::init(Pythia8::Settings& settings, Pythia8::Rndm* rndmPtr, Pythia8::Couplings* couplingsPtrIn, Pythia8::ParticleData* particleDataPtr, bool& useSHLAcouplings, ::std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >& ParticleDataBuffer)
         {
-            wrapperbase::BEptr->init__BOSS(*settings.BEptr, (*rndmPtr).BEptr, (*couplingsPtrIn).BEptr, (*particleDataPtr).BEptr, useSHLAcouplings, ParticleDataBuffer);
+            get_BEptr()->init__BOSS(*settings.get_BEptr(), (*rndmPtr).get_BEptr(), (*couplingsPtrIn).get_BEptr(), (*particleDataPtr).get_BEptr(), useSHLAcouplings, ParticleDataBuffer);
         }
         
-        inline bool SLHAinterface::initSLHA(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr)
+        inline bool SLHAinterface::initSLHA(Pythia8::Settings& settings, Pythia8::ParticleData* particleDataPtr)
         {
-            return wrapperbase::BEptr->initSLHA__BOSS(*settings.BEptr, (*particleDataPtr).BEptr);
+            return get_BEptr()->initSLHA__BOSS(*settings.get_BEptr(), (*particleDataPtr).get_BEptr());
         }
         
-        inline void SLHAinterface::pythia2slha(WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr)
+        inline void SLHAinterface::pythia2slha(Pythia8::ParticleData* particleDataPtr)
         {
-            wrapperbase::BEptr->pythia2slha__BOSS((*particleDataPtr).BEptr);
+            get_BEptr()->pythia2slha__BOSS((*particleDataPtr).get_BEptr());
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::SLHAinterface::SLHAinterface() :
-            WrapperBase<Pythia8::Abstract_SLHAinterface>(__factory0()),
-            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
-            coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
-            meMode(wrapperbase::BEptr->meMode_ref__BOSS())
+            WrapperBase(__factory0()),
+            slha( get_BEptr()->slha_ref__BOSS().get_init_wref()),
+            coupSUSY( get_BEptr()->coupSUSY_ref__BOSS().get_init_wref()),
+            meMode( get_BEptr()->meMode_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::SLHAinterface::SLHAinterface(Pythia8::Abstract_SLHAinterface* in) :
-            WrapperBase<Pythia8::Abstract_SLHAinterface>(in),
-            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
-            coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
-            meMode(wrapperbase::BEptr->meMode_ref__BOSS())
+            WrapperBase(in),
+            slha( get_BEptr()->slha_ref__BOSS().get_init_wref()),
+            coupSUSY( get_BEptr()->coupSUSY_ref__BOSS().get_init_wref()),
+            meMode( get_BEptr()->meMode_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
-        }
-        
-        inline Pythia8::SLHAinterface::SLHAinterface(Pythia8::Abstract_SLHAinterface* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_SLHAinterface>(in, true),
-            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
-            coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
-            meMode(wrapperbase::BEptr->meMode_ref__BOSS())
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::SLHAinterface::SLHAinterface(const SLHAinterface& in) :
-            WrapperBase<Pythia8::Abstract_SLHAinterface>(in),
-            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
-            coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
-            meMode(wrapperbase::BEptr->meMode_ref__BOSS())
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
+            slha( get_BEptr()->slha_ref__BOSS().get_init_wref()),
+            coupSUSY( get_BEptr()->coupSUSY_ref__BOSS().get_init_wref()),
+            meMode( get_BEptr()->meMode_ref__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::SLHAinterface& SLHAinterface::operator=(const SLHAinterface& in)
         {
-            WrapperBase<Pythia8::Abstract_SLHAinterface>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -99,18 +87,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::SLHAinterface::~SLHAinterface()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::SLHAinterface::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_SLHAinterface* Pythia8::SLHAinterface::get_BEptr() const
         {
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_wrapper(false);
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_me(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_wrapper(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_me(false);
+            return dynamic_cast<Pythia8::Abstract_SLHAinterface*>(BEptr);
         }
-        
     }
     
 }

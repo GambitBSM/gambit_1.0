@@ -5,12 +5,9 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::AlphaStrong*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -18,7 +15,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_AlphaStrong : virtual public AbstractBase
+        class Abstract_AlphaStrong : public virtual AbstractBase
         {
             public:
     
@@ -55,36 +52,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double facCMW(int) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_AlphaStrong*) =0;
-                virtual Abstract_AlphaStrong* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_AlphaStrong*) =0;
+                virtual Abstract_AlphaStrong* pointer_copy__BOSS() =0;
     
             private:
-                mutable AlphaStrong* wptr;
+                AlphaStrong* wptr;
+                bool delete_wrapper;
+            public:
+                AlphaStrong* get_wptr() { return wptr; }
+                void set_wptr(AlphaStrong* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_AlphaStrong()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(AlphaStrong* wptr_in)
+                Abstract_AlphaStrong(const Abstract_AlphaStrong&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                AlphaStrong* wrapper__BOSS()
+                Abstract_AlphaStrong& operator=(const Abstract_AlphaStrong&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::AlphaStrong from backend Pythia_8_212. The function Abstract_AlphaStrong::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                AlphaStrong* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                AlphaStrong& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_AlphaStrong()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::AlphaStrong from backend Pythia_8_212. The function Abstract_AlphaStrong::~Abstract_AlphaStrong in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

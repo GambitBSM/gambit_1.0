@@ -94,9 +94,9 @@ namespace Gambit
     /// Rollcalled functions properly hooked up to Gambit
     // *************************************************
 
-    void SI_FlavBit_fill(struct parameters &result)
+    void SI_fill(struct parameters &result)
     {
-      namespace myPipe = Pipes::SI_FlavBit_fill;
+      namespace myPipe = Pipes::SI_fill;
       using namespace myPipe;
       using namespace std;
 
@@ -439,7 +439,7 @@ namespace Gambit
              if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
 
       BEreq::slha_adjust(&result);
-      if(*Dep::Debug_Cap) cout<<"Finished FlavBit_fill"<<endl;
+      if(*Dep::Debug_Cap) cout<<"Finished SI_fill"<<endl;
     }
 
     // *************************************************
@@ -451,7 +451,7 @@ namespace Gambit
       using namespace Pipes::SI_bsgamma;
       if(*Dep::Debug_Cap)  cout<<"Starting SI_bsgamma"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -482,7 +482,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Bsmumu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -515,7 +515,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Bsmumu_untag"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -549,7 +549,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Bdmumu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -580,7 +580,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Btaunu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Btaunu(&param);
@@ -601,7 +601,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BDtaunu"<<endl;
 
-       struct parameters param = *Dep::FlavBit_fill;
+       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu(&param);
@@ -621,7 +621,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BDtaunu_BDenu"<<endl;
 
-       struct parameters param = *Dep::FlavBit_fill;
+       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu_BDenu(&param);
@@ -641,7 +641,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Kmunu_pimunu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Kmunu_pimunu(&param);
@@ -658,7 +658,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Rmu23"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Rmu23(&param);
@@ -678,7 +678,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Dstaunu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dstaunu(&param);
@@ -698,7 +698,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Dsmunu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dsmunu(&param);
@@ -717,7 +717,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Dmunu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dmunu(&param);
@@ -726,24 +726,6 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Dmunu"<<endl;
     }
 
-    // *************************************************
-    /// Calculating g-2
-    // *************************************************
-
-    void SI_muon_gm2(double &result)
-    {
-      using namespace Pipes::SI_muon_gm2;
-
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_muon_gm2"<<endl;
-
-      struct parameters param = *Dep::FlavBit_fill;
-
-      if(param.model<0) result=0.;
-      else result = BEreq::muon_gm2(&param);
-
-      if(*Dep::Debug_Cap) printf("(g-2)_mu=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_muon_gm2"<<endl;
-    }
 
     // *************************************************
 
@@ -753,7 +735,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_delta0"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -787,7 +769,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXsmumu_lowq2"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -817,7 +799,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXsmumu_highq2"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -847,7 +829,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_lowq2"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -878,7 +860,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_highq2"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -908,7 +890,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_zero"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -938,7 +920,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXstautau_highq2"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -968,7 +950,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXstautau_highq2"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -1001,7 +983,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       double q2min=1.1;
       double q2max=2.5;
@@ -1019,7 +1001,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       double q2min=2.5;
       double q2max=4.0;
@@ -1038,7 +1020,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
 
       double q2min=4.0;
@@ -1059,7 +1041,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_60_80"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
 
       double q2min=6.0;
@@ -1078,7 +1060,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap) cout<<"Starting SI_BRBKstarmumu_15_17 "<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       double q2min=15.0;
       double q2max=17.0;
@@ -1098,7 +1080,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap) cout<<"Starting SI_BRBKstarmumu_17_19 "<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
 
       double q2min=17.0;
@@ -1121,7 +1103,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
@@ -1149,7 +1131,7 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu_zero"<<endl;
 
-      struct parameters param = *Dep::FlavBit_fill;
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else

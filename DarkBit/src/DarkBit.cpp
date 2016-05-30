@@ -65,6 +65,7 @@ namespace Gambit {
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       result = 0.0;
+      // Add all the regular channels
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
@@ -74,6 +75,8 @@ namespace Gambit {
           result += it->genRate->bind("v")->eval(0.);
         }
       }
+      // Add invisible contributions
+      result += annProc.genRateMisc->bind("v")->eval(0.);
     }
 
 
@@ -96,8 +99,6 @@ namespace Gambit {
        * afterwards can be checked against the expectations.
        */
 
-      static unsigned int counter = 0;
-
       double M_DM = 
         Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double Gps = (*Dep::DD_couplings).gps;
@@ -112,6 +113,7 @@ namespace Gambit {
 
       std::ostringstream filename;
       /*
+      static unsigned int counter = 0;
       filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit",
           "fileroot");
       filename << "_" << counter << ".yml";

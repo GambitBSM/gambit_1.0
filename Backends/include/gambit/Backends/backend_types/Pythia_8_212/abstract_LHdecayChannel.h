@@ -7,12 +7,9 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::LHdecayChannel*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -20,7 +17,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_LHdecayChannel : virtual public AbstractBase
+        class Abstract_LHdecayChannel : public virtual AbstractBase
         {
             public:
     
@@ -41,36 +38,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getComment() =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_LHdecayChannel*) =0;
-                virtual Abstract_LHdecayChannel* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_LHdecayChannel*) =0;
+                virtual Abstract_LHdecayChannel* pointer_copy__BOSS() =0;
     
             private:
-                mutable LHdecayChannel* wptr;
+                LHdecayChannel* wptr;
+                bool delete_wrapper;
+            public:
+                LHdecayChannel* get_wptr() { return wptr; }
+                void set_wptr(LHdecayChannel* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_LHdecayChannel()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(LHdecayChannel* wptr_in)
+                Abstract_LHdecayChannel(const Abstract_LHdecayChannel&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                LHdecayChannel* wrapper__BOSS()
+                Abstract_LHdecayChannel& operator=(const Abstract_LHdecayChannel&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::LHdecayChannel from backend Pythia_8_212. The function Abstract_LHdecayChannel::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                LHdecayChannel* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                LHdecayChannel& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_LHdecayChannel()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::LHdecayChannel from backend Pythia_8_212. The function Abstract_LHdecayChannel::~Abstract_LHdecayChannel in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

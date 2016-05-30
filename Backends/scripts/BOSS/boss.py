@@ -12,7 +12,7 @@
 # BOSS makes use of CastXML to parse the C++ source code.
 #
 # Default usage:
-# ./boss [list of class header files]
+# ./boss configs/some_config_file.py
 # 
 
 import xml.etree.ElementTree as ET
@@ -26,16 +26,6 @@ import pickle
 import copy
 from collections import OrderedDict
 from optparse import OptionParser
-
-# import modules.cfg as cfg
-# import modules.gb as gb
-# import modules.classutils as classutils
-# import modules.classparse as classparse
-# import modules.funcparse as funcparse
-# import modules.funcutils as funcutils
-# import modules.utils as utils
-# import modules.filehandling as filehandling
-# import modules.infomsg as infomsg
 
 
 # ====== main ========
@@ -289,7 +279,7 @@ def main():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 100.
+        timeout = 600.
         poll = 0.2
 
         # Run castxml
@@ -415,10 +405,6 @@ def main():
         gb.xml_file_name = xml_file
         utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
 
-        # # Set the global dicts for the current xml file
-        # gb.id_dict   = gb.all_id_dict[xml_file]
-        # gb.name_dict = gb.all_name_dict[xml_file]
-
         # Loop over all named elements in the xml file
         for full_name, el in gb.name_dict.items():
 
@@ -488,10 +474,6 @@ def main():
         # Initialise global dicts
         gb.xml_file_name = xml_file
         utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
-
-        # # Set the global dicts for the current xml file
-        # gb.id_dict   = gb.all_id_dict[xml_file]
-        # gb.name_dict = gb.all_name_dict[xml_file]
 
         # Loop over all named elements in the xml file
         for full_name, el in gb.name_dict.items():
@@ -706,7 +688,7 @@ def main():
     # the correct namespace.
     #
 
-    construct_namespace_in_files = glob.glob( os.path.join(gb.gambit_backend_dir_complete, '*') )
+    construct_namespace_in_files = glob.glob(os.path.join(gb.backend_types_dir_complete,'*')) + glob.glob(os.path.join(gb.for_gambit_backend_types_dir_complete,'*'))
 
     filehandling.replaceNamespaceTags(construct_namespace_in_files, gb.gambit_backend_namespace, '__START_GAMBIT_NAMESPACE__', '__END_GAMBIT_NAMESPACE__')
 
@@ -715,12 +697,13 @@ def main():
     # Run through all the generated files and remove tags that are no longer needed
     #
 
-    all_generated_files = glob.glob( os.path.join(cfg.extra_output_dir, '*') ) + glob.glob( os.path.join(gb.gambit_backend_dir_complete, '*') )
+    all_generated_files = glob.glob(os.path.join(cfg.extra_output_dir,'*')) + glob.glob(os.path.join(gb.backend_types_dir_complete, '*')) + glob.glob(os.path.join(gb.for_gambit_backend_types_dir_complete,'*'))
     remove_tags_list = [ '__START_GAMBIT_NAMESPACE__', 
                          '__END_GAMBIT_NAMESPACE__', 
                          '__INSERT_CODE_HERE__' ]
 
     filehandling.removeCodeTagsFromFiles(all_generated_files, remove_tags_list)
+
 
 
     #
@@ -824,7 +807,7 @@ def main():
     print "       Make sure that these are included when building '%s'." % (cfg.gambit_backend_name)
     print "    2. Build a shared library (.so) from the '%s' source code that BOSS has edited." % (cfg.gambit_backend_name)
     print "    3. Set the correct path to this library in the 'backends_locations.yaml' file in GAMBIT."
-    print "    4. Copy the '%s' directory from '%s' to the 'backend_types' directory within GAMBIT." % (gb.gambit_backend_name_full, gb.gambit_backend_dir_complete)
+    print "    4. Copy the '%s' directory from '%s' to the 'backend_types' directory within GAMBIT." % (gb.gambit_backend_name_full, gb.for_gambit_backend_types_dir_complete)
     print "    5. Copy the file '%s' from '%s' to the GAMBIT 'frontends' directory." % (gb.frontend_fname, gb.frontend_path)
     print 
     print 

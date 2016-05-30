@@ -27,7 +27,12 @@
  (std::vector<bool>)           \
  (std::vector<int>)            \
  (std::vector<double>)         \
- (ModelParameters)
+// (ModelParameters)
  // Add more as needed
+
+#define RETRIEVABLE_TYPES  \
+(double)                   \
+(std::vector(double))      \
+(map_str_dbl)              \
 
 #endif

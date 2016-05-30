@@ -296,17 +296,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                     
 
 // Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag 
 #ifdef STANDALONE
-  #define BE_VARIABLE_I(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)           \
-          BE_VARIABLE_I_MAIN(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)
+  #define BE_VARIABLE_I(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)           \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)
 #else
-  #define BE_VARIABLE_I(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)           \
-          BE_VARIABLE_I_MAIN(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)      \
+  #define BE_VARIABLE_I(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)           \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)      \
           BE_VARIABLE_I_SUPP(NAME)
 #endif
 
 
 /// Main actual backend variable macro
-#define BE_VARIABLE_I_MAIN(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)        \
+#define BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)        \
 namespace Gambit                                                              \
 {                                                                             \
   namespace Backends                                                          \

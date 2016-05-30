@@ -17,6 +17,7 @@
 
 #include "HEPUtils/Utils.h"
 #include "HEPUtils/Vectors.h"
+#include <stdexcept>
 
 #ifndef FJCORE
 #define FJNS fastjet
@@ -52,7 +53,7 @@ namespace HEPUtils {
   /// Convert a FastJet PseudoJet to a P4
   inline P4 mk_p4(const FJNS::PseudoJet& p) {
     const double m = p.m();
-    assert(m > -1e-3 && "Negative mass vector from FastJet");
+    if (m < -5e-3) throw std::domain_error("Negative mass vector from FastJet");
     return P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
   }
 
