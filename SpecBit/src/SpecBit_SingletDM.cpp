@@ -82,10 +82,65 @@ namespace Gambit
 
       // Initialise an object to carry the Singlet plus Higgs sector information
       Models::SingletDMModel singletmodel;
-      singletmodel.HiggsPoleMass   = *myPipe::Param.at("mH");
-      singletmodel.HiggsVEV        = 1. / sqrt(sqrt(2.)*sminputs.GF);
+      
+      
+      // quantities needed to fill container spectrum, intermediate calculations
+      double alpha_em = 1.0 / *myPipe::Param.at("alphainv");
+      double mz2 = pow(*myPipe::Param.at("mZ"),2);
+      double GF = pow(*myPipe::Param.at("GF"),2);
+      double sinW2cosW2 = Pi * alpha_em / (pow(2,0.5) * mz2 * GF ) ;
+      
+
+      double e = pow( 4*Pi*( alpha_em ),0.5) ;
+      
+      
+      double sin2W = pow(2 * sinW2cosW2, 0.5);
+      double tW = 0.5* asin( sin2W );
+      double sinW2 = pow( sin (tW) , 2);
+      double cosW2 = pow( cos (tW) , 2);
+      
+      
+      // Higgs sector
+      double mh   = *myPipe::Param.at("mH");
+      singletmodel.HiggsPoleMass   = mh;
+      
+      double vev        = 1. / sqrt(sqrt(2.)*sminputs.GF);
+      singletmodel.HiggsVEV        = vev;
+      singletmodel.LambdaH   = GF*pow(mh,2)/pow(2,0.5) ;
+      
+      // Scalar singlet sector
+      
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
+      singletmodel.SingletLambdaS   = 0;
+      
+      
+      // Standard model
+      
+      singletmodel.sinW2 = sinW2;
+      
+      // gauge couplings
+      singletmodel.g1 = e / sinW2;
+      singletmodel.g2 = e / cosW2;
+      singletmodel.g3   = pow( 4*Pi*( *myPipe::Param.at("alphaS") ),0.5) ;
+      
+      double sqrt2v = pow(2.0,0.5)/vev;
+      // Yukawas
+      
+      singletmodel.Yu[0] = sqrt2v * *myPipe::Param.at("mU");
+      singletmodel.Yu[1] = sqrt2v * *myPipe::Param.at("mCmC");
+      singletmodel.Yu[2] = sqrt2v * *myPipe::Param.at("mT");
+      
+      singletmodel.Ye[0] = sqrt2v * *myPipe::Param.at("mE");
+      singletmodel.Ye[1] = sqrt2v * *myPipe::Param.at("mMu");
+      singletmodel.Ye[2] = sqrt2v * *myPipe::Param.at("mTau");
+      
+      singletmodel.Yd[0] = sqrt2v * *myPipe::Param.at("mD");
+      singletmodel.Yd[1] = sqrt2v * *myPipe::Param.at("mS");
+      singletmodel.Yd[2] = sqrt2v * *myPipe::Param.at("mBmB");
+      
+      
+      
 
       // Create a SubSpectrum object to wrap the EW sector information
       Models::ScalarSingletDMSimpleSpec singletspec(singletmodel);
