@@ -96,8 +96,6 @@ namespace Gambit {
        * afterwards can be checked against the expectations.
        */
 
-      static unsigned int counter = 0;
-
       double M_DM = 
         Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double Gps = (*Dep::DD_couplings).gps;
@@ -112,11 +110,13 @@ namespace Gambit {
 
       std::ostringstream filename;
       /*
+      static unsigned int counter = 0;
       filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit",
           "fileroot");
       filename << "_" << counter << ".yml";
       counter++;
       */
+      /// Option filename<std::string>: Output filename (default UnitTest.yaml)
       filename << runOptions->getValueOrDef<std::string>("UnitTest.yaml", "filename");
 
       std::ofstream os;
@@ -142,9 +142,12 @@ namespace Gambit {
 
         // Output gamma-ray spectrum (grid be set in YAML file).
         double x_min = 
+          /// Option GA_AnnYield::Emin<double>: Minimum energy in GeV (default 0.1)
           runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
         double x_max = 
+          /// Option GA_AnnYield::Emax<double>: Maximum energy in GeV (default 1e4)
           runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
+          /// Option GA_AnnYield::nbins<int>: Number of energy bins (default 26)
         int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
         // from 0.1 to 500 GeV
         std::vector<double> x = Funk::logspace(log10(x_min), log10(x_max), n);

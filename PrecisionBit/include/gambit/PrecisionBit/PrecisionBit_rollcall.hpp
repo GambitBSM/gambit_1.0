@@ -26,6 +26,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@nordita.org)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 
@@ -49,9 +53,10 @@ START_MODULE
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
-  
+
+
   // Extractors for FeynHiggs EWK precision observables
-  QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, deltarho,       NEW_CAPABILITY, FH_precision_deltarho, triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, prec_mw,        NEW_CAPABILITY, FH_precision_mw,       triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, prec_sinW2_eff, NEW_CAPABILITY, FH_precision_sinW2,    triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
@@ -70,10 +75,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
   
-  // Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods
+  // Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
   QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, const Spectrum*))
-  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM), (SingletDM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, const Spectrum*))
   QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, triplet<double>, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mh, NEW_CAPABILITY, mh_from_SM_spectrum,   double, (), (SM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_SS_spectrum,   double, (SingletDM, SingletDMZ3), (SingletDM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_MSSM_spectrum, double, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, const Spectrum*))
 
   // SM nuisance likelihoods
   QUICK_FUNCTION(PrecisionBit, lnL_Z_mass,   NEW_CAPABILITY, lnL_Z_mass_chi2,   double, (), (SMINPUTS, SMInputs))
@@ -104,6 +112,16 @@ START_MODULE
     DEPENDENCY(prec_sinW2_eff, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
+
+
+  // Precision likelihood: (g-2)_\mu
+  #define CAPABILITY lnL_gm2
+  START_CAPABILITY
+    #define FUNCTION lnL_gm2_chi2
+    START_FUNCTION(double)
+    DEPENDENCY(muon_gm2, triplet<double>)
+    #undef FUNCTION
+  #undef CAPABILITY
   
   // Electroweak precision likelihoods: Delta rho
   #define CAPABILITY lnL_deltarho
@@ -127,9 +145,72 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
+  // Observable: (g-2)_mu
+  #define CAPABILITY muon_gm2
+
+    // Muon g-2 -- Using SuperIso
+    #define FUNCTION SI_muon_gm2
+    START_FUNCTION(triplet<double>)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
+    BACKEND_REQ(muon_gm2, (libsuperiso), double, (struct parameters*))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+
+    // Muon g-2 -- Using the C++ interface to gm2calc
+    #define FUNCTION GM2C_SUSY
+    START_FUNCTION(triplet<double>)
+    NEEDS_CLASSES_FROM(gm2calc, default)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 
+                             (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
+    BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, 
+                             (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
+    BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, 
+                             (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
+    BACKEND_OPTION( (gm2calc), (libgm2calc) )
+    ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
+    #undef FUNCTION
+
+    // Muon g-2 -- Using the C interface to gm2calc
+    #define FUNCTION GM2C_SUSY_c
+    START_FUNCTION(triplet<double>)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    BACKEND_REQ(gm2calc_mssmnofv_new, (libgm2calc), gm2calc_c::MSSMNoFV_onshell*, ())
+    BACKEND_REQ(gm2calc_mssmnofv_set_MSvmL_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MSm_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MChi_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MCha_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MAh_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_TB, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Mu, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MassB, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MassWB, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MassG, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_ml2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_me2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_mq2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_md2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_mu2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Au, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Ad, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Ae, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_scale, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    // 
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_uncertainty_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_error_str, (libgm2calc), const char*, (gm2calc_c::gm2calc_error))
+    // 
+    BACKEND_REQ(gm2calc_mssmnofv_free, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_OPTION( (gm2calc_c), (libgm2calc) )
+    ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY 
 
 #undef MODULE
 
 
 #endif /* defined(__PrecisionBit_rollcall_hpp__) */
+
 

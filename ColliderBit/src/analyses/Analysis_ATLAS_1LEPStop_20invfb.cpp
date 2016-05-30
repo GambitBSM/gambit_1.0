@@ -201,6 +201,7 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
+
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
@@ -265,7 +266,7 @@ namespace Gambit {
 
         // Calculate common variables and cuts first
 
-        applyTightIDElectronSelection(signalElectrons);
+        ATLAS::applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -370,7 +371,7 @@ namespace Gambit {
         if(meff>700.)cut_meffGt700=true;
 
         //Apply the basic preselection to save costly MT2 calculation
-        //if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
+        if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
         //Do hadronic top reconstruction
         double mindR1=9999.;
         double mindR2=9999.;
@@ -758,49 +759,49 @@ namespace Gambit {
         //They need to be added (but will probably update to paper result)
 
         SignalRegionData results_BC1;
-        results_BC1.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
-        results_BC1.set_sr_label("BC1");
-        results_BC1.set_observation(456.);
-        results_BC1.set_background(482.);
-        results_BC1.set_backgroundsys(76.);
-        results_BC1.set_signalsys(0.);
-        results_BC1.set_signal(_numBC1);
+        results_BC1.analysis_name = "Analysis_ATLAS_1LEPStop_20invfb";
+        results_BC1.sr_label = "BC1";
+        results_BC1.n_observed = 456.;
+        results_BC1.n_background = 482.;
+        results_BC1.background_sys = 76.;
+        results_BC1.signal_sys = 0.;
+        results_BC1.n_signal = _numBC1;
 
         SignalRegionData results_BC2;
-        results_BC2.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
-        results_BC2.set_sr_label("BC2");
-        results_BC2.set_observation(25.);
-        results_BC2.set_background(18.);
-        results_BC2.set_backgroundsys(5.);
-        results_BC2.set_signalsys(0.);
-        results_BC2.set_signal(_numBC2);
+        results_BC2.analysis_name = "Analysis_ATLAS_1LEPStop_20invfb";
+        results_BC2.sr_label = "BC2";
+        results_BC2.n_observed = 25.;
+        results_BC2.n_background = 18.;
+        results_BC2.background_sys = 5.;
+        results_BC2.signal_sys = 0.;
+        results_BC2.n_signal = _numBC2;
 
         SignalRegionData results_BC3;
-        results_BC3.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
-        results_BC3.set_sr_label("BC3");
-        results_BC3.set_observation(6.);
-        results_BC3.set_background(7.);
-        results_BC3.set_backgroundsys(3.);
-        results_BC3.set_signalsys(0.);
-        results_BC3.set_signal(_numBC3);
+        results_BC3.analysis_name = "Analysis_ATLAS_1LEPStop_20invfb";
+        results_BC3.sr_label = "BC3";
+        results_BC3.n_observed = 6.;
+        results_BC3.n_background = 7.;
+        results_BC3.background_sys = 3.;
+        results_BC3.signal_sys = 0.;
+        results_BC3.n_signal = _numBC3;
 
         SignalRegionData results_TN2;
-        results_TN2.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
-        results_TN2.set_sr_label("TN2");
-        results_TN2.set_observation(14.);
-        results_TN2.set_background(13.);
-        results_TN2.set_backgroundsys(3.);
-        results_TN2.set_signalsys(0.);
-        results_TN2.set_signal(_numTN2);
+        results_TN2.analysis_name = "Analysis_ATLAS_1LEPStop_20invfb";
+        results_TN2.sr_label = "TN2";
+        results_TN2.n_observed = 14.;
+        results_TN2.n_background = 13.;
+        results_TN2.background_sys = 3.;
+        results_TN2.signal_sys = 0.;
+        results_TN2.n_signal = _numTN2;
 
         SignalRegionData results_TN3;
-        results_TN3.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
-        results_TN3.set_sr_label("TN3");
-        results_TN3.set_observation(7.);
-        results_TN3.set_background(5.);
-        results_TN3.set_backgroundsys(2.);
-        results_TN3.set_signalsys(0.);
-        results_TN3.set_signal(_numTN3);
+        results_TN3.analysis_name = "Analysis_ATLAS_1LEPStop_20invfb";
+        results_TN3.sr_label = "TN3";
+        results_TN3.n_observed = 7.;
+        results_TN3.n_background = 5.;
+        results_TN3.background_sys = 2.;
+        results_TN3.signal_sys = 0.;
+        results_TN3.n_signal = _numTN3;
 
         add_result(results_BC1);
         add_result(results_BC2);

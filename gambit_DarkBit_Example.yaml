@@ -60,7 +60,7 @@ Printer:
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
   #printer: ascii
 
@@ -103,11 +103,11 @@ ObsLikes:
       purpose:    LogLike
 
     # Calculate the Xenon100 2012 likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose:    LogLike
 
    # Calculate the LUX 2013 likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:    LogLike
 
    # Calculate the IceCube 79 string likelihood
@@ -339,10 +339,8 @@ Rules:
   - options:
       gauge_mixing_tolerance: 0.5
       family_mixing_tolerance: 0.5
-      off_diagonal_tolerance: 0.5
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
-      #off_diagonal_tolerance_invalidates_point_only: false
 
 Logger:
 

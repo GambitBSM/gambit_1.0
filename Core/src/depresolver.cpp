@@ -35,6 +35,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #ifdef HAVE_REGEX_H
   #include <regex>
 #endif
@@ -620,8 +621,6 @@ namespace Gambit
         }
         invalid_point_exception* e = masterGraph[*it]->retrieve_invalid_point_exception();
         if (e != NULL) throw(*e);
-        // TODO: Need to deal with different options for output
-        // Print output (currently only to std::cout)
         // Ben: may want to do this call elsewhere; I added it here for testing.
         // Pat: note that this prints from thread index 0 only, i.e. results created by
         //      threads other than the main one need to be accessed with
@@ -630,6 +629,8 @@ namespace Gambit
         if (not typeComp(masterGraph[*it]->type(),  "void", *boundTEs, false)) masterGraph[*it]->print(boundPrinter,pointID);
         //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
+      // Reset the cout output precision, in case any backends have messed with it during the ObsLike evaluation.
+      cout << std::setprecision(boundCore->get_outprec());
     }
 
     /// Getter for print_timing flag (used by LikelihoodContainer)
@@ -1419,8 +1420,7 @@ namespace Gambit
         //logger() << EOM;
 
         // Check if we wanted to output this observable to the printer system.
-        //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        masterGraph[fromVertex]->setPrintRequirement(printme);
+        if ( toVertex==OBSLIKE_VERTEXID ) masterGraph[fromVertex]->setPrintRequirement(printme);
         // Check if the flag to output timing data is set
         if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 

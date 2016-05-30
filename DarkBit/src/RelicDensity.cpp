@@ -50,11 +50,14 @@ namespace Gambit {
 
       // settings for coannihilations (default values if no input is specified
       // in yaml file)
+      // FIXME: Add getValue documentation
       bool CoannCharginosNeutralinos = runOptions->getValueOrDef<bool>(true,
           "CoannCharginosNeutralinos");
+      // FIXME: Add getValue documentation
       bool CoannSfermions = runOptions->getValueOrDef<bool>(true,
           "CoannSfermions");
       // TB: for me always the default value is used (not the one in the yaml file!?    
+      // FIXME: Add getValue documentation
       double CoannMaxMass = runOptions->getValueOrDef<double>(1.6,
           "CoannMaxMass");
 
@@ -401,6 +404,7 @@ namespace Gambit {
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
 
+      // FIXME: Add getValue documentation
         int fast = runOptions->getValueOrDef<int>(1, "fast");
         switch (fast)
         {
@@ -525,12 +529,18 @@ namespace Gambit {
         start = std::chrono::system_clock::now();
 #endif
 
-        // tabulate invariant rate
-        //logger() << "Tabulating RD_eff_annrate..." << std::endl;
+#ifdef DARKBIT_RD_DEBUG
+        logger() << "Tabulating RD_eff_annrate..." << std::endl;
         std::cout << "Starting dsrdtab..." << std::endl;
+#endif
+
+        // Tabulate invariant rate
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+
+#ifdef DARKBIT_RD_DEBUG
         std::cout << "...done" << std::endl;
-        //logger() << "...done!" << std::endl;
+        logger() << "...done!" << std::endl;
+#endif
 
 #ifdef DARKBIT_RD_DEBUG
         // Get runtime
@@ -583,11 +593,11 @@ namespace Gambit {
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
 
-// FIXME: Should be commented out
-//#ifdef DARKBIT_DEBUG
+
+#ifdef DARKBIT_DEBUG
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
-//#endif
+#endif
 
 #ifdef DARKBIT_RD_DEBUG
       if (tbtest==1) {exit(1);}
@@ -614,7 +624,9 @@ namespace Gambit {
       double Beps;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
 
       // Set options via ini-file
+      // FIXME: Add getValue documentation
       fast = runOptions->getValueOrDef<int>(0, "fast");
+      // FIXME: Add getValue documentation
       Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
       logger() << "Using fast: " << fast << " and Beps: " << Beps << endl;
 
@@ -636,7 +648,9 @@ namespace Gambit {
       using namespace Pipes::RD_fraction_from_oh2;
       result = -1;
       double oh2_theory = *Dep::RD_oh2;
+      /// Option oh2_obs<double>: Set reference dark matter density (Oh2) for this module function (default 0.1188)
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      /// Option mode<str::string>: Set fraction mode (one, leq_one, any ; default is "one")
       std::string mode = runOptions->getValueOrDef<std::string>("one", "mode");
       if (mode ==  "one")
         result = 1;

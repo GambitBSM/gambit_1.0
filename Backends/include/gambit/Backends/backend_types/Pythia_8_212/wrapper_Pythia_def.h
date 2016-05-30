@@ -6,9 +6,6 @@
 #include "wrapper_Settings_decl.h"
 #include <istream>
 #include <vector>
-#include "wrapper_UserHooks_decl.h"
-#include "wrapper_SigmaProcess_decl.h"
-#include "wrapper_ResonanceWidths_decl.h"
 #include <ostream>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
@@ -32,291 +29,260 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline bool Pythia::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1, bool warn)
         {
-            return wrapperbase::BEptr->readString(arg_1, warn);
+            return get_BEptr()->readString(arg_1, warn);
         }
         
         inline bool Pythia::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1)
         {
-            return wrapperbase::BEptr->readString__BOSS(arg_1);
+            return get_BEptr()->readString__BOSS(arg_1);
         }
         
         inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool warn, int subrun)
         {
-            return wrapperbase::BEptr->readFile(fileName, warn, subrun);
+            return get_BEptr()->readFile(fileName, warn, subrun);
         }
         
         inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool warn)
         {
-            return wrapperbase::BEptr->readFile__BOSS(fileName, warn);
+            return get_BEptr()->readFile__BOSS(fileName, warn);
         }
         
         inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
         {
-            return wrapperbase::BEptr->readFile__BOSS(fileName);
+            return get_BEptr()->readFile__BOSS(fileName);
         }
         
         inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, int subrun)
         {
-            return wrapperbase::BEptr->readFile(fileName, subrun);
+            return get_BEptr()->readFile(fileName, subrun);
         }
         
         inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is, bool warn, int subrun)
         {
-            return wrapperbase::BEptr->readFile(is, warn, subrun);
+            return get_BEptr()->readFile(is, warn, subrun);
         }
         
         inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is, bool warn)
         {
-            return wrapperbase::BEptr->readFile__BOSS(is, warn);
+            return get_BEptr()->readFile__BOSS(is, warn);
         }
         
         inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is)
         {
-            return wrapperbase::BEptr->readFile__BOSS(is);
+            return get_BEptr()->readFile__BOSS(is);
         }
         
         inline bool Pythia::readFile()
         {
-            return wrapperbase::BEptr->readFile__BOSS();
+            return get_BEptr()->readFile__BOSS();
         }
         
         inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is, int subrun)
         {
-            return wrapperbase::BEptr->readFile(is, subrun);
-        }
-        
-        inline bool Pythia::setUserHooksPtr(WrapperBase< Pythia8::Abstract_UserHooks >* userHooksPtrIn)
-        {
-            return wrapperbase::BEptr->setUserHooksPtr__BOSS((*userHooksPtrIn).BEptr);
-        }
-        
-        inline bool Pythia::setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn)
-        {
-            return wrapperbase::BEptr->setResonancePtr__BOSS((*resonancePtrIn).BEptr);
+            return get_BEptr()->readFile(is, subrun);
         }
         
         inline bool Pythia::init(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            return wrapperbase::BEptr->init(os);
+            return get_BEptr()->init(os);
         }
         
         inline bool Pythia::init()
         {
-            return wrapperbase::BEptr->init__BOSS();
+            return get_BEptr()->init__BOSS();
         }
         
         inline bool Pythia::next()
         {
-            return wrapperbase::BEptr->next();
+            return get_BEptr()->next();
         }
         
         inline int Pythia::forceTimeShower(int iBeg, int iEnd, double pTmax, int nBranchMax)
         {
-            return wrapperbase::BEptr->forceTimeShower(iBeg, iEnd, pTmax, nBranchMax);
+            return get_BEptr()->forceTimeShower(iBeg, iEnd, pTmax, nBranchMax);
         }
         
         inline int Pythia::forceTimeShower(int iBeg, int iEnd, double pTmax)
         {
-            return wrapperbase::BEptr->forceTimeShower__BOSS(iBeg, iEnd, pTmax);
+            return get_BEptr()->forceTimeShower__BOSS(iBeg, iEnd, pTmax);
         }
         
         inline bool Pythia::forceHadronLevel(bool findJunctions)
         {
-            return wrapperbase::BEptr->forceHadronLevel(findJunctions);
+            return get_BEptr()->forceHadronLevel(findJunctions);
         }
         
         inline bool Pythia::forceHadronLevel()
         {
-            return wrapperbase::BEptr->forceHadronLevel__BOSS();
+            return get_BEptr()->forceHadronLevel__BOSS();
         }
         
         inline bool Pythia::moreDecays()
         {
-            return wrapperbase::BEptr->moreDecays();
+            return get_BEptr()->moreDecays();
         }
         
         inline bool Pythia::forceRHadronDecays()
         {
-            return wrapperbase::BEptr->forceRHadronDecays();
+            return get_BEptr()->forceRHadronDecays();
         }
         
         inline void Pythia::LHAeventList(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            wrapperbase::BEptr->LHAeventList(os);
+            get_BEptr()->LHAeventList(os);
         }
         
         inline void Pythia::LHAeventList()
         {
-            wrapperbase::BEptr->LHAeventList__BOSS();
+            get_BEptr()->LHAeventList__BOSS();
         }
         
         inline bool Pythia::LHAeventSkip(int nSkip)
         {
-            return wrapperbase::BEptr->LHAeventSkip(nSkip);
+            return get_BEptr()->LHAeventSkip(nSkip);
         }
         
         inline void Pythia::stat()
         {
-            wrapperbase::BEptr->stat();
+            get_BEptr()->stat();
         }
         
         inline bool Pythia::flag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->flag(key);
+            return get_BEptr()->flag(key);
         }
         
         inline int Pythia::mode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->mode(key);
+            return get_BEptr()->mode(key);
         }
         
         inline double Pythia::parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->parm(key);
+            return get_BEptr()->parm(key);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Pythia::word(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->word(key);
+            return get_BEptr()->word(key);
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Pythia::Pythia(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > xmlDir, bool printBanner) :
-            WrapperBase<Pythia8::Abstract_Pythia>(__factory0(xmlDir, printBanner)),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(__factory0(xmlDir, printBanner)),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Pythia::Pythia(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > xmlDir) :
-            WrapperBase<Pythia8::Abstract_Pythia>(__factory1(xmlDir)),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(__factory1(xmlDir)),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Pythia::Pythia() :
-            WrapperBase<Pythia8::Abstract_Pythia>(__factory2()),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(__factory2()),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Pythia::Pythia(Pythia8::ParticleData& particleDataIn, Pythia8::Settings& settingsIn, bool printBanner) :
-            WrapperBase<Pythia8::Abstract_Pythia>(__factory3(particleDataIn, settingsIn, printBanner)),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(__factory3(particleDataIn, settingsIn, printBanner)),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Pythia::Pythia(Pythia8::ParticleData& particleDataIn, Pythia8::Settings& settingsIn) :
-            WrapperBase<Pythia8::Abstract_Pythia>(__factory4(particleDataIn, settingsIn)),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(__factory4(particleDataIn, settingsIn)),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Pythia::Pythia(Pythia8::Abstract_Pythia* in) :
-            WrapperBase<Pythia8::Abstract_Pythia>(in),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(in),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
-        }
-        
-        inline Pythia8::Pythia::Pythia(Pythia8::Abstract_Pythia* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Pythia>(in, true),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Pythia::Pythia(const Pythia& in) :
-            WrapperBase<Pythia8::Abstract_Pythia>(in),
-            process(&(wrapperbase::BEptr->process_ref__BOSS())),
-            event(&(wrapperbase::BEptr->event_ref__BOSS())),
-            info(&(wrapperbase::BEptr->info_ref__BOSS())),
-            settings(&(wrapperbase::BEptr->settings_ref__BOSS())),
-            particleData(&(wrapperbase::BEptr->particleData_ref__BOSS())),
-            rndm(&(wrapperbase::BEptr->rndm_ref__BOSS())),
-            couplings(&(wrapperbase::BEptr->couplings_ref__BOSS())),
-            slhaInterface(&(wrapperbase::BEptr->slhaInterface_ref__BOSS()))
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
+            process( get_BEptr()->process_ref__BOSS().get_init_wref()),
+            event( get_BEptr()->event_ref__BOSS().get_init_wref()),
+            info( get_BEptr()->info_ref__BOSS().get_init_wref()),
+            settings( get_BEptr()->settings_ref__BOSS().get_init_wref()),
+            particleData( get_BEptr()->particleData_ref__BOSS().get_init_wref()),
+            rndm( get_BEptr()->rndm_ref__BOSS().get_init_wref()),
+            couplings( get_BEptr()->couplings_ref__BOSS().get_init_wref()),
+            slhaInterface( get_BEptr()->slhaInterface_ref__BOSS().get_init_wref())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            _memberVariablesInit();
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Pythia& Pythia::operator=(const Pythia& in)
         {
-            WrapperBase<Pythia8::Abstract_Pythia>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -324,30 +290,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Pythia::~Pythia()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Pythia::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Pythia* Pythia8::Pythia::get_BEptr() const
         {
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_wrapper(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_me(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_wrapper(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_me(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_wrapper(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_me(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_wrapper(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
+            return dynamic_cast<Pythia8::Abstract_Pythia*>(BEptr);
         }
-        
     }
     
 }

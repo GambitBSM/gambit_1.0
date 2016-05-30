@@ -110,7 +110,8 @@ namespace Gambit
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
-        };
+            unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
+       };
         
         template<typename ret, typename... args>
         class Function_Deleter<ret (args...)>

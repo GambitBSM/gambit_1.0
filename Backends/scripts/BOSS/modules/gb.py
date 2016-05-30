@@ -10,12 +10,13 @@ import os
 
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
-#import modules.cfg as cfg
 
 
 # ~~~~~ BOSS global variables and containers ~~~~~
 
 boss_temp_dir = 'temp'
+
+debug_mode = False
 
 new_code                = OrderedDict()
 xml_file_name           = ''
@@ -29,10 +30,8 @@ parents_of_loaded_classes = []
 contains_pure_virtual_members = []
 
 file_dict               = OrderedDict()
-# all_classes_dict        = OrderedDict()
 std_types_dict          = OrderedDict()
 typedef_dict            = OrderedDict()
-# class_dict              = OrderedDict()
 loaded_classes_in_xml   = OrderedDict()
 func_dict               = OrderedDict()
 new_header_files        = OrderedDict()
@@ -51,17 +50,21 @@ function_file_dict      = OrderedDict()
 wr_func_names           = OrderedDict()
 
 symbol_name_counter     = 1
+function_name_counter   = 1
 
 
 gambit_backend_namespace    = 'CAT_3(BACKENDNAME,_,SAFE_VERSION)'
 gambit_backend_safeversion  = cfg.gambit_backend_version.replace('.','_')
 gambit_backend_name_full    = cfg.gambit_backend_name + '_' + gambit_backend_safeversion
 
-gambit_backend_types_basedir = 'backend_types'
-gambit_backend_dir_complete  = os.path.join(cfg.extra_output_dir, gambit_backend_types_basedir, gambit_backend_name_full) 
+backend_types_basedir = 'backend_types'
+backend_types_dir_complete = os.path.join(cfg.extra_output_dir, backend_types_basedir, gambit_backend_name_full) 
 
-gambit_frontend_base_dir = 'frontends'
-gambit_frontend_dir_complete = os.path.join(cfg.extra_output_dir, gambit_frontend_base_dir) 
+for_gambit_basedir = 'for_gambit'
+for_gambit_backend_types_dir_complete = os.path.join(cfg.extra_output_dir, for_gambit_basedir, backend_types_basedir, gambit_backend_name_full) 
+
+frontend_base_dir = 'frontends'
+frontend_dir_complete = os.path.join(cfg.extra_output_dir, frontend_base_dir) 
 
 gambit_backend_incl_dir = 'gambit/Backends/'
 gambit_utils_incl_dir   = 'gambit/Utils/'
@@ -70,9 +73,13 @@ code_suffix          = '__BOSS'
 abstr_class_prefix   = 'Abstract_'
 wrapper_class_prefix = 'Wrapper_'
 
-
-func_return_utils_fname = 'function_return_utils'
-wrapper_deleter_fname   = 'wrapperdeleter'
+abstr_header_prefix     = 'abstract_'
+wrapper_header_prefix   = 'wrapper_'
+general_src_file_prefix = 'BOSS_'
+factory_file_prefix     = general_src_file_prefix + 'factory_'
+function_files_prefix   = general_src_file_prefix + 'func_'
+func_return_utils_fname = general_src_file_prefix + 'function_return_utils'
+wrapper_utils_fname     = general_src_file_prefix + 'wrapperutils'
 frwd_decls_abs_fname    = 'forward_decls_abstract_classes'
 frwd_decls_wrp_fname    = 'forward_decls_wrapper_classes'
 wrapper_typedefs_fname  = 'wrappertypedefs'
@@ -80,7 +87,7 @@ abstract_typedefs_fname = 'abstracttypedefs'
 enum_decls_wrp_fname    = 'enum_decl_copies'
 
 frontend_fname          = gambit_backend_name_full + '.hpp'
-frontend_path           = os.path.join(gambit_frontend_dir_complete, frontend_fname)
+frontend_path           = os.path.join(frontend_dir_complete, frontend_fname)
 
 # Dictionary of what names to use for various operator symbols
 operator_names = {

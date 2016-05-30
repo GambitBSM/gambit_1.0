@@ -67,7 +67,7 @@ else()
     SOURCE_DIR ${DELPHES_DIR}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ./configure
-              COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig
+              COMMAND sed ${dashi} "/^CXXFLAGS += .* -Iexternal\\/tcl/ s/$/ ${CMAKE_CXX_FLAGS}/" <SOURCE_DIR>/Makefile
               COMMAND sed ${dashi} "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
               COMMAND sed ${dashi} "s/${DELPHES_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} all
@@ -93,10 +93,19 @@ endif()
 #contrib/fjcore-3.1.3; compile only if Delphes is ditched and ColliderBit is not.
 set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
 include_directories("${fjcore_INCLUDE_DIR}")
+add_definitions(-DFJCORE)
 add_gambit_library(fjcore OPTION OBJECT
                           SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc
-                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
+                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fjcore.hh)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
+
+
+#set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
+#include_directories("${fjcore_INCLUDE_DIR}")
+#add_gambit_library(fjcore OPTION OBJECT
+#                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc
+#                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
+#set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
 
 #contrib/MassSpectra; include only if SpecBit is in use
 set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
@@ -131,6 +140,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(FS_OPTIONS ${FS_OPTIONS}
        --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxxflags=${FS_CXX_FLAGS}
+       --with-ldflags=${OpenMP_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
        --with-fflags=${FS_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}

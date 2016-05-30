@@ -151,7 +151,6 @@ namespace Gambit {
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
 
-
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
         for (HEPUtils::Particle* electron : event->electrons()) {
@@ -207,15 +206,16 @@ namespace Gambit {
           }
         }
 
-        // Taus
+        // Hadronic taus
         vector<HEPUtils::Particle*> signalTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
-          if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
+          if (tau->pT() > 20. && tau->abseta() < 2.47) signalTaus.push_back(tau);
         }
-
+        // Apply Run 2 medium hadronic tau efficiency
+        ATLAS::applyTauEfficiencyR2(signalTaus);
 
         // Do further electron selection
-        applyMediumIDElectronSelection(signalElectrons);
+        ATLAS::applyMediumIDElectronSelection(signalElectrons);
 
         // We now have the signal electrons, muons and jets; fill the histograms
 
@@ -435,11 +435,11 @@ namespace Gambit {
         // DO NOTHING
 
         SignalRegionData dummy;
-        dummy.set_observation(10.);
-        dummy.set_background(10.);
-        dummy.set_backgroundsys(1.);
-        dummy.set_signalsys(0.);
-        dummy.set_signal(1.);
+        dummy.n_observed = 10.;
+        dummy.n_background = 10.;
+        dummy.background_sys = 1.;
+        dummy.signal_sys = 0.;
+        dummy.n_signal = 1.;
 
         add_result(dummy);
 

@@ -118,7 +118,7 @@ Printer:
     # name of output file
     output_file: "gambit_output.hdf5"
     group: "/sing/let"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 ##############################
@@ -173,10 +173,10 @@ ObsLikes:
       purpose: LogLike
       function: lnL_oh2_Simple
 # XENON100 2012 direct detection likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose: LogLike
 # LUX 2013 direct detection likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!

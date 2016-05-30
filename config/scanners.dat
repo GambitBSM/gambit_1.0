@@ -109,3 +109,14 @@ raster: |
       parameters:
         "model::param_1": [0, 1]
         "model::param_2": 0.5
+
+GreAT: |
+  #remove_newlines
+  The Grenoble Analysis Toolkit (GreAT) is a flexible C++ framework for statistical analyses. In order to provide efficient handling and plotting of the data, GreAT is interfaced with the ROOT package developed at CERN. The GreAT package comes with a Markov Chain Monte Carlo (MCMC) algorithm for Bayesian parameter inference. The implemented Metropolis-Hastings algorithms use different proposal functions. In the current version of the GreAT interface implemented in GAMBIT, only the multivariate Gaussian distribution is used where the covariance matrix can be automatically reevaluated after each chain from all previous processed chains. To obtain a reliable estimate of the PDF, the chain analysis is based on the selection of a subset of points from the chains. Some steps at the beginning of the chain are discarded (burn-in length), in order to forget the random starting point. By construction, each step of the chain is correlated with the previous steps: sets of independent samples are obtained by thinning the chain (over the correlation length). The final results of the MCMC analysis are obtained by merely counting the number of samples within the related region of parameter space.
+
+  GreAT inifile options:
+    nTrialLists:    The number of trial lists (Markov Chains)
+    nTrials:        The number of trials (steps in the parameter space per trial list)
+
+  Auxillary output variables:
+    multiplicity:    Statistical weight (multiplicity) of each point

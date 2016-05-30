@@ -34,17 +34,18 @@ namespace Gambit
     /*! \brief Capture rate of regular dark matter in the Sun (no v-dependent
      *         or q-dependent cross-sections) (s^-1).
      */
-    void capture_rate_Sun_constant_xsec(double &result)
+    void capture_rate_Sun_const_xsec(double &result)
     {
-      using namespace Pipes::capture_rate_Sun_constant_xsec;
+      using namespace Pipes::capture_rate_Sun_const_xsec;
 
-      if (BEreq::capture_rate_Sun.origin()=="DarkSUSY")
+      if (BEreq::cap_Sun_v0q0_isoscalar.origin()=="DarkSUSY")
         if(!(*Dep::DarkSUSY_PointInit_LocalHalo))
           DarkBit_error().raise(LOCAL_INFO,"DarkSUSY halo model not initialized!");
 
-      // Here we assume that the proton and neutron scattering cross-sections
-      // are the same.
-      result = BEreq::capture_rate_Sun(
+      // When calculating the solar capture rate, DarkSUSY assumes that the
+      // proton and neutron scattering cross-sections are the same; we
+      // assume that whichever backend has been hooked up here does so too. 
+      result = BEreq::cap_Sun_v0q0_isoscalar(
           *Dep::mwimp, *Dep::sigma_SI_p, *Dep::sigma_SD_p);
     }
 
@@ -332,6 +333,7 @@ namespace Gambit
       char experiment[300] = "IC-22";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      // FIXME: Add getValue documentation
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -363,6 +365,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      // FIXME: Add getValue documentation
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -394,6 +397,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      // FIXME: Add getValue documentation
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -425,6 +429,7 @@ namespace Gambit
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      // FIXME: Add getValue documentation
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,

@@ -40,7 +40,7 @@
 
 
 // Switch for debug mode
-#define SpecBit_DBUG 
+//#define SPECBIT_DEBUG
 
 namespace Gambit
 {
@@ -65,18 +65,41 @@ namespace Gambit
     using namespace SpecBit;
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
     double step = scale / pts;
-    bool nperturbative = 0;
+    //bool nperturbative = 0;
     double ul=3.5449077018110318; // sqrt(4*Pi), maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
     for (int i=1;i<pts;i++)
     {
     SingletDM -> RunToScale(step*float(i));
-    bool perturbative = 0;
-    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
-    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
-    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
-    nperturbative +=!perturbative;
-    }
-    return !nperturbative;
+//    bool p1 = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
+//    bool p2 = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
+//    bool p3 = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
+//    nperturbative =!(p1 | p2 | p3);
+//    }
+   
+    static const SpectrumContents::SingletDM contents;
+    static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters_with_tag(Par::dimensionless);
+      
+    for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+          it != required_parameters.end(); ++it)
+      {
+         const Par::Tags        tag   = it->tag();
+         const std::string      name  = it->name();
+         const std::vector<int> shape = it->shape();
+
+           std::ostringstream label;
+           label << name <<" "<< Par::toString.at(tag);
+           if (abs(SingletDM->get(tag,name))>ul)
+           {
+            return false;
+           }
+      }
+      }
+
+
+      
+      
+      
+    return true;
     }
     
     double run_lambda(const Spectrum*  spec,double scale)
@@ -206,16 +229,21 @@ namespace Gambit
               }
           }
       }
-      cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
+
+    #ifdef SPECBIT_DEBUG
+        std::cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<std::endl;
+    #endif
+    
+
 
       double lambda_min=fu;
       double lifetime,LB;
       if (lambda_min<0) // second minimum exists, now determine stability and lifetime
       {
+        
         LB=u;
-        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4);
-        cout<< "tunnelling rate is approximately  " << p << endl;
-     
+        #ifdef SPECBIT_DEBUG
+        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4); // compute tunnelling rate
         if (p>1)
         {
             cout<< "vacuum is unstable" << endl;
@@ -224,6 +252,7 @@ namespace Gambit
         {
             cout<< "vacuum is metastable" << endl;
         }
+        #endif
        
         lifetime=1/(exp(3*140-2600/(abs(lambda_min)/0.01))*pow(1/(1.2e19),3)*pow(LB,4));
       }
@@ -231,7 +260,9 @@ namespace Gambit
       {
         LB=high_energy_limit;
         lifetime=1e300;
+        #ifdef SPECBIT_DEBUG
         cout << "vacuum is absolutely stable" << endl;
+        #endif
         // vacuum is stable
       }
       bool perturbative=check_perturb(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale

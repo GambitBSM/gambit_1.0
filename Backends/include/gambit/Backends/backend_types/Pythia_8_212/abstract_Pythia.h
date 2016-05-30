@@ -9,9 +9,6 @@
 #include "wrapper_Settings_decl.h"
 #include <istream>
 #include <vector>
-#include "wrapper_UserHooks_decl.h"
-#include "wrapper_SigmaProcess_decl.h"
-#include "wrapper_ResonanceWidths_decl.h"
 #include <ostream>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
@@ -24,12 +21,9 @@
 #include "wrapper_SigmaTotal_decl.h"
 #include <sstream>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Pythia*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -37,7 +31,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_Pythia : virtual public AbstractBase
+        class Abstract_Pythia : public virtual AbstractBase
         {
             public:
     
@@ -62,10 +56,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual bool readFile__BOSS() =0;
     
                 virtual bool readFile(::std::basic_istream<char, std::char_traits<char> >&, int) =0;
-    
-                virtual bool setUserHooksPtr__BOSS(Pythia8::Abstract_UserHooks*) =0;
-    
-                virtual bool setResonancePtr__BOSS(Pythia8::Abstract_ResonanceWidths*) =0;
     
                 virtual bool init(::std::basic_ostream<char, std::char_traits<char> >&) =0;
     
@@ -118,36 +108,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual Pythia8::Abstract_SLHAinterface& slhaInterface_ref__BOSS() =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_Pythia*) =0;
-                virtual Abstract_Pythia* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_Pythia*) =0;
+                virtual Abstract_Pythia* pointer_copy__BOSS() =0;
     
             private:
-                mutable Pythia* wptr;
+                Pythia* wptr;
+                bool delete_wrapper;
+            public:
+                Pythia* get_wptr() { return wptr; }
+                void set_wptr(Pythia* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_Pythia()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(Pythia* wptr_in)
+                Abstract_Pythia(const Abstract_Pythia&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                Pythia* wrapper__BOSS()
+                Abstract_Pythia& operator=(const Abstract_Pythia&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Pythia from backend Pythia_8_212. The function Abstract_Pythia::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                Pythia* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                Pythia& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_Pythia()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Pythia from backend Pythia_8_212. The function Abstract_Pythia::~Abstract_Pythia in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

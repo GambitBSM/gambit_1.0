@@ -49,16 +49,16 @@ class ClosestPair2D : public ClosestPair2DBase {
 public:
   /// constructor from a vector of 2D positions -- number of objects
   /// after insertion and deletion must never exceed positions.size();
-  /// objects are given IDs that correspond to their index in the vector 
+  /// objects are given IDs that correspond to their index in the vector
   /// of positions
-  ClosestPair2D(const std::vector<Coord2D> & positions, 
+  ClosestPair2D(const std::vector<Coord2D> & positions,
 		const Coord2D & left_corner, const Coord2D & right_corner) {
     _initialize(positions, left_corner, right_corner, positions.size());
   };
 
   /// constructor which allows structure to grow beyond positions.size(), up
   /// to max_size
-  ClosestPair2D(const std::vector<Coord2D> & positions, 
+  ClosestPair2D(const std::vector<Coord2D> & positions,
 		const Coord2D & left_corner, const Coord2D & right_corner,
 		const unsigned int max_size) {
     _initialize(positions, left_corner, right_corner, max_size);
@@ -66,19 +66,19 @@ public:
 
   /// provides the IDs of the closest pair as well as the distance between
   /// them
-  void closest_pair(unsigned int & ID1, unsigned int & ID2, 
+  void closest_pair(unsigned int & ID1, unsigned int & ID2,
 		    double & distance2) const;
 
   /// removes the entry labelled by ID from the object;
   void remove(unsigned int ID);
- 
+
   /// inserts the position into the closest pair structure and returns the
   /// ID that has been allocated for the object.
   unsigned int insert(const Coord2D &);
 
-  /// removes ID1 and ID2 and inserts position, returning the ID 
+  /// removes ID1 and ID2 and inserts position, returning the ID
   /// corresponding to position...
-  virtual unsigned int replace(unsigned int ID1, unsigned int ID2, 
+  virtual unsigned int replace(unsigned int ID1, unsigned int ID2,
 			       const Coord2D & position);
 
   /// replaces IDs_to_remove with points at the new_positions
@@ -97,8 +97,8 @@ public:
   unsigned int size();
 
 private:
-  
-  void _initialize(const std::vector<Coord2D> & positions, 
+
+  void _initialize(const std::vector<Coord2D> & positions,
 	      const Coord2D & left_corner, const Coord2D & right_corner,
 	      const unsigned int max_size);
 
@@ -131,8 +131,8 @@ private:
   typedef Tree::const_circulator  const_circulator;
 
 
-  triplet<std::auto_ptr<Tree> >  _trees;
-  std::auto_ptr<MinHeap> _heap;
+  triplet<std::unique_ptr<Tree> >  _trees;
+  std::unique_ptr<MinHeap> _heap;
   std::vector<Point>     _points;
   std::stack<Point *>    _available_points;
 
@@ -149,7 +149,7 @@ private:
   /// affect other labels already set for the point]
   void _add_label(Point * point, unsigned int review_flag);
 
-  /// sets the label for the point to be exclusively this 
+  /// sets the label for the point to be exclusively this
   /// review flag (and adds it to list of points needing review
   /// if not already there)
   void _set_label(Point * point, unsigned int review_flag);

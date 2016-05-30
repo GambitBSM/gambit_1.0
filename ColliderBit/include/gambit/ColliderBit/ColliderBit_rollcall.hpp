@@ -83,8 +83,13 @@ START_MODULE
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
-    #define FUNCTION getBuckFast
-    START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
+    #define FUNCTION getBuckFastATLAS
+    START_FUNCTION(Gambit::ColliderBit::BuckFastSmearATLAS)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    #undef FUNCTION
+
+    #define FUNCTION getBuckFastCMS
+    START_FUNCTION(Gambit::ColliderBit::BuckFastSmearCMS)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
 
@@ -97,9 +102,18 @@ START_MODULE
 
   /// Capability that holds list of analyses to run
   /// Eventually needs to be configurable from yaml file
-  #define CAPABILITY AnalysisContainer
+  #define CAPABILITY ATLASAnalysisContainer
   START_CAPABILITY
-    #define FUNCTION getAnalysisContainer
+    #define FUNCTION getATLASAnalysisContainer
+    START_FUNCTION(HEPUtilsAnalysisContainer)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY CMSAnalysisContainer
+  START_CAPABILITY
+    #define FUNCTION getCMSAnalysisContainer
     START_FUNCTION(HEPUtilsAnalysisContainer)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -115,24 +129,6 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  /// Event converters to the standard Gambit collider event format
-  #define CAPABILITY ConvertedScatteringEvent
-  START_CAPABILITY
-    #define FUNCTION convertPythia8PartonEvent
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    #undef FUNCTION
-
-    #define FUNCTION convertPythia8ParticleEvent
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -152,9 +148,9 @@ START_MODULE
 */
 
   /// Detector simulators which directly produce the standard event format
+#ifndef EXCLUDE_DELPHES
   #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
-#ifndef EXCLUDE_DELPHES
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -162,33 +158,60 @@ START_MODULE
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
+  #undef CAPABILITY
 #endif // not defined EXCLUDE_DELPHES
 
-    #define FUNCTION reconstructBuckFastEvent
+  #define CAPABILITY ATLASSmearedEvent
+  START_CAPABILITY
+    #define FUNCTION smearEventATLAS
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
-    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearATLAS)
     #undef FUNCTION
+  #undef CAPABILITY
 
-    #define FUNCTION reconstructBuckFastIdentityEvent
+  #define CAPABILITY CMSSmearedEvent
+  START_CAPABILITY
+    #define FUNCTION smearEventCMS
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearCMS)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY CopiedEvent
+  START_CAPABILITY
+    #define FUNCTION copyEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastIdentity)
     #undef FUNCTION
   #undef CAPABILITY
 
   // A capability that calculates the log likelihood
   // Runs all analyses and fills vector of analysis results
-  #define CAPABILITY AnalysisNumbers
+  #define CAPABILITY ATLASAnalysisNumbers
   START_CAPABILITY
-    #define FUNCTION runAnalyses
+    #define FUNCTION runATLASAnalyses
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
+    DEPENDENCY(ATLASSmearedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
-    DEPENDENCY(AnalysisContainer, HEPUtilsAnalysisContainer)
+    DEPENDENCY(ATLASAnalysisContainer, HEPUtilsAnalysisContainer)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY CMSAnalysisNumbers
+  START_CAPABILITY
+    #define FUNCTION runCMSAnalyses
+    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(CMSSmearedEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    DEPENDENCY(CMSAnalysisContainer, HEPUtilsAnalysisContainer)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -197,7 +220,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION calc_LHC_LogLike
     START_FUNCTION(double)
-    DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
+    DEPENDENCY(ATLASAnalysisNumbers, ColliderLogLikes)
+    DEPENDENCY(CMSAnalysisNumbers, ColliderLogLikes)
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_GROUP(lnlike_marg_poisson)
@@ -392,10 +416,18 @@ START_MODULE
   #define CAPABILITY HB_ModelParameters
   START_CAPABILITY
 
-    // SM Higgs only model parameters
+    // SM Higgs model parameters
     #define FUNCTION SMHiggs_ModelParameters  
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(SM_spectrum, const Spectrum*)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
+    #define FUNCTION SMlikeHiggs_ModelParameters
+    START_FUNCTION(hb_ModelParameters)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
+    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, const Spectrum*, SingletDM, SingletDMZ3)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 

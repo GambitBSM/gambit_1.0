@@ -34,6 +34,7 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/local_info.hpp"
 
 namespace Gambit
 {

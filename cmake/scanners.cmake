@@ -21,7 +21,10 @@
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
 #  \date 2015 May  
-#                                               
+#
+#  \author Antje Putze (putze@lapth.cnrs.fr)
+#  \date 2016 Jan
+#
 #************************************************
 
 
@@ -30,7 +33,7 @@ set(diver_location "${GAMBIT_INTERNAL}/Diver")
 set(diver_ver "1\\.0\\.0")
 set(diver_lib "libdiver")
 set(diver_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/Diver/1.0.0")
-set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS} -fopenmp")
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${GAMBIT_Fortran_FLAGS_PLUS_MPI}")
 else()
@@ -87,10 +90,30 @@ ExternalProject_Add(multinest
 )
 add_extra_targets(multinest ${mn_dir} null clean)
 
+# GreAT
+set(great_location "${GAMBIT_INTERNAL}/great-1.0.0")
+set(great_ver "1\\.0\\.0")
+set(great_lib "libgreat")
+set(great_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/GreAT/1.0.0")
+ExternalProject_Add(great
+  GIT_REPOSITORY https://gitlab.in2p3.fr/derome/GreAT.git
+  DOWNLOAD_DIR ${scanner_download}
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${great_location} ${great_dir}
+  SOURCE_DIR ${great_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_CAMMAND mkdir build COMMAND cd build
+  CMAKE_COMMAND ${CMAKE_COMMAND} ..
+  CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+  INSTALL_COMMAND ""
+)
+add_extra_targets(great ${great_dir} null cleanall)
+
 # All other scanners are implemented natively in ScannerBit.
 
 
-set_target_properties(diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(diver multinest great PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(scanners DEPENDS diver multinest)
-add_custom_target(clean-scanners DEPENDS clean-diver clean-multinest)
+add_custom_target(scanners DEPENDS diver multinest great)
+add_custom_target(clean-scanners DEPENDS clean-diver clean-multinest clean-great)

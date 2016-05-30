@@ -209,19 +209,21 @@ namespace Gambit {
         {
           if(resume) 
           { 
-             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"_isvalid'..."<<std::endl;
-          } else
+             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"_isvalid'...";
+          }
+          else
           {
-             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'..."<<std::endl;
+             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'...";
           }
           _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location_id, name+"_isvalid", resume);
 
           if(resume) 
           { 
-             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"'..."<<std::endl;
-          } else
+             logger()<<std::endl<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"'...";
+          }
+          else
           {
-             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"'..."<<std::endl;
+             logger()<<std::endl<<LogTags::printers<<"Creating new dataset '"<<name<<"'...";
           }
           _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location_id, name, resume);
 
@@ -263,19 +265,21 @@ namespace Gambit {
         {
           if(resume) 
           { 
-             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"_isvalid'..."<<std::endl;
-          } else
+             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"_isvalid'...";
+          }
+          else
           {
-             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'..."<<std::endl;
+             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'...";
           }
           _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location_id, name+"_isvalid", resume);
 
           if(resume) 
           { 
-             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"'..."<<std::endl;
-          } else
+             logger()<<std::endl<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"'...";
+          }
+          else
           {
-             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"'..."<<std::endl;
+             logger()<<std::endl<<LogTags::printers<<"Creating new dataset '"<<name<<"'...";
           }
           _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location_id, name, resume);
 

@@ -27,6 +27,7 @@
 #include <map>
 
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/funktions.hpp"
 
 namespace Gambit
@@ -102,7 +103,7 @@ namespace Gambit
         std::vector<std::string> finalStateIDs;
 
         /// Number of final state particles in this channel
-        int nFinalStates;
+        unsigned int nFinalStates;
 
         /// Energy dependence of final state particles. Includes v_rel ("v") as last argument in case of annihilation
         Funk::Funk genRate = Funk::zero("dummyArgument");

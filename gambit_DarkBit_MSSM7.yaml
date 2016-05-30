@@ -61,7 +61,7 @@ Printer:
   options:
     output_file: "runs/MSSM7/samples/MSSM7.hdf5"
     group: "/MSSM7"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 Scanner:
 
@@ -96,10 +96,10 @@ ObsLikes:
   #    - capability: lnL_FermiLATdwarfs
   #      purpose:  LogLike
   #
-  #    - capability: lnL_XENON100_2012
+  #    - capability: XENON100_2012_LogLikelihood
   #      purpose:  LogLike
 
-  #    - capability: lnL_LUX_2013
+  #    - capability: LUX_2013_LogLikelihood
   #      purpose:  LogLike
   #
   #    - capability: IC79_loglike

@@ -42,7 +42,7 @@
 #include "fastjet/internal/Dnn4piCylinder.hh"
 #include "fastjet/internal/Dnn3piCylinder.hh"
 #include "fastjet/internal/Dnn2piCylinder.hh"
-#endif //  DROP_CGAL 
+#endif //  DROP_CGAL
 
 FASTJET_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 
@@ -66,7 +66,7 @@ void ClusterSequence::_delaunay_cluster () {
   }
 
   // initialise our DNN structure with the set of points
-  auto_ptr<DynamicNearestNeighbours> DNN;
+  unique_ptr<DynamicNearestNeighbours> DNN;
 #ifndef DROP_CGAL // strategy = NlnN* are not supported if we drop CGAL...
   bool verbose = false;
   bool ignore_nearest_is_mirror = (_Rparam < twopi);
@@ -76,7 +76,7 @@ void ClusterSequence::_delaunay_cluster () {
     DNN.reset(new Dnn3piCylinder(points,ignore_nearest_is_mirror,verbose));
   } else if (_strategy == NlnN) {
     DNN.reset(new Dnn2piCylinder(points,ignore_nearest_is_mirror,verbose));
-  } else 
+  } else
 #else
   if (_strategy == NlnN4pi || _strategy == NlnN3pi || _strategy == NlnN) {
     ostringstream err;
@@ -114,7 +114,7 @@ void ClusterSequence::_delaunay_cluster () {
     double SmallestDij;
     bool Valid2;
     bool recombine_with_beam;
-    do { 
+    do {
       SmallestDij = DijMap.begin()->first;
       SmallestDijPair = DijMap.begin()->second;
       jet_i = SmallestDijPair.first;
@@ -127,10 +127,10 @@ void ClusterSequence::_delaunay_cluster () {
       DijMap.erase(DijMap.begin());
       //cout << "got beyond here\n";
 
-      // need to "prime" the validity of jet_j in such a way that 
+      // need to "prime" the validity of jet_j in such a way that
       // if it corresponds to the beam then it is automatically valid.
       recombine_with_beam = (jet_j == BeamJet);
-      if (!recombine_with_beam) {Valid2 = DNN->Valid(jet_j);} 
+      if (!recombine_with_beam) {Valid2 = DNN->Valid(jet_j);}
       else {Valid2 = true;}
 
     } while ( !DNN->Valid(jet_i) || !Valid2);
@@ -144,15 +144,15 @@ void ClusterSequence::_delaunay_cluster () {
       _do_ij_recombination_step(jet_i, jet_j, SmallestDij, nn);
       //OBS // merge the two jets, add new jet, remove old ones
       //OBS _jets.push_back(_jets[jet_i] + _jets[jet_j]);
-      //OBS 
+      //OBS
       //OBS int nn = _jets.size()-1;
       //OBS _jets[nn].set_cluster_hist_index(n+i);
-      //OBS 
+      //OBS
       //OBS // get corresponding indices in history structure
       //OBS int hist_i = _jets[jet_i].cluster_hist_index();
       //OBS int hist_j = _jets[jet_j].cluster_hist_index();
-      //OBS 
-      //OBS 
+      //OBS
+      //OBS
       //OBS _add_step_to_history(n+i,min(hist_i,hist_j), max(hist_i,hist_j),
       //OBS 		      _jets.size()-1, SmallestDij);
 
@@ -175,11 +175,11 @@ void ClusterSequence::_delaunay_cluster () {
     if (! recombine_with_beam) {
       // update DNN
       int point3;
-      DNN->RemoveCombinedAddCombination(jet_i, jet_j, 
+      DNN->RemoveCombinedAddCombination(jet_i, jet_j,
 				       points[points.size()-1], point3,
 				       updated_neighbours);
       // C++ beginners' comment: static_cast to unsigned int is necessary
-      // to do away with warnings about type mismatch between point3 (int) 
+      // to do away with warnings about type mismatch between point3 (int)
       // and points.size (unsigned int)
       if (static_cast<unsigned int> (point3) != points.size()-1) {
 	throw Error("INTERNAL ERROR: point3 != points.size()-1");}
@@ -194,16 +194,16 @@ void ClusterSequence::_delaunay_cluster () {
       int ii = *it;
       _add_ktdistance_to_map(ii, DijMap, DNN.get());
     }
-      
-  } // end clustering loop 
-  
+
+  } // end clustering loop
+
 }
 
 
 //----------------------------------------------------------------------
 /// Add the current kt distance for particle ii to the map (DijMap)
 /// using information from the DNN object. Work as follows:
-/// 
+///
 /// . if the kt is zero then it's nearest neighbour is taken to be the
 ///   the beam jet and the distance is zero.
 ///
@@ -216,10 +216,10 @@ void ClusterSequence::_delaunay_cluster () {
 /// . otherwise do nothing
 ///
 void ClusterSequence::_add_ktdistance_to_map(
-                          const int & ii, 
+                          const int & ii,
 			  DistMap & DijMap,
 			  const DynamicNearestNeighbours * DNN) {
-  
+
   double yiB = jet_scale_for_algorithm(_jets[ii]);
   if (yiB == 0.0) {
     // in this case convention is that we do not worry about distances
@@ -232,7 +232,7 @@ void ClusterSequence::_add_ktdistance_to_map(
     // then: either it is j's nearest neighbour and then we will
     // include dij when we come to j; or it is not j's nearest
     // neighbour and j will recombine with someone else).
-    
+
     // If DeltaR2 > 1.0 then in any case it will recombine with beam rather
     // than with any neighbours.
     // (put general normalisation here at some point)
@@ -251,4 +251,3 @@ void ClusterSequence::_add_ktdistance_to_map(
 
 
 FASTJET_END_NAMESPACE
-

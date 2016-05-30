@@ -196,7 +196,7 @@ namespace Gambit
 
 
     /// Direct detection couplings for Singlet DM.
-    void DD_couplings_SingletDM(DarkBit::DD_couplings &result)
+    void DD_couplings_SingletDM(DM_nucleon_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
       const Spectrum* spec = *Dep::SingletDM_spectrum;
@@ -350,6 +350,7 @@ namespace Gambit
 
       // Minimum branching ratio to include
       double minBranching = 
+      // FIXME: Add getValue documentation
         runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
 
       // Import relevant decays (only Higgs and subsequent decays)

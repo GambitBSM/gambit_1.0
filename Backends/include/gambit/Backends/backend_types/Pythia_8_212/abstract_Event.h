@@ -11,12 +11,9 @@
 #include <ostream>
 #include <vector>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Event*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -24,11 +21,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_Event : virtual public AbstractBase
+        class Abstract_Event : public virtual AbstractBase
         {
             public:
     
-                virtual Pythia8::Abstract_Event* operator_equal__BOSS(const Pythia8::Abstract_Event&) =0;
+                virtual Pythia8::Abstract_Event& operator_equal__BOSS(const Pythia8::Abstract_Event&) =0;
     
                 virtual void init__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Pythia8::Abstract_ParticleData*, int) =0;
     
@@ -42,15 +39,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void reset() =0;
     
-                virtual Pythia8::Abstract_Particle* operator_square_bracket_pair__BOSS(int) =0;
+                virtual Pythia8::Abstract_Particle& operator_square_bracket_pair__BOSS(int) =0;
     
-                virtual const Pythia8::Abstract_Particle* operator_square_bracket_pair__BOSS(int) const =0;
+                virtual const Pythia8::Abstract_Particle& operator_square_bracket_pair__BOSS(int) const =0;
     
-                virtual Pythia8::Abstract_Particle* front__BOSS() =0;
+                virtual Pythia8::Abstract_Particle& front__BOSS() =0;
     
-                virtual Pythia8::Abstract_Particle* at__BOSS(int) =0;
+                virtual Pythia8::Abstract_Particle& at__BOSS(int) =0;
     
-                virtual Pythia8::Abstract_Particle* back__BOSS() =0;
+                virtual Pythia8::Abstract_Particle& back__BOSS() =0;
     
                 virtual int size() const =0;
     
@@ -190,39 +187,56 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void savePartonLevelSize() =0;
     
-                virtual Pythia8::Abstract_Event* operator_plus_equal__BOSS(const Pythia8::Abstract_Event&) =0;
+                virtual Pythia8::Abstract_Event& operator_plus_equal__BOSS(const Pythia8::Abstract_Event&) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_Event*) =0;
-                virtual Abstract_Event* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_Event*) =0;
+                virtual Abstract_Event* pointer_copy__BOSS() =0;
     
             private:
-                mutable Event* wptr;
+                Event* wptr;
+                bool delete_wrapper;
+            public:
+                Event* get_wptr() { return wptr; }
+                void set_wptr(Event* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_Event()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(Event* wptr_in)
+                Abstract_Event(const Abstract_Event&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                Event* wrapper__BOSS()
+                Abstract_Event& operator=(const Abstract_Event&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Event from backend Pythia_8_212. The function Abstract_Event::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                Event* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                Event& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_Event()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Event from backend Pythia_8_212. The function Abstract_Event::~Abstract_Event in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }
