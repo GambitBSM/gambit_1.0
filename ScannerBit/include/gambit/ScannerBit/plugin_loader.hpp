@@ -179,7 +179,7 @@ namespace Gambit
                 {
                     if (printer->resume_mode())
                     {
-                        if (resume_streams.find(name) != resume_streams.end())
+                        if (resume_streams.find(name) == resume_streams.end())
                         {
                             std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
                             resume_streams[name] = new std::ifstream((path + "/" + name).c_str(), std::ifstream::binary);
@@ -190,7 +190,8 @@ namespace Gambit
                         }
                         else
                         {
-                            scan_err << "Could not load resume data." << scan_end;
+                            std::cout << "Could not load resume data." << std::endl;
+                            //scan_err << "Could not load resume data." << scan_end;
                         }
                     }
                     
