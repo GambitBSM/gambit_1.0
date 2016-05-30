@@ -293,4 +293,3 @@ FH_HiggsProd: |
 #             Calculates the LEP chargino pair production
 #             cross-section for centre of mass energy $E$, with chargino
 #             mass eigenstates $X$ and $Y$.
->>>>>>> e1c74cc03e97f83c3e8611044c074ef5d3685479
