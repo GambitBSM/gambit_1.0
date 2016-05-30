@@ -68,7 +68,7 @@ namespace Gambit {
       if (abs(p.id()) == 5 || MCUtils::PID::hasBottom(p.id())) return true;
       /// @todo What about partonic decays?
       if (p.isParton()) return false; // stop the walking at hadron level
-      BOOST_FOREACH (int m, p.motherList()) {
+      for (int m : p.motherList()) {
         if (fromBottom(m, evt)) return true;
       }
       return false;
@@ -82,7 +82,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 15) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      BOOST_FOREACH (int m, p.motherList()) {
+      for (int m : p.motherList()) {
         if (fromTau(m, evt)) return true;
       }
       return false;
@@ -96,7 +96,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       if (p.isHadron()) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      BOOST_FOREACH (int m, p.motherList()) {
+      for (int m : p.motherList()) {
         if (fromHadron(m, evt)) return true;
       }
       return false;
@@ -115,7 +115,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       //assert(!p.isParton());
       if (p.isParton()) std::cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
-      BOOST_FOREACH (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (evt[m].isFinal()) {
           rtn.push_back(m);
         } else {
@@ -131,7 +131,7 @@ namespace Gambit {
       // *This* particle must be a b or b-hadron
       if (!MCUtils::PID::hasBottom(evt[n].id())) return false;
       // Daughters must *not* include a b or b-hadron
-      BOOST_FOREACH (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (MCUtils::PID::hasBottom(evt[m].id())) return false;
       }
       return true;
@@ -144,7 +144,7 @@ namespace Gambit {
       // *This* particle must be a tau
       if (abs(evt[n].id()) != 15) return false;
       // Daughters must *not* include a tau
-      BOOST_FOREACH (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (abs(evt[m].id()) == 15) return false;
       }
       return true;
@@ -167,7 +167,7 @@ namespace Gambit {
       // Check if it's a parton at all & early exit
       if (!isParton(n, evt)) return false;
       // Daughters must *not* be partons
-      BOOST_FOREACH (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (m == 0) continue; // 0 shouldn't be possible here, but just to be sure...
         if (isParton(m, evt)) return false;
       }
@@ -230,14 +230,14 @@ namespace Gambit {
     //   Pythia8::Vec4 ptot;
     //   std::vector<fastjet::PseudoJet> jetparticles;
     //   std::vector<fastjet::PseudoJet> bhadrons, taus;
-    // 
+    //
     //   // Make a first pass to gather unstable final B hadrons and taus
     //   for (int i = 0; i < pevt.size(); ++i) {
     //     const Pythia8::Particle& p = pevt[i];
-    // 
+    //
     //     // Find last b-hadrons in b decay chains as the best proxy for b-tagging
     //     if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
-    // 
+    //
     //     // Find last tau in tau replica chains as a proxy for tau-tagging
     //     // Also require that the tau are prompt
     //     /// @todo Only accept hadronically decaying taus?
@@ -248,20 +248,20 @@ namespace Gambit {
     //       gevt.add_particle(gp); // Will be automatically categorised
     //     }
     //   }
-    // 
+    //
     //   for (int i = 0; i < pevt.size(); ++i) {
     //     const Pythia8::Particle& p = pevt[i];
-    // 
+    //
     //     // Only consider final state particles within ATLAS/CMS acceptance
     //     if (!p.isFinal()) continue;
     //     if (std::abs(p.eta()) > 5.0) continue;
     //     // Add to total final state momentum
     //     ptot += p.p();
-    // 
+    //
     //     // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
     //     /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
     //     const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
-    // 
+    //
     //     if (prompt) {
     //       HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
     //       gp->set_prompt();
@@ -269,15 +269,15 @@ namespace Gambit {
     //     } else {
     //       jetparticles.push_back(mk_pseudojet(p.p()));
     //     }
-    // 
+    //
     //   }
-    // 
+    //
     //   // Jet finding
     //   // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
     //   const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
     //   fastjet::ClusterSequence cseq(jetparticles, jet_def);
     //   std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
-    // 
+    //
     //   // Do jet b-tagging, etc. and add to the Event
     //   for (auto& pj : pjets) {
     //     bool isB = false;
@@ -291,7 +291,7 @@ namespace Gambit {
     //     const P4 p4 = mk_p4(pj);
     //     gevt.add_jet(new HEPUtils::Jet(p4, isB));
     //   }
-    // 
+    //
     //   // MET (not equal to sum of prompt invisibles)
     //   gevt.set_missingmom(-mk_p4(ptot));
     // }

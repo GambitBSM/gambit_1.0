@@ -37,7 +37,7 @@ namespace HEPUtils {
 
   private:
 
-    /// Hide copy assignment, since shallow copies of Particle & jet pointers create ownership/deletion problems
+    /// Hide copy assignment, since shallow copies of Particle & Jet pointers create ownership/deletion problems
     /// @todo Reinstate as a deep copy uing cloneTo?
     void operator = (const Event& e) {
       clear(); //< Delete current particles
@@ -136,7 +136,8 @@ namespace HEPUtils {
         if (p->abspid() == 11) _electrons.push_back(p);
         if (p->abspid() == 13) _muons.push_back(p);
         if (p->abspid() == 15) _taus.push_back(p);
-        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 || p->pid() == 1000022) _invisibles.push_back(p);
+        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
+            p->pid() == 1000022 || in_range(p->pid(), 50, 60)) _invisibles.push_back(p);
       }
     }
 

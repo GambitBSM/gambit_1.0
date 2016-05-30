@@ -8,6 +8,10 @@
 //
 #pragma once
 
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
+
 /// @file Interactions between P4 and HepMC's simple vectors
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
@@ -36,7 +40,7 @@ namespace MCUtils {
   /// Convert a vector of HepMC GenParticles to a vector of FastJet PseudoJets
   inline std::vector<P4> mk_p4s(const std::vector<const HepMC::GenParticle*>& gps) {
     std::vector<P4> p4s;
-    BOOST_FOREACH (const HepMC::GenParticle* gp, gps) {
+    for (const HepMC::GenParticle* gp : gps) {
       p4s.push_back( mk_p4(gp) );
     }
     return p4s;

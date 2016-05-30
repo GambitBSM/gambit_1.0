@@ -8,6 +8,10 @@
 //
 #pragma once
 
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
+
 /// @file FastJet clustering on HepMC events
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
@@ -33,9 +37,9 @@ namespace MCUtils {
   }
 
   /// Convert a vector of HepMC GenParticles to a vector of FastJet PseudoJets
-  inline std::vector<fastjet::PseudoJet> mk_pseudojets(const std::vector<const HepMC::GenParticle*>& gps) {
+  inline std::vector<fastjet::PseudoJet> mk_pseudojets(const GenParticlesC& gps) {
     std::vector<fastjet::PseudoJet> pjs;
-    BOOST_FOREACH (const HepMC::GenParticle* gp, gps) {
+    for (const HepMC::GenParticle* gp : gps) {
       pjs.push_back( mk_pseudojet(gp) );
     }
     return pjs;
@@ -51,7 +55,7 @@ namespace MCUtils {
   inline std::vector<fastjet::PseudoJet> get_jets(const GenParticlesC& particles, double R, double ptmin,
                                                   fastjet::JetAlgorithm alg=fastjet::antikt_algorithm) {
     /// @todo Convert to use filter_jet_inputs
-    return get_jets(mk_pseudojets(filter_stable(particles)), R, ptmin, alg);
+    return HEPUtils::get_jets(mk_pseudojets(filter_stable(particles)), R, ptmin, alg);
   }
 
 
@@ -59,7 +63,7 @@ namespace MCUtils {
   inline std::vector<fastjet::PseudoJet> get_jets(const HepMC::GenEvent* evt, double R, double ptmin,
                                                   fastjet::JetAlgorithm alg=fastjet::antikt_algorithm) {
     /// @todo Convert to use get_jet_inputs
-    return get_jets(mk_pseudojets(get_stable(evt)), R, ptmin, alg);
+    return HEPUtils::get_jets(mk_pseudojets(get_stable(evt)), R, ptmin, alg);
   }
 
   //@}
