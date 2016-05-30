@@ -3743,11 +3743,12 @@ namespace Gambit
                &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
                &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
 
+
       BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
 
       // run Higgs bounds 'classic'
-      double HBresult, obsratio;
-      int chan, ncombined;
+      double obsratio;
+      int HBresult, chan, ncombined;
       BEreq::run_HiggsBounds_classic(HBresult,chan,obsratio,ncombined);
 
       // extract the LEP chisq
