@@ -21,7 +21,6 @@
 #include "plugin_interface.hpp"
 #include "scanner_plugin.hpp"
 #include "twalk.hpp"
-using namespace Gambit::Scanner::zip;
 
 scanner_plugin(twalk, version(1, 0, 0, beta))
 {

@@ -67,7 +67,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: toy
   #find_shift
   #find_kernel
   #object_detection
@@ -109,6 +109,7 @@ Scanner:
     toy:
       like: LogLike
       plugin: toy_mcmc
+      point_number: 2000
       #plugin_path: /home/gmartine/libsample.so
 
     square_grid:

@@ -144,7 +144,7 @@ namespace Gambit
 
             unsigned int dim = prior->size();
             
-            scan_for(pluginName, pluginNames)
+            for(auto &&pluginName : pluginNames)
             {
                 Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
                 
