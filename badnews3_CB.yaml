@@ -1,17 +1,21 @@
 Parameters:
 
-  CMSSM:
-    A0: 7955.71
-    M0: 3406.17
-    M12: 8960.77
-    SignMu: 1
-    TanBeta: 10.6419
   LocalHalo:
     rho0: 0.4
     v0: 235
     vearth: 29.78
     vesc: 550
     vrot: 235
+  MSSM7atQ:
+    Ad_3: 163.998
+    Au_3: 495.372
+    M2: 400.706
+    Qin: 1000
+    SignMu: 1
+    TanBeta: 21.5982
+    mHd2: 1.33985e+06
+    mHu2: 15775.6
+    mf2: 345191
   StandardModel_SLHA2:
     CKM_A: 0.814
     CKM_etabar: 0.353
@@ -55,8 +59,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "CMSSM.hdf5"
-    group: "/CMSSM"
+    output_file: "MSSM7.hdf5"
+    group: "/MSSM7"
 
 Scanner:
 
@@ -290,10 +294,8 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_CMSSM_spectrum
+    function: get_MSSMatQ_spectrum
     options:
-      # Set to match benchmark point specified in
-      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -431,8 +433,8 @@ Rules:
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
-  - capability: ConvertedScatteringEvent
-    function: convertPythia8ParticleEvent
+#  - capability: ConvertedScatteringEvent
+#    function: convertPythia8ParticleEvent
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -449,9 +451,10 @@ Rules:
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV: ["Print:quiet = off",
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = on",
@@ -464,8 +467,6 @@ Rules:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
 Logger:
-
-  debug: true
 
   redirection:
     [Debug] : "debug.log"
@@ -485,6 +486,6 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4
-    debug: true
 
-  default_output_path: "runs/CMSSM_LHC/"
+  default_output_path: "runs/MSSM7_badnews/"
+  debug: true

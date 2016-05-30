@@ -35,7 +35,7 @@
 #include "gambit/Elements/spectrum.hpp"
 
 // Activate debug output
-#define SingletDM_DBUG
+//#define SingletDM_DBUG
 
 using namespace Gambit::Utils;
 
