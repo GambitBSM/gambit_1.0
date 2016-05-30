@@ -31,6 +31,8 @@
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/ScannerBit/base_prior.hpp"
 
 namespace Gambit
 {
@@ -54,12 +56,13 @@ namespace Gambit
             struct Plugin_Interface_Details
             {
                 Plugin_Details &details;
-                const printer_interface *printer;
+                printer_interface *printer;
+                Priors::BasePrior *prior;
                 YAML::Node flags;
                 YAML::Node node;
                 
-                Plugin_Interface_Details(Plugin_Details &details, printer_interface *printer, const YAML::Node &node) 
-                        : details(details), printer(printer), flags(details.flags), node(node) {}
+                Plugin_Interface_Details(Plugin_Details &details, printer_interface *printer, Priors::BasePrior *prior, const YAML::Node &node) 
+                        : details(details), printer(printer), prior(prior), flags(details.flags), node(node) {}
             };
     
             ///container class for the actual plugins detected my ScannerBit
@@ -130,7 +133,9 @@ namespace Gambit
                 std::map<std::string, std::vector<__plugin_resume_base__ *>> resume_data;
                 std::map<std::string, std::ifstream *> resume_streams;
                 printer_interface *printer;
+                Priors::BasePrior *prior;
                 Options options;
+                std::string def_out_path;
                 
                 inline void set_resume(std::vector<__plugin_resume_base__ *> &){}
                                 
@@ -161,8 +166,8 @@ namespace Gambit
             public:
                 pluginInfo() : keepRunning(true), funcCalculating(false) {}
                 ///Enter plugin inifile
-                void iniFile(const Options &, printer_interface &);
-                
+                void iniFile(const Options &);
+                void printer_prior(printer_interface &, Priors::BasePrior &);
                 bool keep_running() const {return keepRunning;}
                 void set_running(bool b){keepRunning = b;}
                 bool func_calculating() const {return funcCalculating;}
@@ -175,7 +180,10 @@ namespace Gambit
                     if (printer->resume_mode())
                     {
                         if (resume_streams.find(name) != resume_streams.end())
-                            resume_streams[name] = new std::ifstream((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
+                        {
+                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
+                            resume_streams[name] = new std::ifstream((path + "/" + name).c_str(), std::ifstream::binary);
+                        }
                         if (resume_streams[name]->is_open())
                         {
                             get_resume(*resume_streams[name], data...);
