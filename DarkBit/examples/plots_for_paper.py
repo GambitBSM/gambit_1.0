@@ -133,14 +133,16 @@ def spokePlots():
 
     plt.clf()
     limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
-    plt.scatter(mwimp,sigma_SI_p,c=LUXlnL)
+    sc = plt.scatter(mwimp,sigma_SI_p,c=LUXlnL,s=30)
+    cbar=plt.colorbar(sc)
+    cbar.set_label('ln L_LUX')
     plt.plot(limit[:,0],limit[:,1]*10**-36)
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SI_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-50,ymax=10**-39)
+    plt.gca().set_ylim(ymin=10**-49,ymax=10**-39)
     plt.show()
 
 #    plt.clf()   
