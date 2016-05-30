@@ -79,10 +79,10 @@ Scanner:
 
     twalk:
       plugin: twalk
-      options:
-        tolerance: 1.001
-        #chain_number: 20
-        projection_dimension: 4
+      like: LogLike
+      tolerance: 1.001
+      #chain_number: 20
+      projection_dimension: 4
         
     tnest:
       plugin: tnest
@@ -186,7 +186,7 @@ Scanner:
       #selected_pts:
       #  - "gaussian::param_0"
       #  - "gaussian::param_1"
-      mult: ["Posterior"]
+      mult: ["mult"]
       #loglike: 1
       flags: ["linear"]
       #flags: ["linear", "noadjx", "logx"]
