@@ -3364,15 +3364,15 @@ namespace Gambit
         for(int j = 0; j < 3; j++) result.BR_hjhihi[i][j] = 0.;
       }
 
-      result.MHplus = 0.;
-      result.deltaMHplus = 0.;
-      result.HpGammaTot = 0.;
-      result.CS_lep_HpjHmi_ratio = 0.;
+      result.MHplus[0] = 0.;
+      result.deltaMHplus[0] = 0.;
+      result.HpGammaTot[0] = 0.;
+      result.CS_lep_HpjHmi_ratio[0] = 0.;
       result.BR_tWpb = 0.;
-      result.BR_tHpjb = 0.;
-      result.BR_Hpjcs = 0.;
-      result.BR_Hpjcb = 0.;
-      result.BR_Hptaunu = 0.;
+      result.BR_tHpjb[0] = 0.;
+      result.BR_Hpjcs[0] = 0.;
+      result.BR_Hpjcb[0] = 0.;
+      result.BR_Hptaunu[0] = 0.;
       result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
       try
       {
@@ -3547,20 +3547,20 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->get(Par::Pole_Mass,"H+");
+      result.MHplus[0] = spec->get(Par::Pole_Mass,"H+");
       double upper = spec->get(Par::Pole_Mass_1srd_high,"H+");
       double lower = spec->get(Par::Pole_Mass_1srd_low,"H+");
-      result.deltaMHplus = std::max(upper,lower);
+      result.deltaMHplus[0] = std::max(upper,lower);
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
       const DecayTable::Entry* top_decays = &(decaytable("t"));
 
-      result.HpGammaTot = Hplus_decays->width_in_GeV;
-      result.BR_tWpb    = top_decays->BF("W+", "b");
-      result.BR_tHpjb   = top_decays->has_channel("H+", "b") ? top_decays->BF("H+", "b") : 0.0;
-      result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar");
-      result.BR_Hpjcb   = Hplus_decays->BF("c", "bbar");
-      result.BR_Hptaunu = Hplus_decays->BF("tau+", "nu_tau");
+      result.HpGammaTot[0] = Hplus_decays->width_in_GeV;
+      result.BR_tWpb       = top_decays->BF("W+", "b");
+      result.BR_tHpjb[0]   = top_decays->has_channel("H+", "b") ? top_decays->BF("H+", "b") : 0.0;
+      result.BR_Hpjcs[0]   = Hplus_decays->BF("c", "sbar");
+      result.BR_Hpjcb[0]   = Hplus_decays->BF("c", "bbar");
+      result.BR_Hptaunu[0] = Hplus_decays->BF("tau+", "nu_tau");
 
       // check SM partial width h0_1 -> b bbar
       // shouldn't be zero...
@@ -3702,7 +3702,7 @@ namespace Gambit
           result.CS_lhc8_tthj_ratio[i] = FH_prod.prodxs_LHC8[i+27]/FH_prod.prodxs_LHC8[i+30];
       }
       // LEP H+ H- x-section ratio
-      result.CS_lep_HpjHmi_ratio = 1.;
+      result.CS_lep_HpjHmi_ratio[0] = 1.;
     }
 
     /// Get a LEP chisq from HiggsBounds
@@ -3739,12 +3739,11 @@ namespace Gambit
               &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
               &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
-      BEreq::HiggsBounds_charged_input(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
-               &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+      BEreq::HiggsBounds_charged_input(&ModelParam.MHplus[0], &ModelParam.HpGammaTot[0], &ModelParam.CS_lep_HpjHmi_ratio[0],
+               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb[0], &ModelParam.BR_Hpjcs[0],
+               &ModelParam.BR_Hpjcb[0], &ModelParam.BR_Hptaunu[0]);
 
-
-      BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
+      BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus[0]);
 
       // run Higgs bounds 'classic'
       double obsratio;
@@ -3796,15 +3795,15 @@ namespace Gambit
                  &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
                  &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
-      BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
-            &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+      BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus[0], &ModelParam.HpGammaTot[0], &ModelParam.CS_lep_HpjHmi_ratio[0],
+            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb[0], &ModelParam.BR_Hpjcs[0],
+            &ModelParam.BR_Hpjcb[0], &ModelParam.BR_Hptaunu[0]);
 
       BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
 
       // add uncertainties to cross-sections and branching ratios
-      // double dCS[5];
-      // double dBR[5];
+      // double dCS[5] = {0.,0.,0.,0.,0.};
+      // double dBR[5] = {0.,0.,0.,0.,0.};
       // BEreq::setup_rate_uncertainties(dCS,dBR);
 
       // run HiggsSignals
