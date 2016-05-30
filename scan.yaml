@@ -516,7 +516,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/scan"
+  default_output_path: "runs/scan_me"
 
   # Some example keys and subkeys
   my_key: 123
