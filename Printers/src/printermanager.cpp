@@ -78,12 +78,16 @@ namespace Gambit
     PrinterManager::~PrinterManager()
     {
       // Delete all the printer objects
-      DBUG( std::cout << "PrinterManager: Destructing printers..." << std::endl; )
+      DBUG( std::cout << "PrinterManager: Destructing printers and readers..." << std::endl; )
       typedef std::map<std::string, BasePrinter*>::iterator it_type;
+      typedef std::map<std::string, BaseReader*>::iterator it2_type;
       for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
          delete it->second; // Delete the printer to which this pointer points.
       } 
-      delete printerptr;
+      for(it2_type it = readers.begin(); it != readers.end(); it++) {
+         delete it->second; // Delete the reader to which this pointer points.
+      } 
+      delete printerptr; // Delete primary printer
     }
 
     // Create new printer object (of the same type as the primary printer)
@@ -102,6 +106,25 @@ namespace Gambit
        auxprinters[streamname] = printer_creators.at(tag)(mod_options,printerptr);
        // Some printers may requires two-step initiations so this virtual function is provided to allow that.
        auxprinters.at(streamname)->auxilliary_init();
+    }
+
+    // Create new printer reader object (of the same type as the primary printer)
+    // and attach it to the provided name.
+    void PrinterManager::new_reader(const std::string& readstreamname, const Options& options)
+    {
+       DBUG( std::cout << "PrinterManager: Creating printer read stream of type \"" << tag << "\" with name \"" << readstreamname << "\"" << std::endl; )
+       std::string whichreader = options.getValueOrDef<std::string>(tag,"type");
+       if(reader_creators.find(whichreader)==reader_creators.end())
+       {
+         std::ostringstream os;
+         os << "PrinterManager: Tried to construct reader with name '"<<readstreamname<<"' as reader-type '"<<whichreader<<"', but this is not a valid reader type! Please choose one of the following:"<<std::endl;
+         for (auto it = reader_creators.begin(); it != reader_creators.end(); ++it)
+         {
+            os << "  " << it->first << std::endl;
+         }
+         printer_error().raise(LOCAL_INFO,os.str());
+       }
+       readers[readstreamname] = reader_creators.at(whichreader)(options);
     }
 
     // Retrieve pointer to named printer object
@@ -130,6 +153,23 @@ namespace Gambit
         }
         return it->second;
       }
+    }
+
+    // Retrieve pointer to named reader object
+    BaseBaseReader* PrinterManager::get_reader(const std::string& readername)
+    {
+      DBUG( std::cout << "PrinterManager: Retrieving reader stream \"" << readername << "\"" << std::endl; )
+      // Note that this routine automatically converts the BaseReader pointer into a BaseBaseReader pointer
+      // (for a more minimal interface for use in ScannerBit)
+      typedef std::map<std::string, BaseReader*>::iterator it_type;
+      it_type it = readers.find(readername);
+      if( it == readers.end() ) 
+      {
+        std::ostringstream errmsg;
+        errmsg << "Error! PrinterManager failed to retrieve the requested reader stream with name '"<<readername<<"'! The reader may not have been created in the first place. Please check that the scanner plugin you are using correctly creates a reader stream with this name.";
+        printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+      return it->second;
     }
 
     /// Instruct all printers that scan has finished and to perform cleanup

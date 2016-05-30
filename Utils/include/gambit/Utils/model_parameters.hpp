@@ -43,9 +43,6 @@
 #include <map>
 #include <vector>
 #include <iostream>
-#include <sstream>
-
-#include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit {
 

@@ -29,9 +29,29 @@
 # unaffected_text                                                           #
 #############################################################################
 
+priors: |
+  #remove_newlines
+  Prior are specified either in the parameters section when a parameter is 
+  declared as so ...
+  
+  parameter:
+    prior_type: flat
+    range: [0, 1]
+    
+  #remove_newlines
+  Or in the prior section as so ...
+  
+  my_prior:
+    prior_type: flat
+    parameters: [model::parameter, ...]
+    range: [0, 1]
+    
+  #remove_newlines
+  Listed below are various priors that GAMBIT recognizes seperated into five groups: one dimensional priors (flat, log, sin, cos, tan, cot), multidimensional priors (gaussian, cauchy), same_as (same_as), fixed value (fixed_value), and dummy (dummy)).I
+
 one dimensional priors: |
   #remove_newlines
-  Specifies a 1 dimensional prior.  Different prior types that fall into this
+  Specifies a one dimensional prior.  Different prior types that fall into this
   catagory are flat (uniform distribution), log (1/x distribution), and trig
   functions (sin, cos, tan, cot).  If same_as, fixed_value and prior_type are not
   specified, a flat prior is assumed.
@@ -39,7 +59,9 @@ one dimensional priors: |
   Inifile entries:
       range:       specifies the range in the form [low, hi]
       shift (0):   adds the shift value to the parameter 
-      scale (1):   multiplies the scale value to the parameter 
+      scale (1):   multiplies the scale value to the parameter.  If set to "degrees" will convert degrees to radians.
+
+      output_scaled_values (true):  Outputs the scaled parameters if true.  Set to false if "degrees" is specified.
 
 multidimensional priors: |
   #remove_newlines
@@ -48,10 +70,7 @@ multidimensional priors: |
 
   Inifile entries:
       cov:   coveriance matrix
-  #remove_newlines
-      sigs ([1...]):  specifies the sqrt of the diagonal components of the coveriance matrix.
-                      Defaults to 1 if not specified.
-  #dont_remove_newlines
+      sigs ([1...]):  specifies the sqrt of the diagonal components of the coveriance matrix. Defaults to 1 if not specified.
       mean ([0...]):  specifies the mean or median.  Defaults to 0 if not specified.
 
 same_as: |
@@ -66,8 +85,7 @@ same_as: |
 
 fixed_value: |
   #remove_newlines
-  Sets the parameter to a fixed value.  This prior
-  does not need the prior_type tag
+  Sets the parameter to a fixed value that is defined by the fixed_value option.  If a vector is given instead of a single value, the parameter's value will be sequentially set to the inputed values.  This prior does not need the prior_type tag, just the "fixed_value" option.
 
 dummy: | 
   Does absolutly nothing.
