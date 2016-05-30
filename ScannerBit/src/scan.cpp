@@ -32,205 +32,160 @@
 namespace Gambit
 {
 
-        namespace Scanner
-        {
+    namespace Scanner
+    {
 
-                inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
-                {       
-                        YAML::Node outNode = node;
-                        
-                        for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
-                        {
-                                outNode[it->first] = it->second;
-                        }
-                        
-                        return outNode;
-                }
-                
-                inline std::vector<std::string> get_infile_values(const YAML::Node &node)
-                {
-                        if (node.IsSequence())
-                        {
-                                return node.as< std::vector<std::string> >(); 
-                        }
-                        else if (node.IsScalar())
-                        {
-                                std::string plug = node.as<std::string>();
-                                
-                                std::string::size_type pos = plug.find_first_of(",;:.");
-                                while (pos != std::string::npos)
-                                {
-                                        plug[pos] = ' ';
-                                        pos = plug.find_first_of(",;:.", pos + 1);
-                                }
-                                
-                                std::stringstream ss;
-                                ss << plug;
-                                std::vector<std::string> ret;
-                                std::string temp;
-                                while (ss >> temp) ret.push_back(temp);
-                                
-                                return ret;
-                        }
-                        else
-                        {
-                                scan_err << "\"" << node << "\" input value not usable in the inifile." << scan_end;
-                                return std::vector <std::string> ();
-                        }
-                }
-        
-                Scan_Manager::Scan_Manager (const Factory_Base *factoryIn, const Options options_in, const Priors::CompositePrior *priorIn, 
-                 printer_interface *printerInterface) 
-                : options(options_in), printerInterface(printerInterface), has_local_prior_and_factory(false)
-                {
-                        Plugins::plugin_info.iniFile(options, *printerInterface);
-                        
-                        if (options.hasKey("use_objectives"))
-                        {
-                                std::map< std::string, std::vector<std::pair<std::string, std::string>> > names;
-                                std::map< std::string, YAML::Node > nodes;
-                                std::vector <std::string> plugs = get_infile_values(options.getNode("use_objectives"));
-                                        
-                                for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
-                                {
-                                        if (options.hasKey("objectives") && options.hasKey("objectives", *it))
-                                        {
-                                                std::string plugin_name;
-                                                if (options.hasKey("objectives", *it, "purpose") && options.hasKey("objectives", *it, "plugin"))
-                                                {
-                                                        std::vector <std::string> purposes = get_infile_values(options.getNode("objectives", *it, "purpose"));
-                                                        plugin_name = options.getValue<std::string>("objectives", *it, "plugin");
-                                                        for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
-                                                                names[*it2].push_back(std::pair<std::string, std::string>(*it, plugin_name));
-                                                }
-                                                else
-                                                {
-                                                        scan_err << "Must specify a plugin and a purpose under the plugin tag \"" << *it << "\"." << scan_end;
-                                                }
-                                                
-                                                if (options.hasKey("objectives", *it, "parameters"))
-                                                {
-                                                        if (options.hasKey("parameters") && options.hasKey("parameters", *it))
-                                                        {
-                                                                scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
-                                                                        << "both the \"parameters\" section and the \"plugins\" "
-                                                                        << "section in the inifile." << scan_end;
-                                                        }
-                                                        
-                                                        nodes[plugin_name] = options.getNode("objectives", *it, "parameters");
-                                                        //nodes[*it] = options.getNode("objectives", *it, "parameters");
-                                                }
-                                        }
-                                        else
-                                        {
-                                                scan_err << "Plugin \"" << *it << "\" of type \"" << "objective" << "\" is not defined under the \"Scanner\""
-                                                << " subsection in the inifile" << scan_end;
-                                        }
-                                }
-                                
-                                if (names.size() > 0)
-                                {
-                                        YAML::Node paramNode;
-                                        YAML::Node priorNode;
-                                        
-                                        if (options.hasKey("parameters"))
-                                        {
-                                                if (nodes.size() > 0)
-                                                {
-                                                        paramNode = combineNodes(nodes, options.getNode("parameters"));
-                                                }
-                                                else
-                                                {
-                                                        paramNode = options.getNode("parameters");
-                                                }
-                                        }
-                                        else
-                                        {
-                                                if (nodes.size() > 0)
-                                                {
-                                                        paramNode = combineNodes(nodes, YAML::Node());
-                                                }
-                                        }
-                                        
-                                        if (options.hasKey("priors"))
-                                        {
-                                                priorNode = options.getNode("priors");
-                                        }
-
-                                        prior = new Gambit::Priors::CompositePrior(paramNode, priorNode);
-                                        factory = new Plugin_Function_Factory(*prior, names);
-                                        has_local_prior_and_factory = true;
-                                        
-                                }
-                                else
-                                {
-                                        factory = factoryIn;
-                                        prior = priorIn;
-                                }
-                        }
-                        else
-                        {
-                                factory = factoryIn;
-                                prior = priorIn;
-                        }
-
-                }
-                
-                int Scan_Manager::Run()
-                {
-                        std::vector<std::string> pluginNames;
-                        if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
-                        {
-                                pluginNames = get_infile_values(options.getNode("use_scanner"));
-                        }
-                        else
-                        {
-                                scan_err << "\"use_scanner:\" input value not usable in the inifile." << scan_end;
-                        }
-
-                        unsigned int dim = prior->size();
-                        
-                        scan_for(pluginName, pluginNames)
-                        {
-                                Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
-                                
-                                //if(plugin_interface["initialize_mpi"] && !plugin_interface["initialize_mpi"].as<bool>())
-                                if (false)
-                                {
-                                        plugin_interface();
-                                        printerInterface->finalise();
-                                }
-                                else
-                                {
-#ifdef WITH_MPI
-                                        if(GMPI::Is_initialized())
-                                        {
-                                                //scan_err << "Error initialising MPI! It is already initialised!" << scan_end; 
-                                        } 
-                                        else
-                                        {
-                                                //MPI_Init(&argc,&argv); 
-                                        }
-                                        //GMPI::Init(argc,argv);
-#endif
-                                        plugin_interface();
-                                        printerInterface->finalise();
-#ifdef WITH_MPI
-                                        //MPI_Finalize(); 
-#endif
-                                }
-                        }
- 
-                        return 0;
-                }
-                
-                Scan_Manager::~Scan_Manager()
-                {
-                  if (has_local_prior_and_factory)
-                  {
-                    delete prior;
-                    delete factory;
-                  }
-                }
+        inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
+        {       
+            YAML::Node outNode = node;
+            
+            for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
+            {
+                outNode[it->first] = it->second;
+            }
+            
+            return outNode;
         }
+        
+        Scan_Manager::Scan_Manager (const YAML::Node &main_node, printer_interface *printerInterface, const Factory_Base *factoryIn) 
+        : printerInterface(printerInterface), has_local_factory(false)
+        {
+            options = main_node["Scanner"];
+            
+            Plugins::plugin_info.iniFile(options);
+            
+            if (options.hasKey("use_objectives"))
+            {
+                std::map< std::string, std::vector<std::pair<std::string, std::string>> > names;
+                std::map< std::string, YAML::Node > nodes;
+                std::vector <std::string> plugs = get_yaml_vector<std::string>(options.getNode("use_objectives"));
+                        
+                for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
+                {
+                    if (options.hasKey("objectives") && options.hasKey("objectives", *it))
+                    {
+                        std::string plugin_name;
+                        if (options.hasKey("objectives", *it, "purpose") && options.hasKey("objectives", *it, "plugin"))
+                        {
+                            std::vector <std::string> purposes = get_yaml_vector<std::string>(options.getNode("objectives", *it, "purpose"));
+                            plugin_name = options.getValue<std::string>("objectives", *it, "plugin");
+                            for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
+                                    names[*it2].push_back(std::pair<std::string, std::string>(*it, plugin_name));
+                        }
+                        else
+                        {
+                            scan_err << "Must specify a plugin and a purpose under the plugin tag \"" << *it << "\"." << scan_end;
+                        }
+                        
+                        if (options.hasKey("objectives", *it, "parameters"))
+                        {
+                            if (options.hasKey("parameters") && options.hasKey("parameters", *it))
+                            {
+                                    scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
+                                            << "both the \"parameters\" section and the \"plugins\" "
+                                            << "section in the inifile." << scan_end;
+                            }
+                            
+                            nodes[plugin_name] = options.getNode("objectives", *it, "parameters");
+                            //nodes[*it] = options.getNode("objectives", *it, "parameters");
+                        }
+                    }
+                    else
+                    {
+                        scan_err << "Plugin \"" << *it << "\" of type \"" << "objective" << "\" is not defined under the \"Scanner\""
+                        << " subsection in the inifile" << scan_end;
+                    }
+                }
+                
+                if (names.size() > 0)
+                {
+                    YAML::Node paramNode;
+                    
+                    if (nodes.size() > 0)
+                    {
+                        paramNode = combineNodes(nodes, main_node["Parameters"]);
+                    }
+                    else
+                    {
+                        paramNode = main_node["Parameters"];
+                    }
+
+                    prior = new Gambit::Priors::CompositePrior(paramNode, main_node["Priors"]);
+                    factory = new Plugin_Function_Factory(prior->getParameters(), names);
+                    Plugins::plugin_info.printer_prior(*printerInterface, *prior);
+                    has_local_factory = true;                        
+                }
+                else
+                {
+                    prior = new Gambit::Priors::CompositePrior(main_node["Parameters"], main_node["Priors"]);
+                    factory = factoryIn;
+                    Plugins::plugin_info.printer_prior(*printerInterface, *prior);
+                }
+            }
+            else
+            {
+                prior = new Gambit::Priors::CompositePrior(main_node["Parameters"], main_node["Priors"]);
+                factory = factoryIn;
+                Plugins::plugin_info.printer_prior(*printerInterface, *prior);
+            }   
+        }
+        
+        int Scan_Manager::Run()
+        {
+            std::vector<std::string> pluginNames;
+            if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
+            {
+                    pluginNames = get_yaml_vector<std::string>(options.getNode("use_scanner"));
+            }
+            else
+            {
+                    scan_err << "\"use_scanner:\" input value not usable in the inifile." << scan_end;
+            }
+
+            unsigned int dim = prior->size();
+            
+            scan_for(pluginName, pluginNames)
+            {
+                Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
+                
+                //if(plugin_interface["initialize_mpi"] && !plugin_interface["initialize_mpi"].as<bool>())
+                if (false)
+                {
+                    plugin_interface();
+                    printerInterface->finalise();
+                }
+                else
+                {
+#ifdef WITH_MPI
+                    if(GMPI::Is_initialized())
+                    {
+                        //scan_err << "Error initialising MPI! It is already initialised!" << scan_end; 
+                    } 
+                    else
+                    {
+                        //MPI_Init(&argc,&argv); 
+                    }
+                    //GMPI::Init(argc,argv);
+#endif
+                    plugin_interface();
+                    printerInterface->finalise();
+#ifdef WITH_MPI
+                    //MPI_Finalize(); 
+#endif
+                }
+            }
+
+            return 0;
+        }
+        
+        Scan_Manager::~Scan_Manager()
+        {
+            if (has_local_factory)
+            {
+                delete factory;
+            }
+            
+            delete prior;
+        }
+    }
 }
