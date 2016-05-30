@@ -164,7 +164,7 @@ int main()
     // Set up the LHC likelihood calculations
     calc_LHC_LogLike.resolveDependency(&runATLASAnalyses);
     calc_LHC_LogLike.resolveDependency(&runCMSAnalyses);
-    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_3::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
     runATLASAnalyses.resolveDependency(&getATLASAnalysisContainer);
     runATLASAnalyses.resolveDependency(&getPythiaFileReader);
     runATLASAnalyses.resolveDependency(&smearEventATLAS);
@@ -391,8 +391,7 @@ int main()
     {
       
       // Call the initialisation functions for all backends that are in use. 
-      nulike_1_0_2_init.reset_and_calculate();
-
+      nulike_1_0_3_init.reset_and_calculate();
       
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();

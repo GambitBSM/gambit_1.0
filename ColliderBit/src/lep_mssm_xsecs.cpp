@@ -47,8 +47,8 @@ namespace Gambit
     ///  If l_are_gauge_es = F, then l(bar)_chirality = 1 => (anti-)slepton is lightest family state
     ///                                               = 2 => (anti-)slepton is heaviest family state
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
-                         const int lbar_chirality, const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ,
-                         const bool l_are_gauge_es)
+                         const int lbar_chirality, const double gtol, const double ftol, const bool gpt_error,
+                         const bool fpt_error, const Spectrum* spec, const double gammaZ, const bool l_are_gauge_es)
     {
       static const str genmap[3][2] =
       {
@@ -82,14 +82,14 @@ namespace Gambit
         sleptonmix[0][1] = 0.0; 
         sleptonmix[1][0] = 0.0; 
         sleptonmix[1][1] = 1.0;
-        mass_es1 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][l_chirality-1],    mssm, tol, LOCAL_INFO, pt_error);
-        mass_es2 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][lbar_chirality-1], mssm, tol, LOCAL_INFO, pt_error);
+        mass_es1 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][l_chirality-1],    mssm, gtol, LOCAL_INFO, gpt_error);
+        mass_es2 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][lbar_chirality-1], mssm, gtol, LOCAL_INFO, gpt_error);
       }
       else
       {
         // Requested final states are family mass eigenstates.  Pass 2x2 family mass mixing matrix to low-level routine.
         str m_light, m_heavy;
-        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e-", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO, pt_error);
+        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e-", generation, m_light, m_heavy, mssm, ftol, LOCAL_INFO, fpt_error);
         mass_es1 = (l_chirality    == 1) ? m_light : m_heavy;
         mass_es2 = (lbar_chirality == 1) ? m_light : m_heavy;
         sleptonmix[0][0] = slepton4vec[0]; 
