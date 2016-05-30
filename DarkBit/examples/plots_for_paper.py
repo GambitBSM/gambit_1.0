@@ -2,7 +2,8 @@
 
 from __future__ import division
 from numpy import *
-import pylab as plt
+#import pylab as plt
+import matplotlib.pyplot as plt
 from scipy.integrate import trapz
 
 def plotSpectraCascade():
@@ -117,39 +118,45 @@ def plotMSSM7():
     sigmav = data[50]
     print mwimp, oh2, sigma_SI_p, sigmav
 
-    N = 5
-    data = genfromtxt("runs/MSSM7/samples/runs/MSSM7/samples/MSSM7.hdf5_0")
-    mwimp = data[0:N,49]
-    oh2 = data[0:N,47]
-    sigma_SI_p = data[0:N,51]
-    sigma_SI_n = data[0:N,52]
-    sigma_SD_p = data[0:N,53]
-    sigma_SD_n = data[0:N,54]
-    sigmav = data[0:N,50]  
+
+def spokePlots():
+
+    data1 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM1.out_0")
+    data2 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM2.out_0")
+    
+    mwimp = concatenate((data1[:,46], data2[:,46]))
+    sigma_SI_p = concatenate((data1[:,48], data2[:,48]))
+    sigma_SD_p = concatenate((data1[:,50], data2[:,50]))
+    sigmav = concatenate((data1[:,47], data2[:,47]))
+    LUXlnL = concatenate((data1[:,52], data2[:,52]))
+    
 
     plt.clf()
-    plt.scatter(mwimp,sigma_SI_p)
+    limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
+    plt.scatter(mwimp,sigma_SI_p,c=LUXlnL)
+    plt.plot(limit[:,0],limit[:,1]*10**-36)
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SI_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-53,ymax=10**-43)
+    plt.gca().set_ylim(ymin=10**-50,ymax=10**-39)
     plt.show()
 
-    plt.clf()
-    plt.scatter(mwimp,sigma_SD_p)
-    plt.xlabel("m [GeV]")
-    plt.ylabel("sigma_SD_p [cm^2]")
-    plt.gca().set_xscale('log')
-    plt.gca().set_yscale('log')
-    plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-53,ymax=10**-43)
-    plt.show()
+#    plt.clf()   
+#    plt.scatter(mwimp,sigma_SD_p)
+#    plt.xlabel("m [GeV]")
+#    plt.ylabel("sigma_SD_p [cm^2]")
+#    plt.gca().set_xscale('log')
+#    plt.gca().set_yscale('log')
+#    plt.gca().set_xlim(xmin=5,xmax=10000)
+#    plt.gca().set_ylim(ymin=10**-53,ymax=10**-43)
+#    plt.show()
 
 
 if __name__ == '__main__':
     plotMSSM7()
+    spokePlots()
     #plotLimits()
     #plotSpectraValidation()
     #plotSpectraCascade()
