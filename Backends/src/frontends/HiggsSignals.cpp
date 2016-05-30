@@ -17,6 +17,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Backends/frontends/HiggsSignals.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
@@ -38,16 +39,22 @@ BE_INI_FUNCTION
 
     // Find all the versions of HiggsBounds that have been successfully loaded, and get
     // their locks.
-    std::vector<str> hbversions = backend_info().working_safe_versions("Pythia");
-    
-    Utils::FileLock mylock("HiggsBounds_init");
-    mylock.get_lock();
+    std::vector<str> hbversions = Backends::backendInfo().working_safe_versions("HiggsBounds");    
+    std::vector<Utils::FileLock> mylocks;
+    for (auto it = hbversions.begin(); it != hbversions.end(); ++it)
+    {
+      mylocks.emplace_back("HiggsBounds_" + *it + "_init");
+      mylocks.back().get_lock();
+    }
     { 
       // initialize HiggsSignals with the latest results and set pdf shape
       initialize_HiggsSignals_latestresults(nHneut,nHplus);
       setup_pdf(pdf);
     }
-    mylock.release_lock();    
+    for (auto it = mylocks.begin(); it != mylocks.end(); ++it)
+    {
+      it->release_lock();    
+    }
     scan_level = false;
   }
 

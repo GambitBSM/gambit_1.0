@@ -219,8 +219,7 @@ namespace Gambit
     // Iterate over all known versions of the given backend, retaining only those that work.
     for (auto it = versions.begin(); it != versions.end(); ++it)
     {
-      cout << be + it->first;
-      if (works.at(be + it->first)) {working_versions.push_back(it->first); cout << " works";} cout << endl;
+      if (works.at(be + it->first)) working_versions.push_back(it->first);
     }
     return working_versions;
   }
@@ -231,7 +230,7 @@ namespace Gambit
   {
     // Get the working versions, then iterate over them and convert them to safe versions.
     std::vector<str> safe_versions;
-    const std::vector<str> versions = working_safe_versions(be);
+    const std::vector<str> versions = working_versions(be);
     for (auto it = versions.begin(); it != versions.end(); ++it)
     {
       safe_versions.push_back(safe_version_from_version(be, *it));
