@@ -55,7 +55,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "gambit_output.hdf5"
+    output_file: "gambit_outputi.hdf5"
     group: "/test/test2"
     delete_file_if_exists: true
 
@@ -65,9 +65,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: object_detection
+  use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: hdf5
   #find_shift
   #find_kernel
   #object_detection
@@ -382,9 +382,9 @@ Scanner:
       purpose: LogLike
       parameters:
         param_0:
-          prior_type: none
+          #prior_type: none
           #plugin: flat
-          #range: [0, 1]
+          range: [0, 1]
         param_1:
           range: [0, 1]
           

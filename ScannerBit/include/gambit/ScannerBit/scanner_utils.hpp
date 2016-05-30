@@ -192,6 +192,16 @@ namespace Gambit
                 
                 return ret;
             }
+            else if (node.IsMap())
+            {
+                std::vector<T> ret;
+                for (auto it = node.begin(), end = node.end(); it != end; ++it)
+                {
+                    ret.push_back(it->first.as<T>());
+                }
+                
+                return ret;
+            }
             else
             {
                 scan_err << "\"" << node << "\" input value not usable in the inifile." << scan_end;

@@ -66,7 +66,6 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
             //if (true)
             {
                 a = aNext;
-                //out << "   " << 2.0*chisq << std::endl;
 
                 chisq = chisqnext;
                 mult = 1;
