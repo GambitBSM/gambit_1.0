@@ -85,9 +85,9 @@ namespace Gambit
       
       
       // quantities needed to fill container spectrum, intermediate calculations
-      double alpha_em = 1.0 / *myPipe::Param.at("alphainv");
-      double mz2 = pow(*myPipe::Param.at("mZ"),2);
-      double GF = pow(*myPipe::Param.at("GF"),2);
+      double alpha_em = 1.0 / sminputs.alphainv;
+      double mz2 = pow(sminputs.mZ,2);
+      double GF = sminputs.GF;
       double sinW2cosW2 = Pi * alpha_em / (pow(2,0.5) * mz2 * GF ) ;
       
 
@@ -98,15 +98,19 @@ namespace Gambit
       double tW = 0.5* asin( sin2W );
       double sinW2 = pow( sin (tW) , 2);
       double cosW2 = pow( cos (tW) , 2);
-      
+    
       
       // Higgs sector
       double mh   = *myPipe::Param.at("mH");
       singletmodel.HiggsPoleMass   = mh;
       
-      double vev        = 1. / sqrt(sqrt(2.)*sminputs.GF);
+      
+      
+      
+      
+      double vev        = 1. / sqrt(sqrt(2.)*GF);
       singletmodel.HiggsVEV        = vev;
-      singletmodel.LambdaH   = GF*pow(mh,2)/pow(2,0.5) ;
+    //  singletmodel.LambdaH   = GF*pow(mh,2)/pow(2,0.5) ;
       
       // Scalar singlet sector
       
@@ -122,22 +126,22 @@ namespace Gambit
       // gauge couplings
       singletmodel.g1 = e / sinW2;
       singletmodel.g2 = e / cosW2;
-      singletmodel.g3   = pow( 4*Pi*( *myPipe::Param.at("alphaS") ),0.5) ;
+      singletmodel.g3   = pow( 4*Pi*( sminputs.alphaS ),0.5) ;
       
       double sqrt2v = pow(2.0,0.5)/vev;
       // Yukawas
       
-      singletmodel.Yu[0] = sqrt2v * *myPipe::Param.at("mU");
-      singletmodel.Yu[1] = sqrt2v * *myPipe::Param.at("mCmC");
-      singletmodel.Yu[2] = sqrt2v * *myPipe::Param.at("mT");
+      singletmodel.Yu[0] = sqrt2v * sminputs.mU;
+      singletmodel.Yu[1] = sqrt2v * sminputs.mCmC;
+      singletmodel.Yu[2] = sqrt2v * sminputs.mT;
       
-      singletmodel.Ye[0] = sqrt2v * *myPipe::Param.at("mE");
-      singletmodel.Ye[1] = sqrt2v * *myPipe::Param.at("mMu");
-      singletmodel.Ye[2] = sqrt2v * *myPipe::Param.at("mTau");
+      singletmodel.Ye[0] = sqrt2v * sminputs.mE;
+      singletmodel.Ye[1] = sqrt2v * sminputs.mMu;
+      singletmodel.Ye[2] = sqrt2v * sminputs.mTau;
       
-      singletmodel.Yd[0] = sqrt2v * *myPipe::Param.at("mD");
-      singletmodel.Yd[1] = sqrt2v * *myPipe::Param.at("mS");
-      singletmodel.Yd[2] = sqrt2v * *myPipe::Param.at("mBmB");
+      singletmodel.Yd[0] = sqrt2v * sminputs.mD;
+      singletmodel.Yd[1] = sqrt2v * sminputs.mS;
+      singletmodel.Yd[2] = sqrt2v * sminputs.mBmB;
       
       
       

@@ -101,6 +101,8 @@ namespace Gambit
 
          public:
             /// @{ Constructors/destructors
+            static int index_offset() {return -1;}
+        
             ScalarSingletDMSimpleSpec(const Model& m)
              : model(m)
              , dummyinput()
@@ -123,6 +125,12 @@ namespace Gambit
 
                map_collection[Par::mass1].map0["vev"]       = &Model::get_HiggsVEV;
                map_collection[Par::dimensionless].map0["lambda_hS"] = &Model::get_lambda_hS;
+               map_collection[Par::Pole_Mass].map0["h0"]    = &Model::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::get_HiggsPoleMass;
+ 
+               map_collection[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass;
+              
                map_collection[Par::dimensionless].map0["lambda_S"] = &Model::get_lambda_S;
                map_collection[Par::dimensionless].map0["lambda_h"] = &Model::get_lambda_h;
               
@@ -132,11 +140,7 @@ namespace Gambit
                map_collection[Par::dimensionless].map0["g3"] = &Model::get_g3;
                map_collection[Par::dimensionless].map0["sinW2"] = &Model::get_sinW2;
 
-               map_collection[Par::Pole_Mass].map0["h0"]    = &Model::get_HiggsPoleMass;
-               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::get_HiggsPoleMass;
- 
-               map_collection[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
-               map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass;
+
               
               
               {

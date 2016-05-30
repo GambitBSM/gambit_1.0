@@ -140,9 +140,17 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: multinest
+  use_scanner: random
 
   scanners:
+
+    random:
+      plugin: random_sampler
+      point_number: 2
+      output_file:  output
+      like:  LogLike
+      files:
+        output_file: "weights ..."
 
     multinest:
       plugin: MultiNest
@@ -383,6 +391,9 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4
+
+  exceptions:
+    invalid_point_fatal: false
 
   default_output_path: "runs/singletDM_ScannerBit_test4/"
 
