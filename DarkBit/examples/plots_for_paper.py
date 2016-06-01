@@ -135,16 +135,20 @@ def spokePlots():
     # Spin Independent Direct Detection
     plt.clf()
     limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
+#    plt.plot(mwimp[0:8],sigma_SI_p[0:8],color='k')
+#    plt.plot(mwimp[9:18],sigma_SI_p[9:18],color='k')
     sc = plt.scatter(mwimp,sigma_SI_p,c=LUXlnL,s=30)
     cbar=plt.colorbar(sc)
     cbar.set_label('ln L_LUX')
-    plt.plot(limit[:,0],limit[:,1]*10**-36)
+    plt.plot(limit[:,0],limit[:,1]*10**-36,label="LUX")
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SI_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
     plt.gca().set_ylim(ymin=10**-49,ymax=10**-39)
+    plt.savefig("SI_DD.eps")
+    plt.legend()
     plt.show()
 
     # Spin Dependent Direct Detection
@@ -158,7 +162,7 @@ def spokePlots():
     plt.gca().set_ylim(ymin=10**-41,ymax=10**-31)
     limit = genfromtxt("DarkBit/examples/SIMPLE_2011_PhaseII_SDp.txt")
     plt.plot(limit[:,0],limit[:,1]*10**-36)
-    plt.show()
+    plt.show("SD_DD.eps")
 
     # Ice Cube
     plt.clf()   
@@ -180,8 +184,27 @@ def spokePlots():
     plt.plot(bbSD[:,0],bbSD[:,2], label="SD bb")
     plt.plot(tautauSD[:,0],tautauSD[:,2], label="SD tau+ tau-")
     plt.legend()
+    plt.savefig("IC.eps")
     plt.show()
 
+    # Fermi Dwarf Galaxy Limits
+    plt.clf()
+    sc = plt.scatter(mwimp,sigmav,c=FermiDwarflnL,s=30,label="<sigma v>")
+    cbar=plt.colorbar(sc)
+    cbar.set_label("ln L_Fermi")
+    plt.xlabel("m [GeV]")
+    plt.ylabel("<sigma v>")
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=5,xmax=10000)
+    plt.gca().set_ylim(ymin=10**-30,ymax=10**-20)
+    bb = genfromtxt("DarkBit/examples/FermiLAT_limits_bb.txt")
+    tautau = genfromtxt("DarkBit/examples/FermiLAT_limits_tautau.txt")
+    plt.plot(bb[:,0],bb[:,26], label="Fermi bb")
+    plt.plot(tautau[:,0],tautau[:,26],label="Fermi tau+ tau-")
+    plt.legend()
+    plt.savefig("Fermi.eps")
+    plt.show()
 
 if __name__ == '__main__':
     plotMSSM7()
