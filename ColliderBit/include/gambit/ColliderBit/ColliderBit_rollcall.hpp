@@ -416,10 +416,18 @@ START_MODULE
   #define CAPABILITY HB_ModelParameters
   START_CAPABILITY
 
-    // SM Higgs only model parameters
+    // SM Higgs model parameters
     #define FUNCTION SMHiggs_ModelParameters  
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(SM_spectrum, const Spectrum*)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
+    #define FUNCTION SMlikeHiggs_ModelParameters
+    START_FUNCTION(hb_ModelParameters)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
+    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, const Spectrum*, SingletDM, SingletDMZ3)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 
@@ -453,7 +461,7 @@ START_MODULE
        (double*, double*, double*, double*,
         double*, double*, double*, double*))
        BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
-       BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
+       BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (int&, int&, double&, int&))            
        BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
        BACKEND_OPTION( (HiggsBounds, 4.2.1), (libhiggsbounds) )
     #undef FUNCTION

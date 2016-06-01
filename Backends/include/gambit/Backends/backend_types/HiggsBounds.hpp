@@ -66,15 +66,15 @@ namespace Gambit
     double BR_hjhihi[3][3];
 
     // Charged Higgs Parameters
-    double MHplus;
-    double deltaMHplus;
-    double HpGammaTot; 
-    double CS_lep_HpjHmi_ratio;
+    double MHplus[1];
+    double deltaMHplus[1];
+    double HpGammaTot[1]; 
+    double CS_lep_HpjHmi_ratio[1];
     double BR_tWpb;
-    double BR_tHpjb;
-    double BR_Hpjcs; 
-    double BR_Hpjcb;
-    double BR_Hptaunu;
+    double BR_tHpjb[1];
+    double BR_Hpjcs[1]; 
+    double BR_Hpjcb[1];
+    double BR_Hptaunu[1];
   };
   
   

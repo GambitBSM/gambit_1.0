@@ -856,7 +856,7 @@ namespace Gambit
       using namespace Pipes::LEP208_SLHA1_convention_xsec_selselbar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -865,7 +865,7 @@ namespace Gambit
       using namespace Pipes::LEP208_SLHA1_convention_xsec_selserbar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -874,7 +874,7 @@ namespace Gambit
       using namespace Pipes::LEP208_SLHA1_convention_xsec_serserbar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -887,27 +887,33 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_se1se1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_se1se2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_se2se2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -924,27 +930,27 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -957,27 +963,33 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smu1smu1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smu1smu2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smu2smu2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -994,27 +1006,27 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1027,27 +1039,33 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_stau1stau1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_stau1stau2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP208_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_stau2stau2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1065,8 +1083,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_11(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1074,8 +1092,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_12(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1083,8 +1101,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_13(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_13;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 1, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1092,8 +1110,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_14(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_14;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 1, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1101,8 +1119,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_22(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1110,8 +1128,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_23(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_23;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 2, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1119,8 +1137,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_24(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_24;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 2, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1128,8 +1146,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_33(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_33;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 3, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1137,8 +1155,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_34(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_34;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 3, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1146,8 +1164,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chi00_44(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_44;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 208.0, 4, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1160,8 +1178,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chipm_11(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 208.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1169,8 +1187,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chipm_12(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 208.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1178,8 +1196,8 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_chipm_22(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 208.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1198,27 +1216,27 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_selselbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_selserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_serserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1231,27 +1249,33 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_se1se1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_se1se2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_se2se2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1268,27 +1292,27 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1301,27 +1325,33 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smu1smu1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smu1smu2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smu2smu2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1338,27 +1368,27 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1371,27 +1401,33 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_stau1stau1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_stau1stau2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP205_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_stau2stau2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1409,8 +1445,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_11(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1418,8 +1454,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_12(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1427,8 +1463,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_13(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_13;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 1, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1436,8 +1472,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_14(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_14;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 1, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1445,8 +1481,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_22(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1454,8 +1490,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_23(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_23;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 2, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1463,8 +1499,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_24(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_24;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 2, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1472,8 +1508,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_33(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_33;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 3, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1481,8 +1517,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_34(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_34;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 3, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1490,8 +1526,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chi00_44(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_44;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 205.0, 4, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1504,8 +1540,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chipm_11(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 205.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1513,8 +1549,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chipm_12(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 205.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1522,8 +1558,8 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_chipm_22(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 205.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1540,27 +1576,27 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_selselbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_selserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_serserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1573,27 +1609,33 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_se1se1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_se1se2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_se2se2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1610,27 +1652,27 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1643,27 +1685,33 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smu1smu1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smu1smu2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smu2smu2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1680,27 +1728,27 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, tol, pt_error, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1713,27 +1761,33 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_stau1stau1bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_stau1stau2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
     void LEP188_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_stau2stau2bar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
+      const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool gpt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double ftol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool fpt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, gtol, ftol, gpt_error, fpt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
     }
@@ -1751,8 +1805,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_11(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1760,8 +1814,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_12(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1769,8 +1823,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_13(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_13;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 1, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1778,8 +1832,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_14(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_14;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 1, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1787,8 +1841,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_22(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1796,8 +1850,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_23(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_23;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 2, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1805,8 +1859,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_24(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_24;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 2, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1814,8 +1868,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_33(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_33;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 3, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1823,8 +1877,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_34(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_34;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 3, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1832,8 +1886,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chi00_44(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_44;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chi00(result, 188.6, 4, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1846,8 +1900,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chipm_11(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 188.6, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1855,8 +1909,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chipm_12(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 188.6, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -1864,8 +1918,8 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_chipm_22(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
       get_sigma_ee_chipm(result, 188.6, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
       if (!is_xsec_sane(result))
         ColliderBit_error().raise(LOCAL_INFO, "Non-physical LEP cross section!");
@@ -2032,8 +2086,8 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const SubSpectrum* mssm = spec->get_HE();
-      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
-      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
       const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
@@ -2235,8 +2289,8 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const SubSpectrum* mssm = spec->get_HE();
-      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
-      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
       const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
@@ -2784,8 +2838,8 @@ namespace Gambit
       }
 #endif
       using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
       using std::pow;
       using std::log;
@@ -2911,8 +2965,8 @@ namespace Gambit
       }
 #endif
       using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
       using std::pow;
       using std::log;
@@ -3016,8 +3070,8 @@ namespace Gambit
       }
 #endif
       using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
       using std::pow;
       using std::log;
@@ -3262,10 +3316,10 @@ namespace Gambit
       result = HiggsProd;
     }
 
-    /// SM Higgs only model parameters
-    void SMHiggs_ModelParameters(hb_ModelParameters &result)
+    /// Local function returning a HiggsBounds/Signals ModelParameters object for SM-like Higgs.
+    void set_SMHiggs_ModelParameters(const Spectrum* fullspectrum, const DecayTable::Entry* decays, hb_ModelParameters &result)
     {
-      using namespace Pipes::SMHiggs_ModelParameters;
+      const SubSpectrum* spec = fullspectrum->get_HE();
 
       for(int i = 0; i < 3; i++)
       {
@@ -3310,23 +3364,26 @@ namespace Gambit
         for(int j = 0; j < 3; j++) result.BR_hjhihi[i][j] = 0.;
       }
 
-      result.MHplus = 0.;
-      result.deltaMHplus = 0.;
-      result.HpGammaTot = 0.;
-      result.CS_lep_HpjHmi_ratio = 0.;
+      result.MHplus[0] = 0.;
+      result.deltaMHplus[0] = 0.;
+      result.HpGammaTot[0] = 0.;
+      result.CS_lep_HpjHmi_ratio[0] = 0.;
       result.BR_tWpb = 0.;
-      result.BR_tHpjb = 0.;
-      result.BR_Hpjcs = 0.;
-      result.BR_Hpjcb = 0.;
-      result.BR_Hptaunu = 0.;
-
-      const Spectrum* fullspectrum = *Dep::SM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE();
-      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
-
+      result.BR_tHpjb[0] = 0.;
+      result.BR_Hpjcs[0] = 0.;
+      result.BR_Hpjcb[0] = 0.;
+      result.BR_Hptaunu[0] = 0.;
       result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
-
-      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      try
+      {
+        double upper = spec->get(Par::Pole_Mass_1srd_high, 25, 0);
+        double lower = spec->get(Par::Pole_Mass_1srd_low, 25, 0);
+        result.deltaMh[0] = std::max(upper,lower);
+      }
+      catch(Gambit::exception)
+      {
+        result.deltaMh[0] = 0.;
+      }
       result.hGammaTot[0] = decays->width_in_GeV;
       result.CP[0] = 1;
       result.CS_lep_hjZ_ratio[0] = 1.;
@@ -3363,6 +3420,25 @@ namespace Gambit
       result.BR_hjgg[0] = decays->BF("g", "g");
     }
 
+    /// SM Higgs model parameters for HiggsBounds/Signals
+    void SMHiggs_ModelParameters(hb_ModelParameters &result)
+    {
+      using namespace Pipes::SMHiggs_ModelParameters;
+      const Spectrum* fullspectrum = *Dep::SM_spectrum;
+      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
+      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+    }
+
+    /// SM-like Higgs model parameters for HiggsBounds/Signals
+    void SMlikeHiggs_ModelParameters(hb_ModelParameters &result)
+    {
+      using namespace Pipes::SMlikeHiggs_ModelParameters;
+      const Spectrum* fullspectrum;
+      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3")) fullspectrum = *Dep::SingletDM_spectrum;     
+      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
+      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+    }
+
     /// MSSM Higgs model parameters
     void MSSMHiggs_ModelParameters(hb_ModelParameters &result)
     {
@@ -3386,7 +3462,9 @@ namespace Gambit
       {
         // Higgs masses and errors
         result.Mh[i] = spec->get(Par::Pole_Mass,sHneut[i]);
-        result.deltaMh[i] = 0.;
+        double upper = spec->get(Par::Pole_Mass_1srd_high,sHneut[i]);
+        double lower = spec->get(Par::Pole_Mass_1srd_low,sHneut[i]);
+        result.deltaMh[i] = std::max(upper,lower);
       }
 
       // invisible LSP?
@@ -3469,18 +3547,20 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->get(Par::Pole_Mass,"H+");
-      result.deltaMHplus = 0.;
+      result.MHplus[0] = spec->get(Par::Pole_Mass,"H+");
+      double upper = spec->get(Par::Pole_Mass_1srd_high,"H+");
+      double lower = spec->get(Par::Pole_Mass_1srd_low,"H+");
+      result.deltaMHplus[0] = std::max(upper,lower);
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
       const DecayTable::Entry* top_decays = &(decaytable("t"));
 
-      result.HpGammaTot = Hplus_decays->width_in_GeV;
-      result.BR_tWpb    = top_decays->BF("W+", "b");
-      result.BR_tHpjb   = top_decays->has_channel("H+", "b") ? top_decays->BF("H+", "b") : 0.0;
-      result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar");
-      result.BR_Hpjcb   = Hplus_decays->BF("c", "bbar");
-      result.BR_Hptaunu = Hplus_decays->BF("tau+", "nu_tau");
+      result.HpGammaTot[0] = Hplus_decays->width_in_GeV;
+      result.BR_tWpb       = top_decays->BF("W+", "b");
+      result.BR_tHpjb[0]   = top_decays->has_channel("H+", "b") ? top_decays->BF("H+", "b") : 0.0;
+      result.BR_Hpjcs[0]   = Hplus_decays->BF("c", "sbar");
+      result.BR_Hpjcb[0]   = Hplus_decays->BF("c", "bbar");
+      result.BR_Hptaunu[0] = Hplus_decays->BF("tau+", "nu_tau");
 
       // check SM partial width h0_1 -> b bbar
       // shouldn't be zero...
@@ -3577,9 +3657,9 @@ namespace Gambit
         result.CS_ud_hjWm_ratio[i] = g2hjWW;
         result.CS_cs_hjWm_ratio[i] = g2hjWW;
 
-        result.CS_tev_vbf_ratio[i]   = g2hjWW;
-        result.CS_lhc7_vbf_ratio[i]  = g2hjWW;
-        result.CS_lhc8_tthj_ratio[i] = g2hjWW;
+        result.CS_tev_vbf_ratio[i]  = g2hjWW;
+        result.CS_lhc7_vbf_ratio[i] = g2hjWW;
+        result.CS_lhc8_vbf_ratio[i] = g2hjWW;
       }
 
       // higgs to higgs + V xsection ratios
@@ -3622,7 +3702,7 @@ namespace Gambit
           result.CS_lhc8_tthj_ratio[i] = FH_prod.prodxs_LHC8[i+27]/FH_prod.prodxs_LHC8[i+30];
       }
       // LEP H+ H- x-section ratio
-      result.CS_lep_HpjHmi_ratio = 1.;
+      result.CS_lep_HpjHmi_ratio[0] = 1.;
     }
 
     /// Get a LEP chisq from HiggsBounds
@@ -3659,15 +3739,15 @@ namespace Gambit
               &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
               &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
-      BEreq::HiggsBounds_charged_input(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
-               &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+      BEreq::HiggsBounds_charged_input(&ModelParam.MHplus[0], &ModelParam.HpGammaTot[0], &ModelParam.CS_lep_HpjHmi_ratio[0],
+               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb[0], &ModelParam.BR_Hpjcs[0],
+               &ModelParam.BR_Hpjcb[0], &ModelParam.BR_Hptaunu[0]);
 
-      BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
+      BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus[0]);
 
       // run Higgs bounds 'classic'
-      double HBresult, obsratio;
-      int chan, ncombined;
+      double obsratio;
+      int HBresult, chan, ncombined;
       BEreq::run_HiggsBounds_classic(HBresult,chan,obsratio,ncombined);
 
       // extract the LEP chisq
@@ -3715,15 +3795,15 @@ namespace Gambit
                  &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
                  &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
-      BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
-            &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+      BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus[0], &ModelParam.HpGammaTot[0], &ModelParam.CS_lep_HpjHmi_ratio[0],
+            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb[0], &ModelParam.BR_Hpjcs[0],
+            &ModelParam.BR_Hpjcb[0], &ModelParam.BR_Hptaunu[0]);
 
       BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
 
       // add uncertainties to cross-sections and branching ratios
-      // double dCS[5];
-      // double dBR[5];
+      // double dCS[5] = {0.,0.,0.,0.,0.};
+      // double dBR[5] = {0.,0.,0.,0.,0.};
       // BEreq::setup_rate_uncertainties(dCS,dBR);
 
       // run HiggsSignals
@@ -3731,7 +3811,6 @@ namespace Gambit
       double csqmu, csqmh, csqtot, Pvalue;
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
-
 
       result = -0.5*csqtot;
       //std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";

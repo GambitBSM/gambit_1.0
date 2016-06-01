@@ -98,6 +98,13 @@ namespace Gambit
         /// Get the default version of a BOSSed backend.
         str default_version(const str& be) const;
 
+        /// Get all versions of a given backend that are successfully loaded.
+        std::vector<str> working_versions(const str&);
+
+        /// Get all safe versions of a given backend that are successfully loaded.
+        std::vector<str> working_safe_versions(const str&);
+
+
       private:
 
         /// Map from backend names to maps between version and safe version

@@ -204,9 +204,9 @@ option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimiz
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -ipo -O3 -no-prec-div -fp-model fast=2 -xHost -diag-disable 654")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -fno-math-errno -funsafe-math-optimizations -fno-rounding-math -fno-signaling-nans -fcx-limited-range")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
 endif()
 # - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -307,7 +307,7 @@ BOSS_backend(pythiaEM Pythia 8.212.EM)
 add_extra_targets(pythiaEM ${pythiaEM_dir} ${backend_download}/${pythia_dl} distclean)
 
 # Nulike
-set(nulike_ver "1.0.2")
+set(nulike_ver "1.0.3")
 set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
@@ -315,7 +315,7 @@ set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   URL ${nulike_location}
-  URL_MD5 e4f68df1b53e93854dc10a2d28b8b67f
+  URL_MD5 2e77fe4b18891e4838f8af8d861c341b
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1

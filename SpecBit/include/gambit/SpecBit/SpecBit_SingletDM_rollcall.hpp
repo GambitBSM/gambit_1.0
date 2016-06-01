@@ -56,35 +56,16 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
-
-
   #undef CAPABILITY
 
-  #define CAPABILITY SingletDM_pole_mh
+  #define CAPABILITY print_SingletDM_spectrum
   START_CAPABILITY
-    #define FUNCTION get_pole_mh
-    START_FUNCTION(double)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SingletDMZ3)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running,SingletDMZ3))
-    ALLOW_MODEL_COMBINATION(higgs, singlet)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-  #define CAPABILITY SingletDM_pole_ms
-  START_CAPABILITY
-    #define FUNCTION get_pole_ms
-    START_FUNCTION(double)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SingletDMZ3)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running,SingletDMZ3))
-    ALLOW_MODEL_COMBINATION(higgs, singlet)
-    #undef FUNCTION
+    // ============================== 
+    // Convert spectrum into a standard map so that it can be printed
+    #define FUNCTION get_SingletDM_spectrum_as_map 
+    START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
+    DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+    #undef FUNCTION    
   #undef CAPABILITY
 
 
@@ -111,7 +92,7 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
-    #undef FUNCTION
+//    #undef FUNCTION
 
   #undef CAPABILITY
 
