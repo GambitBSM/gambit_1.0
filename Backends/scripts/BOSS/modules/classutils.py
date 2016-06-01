@@ -1329,9 +1329,8 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
 
         # If return-by-value, then a const qualifier on the return value is meaningless
         # (will result in a compiler warning)
-        if (pointerness == 0) and (is_ref == False):
-            if 'const' in return_type_kw:
-                return_type_kw.remove('const')
+        if (pointerness == 0) and (is_ref == False) and ('const' in return_type_kw):
+            return_kw_str = return_kw_str.replace('const', '')
 
         # Arguments
         args = funcutils.getArgs(func_el)
@@ -1425,7 +1424,7 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
     # Add special constructor based on abstract pointer
     decl_code += 2*indent + '// Special pointer-based constructor: \n'
     decl_code += 2*indent + class_name['short'] + '(' + abstr_class_name['long'] +'* in);\n'
-    # decl_code += 2*indent + class_name['short'] + '(' + abstr_class_name['long'] +'* const & in, bool);\n'
+    # decl_code += 2*indent + class_name['short'] + '(const ' + abstr_class_name['long'] +'* in);\n'
 
 
     # Add copy constructor
@@ -1549,10 +1548,8 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
 
         # If return-by-value, then a const qualifier on the return value is meaningless
         # (will result in a compiler warning)
-        if (pointerness == 0) and (is_ref == False):
-            if 'const' in return_type_kw:
-                return_type_kw.remove('const')
-
+        if (pointerness == 0) and (is_ref == False) and ('const' in return_type_kw):
+            return_kw_str = return_kw_str.replace('const', '')
 
         # Arguments
         args = funcutils.getArgs(func_el)
@@ -1620,7 +1617,10 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                         def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wptr();\n'
                 
                 # Return-by-value
-                else:  
+                else:
+                    print 'DEBUG:'
+                    print 'DEBUG: call_func_name = ', call_func_name  
+                    print 'DEBUG: return_type_kw = ', [return_type_kw]  
                     if 'const' in return_type_kw:
                         # def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
                         def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ') );\n'
@@ -1772,6 +1772,24 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += '{\n'
     def_code += common_constructor_body
     def_code += '}\n'
+
+    # # Const version of constructor from abstract class pointer
+    # def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(const ' + abstr_class_name['long'] +'* in) :\n'
+
+    # parent_class_init_list = ''
+    # for parent_dict in loaded_parent_classes:
+    #     parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in),\n'
+    # if parent_class_init_list == '':
+    #     parent_class_init_list += indent + 'WrapperBase(in),\n'
+
+    # if common_init_list_code != '':
+    #     def_code += parent_class_init_list + common_init_list_code
+    # else:
+    #     def_code += parent_class_init_list.rstrip(',\n') + '\n'
+    # def_code += '{\n'
+    # def_code += common_constructor_body
+    # def_code += '}\n'
+
 
 
     # Add copy constructor
