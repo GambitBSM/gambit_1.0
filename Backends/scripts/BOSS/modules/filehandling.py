@@ -186,7 +186,6 @@ def moveFilesAround():
     files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
 
     for rm_target in files_list:
-        print 'DEBUG: Deleting file: ', rm_target
         os.remove(rm_target)
 
 
