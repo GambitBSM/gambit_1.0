@@ -128,9 +128,11 @@ def spokePlots():
     sigma_SI_p = concatenate((data1[:,48], data2[:,48]))
     sigma_SD_p = concatenate((data1[:,50], data2[:,50]))
     sigmav = concatenate((data1[:,47], data2[:,47]))
-    LUXlnL = concatenate((data1[:,52], data2[:,52]))
-    
+    LUXlnL = concatenate((data1[:,53], data2[:,53]))
+    FermiDwarflnL = concatenate((data1[:,44], data2[:,44]))
+    IceCubelnL = concatenate((data1[:,54], data2[:,54]))
 
+    # Spin Independent Direct Detection
     plt.clf()
     limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
     sc = plt.scatter(mwimp,sigma_SI_p,c=LUXlnL,s=30)
@@ -145,15 +147,40 @@ def spokePlots():
     plt.gca().set_ylim(ymin=10**-49,ymax=10**-39)
     plt.show()
 
-#    plt.clf()   
+    # Spin Dependent Direct Detection
+    plt.clf()   
 #    plt.scatter(mwimp,sigma_SD_p)
-#    plt.xlabel("m [GeV]")
-#    plt.ylabel("sigma_SD_p [cm^2]")
-#    plt.gca().set_xscale('log')
-#    plt.gca().set_yscale('log')
-#    plt.gca().set_xlim(xmin=5,xmax=10000)
-#    plt.gca().set_ylim(ymin=10**-53,ymax=10**-43)
-#    plt.show()
+    plt.xlabel("m [GeV]")
+    plt.ylabel("sigma_SD_p [cm^2]")
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=5,xmax=10000)
+    plt.gca().set_ylim(ymin=10**-41,ymax=10**-31)
+    limit = genfromtxt("DarkBit/examples/SIMPLE_2011_PhaseII_SDp.txt")
+    plt.plot(limit[:,0],limit[:,1]*10**-36)
+    plt.show()
+
+    # Ice Cube
+    plt.clf()   
+    sc = plt.scatter(mwimp,sigma_SI_p,c=IceCubelnL,s=30,label="sigma_p_SI")
+    cbar=plt.colorbar(sc)
+    cbar.set_label('ln L_Ice Cube 79')
+    plt.xlabel("m [GeV]")
+    plt.ylabel("sigma_p [cm^2]")
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=5,xmax=10000)
+    plt.gca().set_ylim(ymin=10**-49,ymax=10**-31)
+    bbSI = genfromtxt("DarkBit/examples/IC79_bb_SI.dat", comments="#")
+    tautauSI = genfromtxt("DarkBit/examples/IC79_tautau_SI.dat", comments="#")
+    bbSD = genfromtxt("DarkBit/examples/IC79_bb_SD.dat", comments="#")
+    tautauSD = genfromtxt("DarkBit/examples/IC79_tautau_SD.dat", comments="#")
+    plt.plot(bbSI[:,0],bbSI[:,2], label="SI bb")
+    plt.plot(tautauSI[:,0],tautauSI[:,2], label="SI tau+ tau-")
+    plt.plot(bbSD[:,0],bbSD[:,2], label="SD bb")
+    plt.plot(tautauSD[:,0],tautauSD[:,2], label="SD tau+ tau-")
+    plt.legend()
+    plt.show()
 
 
 if __name__ == '__main__':
