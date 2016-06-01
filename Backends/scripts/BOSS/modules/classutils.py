@@ -1618,9 +1618,6 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 
                 # Return-by-value
                 else:
-                    print 'DEBUG:'
-                    print 'DEBUG: call_func_name = ', call_func_name  
-                    print 'DEBUG: return_type_kw = ', [return_type_kw]  
                     if 'const' in return_type_kw:
                         # def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
                         def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ') );\n'
