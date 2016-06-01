@@ -112,12 +112,12 @@ namespace Gambit
          std::string getName() const { return SpecTraits<D>::name(); };
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         bool   has(const Par::Tags, const str&, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
-         double get(const Par::Tags, const str&, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
-         bool   has(const Par::Tags, const str&, int, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
-         double get(const Par::Tags, const str&, int, SafeBool=SafeBool(true), SafeBool=SafeBool(true)) const;
-         bool   has(const Par::Tags, const str&, int, int, SafeBool=SafeBool(true)) const;
-         double get(const Par::Tags, const str&, int, int, SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, int, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, int, SpecOverrideOptions=use_overrides) const;
+         double get(const Par::Tags, const str&, int, int, SpecOverrideOptions=use_overrides) const;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside

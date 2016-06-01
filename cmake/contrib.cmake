@@ -133,7 +133,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} ${flexiblesusy_extralibs}")
 
   # We need to include some stuff from the eigen3 library.  Just ship it until we can get rid of FlexibleSUSY.
-  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
+  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
   include_directories("${EIGEN3_DIR}")
 
   # FlexibleSUSY configure options

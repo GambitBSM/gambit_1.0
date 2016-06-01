@@ -105,6 +105,8 @@ scanner_plugin(MultiNest, version(3, 9))
       int pWrap[ndims];
       for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)        
 
+      // TODO: check what happens if resume mode is active but multinest native output is not written. I guess it will resume writing to the printer output, but actually start a new scan?
+
       // Root for output files
       std::string root_str;
       std::string defpath = Gambit::Utils::ensure_path_exists(

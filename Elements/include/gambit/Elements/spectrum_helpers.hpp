@@ -93,6 +93,21 @@ namespace Gambit
       static const std::map<Tags,std::string> toString = fill_map();
    }
 
+   /// Mini helper class to specify behaviour of getters w.r.t. overrides in a type-safe way
+   class SpecOverrideOptions
+   {
+     private:
+      int my_value;
+     public:
+      int value() const { return my_value; }
+      SpecOverrideOptions(int i) : my_value(i) {}
+   };
+   inline static bool operator==(const SpecOverrideOptions& lhs, const SpecOverrideOptions& rhs) 
+   { return lhs.value() == rhs.value(); }
+   static const SpecOverrideOptions use_overrides(0);
+   static const SpecOverrideOptions overrides_only(1);
+   static const SpecOverrideOptions ignore_overrides(2);
+
    /// Structs to hold function pointers and valid index sets
    /// @{
    
