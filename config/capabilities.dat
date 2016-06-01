@@ -217,3 +217,173 @@ FH_HiggsProd: |
 #             Calculates the LEP chargino pair production
 #             cross-section for centre of mass energy $E$, with chargino
 #             mass eigenstates $X$ and $Y$.
+
+
+#-------------------------------------
+#  DarkBit capabilities
+#-------------------------------------
+
+TH_ProcessCatalog: |
+   One of the central structures in DarkBit, carrying all relevant
+   information about the decay and annihilation of particles.
+   See Section 6.3.1 of DarkBit paper.
+
+DD_couplings: |
+   Provides WIMP mass and couplings to nucleons.
+
+mwimp: |
+   DM mass in GeV
+
+sigmav: |
+   Thermally averaged annihilation cross section <sv>, for v=0.
+
+sigma_SI_N: |
+   Spin-independent WIMP-Nucleon cross section.
+
+sigma_SD_N: |
+   Spin-dependent WIMP-Nucleon cross section.
+
+DarkMatter_ID: |
+   Contains string ID to identify dark matter particle.
+
+RD_spectrum: |
+   Contains degrees of freedom and masses of all (co)-annihilating
+   particles, as well as location of thresholds and resonances.
+
+RD_spectrum_ordered: |
+   Same as RD_spectrum, but with all resonances and thresholds 
+   ordered with increasing p_eff, and coannihilation thresholds 
+   included
+
+RD_eff_annrate_DSprep: |
+   Ensures that DarkSUSY is correctly initialized for relic density
+   calculations.
+
+RD_eff_annrate: |
+   The effective invariant rate W_eff that enters in the calculation
+   of the thermally averaged cross section <sv>.
+
+RD_oh2: |
+   Contains the dark matter relic density for a given model point.
+
+RD_fraction: |
+   Contains the fraction of the observed dark matter density that is
+   used to calculate direct and indirect detection observables.
+
+lnL_oh2: |
+   Contains the log likelihood function constraining the relic density.
+
+X_Calculate: |
+   DESCRIPTION MISSING
+
+X_Events: |
+   DESCRIPTION MISSING
+
+X_Background: |
+   DESCRIPTION MISSING
+
+X_Signal: |
+   DESCRIPTION MISSING
+
+X_SignalSI: |
+   DESCRIPTION MISSING
+
+X_SignalSD: |
+   DESCRIPTION MISSING
+
+X_LogLikelihood: |
+   DESCRIPTION MISSING
+
+lnL_SI_nuclear_parameters: |
+   DESCRIPTION MISSING
+
+SimYieldTable: |
+   DESCRIPTION MISSING
+
+GA_DESCRIPTION MISSINGFinalStates: |
+   DESCRIPTION MISSING
+
+GA_AnnYield: |
+   DESCRIPTION MISSING
+
+cascadeMC_FinalStates: |
+   DESCRIPTION MISSING
+
+cascadeMC_DecayTable: |
+   DESCRIPTION MISSING
+
+cascadeMC_gammaSpectra: |
+   DESCRIPTION MISSING
+
+cascadeMC_LoopManager: |
+   DESCRIPTION MISSING
+
+cascadeMC_InitialState: |
+   DESCRIPTION MISSING
+
+cascadeMC_EventCount: |
+   DESCRIPTION MISSING
+
+cascadeMC_ChainEvent: |
+   DESCRIPTION MISSING
+
+cascadeMC_Histograms: |
+   DESCRIPTION MISSING
+
+lnL_FermiLATdwarfs: |
+   DESCRIPTION MISSING
+
+lnL_FermiGC: |
+   DESCRIPTION MISSING
+
+lnL_HESSGC: |
+   DESCRIPTION MISSING
+
+lnL_CTAGC: |
+   DESCRIPTION MISSING
+
+capture_rate_Sun: |
+   DESCRIPTION MISSING
+
+equilibration_time_Sun: |
+   DESCRIPTION MISSING
+
+nuyield_ptr: |
+   DESCRIPTION MISSING
+
+X_data: |
+   DESCRIPTION MISSING
+
+X_signal: |
+   DESCRIPTION MISSING
+
+X_bg: |
+   DESCRIPTION MISSING
+
+X_loglike: |
+   DESCRIPTION MISSING
+
+X_bgloglike: |
+   DESCRIPTION MISSING
+
+X_pvalue: |
+   DESCRIPTION MISSING
+
+X_nobs: |
+   DESCRIPTION MISSING
+
+IC79_loglike: |
+   DESCRIPTION MISSING
+IceCube likelihood: |
+   DESCRIPTION MISSING
+
+DarkSUSY_PointInit: |
+   DESCRIPTION MISSING
+
+dump_GammaSpectrum: |
+   DESCRIPTION MISSING
+
+UnitTest_DarkBit: |
+   DESCRIPTION MISSING
+
+
