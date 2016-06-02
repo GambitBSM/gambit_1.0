@@ -58,7 +58,7 @@ namespace Gambit
         c=d;
     }
     
-    bool check_perturb(const Spectrum*  spec,double scale,int pts)
+    bool check_perturb_to_min_lambda(const Spectrum*  spec,double scale,int pts)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
@@ -284,7 +284,7 @@ namespace Gambit
         #endif
         // vacuum is stable
       }
-      bool perturbative=check_perturb(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale
+      bool perturbative=check_perturb_to_min_lambda(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale
       double perturb=float(!perturbative);
       age_pair = triplet<double>(lifetime,LB,perturb); // output all three results as a triplet, perturb could be bool but all 3 need to be doubles for this type
      
