@@ -273,29 +273,134 @@ RD_fraction: |
 lnL_oh2: |
    Contains the log likelihood function constraining the relic density.
 
-X_Calculate: |
-   DESCRIPTION MISSING
+XENON100_2012_Calculate: |
+   Perform rate and likelihood calculations for the XENON100 2012 direct detection analysis.
 
-X_Events: |
-   DESCRIPTION MISSING
+XENON100_2012_Events: |
+   The number of observed events for the XENON100 2012 direct detection analysis.
+   
+XENON100_2012_Background: |
+   The number of background events for the XENON100 2012 direct detection analysis.
 
-X_Background: |
-   DESCRIPTION MISSING
+XENON100_2012_Signal: |
+   The number of signal events for the XENON100 2012 direct detection analysis.
 
-X_Signal: |
-   DESCRIPTION MISSING
+XENON100_2012_SignalSI: |
+   The number of spin-independent signal events for the XENON100 2012 direct detection analysis.
 
-X_SignalSI: |
-   DESCRIPTION MISSING
+XENON100_2012_SignalSD: |
+   The number of spin-independent signal events for the XENON100 2012 direct detection analysis.
 
-X_SignalSD: |
-   DESCRIPTION MISSING
+XENON100_2012_LogLikelihood: |
+   Calculate the log-likelihood for the XENON100 2012 direct detection analysis.
 
-X_LogLikelihood: |
-   DESCRIPTION MISSING
+LUX_2013_Calculate: |
+   Perform rate and likelihood calculations for the LUX 2013 direct detection analysis.
+
+LUX_2013_Events: |
+   The number of observed events for the LUX 2013 direct detection analysis.
+   
+LUX_2013_Background: |
+   The number of background events for the LUX 2013 direct detection analysis.
+
+LUX_2013_Signal: |
+   The number of signal events for the LUX 2013 direct detection analysis.
+
+LUX_2013_SignalSI: |
+   The number of spin-independent signal events for the LUX 2013 direct detection analysis.
+
+LUX_2013_SignalSD: |
+   The number of spin-independent signal events for the LUX 2013 direct detection analysis.
+
+LUX_2013_LogLikelihood: |
+   Calculate the log-likelihood for the LUX 2013 direct detection analysis.
+
+SuperCDMS_2014_Calculate: |
+   Perform rate and likelihood calculations for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_Events: |
+   The number of observed events for the SuperCDMS 2014 direct detection analysis.
+   
+SuperCDMS_2014_Background: |
+   The number of background events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_Signal: |
+   The number of signal events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_SignalSI: |
+   The number of spin-independent signal events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_SignalSD: |
+   The number of spin-independent signal events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_LogLikelihood: |
+   Calculate the log-likelihood for the SuperCDMS 2014 direct detection analysis.
+
+SIMPLE_2014_Calculate: |
+   Perform rate and likelihood calculations for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_Events: |
+   The number of observed events for the SIMPLE 2014 direct detection analysis.
+   
+SIMPLE_2014_Background: |
+   The number of background events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_Signal: |
+   The number of signal events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_SignalSI: |
+   The number of spin-independent signal events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_SignalSD: |
+   The number of spin-independent signal events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_LogLikelihood: |
+   Calculate the log-likelihood for the SIMPLE 2014 direct detection analysis.
+
+DARWIN_Ar_2015_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_Events: |
+   The number of observed events for the DARWIN Ar 2015 direct detection analysis.
+   
+DARWIN_Ar_2015_Background: |
+   The number of background events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_Signal: |
+   The number of signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Xe_2015_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_Events: |
+   The number of observed events for the DARWIN Xe 2015 direct detection analysis.
+   
+DARWIN_Xe_2015_Background: |
+   The number of background events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_Signal: |
+   The number of signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
 
 lnL_SI_nuclear_parameters: |
-   DESCRIPTION MISSING
+   The log-likehood for the nuclear parameters.
 
 SimYieldTable: |
    DESCRIPTION MISSING
@@ -343,39 +448,103 @@ lnL_CTAGC: |
    DESCRIPTION MISSING
 
 capture_rate_Sun: |
-   DESCRIPTION MISSING
+   Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections; s^−1).
 
 equilibration_time_Sun: |
-   DESCRIPTION MISSING
+   Timescale on which capture and annihilation of dark matter in the Sun equilibrate (s).
 
 nuyield_ptr: |
-   DESCRIPTION MISSING
+   A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
 
-X_data: |
-   DESCRIPTION MISSING
+IC22_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC22.
 
-X_signal: |
-   DESCRIPTION MISSING
+IC22_signal: |
+   Number of signal events for neutrino indirect detection analysis IC22.
 
-X_bg: |
-   DESCRIPTION MISSING
+IC22_bg: |
+   Number of background events for neutrino indirect detection analysis IC22.
 
-X_loglike: |
-   DESCRIPTION MISSING
+IC22_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC22.
 
-X_bgloglike: |
-   DESCRIPTION MISSING
+IC22_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC22.
 
-X_pvalue: |
-   DESCRIPTION MISSING
+IC22_pvalue: |
+   p-value for neutrino indirect detection analysis IC22.
 
-X_nobs: |
-   DESCRIPTION MISSING
+IC22_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC22.
+
+IC79SL_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC79SL.
+
+IC79SL_signal: |
+   Number of signal events for neutrino indirect detection analysis IC79SL.
+
+IC79SL_bg: |
+   Number of background events for neutrino indirect detection analysis IC79SL.
+
+IC79SL_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC79SL.
+
+IC79SL_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC79SL.
+
+IC79SL_pvalue: |
+   p-value for neutrino indirect detection analysis IC79SL.
+
+IC79SL_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC79SL.
+
+IC79WL_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC79WL.
+
+IC79WL_signal: |
+   Number of signal events for neutrino indirect detection analysis IC79WL.
+
+IC79WL_bg: |
+   Number of background events for neutrino indirect detection analysis IC79WL.
+
+IC79WL_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC79WL.
+
+IC79WL_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC79WL.
+
+IC79WL_pvalue: |
+   p-value for neutrino indirect detection analysis IC79WL.
+
+IC79WL_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC79WL.
+
+IC79WH_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC79WH.
+
+IC79WH_signal: |
+   Number of signal events for neutrino indirect detection analysis IC79WH.
+
+IC79WH_bg: |
+   Number of background events for neutrino indirect detection analysis IC79WH.
+
+IC79WH_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC79WH.
+
+IC79WH_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC79WH.
+
+IC79WH_pvalue: |
+   p-value for neutrino indirect detection analysis IC79WH.
+
+IC79WH_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC79WH.
 
 IC79_loglike: |
-   DESCRIPTION MISSING
-IceCube likelihood: |
-   DESCRIPTION MISSING
+   The full 79-string IceCube log-likelihood.
+
+IceCube_likelihood: |
+   The complete IceCube log-likelihood.
 
 DarkSUSY_PointInit: |
    DESCRIPTION MISSING
