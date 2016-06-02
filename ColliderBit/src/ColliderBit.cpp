@@ -324,7 +324,10 @@ namespace Gambit
       static std::string default_doc_path;
       static std::string pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
-      static unsigned int fileCounter = -1;
+      static unsigned int fileCounter = 0;
+
+      if (*Loop::iteration == FINALIZE)
+        fileCounter++;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -342,7 +345,6 @@ namespace Gambit
         // If there are no debug filenames set, look for them.
         if (filenames.empty())
           filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
-        fileCounter++;
         if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
 
         // Pythia random number seed will be this, plus the thread number.
