@@ -273,29 +273,134 @@ RD_fraction: |
 lnL_oh2: |
    Contains the log likelihood function constraining the relic density.
 
-X_Calculate: |
-   DESCRIPTION MISSING
+XENON100_2012_Calculate: |
+   Perform rate and likelihood calculations for the XENON100 2012 direct detection analysis.
 
-X_Events: |
-   DESCRIPTION MISSING
+XENON100_2012_Events: |
+   The number of observed events for the XENON100 2012 direct detection analysis.
+   
+XENON100_2012_Background: |
+   The number of background events for the XENON100 2012 direct detection analysis.
 
-X_Background: |
-   DESCRIPTION MISSING
+XENON100_2012_Signal: |
+   The number of signal events for the XENON100 2012 direct detection analysis.
 
-X_Signal: |
-   DESCRIPTION MISSING
+XENON100_2012_SignalSI: |
+   The number of spin-independent signal events for the XENON100 2012 direct detection analysis.
 
-X_SignalSI: |
-   DESCRIPTION MISSING
+XENON100_2012_SignalSD: |
+   The number of spin-independent signal events for the XENON100 2012 direct detection analysis.
 
-X_SignalSD: |
-   DESCRIPTION MISSING
+XENON100_2012_LogLikelihood: |
+   Calculate the log-likelihood for the XENON100 2012 direct detection analysis.
 
-X_LogLikelihood: |
-   DESCRIPTION MISSING
+LUX_2013_Calculate: |
+   Perform rate and likelihood calculations for the LUX 2013 direct detection analysis.
+
+LUX_2013_Events: |
+   The number of observed events for the LUX 2013 direct detection analysis.
+   
+LUX_2013_Background: |
+   The number of background events for the LUX 2013 direct detection analysis.
+
+LUX_2013_Signal: |
+   The number of signal events for the LUX 2013 direct detection analysis.
+
+LUX_2013_SignalSI: |
+   The number of spin-independent signal events for the LUX 2013 direct detection analysis.
+
+LUX_2013_SignalSD: |
+   The number of spin-independent signal events for the LUX 2013 direct detection analysis.
+
+LUX_2013_LogLikelihood: |
+   Calculate the log-likelihood for the LUX 2013 direct detection analysis.
+
+SuperCDMS_2014_Calculate: |
+   Perform rate and likelihood calculations for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_Events: |
+   The number of observed events for the SuperCDMS 2014 direct detection analysis.
+   
+SuperCDMS_2014_Background: |
+   The number of background events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_Signal: |
+   The number of signal events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_SignalSI: |
+   The number of spin-independent signal events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_SignalSD: |
+   The number of spin-independent signal events for the SuperCDMS 2014 direct detection analysis.
+
+SuperCDMS_2014_LogLikelihood: |
+   Calculate the log-likelihood for the SuperCDMS 2014 direct detection analysis.
+
+SIMPLE_2014_Calculate: |
+   Perform rate and likelihood calculations for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_Events: |
+   The number of observed events for the SIMPLE 2014 direct detection analysis.
+   
+SIMPLE_2014_Background: |
+   The number of background events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_Signal: |
+   The number of signal events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_SignalSI: |
+   The number of spin-independent signal events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_SignalSD: |
+   The number of spin-independent signal events for the SIMPLE 2014 direct detection analysis.
+
+SIMPLE_2014_LogLikelihood: |
+   Calculate the log-likelihood for the SIMPLE 2014 direct detection analysis.
+
+DARWIN_Ar_2015_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_Events: |
+   The number of observed events for the DARWIN Ar 2015 direct detection analysis.
+   
+DARWIN_Ar_2015_Background: |
+   The number of background events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_Signal: |
+   The number of signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_2015_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Xe_2015_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_Events: |
+   The number of observed events for the DARWIN Xe 2015 direct detection analysis.
+   
+DARWIN_Xe_2015_Background: |
+   The number of background events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_Signal: |
+   The number of signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_2015_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
 
 lnL_SI_nuclear_parameters: |
-   DESCRIPTION MISSING
+   The log-likehood for the nuclear parameters.
 
 SimYieldTable: |
    DESCRIPTION MISSING
@@ -343,39 +448,103 @@ lnL_CTAGC: |
    DESCRIPTION MISSING
 
 capture_rate_Sun: |
-   DESCRIPTION MISSING
+   Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections; s^−1).
 
 equilibration_time_Sun: |
-   DESCRIPTION MISSING
+   Timescale on which capture and annihilation of dark matter in the Sun equilibrate (s).
 
 nuyield_ptr: |
-   DESCRIPTION MISSING
+   A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
 
-X_data: |
-   DESCRIPTION MISSING
+IC22_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC22.
 
-X_signal: |
-   DESCRIPTION MISSING
+IC22_signal: |
+   Number of signal events for neutrino indirect detection analysis IC22.
 
-X_bg: |
-   DESCRIPTION MISSING
+IC22_bg: |
+   Number of background events for neutrino indirect detection analysis IC22.
 
-X_loglike: |
-   DESCRIPTION MISSING
+IC22_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC22.
 
-X_bgloglike: |
-   DESCRIPTION MISSING
+IC22_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC22.
 
-X_pvalue: |
-   DESCRIPTION MISSING
+IC22_pvalue: |
+   p-value for neutrino indirect detection analysis IC22.
 
-X_nobs: |
-   DESCRIPTION MISSING
+IC22_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC22.
+
+IC79SL_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC79SL.
+
+IC79SL_signal: |
+   Number of signal events for neutrino indirect detection analysis IC79SL.
+
+IC79SL_bg: |
+   Number of background events for neutrino indirect detection analysis IC79SL.
+
+IC79SL_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC79SL.
+
+IC79SL_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC79SL.
+
+IC79SL_pvalue: |
+   p-value for neutrino indirect detection analysis IC79SL.
+
+IC79SL_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC79SL.
+
+IC79WL_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC79WL.
+
+IC79WL_signal: |
+   Number of signal events for neutrino indirect detection analysis IC79WL.
+
+IC79WL_bg: |
+   Number of background events for neutrino indirect detection analysis IC79WL.
+
+IC79WL_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC79WL.
+
+IC79WL_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC79WL.
+
+IC79WL_pvalue: |
+   p-value for neutrino indirect detection analysis IC79WL.
+
+IC79WL_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC79WL.
+
+IC79WH_data: |
+   Do signal, likelihood and related calculations for neutrino indirect detection analysis IC79WH.
+
+IC79WH_signal: |
+   Number of signal events for neutrino indirect detection analysis IC79WH.
+
+IC79WH_bg: |
+   Number of background events for neutrino indirect detection analysis IC79WH.
+
+IC79WH_loglike: |
+   Log-likelihood for neutrino indirect detection analysis IC79WH.
+
+IC79WH_bgloglike: |
+   Background-only log-likelihood for neutrino indirect detection analysis IC79WH.
+
+IC79WH_pvalue: |
+   p-value for neutrino indirect detection analysis IC79WH.
+
+IC79WH_nobs: |
+   Number of observed events for neutrino indirect detection analysis IC79WH.
 
 IC79_loglike: |
-   DESCRIPTION MISSING
-IceCube likelihood: |
-   DESCRIPTION MISSING
+   The full 79-string IceCube log-likelihood.
+
+IceCube_likelihood: |
+   The complete IceCube log-likelihood.
 
 DarkSUSY_PointInit: |
    DESCRIPTION MISSING
@@ -386,4 +555,305 @@ dump_GammaSpectrum: |
 UnitTest_DarkBit: |
    DESCRIPTION MISSING
 
+#-------------------------------------
+#  DecayBit capabilities
+#-------------------------------------
 
+Z_decay_rates : |
+   All decays of the Z gauge boson.
+
+Higgs_decay_rates : |
+   All decays of the most SM-like Higgs boson.
+
+Reference_SM_Higgs_decay_rates : |
+   All decays of the Higgs boson in the SM.
+
+eta_decay_rates : |
+   All decays of the η meson.
+
+omega_decay_rates : |
+   All decays of the ω meson.
+
+lnL_Higgs_invWidth : |
+   The log-likelihood of the (SM-like) Higgs invisible width.
+
+h0_2_decay_rates : |
+   Decays of the heaviest CP-even MSSM Higgs boson.
+
+A0_decay_rates : |
+   Decays of the CP-odd MSSM Higgs boson.
+
+gluino_decay_rates : |
+   Decays of the gluino.
+
+t_decay_rates : |
+   All decays of the t quark.
+
+snu_electronl_decay_rates : |
+   Decays of the ν_eL sneutrinos.
+
+snu_muonl_decay_rates : |
+   Decays of the ν_μL sneutrinos.
+
+snu_taul_decay_rates : |
+   Decays of the ν_τL sneutrinos.
+
+sup_ C _decay_rates : |
+   Decays of the u_L squarks.
+
+sdown_ C _decay_rates : |
+   Decays of the d_L squarks.
+
+scharm_ C _decay_rates : |
+   Decays of the c_L squarks.
+
+sstrange_ C _decay_rates : |
+   Decays of the s_L squarks.
+
+electron_ C _decay_rates : |
+   Decays of the e_L sleptons.
+
+smuon_ C _decay_rates : |
+   Decays of the mu_L sleptons.
+sup_ C _decay_rates : |
+   Decays of the u_R squarks.
+
+sdown_ C _decay_rates : |
+   Decays of the d_R squarks.
+
+scharm_ C _decay_rates : |
+   Decays of the c_R squarks.
+
+sstrange_ C _decay_rates : |
+   Decays of the s_R squarks.
+
+electron_ C _decay_rates : |
+   Decays of the e_R sleptons.
+
+smuon_ C _decay_rates : |
+   Decays of the μ_R sleptons.
+   
+stop_1_decay_rates : |
+   Decays of the t_1 squarks.
+
+sbottom_1_decay_rates : |
+   Decays of the b_1 squarks.
+
+stau_1_decay_rates : |
+   Decays of the τ_1 sleptons.
+
+stop_2_decay_rates : |
+   Decays of the t_2 squarks.
+
+sbottom_2_decay_rates : |
+   Decays of the b_2 squarks.
+
+stau_2_decay_rates : |
+   Decays of the τ_2 sleptons.
+
+tbar_decay_rates : |
+   All decays of the anti-t quark.
+
+snubar_electronl_decay_rates : |
+   Decays of the anti-ν_eL sneutrinos.
+
+snubar_muonl_decay_rates : |
+   Decays of the anti-ν_μL sneutrinos.
+
+snubar_taul_decay_rates : |
+   Decays of the anti-ν_τL sneutrinos.
+
+supbar_ C _decay_rates : |
+   Decays of the anti-u_L squarks.
+
+sdownbar_ C _decay_rates : |
+   Decays of the anti-d_L squarks.
+
+scharmbar_ C _decay_rates : |
+   Decays of the anti-c_L squarks.
+
+sstrangebar_ C _decay_rates : |
+   Decays of the anti-s_L squarks.
+
+electronbar_ C _decay_rates : |
+   Decays of the anti-e_L sleptons.
+
+smuonbar_ C _decay_rates : |
+   Decays of the anti-μ_L sleptons.
+   
+supbar_ C _decay_rates : |
+   Decays of the anti-u_R squarks.
+
+sdownbar_ C _decay_rates : |
+   Decays of the anti-d_R squarks.
+
+scharmbar_ C _decay_rates : |
+   Decays of the anti-c_R squarks.
+
+sstrangebar_ C _decay_rates : |
+   Decays of the anti-s_R squarks.
+
+electronbar_ C _decay_rates : |
+   Decays of the anti-e_R sleptons.
+
+smuonbar_ C _decay_rates : |
+   Decays of the anti-μ_R sleptons.
+   
+stopbar_1_decay_rates : |
+   Decays of the anti-t_1 squarks.
+
+sbottombar_1_decay_rates : |
+   Decays of the anti-b_1 squarks.
+
+staubar_1_decay_rates : |
+   Decays of the anti-τ_1 sleptons.
+
+stopbar_2_decay_rates : |
+   Decays of the anti-t_2 squarks.
+
+sbottombar_2_decay_rates : |
+   Decays of the anti-b_2 squarks.
+
+staubar_2_decay_rates : |
+   Decays of the anti-τ_2 sleptons.
+   
+mu_plus_decay_rates : |
+  All decays of the μ+ lepton.
+
+tau_plus_decay_rates : |
+  All decays of the τ+ lepton.
+
+W_plus_decay_rates : |
+  All decays of the W+ gauge boson.
+
+H_plus_decay_rates : |
+   Decays of the MSSM H+.
+
+chargino_plus_1_decay_rates : |
+   Decays of the chargino+ 1.
+
+chargino_plus_2_decay_rates : |
+   Decays of the chargino+ 2.
+
+mu_minus_decay_rates : |
+  All decays of the μ- lepton.
+
+tau_minus_decay_rates : |
+  All decays of the τ- lepton.
+
+W_minus_decay_rates : |
+  All decays of the W- gauge boson.
+
+Hminus_decay_rates : |
+   Decays of the MSSM H-.
+
+chargino_minus_1_decay_rates : |
+   Decays of the chargino- 1.
+
+chargino_minus_2_decay_rates : |
+   Decays of the chargino- 2.
+
+pi0_decay_rates : |
+  All decays of the π0 meson.
+
+rho0_decay_rates : |
+  All decays of the ρ0 meson.
+
+piplus_decay_rates : |
+  All decays of the π+ meson.
+
+rhoplus_decay_rates : |
+  All decays of the ρ+ meson.
+
+piminus_decay_rates : |
+  All decays of the π- meson.
+
+rhominus_decay_rates : |
+  All decays of the ρ- meson.
+
+neutralino_1_decay_rates : | 
+   Decays of the neutralino 1.
+
+neutralino_2_decay_rates : | 
+   Decays of the neutralino 2.
+
+neutralino_3_decay_rates : | 
+   Decays of the neutralino 3.
+
+neutralino_4_decay_rates : | 
+   Decays of the neutralino 4.
+
+
+
+#-------------------------------------
+#  PrecisionBit capabilities
+#-------------------------------------
+
+lnL_alpha_em : |
+   Log-likelihood of α_EM (m_Z), the MSBar value of the fine structure constant at μ = m_Z.
+
+lnL_alpha_s : |
+   Log-likelihood of α_s (m_Z), the MSBar value of the strong coupling constant at μ = m_Z.
+
+lnL_GF : |
+   Log-likelihood of the Fermi coupling constant G_F.
+
+lnL_light_quark_masses : |
+   Joint log-likelihood of the MSbar masses of the u, d and s quarks at μ = 2 GeV.
+
+lnL_mcmc : |
+   Log-likelihood of the MSbar mass of the c quark at scale m_c.
+
+lnL_mbmb : |
+   Log-likelihood of the MSbar mass of the b quark at scale m_b.
+
+lnL_t_mass : |
+   Log-likelihood of the top quark pole mass.
+
+lnL_Z_mass : |
+   Log-likelihood of the Z boson pole mass.
+
+lnL_W_mass : |
+   Log-likelihood of the W boson pole mass.
+
+mw : |
+   The W boson pole mass.
+
+mh : |
+   The SM-like Higgs boson pole mass.
+
+FH_Precision : |
+   Precision observable tableau, as calculated with FeynHiggs.
+
+SP_PrecisionObs : |
+   Precision observable tableau, as calculated with SUSY-POPE.
+
+deltarho : |
+   Deviation from one (∆ρ) of the ratio of the Fermi effective coupling (G_F) in W and Z-mediated processes.
+
+prec_mw : |
+   Precision value of the W mass in the MSSM.
+
+prec_sinW2_eff : |
+   Precision value of the effective leptonic weak mixing angle sin^2 θ_W,eff.
+
+edm_e : |
+   The electric dipole moment of the electron.
+
+edm_n : |
+   The electric dipole moment of the neutron.
+
+edm_hg : |
+   The electric dipole moment of mercury.
+
+muon_gm2: |
+   The MSSM contribution to g−2 of the muon.
+
+lnL_sinW2_eff : |
+   Log-likelihood of the effective leptonic weak mixing angle sin^2 θ_W,eff.
+
+lnL_gm2 : |
+   Log-likelihood of the muon g−2.
+
+lnL_deltarho : |
+   Log-likelihood of ∆ρ, the departure from one of the ratio of the Fermi effective coupling (G_F) in W and Z-mediated processes.
