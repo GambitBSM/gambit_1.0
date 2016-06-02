@@ -65,8 +65,8 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 20000
-      tol: 0.0001
+      nlive: 4000
+      tol: 0.5
 
     de:
       plugin: Diver
@@ -118,8 +118,8 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
-    - capability:  lnL_gm2
-      purpose:     LogLike
+#    - capability:  lnL_gm2
+#      purpose:     LogLike
 
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
