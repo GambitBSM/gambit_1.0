@@ -782,3 +782,78 @@ neutralino_3_decay_rates : |
 
 neutralino_4_decay_rates : | 
    Decays of the neutralino 4.
+
+
+
+#-------------------------------------
+#  PrecisionBit capabilities
+#-------------------------------------
+
+lnL_alpha_em : |
+   Log-likelihood of α_EM (m_Z), the MSBar value of the fine structure constant at μ = m_Z.
+
+lnL_alpha_s : |
+   Log-likelihood of α_s (m_Z), the MSBar value of the strong coupling constant at μ = m_Z.
+
+lnL_GF : |
+   Log-likelihood of the Fermi coupling constant G_F.
+
+lnL_light_quark_masses : |
+   Joint log-likelihood of the MSbar masses of the u, d and s quarks at μ = 2 GeV.
+
+lnL_mcmc : |
+   Log-likelihood of the MSbar mass of the c quark at scale m_c.
+
+lnL_mbmb : |
+   Log-likelihood of the MSbar mass of the b quark at scale m_b.
+
+lnL_t_mass : |
+   Log-likelihood of the top quark pole mass.
+
+lnL_Z_mass : |
+   Log-likelihood of the Z boson pole mass.
+
+lnL_W_mass : |
+   Log-likelihood of the W boson pole mass.
+
+mw : |
+   The W boson pole mass.
+
+mh : |
+   The SM-like Higgs boson pole mass.
+
+FH_Precision : |
+   Precision observable tableau, as calculated with FeynHiggs.
+
+SP_PrecisionObs : |
+   Precision observable tableau, as calculated with SUSY-POPE.
+
+deltarho : |
+   Deviation from one (∆ρ) of the ratio of the Fermi effective coupling (G_F) in W and Z-mediated processes.
+
+prec_mw : |
+   Precision value of the W mass in the MSSM.
+
+prec_sinW2_eff : |
+   Precision value of the effective leptonic weak mixing angle sin^2 θ_W,eff.
+
+edm_e : |
+   The electric dipole moment of the electron.
+
+edm_n : |
+   The electric dipole moment of the neutron.
+
+edm_hg : |
+   The electric dipole moment of mercury.
+
+muon_gm2: |
+   The MSSM contribution to g−2 of the muon.
+
+lnL_sinW2_eff : |
+   Log-likelihood of the effective leptonic weak mixing angle sin^2 θ_W,eff.
+
+lnL_gm2 : |
+   Log-likelihood of the muon g−2.
+
+lnL_deltarho : |
+   Log-likelihood of ∆ρ, the departure from one of the ratio of the Fermi effective coupling (G_F) in W and Z-mediated processes.
