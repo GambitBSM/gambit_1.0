@@ -35,6 +35,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/spectrum.hpp"
+#include "gambit/Models/SimpleSpectra/SMSimpleSpec.hpp" // For auto-creation of simple SM low-energy SubSpectrum
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
@@ -77,6 +78,17 @@ namespace Gambit
      , input_Param(params)
      , initialised(true) 
    {}
+
+   /// Construct new object, automatically creating an SMSimpleSpec as the LE subspectrum, and cloning the HE SubSpectrum object supplied and taking possession of it.
+   Spectrum::Spectrum(const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params)
+     : LE_new(SMSimpleSpec(smi).clone())
+     , HE_new(he.clone())
+     , LE(LE_new.get())   
+     , HE(HE_new.get())
+     , SMINPUTS(smi)
+     , input_Param(params)
+     , initialised(true) 
+   {}
    
    /// Construct new object, wrapping existing SubSpectrum objects
    ///  Make sure the original objects don't get deleted before this wrapper does!
@@ -102,9 +114,10 @@ namespace Gambit
    
    /// Copy-assignment
    /// Using "copy-and-swap" idiom
-   Spectrum& Spectrum::operator=(Spectrum other)
+   Spectrum& Spectrum::operator=(const Spectrum& other)
    {
-      swap(*this, other);
+      Spectrum temp(other);
+      swap(*this, temp);
       return *this;
    } 
    
@@ -129,14 +142,14 @@ namespace Gambit
    }
    
    /// Standard getters
-   /// Return non-owning pointers. Make sure original Spectrum object doesn't
+   /// Return references to internal data members. Make sure original Spectrum object doesn't
    /// get destroyed before you finish using these or you will cause a segfault.
-   SubSpectrum* Spectrum::get_LE() {check_init(); return LE;}
-   SubSpectrum* Spectrum::get_HE() {check_init(); return HE;}
+   SubSpectrum& Spectrum::get_LE() {check_init(); return *LE;}
+   SubSpectrum& Spectrum::get_HE() {check_init(); return *HE;}
    SMInputs&    Spectrum::get_SMInputs() {check_init(); return SMINPUTS;}
    // const versions
-   const SubSpectrum* Spectrum::get_LE()       const {check_init(); return LE;}
-   const SubSpectrum* Spectrum::get_HE()       const {check_init(); return HE;}
+   const SubSpectrum& Spectrum::get_LE()       const {check_init(); return *LE;}
+   const SubSpectrum& Spectrum::get_HE()       const {check_init(); return *HE;}
    const SMInputs&    Spectrum::get_SMInputs() const {check_init(); return SMINPUTS;}
    
    /// Clone getters

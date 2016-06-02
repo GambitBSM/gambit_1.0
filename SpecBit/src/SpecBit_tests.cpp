@@ -57,23 +57,23 @@ namespace Gambit
       // Retrieve pointer to Spectrum object, delivered by dependency resolver
       // Module function asks for Spectrum* with capability unimproved_MSSM_spectrum.
       namespace myPipe = Pipes::MSSMspectrum_test;
-      const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // MSSMSpec SubSpectrum object
-      const SubSpectrum* SM   = fullspectrum->get_LE(); // QedQcdWrapper SubSpectrum object
+      const Spectrum& fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
+      const SubSpectrum& spec = fullspectrum.get_HE(); // MSSMSpec SubSpectrum object
+      const SubSpectrum& SM   = fullspectrum.get_LE(); // QedQcdWrapper SubSpectrum object
 
       std::ostringstream report; // Information about any problems encountered
 
       // Extract SLHAea object
       // This copies the data out. Could possible change it to pass out a
       // reference instead, or have another function to do that.
-      SLHAea::Coll slhaea = fullspectrum->getSLHAea();
+      SLHAea::Coll slhaea = fullspectrum.getSLHAea();
       // for testing, write this to file      
       std::ofstream out1;
       out1.open("SpecBit/MSSMspectrum_test.slha");
       out1 << slhaea;
       out1.close();
 
-      // SLHAea::Coll slhaea = spec->getSLHAea(); // The above is just a wrapper for this.
+      // SLHAea::Coll slhaea = spec.getSLHAea(); // The above is just a wrapper for this.
 
       // If this is a valid model point, return true and dump information, else false
 
@@ -92,7 +92,7 @@ namespace Gambit
          std::cout << std::endl << slhaea << std::endl;
          
          // Write to file so we can check it
-         spec->getSLHA("SpecBit/MSSMspectrum_test_good.slha");
+         spec.getSLHA("SpecBit/MSSMspectrum_test_good.slha");
 
          // ---------------------------------------------------------
          // BEGIN DEMO OF SPECTRUM OBJECT AND PARTICLE DATABASE
@@ -189,19 +189,19 @@ namespace Gambit
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
          cout<<"Lightest neutral Higgs boson pole mass:"<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass, PDB.short_name_pair(25,0) )   )
-         ECHO(  fullspectrum->get(Par::Pole_Mass, PDB.long_name(25,0) )         )
-         ECHO(  fullspectrum->get(Par::Pole_Mass,25,0)                          )
-         ECHO(  fullspectrum->get(Par::Pole_Mass, PDB.pdg_pair("h0",1) )        )
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"h0",1)                        )
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"h0_1")                        )
+         ECHO(  fullspectrum.get(Par::Pole_Mass, PDB.short_name_pair(25,0) )   )
+         ECHO(  fullspectrum.get(Par::Pole_Mass, PDB.long_name(25,0) )         )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,25,0)                          )
+         ECHO(  fullspectrum.get(Par::Pole_Mass, PDB.pdg_pair("h0",1) )        )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"h0",1)                        )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"h0_1")                        )
 
-         ECHO(  spec->get(Par::Pole_Mass, PDB.short_name_pair(25,0) )   )
-         ECHO(  spec->get(Par::Pole_Mass, PDB.long_name(25,0) )         )
-         ECHO(  spec->get(Par::Pole_Mass,25,0)                          )
-         ECHO(  spec->get(Par::Pole_Mass, PDB.pdg_pair("h0",1) )        )
-         ECHO(  spec->get(Par::Pole_Mass,"h0",1)                        )
-         ECHO(  spec->get(Par::Pole_Mass,"h0_1")                        )
+         ECHO(  spec.get(Par::Pole_Mass, PDB.short_name_pair(25,0) )   )
+         ECHO(  spec.get(Par::Pole_Mass, PDB.long_name(25,0) )         )
+         ECHO(  spec.get(Par::Pole_Mass,25,0)                          )
+         ECHO(  spec.get(Par::Pole_Mass, PDB.pdg_pair("h0",1) )        )
+         ECHO(  spec.get(Par::Pole_Mass,"h0",1)                        )
+         ECHO(  spec.get(Par::Pole_Mass,"h0_1")                        )
 
          cout<<endl;
          cout<<"Retrieval of Spectrum object contents, with"<<endl;
@@ -215,20 +215,20 @@ namespace Gambit
          cout<<endl;
          cout<<"Gauge boson pole masses:"<<endl;
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"Z0") )
-         ECHO(  SM->get(Par::Pole_Mass,"Z0")           )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"Z0") )
+         ECHO(  SM.get(Par::Pole_Mass,"Z0")           )
          ECHO(  slhaea.at("SMINPUTS").at(4).at(1)      )
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"gamma")    )
-         ECHO(  SM->get(Par::Pole_Mass,"gamma")    )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"gamma")    )
+         ECHO(  SM.get(Par::Pole_Mass,"gamma")    )
          cout<<"  ***Not in slha***"<<endl;
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"W+")       )
-         ECHO(  SM->get(Par::Pole_Mass,"W+")         )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"W+")       )
+         ECHO(  SM.get(Par::Pole_Mass,"W+")         )
          ECHO(  slhaea.at("MASS").at(24).at(1)    )
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"g")       )
-         ECHO(  SM->get(Par::Pole_Mass,"g")          )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"g")       )
+         ECHO(  SM.get(Par::Pole_Mass,"g")          )
          cout<<"  ***Not in slha***"<<endl;
          cout<<endl;
          cout<<"Quark pole masses (actually the slha entries are MSbar except the top mass):"<<endl;
@@ -237,85 +237,85 @@ namespace Gambit
          // that non-perturbative effects made definining them difficult... well anyway will have
          // to ask Peter what is being computed here.
 
-         //ECHO(  spec->get(Par::Pole_Mass,"u",1)      )  // i.e. up (mass eigenstate)
+         //ECHO(  spec.get(Par::Pole_Mass,"u",1)      )  // i.e. up (mass eigenstate)
          cout<<"  ***u Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(22).at(1)   )  // mu(2 GeV)^MS-bar, not pole mass
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"u",2)      )  // i.e. charm
+         //ECHO(  spec.get(Par::Pole_Mass,"u",2)      )  // i.e. charm
          cout<<"  ***c Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(24).at(1)   )  // mc(mc)^MS-bar, not pole mass
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"u",3)      )  // i.e. top
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"t")       )
-         ECHO(  SM->get(Par::Pole_Mass,"u",3)      )  // i.e. top
+         //ECHO(  spec.get(Par::Pole_Mass,"u",3)      )  // i.e. top
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"t")       )
+         ECHO(  SM.get(Par::Pole_Mass,"u",3)      )  // i.e. top
          ECHO(  slhaea.at("SMINPUTS").at(6).at(1)    )
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"d",1)      )  // i.e. down
+         //ECHO(  spec.get(Par::Pole_Mass,"d",1)      )  // i.e. down
          cout<<"  ***d Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(21).at(1)   )  // md(2 GeV)^MS-bar, not pole mass
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"d",2)      )  // i.e. strange
+         //ECHO(  spec.get(Par::Pole_Mass,"d",2)      )  // i.e. strange
          cout<<"  ***s Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(23).at(1)   )  // ms(2 GeV)^MS-bar, not pole mass
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"d",3)      )  // i.e. bottom
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"b")       )
-         ECHO(  SM->get(Par::Pole_Mass,"d",3)      )  // i.e. bottom
+         //ECHO(  spec.get(Par::Pole_Mass,"d",3)      )  // i.e. bottom
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"b")       )
+         ECHO(  SM.get(Par::Pole_Mass,"d",3)      )  // i.e. bottom
          ECHO(  slhaea.at("SMINPUTS").at(5).at(1)    )  //  mb(mb)^MS-bar, not pole mass.
          cout<<endl;
          cout<<"Charged fermions pole masses:"<<endl;
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"e-",1)     )  // i.e. electron
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"e-")       )
-         ECHO(  SM->get(Par::Pole_Mass,"e-",1)     )  // i.e. electron
+         //ECHO(  spec.get(Par::Pole_Mass,"e-",1)     )  // i.e. electron
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"e-")       )
+         ECHO(  SM.get(Par::Pole_Mass,"e-",1)     )  // i.e. electron
          ECHO(  slhaea.at("SMINPUTS").at(11).at(1)   )
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"e-",2)     )  // i.e. muon
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"mu-")       )
-         ECHO(  SM->get(Par::Pole_Mass,"e-",2)     )  // i.e. muon
+         //ECHO(  spec.get(Par::Pole_Mass,"e-",2)     )  // i.e. muon
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"mu-")       )
+         ECHO(  SM.get(Par::Pole_Mass,"e-",2)     )  // i.e. muon
          ECHO(  slhaea.at("SMINPUTS").at(13).at(1)   )
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"e-",3)     )  // i.e. tau
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"tau-")       )
-         ECHO(  SM->get(Par::Pole_Mass,"e-",3)     )  // i.e. tau
+         //ECHO(  spec.get(Par::Pole_Mass,"e-",3)     )  // i.e. tau
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"tau-")       )
+         ECHO(  SM.get(Par::Pole_Mass,"e-",3)     )  // i.e. tau
          ECHO(  slhaea.at("SMINPUTS").at(7).at(1)    )
          cout<<endl;
          cout<<"Neutrinos pole masses:"<<endl;
          cout<<endl;
          // These will produce errors because currently no neutrino mass getters are hooked up
-         //ECHO(  spec->get(Par::Pole_Mass,"nu",1)     )  // Just mass ordered (if there is mixing)
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"nu",1)       )
-         ECHO(  SM->get(Par::Pole_Mass,"nu",1)     )  // Just mass ordered (if there is mixing)
+         //ECHO(  spec.get(Par::Pole_Mass,"nu",1)     )  // Just mass ordered (if there is mixing)
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"nu",1)       )
+         ECHO(  SM.get(Par::Pole_Mass,"nu",1)     )  // Just mass ordered (if there is mixing)
          ECHO(  slhaea.at("SMINPUTS").at(12).at(1)   )
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"nu",2)     )
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"nu",2)       )
-         ECHO(  SM->get(Par::Pole_Mass,"nu",2)     )
+         //ECHO(  spec.get(Par::Pole_Mass,"nu",2)     )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"nu",2)       )
+         ECHO(  SM.get(Par::Pole_Mass,"nu",2)     )
          ECHO(  slhaea.at("SMINPUTS").at(14).at(1)   )
          cout<<endl;
-         //ECHO(  spec->get(Par::Pole_Mass,"nu",3)     )
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"nu",3)       )
-         ECHO(  SM->get(Par::Pole_Mass,"nu",3)     )
+         //ECHO(  spec.get(Par::Pole_Mass,"nu",3)     )
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"nu",3)       )
+         ECHO(  SM.get(Par::Pole_Mass,"nu",3)     )
          ECHO(  slhaea.at("SMINPUTS").at(8).at(1)    )
          cout<<endl;
          // Now for SUSY particles
          cout<<endl;
          cout<<"MSSM Higgs sector pole masses:"<<endl;
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"h0",1)       )
-         ECHO(  spec->get(Par::Pole_Mass,"h0",1)     )  // Lightest neutral Higgs boson
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"h0",1)       )
+         ECHO(  spec.get(Par::Pole_Mass,"h0",1)     )  // Lightest neutral Higgs boson
          ECHO(  slhaea.at("MASS").at(25).at(1)       )
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"h0",2)       )
-         ECHO(  spec->get(Par::Pole_Mass,"h0",2)     )  // Heavy neutral Higgs boson
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"h0",2)       )
+         ECHO(  spec.get(Par::Pole_Mass,"h0",2)     )  // Heavy neutral Higgs boson
          ECHO(  slhaea.at("MASS").at(35).at(1)       )
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"H+")       )
-         ECHO(  spec->get(Par::Pole_Mass,"H+")       )  // Charged Higgs
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"H+")       )
+         ECHO(  spec.get(Par::Pole_Mass,"H+")       )  // Charged Higgs
          ECHO(  slhaea.at("MASS").at(37).at(1)       )
          cout<<endl;
-         ECHO(  fullspectrum->get(Par::Pole_Mass,"A0")       )
-         ECHO(  spec->get(Par::Pole_Mass,"A0")       )  // Pseudoscalar neutral Higgs
+         ECHO(  fullspectrum.get(Par::Pole_Mass,"A0")       )
+         ECHO(  spec.get(Par::Pole_Mass,"A0")       )  // Pseudoscalar neutral Higgs
          ECHO(  slhaea.at("MASS").at(36).at(1)       )
          cout<<endl;
 
@@ -329,10 +329,10 @@ namespace Gambit
            void operator()(const std::string& longname) 
            {                                            
              std::ostringstream echo1, echo2, echo3;                                           
-             echo1 <<     "  fullspectrum->get(Par::Pole_Mass,"<<longname<<") = ";       
-             double value1 = fullspectrum->get(Par::Pole_Mass,longname);                 
-             echo2 <<     "  spec->get(Par::Pole_Mass,"<<longname<<") = ";       
-             double value2 = spec->get(Par::Pole_Mass,longname);                 
+             echo1 <<     "  fullspectrum.get(Par::Pole_Mass,"<<longname<<") = ";       
+             double value1 = fullspectrum.get(Par::Pole_Mass,longname);                 
+             echo2 <<     "  spec.get(Par::Pole_Mass,"<<longname<<") = ";       
+             double value2 = spec.get(Par::Pole_Mass,longname);                 
              echo3 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(longname).first<<").at(1) = ";
              str value3 = slhaea.at("MASS").at( PDB.pdg_pair(longname).first ).at(1);
              cout << echo1.str() << value1 << endl;                              
@@ -347,8 +347,8 @@ namespace Gambit
              {
                std::ostringstream echo1;                                           
                std::ostringstream echo2;                                           
-               echo1 <<     "  spec->get(Par::Pole_Mass,"<<longname<<","<<i<<") = ";
-               double value1 = spec->get(Par::Pole_Mass,longname,i);                
+               echo1 <<     "  spec.get(Par::Pole_Mass,"<<longname<<","<<i<<") = ";
+               double value1 = spec.get(Par::Pole_Mass,longname,i);                
                echo2 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(longname,i).first<<").at(1) = ";
                str value2 = slhaea.at("MASS").at( PDB.pdg_pair(longname,i).first ).at(1);
                cout << echo1.str() << value1 << endl;                              
@@ -357,7 +357,7 @@ namespace Gambit
              }
            }
 
-           get_polemass_functor(std::ostringstream& report, const Spectrum* fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
+           get_polemass_functor(std::ostringstream& report, const Spectrum& fullin, const SubSpectrum& specin, SLHAea::Coll& slhaeain) 
              : report(report)
              , fullspectrum(fullin)
              , spec(specin)
@@ -366,8 +366,8 @@ namespace Gambit
 
            private:
              std::ostringstream& report;
-             const Spectrum* fullspectrum;
-             const SubSpectrum* spec;
+             const Spectrum& fullspectrum;
+             const SubSpectrum& spec;
              SLHAea::Coll slhaea;
          }; 
 
@@ -399,8 +399,8 @@ namespace Gambit
            try{                                                                  \
             std::ostringstream echo1;                                            \
             std::ostringstream echo2;                                            \
-            echo1 <<     "  spec->get(Par::Pole_Mixing,"<<label<<","<<i<<","<<j<<") = "; \
-            double value1 = spec->get(Par::Pole_Mixing,label,i,j); \
+            echo1 <<     "  spec.get(Par::Pole_Mixing,"<<label<<","<<i<<","<<j<<") = "; \
+            double value1 = spec.get(Par::Pole_Mixing,label,i,j); \
             echo2 <<     "  SLHAea::to<double>( slhaea.at("<<block<<").at("<<i<<","<<j<<").at(2) ) = "; \
             double value2 = SLHAea::to<double>( slhaea.at(block).at(i,j).at(2) ); \
             cout << echo1.str() << value1 <<endl;                                \
@@ -432,19 +432,19 @@ namespace Gambit
          cout << "There may be some switching or converting once other spectrum generator are added." << endl;
          cout<<endl;
          cout << "Spectrum object running parameters are currently defined at scale Q=" 
-              << spec->GetScale() << " [GeV]" << endl << endl;
+              << spec.GetScale() << " [GeV]" << endl << endl;
          cout<<endl; 
          cout << "-- Dimensionless parameters --" <<endl;          
          cout << endl << "Gauge couplings:" << endl << endl;
-         ECHO(  spec->get(Par::dimensionless,"g1")  )  // U_Y(1) gauge coupling in SU(5) normalisation  
+         ECHO(  spec.get(Par::dimensionless,"g1")  )  // U_Y(1) gauge coupling in SU(5) normalisation  
          ECHO(  slhaea.at("GAUGE").at(1).at(1)  ) // This is in the Standard Model normalisation as per SLHA conventions
-         cout << "Note: " << spec->get(Par::dimensionless,"g1") << " * sqrt(3/5) = "
-                          << spec->get(Par::dimensionless,"g1")*sqrt(3./5.) << endl;
+         cout << "Note: " << spec.get(Par::dimensionless,"g1") << " * sqrt(3/5) = "
+                          << spec.get(Par::dimensionless,"g1")*sqrt(3./5.) << endl;
          cout<<endl;
-         ECHO(  spec->get(Par::dimensionless,"g2")  )  // SU(2) gauge coupling
+         ECHO(  spec.get(Par::dimensionless,"g2")  )  // SU(2) gauge coupling
          ECHO(  slhaea.at("GAUGE").at(2).at(1)  )
          cout<<endl;
-         ECHO(  spec->get(Par::dimensionless,"g3")  )  // SU(3) gauge coupling
+         ECHO(  spec.get(Par::dimensionless,"g3")  )  // SU(3) gauge coupling
          ECHO(  slhaea.at("GAUGE").at(3).at(1)  )
          cout<<endl;
  
@@ -463,8 +463,8 @@ namespace Gambit
            try{                                                                  \
             std::ostringstream echo1;                                            \
             std::ostringstream echo2;                                            \
-            echo1 <<     "  spec->get(Par::dimensionless,"<<label<<","<<i<<","<<j<<") = "; \
-            double value1 = spec->get(Par::dimensionless,label,i,j); \
+            echo1 <<     "  spec.get(Par::dimensionless,"<<label<<","<<i<<","<<j<<") = "; \
+            double value1 = spec.get(Par::dimensionless,label,i,j); \
             echo2 <<     "  SLHAea::to<double>( slhaea.at("<<block<<").at("<<i<<","<<j<<").at(2) ) = "; \
             double value2 = SLHAea::to<double>( slhaea.at(block).at(i,j).at(2) ); \
             cout << echo1.str() << value1 <<endl;                                \
@@ -485,22 +485,22 @@ namespace Gambit
          cout<<endl;
          cout<<"MSSM mass dimension 1 running parameters"<<endl;
          cout<<endl;
-         ECHO(  spec->get(Par::mass1,"M1")    )  // Gaugino mass parameter "MassB"
+         ECHO(  spec.get(Par::mass1,"M1")    )  // Gaugino mass parameter "MassB"
          ECHO(  slhaea.at("MSOFT").at(1).at(1)                )
          cout<<endl;
-         ECHO(  spec->get(Par::mass1,"M2")    )  // Gaugino mass parameter "MassWB"
+         ECHO(  spec.get(Par::mass1,"M2")    )  // Gaugino mass parameter "MassWB"
          ECHO(  slhaea.at("MSOFT").at(2).at(1)                )
          cout<<endl;
-         ECHO(  spec->get(Par::mass1,"M3")    )  // Gaugino mass parameter "MassG"
+         ECHO(  spec.get(Par::mass1,"M3")    )  // Gaugino mass parameter "MassG"
          ECHO(  slhaea.at("MSOFT").at(3).at(1)                )
          cout<<endl;
-         ECHO(  spec->get(Par::mass1,"Mu")    )  // Superpotential mu parameter
+         ECHO(  spec.get(Par::mass1,"Mu")    )  // Superpotential mu parameter
          ECHO(  slhaea.at("HMIX").at(1).at(1)                 )
          cout<<endl;
-         ECHO(  spec->get(Par::mass1,"vd")    )  // Down-type Higgs vev
+         ECHO(  spec.get(Par::mass1,"vd")    )  // Down-type Higgs vev
          ECHO(  slhaea.at("HMIX").at(102).at(1)               )
          cout<<endl;
-         ECHO(  spec->get(Par::mass1,"vu")    )  // Up-type Higgs vev
+         ECHO(  spec.get(Par::mass1,"vu")    )  // Up-type Higgs vev
          ECHO(  slhaea.at("HMIX").at(103).at(1)               )
          cout<<endl;
 
@@ -515,8 +515,8 @@ namespace Gambit
            try{                                                                  \
             std::ostringstream echo1;                                            \
             std::ostringstream echo2;                                            \
-            echo1 <<     "  spec->get(Par::mass1,"<<label<<","<<i<<","<<j<<") = "; \
-            double value1 = spec->get(Par::mass1,label,i,j); \
+            echo1 <<     "  spec.get(Par::mass1,"<<label<<","<<i<<","<<j<<") = "; \
+            double value1 = spec.get(Par::mass1,label,i,j); \
             echo2 <<     "  SLHAea::to<double>( slhaea.at("<<block<<").at("<<i<<","<<j<<").at(2) ) = "; \
             double value2 = SLHAea::to<double>( slhaea.at(block).at(i,j).at(2) ); \
             cout << echo1.str() << value1 <<endl;                                \
@@ -545,13 +545,13 @@ namespace Gambit
          cout<<endl;
          cout<<"MSSM mass dimension 2 running parameters"<<endl;
          cout<<endl;
-         ECHO(  spec->get(Par::mass2,"mHd2")  )  // Down-type Higgs soft mass
+         ECHO(  spec.get(Par::mass2,"mHd2")  )  // Down-type Higgs soft mass
          ECHO(  slhaea.at("MSOFT").at(21).at(1)               )
          cout<<endl;
-         ECHO(  spec->get(Par::mass2,"mHu2")  )  // Up-type Higgs soft mass
+         ECHO(  spec.get(Par::mass2,"mHu2")  )  // Up-type Higgs soft mass
          ECHO(  slhaea.at("MSOFT").at(22).at(1)               )
          cout<<endl;
-         ECHO(  spec->get(Par::mass2,"BMu")   )  // Higgs bilinear soft parameter
+         ECHO(  spec.get(Par::mass2,"BMu")   )  // Higgs bilinear soft parameter
          ECHO(  slhaea.at("HMIX").at(101).at(1)               )
          cout<<endl;
 
@@ -566,8 +566,8 @@ namespace Gambit
             std::ostringstream echo1;                                            \
            try {                                                                 \
             std::ostringstream echo2;                                            \
-            echo1 <<     "  spec->get(Par::mass2,"<<label<<","<<i<<","<<j<<") = "; \
-            double value1 = spec->get(Par::mass2,label,i,j); \
+            echo1 <<     "  spec.get(Par::mass2,"<<label<<","<<i<<","<<j<<") = "; \
+            double value1 = spec.get(Par::mass2,label,i,j); \
             echo2 <<     "  SLHAea::to<double>( slhaea.at("<<block<<").at("<<i<<","<<j<<").at(2) ) = "; \
             double value2 = SLHAea::to<double>( slhaea.at(block).at(i,j).at(2) ); \
             cout << echo1.str() << value1 <<endl;                                \
@@ -591,7 +591,7 @@ namespace Gambit
 
          /// NEW! Tests of override setters
          /// These cannot be run on a const spectrum object, so we need to clone it first
-         std::unique_ptr<SubSpectrum> clonedspec = spec->clone();
+         std::unique_ptr<SubSpectrum> clonedspec = spec.clone();
   
          cout << "Testing set_override functions" << endl;
 

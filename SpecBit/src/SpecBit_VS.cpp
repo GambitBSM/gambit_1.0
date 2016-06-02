@@ -58,12 +58,12 @@ namespace Gambit
         c=d;
     }
     
-    bool check_perturb(const Spectrum*  spec,double scale,int pts)
+    bool check_perturb(const Spectrum& spec,double scale,int pts)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
     double step = scale / pts;
     //bool nperturbative = 0;
     double ul=3.5449077018110318; // sqrt(4*Pi), maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
@@ -102,12 +102,12 @@ namespace Gambit
     return true;
     }
     
-    double run_lambda(const Spectrum*  spec,double scale)
+    double run_lambda(const Spectrum& spec,double scale)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE(); // clone the original spectrum incase the running takes the spectrum
                                                                 // into a non-perturbative scale and thus the spectrum is no longer reliable
     SingletDM -> RunToScale(scale);
     double lambda1 = SingletDM->get(Par::dimensionless,"lambda_h");
@@ -124,7 +124,7 @@ namespace Gambit
       int check_perturb_pts = runOptions.getValueOrDef<double>(100,"check_perturb_pts");
       using namespace Gambit;
       using namespace SpecBit;
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
+      const Spectrum& fullspectrum = *myPipe::Dep::SingletDM_spectrum;
       // const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
       //std::unique_ptr<SubSpectrum> SingletDM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();

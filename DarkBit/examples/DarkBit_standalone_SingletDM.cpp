@@ -29,7 +29,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
+QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, /*TAG*/ Spectrum, ())
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 namespace Gambit

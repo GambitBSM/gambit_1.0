@@ -81,7 +81,7 @@ START_MODULE
     #define FUNCTION SingletDM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+    DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
     ALLOW_MODELS(SingletDM, SingletDMZ3)
     #undef FUNCTION
 
@@ -663,7 +663,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION check_first_sec_gen_mixing
     START_FUNCTION(int)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -672,7 +672,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 

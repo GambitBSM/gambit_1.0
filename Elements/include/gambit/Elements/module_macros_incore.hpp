@@ -51,6 +51,13 @@
 /// Change this to 1 if you really don't care about parameter clashes.
 #define ALLOW_DUPLICATES_IN_PARAMS_MAP 0
 
+/// Suppress unused variable warnings in GCC (and do nothing for other compilers)
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+
 #include <map>
 
 #include "gambit/Elements/functors.hpp"
@@ -602,12 +609,11 @@
   }                                                                            \
                                                                                \
   /* Register the function */                                                  \
-  const int CAT(FUNCTION,_registered1) = register_function(Functown::FUNCTION, \
+  const int VARIABLE_IS_NOT_USED CAT(FUNCTION,_registered1) = register_function(Functown::FUNCTION, \
    CAN_MANAGE,                                                                 \
    BOOST_PP_IIF(CAN_MANAGE, &Pipes::FUNCTION::Loop::done, NULL),               \
    Accessors::iCanDo, Accessors::map_bools,                                    \
    Accessors::provides<Gambit::Tags::CAPABILITY>, Pipes::FUNCTION::runOptions);\
-
 
 // Determine whether to make registration calls to the Core in the 
 // CORE_NEEDS_MANAGER_WITH_CAPABILITY macro, depending on STANDALONE flag 

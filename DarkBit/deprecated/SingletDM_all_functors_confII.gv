@@ -346,7 +346,7 @@ digraph G {
 	71 -> 78;
 	71 -> 79;
 	171	 [fillcolor="#F0F0D0",
-		label=< <font point-size="20" color="red">MSSM_spectrum</font><br/>Type: const Spectrum*<br/>Function: get_MSSM_spectrum_from_SLHAfile<br/>Module: SpecBit>,
+		label=< <font point-size="20" color="red">MSSM_spectrum</font><br/>Type: /*TAG*/ Spectrum<br/>Function: get_MSSM_spectrum_from_SLHAfile<br/>Module: SpecBit>,
 		shape=box,
 		style="rounded,filled"];
 	171 -> 12;

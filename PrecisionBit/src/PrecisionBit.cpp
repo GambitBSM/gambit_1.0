@@ -171,24 +171,23 @@ namespace Gambit
     /// @}
 
     /// Precision MSSM spectrum manufacturer
-    void make_MSSM_precision_spectrum(const Spectrum* &result)
+    void make_MSSM_precision_spectrum(Spectrum& improved_spec /*(result)*/)
     {
       using namespace Pipes::make_MSSM_precision_spectrum;
-      static Spectrum improved_spec;
-      improved_spec = **Dep::unimproved_MSSM_spectrum;
-      SubSpectrum* HE = improved_spec.get_HE();
-      SubSpectrum* LE = improved_spec.get_LE();
+      improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
+      SubSpectrum& HE = improved_spec.get_HE();
+      SubSpectrum& LE = improved_spec.get_LE();
 
       // W mass
       //-------
 
-      HE->set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
-      HE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
-      HE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
+      HE.set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
+      HE.set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
+      HE.set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
 
-      LE->set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
-      LE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true); //FIXME these should contain some default error, no?
-      LE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);  //FIXME these should contain some default error, no?
+      LE.set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
+      LE.set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true); //FIXME these should contain some default error, no?
+      LE.set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);  //FIXME these should contain some default error, no?
 
       // Higgs masses
       //-------------
@@ -204,17 +203,17 @@ namespace Gambit
       //                                 std::pair<int,int>(36,0),
       //                                 std::pair<int,int>(37,0)};
       const str higgses[4] = {"h0_1", "h0_2", "A0", "H+"};
-      const double mh_s[4] = {HE->get(Par::Pole_Mass, higgses[0]),
-                              HE->get(Par::Pole_Mass, higgses[1]),
-                              HE->get(Par::Pole_Mass, higgses[2]),
-                              HE->get(Par::Pole_Mass, higgses[3])};
+      const double mh_s[4] = {HE.get(Par::Pole_Mass, higgses[0]),
+                              HE.get(Par::Pole_Mass, higgses[1]),
+                              HE.get(Par::Pole_Mass, higgses[2]),
+                              HE.get(Par::Pole_Mass, higgses[3])};
       double mh[4];
 
 
       #ifdef PRECISIONBIT_DEBUG
         for (int i = 0; i < 4; i++) cout << "h masses, FS: "<< mh_s[i] << endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, FS error low: "<< HE->get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i] << endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, FS error high: "<< HE->get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FS error low: "<< HE.get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FS error high: "<< HE.get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i] << endl;
         for (int i = 0; i < 4; i++) cout << "h masses, FH: "<< Dep::prec_HiggsMasses->MH[i] << endl;
         for (int i = 0; i < 4; i++) cout << "h masses, FH error: "<< Dep::prec_HiggsMasses->deltaMH[i] << endl;
       #endif
@@ -239,7 +238,7 @@ namespace Gambit
       }
       if (central != 2)
       {
-        for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass, mh[i], higgses[i]);
+        for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass, mh[i], higgses[i]);
       }
 
       // Uncertainties:
@@ -263,8 +262,8 @@ namespace Gambit
       {
         for (int i = 0; i < 4; i++)
         {
-          double D_s_low = HE->get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i];
-          double D_s_high = HE->get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i];
+          double D_s_low = HE.get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i];
+          double D_s_high = HE.get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i];
           double D_p = Dep::prec_HiggsMasses->deltaMH[i];
           mh_low[i] = sqrt(D_s_low*D_s_low + D_p*D_p + D_g[i]*D_g[i]);
           mh_high[i] = sqrt(D_s_high*D_s_high + D_p*D_p + D_g[i]*D_g[i]);
@@ -276,8 +275,8 @@ namespace Gambit
       {
         for (int i = 0; i < 4; i++)
         {
-          double D_s_low = mh_s[i]*HE->get(Par::Pole_Mass_1srd_low, higgses[i]);
-          double D_s_high = mh_s[i]*HE->get(Par::Pole_Mass_1srd_high, higgses[i]);
+          double D_s_low = mh_s[i]*HE.get(Par::Pole_Mass_1srd_low, higgses[i]);
+          double D_s_high = mh_s[i]*HE.get(Par::Pole_Mass_1srd_high, higgses[i]);
           double D_p = Dep::prec_HiggsMasses->deltaMH[i];
           if (central == 1) // Using precision calculator mass as central value
           {
@@ -413,8 +412,8 @@ namespace Gambit
       {
         for (int i = 0; i < 4; i++)
         {
-          double D_s_low = mh_s[i]*HE->get(Par::Pole_Mass_1srd_low, higgses[i]);
-          double D_s_high = mh_s[i]*HE->get(Par::Pole_Mass_1srd_high, higgses[i]);
+          double D_s_low = mh_s[i]*HE.get(Par::Pole_Mass_1srd_low, higgses[i]);
+          double D_s_high = mh_s[i]*HE.get(Par::Pole_Mass_1srd_high, higgses[i]);
           if (central == 1) // Using precision calculator mass as central value
           {
             if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass
@@ -464,21 +463,19 @@ namespace Gambit
         msg << "Unrecognised Higgs_predictions_error_method specified for make_MSSM_precision_spectrum: " << central;
         PrecisionBit_error().raise(LOCAL_INFO,msg.str());
       }
-      for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true); // TODO: Ben: I changed the flags here to "false", because that means the uncertainties don't already have to exist. This is the case if e.g. the spectrum comes from an SLHA file.
-      for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
+      for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true); // TODO: Ben: I changed the flags here to "false", because that means the uncertainties don't already have to exist. This is the case if e.g. the spectrum comes from an SLHA file.
+      for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
       #ifdef PRECISIONBIT_DEBUG
-        for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE->get(Par::Pole_Mass, higgses[i])<< endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE->get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE->get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE.get(Par::Pole_Mass, higgses[i])<< endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE.get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE.get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
       #endif
-
-      result = &improved_spec;
 
       if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        result->getSLHA(filename);
+        improved_spec.getSLHA(filename);
       }
 
     }
@@ -488,44 +485,44 @@ namespace Gambit
     void mw_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SM_spectrum;
-      const SubSpectrum* HE = (*Dep::SM_spectrum)->get_HE();
-      result.central = HE->get(Par::Pole_Mass, "W+");;
-      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
+      const SubSpectrum& HE = (*Dep::SM_spectrum).get_HE();
+      result.central = HE.get(Par::Pole_Mass, "W+");;
+      result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SS_spectrum;
-      const SubSpectrum* HE = (*Dep::SingletDM_spectrum)->get_HE();
-      result.central = HE->get(Par::Pole_Mass, "W+");;
-      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
+      const SubSpectrum& HE = (*Dep::SingletDM_spectrum).get_HE();
+      result.central = HE.get(Par::Pole_Mass, "W+");;
+      result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_MSSM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_MSSM_spectrum;
-      const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
-      result.central = HE->get(Par::Pole_Mass, "W+");
-      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
+      const SubSpectrum& HE = (*Dep::MSSM_spectrum).get_HE();
+      result.central = HE.get(Par::Pole_Mass, "W+");
+      result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mh_from_SM_spectrum(double &result)
     {
       using namespace Pipes::mh_from_SM_spectrum;
-      const SubSpectrum* HE = (*Dep::SM_spectrum)->get_HE();
-      result = HE->get(Par::Pole_Mass, 25, 0);
+      const SubSpectrum& HE = (*Dep::SM_spectrum).get_HE();
+      result = HE.get(Par::Pole_Mass, 25, 0);
     }
     void mh_from_SS_spectrum(double &result)
     {
       using namespace Pipes::mh_from_SS_spectrum;
-      const SubSpectrum* HE = (*Dep::SingletDM_spectrum)->get_HE();
-      result = HE->get(Par::Pole_Mass, 25, 0);
+      const SubSpectrum& HE = (*Dep::SingletDM_spectrum).get_HE();
+      result = HE.get(Par::Pole_Mass, 25, 0);
     }
     void mh_from_MSSM_spectrum(double &result)
     {
       using namespace Pipes::mh_from_MSSM_spectrum;
-      const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
-      result = HE->get(Par::Pole_Mass, 25, 0);
+      const SubSpectrum& HE = (*Dep::MSSM_spectrum).get_HE();
+      result = HE.get(Par::Pole_Mass, 25, 0);
     }
     /// @}
 
@@ -673,55 +670,55 @@ namespace Gambit
     void GM2C_SUSY(triplet<double> &result)
     {
       using namespace Pipes::GM2C_SUSY;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Dep::MSSM_spectrum).get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
       /// fill pole masses.
       /// note: that the indices start from 0 in gm2calc,
       /// gambit indices start from 1, hence the offsets here
-      model.get_physical().MSvmL = mssm->get(Par::Pole_Mass, "~nu", 2); // 1L
+      model.get_physical().MSvmL = mssm.get(Par::Pole_Mass, "~nu", 2); // 1L
       str msm1, msm2;
       // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
       // If we get a successful convergence to the pole mass scheme in the end it's OK  
       const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
       slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
-      model.get_physical().MSm(0)  =  mssm->get(Par::Pole_Mass, msm1); // 1L
-      model.get_physical().MSm(1)  =  mssm->get(Par::Pole_Mass, msm2); // 1L
+      model.get_physical().MSm(0)  =  mssm.get(Par::Pole_Mass, msm1); // 1L
+      model.get_physical().MSm(1)  =  mssm.get(Par::Pole_Mass, msm2); // 1L
       
-      model.get_physical().MChi(0) = mssm->get(Par::Pole_Mass, "~chi0", 1); // 1L
-      model.get_physical().MChi(1) =  mssm->get(Par::Pole_Mass, "~chi0", 2); // 1L
-      model.get_physical().MChi(2) = mssm->get(Par::Pole_Mass, "~chi0", 3); // 1L
-      model.get_physical().MChi(3) = mssm->get(Par::Pole_Mass, "~chi0", 4); // 1L
+      model.get_physical().MChi(0) = mssm.get(Par::Pole_Mass, "~chi0", 1); // 1L
+      model.get_physical().MChi(1) =  mssm.get(Par::Pole_Mass, "~chi0", 2); // 1L
+      model.get_physical().MChi(2) = mssm.get(Par::Pole_Mass, "~chi0", 3); // 1L
+      model.get_physical().MChi(3) = mssm.get(Par::Pole_Mass, "~chi0", 4); // 1L
       
-      model.get_physical().MCha(0) =  mssm->get(Par::Pole_Mass, "~chi+", 1); // 1L
-      model.get_physical().MCha(1) =  mssm->get(Par::Pole_Mass, "~chi+", 2); // 1L
-      model.get_physical().MAh(1)  = mssm->get(Par::Pole_Mass, "A0"); // 2L
+      model.get_physical().MCha(0) =  mssm.get(Par::Pole_Mass, "~chi+", 1); // 1L
+      model.get_physical().MCha(1) =  mssm.get(Par::Pole_Mass, "~chi+", 2); // 1L
+      model.get_physical().MAh(1)  = mssm.get(Par::Pole_Mass, "A0"); // 2L
       
-      model.set_TB(mssm->get(Par::dimensionless,"tanbeta"));
-      model.set_Mu(mssm->get(Par::mass1, "Mu"));
-      model.set_MassB(mssm->get(Par::mass1, "M1"));
-      model.set_MassWB(mssm->get(Par::mass1, "M2"));
-      model.set_MassG(mssm->get(Par::mass1, "M3"));
+      model.set_TB(mssm.get(Par::dimensionless,"tanbeta"));
+      model.set_Mu(mssm.get(Par::mass1, "Mu"));
+      model.set_MassB(mssm.get(Par::mass1, "M1"));
+      model.set_MassWB(mssm.get(Par::mass1, "M2"));
+      model.set_MassG(mssm.get(Par::mass1, "M3"));
       for(int i = 1; i<=3; i++) {
         for(int j = 1; j<=3; j++) {	
-          model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
-          model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
-          model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
-          model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
-          model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j));
+          model.set_mq2(i-1,j-1, mssm.get(Par::mass2, "mq2", i, j)); 
+          model.set_ml2(i-1,j-1, mssm.get(Par::mass2, "ml2", i, j)); 
+          model.set_md2(i-1,j-1, mssm.get(Par::mass2, "md2", i, j)); 
+          model.set_mu2(i-1,j-1, mssm.get(Par::mass2, "mu2", i, j)); 
+          model.set_me2(i-1,j-1, mssm.get(Par::mass2, "me2", i, j));
           double Au = 0.0, Ad = 0.0, Ae = 0.0;
-          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
-            Au = mssm->get(Par::mass1, "TYu", i, j)
-            / mssm->get(Par::dimensionless, "Yu", i, j);
+          if(mssm.get(Par::dimensionless, "Yu", i, j) > 1e-14){
+            Au = mssm.get(Par::mass1, "TYu", i, j)
+            / mssm.get(Par::dimensionless, "Yu", i, j);
           }
-          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
-            Ae = mssm->get(Par::mass1, "TYe", i, j)
-            / mssm->get(Par::dimensionless, "Ye", i, j);
+          if(mssm.get(Par::dimensionless, "Ye", i, j) > 1e-14){
+            Ae = mssm.get(Par::mass1, "TYe", i, j)
+            / mssm.get(Par::dimensionless, "Ye", i, j);
           }
-          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
-            Ad = mssm->get(Par::mass1, "TYd", i, j)
-            / mssm->get(Par::dimensionless, "Yd", i, j);
+          if(mssm.get(Par::dimensionless, "Yd", i, j) > 1e-14){
+            Ad = mssm.get(Par::mass1, "TYd", i, j)
+            / mssm.get(Par::dimensionless, "Yd", i, j);
           }
      
           model.set_Au(i-1, j-1, Au);
@@ -730,7 +727,7 @@ namespace Gambit
         }
       }
       
-      model.set_scale(mssm->GetScale());                   // 2L
+      model.set_scale(mssm.GetScale());                   // 2L
      
       /// convert DR-bar parameters to on-shell
       model.convert_to_onshell();
@@ -770,55 +767,55 @@ namespace Gambit
     void GM2C_SUSY_c(triplet<double> &result)
     {
       using namespace Pipes::GM2C_SUSY_c;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Dep::MSSM_spectrum).get_HE();
 
       /// Note for the C backend to gm2calc: An extra ".pointer()" is needed for functions that take the pointer "model" as input.
       /// Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
 
       gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
 
-      BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, mssm->get(Par::Pole_Mass, "~nu", 2));
+      BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, mssm.get(Par::Pole_Mass, "~nu", 2));
       str msm1, msm2;
       // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
       // If we get a successful convergence to the pole mass scheme in the end it's OK  
       const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
       slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
-      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, msm1));   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, msm2));   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi0", 1));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, "~chi0", 2));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, mssm->get(Par::Pole_Mass, "~chi0", 3)); /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, mssm->get(Par::Pole_Mass, "~chi0", 3));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi+", 1));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, "~chi+", 2));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, mssm->get(Par::Pole_Mass, "A0"));      /* 2L */
+      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, mssm.get(Par::Pole_Mass, msm1));   /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, mssm.get(Par::Pole_Mass, msm2));   /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, mssm.get(Par::Pole_Mass, "~chi0", 1));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, mssm.get(Par::Pole_Mass, "~chi0", 2));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, mssm.get(Par::Pole_Mass, "~chi0", 3)); /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, mssm.get(Par::Pole_Mass, "~chi0", 3));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, mssm.get(Par::Pole_Mass, "~chi+", 1));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, mssm.get(Par::Pole_Mass, "~chi+", 2));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, mssm.get(Par::Pole_Mass, "A0"));      /* 2L */
       
-      BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, mssm->get(Par::dimensionless,"tanbeta"));                        /* 1L */
-      BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, mssm->get(Par::mass1, "Mu"));                       /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, mssm->get(Par::mass1, "M1"));                    /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, mssm->get(Par::mass1, "M2"));                   /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, mssm->get(Par::mass1, "M3"));                   /* 2L */
+      BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, mssm.get(Par::dimensionless,"tanbeta"));                        /* 1L */
+      BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, mssm.get(Par::mass1, "Mu"));                       /* initial guess */
+      BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, mssm.get(Par::mass1, "M1"));                    /* initial guess */
+      BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, mssm.get(Par::mass1, "M2"));                   /* initial guess */
+      BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, mssm.get(Par::mass1, "M3"));                   /* 2L */
 
       for(int i = 1; i<=3; i++) {
         for(int j = 1; j<=3; j++) {
-          BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "ml2", i,j));     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, i-1, j-1,mssm->get(Par::mass2, "me2", i,j) );     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mq2", i,j));     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "md2", i,j));     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mu2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, i-1, j-1, mssm.get(Par::mass2, "ml2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, i-1, j-1,mssm.get(Par::mass2, "me2", i,j) );     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i-1, j-1, mssm.get(Par::mass2, "mq2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i-1, j-1, mssm.get(Par::mass2, "md2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i-1, j-1, mssm.get(Par::mass2, "mu2", i,j));     /* 2L */
           double Au = 0.0, Ad = 0.0, Ae = 0.0;
-          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
-            Au = mssm->get(Par::mass1, "TYu", i, j)
-            / mssm->get(Par::dimensionless, "Yu", i, j);
+          if(mssm.get(Par::dimensionless, "Yu", i, j) > 1e-14){
+            Au = mssm.get(Par::mass1, "TYu", i, j)
+            / mssm.get(Par::dimensionless, "Yu", i, j);
           }
-          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
-            Ae = mssm->get(Par::mass1, "TYe", i, j)
-            / mssm->get(Par::dimensionless, "Ye", i, j);
+          if(mssm.get(Par::dimensionless, "Ye", i, j) > 1e-14){
+            Ae = mssm.get(Par::mass1, "TYe", i, j)
+            / mssm.get(Par::dimensionless, "Ye", i, j);
           }
-          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
-            Ad = mssm->get(Par::mass1, "TYd", i, j)
-            / mssm->get(Par::dimensionless, "Yd", i, j);
+          if(mssm.get(Par::dimensionless, "Yd", i, j) > 1e-14){
+            Ad = mssm.get(Par::mass1, "TYd", i, j)
+            / mssm.get(Par::dimensionless, "Yd", i, j);
           }
           BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, i-1, j-1, Au);
           BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, i-1, j-1, Ad);
@@ -826,7 +823,7 @@ namespace Gambit
         }
       }
 
-      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm->GetScale());    
+      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm.GetScale());    
       
       /// convert DR-bar parameters to on-shell
       gm2calc_c::gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);

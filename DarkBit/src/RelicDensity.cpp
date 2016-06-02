@@ -517,7 +517,7 @@ namespace Gambit {
 
         
         // FIXME: Remove?
-//            const Spectrum* mySpec = *Dep::MSSM_spectrum;
+//            /*TAG*/ Spectrum mySpec = *Dep::MSSM_spectrum;
 //            SLHAstruct mySLHA = mySpec->getSLHAea();
 //            std::ofstream ofs("RelicDensity_debug.slha");
 //            ofs << mySLHA;
@@ -551,7 +551,7 @@ namespace Gambit {
         if ( runtime > 30. )
         {
           std::cout << "Duration [ms]: " << runtime << std::endl;
-          const Spectrum* mySpec = *Dep::MSSM_spectrum;
+          /*TAG*/ Spectrum mySpec = *Dep::MSSM_spectrum;
           SLHAstruct mySLHA = mySpec->getSLHAea();
           std::ofstream ofs("RelicDensity_debug.slha");
           ofs << mySLHA;

@@ -26,15 +26,15 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 
 // These functions are defined to allow GAMBIT dependencies to be satisfied properly without using GAMBIT
 // The user does not need to change these
-QUICK_FUNCTION(ColliderBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, const Spectrum*, (MSSM30atQ,MSSM30atMGUT))
-QUICK_FUNCTION(ColliderBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(ColliderBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, Spectrum))
 QUICK_FUNCTION(ColliderBit, Z_decay_rates, NEW_CAPABILITY, createZDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT))
-QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
 
 // SLHA file for input: user can change name here
 // Note that it must contain the full decay table for the LEP likelihoods to function properly
@@ -46,17 +46,16 @@ namespace Gambit
   namespace ColliderBit {
 
     // Make a GAMBIT spectrum object from an SLHA file
-    void createSpectrum(const Spectrum *& outSpec){
+    void createSpectrum(Spectrum& outSpec){
       static Spectrum mySpec;
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
-      outSpec = &mySpec;
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
     }
     
     void createDecays(DecayTable& outDecays)
     {
       // This function makes a decay table from an input SLHA file
-      const Spectrum* spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
-      outDecays = DecayTable(inputFileName, spec->PDG_translator(), 0, true);
+      const Spectrum& spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
+      outDecays = DecayTable(inputFileName, spec.PDG_translator(), 0, true);
     }
     
     void createZDecays(DecayTable::Entry& result){
@@ -76,7 +75,7 @@ namespace Gambit
       // This is a little more complicated than the previous function
       // Need to get the string that corresponds to a left-handed selectron (the decay table entries are in the mass eigenstate basis)
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
       outSelDecays = (*Pipes::createSelDecays::Dep::decay_rates)(x);
     }
@@ -84,7 +83,7 @@ namespace Gambit
     void createSerDecays(DecayTable::Entry& outSerDecays){
       // This function extracts the right-handed selectron decay table
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
       outSerDecays = (*Pipes::createSerDecays::Dep::decay_rates)(x);
     }
@@ -92,7 +91,7 @@ namespace Gambit
     void createSmulDecays(DecayTable::Entry& outSmulDecays){
       // This function extracts the left-handed smuon decay table
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
       outSmulDecays = (*Pipes::createSmulDecays::Dep::decay_rates)(x);
     }
@@ -100,14 +99,14 @@ namespace Gambit
     void createSmurDecays(DecayTable::Entry& outSmurDecays){
       //This function extracts the right-handed smuon decay table
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
       outSmurDecays = (*Pipes::createSmurDecays::Dep::decay_rates)(x);
     }
     
     void createStau1Decays(DecayTable::Entry& outStau1Decays){
       //This function extracts the stau1 decay table
-      const SubSpectrum* mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum).get_HE();
       // Set these arguments by hand for this example
       const static double tol = 0.001;
       const static bool pterror=false;
@@ -117,7 +116,7 @@ namespace Gambit
 
     void createStau2Decays(DecayTable::Entry& outStau2Decays){
       //This function extracts the stau2 decay table
-      const SubSpectrum* mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum).get_HE();
       const static double tol = 0.001;
       const static bool pterror=false;
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
