@@ -23,20 +23,22 @@ namespace Gambit
 {
     typedef Farray<Finteger,1,3> Farray_Finteger_1_3;
     typedef Farray<Freal8,1,2> Farray_Freal8_1_2;
-    typedef Farray<Fcomplex16,1,2,1,2> Farray_Fcomplex16_1_2_1_2;
-    typedef Farray<Freal8,1,4> Farray_Freal8_1_4;
-    typedef Farray<Fcomplex16,1,4,1,4> Farray_Fcomplex16_1_4_1_4;
-    typedef Farray<Freal8,1,2,1,2> Farray_Freal8_1_2_1_2;
-    typedef Farray<Freal8,1,6> Farray_Freal8_1_6;
-    typedef Farray<Fcomplex16,1,6,1,6> Farray_Fcomplex16_1_6_1_6;
     typedef Farray<Freal8,1,3> Farray_Freal8_1_3;
-    typedef Farray<Fcomplex16,1,3,1,3> Farray_Fcomplex16_1_3_1_3;
-    typedef Farray<Fcomplex16,1,3> Farray_Fcomplex16_1_3;
-    typedef Farray<Fcomplex16,1,2> Farray_Fcomplex16_1_2;
+    typedef Farray<Freal8,1,4> Farray_Freal8_1_4;
     typedef Farray<Freal8,1,5> Farray_Freal8_1_5;
-// temp
-    typedef Farray<Freal8,1,57> Farray_Freal8_1_57;
-    typedef Farray<Freal8,1,213> Farray_Freal8_1_213;
+    typedef Farray<Freal8,1,6> Farray_Freal8_1_6;
+    typedef Farray<Freal8,1,100> Farray_Freal8_1_100;   
+    typedef Farray<Freal8,1,2,1,2> Farray_Freal8_1_2_1_2;
+    typedef Farray<Freal8,1,3,1,3> Farray_Freal8_1_3_1_3;
+    typedef Farray<Freal8,1,4,1,4> Farray_Freal8_1_4_1_4;
+    typedef Farray<Fcomplex16,1,2> Farray_Fcomplex16_1_2;
+    typedef Farray<Fcomplex16,1,3> Farray_Fcomplex16_1_3;
+    typedef Farray<Fcomplex16,1,2,1,2> Farray_Fcomplex16_1_2_1_2;
+    typedef Farray<Fcomplex16,1,3,1,3> Farray_Fcomplex16_1_3_1_3;
+    typedef Farray<Fcomplex16,1,4,1,4> Farray_Fcomplex16_1_4_1_4;
+    typedef Farray<Fcomplex16,1,5,1,5> Farray_Fcomplex16_1_5_1_5;
+    typedef Farray<Fcomplex16,1,6,1,6> Farray_Fcomplex16_1_6_1_6;
+    
 
     struct particle2
     {

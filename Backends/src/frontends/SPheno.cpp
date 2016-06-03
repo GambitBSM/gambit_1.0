@@ -24,10 +24,8 @@ BE_NAMESPACE
 {
 
   // Run SPheno
-  void run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
+  int run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
   {
-   
-    Set_All_Parameters_0();
 
     ReadingData(sminputs, Param);
 
@@ -56,42 +54,28 @@ BE_NAMESPACE
    
       // Variables needed to get masses of sparticles
       Farray_Freal8_1_2 mChiPm;
+      Farray_Freal8_1_2 mChiPm2;
       Farray_Freal8_1_4 mChi0;
+      Farray_Freal8_1_4 mChi02;
       Farray_Freal8_1_2 mS0;
-      Farray_Freal8_1_2 m2S0;
+      Farray_Freal8_1_2 mS02;
       Farray_Freal8_1_2 mP0;
-      Farray_Freal8_1_2 m2P0;
+      Farray_Freal8_1_2 mP02;
       Farray_Freal8_1_2 mSpm;
-      Farray_Freal8_1_2 m2Spm;
+      Farray_Freal8_1_2 mSpm2;
       Farray_Freal8_1_6 mSdown;
-      Farray_Freal8_1_6 m2Sdown;
+      Farray_Freal8_1_6 mSdown2;
       Farray_Freal8_1_6 mSup;
-      Farray_Freal8_1_6 m2Sup;
+      Farray_Freal8_1_6 mSup2;
       Farray_Freal8_1_6 mSlepton;
-      Farray_Freal8_1_6 m2Slepton;
+      Farray_Freal8_1_6 mSlepton2;
       Farray_Freal8_1_3 mSneut;
-      Farray_Freal8_1_3 m2Sneut;
+      Farray_Freal8_1_3 mSneut2;
       Freal8 mGlu;
+ 
 
-      mChiPm = 0;
-      mChi0 = 0;
-      mS0 = 0;
-      m2S0 = 0;
-      mP0 = 0;
-      m2P0 = 0;
-      mSpm = 0;
-      m2Spm = 0;
-      mSdown = 0;
-      m2Sdown = 0;
-      mSup = 0;
-      m2Sup = 0;
-      mSlepton = 0;
-      m2Slepton = 0;
-      mSneut = 0;
-      m2Sneut = 0;
-      mGlu = 0;
-     
-      CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, m2S0, *RS0, mP0, m2P0, *RP0, mSpm, m2Spm, *RSpm, mSdown, m2Sdown, *RSdown, mSup, m2Sup, *RSup, mSlepton, m2Slepton, *RSlepton, mSneut, m2Sneut, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
+      CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
+
 
       if(!*kont)
       {
@@ -100,16 +84,16 @@ BE_NAMESPACE
           (*ChiPm)(i).m = mChiPm(i);
           (*ChiPm)(i).m2 = pow(mChiPm(i),2);
           (*S0)(i).m = mS0(i);
-          (*S0)(i).m2 = m2S0(i);
+          (*S0)(i).m2 = mS02(i);
           (*P0)(i).m = mP0(i);
-          (*P0)(i).m2 = m2P0(i);
+          (*P0)(i).m2 = mP02(i);
           (*Spm)(i).m = mSpm(i);
-          (*Spm)(i).m2 = m2Spm(i);
+          (*Spm)(i).m2 = mSpm2(i);
         }
         for(int i=1; i<=3; i++)
         {
           (*Sneut)(i).m = mSneut(i);
-          (*Sneut)(i).m2 = m2Sneut(i);
+          (*Sneut)(i).m2 = mSneut2(i);
         }
         for(int i=1; i<=4; i++)
         {
@@ -119,27 +103,59 @@ BE_NAMESPACE
         for(int i=1; i<=6; i++)
         {
           (*Sdown)(i).m = mSdown(i);
-          (*Sdown)(i).m2 = m2Sdown(i);
+          (*Sdown)(i).m2 = mSdown2(i);
           (*Sup)(i).m = mSup(i);
-          (*Sup)(i).m2 = m2Sup(i);
+          (*Sup)(i).m2 = mSup2(i);
           (*Slepton)(i).m = mSlepton(i);
-          (*Slepton)(i).m2 = m2Slepton(i);
+          (*Slepton)(i).m2 = mSlepton2(i);
         }
         Glu->m = mGlu;
         Glu->m2 = pow(mGlu,2);
 
         *Q_in = sqrt(GetRenormalizationScale());
 
+        spectrum = Spectrum_Out(Param);
+        std::cout << spectrum.getSLHAea() << std::endl;
 
- 
-        //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, m2P0, m2S0, m2Spm, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
+        // TODO
+        //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, mP02, mS02, mSpm2, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
+        // reorder state identification if necessary
+        // TODO: Swap Order
 
-       spectrum = Spectrum_Out(Param);
-     }
-   }
+        // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
+        if(*L_BR and *kont != 0)
+        {
+          if(*HighScaleModel == "MSSM")
+          {  //CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
+          }
+          else
+          {
+            // TODO: NMSSM, etc
+          }
+        }
+
+        // Calculation of the cross sections in e+ e- annihilation provided L_Cs is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0).  In the case that the file CrossSections.in does not exist, the following default values are used: Ecms = 500 GeV, Pm = Pp = 0, ISR = .TRUE.
+        if(*L_CS and *kont != 0)
+        {
+          for(int i=1; i<=3; i++)
+            for(int j=1; j<=3; j++)
+            {
+              (*Ylp)(i,j).re = (*Y_l)(i,j).re / (*gauge)(2);
+              (*Ylp)(i,j).im = (*Y_l)(i,j).im / (*gauge)(2);
+            }
+          // TODO: Ecms check
+          // TODO: Cross Sections
+        }
+      }
+    }
    
-   if(*kont != 0)
-     return ;
+    if(*kont != 0)
+    {
+      //ErrorHandling(*kont);
+    }
+
+    return *kont;   
+ 
   }
 
   Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
@@ -624,21 +640,26 @@ BE_NAMESPACE
     InitializeStandardModel(sminputs); 
     InitializeLoopFunctions();
 
-    *GenerationMixing = false;
     *ErrorLevel = -1;
+    *GenerationMixing = false;
     *L_BR = false;
     *L_CS = false;
 
     Set_All_Parameters_0();
-    *MNuR = -0.000000001;
+
+    // necessary to exclude right handed neutrinos from RGEs
+    // is set to positive in the corresponding model
+    *MNuR = -1E-9;
+
+    // take highest precision, will be change at a later stage (already taken from SPHENOINPUT
     *TwoLoopRGE = true;
+    
+    // these variables are only used in GMSB and will be set correctly below
+    *F_GMSB = 1E12;
+    *m32 = 1E10;
+
     *kont = 0;
-
-    // Block MODSEL (only CMSSM/mSUGRA now)
-    *HighScaleModel = "mSUGRA";
-    Fstring<20> model = "SUGRA";
-    SetHighScaleModel(model);
-
+ 
     // Block SMINPUTS
     // Already in InitializeStandardModel
    
@@ -676,202 +697,153 @@ BE_NAMESPACE
     else if(*HighScaleModel == "GMSB")
     {
       // Lambda
-      //*Lambda = *Param.at("Lambda");
+      *Lambda = *Param.at("Lambda");
       // M_M
-      //*MlambdaS = *Param.at("MlambdaS");
+      *MLambdaS = *Param.at("MLambdaS");
       // SignMu
-      //*phase_mu = *Param.at("SignMu");
+      *phase_mu = *Param.at("SignMu");
       // n_5
-      //*n5plets = *Param.at("n5");
+      *n5plets = *Param.at("n5");
       // n_10
-      //*n10plets = 0;
+      *n10plets = 0;
       // grav_fac
-      //*grav_fac = *Param.at("grav_fac");
+      *grav_fac = *Param.at("grav_fac");
+      // TanBeta
+      *tanb = *Param.at("TanBeta");
     }
     else if(*HighScaleModel == "AMSB")
     {
       // M0
-      //*M0_amsb = *Param.at("M0");
+      *M0_amsb = *Param.at("M0");
       // M32
-      //*M_32 = *Param.at("M32");
+      *M_32 = *Param.at("M32");
       // SignMu
-      //*phase_mu = *Param.at("SignMu");
+      *phase_mu = *Param.at("SignMu");
+      // TanBeta
+      *tanb = *Param.at("TanBeta");
 
+    }
+    else if(*HighScaleModel == "MSSM")
+    {
+      // TanBeta
+      *tanb = *Param.at("TanBeta");
+      // SignMu
+      *phase_mu = *Param.at("SignMu");
     }
     // Missing pars 7 - 10
 
     // Block EXTPAR
-    // Nothing here right now
+    if(*HighScaleModel == "MSSM")
+    {
+      // Scale of input parameters
+      if(Param.find("Qin") != Param.end())
+      {
+        Freal8 RGEScale = *Param.at("Qin");
+        RGEScale *= RGEScale;
+        SetRGEScale(RGEScale);
+      }
+      // M_1
+      (*Mi)(1).re = *Param.at("M1");
+      (*Mi_0)(1).re = *Param.at("M1");
+      // M_2
+      (*Mi)(2).re = *Param.at("M2");
+      (*Mi_0)(2).re = *Param.at("M2");
+      // M_3
+      (*Mi)(3).re = *Param.at("M3");
+      (*Mi_0)(3).re = *Param.at("M3");
+      // tanb
+      // in GAMBIT tanb is alwasy at mZ
+      //*tanb_Q = *Param.at("TanBeta");
+      //*tanb_in_at_Q = true;
+       
+      for(int i=1; i<=3; i++)
+        for(int j=1; j<=3; j++)
+        {
+          // A_u, Block TUIN
+          std::stringstream parname;
+          parname << "Au_" << i << j;
+          (*Au_0_sckm)(i,j).re = *Param.at(parname.str());
+          (*Au_sckm)(j,i).re = *Param.at(parname.str());
+          // A_d, Block TDIN
+          parname.str(std::string());
+          parname << "Ad_" << i << j; 
+          (*Ad_0_sckm)(i,j).re = *Param.at(parname.str());
+          (*Ad_sckm)(j,i).re = *Param.at(parname.str());
+          // A_l, Block TEIN
+          parname.str(std::string());
+          parname << "Ae_" << i << j;
+          (*Al_0_pmns)(i,j).re = *Param.at(parname.str());
+          (*Al_pmns)(j,i).re = *Param.at(parname.str());
+        } 
+
+      // A_t
+      (*AoY_u)(3,3).re = *Param.at("Au_33");
+      *At_save = (*AoY_u)(3,3);
+      *AoY_u_0 = *AoY_u;
+      // A_b
+      (*AoY_d)(3,3).re = *Param.at("Ad_33");
+      *Ab_save = (*AoY_d)(3,3);
+      *AoY_d_0 = *AoY_d;
+      // A_tau
+      (*AoY_l)(3,3).re = *Param.at("Ae_33");
+      *Atau_save = (*AoY_l)(3,3);
+      *AoY_l_0 = *AoY_l;
+       
+      // M^2_Hd
+      (*M2_H)(1) = *Param.at("mHd2");
+      (*M2_H_0)(1) = *Param.at("mHd2");
+      // M^2_Hu
+      (*M2_H)(2) = *Param.at("mHu2");
+      (*M2_H_0)(2) = *Param.at("mHu2");
+      // mu, not in GAMBIT input
+      // M^2_A(Q), not in GAMBIT input
+      // m_A, pole mass, not in GAMBIT input
+      for(int i=1; i<=3; i++)
+        for(int j=i; j<=3; j++)
+        {
+          // M^2_L, Block MSL2
+          std::stringstream parname;
+          parname << "ml2_" << i << j;
+          (*M2L_pmns)(i,j) = *Param.at(parname.str());
+          (*M2L_pmns)(j,i) = *Param.at(parname.str());
+          // M^2_E, Block MSE2
+          parname.str(std::string());
+          parname << "me2_" << i << j;
+          (*M2E_pmns)(i,j) = *Param.at(parname.str());
+          (*M2E_pmns)(j,i) = *Param.at(parname.str());
+          // M^2_Q, Block MSQ2
+          parname.str(std::string());
+          parname << "mq2_" << i << j;
+          (*M2Q_sckm)(i,j) = *Param.at(parname.str());
+          (*M2Q_sckm)(j,i) = *Param.at(parname.str());
+          // M^2_U, Block MSU2
+          parname.str(std::string());
+          parname << "mu2_" << i << j;
+          (*M2U_sckm)(i,j) = *Param.at(parname.str());
+          (*M2U_sckm)(j,i) = *Param.at(parname.str());
+          // M^2_D, Block MSD2
+          parname.str(std::string());
+          parname << "md2_" << i << j;
+          (*M2D_sckm)(i,j) = *Param.at(parname.str());
+          (*M2D_sckm)(j,i) = *Param.at(parname.str());
+        }
+      *M2L_0_pmns = *M2L_pmns;
+      *M2E_0_pmns = *M2E_pmns;
+      *M2Q_0_sckm = *M2Q_sckm;
+      *M2U_0_sckm = *M2U_sckm;
+      *M2D_0_sckm = *M2D_sckm;
+    }
+
+    // TODO: NMSSM
+
+    // TODO: R-parity breaking
 
     // Block SPHENOINPUT
-    // 1
-    *ErrorLevel = options.getValueOrDef<Finteger>(-1, "ErrorLevel");
+    // Already in BE_INI_FUNCTION 
 
-    // 2
-    *SPA_convention = options.getValueOrDef<Flogical>(true, "SPA_convention");
-    Freal8 scale = 1000000;
-    SetRGEScale(scale);
+    // Block SPINFO, nothing to do here
 
-    // 3
-    *External_Spectrum = options.getValueOrDef<Flogical>(false, "External_Spectrum");
-    *External_Higgs = options.getValueOrDef<Flogical>(false, "External_Spectrum");
-
-    // 4
-    *Use_Flavour_States = options.getValueOrDef<Flogical>(false, "Use_Flavour_States");
-
-    // 5
-    *FermionMassResummation = options.getValueOrDef<Flogical>(true, "FermionMassResummation");
-
-    // 6
-    *Ynu_at_MR3 = options.getValueOrDef<Flogical>(false, "Ynu_at_MR3");
-    *Fixed_Nu_Yukawas = !options.getValueOrDef<Flogical>(true, "Ynu_at_MR3");
-
-    // 7
-    *Only_1loop_Higgsmass = options.getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
-
-    // 8, Calculates Masses for extra scales if required
-    *Calc_Mass = options.getValueOrDef<Flogical>(false, "Calc_Mass");
-
-    // 9, Use old version of BoundaryEW
-    *UseNewBoundaryEW = options.getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
-
-    // 10, use old version to calculate scale
-    *UseNewScale = options.getValueOrDef<Flogical>(true, "UseNewScale");
-
-    // 11, whether to calculate branching ratios or not
-    *L_BR = options.getValueOrDef<Flogical>(false, "L_BR");
-
-    // 12, minimal value such that a branching ratio is written out
-    Freal8 BrMin = options.getValueOrDef<Freal8>(0.0, "BRMin");
-    if(BrMin > 0.0)
-      SetWriteMinBR(BrMin);
-
-    // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
-    *BR_Higgs_with_offshell_V = options.getValueOrDef(false, "BR_Higgs_with_offshell_V");
-
-    // 21, whether to calculate cross sections or not
-    *L_CS = options.getValueOrDef<Flogical>(false, "L_CS");
-
-    // 22, CMS energy
-    // TODO: Perhaps there is the option of setting more than one Ecms
-    // TODO: Error handling
-    *p_max = Ecms->nElem;
-    static p_act = 0;
-    p_act ++1;
-    if(p_act <= *p_max)
-      (*Ecms)(p_act) = options.getValueOrDef<Freal8>(0.0, "Ecms");
-
-    // 23, polarisation of incoming e- beam
-    if(p_act <= *p_max)
-      (*Pm)(p_act) = options.getValueOrDef<Freal8>(0.0, "Pm");
-    if((*Pm)(p_act) > 1)
-    {
-      // TODO: Error handling
-      (*Pm)(p_act) = 0;
-    }
-
-    // 24, polarisation of incoming e+ beam
-    if(p_act <= *p_max)
-      (*Pp)(p_act) = options.getValueOrDef<Freal8>(0.0, "Pp");
-    if((*Pp)(p_act) > 1)
-    {
-      // TODO: Error handling
-      (*Pp)(p_act) = 0;
-    }
-
-    // 25, caluclate initial state radiation
-    if(p_act <= *p_max)
-      (*ISR)(p_act) = options.getValueOrDef<Flogical>(false, "ISR");
-
-    // 26, minimal value such that a cross section is written out
-    Freal8 SigMin = options.getValueOrDef<Freal8>(0.0, "SigMin")
-    if(SigMin > 0.0)
-      SetWriteMinSig(SigMin);
-
-    // 31, setting a fixed GUT scale
-    Freal8 GUTScale = options.getValueOrDef<Freal8>(0.0, "GUTScale");
-    if(GUTScale > 0.0)
-      SetGUTScale(GUTScale); 
-
-    // 32, requires strict unification
-    Flogical StrictUnification = options.getValueOrDef<Flogical>(false, "StrictUnification");
-    if(StrictUnification)
-      SetStrictUnification(StrictUnification);
-
-    // 34, precision of mass calculation
-    *delta_mass = options.getValueOrDef<Freal8>(0.00001, "delta_mass");
-
-    // 35, maximal number of iterations
-    *n_run = options.getValueOrDef<Finteger>(40, "n_run");
-
-    // 36, write out debug information
-    *WriteOut = options.getValueOrDef<Flogical>(false, "WriteOut");
-
-    // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
-    Finteger YukawaScheme = options.getValueOrDef<Finteger>(0, "YukawaScheme");
-    if(YukawaScheme > 0)
-      SetYukawaScheme(YukawaScheme);   
-    
-    // 38, set looplevel of RGEs
-    *TwoLoopRGE = options.getValueOrDef<Flogical>(false, "TwoLoopRGE");
-
-    // 39, write additional SLHA1 file
-    // GABMIT: Always false, no file output
-    *Write_SLHA1 = false;
-
-    // 40, alpha(0)
-    // TODO: default
-    (*check_alpha)(2) = true;
-    *Alpha = 1.0 / options.getValueOrDef<Freal8>(1, "Alpha");
-
-    // 41, Z-boson width
-    // TODO: default
-    *gamZ = options.getValueOrDef<Freal8>(0, "gamZ");
-
-    // 42, W-boson width
-    // TODO: default
-    *gamW = options.getValueOrDef<Freal8>(0, "gamW");
-
-    // 80, exit for sure with non-zero value if problem occurs
-    *Non_Zero_Exit = options.getValueOrDef<Flogical>(false, "Non_Zero_Exit");
-
-    // 81, quick and dirty way to implement model by Suchita Kulkarni
-    *Model_Suchita = options.getValueOrDef<Flogical>(false, "Model_Suchita");
-
-    // 90, add R-parity at low energies
-    *Add_RParity = options.getValueOrDef<Flogical>(false, "Add_RParity");
-
-    // 91, fit RP parameters such that neutrino data are ok
-    *L_Fit_RP_Parameters = options.getValueOrDef<Flobical>(false, "L_Fit_RP_Parameters");
-
-    // 92, for Pythia input
-    *L_RP_Pythia = options.getValueOrDef<Flogical>(false, "L_RP_Pythia");
-
-    // 93, calculates cross sectionin case of RP, only partially implemented
-    *L_CSrp = options.getValueOrDef<Flogical>(false, "L_CSrp");
-
-    // 94, io_RP
-    *io_RP = options.getValueOrDef<Finteger>(0, "io_RP");
-
-    // 99, MADGraph output style, some additional information
-    // GAMBIT: always false, no file output
-    *MADGraph_style = false;
- 
-    // 100, use bsstep instead of rkqs
-    Flogical bsstep = options.getValueOrDef<Flogical>(false, "Use_bsstep_instead_of_rkqs");
-    if(bsstep)
-      Set_Use_bsstep_instead_of_rkqs(bsstep);    
-
-    // 101, use rzextr instead of pzextr
-    Flogical rzextr = options.getValueOrDef<Flogical>(false, "Use_rzextr_instead_of_pzextr");
-    if(rzextr)
-      Set_Use_bsstep_instead_of_pzextr(rzextr);
-
-    // 110, write ouput for LHC observables
-    *LWrite_LHC_Observables = options.getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
-    
-
-    // Block SPINFO, missing
+    // No other blocks are relevant at this stage
 
     // now some checks and additional settings
     if(phase_mu->re == 0 and (mu->abs() > 0)) 
@@ -881,11 +853,28 @@ BE_NAMESPACE
       phase_mu->im /= mu->abs();
     }
 
-    // SPA_convention, missing
-
-    // i_particles check, missing (not needed for mSUGRA)
-
-    // check_alpha, missing
+    if(*SPA_convention and !(*tanb_in_at_Q))
+    {
+      // TODO: Warnings
+    }
+    // first guess of mu, B and mA
+    if(*HighScaleModel == "MSSM")
+    {
+      //*HighScaleModel = "MSSM1";
+      Freal8 cosb2 = 1.0 / (1.0 + *tanb * *tanb);
+      Freal8 sinb2 = *tanb * *tanb * cosb2;
+      Freal8 cos2b = cosb2 - sinb2;
+      Freal8 Abs_Mu2 = ((*M2_H)(2) * sinb2 - (*M2_H)(1) * cosb2) / cos2b - 0.5 * *mZ2;
+      if(Abs_Mu2 < 0) Abs_Mu2 = 10000;
+      mu->re = sqrt(Abs_Mu2) * phase_mu->re;
+      B->re = ((*M2_H)(1) + (*M2_H)(2) + 2.0 * Abs_Mu2) * *tanb / (1 + *tanb * *tanb);
+      (*mP02)(2) = B->abs() * (1.0 / *tanb + *tanb);
+      (*mP0)(2) = sqrt((*mP02)(2));
+    }   
+    else
+    {
+      // TODO: NMSSM and other models
+    }
 
     // recalculate quantities to be sure
     *gmZ = *gamZ * *mZ;
@@ -903,11 +892,11 @@ BE_NAMESPACE
     *Alpha_mZ = Alpha_MSbar(*mZ, *mW);
     CalculateRunningMasses(*mf_l, *mf_d, *mf_u, *Q_light_quarks, *Alpha_mZ, *AlphaS_mZ, *mZ, *mf_l_mZ, *mf_d_mZ, *mf_u_mZ, *kont);
     
-    // SUGRA_NuR, missing
+    // TODO: SUGRA_NuR and SEESAW
 
-    // External_spectrum, missing
+    // TODO: External_spectrum
 
-    // l_pmns, missing
+    // TODO: l_pmns
 
     // check if T_f and A_f given, if yes, then A_f gets overwritten
     if((*Au_sckm)(3,3).abs() != 0)
@@ -999,8 +988,15 @@ BE_NAMESPACE
     }
 
     // couplings: Alpha(Q=0), Alpha(mZ), Alpha_S(mZ), Fermi constant G_F
-    *Alpha = 1.0/137.03599974;
+    if(*Alpha == 1.0)
+      *Alpha = 1.0/137.03599974;
+    else
+    {
+      // TODO: Warning
+    }
     *Alpha_mZ = 1.0/sminputs.alphainv;
+    *Alpha_mZ_MS = *Alpha_mZ; // from SMINPUTS
+    *MZ_input = true;
     *AlphaS_mZ = sminputs.alphaS; 
     *G_F = sminputs.GF;
 
@@ -1039,12 +1035,315 @@ BE_NAMESPACE
 
   }  
 
+  // Function that handles errors
+/*  void ErrorHandling(int kont)
+  {
+    std::stringstream mess;
+
+    switch(kont)
+    {
+     case -1:
+        mess << "step size gets too small in routine ODEint";
+        break;
+
+     case -2:
+        mess << "maximal value > 10^36 ODEint";
+        break;
+
+     case -3:
+        mess << "too many steps are required in routine ODEint";
+        break;
+
+     case -4:
+        mess << "boundary conditions cannot be fullfilled in routine ODEintB";
+        break;
+
+     case -5:
+        mess << "maximal value 10^36 ODEintB"; 
+        break;
+
+     case -6:
+        mess << "step size gets too small in routine ODEintB";
+        break;
+
+     case -7:
+        mess << "too many steps are required in routine ODEintB";
+        break;
+
+     case -8:
+        mess << "boundary conditions cannot be fullfilled in routine ODEintB";
+        break;
+
+     case -9:
+        mess << "maximal value >10^36 ODEintC";
+        break;
+
+     case -10:
+        mess << "step size gets too small in routine ODEintC";
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+     case -1:
+        break;
+
+
+    }
+  }*/
 }
+
+
+
 END_BE_NAMESPACE
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
 
+    // Divert all ouput to screen, i.e. to GAMBIT logs
+    *ErrCan = 6; 
+
+    Set_All_Parameters_0();
+
+    // Set up model, same as Block MODSEL
+    if((*ModelInUse)("CMSSM"))
+    {
+      *HighScaleModel = "mSUGRA";
+      Fstring<20> model = "SUGRA";
+      SetHighScaleModel(model);
+      std::cout << "Model is CMSSM" << std::endl;
+    }
+    else
+    {
+      *HighScaleModel = "MSSM";
+    }
+
+    // Set up options, same as BLOCK SPHENOINPUT
+    // 1
+    *ErrorLevel = runOptions->getValueOrDef<Finteger>(-1, "ErrorLevel");
+
+    // 2
+    *SPA_convention = runOptions->getValueOrDef<Flogical>(true, "SPA_convention");
+    Freal8 scale = 1000000;
+    SetRGEScale(scale);
+
+    // 3
+    *External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
+    *External_Higgs = runOptions->getValueOrDef<Flogical>(false, "External_Higgs");
+
+    // 4
+    // TODO: private variable, cannot import
+    //*Use_Flavour_States = runOptions->getValueOrDef<Flogical>(false, "Use_Flavour_States");
+
+    // 5
+    *FermionMassResummation = runOptions->getValueOrDef<Flogical>(true, "FermionMassResummation");
+
+    // 6
+    *Ynu_at_MR3 = runOptions->getValueOrDef<Flogical>(false, "Ynu_at_MR3");
+    *Fixed_Nu_Yukawas = !runOptions->getValueOrDef<Flogical>(true, "Fixed_Nu_Yukawas");
+
+    // 7
+    *Only_1loop_Higgsmass = runOptions->getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
+
+    // 8, Calculates Masses for extra scales if required
+    *Calc_Mass = runOptions->getValueOrDef<Flogical>(false, "Calc_Mass");
+
+    // 9, Use old version of BoundaryEW
+    *UseNewBoundaryEW = runOptions->getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
+
+    // 10, use old version to calculate scale
+    *UseNewScale = runOptions->getValueOrDef<Flogical>(true, "UseNewScale");
+
+    // 11, whether to calculate branching ratios or not
+    *L_BR = runOptions->getValueOrDef<Flogical>(false, "L_BR");
+
+    // 12, minimal value such that a branching ratio is written out
+    Freal8 BrMin = runOptions->getValueOrDef<Freal8>(0.0, "BRMin");
+    if(BrMin > 0.0)
+      SetWriteMinBr(BrMin);
+
+    // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
+    // TODO: private variable, cannot import
+    //*BR_Higgs_with_offshell_V = runOptions->getValueOrDef<Flogical>(false, "BR_Higgs_with_offshell_V");
+
+    // 21, whether to calculate cross sections or not
+    *L_CS = runOptions->getValueOrDef<Flogical>(false, "L_CS");
+
+    // 22, CMS energy
+    // TODO: Perhaps there is the option of setting more than one Ecms
+    // TODO: Error handling
+    static int p_max = 100;
+    static Finteger p_act = 0;
+    p_act ++;
+    if(p_act <= p_max)
+      (*Ecms)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Ecms");
+
+    // 23, polarisation of incoming e- beam
+    if(p_act <= p_max)
+      (*Pm)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pm");
+    if((*Pm)(p_act) > 1)
+    {
+      // TODO: Error handling
+      (*Pm)(p_act) = 0;
+    }
+
+    // 24, polarisation of incoming e+ beam
+    if(p_act <= p_max)
+      (*Pp)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pp");
+    if((*Pp)(p_act) > 1)
+    {
+      // TODO: Error handling
+      (*Pp)(p_act) = 0;
+    }
+
+    // 25, caluclate initial state radiation
+    if(p_act <= p_max)
+      (*ISR)(p_act) = runOptions->getValueOrDef<Flogical>(false, "ISR");
+
+    // 26, minimal value such that a cross section is written out
+    Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
+    if(SigMin > 0.0)
+      SetWriteMinSig(SigMin);
+
+    // 31, setting a fixed GUT scale
+    Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
+    if(GUTScale > 0.0)
+       SetGUTScale(GUTScale); 
+
+    // 32, requires strict unification
+    Flogical StrictUnification = runOptions->getValueOrDef<Flogical>(false, "StrictUnification");
+    if(StrictUnification)
+      SetStrictUnification(StrictUnification);
+
+    // 34, precision of mass calculation
+    *delta_mass = runOptions->getValueOrDef<Freal8>(0.00001, "delta_mass");
+
+    // 35, maximal number of iterations
+    *n_run = runOptions->getValueOrDef<Finteger>(40, "n_run");
+
+    // 36, write out debug information
+    *WriteOut = runOptions->getValueOrDef<Flogical>(false, "WriteOut");
+
+    // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
+    Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
+    if(YukawaScheme > 0)
+      SetYukawaScheme(YukawaScheme);   
+    
+    // 38, set looplevel of RGEs
+    *TwoLoopRGE = runOptions->getValueOrDef<Flogical>(false, "TwoLoopRGE");
+
+    // 39, write additional SLHA1 file
+    // GABMIT: Always false, no file output
+    *Write_SLHA1 = false;
+
+    // 40, alpha(0)
+    // TODO: default
+    *Alpha = 1.0 / runOptions->getValueOrDef<Freal8>(1, "Alpha");
+
+    // 41, Z-boson width
+    // TODO: default
+    *gamZ = runOptions->getValueOrDef<Freal8>(0, "gamZ");
+
+    // 42, W-boson width
+    // TODO: default
+    *gamW = runOptions->getValueOrDef<Freal8>(0, "gamW");
+
+    // 80, exit for sure with non-zero value if problem occurs
+    *Non_Zero_Exit = runOptions->getValueOrDef<Flogical>(false, "Non_Zero_Exit");
+
+    // 81, quick and dirty way to implement model by Suchita Kulkarni
+    *Model_Suchita = runOptions->getValueOrDef<Flogical>(false, "Model_Suchita");
+
+    // 90, add R-parity at low energies
+    *Add_RParity = runOptions->getValueOrDef<Flogical>(false, "Add_RParity");
+
+    // 91, fit RP parameters such that neutrino data are ok
+    *L_Fit_RP_Parameters = runOptions->getValueOrDef<Flogical>(false, "L_Fit_RP_Parameters");
+
+    // 92, for Pythia input
+    // TODO: private variable, cannot import
+    // *L_RP_Pythia = runOptions->getValueOrDef<Flogical>(false, "L_RP_Pythia");
+
+    // 93, calculates cross sectionin case of RP, only partially implemented
+    *L_CSrp = runOptions->getValueOrDef<Flogical>(false, "L_CSrp");
+
+    // 94, io_RP
+    // TODO: private variable, cannot import
+    // *io_RP = runOptions->getValueOrDef<Finteger>(0, "io_RP");
+
+    // 99, MADGraph output style, some additional information
+    // TODO: private variable, cannot import
+    // GAMBIT: always false, no file output
+    // *MADGraph_style = false;
+ 
+    // 100, use bsstep instead of rkqs
+    Flogical bsstep = runOptions->getValueOrDef<Flogical>(false, "Use_bsstep_instead_of_rkqs");
+    if(bsstep)
+      Set_Use_bsstep_instead_of_rkqs(bsstep);    
+
+    // 101, use rzextr instead of pzextr
+    Flogical rzextr = runOptions->getValueOrDef<Flogical>(false, "Use_rzextr_instead_of_pzextr");
+    if(rzextr)
+      Set_Use_rzextr_instead_of_pzextr(rzextr);
+
+    // 110, write ouput for LHC observables
+    // TODO: private variable, cannot import
+    // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
+   
 }
 END_BE_INI_FUNCTION

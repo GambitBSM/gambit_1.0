@@ -3,11 +3,9 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  NUHM1:
+  CMSSM:
     M0:
       fixed_value: 100
-    mH:
-      fixed_value: 200
     M12:
       fixed_value: 100
     A0:
@@ -39,7 +37,7 @@ ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
     type:         bool
-    function:     SPheno_MSSM63atMGUT_test
+    function:     SPheno_CMSSM_test
 
 Rules:
   - capability:   SPheno_MSSMspectrum
