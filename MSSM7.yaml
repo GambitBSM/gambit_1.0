@@ -81,6 +81,12 @@ Scanner:
       nlive: 4000
       tol: 0.5
 
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 5000
+      verbosity: 1
+
 ObsLikes:
 
     - capability: lnL_oh2
@@ -459,7 +465,8 @@ Rules:
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
                              "SUSY:all = on",
-                             "TauDecays:mode = 0"]
+                             "TauDecays:mode = 0",
+                             "TimeShower:pTmin = 20"]
 
   - capability: LHC_Combined_LogLike
     backends:
