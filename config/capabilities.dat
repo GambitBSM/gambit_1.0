@@ -87,8 +87,12 @@ CopiedEvent: |
    Uses the given SimpleSmearingSim to do absolutely nothing to
    the given HardScatteringEvent.
 
-AnalysisContainer: |
-   Provides a list of analyses within a container which is ready
+ATLASAnalysisContainer: |
+   Provides a list of ATLAS analyses within a container which is ready
+   to apply each analysis to an event.
+
+CMSAnalysisContainer: |
+   Provides a list of CMS analyses within a container which is ready
    to apply each analysis to an event.
 
 ATLASAnalysisNumbers: |
