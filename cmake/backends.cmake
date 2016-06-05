@@ -505,7 +505,6 @@ set_target_properties(darksusy
                       gamlike
                       nulike
                       gm2calc
-                      gm2calc_c
                       PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends
@@ -521,7 +520,6 @@ add_custom_target(backends
                   pythia
                   nulike
                   gm2calc
-                  gm2calc_c
                  )
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike)
@@ -546,5 +544,4 @@ add_custom_target(clean-backends
                   clean-delphes
                   clean-flexiblesusy
                   clean-gm2calc
-                  clean-gm2calc_c
                  )
