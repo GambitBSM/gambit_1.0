@@ -488,30 +488,6 @@ BOSS_backend(gm2calc gm2calc 1.0.0)
 add_extra_targets(gm2calc ${gm2calc_dir} ${backend_download}/${gm2calc_dl} clean)
 
 
-# gm2calc_c (C interface)
-set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc_c/1.1.0")
-set(gm2calc_dl "gm2calc-1.1.0.tar.gz")
-ExternalProject_Add(gm2calc_c
-  URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
-  URL_MD5 8470a1a1b77be56c5915825667160e39
-  DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${gm2calc_dir}
-  BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
-  PATCH_COMMAND patch -p1 < ${gm2calc_patch}/check-negative-soft-mass.patch
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} BOOSTFLAGS=-I${Boost_INCLUDE_DIR} sharedlib
-  INSTALL_COMMAND ""
-)
-ExternalProject_Add_Step(gm2calc_c apply_hacks
-  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calc_cHacks/Makefile ${gm2calc_dir}/Makefile
-  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calc_cHacks/module.mk ${gm2calc_dir}/src/module.mk
-  DEPENDEES download
-  DEPENDERS patch
-)
-add_extra_targets(gm2calc_c ${gm2calc_dir} ${backend_download}/${gm2calc_dl} clean)
-
-
 set_target_properties(darksusy
                       darksusy_5_1_1
                       micromegas
