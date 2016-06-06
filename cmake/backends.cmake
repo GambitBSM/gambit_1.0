@@ -463,12 +463,12 @@ add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssi
 
 # gm2calc (C++ interface)
 set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
-set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.0.0")
-set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/1.0.0")
-set(gm2calc_dl "gm2calc-1.0.0.tar.gz")
+set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.1.2")
+set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/1.1.2")
+set(gm2calc_dl "gm2calc-1.1.2.tar.gz")
 ExternalProject_Add(gm2calc
   URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
-  URL_MD5 309e38ac04c933884b7b950fae920412
+  URL_MD5 459b3a49fdba0f7a5836ad364031e16b
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${gm2calc_dir}
   BUILD_IN_SOURCE 1
@@ -484,7 +484,7 @@ ExternalProject_Add_Step(gm2calc apply_hacks
   DEPENDEES download
   DEPENDERS patch
 )
-BOSS_backend(gm2calc gm2calc 1.0.0)
+BOSS_backend(gm2calc gm2calc 1.1.2)
 add_extra_targets(gm2calc ${gm2calc_dir} ${backend_download}/${gm2calc_dl} clean)
 
 
