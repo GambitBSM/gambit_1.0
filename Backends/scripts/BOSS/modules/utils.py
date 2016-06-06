@@ -835,7 +835,7 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
 
 def removeTemplateBracket(type_name, return_bracket=False):
     
-    if '>' in type_name:
+    if ('<' in type_name) and ('>' in type_name):
 
         r_pos = type_name.rfind('>')
 

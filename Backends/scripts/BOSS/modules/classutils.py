@@ -1151,7 +1151,7 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
 
     # If no other parent classes, add WrapperBase
     if inheritance_line == '':
-        inheritance_line = ' : public WrapperBase'
+        inheritance_line = ' : public virtual WrapperBase'
     else:
         inheritance_line = ' : ' + inheritance_line
 
@@ -1602,28 +1602,33 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 abs_return_type_simple = toAbstractType(return_type, include_namespace=True, remove_reference=True, remove_pointers=True)
                 return_type_simple     = return_type.replace('*','').replace('&','')
 
+                if is_const:
+                    get_BEptr_call = 'const_cast<const ' + abstr_class_name['short'] +'*>(get_BEptr())'
+                else:
+                    get_BEptr_call = 'get_BEptr()'
+
                 # Return-by-reference
                 if is_ref:
                     if 'const' in return_type_kw:
-                        def_code += 'const_cast<' + abs_return_type_simple + '&>(get_BEptr()->' + call_func_name + args_bracket_notypes + ').get_init_wref();\n'
+                        def_code += 'const_cast<' + abs_return_type_simple + '&>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ').get_init_wref();\n'
                     else:
-                        def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + '.get_init_wref();\n'
+                        def_code += get_BEptr_call + '->' + call_func_name + args_bracket_notypes + '.get_init_wref();\n'
                 
                 # Return-by-pointer
                 elif (not is_ref) and (pointerness > 0):  
                     if 'const' in return_type_kw:
-                        def_code += 'const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wptr();\n'
+                        def_code += 'const_cast<' + abs_return_type_simple + '*>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ')->get_init_wptr();\n'
                     else:
-                        def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wptr();\n'
+                        def_code += get_BEptr_call + '->' + call_func_name + args_bracket_notypes + '->get_init_wptr();\n'
                 
                 # Return-by-value
                 else:
                     if 'const' in return_type_kw:
-                        # def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
-                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ') );\n'
+                        # def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
+                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ') );\n'
                     else:
-                        # def_code += return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wref() );\n'
-                        def_code += return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + ' );\n'
+                        # def_code += return_type + '( ' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + '->get_init_wref() );\n'
+                        def_code += return_type + '( ' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ' );\n'
            
             else:                
                 def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + ';\n'
@@ -1728,10 +1733,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
             temp_code += 'inline ' + class_name['long'] + '::' + class_name['short'] + args_bracket + ' :\n'
 
             parent_class_init_list = ''
+            parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
             for parent_dict in loaded_parent_classes:
                 parent_class_init_list += indent + parent_dict['class_name']['short'] + '(' + factory_ptr_name + args_bracket_notypes + '),\n'
-            if parent_class_init_list == '':
-                parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
+            # if parent_class_init_list == '':
+            #     parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
 
             if common_init_list_code != '':
                 temp_code += parent_class_init_list + common_init_list_code
@@ -1757,10 +1763,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(' + abstr_class_name['long'] +'* in) :\n'
 
     parent_class_init_list = ''
+    parent_class_init_list += indent + 'WrapperBase(in),\n'
     for parent_dict in loaded_parent_classes:
         parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in),\n'
-    if parent_class_init_list == '':
-        parent_class_init_list += indent + 'WrapperBase(in),\n'
+    # if parent_class_init_list == '':
+    #     parent_class_init_list += indent + 'WrapperBase(in),\n'
 
     if common_init_list_code != '':
         def_code += parent_class_init_list + common_init_list_code
@@ -1796,10 +1803,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
         def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(const ' + class_name['short'] +'& in) :\n'
 
         parent_class_init_list = ''
+        parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
         for parent_dict in loaded_parent_classes:
             parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
-        if parent_class_init_list == '':
-            parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
+        # if parent_class_init_list == '':
+        #     parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
 
         if common_init_list_code != '':
             def_code += parent_class_init_list + common_init_list_code
