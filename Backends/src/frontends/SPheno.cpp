@@ -125,7 +125,7 @@ BE_NAMESPACE
         // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
         if(*L_BR and *kont != 0)
         {
-          if(*HighScaleModel == "MSSM")
+          if(*HighScaleModel == "SUGRA")
           {  //CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
           }
           else
@@ -723,7 +723,7 @@ BE_NAMESPACE
       *tanb = *Param.at("TanBeta");
 
     }
-    else if(*HighScaleModel == "MSSM")
+    else if(*HighScaleModel == "SUGRA")
     {
       // TanBeta
       *tanb = *Param.at("TanBeta");
@@ -733,14 +733,12 @@ BE_NAMESPACE
     // Missing pars 7 - 10
 
     // Block EXTPAR
-    if(*HighScaleModel == "MSSM")
+    if(*HighScaleModel == "SUGRA")
     {
       // Scale of input parameters
       if(Param.find("Qin") != Param.end())
       {
-        Freal8 RGEScale = *Param.at("Qin");
-        RGEScale *= RGEScale;
-        SetRGEScale(RGEScale);
+        SetGUTScale(*Param.at("Qin"));
       }
       // M_1
       (*Mi)(1).re = *Param.at("M1");
@@ -752,7 +750,7 @@ BE_NAMESPACE
       (*Mi)(3).re = *Param.at("M3");
       (*Mi_0)(3).re = *Param.at("M3");
       // tanb
-      // in GAMBIT tanb is alwasy at mZ
+      // in GAMBIT tanb is always at mZ
       //*tanb_Q = *Param.at("TanBeta");
       //*tanb_in_at_Q = true;
        
@@ -856,24 +854,6 @@ BE_NAMESPACE
     if(*SPA_convention and !(*tanb_in_at_Q))
     {
       // TODO: Warnings
-    }
-    // first guess of mu, B and mA
-    if(*HighScaleModel == "MSSM")
-    {
-      //*HighScaleModel = "MSSM1";
-      Freal8 cosb2 = 1.0 / (1.0 + *tanb * *tanb);
-      Freal8 sinb2 = *tanb * *tanb * cosb2;
-      Freal8 cos2b = cosb2 - sinb2;
-      Freal8 Abs_Mu2 = ((*M2_H)(2) * sinb2 - (*M2_H)(1) * cosb2) / cos2b - 0.5 * *mZ2;
-      if(Abs_Mu2 < 0) Abs_Mu2 = 10000;
-      mu->re = sqrt(Abs_Mu2) * phase_mu->re;
-      B->re = ((*M2_H)(1) + (*M2_H)(2) + 2.0 * Abs_Mu2) * *tanb / (1 + *tanb * *tanb);
-      (*mP02)(2) = B->abs() * (1.0 / *tanb + *tanb);
-      (*mP0)(2) = sqrt((*mP02)(2));
-    }   
-    else
-    {
-      // TODO: NMSSM and other models
     }
 
     // recalculate quantities to be sure
@@ -1164,13 +1144,12 @@ BE_INI_FUNCTION
     if((*ModelInUse)("CMSSM"))
     {
       *HighScaleModel = "mSUGRA";
-      Fstring<20> model = "SUGRA";
-      SetHighScaleModel(model);
-      std::cout << "Model is CMSSM" << std::endl;
+      SetHighScaleModel("SUGRA");
     }
     else
     {
-      *HighScaleModel = "MSSM";
+      *HighScaleModel = "SUGRA";
+      SetHighScaleModel("SUGRA");
     }
 
     // Set up options, same as BLOCK SPHENOINPUT
@@ -1179,8 +1158,7 @@ BE_INI_FUNCTION
 
     // 2
     *SPA_convention = runOptions->getValueOrDef<Flogical>(true, "SPA_convention");
-    Freal8 scale = 1000000;
-    SetRGEScale(scale);
+    SetRGEScale(1E6);
 
     // 3
     *External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
@@ -1263,7 +1241,7 @@ BE_INI_FUNCTION
     // 31, setting a fixed GUT scale
     Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
     if(GUTScale > 0.0)
-       SetGUTScale(GUTScale); 
+       SetGUTScale(byVal(GUTScale)); 
 
     // 32, requires strict unification
     Flogical StrictUnification = runOptions->getValueOrDef<Flogical>(false, "StrictUnification");

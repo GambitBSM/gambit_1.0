@@ -7,7 +7,7 @@ Parameters:
     M0:
       fixed_value: 100
     mH:
-      fixed_value: 200
+      fixed_value: 100
     M12:
       fixed_value: 100
     A0:
