@@ -718,7 +718,7 @@ def createFrontendHeader(function_xml_files_dict):
 
     be_function_macro_code = ''
 
-    for func_name in gb.functions_done:
+    for i,func_name in enumerate(gb.functions_done):
 
         # Set useful variables
         xml_file = function_xml_files_dict[func_name['long_templ_args']]
@@ -736,7 +736,7 @@ def createFrontendHeader(function_xml_files_dict):
 
         for el in root.findall('Function'):
 
-            if el.get('name') == func_name['wr_name']:
+            if el.get('name') == gb.wr_func_names[i]:
                 wr_func_el = el
 
         if wr_func_el is None:
@@ -847,7 +847,7 @@ def resetSourceCode(reset_info_file_name):
             f = open(target_path, 'r')
         except IOError, e:
             if e.errno == 2:
-                print "  WARNING: Could not find '%s'. No reset action permformed." % (target_path)
+                print "  WARNING: Could not find %s. No reset action permformed." % (target_path)
                 continue
             else:
                 raise e
@@ -858,14 +858,14 @@ def resetSourceCode(reset_info_file_name):
             f = open(backup_file_path, 'r')
         except IOError, e:
             if e.errno == 2:
-                print "  WARNING: Could not find backup file '%s'. No reset action permformed." % (backup_file_path)
+                print "  WARNING: Could not find backup file %s. No reset action permformed." % (backup_file_path)
                 continue
             else:
                 raise e
 
         # If backup exists, use it to replace target file
         shutil.move(backup_file_path, target_path)            
-        print "  Restored '%s' from '%s'" % (target_path, backup_file_path)
+        print "  Restored %s from %s" % (target_path, backup_file_path)
 
 
     # Delete new files that BOSS added to the source tree.
@@ -876,13 +876,13 @@ def resetSourceCode(reset_info_file_name):
             f = open(target_path, 'r')
         except IOError, e:
             if e.errno == 2:
-                print "  WARNING: Could not find '%s'. No reset action permformed." % (target_path)
+                print "  WARNING: Could not find %s. No reset action permformed." % (target_path)
                 continue
             else:
                 raise e
 
         os.remove(target_path)
-        print "  Deleted '%s'" % (target_path)
+        print "  Deleted %s" % (target_path)
 
 
     # Remove new directories created by BOSS.
@@ -890,10 +890,10 @@ def resetSourceCode(reset_info_file_name):
 
         try:
             os.removedirs(dir_path)
-            print "  Removed directory '%s'" % (dir_path)
+            print "  Removed directory %s" % (dir_path)
         except OSError, e:
             if e.errno == 2:
-                print "  WARNING: Could not find directory '%s'. No reset action permformed." % (dir_path)
+                print "  WARNING: Could not find directory %s. No reset action permformed." % (dir_path)
                 continue
             else:
                 raise e
