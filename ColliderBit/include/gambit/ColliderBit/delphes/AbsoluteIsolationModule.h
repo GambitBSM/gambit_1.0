@@ -1,7 +1,14 @@
 #ifndef AbsoluteIsolation_h
 #define AbsoluteIsolation_h
 
-/** \class AbsoluteIsolation
+#include "classes/DelphesModule.h"
+
+class TObjArray;
+
+class ExRootFilter;
+class AbsoluteIsolationClassifier;
+
+/** \brief AbsoluteIsolation Delphes module
  *
  *  Sums transverse momenta of isolation objects (tracks, calorimeter towers, etc)
  *  within a DeltaR cone around a candidate and calculates fraction of this sum
@@ -15,14 +22,6 @@
  *  \author P. Demin - UCL, Louvain-la-Neuve
  *
  */
-
-#include "classes/DelphesModule.h"
-
-class TObjArray;
-
-class ExRootFilter;
-class AbsoluteIsolationClassifier;
-
 class AbsoluteIsolation: public DelphesModule
 {
 public:

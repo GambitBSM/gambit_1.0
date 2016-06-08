@@ -1,5 +1,5 @@
 
-/** \class
+/** \file
  *
  *  Lists classes to be included in cint dicitonary
  *

@@ -3,9 +3,6 @@
 namespace Gambit {
   namespace ColliderBit {
 
-    /// @name ALEPHSelectronLimitAt208GeV methods
-    /// @{
-
     P2 ALEPHSelectronLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(50. + (x - 243.00) / (886.00 - 243.00) * (100. - 50.),
@@ -3017,11 +3014,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(9, contoursPointer));
 
     }
-    /// @}
 
 
-    /// @name ALEPHSmuonLimitAt208GeV methods
-    /// @{
     
     P2 ALEPHSmuonLimitAt208GeV::convertPt(double x, double y) const
     {
@@ -6180,11 +6174,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(9, contoursPointer));
 
     }
-    /// @}
 
 
-    /// @name ALEPHStauLimitAt208GeV methods
-    /// @{
 
     P2 ALEPHStauLimitAt208GeV::convertPt(double x, double y) const
     {
@@ -8002,7 +7993,6 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(8, contoursPointer));
 
     }
-    /// @}
 
   }
 }

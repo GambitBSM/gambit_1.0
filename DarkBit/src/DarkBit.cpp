@@ -65,6 +65,7 @@ namespace Gambit {
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       result = 0.0;
+      // Add all the regular channels
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
@@ -74,6 +75,8 @@ namespace Gambit {
           result += it->genRate->bind("v")->eval(0.);
         }
       }
+      // Add invisible contributions
+      result += annProc.genRateMisc->bind("v")->eval(0.);
     }
 
 

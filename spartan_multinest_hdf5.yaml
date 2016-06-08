@@ -37,7 +37,8 @@ Scanner:
       plugin: MultiNest
       like:  LogLike
       nlive: 1000
-      tol: 0.01
+      updInt: 50
+      tol: 1e-2
       mmodal: 0
       # write native MultiNest ascii output files?
       outfile: 1 # yes, need them for resuming
@@ -101,7 +102,8 @@ KeyValues:
   use_mpi_abort: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e6
+    model_invalid_for_lnlike_below: -1e6     # Multinest will use this as its logzero value by default
+    model_invalid_for_lnlike_below_alt: -1e5 # And it will switch to this after live point generation
 
   # NOTES REGARDING SIGNAL HANDLING
   #---------------------------------------------
