@@ -51,7 +51,7 @@ namespace Gambit
     errorComm          (comm), 
     #endif
     min_valid_lnlike    (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
-    alt_min_valid_lnlike(iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below_alt")),
+    alt_min_valid_lnlike(iniFile.getValueOrDef<double>(min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")),
     active_min_valid_lnlike(min_valid_lnlike), // can be switched to the alternate value by the scanner
     intralooptime_label("Runtime(ns) intraloop"),
     interlooptime_label("Runtime(ns) interloop"),
