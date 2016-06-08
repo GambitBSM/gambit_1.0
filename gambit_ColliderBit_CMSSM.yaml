@@ -207,8 +207,8 @@ Rules:
     function: FH_A0_decays
   - capability: Higgs_decay_rates
     function: FH_MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: FH_Hplus_decays
+  - capability: H_plus_decay_rates
+    function: FH_H_plus_decays
   - capability: h0_2_decay_rates
     function: FH_h0_2_decays
   - capability: t_decay_rates
@@ -262,10 +262,8 @@ Rules:
   - options:
       gauge_mixing_tolerance: 0.5
       family_mixing_tolerance: 0.5
-      off_diagonal_tolerance: 0.5
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
-      #off_diagonal_tolerance_invalidates_point_only: false
 
   # Choose which getPythia to use
   # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)

@@ -30,12 +30,11 @@ namespace Gambit
 {
 
   Likelihood_Container_Factory::Likelihood_Container_Factory(const gambit_core &core, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, Printers::BaseBasePrinter& printer
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
   ) : dependencyResolver(dependencyResolver)
-    , prior(prior)
     , iniFile(iniFile)
     , printer(printer)
     #ifdef WITH_MPI
@@ -43,46 +42,49 @@ namespace Gambit
     #endif
   {
     functorMap = core.getActiveModelFunctors();
+    std::set<std::string> modelSet = iniFile.getModelNames();
     
-    std::vector<std::string> priorKeys = prior.getParameters();
-    std::vector<std::string> gambitKeys;
-    
-    for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
+    if (functorMap.size() < modelSet.size())
     {
+      std::stringstream err;
+      err << "There are more model entries specified in the inifile than is required by GAMBIT." << std::endl;
+      core_error().raise(LOCAL_INFO, err.str());
+    }
+    
+    for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(), end = functorMap.end(); act_it != end; ++act_it)
+    {
+      if (modelSet.find(act_it->first) == modelSet.end())
+      {
+        std::stringstream err;
+        err << "Model " << act_it->first << " is required by GAMBIT but is not in the inifile." << std::endl;
+        core_error().raise(LOCAL_INFO, err.str());
+      }
+      
       std::vector <std::string> paramkeys = act_it->second->getcontentsPtr()->getKeys();
-      for (std::vector<std::string>::iterator it = paramkeys.begin(); it != paramkeys.end(); it++)
-      {
-        gambitKeys.push_back(act_it->first + "::" + *it);
-      }
-    }
-    
-    std::unordered_set<std::string> priorSet(priorKeys.begin(), priorKeys.end());
-    std::unordered_set<std::string> gambitSet(gambitKeys.begin(), gambitKeys.end());
-    
-    for (std::vector<std::string>::const_iterator it = gambitKeys.begin(); it != gambitKeys.end(); it++)
-    {
-      if (priorSet.find(*it) == priorSet.end())
+      std::vector <std::string> inikeys = iniFile.getModelParameters(act_it->first);
+      if (paramkeys.size() < inikeys.size())
       {
         std::stringstream err;
-        err << "Parameter " << *it << " is required by GAMBIT but is not in the inifile." << std::endl;
-        Scanner::scan_error().raise(LOCAL_INFO, err.str());
+        err << "There are more parameter entries (of model " << act_it->first << ") specified in the inifile than is required by GAMBIT." << std::endl;
+        core_error().raise(LOCAL_INFO, err.str());
       }
-    }
-    
-    for (std::vector<std::string>::iterator it = priorKeys.begin(); it != priorKeys.end(); it++)
-    {
-      if (gambitSet.find(*it) == gambitSet.end())
+      
+      std::unordered_set<std::string> paramSet(inikeys.begin(), inikeys.end());
+      for (std::vector<std::string>::iterator it = paramkeys.begin(), end = paramkeys.end(); it != end; ++it)
       {
-        std::stringstream err;
-        err << "Parameter " << *it << " is in the inifile but is not required by GAMBIT." << std::endl;
-        Scanner::scan_error().raise(LOCAL_INFO, err.str());
+        if (paramSet.find(*it) == paramSet.end())
+        {
+          std::stringstream err;
+          err << "Parameter " << *it << " of model " << act_it->first << " is required by GAMBIT but is not in the inifile." << std::endl;
+          core_error().raise(LOCAL_INFO, err.str());
+        }
       }
     }
   }
     
   void * Likelihood_Container_Factory::operator() (const std::string &purpose) const
   {
-    return __scanner_factories__["GAMBIT_Scanner_Target_Function"](functorMap, dependencyResolver, iniFile, prior, purpose, printer
+    return __scanner_factories__["GAMBIT_Scanner_Target_Function"](functorMap, dependencyResolver, iniFile, purpose, printer
       #ifdef WITH_MPI
        , myComm
       #endif

@@ -57,7 +57,7 @@ namespace Gambit {
       else
         convertPythia8ParticleEvent(eventIn, eventOut);
 
-      /* MJW debug- make this the same as ATLAS temporarily
+      //MJW debug- make this the same as ATLAS temporarily
       // Electron smearing and efficiency
       CMS::applyElectronTrackingEff(eventOut.electrons());
       CMS::smearElectronEnergy(eventOut.electrons());
@@ -74,10 +74,10 @@ namespace Gambit {
       CMS::smearTaus(eventOut.taus());
 
       // Smear jet momenta
-      CMS::smearJets(eventOut.jets());*/
+      CMS::smearJets(eventOut.jets());
 
       // Electron smearing and efficiency
-      ATLAS::applyElectronTrackingEff(eventOut.electrons());
+      /*ATLAS::applyElectronTrackingEff(eventOut.electrons());
       ATLAS::smearElectronEnergy(eventOut.electrons());
       ATLAS::applyElectronEff(eventOut.electrons());
 
@@ -92,7 +92,7 @@ namespace Gambit {
       ATLAS::smearTaus(eventOut.taus());
 
       // Smear jet momenta
-      ATLAS::smearJets(eventOut.jets());
+      ATLAS::smearJets(eventOut.jets());*/
 
       // Unset b-tags outside |eta|=5
       /// @todo Same as DELPHES... but surely we can't actually do b-tags outside |eta| < 2.5? (or even less, due to jet radius)

@@ -371,7 +371,7 @@ namespace Gambit {
         if(meff>700.)cut_meffGt700=true;
 
         //Apply the basic preselection to save costly MT2 calculation
-        //if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
+        if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
         //Do hadronic top reconstruction
         double mindR1=9999.;
         double mindR2=9999.;

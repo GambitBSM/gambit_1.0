@@ -298,7 +298,7 @@ ObsLikes:
   ## Test DarkBit DD couplings with micrOMEGAs and DarkSUSY
   #- purpose:      Observable
   #  capability:   DD_couplings
-  #  type:         DarkBit::DD_couplings
+  #  type:         DM_nucleon_couplings
   #  function:     DD_couplings_micrOMEGAs
   #  function:     DD_couplings_DarkSUSY
 
@@ -312,8 +312,8 @@ Rules:
     function: A0_decays
   - capability: Higgs_decay_rates
     function: MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: Hplus_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
   - capability: h0_2_decay_rates
     function: h0_2_decays
   - capability: t_decay_rates

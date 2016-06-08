@@ -74,9 +74,9 @@ namespace Gambit
       }
     }        
 
-    void SpecializablePythia::init_external(const std::string pythiaDocPath,
-                                            const std::vector<std::string>& externalSettings,
-                                            const SLHAea::Coll* slhaea, std::ostream& os)
+    void SpecializablePythia::init_user_model(const std::string pythiaDocPath,
+                                              const std::vector<std::string>& externalSettings,
+                                              const SLHAea::Coll* slhaea, std::ostream& os)
     {
       // Special version of the init function for user defined models
       // Needs to directly construct the new matrix elements (rather than use flags)
@@ -92,7 +92,6 @@ namespace Gambit
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
@@ -126,7 +125,6 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
         // Use all settings to instantiate and initialize PythiaBase
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
-        if (!_pythiaBase->init(os)) throw InitializationError();
       }
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);

@@ -26,6 +26,7 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
  
+// Types that Gambit printers can output (if printer plugin is properly equipped)
 #define PRINTABLE_TYPES  \
 (bool)                   \
 (int)(uint)(long)(ulong) \
@@ -33,8 +34,15 @@ typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro 
 (std::vector<bool>)      \
 (std::vector<int>)       \
 (std::vector<double>)    \
-(ModelParameters)        \
+(Gambit::ModelParameters)\
 (triplet<double>)        \
 (map_str_dbl)            \
+
+// Types that can be retrieved from Gambit printer output (if printer plugin is properly equipped)
+#define RETRIEVABLE_TYPES  \
+(double)                   \
+(std::vector<double>)      \
+(Gambit::ModelParameters)  \
+(map_str_dbl)              \
 
 #endif // defined __printable_types_hpp__
