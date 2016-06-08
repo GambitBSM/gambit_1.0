@@ -392,9 +392,9 @@ namespace Gambit {
       /// done!
     }
 
-    void asciiReader::_retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID)
+    void asciiReader::_retrieve(std::vector<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
     { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
-    void asciiReader::_retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID)
+    void asciiReader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
     { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
 
     /// @}

@@ -315,7 +315,7 @@ namespace Gambit {
           {
              dumper_runonce = true;
              boundLogLike->switch_to_alternate_min_LogL();
-             std::cerr << "Dumper ran on process "<<boundLogLike->getRank()<<" at iteration "<<boundLogLike->getPtID()<<std::endl;
+             std::cerr << "Multinest dumper first ran on process "<<boundLogLike->getRank()<<" at iteration "<<boundLogLike->getPtID()<<std::endl;
           }
 
           // Get printers for each auxiliary stream
