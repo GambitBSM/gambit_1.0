@@ -247,6 +247,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Wrappers for original constructors: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters() :
+         WrapperBase(__factory0()),
          MSSMNoFV_onshell_susy_parameters(__factory0())
       {
          get_BEptr()->set_wptr(this);
@@ -254,6 +255,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       }
       
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(const gm2calc::MSSMNoFV_onshell_susy_parameters& arg_1, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYd_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYe_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYu_, double BMu_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& mq2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& ml2_, double mHd2_, double mHu2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& md2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& mu2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& me2_, double MassB_, double MassWB_, double MassG_) :
+         WrapperBase(__factory1(arg_1, TYd_, TYe_, TYu_, BMu_, mq2_, ml2_, mHd2_, mHu2_, md2_, mu2_, me2_, MassB_, MassWB_, MassG_)),
          MSSMNoFV_onshell_susy_parameters(__factory1(arg_1, TYd_, TYe_, TYu_, BMu_, mq2_, ml2_, mHd2_, mHu2_, md2_, mu2_, me2_, MassB_, MassWB_, MassG_))
       {
          get_BEptr()->set_wptr(this);
@@ -262,6 +264,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Special pointer-based constructor: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters* in) :
+         WrapperBase(in),
          MSSMNoFV_onshell_susy_parameters(in)
       {
          get_BEptr()->set_wptr(this);
@@ -270,6 +273,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Copy constructor: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(const MSSMNoFV_onshell_soft_parameters& in) :
+         WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
          MSSMNoFV_onshell_susy_parameters(in.get_BEptr()->pointer_copy__BOSS())
       {
          get_BEptr()->set_wptr(this);

@@ -17,7 +17,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Hist : public WrapperBase
+        class Hist : public virtual WrapperBase
         {
                 // Member variables: 
             public:

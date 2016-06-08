@@ -72,7 +72,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 SlowJet::p(int i) const
         {
-            return Pythia8::Vec4( get_BEptr()->p__BOSS(i) );
+            return Pythia8::Vec4( const_cast<const Abstract_SlowJet*>(get_BEptr())->p__BOSS(i) );
         }
         
         inline double SlowJet::m(int i) const

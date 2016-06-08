@@ -17,7 +17,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Rndm : public WrapperBase
+        class Rndm : public virtual WrapperBase
         {
                 // Member variables: 
             public:

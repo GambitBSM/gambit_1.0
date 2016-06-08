@@ -64,7 +64,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       inline const gm2calc::MSSMNoFV_onshell_physical& MSSMNoFV_onshell_mass_eigenstates::get_physical() const
       {
-         return const_cast<gm2calc::Abstract_MSSMNoFV_onshell_physical&>(get_BEptr()->get_physical__BOSS()).get_init_wref();
+         return const_cast<gm2calc::Abstract_MSSMNoFV_onshell_physical&>(const_cast<const Abstract_MSSMNoFV_onshell_mass_eigenstates*>(get_BEptr())->get_physical__BOSS()).get_init_wref();
       }
       
       inline gm2calc::MSSMNoFV_onshell_physical& MSSMNoFV_onshell_mass_eigenstates::get_physical()
@@ -74,7 +74,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       inline const gm2calc::MSSMNoFV_onshell_problems& MSSMNoFV_onshell_mass_eigenstates::get_problems() const
       {
-         return const_cast<gm2calc::Abstract_MSSMNoFV_onshell_problems&>(get_BEptr()->get_problems__BOSS()).get_init_wref();
+         return const_cast<gm2calc::Abstract_MSSMNoFV_onshell_problems&>(const_cast<const Abstract_MSSMNoFV_onshell_mass_eigenstates*>(get_BEptr())->get_problems__BOSS()).get_init_wref();
       }
       
       inline gm2calc::MSSMNoFV_onshell_problems& MSSMNoFV_onshell_mass_eigenstates::get_problems()
@@ -875,6 +875,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Wrappers for original constructors: 
       inline gm2calc::MSSMNoFV_onshell_mass_eigenstates::MSSMNoFV_onshell_mass_eigenstates() :
+         WrapperBase(__factory0()),
          MSSMNoFV_onshell_soft_parameters(__factory0())
       {
          get_BEptr()->set_wptr(this);
@@ -883,6 +884,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Special pointer-based constructor: 
       inline gm2calc::MSSMNoFV_onshell_mass_eigenstates::MSSMNoFV_onshell_mass_eigenstates(gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates* in) :
+         WrapperBase(in),
          MSSMNoFV_onshell_soft_parameters(in)
       {
          get_BEptr()->set_wptr(this);
@@ -891,6 +893,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Copy constructor: 
       inline gm2calc::MSSMNoFV_onshell_mass_eigenstates::MSSMNoFV_onshell_mass_eigenstates(const MSSMNoFV_onshell_mass_eigenstates& in) :
+         WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
          MSSMNoFV_onshell_soft_parameters(in.get_BEptr()->pointer_copy__BOSS())
       {
          get_BEptr()->set_wptr(this);
