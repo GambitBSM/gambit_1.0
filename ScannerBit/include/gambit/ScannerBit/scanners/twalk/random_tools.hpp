@@ -1005,7 +1005,7 @@ public:
         }
     }
     
-    void Max(double *ptrOut, double *ptr, double *ptr0, const double Z)
+    double Max(double *ptr, double *ptr0)
     {
         double max = 0;
         
@@ -1027,15 +1027,8 @@ public:
             if (pt > max)
                 max = pt;
         }
-        
-        for (int j = 0; j < num; j++)
-        {
-            ptrOut[j] = ptr[j];
-            for (int i = 0; i < proj; i++)
-            {
-                ptrOut[j] += z[i]*currentVec[i][j];
-            }
-        }
+
+        return max;
     }
     
     void RandRot(const int start = 0)

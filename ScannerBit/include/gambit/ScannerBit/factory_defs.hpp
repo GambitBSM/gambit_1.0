@@ -72,6 +72,9 @@ namespace Gambit
             std::string purpose;
             int rank;
  
+            /// Variable to store state of affairs regarding use of alternate min_LogL
+            bool use_alternate_min_LogL;
+
             virtual void deleter(Function_Base <ret (args...)> *in) const
             {
                 delete in;
@@ -80,7 +83,7 @@ namespace Gambit
             virtual const std::type_info & type() const {return typeid(ret (args...));}
                 
         public:
-            Function_Base() : rank(0)
+            Function_Base() : rank(0), use_alternate_min_LogL(false)
             {
 #ifdef WITH_MPI
                 GMPI::Comm world;
@@ -111,6 +114,40 @@ namespace Gambit
             int getRank() const {return rank;}
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
             unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
+
+            /// @{ TEMPORARY (or at least preliminary)
+            ///    These functions need to get a GMPI::Comm object from somewhere,
+            ///    one that is attached to a clean communicator group. For now
+            ///    I will just use COMM_WORLD, but this is not ok as a final solution.
+            ///    Can move these functions elsewhere if it turns out to make more sense.
+            static const int TAG = 48677; // Randomly chosen to try not to clash with existing tags. This is why private group is needed.          
+           
+            /// Tell printer to tell driver code to switch to an alternate value for the minimum
+            /// log-likelihood. Called by e.g. MultiNest scanner plugin.
+            void switch_to_alternate_min_LogL()
+            {
+              use_alternate_min_LogL = true;
+              static GMPI::Comm myComm;  // Uses MPI_COMM_WORLD by default. Need to replace with private communicator group
+              MPI_Request req_null = MPI_REQUEST_NULL;
+              int nullmsg = 0; // Don't need message content, the message itself is the signal.
+              myComm.IsendToAll(&nullmsg, 1, TAG, &req_null);
+            }
+
+            /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function 
+            bool check_for_switch_to_alternate_min_LogL()
+            {
+              static GMPI::Comm myComm;  // Uses MPI_COMM_WORLD by default. Need to replace with private communicator group
+              if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+              {
+                int nullmsg;
+                MPI_Status msg_status;
+                myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
+                use_alternate_min_LogL = true;
+              }
+              return use_alternate_min_LogL;
+            }
+            /// @}
+
        };
         
         template<typename ret, typename... args>

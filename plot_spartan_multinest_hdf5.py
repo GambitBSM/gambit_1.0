@@ -8,6 +8,9 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.colorbar as colorbar
+import plottools #Some handy bits and pieces I wrote for plotting stuff
+
 
 f = h5py.File("runs/spartan_multinest_hdf5/samples/results.hdf5",'r')
 group = f["/gambit_data"]
@@ -18,10 +21,10 @@ mu_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_paramet
 sigma = group["#NormalDist_parameters @NormalDist::primary_parameters::sigma"]
 sigma_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_parameters::sigma_isvalid"],dtype=np.bool)
 
-#print group["pointID"][:]
-#print group["pointID_isvalid"][:]
-#print group["MPIrank"][:]
-#print group["MPIrank_isvalid"][:]
+pid = group["pointID"][:]
+pid_isvalid = group["pointID_isvalid"][:]
+rank = group["MPIrank"][:]
+rank_isvalid = group["MPIrank_isvalid"][:]
 #quit()
 #
 #print mu[-100:]
@@ -31,6 +34,18 @@ sigma_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_para
 
 P = group["Posterior"]
 P_isvalid = np.array(group["Posterior_isvalid"],dtype=np.bool)
+
+lnL = np.array(group["LogLike"])
+lnL_isvalid = np.array(group["LogLike_isvalid"],dtype=np.bool)
+
+# Check out what the minimum lnL value is doing
+print "low lnL values:"
+print np.min(lnL)
+mask = lnL < -1e4
+print np.sum(mask)
+indices = range(len(lnL))
+for p,r,l in zip(pid[mask],rank[mask],lnL[mask]):
+  print r, p, l
 
 # Compare to hypercube parameters to check dataset alignment
 #hc0 = group["Parameters[0]"]
@@ -130,5 +145,29 @@ ax.set_ylabel("sigma")
 #ax.set_ylim(np.min(Y),np.max(Y))
 
 fig.savefig('spartan_multinest_hdf5_posterior.png')
+
+
+# Plot likelihood
+
+mask = mu_isvalid & sigma_isvalid & lnL_isvalid
+data = np.vstack((mu[mask], sigma[mask], -2*lnL[mask])).T
+
+print "Plotting chi^2 figure..."
+print "Number of samples: ", np.sum(mask)
+
+fig= plt.figure(figsize=(12,8))
+ax = fig.add_subplot(111)
+plot = plottools.chi2scatplot(ax,data,labels=["mu","sigma"],s=20)
+fig.subplots_adjust(bottom=0.15)
+fig.subplots_adjust(left=0.15)
+fig.subplots_adjust(right=.99)
+cax,kw = colorbar.make_axes(ax, orientation='vertical', shrink=0.7, pad=0.04)
+cbar = fig.colorbar(plot, ax=ax, cax=cax, ticks=[0, 1, 2, 3, 4, 5], **kw)
+cbar.ax.set_yticklabels(['0','1','4','9','16',r'$\geq$25'])# vertically oriented colorbar
+cbar.ax.set_title("$\Delta\chi^2$")
+ax.set_xlim(15,30) #manually tuned
+ax.set_ylim(-8,8)
+fig.savefig("spartan_LnL_scat_hdf5.png", bbox_inches='tight')
+print "Done."
 
 

@@ -4,9 +4,6 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    /// @name L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV methods
-    /// @{
-
     P2 L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 138.00) / (1014.00 - 138.00) * (95. - 45.),
@@ -111,11 +108,9 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
-
-    /// @name L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV methods
-    /// @{
     
+
+
     P2 L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 140.00) / (1017.00 - 140.00) * (95. - 45.),
@@ -220,10 +215,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
 
-    /// @name L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV methods
-    /// @{
+
 
     P2 L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::convertPt(double x, double y) const
     {
@@ -324,7 +317,6 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
 
   }
 }

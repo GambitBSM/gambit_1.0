@@ -4,9 +4,6 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    /// @name L3SelectronLimitAt205GeV methods
-    /// @{
-
     P2 L3SelectronLimitAt205GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 159.00) / (700.00 - 159.00) * (100. - 45.),
@@ -198,10 +195,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    /// @}
 
-    /// @name L3SmuonLimitAt205GeV methods
-    /// @{
+
 
     P2 L3SmuonLimitAt205GeV::convertPt(double x, double y) const
     {
@@ -361,10 +356,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }    
-    /// @}
 
-    /// @name L3StauLimitAt205GeV methods
-    /// @{
+
 
     P2 L3StauLimitAt205GeV::convertPt(double x, double y) const
     {
@@ -593,7 +586,6 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    /// @}
 
   }
 }

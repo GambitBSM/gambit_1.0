@@ -151,13 +151,37 @@ public:
 #else
             for (int i = 0, end = a0.size(); i < end; i++)
             {
-                if (i != tt)
+                if (i != t)
                     temp.push_back(std::vector<double>(a0[i]));
             }
 #endif
             if (!gDev[0]->EnterMat(calcCov(temp)))
             {
-                gDev[0]->EnterMat(calcIndent(temp));
+#ifdef WITH_MPI
+                int ttt;
+                while(tints[ttt = freePts*gDev[0]->Doub()] == tt);
+                    
+                double ct = gDev[0]->Max(&a0[tt][0], &a0[tints[ttt]][0]);
+#else
+                int ttt = (a0.size()-2)*gDev[0]->Doub();
+                if (t < tt)
+                {
+                    if (ttt >= t) ttt++;
+                    if (ttt >= tt) ttt++;
+                }
+                else
+                {
+                    if (ttt >= tt) ttt++;
+                    if (ttt >= t) ttt++;
+                }
+                double ct = gDev[0]->Max(&a0[tt][0], &a0[ttt][0]);
+#endif
+                int ma = a0[0].size();
+                std::vector<std::vector<double>> cov (ma, std::vector<double>(ma, 0.0));
+                for (int i = 0; i < ma; i++)
+                    cov[i][i] = ct*ct/12.0;
+                gDev[0]->EnterMat(cov);
+                //gDev[0]->EnterMat(calcIndent(temp));
             }
                     
             gDev[0]->MultiDev(&aNext[0], &a0[t][0]);
@@ -174,13 +198,37 @@ public:
 #else
             for (int i = 0, end = a0.size(); i < end; i++)
             {
-                if (i != tt)
+                if (i != t)
                     temp.push_back(std::vector<double>(a0[i]));
             }
 #endif
             if (!gDev[0]->EnterMat(calcCov(temp)))
             {
-                gDev[0]->EnterMat(calcIndent(temp));
+#ifdef WITH_MPI
+                int ttt;
+                while(tints[ttt = freePts*gDev[0]->Doub()] == tt);
+                
+                double ct = gDev[0]->Max(&a0[tt][0], &a0[tints[ttt]][0]);
+#else
+                int ttt = (a0.size()-2)*gDev[0]->Doub();
+                if (t < tt)
+                {
+                    if (ttt >= t) ttt++;
+                    if (ttt >= tt) ttt++;
+                }
+                else
+                {
+                    if (ttt >= tt) ttt++;
+                    if (ttt >= t) ttt++;
+                }
+                double ct = gDev[0]->Max(&a0[tt][0], &a0[ttt][0]);
+#endif
+                int ma = a0[0].size();
+                std::vector<std::vector<double>> cov (ma, std::vector<double>(ma, 0.0));
+                for (int i = 0; i < ma; i++)
+                    cov[i][i] = ct*ct/12.0;
+                gDev[0]->EnterMat(cov);
+                //gDev[0]->EnterMat(calcIndent(temp));
             }
             
             gDev[0]->MultiDev(&aNext[0], &a0[tt][0]);

@@ -4,8 +4,6 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    /// @name OPALCharginoHadronicLimitAt208GeV methods
-    /// @{
     P2 OPALCharginoHadronicLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(75. + (x - 179.00) / (753.00 - 179.00) * (100. - 75.),
@@ -227,11 +225,9 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    /// @}
-
-    /// @name OPALCharginoSemiLeptonicLimitAt208GeV methods
-    /// @{
     
+
+
     P2 OPALCharginoSemiLeptonicLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(75. + (x - 179.00) / (753.00 - 179.00) * (100. - 75.),
@@ -426,11 +422,9 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
-
-    /// @name OPALCharginoLeptonicLimitAt208GeV methods
-    /// @{
     
+
+
     P2 OPALCharginoLeptonicLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(75. + (x - 185.00) / (759.00 - 185.00) * (100. - 75.),
@@ -610,10 +604,9 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
 
-    /// @name OPALCharginoAllChannelsLimitAt208GeV methods
-    /// @{
+
+
     P2 OPALCharginoAllChannelsLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(75. + (x - 176.00) / (749.00 - 176.00) * (100. - 75.),
@@ -805,10 +798,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    /// @}
 
-    /// @name OPALNeutralinoHadronicLimitAt208GeV methods
-    /// @{
+
 
     P2 OPALNeutralinoHadronicLimitAt208GeV::convertPt(double x, double y) const
     {
@@ -1494,10 +1485,9 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    /// @}
 
-    /// @name OPALNeutralinoHadronicViaZLimitAt208GeV
-    /// @{
+
+
     P2 OPALNeutralinoHadronicViaZLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(60. + (x - 236.00) / (835.00 - 236.00) * (200. - 60.),
@@ -2076,7 +2066,6 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    /// @}
 
   }
 }

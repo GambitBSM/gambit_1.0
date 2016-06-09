@@ -190,7 +190,7 @@ namespace Gambit
                         }
                         else
                         {
-                            std::cout << "Could not load resume data." << std::endl;
+                            std::cerr << "Could not load resume data." << std::endl;
                             //scan_err << "Could not load resume data." << scan_end;
                         }
                     }
