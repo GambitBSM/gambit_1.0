@@ -10,7 +10,7 @@
 ///   
 ///  \author Tomas Gonzalo 
 ///          (t.e.gonzalo@fys.uio.no)
-///  \date 2016 May
+///  \date 2016 May, June
 ///
 ///  *********************************************
 
@@ -21,7 +21,7 @@
 // Begin
 LOAD_LIBRARY
 
-// Allow for CMSSM, MSSM63atMGUT and MSSM63Q (all submodels are included in these)
+// Allow for CMSSM, MSSM63atMGUT and MSSM63Q (last one not yet)
 BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT)
 
 // Functions
@@ -429,6 +429,7 @@ BE_CONV_FUNCTION(run_SPheno, int, (Spectrum&, const SMInputs&, const std::map<st
 BE_CONV_FUNCTION(Spectrum_Out, Spectrum, (const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
 BE_CONV_FUNCTION(ReadingData, void, (const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
 BE_CONV_FUNCTION(InitializeStandardModel, void, (const SMInputs&), "SPheno_MSSMspectrum")
+BE_CONV_FUNCTION(ErrorHandling, str, (const int&), "SPheno_MSSMspectrum")
 
 // Initialisation functions (dependencies)
 

@@ -46,6 +46,15 @@
      BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
      BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
      #undef FUNCTION
+
+     #define FUNCTION SPheno_MSSM63atQ_test
+     START_FUNCTION(bool)
+     DEPENDENCY(SMINPUTS, SMInputs)
+     ALLOW_MODELS(MSSM63atQ)
+     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
+     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
+     #undef FUNCTION
+
   
    #undef CAPABILITY
  

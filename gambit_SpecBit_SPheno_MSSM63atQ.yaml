@@ -1,0 +1,76 @@
+# Inifile for testing SpecBit features
+
+Parameters:
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  MSSM7atQ:
+    Qin:
+      fixed_value: 1000
+    M2:
+      fixed_value: 100
+    mHd2:
+      fixed_value: 40000
+    mHu2:
+      fixed_value: 250000
+    mf2:
+      fixed_value: 100
+    Ad_3:
+      fixed_value: 100
+    Au_3:
+      fixed_value: 100
+    SignMu:
+      fixed_value: 1
+    TanBeta:
+      fixed_value: 3
+  
+Priors:
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "gambit_output.txt"
+
+Scanner:
+  use_scanner: toy_mcmc
+  
+  scanners:
+    toy_mcmc:
+      plugin: toy_mcmc
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
+
+
+ObsLikes:
+  - purpose:      Test
+    capability:   run_MSSMspectrum_test
+    type:         bool
+    function:     SPheno_MSSM63atQ_test
+
+Rules:
+  - capability:   SPheno_MSSMspectrum
+    type:         void
+    function:     run_SPheno
+    options:
+      ErrorLevel:                 -1
+      SPA_convention:             true
+      Calculate_Branching_Ratios: false
+      Calculate_Cross_Sections:   false
+
+Logger:
+
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [SpecBit] : "SpecBit.log"
+
+KeyValues:
+
+  default_output_path: "runs/gambit_SpecBit_tests"
+
+  dependency_resolution:
+    prefer_model_specific_functions: false
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+ 

@@ -9,7 +9,7 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Tomas Gonzalo
-///  \date 2016 Apr
+///  \date 2016 Apr, May, June
 ///
 ///  *********************************************
 
@@ -123,7 +123,7 @@ BE_NAMESPACE
         // TODO: Swap Order
 
         // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
-        if(*L_BR and *kont != 0)
+        if(*L_BR and !*kont)
         {
           if(*HighScaleModel == "SUGRA")
           {  //CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
@@ -135,7 +135,7 @@ BE_NAMESPACE
         }
 
         // Calculation of the cross sections in e+ e- annihilation provided L_Cs is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0).  In the case that the file CrossSections.in does not exist, the following default values are used: Ecms = 500 GeV, Pm = Pp = 0, ISR = .TRUE.
-        if(*L_CS and *kont != 0)
+        if(*L_CS and !*kont)
         {
           for(int i=1; i<=3; i++)
             for(int j=1; j<=3; j++)
@@ -151,8 +151,13 @@ BE_NAMESPACE
    
     if(*kont != 0)
     {
-      //ErrorHandling(*kont);
+      std::stringstream msg;
+      msg << ErrorHandling(*kont);
+      logger() << msg.str() << EOM;
+      std::cout << msg.str() << std::endl;
+      invalid_point().raise(msg.str());
     }
+
 
     return *kont;   
  
@@ -186,11 +191,14 @@ BE_NAMESPACE
         slha["MODSEL"][""] << 6 << 3 << "# switching on flavour violation";
 
       SLHAea_add_block(slha, "MINPAR");
-      slha["MINPAR"][""] << 1 << *input_Param.at("M0") << "# m0"; 
-      slha["MINPAR"][""] << 2 << *input_Param.at("M12") << "# m12";
+      if(input_Param.find("M0") != input_Param.end())
+        slha["MINPAR"][""] << 1 << *input_Param.at("M0") << "# m0"; 
+      if(input_Param.find("M12") != input_Param.end())
+        slha["MINPAR"][""] << 2 << *input_Param.at("M12") << "# m12";
       slha["MINPAR"][""] << 3 << *input_Param.at("TanBeta") << "# tanb at m_Z";
       slha["MINPAR"][""] << 4 << *input_Param.at("SignMu") << "# cos(phase_mu)";
-      slha["MINPAR"][""] << 5 << *input_Param.at("A0") << "# A0";
+      if(input_Param.find("A0") != input_Param.end())
+        slha["MINPAR"][""] << 5 << *input_Param.at("A0") << "# A0";
 
       SLHAea_add_block(slha, "GAUGE", *m_GUT);
       slha["GAUGE"][""] << 1 << (*gauge_0)(1) << "# g'(M_GUT)^DRbar";
@@ -227,9 +235,37 @@ BE_NAMESPACE
       slha["Ye"][""] << 3 << 3 << Yl(3) << "# Y_tau(M_GUT)^DRbar";
 
 
-   }
+    }
 
-    // if(extpar), missing
+    if(*HighScaleModel == "SUGRA")
+    {
+      SLHAea_add_block(slha, "EXTPAR");
+      if(input_Param.find("Qin") != input_Param.end())
+        slha["EXTPAR"][""] << 0 << *input_Param.at("Qin") << "# scale Q where the parameters below are defined";
+      slha["EXTPAR"][""] << 1 << *input_Param.at("M1") << "# M_1";
+      slha["EXTPAR"][""] << 2 << *input_Param.at("M2") << "# M_2";
+      slha["EXTPAR"][""] << 3 << *input_Param.at("M3") << "# M_3";
+      slha["EXTPAR"][""] << 11 << *input_Param.at("Au_33") << "# A_t";
+      slha["EXTPAR"][""] << 12 << *input_Param.at("Ad_33") << "# A_b";
+      slha["EXTPAR"][""] << 13 << *input_Param.at("Ae_33") << "# A_l";
+      slha["EXTPAR"][""] << 21 << *input_Param.at("mHd2") << "# m_Hd^2";
+      slha["EXTPAR"][""] << 22 << *input_Param.at("mHd2") << "# m_Hu^2";
+      slha["EXTPAR"][""] << 31 << sqrt(*input_Param.at("ml2_11")) << "# M_(L,11)";
+      slha["EXTPAR"][""] << 32 << sqrt(*input_Param.at("ml2_22")) << "# M_(L,22)";
+      slha["EXTPAR"][""] << 33 << sqrt(*input_Param.at("ml2_33")) << "# M_(L,33)";
+      slha["EXTPAR"][""] << 34 << sqrt(*input_Param.at("me2_11")) << "# M_(E,11)";
+      slha["EXTPAR"][""] << 35 << sqrt(*input_Param.at("me2_22")) << "# M_(E,22)";
+      slha["EXTPAR"][""] << 36 << sqrt(*input_Param.at("me2_33")) << "# M_(E,33)";
+      slha["EXTPAR"][""] << 41 << sqrt(*input_Param.at("mq2_11")) << "# M_(Q,11)";
+      slha["EXTPAR"][""] << 42 << sqrt(*input_Param.at("mq2_22")) << "# M_(Q,22)";
+      slha["EXTPAR"][""] << 43 << sqrt(*input_Param.at("mq2_33")) << "# M_(Q,33)";
+      slha["EXTPAR"][""] << 44 << sqrt(*input_Param.at("mu2_11")) << "# M_(U,11)";
+      slha["EXTPAR"][""] << 45 << sqrt(*input_Param.at("mu2_22")) << "# M_(U,22)";
+      slha["EXTPAR"][""] << 46 << sqrt(*input_Param.at("mu2_33")) << "# M_(U,33)";
+      slha["EXTPAR"][""] << 47 << sqrt(*input_Param.at("md2_11")) << "# M_(D,11)";
+      slha["EXTPAR"][""] << 48 << sqrt(*input_Param.at("md2_22")) << "# M_(D,22)";
+      slha["EXTPAR"][""] << 49 << sqrt(*input_Param.at("md2_33")) << "# M_(D,33)";
+    }
 
     // parameters + masses for SPheno.spc
     SLHAea_add_block(slha, "SMINPUTS");
@@ -640,7 +676,7 @@ BE_NAMESPACE
     InitializeStandardModel(sminputs); 
     InitializeLoopFunctions();
 
-    *ErrorLevel = -1;
+    //*ErrorLevel = -1;
     *GenerationMixing = false;
     *L_BR = false;
     *L_CS = false;
@@ -752,7 +788,7 @@ BE_NAMESPACE
       // tanb
       // in GAMBIT tanb is always at mZ
       //*tanb_Q = *Param.at("TanBeta");
-      //*tanb_in_at_Q = true;
+      *tanb_in_at_Q = false;
        
       for(int i=1; i<=3; i++)
         for(int j=1; j<=3; j++)
@@ -851,9 +887,9 @@ BE_NAMESPACE
       phase_mu->im /= mu->abs();
     }
 
-    if(*SPA_convention and !(*tanb_in_at_Q))
+    if(*SPA_convention)
     {
-      // TODO: Warnings
+      backend_warning().raise(LOCAL_INFO,"SPheno Warning: in case of SPA conventions, tan(beta) should be given at 1 TeV.");
     }
 
     // recalculate quantities to be sure
@@ -1016,115 +1052,148 @@ BE_NAMESPACE
   }  
 
   // Function that handles errors
-/*  void ErrorHandling(int kont)
+  str ErrorHandling(const int &kont)
   {
-    std::stringstream mess;
 
     switch(kont)
     {
-     case -1:
-        mess << "step size gets too small in routine ODEint";
-        break;
-
-     case -2:
-        mess << "maximal value > 10^36 ODEint";
-        break;
-
-     case -3:
-        mess << "too many steps are required in routine ODEint";
-        break;
-
-     case -4:
-        mess << "boundary conditions cannot be fullfilled in routine ODEintB";
-        break;
-
-     case -5:
-        mess << "maximal value 10^36 ODEintB"; 
-        break;
-
-     case -6:
-        mess << "step size gets too small in routine ODEintB";
-        break;
-
-     case -7:
-        mess << "too many steps are required in routine ODEintB";
-        break;
-
-     case -8:
-        mess << "boundary conditions cannot be fullfilled in routine ODEintB";
-        break;
-
-     case -9:
-        mess << "maximal value >10^36 ODEintC";
-        break;
-
-     case -10:
-        mess << "step size gets too small in routine ODEintC";
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-     case -1:
-        break;
-
-
+      case -1: return "Problem in OdeInt, stepsize smaller than minimum.";
+      case -2: return "Problem in OdeInt, max val > 10^36.";
+      case -3: return "Proglem in OdeInt, too many steps.";
+      case -4: return "Proglem in OdeIntB, boundary condition not fulfilled.";
+      case -5: return "Problem in OdeIntB, stepsize smaller than minimum.";
+      case -6: return "Problem in OdeIntB, max val > 10^36.";
+      case -7: return "Problem in OdeIntB, too many steps.";
+      case -8: return "Problem in OdeIntC, boundary condition not fullfilled.";
+      case -9: return "Problem in OdeIntC, stepsize smaller than minimum.";
+      case -10: return "Problem in OdeIntC, max val > 10^36.";
+      case -11: return "Problem in OdeIntC, too many steps.";
+      case -12: return "Problem in rkqs, stepsize undeflow.";
+      case -13: return "Error in Subroutine ComplexEigenSystem. Dimensions do not match.";
+      case -14: return "Potential numerical problems in routine ComplexEigenSystem.";
+      case -15: return "Error in Subroutine RealEigenSystem. Dimensions do not match.";
+      case -16: return "Potential numerical problems in routine RealEigenSystem.";
+      case -17: return "Error in tqli.";
+      case -18: return "Problem in tqli, too many iterations.";
+      case -19: return "Function DGAUSS ... too high accuracy required.";
+      case -20: return "Subroutine DGaussInt ... Too high accuracy required.";
+      case -21: return "Problem in function kappa.";
+      case -24: return "Singular matrix in routine GaussJ.";
+      case -27: return "Problem in bsstep, stepsize undeflow.";
+      case -28: return "Routine pzextr: probable misuse, too much extrapolation";
+      case -29: return "Routine rzextr: probable misuse, too much extrapolation";
+      case -30: return "Error in Subroutine RealEigenSystem. Matrix contains NaN.";
+      case -31: return  "Error in Subroutine ComplexEigenSystem. Matrix contains NaN.";
+      case -101: return "Problem in routine CalculateRunningMasses: Qlow > mb(mb).";
+      case -102: return "Problem in routine CalculateRunningMasses: Max(Qlow, mb(mb)) > Qmax.";
+      case -201: return"Warning from Subroutine ChargedScalarMassEps1nt, a mass squared is negative.";
+      case -202: return "Warning from Subroutine ChargedScalarMassEps3, a mass squared is negative.";
+      case -203: return"Warning from Subroutine ChargedScalarMassLam3nt, a mass squared is negative.";
+      case -204: return "Severe Warning from routine CharginoMass3. Abs(h_tau)**2 < 0. Taking the square root from the negative.";
+      case -205: return "Severe Warning from routine CharginoMass5. Abs(h_tau)**2 < 0. Taking the square root from the negative.";
+      case -206: return "Warning from Subroutine PseudoScalarMassEps1nT, a mass squared is negative.";
+      case -207: return "Warning from Subroutine PseudoScalarMassEps3nT, a mass squared is negative.";
+      case -208: return "Warning from Subroutine PseudoScalarMassMSSMnT, a mass squared is negative.";
+      case -210: return "Warning from Subroutine ScalarMassEps1nT, a mass squared is negative.";
+      case -211: return "Warning form Subroutine ScalarMassEps3nT, a mass squared is negative.";
+      case -212: return "Warning from ScalarMassMSSMeff, m_h^2. Setting m_h to the sqrt(abs(m^2_h)).";
+      case -213: return "Warning from Subroutine ScalarMassMSSMnT, a mass squared is negative.";
+      case -214: return "L*k*tanbq*mu = 0 in routine ScalarMassNMSSMeff.";
+      case -215: return "m^2_{S_1^0} < 0 in routine ScalarMassNMSSMeff.";
+      case -216: return "m^2_{P_1^0} < 0 in routine ScalarMassNMSSMeff.";
+      case -217: return "m^2_{S^+} < 0 in routine ScalarMassNMSSMeff.";
+      case -219: return "Warning from routine SdwonMass3Lam. In the calculation of the masses occurred a negative mass squared.";
+      case -220: return "Warning from routine SfermionMass1. In the calculation of the masses occurred a negative mass squared.";
+      case -221: return "Warning from routine SfermionMass1. In the calculation of the masses occurred a negative mass squared.";
+      case -222: return "Warning from routine SfermionMass1mssm. In the calculation of the masses occurred a negative mass squared.";
+      case -223: return "Warning from routine SfermionMass3mssm. In the calculation of the masses occurred a negative mass squared.";
+      case -224: return "Warning from routine SquarkMass3Eps. In the calculation of the masses occurred a negative mass squared.";
+      case -225: return "Error in subroutine TreeMassesEps1. mSneutrino^2 <= 0. Setting it to 10.";
+      case -226: return "Warning from TreeMassesMSSM. mSneut2 < 0. Set to its modulus.";
+      case -227: return "Warning from TreeMassesMSSM. mP02 < 0. Set to its modulus.";
+      case -228: return "Warning from TreeMassesMSSM. mSpm2 < 0. Set to its modulus.";
+      case -229: return "Warning from TreeMassesMSSM2. mSneut2 < 0. Set to 0.";
+      case -230: return "Warning from TreeMassesMSSM2. mP02 < 0. Set to its modulus.";
+      case -231: return "Warning from TreeMassesMSSM2. mSpm2 < 0. Set to its modulus.";
+      case -232: return "Warning from TreeMassesMSSM3. mSneut2 < 0. Set to 0.";
+      case -233: return "Warning from TreeMassesNMSSM. mSneut2 < 0. Set to its modulus.";
+      
+      case -302: return "Routine LesHouches Input: unknown entry for Block MODSEL.";
+      case -303: return "Routine LesHouches Input: model must be specified before parameters.";
+      case -304: return "Routine LesHouches Input: unknown entry for Block MINPAR.";
+      case -305: return "Routine LesHouches Input: model has not been specified completly.";
+      case -306: return "Routine LesHouches Input: a serious error has been part of the input.";
+      case -307: return "Routine LesHouches Input: Higgs sector has not been fully specified.";
+      case -308: return "Routine ReadMatrixC: indices exceed the given boundaries.";
+      case -309: return "Routine ReadMatrixR: indices exceed the given boundaries.";
+      case -310: return "Routine ReadVectorC: index exceeds the given boundaries.";
+      case -311: return "Routine ReadVectorR: index exceeds the given boundaries.";
+      case -312: return "Routine ReadMatrixC: indices exceed the given boundaries";
+      case -401: return "Routine BoundaryEW: negative scalar mass squared as input.";
+      case -402: return "Routine BoundaryEW: m^2_Z(m_Z) < 0.";
+      case -403: return "Routine BoundaryEW: sin^2(θ_DR) < 0.";
+      case -404: return "Routine BoundaryEW: m^2_W < 0.";
+      case -405: return "Routine BoundaryEW: either m_(l_D R)/m_l < 0.1 or m_(l_D R)/m_l > 10.";
+      case -406: return "Routine BoundaryEW: either m_(d_D R)/m_u < 0.1 or m_(d_D R)/m_d > 10.";
+      case -407: return "Routine BoundaryEW: either m_(u_D R)/m_d < 0.1 or m_(u_D R)/m_u > 10.";
+      case -408: return "Routine RunRGE: entering non-perturbative regime.";
+      case -409: return "Routine RunRGE: nor g_1 = g_ 2 at M_GUT neither any other unification.";
+      case -410: return "Routine RunRGE: entering non-perturbative regime at M_GUT.";
+      case -411: return "Routine RunRGE: entering non-perturbative regime at M_(H_3).";
+      case -412: return "Routine Sugra: run did not converge.";
+      case -413: return "Routine Calculate_Gi_Yi: m^2_Z(m_Z) < 0.";
+      case -414: return "Routine Calculate_Gi_Yi: too many iterations to calculate m_b(m_b) in the MS scheme.";
+      case -415: return "Routine Sugra: |μ|^2 < 0 at m_Z.";
+      case -501: return "Negative mass squared in routine SleptonMass_1L.";
+      case -502: return "p^2 iteration did not converge in routine SleptonMass_1L.";
+      case -503: return "Negative mass squared in routine SneutrinoMass_1L.";
+      case -504: return "p^2 iteration did not converge in routine SneutrinoMass_1L.";
+      case -505: return "Negative mass squared in routine SquarkMass_1L.";
+      case -506: return "p^2 iteration did not converge in routine SquarkMass_1L.";
+      case -507: return "m^2_(h^0) < 0 in routine LoopMassesMSSM.";
+      case -508: return "m^2_(A^0) < 0 in routine LoopMassesMSSM.";
+      case -509: return "m^2_(H^+) < 0 in routine LoopMassesMSSM.";
+      case -510: return "|μ|^2 > 10^20 in routine LoopMassesMSSM.";
+      case -511: return "|μ|^2 < 0 in routine LoopMassesMSSM.";
+      case -512: return "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM.";
+      case -513: return "m^2_(h^0) < 0 in routine LoopMassesMSSM_2.";
+      case -514: return "m^2_(A^0) < 0 in routine LoopMassesMSSM_2.";
+      case -515: return "m^2_(H^+) < 0 in routine LoopMassesMSSM_2.";
+      case -516: return "|μ|^2 > 10^20 in routine LoopMassesMSSM_2.";
+      case -517: return "|μ|^2 < 0 in routine LoopMassesMSSM_2.";
+      case -518: return "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM_2.";
+      case -519: return "m^2_(h^0) < 0 in routine LoopMassesMSSM_3.";
+      case -520: return "m^2_(A^0) < 0 in routine LoopMassesMSSM_3.";
+      case -521: return "m^2_(H^+) < 0 in routine LoopMassesMSSM_3.";
+      case -522: return "|μ|^2 > 10^20 in routine LoopMassesMSSM_3.";
+      case -523: return "|μ|^2 < 0 in routine LoopMassesMSSM_3.";
+      case -524: return "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM_3.";
+      case -525: return "Negative mass squared in routine Sigma_SM_chirally enhanced.";
+      case -601: return "Routine PiPseudoScalar2: m^2_(~t) < 0.";
+      case -602: return "Routine PiPseudoScalar2: m^2_(~b < 0.";
+      case -603: return "Routine PiPseudoScalar2: m^2_(~τ) < 0.";
+      case -604: return "Routine PiScalar2: m^2_(~t) < 0.";
+      case -605: return "Routine PiScalar2: m^2_(~b) < 0.";
+      case -606: return "Routine PiScalar2: m^2_(~τ) < 0.";
+      case -607: return "Routine Two Loop Tadpoles: m^2_(~t) < 0.";
+      case -608: return "Routine Two Loop Tadpoles: m^2_(~b) < 0.";
+      case -609: return "Routine Two Loop Tadpoles: m^2_(~τ) < 0.";
+      case -1001: return "The size of the arrays do not match in routine ComplexEigenSystems_DP.";
+      case -1002: return "Potential numerical problems in routine ComplexEigenSystems_DP.";
+      case -1003: return "The size of the arrays do not match in routine ComplexEigenSystems_QP.";
+      case -1004: return "Potential numerical problems in routine ComplexEigenSystems_QP.";
+      case -1005: return "The size of the arrays do not match in routine RealEigenSystems_DP.";
+      case -1006: return "Potential numerical problems in routine RealEigenSystems_ DP.";
+      case -1007: return "The size of the arrays do not match in routine RealEigenSystems_QP.";
+      case -1008: return "The size of the arrays do not match in routine Tqli_QP.";
+      case -1009: return "Too many iterations in routine Tqli_QP.";
+      case -1010: return "Too many iterations in routine Tql2_QP.";
     }
-  }*/
+
+    return "Unspecified error";
+
+  }
+  
 }
 
 
@@ -1135,8 +1204,8 @@ END_BE_NAMESPACE
 BE_INI_FUNCTION
 {
 
-    // Divert all ouput to screen, i.e. to GAMBIT logs
-    *ErrCan = 6; 
+    // Dump all internal output 
+    //*ErrCan = 0; 
 
     Set_All_Parameters_0();
 
@@ -1155,6 +1224,8 @@ BE_INI_FUNCTION
     // Set up options, same as BLOCK SPHENOINPUT
     // 1
     *ErrorLevel = runOptions->getValueOrDef<Finteger>(-1, "ErrorLevel");
+    // GAMBIT: keep error level always 0 (print every warning), let GAMBIT handle errors
+    *ErrorLevel = 0;
 
     // 2
     *SPA_convention = runOptions->getValueOrDef<Flogical>(true, "SPA_convention");
@@ -1204,19 +1275,20 @@ BE_INI_FUNCTION
 
     // 22, CMS energy
     // TODO: Perhaps there is the option of setting more than one Ecms
-    // TODO: Error handling
     static int p_max = 100;
     static Finteger p_act = 0;
     p_act ++;
     if(p_act <= p_max)
       (*Ecms)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Ecms");
+    else
+      backend_error().raise(LOCAL_INFO, "The number of required points for the calculation of cross sections exceeds the maximum");
 
     // 23, polarisation of incoming e- beam
     if(p_act <= p_max)
       (*Pm)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pm");
     if((*Pm)(p_act) > 1)
     {
-      // TODO: Error handling
+      backend_error().raise(LOCAL_INFO, "e- beam polarisation has to be between -1 and 1");
       (*Pm)(p_act) = 0;
     }
 
@@ -1225,7 +1297,7 @@ BE_INI_FUNCTION
       (*Pp)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pp");
     if((*Pp)(p_act) > 1)
     {
-      // TODO: Error handling
+      backend_error().raise(LOCAL_INFO, "e+ beam polarisation has to be between -1 and 1");
       (*Pp)(p_act) = 0;
     }
 

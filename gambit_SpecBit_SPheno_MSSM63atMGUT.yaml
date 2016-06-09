@@ -3,19 +3,77 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  NUHM1:
-    M0:
-      fixed_value: 100
-    mH:
-      fixed_value: 100
-    M12:
-      fixed_value: 100
-    A0:
-      fixed_value: 100
+  MSSM30atMGUT:
+    mHu2:
+      fixed_value: 15625
+    mHd2:
+      fixed_value: 15625
+
+    M1:
+      fixed_value: 500
+    M2:
+      fixed_value: 500
+    M3:
+      fixed_value: 500
+
+    mq2_1:
+      fixed_value: 15625.0
+    mq2_2:
+      fixed_value: 15625.0
+    mq2_3:
+      fixed_value: 15625.0
+
+    ml2_1:
+      fixed_value: 15625.0
+    ml2_2:
+      fixed_value: 15625.0
+    ml2_3:
+      fixed_value: 15625.0
+
+    md2_1:
+      fixed_value: 15625.0
+    md2_2:
+      fixed_value: 15625.0
+    md2_3:
+      fixed_value: 15625.0
+
+    mu2_1:
+      fixed_value: 15625.0
+    mu2_2:
+      fixed_value: 15625.0
+    mu2_3:
+      fixed_value: 15625.0
+
+    me2_1:
+      fixed_value: 15625.0
+    me2_2:
+      fixed_value: 15625.0
+    me2_3:
+      fixed_value: 15625.0
+
+    Ae_1:
+      fixed_value: 0
+    Ae_2:
+      fixed_value: 0
+    Ae_3:
+      fixed_value: 0
+    Ad_1:
+      fixed_value: 0
+    Ad_2:
+      fixed_value: 0
+    Ad_3:
+      fixed_value: 0 
+    Au_1:
+      fixed_value: 0
+    Au_2:
+      fixed_value: 0
+    Au_3:
+      fixed_value: 0
+
     SignMu:
       fixed_value: 1
     TanBeta:
-      fixed_value: 3
+      fixed_value: 10
   
 Priors:
 
