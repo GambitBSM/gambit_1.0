@@ -69,7 +69,7 @@ KeyValues:
   default_output_path: "runs/gambit_SpecBit_tests"
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

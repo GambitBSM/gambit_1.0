@@ -21,8 +21,8 @@
 // Begin
 LOAD_LIBRARY
 
-// Allow for CMSSM, MSSM63atMGUT and MSSM63Q
-BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT)
+// Allow for CMSSM, MSSM63atMGUT and MSSM63atQ
+BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT,MSSM63atQ)
 
 // Functions
 BE_FUNCTION(Set_All_Parameters_0, void, (), "__model_data_MOD_set_all_parameters_0", "SPheno_MSSMspectrum")
