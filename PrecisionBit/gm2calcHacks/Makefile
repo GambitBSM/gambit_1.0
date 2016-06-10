@@ -1,14 +1,17 @@
 # Package information
 PKGNAME         := gm2calc
 MAJOR           := 1
-MINOR           := 0
-PATCH           := 0
+MINOR           := 1
+PATCH           := 2
 VERSION         := $(MAJOR).$(MINOR).$(PATCH)
 
 # Variables for compilation
+CC              := gcc
+CFLAGS          := -O2 -std=c99
+CLIBS           := -lstdc++ -lm
 CXX             := g++
 CPPFLAGS        := -Isrc
-CXXFLAGS        := -O2 -std=c++11 -fPIC
+CXXFLAGS        := -O2 -std=c++11
 CXX_DEP_GEN     := g++
 MAKELIB         := ar cru
 MAKESHAREDLIB   := $(CXX) -shared 
@@ -19,13 +22,12 @@ SHAREDLIBEXT    := .so
 BINDIR          := bin
 CONFIG_H        := src/config.h
 
-
 # Flags (set to 1 to enable, leave empty to disable)
 ENABLE_LAPACK   :=
 
-.PHONY:         all allexec alllib clean depend make.args sharedlib
-
 all: alllib allexec make.args sharedlib
+
+.PHONY: all allexec alllib clean depend make.args sharedlib
 
 clean::
 	-rm -f $(CONFIG_H)
@@ -33,6 +35,7 @@ clean::
 	-rm -f make.args
 
 include src/module.mk
+include examples/module.mk
 include doc/module.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -58,7 +61,7 @@ alllib:   $(ALLLIB)
 depend:   $(ALLDEP)
 
 sharedlib: $(SHAREDLIB)
-
+	
 $(BINDIR):
 	mkdir $(BINDIR)
 
@@ -90,6 +93,9 @@ make.args:
 	mv $@-t $@
 
 %.d: %.cpp | $(CONFIG_H)
+	$(CXX_DEP_GEN) $(CPPFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
+
+%.d: %.c | $(CONFIG_H)
 	$(CXX_DEP_GEN) $(CPPFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 print-% : ; @echo $* = $($*)

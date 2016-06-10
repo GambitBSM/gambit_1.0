@@ -48,10 +48,7 @@ gamLike:
   1.0.0:       ./Backends/installed/gamLike/1.0.0/lib/gamLike.so
 
 gm2calc:
-  1.0.0:       ./Backends/installed/gm2calc/1.0.0/src/libgm2calc.so
-
-gm2calc_c:
-  1.1.0:       ./Backends/installed/gm2calc_c/1.1.0/src/libgm2calc.so
+  1.1.2:       ./Backends/installed/gm2calc/1.1.2/src/libgm2calc.so
 
 MicrOmegas:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/MSSM/MSSM/libmicromegas.so

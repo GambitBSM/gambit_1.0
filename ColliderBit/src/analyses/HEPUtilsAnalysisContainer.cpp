@@ -52,8 +52,6 @@ namespace Gambit {
     }
 
 
-    /// @name HEPUtilsAnalysisContainer function definitions:
-    //@{
     void HEPUtilsAnalysisContainer::clear() {
       if (analyses.size() != 0) {
         for (auto it = analyses.begin(); it != analyses.end(); ++it) {
@@ -139,7 +137,6 @@ namespace Gambit {
         (*myIter++)->scale(factor);
       }
     }
-    //@}
 
   }
 }

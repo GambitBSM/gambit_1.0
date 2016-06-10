@@ -45,7 +45,7 @@ namespace Gambit {
    namespace MultiNest {
 
       /// Typedef for the ScannerBit pointer to the external loglikelihood function
-      typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
+      typedef Gambit::Scanner::like_ptr scanPtr;
 
       /// Bring printer_interface and printer names into this scope
       using Gambit::Scanner::printer_interface;

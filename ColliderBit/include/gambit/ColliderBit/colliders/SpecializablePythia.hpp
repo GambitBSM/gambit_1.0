@@ -78,10 +78,9 @@ namespace Gambit {
                   const std::vector<std::string>& externalSettings,
                   const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
         /// Initialize from some external settings.
-        /// @todo rename. 
-        void init_external(const std::string pythiaDocPath,
-                           const std::vector<std::string>& externalSettings,
-                           const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
+        void init_user_model(const std::string pythiaDocPath,
+                             const std::vector<std::string>& externalSettings,
+                             const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
 
         /// Initialize from some external settings, assuming no given SLHAea instance.
         void init(const std::string pythiaDocPath,
@@ -89,10 +88,9 @@ namespace Gambit {
           init(pythiaDocPath, externalSettings, nullptr, os);
         }
         /// Initialize from some external settings, assuming no given SLHAea instance.
-        /// @todo rename. 
-        void init_external(const std::string pythiaDocPath,
-                           const std::vector<std::string>& externalSettings, std::ostream& os) {
-          init_external(pythiaDocPath, externalSettings, nullptr, os);
+        void init_user_model(const std::string pythiaDocPath,
+                             const std::vector<std::string>& externalSettings, std::ostream& os) {
+          init_user_model(pythiaDocPath, externalSettings, nullptr, os);
         }
       
         /// Specialize this Pythia interface to Gambit with a specialization function.

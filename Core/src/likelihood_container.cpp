@@ -39,13 +39,12 @@ namespace Gambit
   /// Constructor
   Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-   Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+   const str &purpose, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
   ) 
   : dependencyResolver (dependencyResolver), 
-    prior              (prior),
     printer            (printer),
     functorMap         (functorMap),
     #ifdef WITH_MPI
@@ -90,10 +89,10 @@ namespace Gambit
   }
 
   /// Do the prior transformation and populate the parameter map
-  void Likelihood_Container::setParameters (const std::vector<double> &vec)
+  void Likelihood_Container::setParameters (const std::unordered_map<std::string, double> &parameterMap)
   {
-    // Do the prior transformation, saving the real parameter values in the parameterMap
-    prior.transform(vec, parameterMap);
+    // Clear the parameter map to make sure no junk from the last iteration gets left in there
+    //parameterMap.clear();
 
     // Set up a stream containing the parameter values, for diagnostic output
     std::ostringstream parstream;
@@ -108,8 +107,23 @@ namespace Gambit
       for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
         str key = act_it->first + "::" + *par_it;
-        parstream << "    " << *par_it << ": " << parameterMap[key] << endl;
-        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[key]);
+        auto tmp_it = parameterMap.find(key);
+        if(tmp_it == parameterMap.end())
+        {
+           std::ostringstream err;
+           err << "Error! Failed to set parameter '"<<key<<"' following prior transformation! The parameter could not be found in the map returned by the prior. This probably means that the prior you are using contains a bug." << std::endl;
+           err << "The parameters and values that *were* returned by the prior were:" <<std::endl;
+           if(parameterMap.size()==0){ err << "None! Size of map was zero." << std::endl; } 
+           else {
+             for (auto par_jt = parameterMap.begin(); par_jt != parameterMap.end(); ++par_jt)
+             {
+               err << par_jt->first << "=" << par_jt->second << std::endl;
+             }
+           }
+           core_error().raise(LOCAL_INFO,err.str());
+        }
+        parstream << "    " << *par_it << ": " << tmp_it->second << endl;
+        act_it->second->getcontentsPtr()->setValue(*par_it, tmp_it->second);
       }
     }
 
@@ -129,7 +143,7 @@ namespace Gambit
   }
 
   /// Evaluate total likelihood function
-  double Likelihood_Container::main (const std::vector<double> &in)
+  double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
   {
     double lnlike = 0;
 
@@ -257,11 +271,11 @@ namespace Gambit
       }
     }
 
-    if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
-
     // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
     if (compute_aux)
     {
+      if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
+
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
         // Log the observables being tried.

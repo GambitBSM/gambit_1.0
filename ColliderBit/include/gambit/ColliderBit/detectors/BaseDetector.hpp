@@ -37,6 +37,7 @@ namespace Gambit {
 
       /// @name Event detection simulation
       //@{
+        /// Perform the detector simulation on the next collider event by reference.
         virtual void processEvent(const EventIn&, EventOut&) const = 0;
       //@}
 

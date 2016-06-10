@@ -339,7 +339,7 @@ def getTemplateBracket(el):
     else:
         template_bracket = '<>'
 
-    print 'TEMPLATE BRACKET: ', template_bracket
+    # print 'TEMPLATE BRACKET: ', template_bracket
 
     # Isolate only the template variable names (last word in each entry)
     if template_bracket == '<>':
@@ -812,7 +812,6 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
         if 'name' in context_xml_el.keys():
             context_name = context_xml_el.get('name')
             namespaces.append(context_name)
-            # print "HERE2: Appended name: ", context_name, context_xml_el.get("id") 
         else:
             break
             #continue
@@ -835,7 +834,7 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
 
 def removeTemplateBracket(type_name, return_bracket=False):
     
-    if '>' in type_name:
+    if ('<' in type_name) and ('>' in type_name):
 
         r_pos = type_name.rfind('>')
 
@@ -2193,38 +2192,34 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     # Check for timeout or error
     did_fail = False
     if timed_out:
-        print '  ERROR: CastXML timed out.'
+        print '  ' + modifyText('ERROR: CastXML timed out.','red')
         did_fail = True
-    elif proc.returncode != 0:        
-        print '  ERROR: CastXML failed.'
-	did_fail = True
+    elif (proc.returncode != 0) or ('error: ' in output.lower()):
+        print '  ' + modifyText('ERROR: CastXML failed.','red')
+        did_fail = True
+
+    if did_fail:
         # Get error message
-        for line in output.splitlines():
-            if 'error:' in line:
-                print '  ERROR: ' + line
-                break
+        print
+        print modifyText('START CASTXML OUTPUT','underline')
+        print
+        print output
+        print modifyText('END CASTXML OUTPUT','underline')
+        print
 
     # If it fails with icpc, try again with g++.
     if ("gnu" in cfg.castxml_cc_id) and ("icpc" in cfg.castxml_cc) and did_fail:
         print
-        print '  Will retry with --castxml-cc=g++'
+        print '  ' + modifyText('Will retry with --castxml-cc=g++','yellow')
         print
         cfg.castxml_cc = 'g++'
         castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=timeout_limit, poll_interval=poll_interval)
     # Print error report
     elif did_fail:
-        print
-        print 'START CASTXML OUTPUT'
-        print '--------------------'
-        print
-        print output
-        print 'END CASTXML OUTPUT'
-        print '------------------'
-        print
         raise Exception('castxml failed')
     
     else:
-        print '  Command finished successfully.'
+        print '  ' + modifyText('Command finished successfully.','green')
     print
 
 # ====== END: castxmlRunner ========
@@ -2306,7 +2301,7 @@ def fillAcceptedTypesList():
 
             type_counter += 1
             if type_counter%500 == 0:
-                print '  %i types classified...' % (type_counter)    
+                print '  - %i types classified...' % (type_counter)    
 
 
             # To save a bit of time, construct class name dict once and pass to remaining checks
@@ -2373,7 +2368,7 @@ def fillAcceptedTypesList():
 
 
     # Print final number of types classified
-    print '  %i types classified.' % (type_counter)    
+    print '  - %i types classified.' % (type_counter)    
 
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
@@ -2482,6 +2477,8 @@ def fillParentsOfLoadedClassesList():
 
     import modules.classutils as classutils
 
+    messages = []
+
     for xml_file in gb.all_id_dict.keys():
 
         # If new xml file, initialise global dicts
@@ -2507,9 +2504,14 @@ def fillParentsOfLoadedClassesList():
                         class_name = classutils.getClassNameDict(parent_el)
 
                         # Append to gb.parents_of_loaded_classes
-                        print '  %s is parent of %s.' % (class_name['long_templ'], full_name)
                         if class_name['long_templ'] not in gb.parents_of_loaded_classes:
                             gb.parents_of_loaded_classes.append(class_name['long_templ'])
+
+                        # Print info
+                        msg = '  - %s is parent of %s.' % (class_name['long_templ'], full_name) 
+                        if msg not in messages:
+                            print msg
+                            messages.append(msg)
 
 # ====== END: fillParentsOfLoadedClassesList ========
 
@@ -2545,7 +2547,6 @@ def xmlFilesToDicts(xml_files):
             # Determine name
             if 'name' in el.keys():
                 namespaces_list = getNamespaces(el, include_self=True, xml_file_name=xml_file)
-                # print "HERE: ", el.get("id"), el.tag, namespaces_list
                 full_name = '::'.join(namespaces_list)
             else:
                 # Skip elements that don't have a name
@@ -2673,6 +2674,11 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
             except KeyError:
                 continue
 
+            # Check if we have done this function already
+            if func_name in gb.functions_done:
+                infomsg.FunctionAlreadyDone( func_name['long_templ_args'] ).printMessage()
+                continue
+
             if func_name['long_templ_args'] in cfg.load_functions:
                 gb.func_dict[func_name['long_templ_args']] = el
 
@@ -2732,26 +2738,24 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
     # Check for timeout or error
     did_fail = False
     if timed_out:
-        print '  ERROR: Shell command timed out.'
+        print '  ' + modifyText('ERROR: Shell command timed out.','red')
         did_fail = True
     elif proc.returncode != 0:        
-        print '  ERROR: Shell command failed.'
+        print '  ' + modifyText('ERROR: Shell command failed.','red')
         did_fail = True
 
     # Print error report
     if did_fail:
         print
-        print 'START SHELL COMMAND OUTPUT'
-        print '--------------------------'
+        print modifyText('START SHELL COMMAND OUTPUT','underline')
         print
         print output
-        print 'END SHELL COMMAND OUTPUT'
-        print '------------------------'
+        print modifyText('END SHELL COMMAND OUTPUT','red')
         print
         raise Exception('Shell command failed')
     
     else:
-        print '  Command finished successfully.'
+        print '  ' + modifyText('Command finished successfully.','green')
     print
 
 
@@ -2762,8 +2766,7 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
         start_i = output_lines.index("#include <...> search starts here:")
         end_i   = output_lines.index("End of search list.")
     except ValueError:
-        print '  WARNING: Could not identify standard include paths.'
-        print '  Add them manually in the config file if necessary.'
+        print '  ' + modifyText('WARNING: Could not identify standard include paths.\n  Add them manually in the config file if necessary.','yellow')
         print
     else:
         for line in output_lines[start_i+1:end_i]:
@@ -2827,4 +2830,20 @@ def isInList(search_entry, search_list, return_index=True, ignore_whitespace=Tru
         return False
 
 # ====== END: isInList ========
+
+
+
+
+# ====== modifyText ========
+
+def modifyText(msg, mod):
+
+    if mod not in gb.textmods.keys():
+        return msg
+
+    msg = gb.textmods[mod] + msg + gb.textmods['end']
+
+    return msg
+
+# ====== END: modifyText ========
 
