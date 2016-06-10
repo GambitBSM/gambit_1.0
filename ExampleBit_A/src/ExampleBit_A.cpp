@@ -517,7 +517,9 @@ namespace Gambit
       result = test3;
     }
 
-
+    /// Flat test likelihood for checking prior distributions
+    void flat_likelihood(double &result){ result = 1; }
+ 
     /// @}
   }
 
