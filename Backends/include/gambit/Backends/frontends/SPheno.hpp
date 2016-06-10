@@ -21,7 +21,7 @@
 // Begin
 LOAD_LIBRARY
 
-// Allow for CMSSM, MSSM63atMGUT and MSSM63Q (last one not yet)
+// Allow for CMSSM, MSSM63atMGUT and MSSM63Q
 BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT)
 
 // Functions

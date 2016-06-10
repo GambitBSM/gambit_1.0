@@ -17,6 +17,11 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 June
+///  
+///
 ///  *********************************************
 
 #ifndef __SpecBit_MSSM_hpp__
@@ -34,6 +39,36 @@
     // GUT MSSM parameterisations 
     // (CMSSM and its various non-universal generalisations)    
  
+
+    /// SPheno spectrum functions, parallel to the FS ones
+    // CMSSM
+    #define FUNCTION get_SPheno_CMSSM_spectrum
+    START_FUNCTION(const Spectrum*)
+    ALLOW_MODELS(CMSSM)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
+    BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
+    #undef FUNCTION
+
+    // MGUT scale MSSM
+    #define FUNCTION get_SPheno_MSSMatMGUT_spectrum
+    START_FUNCTION(const Spectrum*)
+    ALLOW_MODELS(MSSM63atMGUT)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
+    BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
+    #undef FUNCTION
+
+    // Q scale MSSM
+    #define FUNCTION get_SPheno_MSSMatQ_spectrum
+    START_FUNCTION(const Spectrum*)
+    ALLOW_MODELS(MSSM63atQ)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
+    BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
+    #undef FUNCTION
+
+
     /// Get MSSM spectrum from CMSSM boundary conditions
     //  The type, (const) Spectrum, is a class containing two SubSpectrum* members and an SMInputs
     //  member. The SubSpectrum* members point to a "UV" Spectrum object (the MSSM) and an

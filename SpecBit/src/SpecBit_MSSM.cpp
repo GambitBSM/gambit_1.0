@@ -20,6 +20,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 June
+///
 ///  *********************************************
 
 #include <string>
@@ -418,6 +422,48 @@ namespace Gambit
 
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
+
+    void get_SPheno_CMSSM_spectrum (const Spectrum* &result)
+    {
+      namespace myPipe = Pipes::get_SPheno_CMSSM_spectrum;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+      Spectrum spectrum;
+
+      myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      result = &spectrum;
+
+    }
+
+    void get_SPheno_MSSMatMGUT_spectrum (const Spectrum* &result)
+    {
+      namespace myPipe = Pipes::get_SPheno_MSSMatMGUT_spectrum;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+      Spectrum spectrum;
+
+      myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      result = &spectrum;
+
+    }
+
+
+    void get_SPheno_MSSMatQ_spectrum (const Spectrum* &result)
+    {
+      namespace myPipe = Pipes::get_SPheno_MSSMatQ_spectrum;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+      Spectrum spectrum;
+
+      myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      result = &spectrum;
+
+    }
+
+
 
 
     void get_CMSSM_spectrum (const Spectrum* &result)

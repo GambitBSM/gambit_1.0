@@ -12,6 +12,10 @@
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
 ///    \date 2015 Aug
+///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no_)
+///     \date 2016 Apr, May, June
 ///  
 ///  *********************************************
 
@@ -50,24 +54,13 @@ namespace Gambit
     }
     
     // Testing function for the SPheno backend for the CMSSM
-    void SPheno_CMSSM_test(bool &result)
+    void SPheno_MSSM_test(bool &result)
     {
-      namespace myPipe = Pipes::SPheno_CMSSM_test;
-      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+      namespace myPipe = Pipes::SPheno_MSSM_test;
+      const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
 
-      Spectrum spectrum;
+      std::cout << fullspectrum->getSLHAea() << std::endl;
 
-      int kont = myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
-
-      if(!kont)
-      {
-        std::cout << spectrum.getSLHAea() << std::endl;
-        result = true;
-      }
-      else
-      {
-        result = false;
-      }
     }
 
     // Testing function for the SPheno backend for the MSSM63atMGUT

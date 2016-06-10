@@ -14,7 +14,7 @@
 ///  
 ///  \author Tomas Gonzalo
 ///	     (t.e.gonzalo@fys.uio.no)
-///  \date 2016 Mar
+///  \date 2016 Mar - June
 /// 
 ///  *********************************************
 
@@ -31,12 +31,9 @@
      DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
  
-     #define FUNCTION SPheno_CMSSM_test
+     #define FUNCTION SPheno_MSSM_test
      START_FUNCTION(bool)
-     DEPENDENCY(SMINPUTS, SMInputs)
-     ALLOW_MODELS(CMSSM)
-     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
-     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
+     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
   
      #define FUNCTION SPheno_MSSM63atMGUT_test

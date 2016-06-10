@@ -37,9 +37,12 @@ ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
     type:         bool
-    function:     SPheno_CMSSM_test
+    function:     SPheno_MSSM_test
 
 Rules:
+  - capabilty:    unimproved_MSSM_spectrum
+    type:         const Spectrum*
+    function:     get_SPheno_CMSSM_spectrum
   - capability:   SPheno_MSSMspectrum
     type:         void
     function:     run_SPheno

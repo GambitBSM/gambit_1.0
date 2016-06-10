@@ -35,118 +35,104 @@ BE_NAMESPACE
     *ratioWoM = 0;
    
 
-    if(*HighScaleModel == "NMSSM" and !*kont)
-    {
- 	//Model_NMSSM(m32, Grav_fac, F_GMSB, Ecms, Pm, Pp, ISR, Beam, SigSup , SigSdown, SigSle, SigSn, SigC, SigChi0, SigS0, SigSP, SigHp, kont);
-    }
-    //else if((*HighScaleModel2 == "RPexplicit"/* or Add_Rparity*/) and !*kont)
-    //{
-	//Model_bilinear_Rparity(add_Rparity, HighScaleModel, delta_mass, epsI, deltaM, ratioWoM, m32, grav_fac, CalcTBD, Ecms, Pm, Pp, ISR, Beam, SigSup , SigSdown, SigC, SigChi0, SigS0, SigSP, SigHp, M_GUT, kont);
-    //else if(RP_trilinear)
-    //{
-	//HighScaleModel = "RPexplicit";
-	//Model_trilinearL_Rparity(delta_mass, epsI, deltaM, ratioWoM, m32, grav_fac, CalcTBD, Ecms, Pm, Pp, ISR, Beam, SigSup , SigSdown, SigC, SigChi0, SigS0, SigSP, SigHp, kont);
-    //}
-    //}
-    else if(!*kont)
-    {
-	Initialize_MSSM(*GenerationMixing, *id_gl, *id_ph, *id_Z, *id_W, *id_nu, *id_l, *id_d, *id_u, *id_grav);
+    Initialize_MSSM(*GenerationMixing, *id_gl, *id_ph, *id_Z, *id_W, *id_nu, *id_l, *id_d, *id_u, *id_grav);
    
-      // Variables needed to get masses of sparticles
-      Farray_Freal8_1_2 mChiPm;
-      Farray_Freal8_1_2 mChiPm2;
-      Farray_Freal8_1_4 mChi0;
-      Farray_Freal8_1_4 mChi02;
-      Farray_Freal8_1_2 mS0;
-      Farray_Freal8_1_2 mS02;
-      Farray_Freal8_1_2 mP0;
-      Farray_Freal8_1_2 mP02;
-      Farray_Freal8_1_2 mSpm;
-      Farray_Freal8_1_2 mSpm2;
-      Farray_Freal8_1_6 mSdown;
-      Farray_Freal8_1_6 mSdown2;
-      Farray_Freal8_1_6 mSup;
-      Farray_Freal8_1_6 mSup2;
-      Farray_Freal8_1_6 mSlepton;
-      Farray_Freal8_1_6 mSlepton2;
-      Farray_Freal8_1_3 mSneut;
-      Farray_Freal8_1_3 mSneut2;
-      Freal8 mGlu;
+    // Variables needed to get masses of sparticles
+    Farray_Freal8_1_2 mChiPm;
+    Farray_Freal8_1_2 mChiPm2;
+    Farray_Freal8_1_4 mChi0;
+    Farray_Freal8_1_4 mChi02;
+    Farray_Freal8_1_2 mS0;
+    Farray_Freal8_1_2 mS02;
+    Farray_Freal8_1_2 mP0;
+    Farray_Freal8_1_2 mP02;
+    Farray_Freal8_1_2 mSpm;
+    Farray_Freal8_1_2 mSpm2;
+    Farray_Freal8_1_6 mSdown;
+    Farray_Freal8_1_6 mSdown2;
+    Farray_Freal8_1_6 mSup;
+    Farray_Freal8_1_6 mSup2;
+    Farray_Freal8_1_6 mSlepton;
+    Farray_Freal8_1_6 mSlepton2;
+    Farray_Freal8_1_3 mSneut;
+    Farray_Freal8_1_3 mSneut2;
+    Freal8 mGlu;
  
 
-      CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
+    CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
 
 
-      if(!*kont)
+    if(!*kont)
+    {
+      for(int i=1; i<=2; i++)
       {
-        for(int i=1; i<=2; i++)
-        {
-          (*ChiPm)(i).m = mChiPm(i);
-          (*ChiPm)(i).m2 = pow(mChiPm(i),2);
-          (*S0)(i).m = mS0(i);
-          (*S0)(i).m2 = mS02(i);
-          (*P0)(i).m = mP0(i);
-          (*P0)(i).m2 = mP02(i);
-          (*Spm)(i).m = mSpm(i);
-          (*Spm)(i).m2 = mSpm2(i);
-        }
-        for(int i=1; i<=3; i++)
-        {
-          (*Sneut)(i).m = mSneut(i);
-          (*Sneut)(i).m2 = mSneut2(i);
-        }
-        for(int i=1; i<=4; i++)
-        {
-          (*Chi0)(i).m = mChi0(i);
-          (*Chi0)(i).m2 = pow(mChi0(i),2);
-        }
-        for(int i=1; i<=6; i++)
-        {
-          (*Sdown)(i).m = mSdown(i);
-          (*Sdown)(i).m2 = mSdown2(i);
-          (*Sup)(i).m = mSup(i);
-          (*Sup)(i).m2 = mSup2(i);
-          (*Slepton)(i).m = mSlepton(i);
-          (*Slepton)(i).m2 = mSlepton2(i);
-        }
-        Glu->m = mGlu;
-        Glu->m2 = pow(mGlu,2);
+        (*ChiPm)(i).m = mChiPm(i);
+        (*ChiPm)(i).m2 = pow(mChiPm(i),2);
+        (*S0)(i).m = mS0(i);
+        (*S0)(i).m2 = mS02(i);
+        (*P0)(i).m = mP0(i);
+        (*P0)(i).m2 = mP02(i);
+        (*Spm)(i).m = mSpm(i);
+        (*Spm)(i).m2 = mSpm2(i);
+      }
+      for(int i=1; i<=3; i++)
+      {
+        (*Sneut)(i).m = mSneut(i);
+        (*Sneut)(i).m2 = mSneut2(i);
+      }
+      for(int i=1; i<=4; i++)
+      {
+        (*Chi0)(i).m = mChi0(i);
+        (*Chi0)(i).m2 = pow(mChi0(i),2);
+      }
+      for(int i=1; i<=6; i++)
+      {
+        (*Sdown)(i).m = mSdown(i);
+        (*Sdown)(i).m2 = mSdown2(i);
+        (*Sup)(i).m = mSup(i);
+        (*Sup)(i).m2 = mSup2(i);
+        (*Slepton)(i).m = mSlepton(i);
+        (*Slepton)(i).m2 = mSlepton2(i);
+      }
+      Glu->m = mGlu;
+      Glu->m2 = pow(mGlu,2);
 
-        *Q_in = sqrt(GetRenormalizationScale());
+      *Q_in = sqrt(GetRenormalizationScale());
 
-        spectrum = Spectrum_Out(Param);
-        std::cout << spectrum.getSLHAea() << std::endl;
+      spectrum = Spectrum_Out(Param);
 
-        // TODO
-        //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, mP02, mS02, mSpm2, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
-        // reorder state identification if necessary
-        // TODO: Swap Order
+      // TODO
+      //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, mP02, mS02, mSpm2, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
+      // reorder state identification if necessary
+      // TODO: Swap Order
 
-        // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
-        if(*L_BR and !*kont)
-        {
-          if(*HighScaleModel == "SUGRA")
-          {  //CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
-          }
-          else
-          {
-            // TODO: NMSSM, etc
-          }
+      // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
+      if(*L_BR and !*kont)
+      {
+        if(*HighScaleModel == "SUGRA")
+        {  
+          // TODO
+          //CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
         }
-
-        // Calculation of the cross sections in e+ e- annihilation provided L_Cs is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0).  In the case that the file CrossSections.in does not exist, the following default values are used: Ecms = 500 GeV, Pm = Pp = 0, ISR = .TRUE.
-        if(*L_CS and !*kont)
+        else
         {
-          for(int i=1; i<=3; i++)
-            for(int j=1; j<=3; j++)
-            {
-              (*Ylp)(i,j).re = (*Y_l)(i,j).re / (*gauge)(2);
-              (*Ylp)(i,j).im = (*Y_l)(i,j).im / (*gauge)(2);
-            }
-          // TODO: Ecms check
-          // TODO: Cross Sections
+          // TODO: NMSSM, etc
         }
       }
+
+      // Calculation of the cross sections in e+ e- annihilation provided L_Cs is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0).  In the case that the file CrossSections.in does not exist, the following default values are used: Ecms = 500 GeV, Pm = Pp = 0, ISR = .TRUE.
+      if(*L_CS and !*kont)
+      {
+        for(int i=1; i<=3; i++)
+          for(int j=1; j<=3; j++)
+          {
+            (*Ylp)(i,j).re = (*Y_l)(i,j).re / (*gauge)(2);
+            (*Ylp)(i,j).im = (*Y_l)(i,j).im / (*gauge)(2);
+          }
+        // TODO: Ecms check
+        // TODO: Cross Sections
+      }
+      
     }
    
     if(*kont != 0)
