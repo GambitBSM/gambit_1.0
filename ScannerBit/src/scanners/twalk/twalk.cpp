@@ -279,10 +279,13 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
                         {
                             cont = false;
                             Nlength--;
-                            covT = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma, 0.0));
-                            avgT = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma, 0.0));
-                            W = std::vector<double> (ma, 0.0);
-                            avgTot = std::vector<double> (ma, 0.0);
+                            for (int i = 0; i < NThreads; i++)
+                            {
+                                for (int j = 0; j < ma; j++)
+                                {
+                                    covT[i][j] = avgT[i][j] = avgTot[j] = W[j] = 0.0;
+                                }
+                            }
                             ttotal++;
                         }
                     }
