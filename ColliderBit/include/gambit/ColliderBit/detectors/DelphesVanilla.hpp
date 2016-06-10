@@ -13,13 +13,11 @@ namespace Gambit {
     class DelphesVanillaImpl;
 
 
-    /// @note Abstract base class Delphes_ToHEPUtilsBase
+    /// A class for Delphes detector simulations within ColliderBit.
     class DelphesVanilla : public BaseDetector<Pythia8::Event, HEPUtils::Event> {
     protected:
 
-      /// @name Member variable abstraction via a forward-declared type
-      /// @note Abstraction means that external types are hidden cf. the PIMPL idiom
-      DelphesVanillaImpl* _impl;
+      DelphesVanillaImpl* _impl; ///< Member variable abstraction via a forward-declared type.
 
     public:
 

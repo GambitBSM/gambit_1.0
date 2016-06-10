@@ -1,7 +1,17 @@
 #ifndef BTaggingWithTruth_h
 #define BTaggingWithTruth_h
 
-/** \class BTaggingWithTruth
+#include "classes/DelphesModule.h"
+
+#include <map>
+
+class TObjArray;
+class DelphesFormula;
+
+class ExRootFilter;
+class BTaggingWithTruthPartonClassifier;
+
+/** \brief BTaggingWithTruth Delphes Module
  *
  *  Determines origin of jet,
  *  applies b-tagging efficiency (miss identification rate) formulas
@@ -14,16 +24,6 @@
  *  \author P. Demin - UCL, Louvain-la-Neuve
  *
  */
-
-#include "classes/DelphesModule.h"
-
-#include <map>
-
-class TObjArray;
-class DelphesFormula;
-
-class ExRootFilter;
-class BTaggingWithTruthPartonClassifier;
 
 class BTaggingWithTruth: public DelphesModule
 {

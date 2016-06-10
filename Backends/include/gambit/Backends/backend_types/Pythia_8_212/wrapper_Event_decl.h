@@ -20,7 +20,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Event : public WrapperBase
+        class Event : public virtual WrapperBase
         {
                 // Member variables: 
             public:

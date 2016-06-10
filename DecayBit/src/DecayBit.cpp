@@ -261,8 +261,8 @@ namespace Gambit
       if (mh < minmass or mh > maxmass)
       {
         std::stringstream msg;
-        msg << "Requested Higgs virtuality is " << mh
-            << "; allowed range is " << minmass << "--"
+        msg << "Computed Higgs mass is " << mh
+            << "; This is outside of the allowed range for tables from Dittmaier et al, which is " << minmass << "--"
             << maxmass << " GeV.";
         invalid_point().raise(msg.str());
       } 
@@ -847,10 +847,10 @@ namespace Gambit
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// MSSM decays: Hplus
-    void Hplus_decays (DecayTable::Entry& result)
+    /// MSSM decays: H_plus
+    void H_plus_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::Hplus_decays;
+      using namespace Pipes::H_plus_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       result.calculator = BEreq::cb_widthhc_hdec.origin();
@@ -889,9 +889,9 @@ namespace Gambit
     }
 
     /// FeynHiggs MSSM decays: H+
-    void FH_Hplus_decays (DecayTable::Entry& result)
+    void FH_H_plus_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::FH_Hplus_decays;
+      using namespace Pipes::FH_H_plus_decays;
 
       // Get the mass pseudonyms for the gauge eigenstates
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -981,10 +981,10 @@ namespace Gambit
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// MSSM decays: Hminus
-    void Hminus_decays (DecayTable::Entry& result)
+    /// MSSM decays: H_minus
+    void H_minus_decays (DecayTable::Entry& result)
     {
-      result = CP_conjugate(*Pipes::Hminus_decays::Dep::Hplus_decay_rates);
+      result = CP_conjugate(*Pipes::H_minus_decays::Dep::H_plus_decay_rates);
     }
 
     /// MSSM decays: gluino
@@ -1750,10 +1750,10 @@ namespace Gambit
       result = CP_conjugate(*Pipes::snubar_taul_decays::Dep::snu_taul_decay_rates);
     }
 
-    /// MSSM decays: charginoplus_1
-    void charginoplus_1_decays (DecayTable::Entry& result)
+    /// MSSM decays: chargino_plus_1
+    void chargino_plus_1_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::charginoplus_1_decays;
+      using namespace Pipes::chargino_plus_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       result.calculator = BEreq::cb_sd_charwidth.origin();
@@ -1824,16 +1824,16 @@ namespace Gambit
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// MSSM decays: charginominus_1
-    void charginominus_1_decays (DecayTable::Entry& result)
+    /// MSSM decays: chargino_minus_1
+    void chargino_minus_1_decays (DecayTable::Entry& result)
     {
-      result = CP_conjugate(*Pipes::charginominus_1_decays::Dep::charginoplus_1_decay_rates);
+      result = CP_conjugate(*Pipes::chargino_minus_1_decays::Dep::chargino_plus_1_decay_rates);
     }
 
-    /// MSSM decays: charginoplus_2
-    void charginoplus_2_decays (DecayTable::Entry& result)
+    /// MSSM decays: chargino_plus_2
+    void chargino_plus_2_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::charginoplus_2_decays;
+      using namespace Pipes::chargino_plus_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       result.calculator = BEreq::cb_sd_charwidth.origin();
@@ -1920,10 +1920,10 @@ namespace Gambit
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// MSSM decays: charginominus_2
-    void charginominus_2_decays (DecayTable::Entry& result)
+    /// MSSM decays: chargino_minus_2
+    void chargino_minus_2_decays (DecayTable::Entry& result)
     {
-      result = CP_conjugate(*Pipes::charginominus_2_decays::Dep::charginoplus_2_decay_rates);
+      result = CP_conjugate(*Pipes::chargino_minus_2_decays::Dep::chargino_plus_2_decay_rates);
     }
 
     /// MSSM decays: neutralino_1
@@ -2530,15 +2530,15 @@ namespace Gambit
 
         decays("h0_2") = *Dep::h0_2_decay_rates;                 // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                     // Add the A0 decays.
-        decays("H+") = *Dep::Hplus_decay_rates;                  // Add the H+ decays.
-        decays("H-") = *Dep::Hminus_decay_rates;                 // Add the H+ decays.
+        decays("H+") = *Dep::H_plus_decay_rates;                 // Add the H+ decays.
+        decays("H-") = *Dep::H_minus_decay_rates;                // Add the H+ decays.
 
         decays("~g") = *Dep::gluino_decay_rates;                 // Add the gluino decays.
 
-        decays("~chi+_1") = *Dep::charginoplus_1_decay_rates;    // Add the ~chi+_1 decays.
-        decays("~chi-_1") = *Dep::charginominus_1_decay_rates;   // Add the ~chi+_1 decays.
-        decays("~chi+_2") = *Dep::charginoplus_2_decay_rates;    // Add the ~chi+_2 decays.
-        decays("~chi-_2") = *Dep::charginominus_2_decay_rates;   // Add the ~chi+_2 decays.
+        decays("~chi+_1") = *Dep::chargino_plus_1_decay_rates;   // Add the ~chi+_1 decays.
+        decays("~chi-_1") = *Dep::chargino_minus_1_decay_rates;  // Add the ~chi+_1 decays.
+        decays("~chi+_2") = *Dep::chargino_plus_2_decay_rates;   // Add the ~chi+_2 decays.
+        decays("~chi-_2") = *Dep::chargino_minus_2_decay_rates;  // Add the ~chi+_2 decays.
         decays("~chi0_1") = *Dep::neutralino_1_decay_rates;      // Add the ~chi0_1 decays.
         decays("~chi0_2") = *Dep::neutralino_2_decay_rates;      // Add the ~chi0_2 decays.
         decays("~chi0_3") = *Dep::neutralino_3_decay_rates;      // Add the ~chi0_3 decays.

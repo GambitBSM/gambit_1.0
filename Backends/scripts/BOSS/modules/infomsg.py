@@ -5,6 +5,8 @@
 ##################################
 
 
+import modules.gb as gb
+
 # ====== Module-level globals ========
 
 # Set of currently active message types, used by the function clearInfoMessages.
@@ -43,7 +45,7 @@ class InfoMessage(object):
 
 class ClassNotLoadable(InfoMessage):
 
-    msg = "The class '%s' is not loadable."
+    msg = gb.textmods['yellow'] +  "The class '%s' is not loadable." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -65,9 +67,21 @@ class ClassAlreadyDone(InfoMessage):
         InfoMessage.__init__(self)
 
 
+class FunctionAlreadyDone(InfoMessage):
+
+    msg = "Function '%s' is already done."
+    tags_done = set()
+
+    def __init__(self, tag, reason=''):
+        self.tag = tag
+        self.msg = self.__class__.msg % (tag)
+        if bool(reason): self.msg += " (%s)" % reason
+        InfoMessage.__init__(self)
+
+
 class ParentClassIgnored(InfoMessage):
 
-    msg = "In class '%s', the parent class '%s' is ignored."
+    msg = gb.textmods['yellow'] +  "In class '%s', the parent class '%s' is ignored." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, parent_class, reason=''):
@@ -79,7 +93,7 @@ class ParentClassIgnored(InfoMessage):
 
 class IgnoredFunction(InfoMessage):
 
-    msg = "The function '%s' is ignored."
+    msg = gb.textmods['yellow'] +  "The function '%s' is ignored." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -91,7 +105,7 @@ class IgnoredFunction(InfoMessage):
 
 class IgnoredMemberFunction(InfoMessage):
 
-    msg = "The member function '%s' is ignored."
+    msg = gb.textmods['yellow'] +  "The member function '%s' is ignored." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -103,7 +117,7 @@ class IgnoredMemberFunction(InfoMessage):
 
 class IgnoredMemberVariable(InfoMessage):
 
-    msg = "The member variable '%s' is ignored."
+    msg = gb.textmods['yellow'] +  "The member variable '%s' is ignored." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -115,7 +129,7 @@ class IgnoredMemberVariable(InfoMessage):
 
 class NoIncludeStatementGenerated(InfoMessage):
 
-    msg = "No header file include statement generated for the type '%s'."
+    msg = gb.textmods['yellow'] +  "No header file include statement generated for the type '%s'." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -127,7 +141,7 @@ class NoIncludeStatementGenerated(InfoMessage):
 
 class TypeNotAccepted(InfoMessage):
 
-    msg = "The type '%s' is not accepted."
+    msg = gb.textmods['yellow'] +  "The type '%s' is not accepted." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -139,7 +153,7 @@ class TypeNotAccepted(InfoMessage):
 
 class NoFactoryFunctions(InfoMessage):
 
-    msg = "No factory functions generated for class '%s'."
+    msg = gb.textmods['yellow'] +  "No factory functions generated for class '%s'." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -151,7 +165,7 @@ class NoFactoryFunctions(InfoMessage):
 
 class NoPointerCopyAndAssignmentFunctions(InfoMessage):
 
-    msg = "No pointer-based copy constructor or assignment functions generated for class '%s'."
+    msg = gb.textmods['yellow'] +  "No pointer-based copy constructor or assignment functions generated for class '%s'." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
@@ -163,7 +177,7 @@ class NoPointerCopyAndAssignmentFunctions(InfoMessage):
 
 class NoLoadedTypesEntry(InfoMessage):
 
-    msg = "No entry in loaded_types.hpp generated for class '%s'."
+    msg = gb.textmods['yellow'] +  "No entry in loaded_types.hpp generated for class '%s'." + gb.textmods['end']
     tags_done = set()
 
     def __init__(self, tag, reason=''):
