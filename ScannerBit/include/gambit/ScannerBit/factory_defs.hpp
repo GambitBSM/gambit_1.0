@@ -250,8 +250,9 @@ namespace Gambit
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
                 unsigned long long int id = Gambit::Printers::get_point_id();
-                (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
                 (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
+                (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)
+                (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
                 (*this)->getPrinter().print(int(id), "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);
                 
@@ -264,9 +265,10 @@ namespace Gambit
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
                 unsigned long long int id = Gambit::Printers::get_point_id();
+                (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
+                (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)
                 if (vec.size() > 0)
                     (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
-                (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
                 (*this)->getPrinter().print(int(id), "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);
                 
