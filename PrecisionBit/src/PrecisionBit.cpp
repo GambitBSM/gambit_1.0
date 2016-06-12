@@ -86,7 +86,7 @@ namespace Gambit
         std::ostringstream err;
         err << "W mass too extreme. More than 7 sigma off observed value. " << endl
             << "Deviation from observed value: " << std::abs(mw_central_observed - MWMSSM) << "." << endl
-            << "1 sigma uncertainty on observed value: " << 7.0*sqrt(obserrsq + theoryerrsq) << "." << endl
+            << "1 sigma uncertainty on observed value: " << sqrt(obserrsq + theoryerrsq) << "." << endl
             << "Invalidating immediately to prevent downstream instability.";
         invalid_point().raise(err.str());
         //PrecisionBit_error().raise(LOCAL_INFO, err.str());
