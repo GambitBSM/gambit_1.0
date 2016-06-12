@@ -1,0 +1,13 @@
+# CBGB examples dir
+examples
+
+# CBGB output files
+backend_types_header_code.hpp
+frontend_header_code.hpp
+
+# *.pyc files
+modules/*.pyc
+configs/*.pyc
+
+# CBGB todo file
+todo.txt

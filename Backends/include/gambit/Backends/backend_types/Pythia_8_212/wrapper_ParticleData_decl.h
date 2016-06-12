@@ -22,7 +22,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ParticleData : public WrapperBase
+        class ParticleData : public virtual WrapperBase
         {
                 // Member variables: 
             public:

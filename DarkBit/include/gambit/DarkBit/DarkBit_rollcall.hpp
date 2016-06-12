@@ -528,7 +528,6 @@ START_MODULE
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DM_nucleon_couplings)
       DEPENDENCY(SingletDM_spectrum, const Spectrum*)
-      //DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
 
@@ -545,7 +544,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_sigmas_sigmal
       START_FUNCTION(double)
-      ALLOW_MODELS(nuclear_params_sigmas_sigmal)
+      ALLOW_MODEL(nuclear_params_sigmas_sigmal)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -599,15 +598,15 @@ START_MODULE
   // Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections) (s^-1).
   #define CAPABILITY capture_rate_Sun
   START_CAPABILITY
-    #define FUNCTION capture_rate_Sun_constant_xsec
+    #define FUNCTION capture_rate_Sun_const_xsec
       START_FUNCTION(double)
-      BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
+      BACKEND_REQ(cap_Sun_v0q0_isoscalar, (DarkSUSY), double, (const double&, const double&, const double&))
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)
         #define CONDITIONAL_DEPENDENCY DarkSUSY_PointInit_LocalHalo
         START_CONDITIONAL_DEPENDENCY(bool)
-        ACTIVATE_FOR_BACKEND(capture_rate_Sun, DarkSUSY)
+        ACTIVATE_FOR_BACKEND(cap_Sun_v0q0_isoscalar, DarkSUSY)
         #undef CONDITIONAL_DEPENDENCY
     #undef FUNCTION
   #undef CAPABILITY

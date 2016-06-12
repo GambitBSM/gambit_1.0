@@ -81,6 +81,12 @@ Scanner:
       nlive: 4000
       tol: 0.5
 
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 5000
+      verbosity: 1
+
 ObsLikes:
 
     - capability: lnL_oh2
@@ -255,7 +261,7 @@ Rules:
 
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
-    function: GM2C_SUSY_c
+    function: GM2C_SUSY
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
@@ -347,8 +353,8 @@ Rules:
     function: FH_A0_decays
   - capability: Higgs_decay_rates
     function: FH_MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: FH_Hplus_decays
+  - capability: H_plus_decay_rates
+    function: FH_H_plus_decays
   - capability: h0_2_decay_rates
     function: FH_h0_2_decays
   - capability: t_decay_rates
@@ -459,7 +465,8 @@ Rules:
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
                              "SUSY:all = on",
-                             "TauDecays:mode = 0"]
+                             "TauDecays:mode = 0",
+                             "TimeShower:pTmin = 20"]
 
   - capability: LHC_Combined_LogLike
     backends:

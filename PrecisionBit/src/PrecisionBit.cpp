@@ -30,9 +30,16 @@
 
 /// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
 /// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+/// @{
 const double mw_central_observed = 80.385;
 const double mw_err_observed = 0.015;
-const double mw_relerr_theory = 0.05; //FIXME need to add more serious theory uncertainty --> check FH papers
+/// @}
+
+/// EWPO theoretical uncertainties on FeynHiggs calculations; based on hep-ph/0412214 Eq 3.1. 
+/// @{
+const double abserr_mw = 1e-2; //10 MeV
+const double abserr_sinW2eff = 12e-5; 
+/// @}
 
 namespace Gambit
 {
@@ -73,7 +80,7 @@ namespace Gambit
       // Just scrub this point now if it's more than 7 sigma off in mW,
       // as extreme values of mW can cause instability in other routines.
       const double obserrsq = mw_err_observed*mw_err_observed;
-      double theoryerrsq = MWMSSM*MWMSSM*mw_relerr_theory*mw_relerr_theory;
+      const double theoryerrsq = abserr_mw*abserr_mw;
       if (std::abs(mw_central_observed - MWMSSM) > 7.0*sqrt(obserrsq + theoryerrsq))
       {
         std::ostringstream err;
@@ -137,25 +144,28 @@ namespace Gambit
     void FH_precision_gm2(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_gm2::Dep::FH_Precision->gmu2;
-      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = std::max(std::abs(result.central)*0.3, 6e-10); //Based on hep-ph/0609168v1 eqs 84 & 85
       result.lower = result.upper;
     }
     void FH_precision_deltarho(triplet<double> &result)
     {
+      double mw = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;
+      double sintw2eff = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;      
       result.central = Pipes::FH_precision_deltarho::Dep::FH_Precision->deltaRho;
-      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      //Follows approximately from tree level relations, where delta{M_W, sintthetaW^2} go as deltarho
+      result.upper = std::max(abserr_mw/mw, abserr_sinW2eff/sintw2eff); 
       result.lower = result.upper;
     }
     void FH_precision_mw(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;
-      result.upper = mw_relerr_theory * result.central;
+      result.upper = abserr_mw;
       result.lower = result.upper;
     }
     void FH_precision_sinW2   (triplet<double> &result)
     {
       result.central = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;
-      result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = abserr_sinW2eff;
       result.lower = result.upper;
     }
     /// @}
@@ -672,7 +682,9 @@ namespace Gambit
     void GM2C_SUSY(triplet<double> &result)
     {
       using namespace Pipes::GM2C_SUSY;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      const Spectrum* spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      
       gm2calc::MSSMNoFV_onshell model;
 
       /// fill pole masses.
@@ -729,6 +741,38 @@ namespace Gambit
         }
       }
       
+      const SMInputs& smin = spec->get_SMInputs();
+
+      model.get_physical().MVZ =smin.mZ;
+      model.get_physical().MFb =smin.mBmB;
+      model.get_physical().MFt =smin.mT; 
+      model.get_physical().MFtau =smin.mTau; 
+      model.get_physical().MVWm =mssm->get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
+      model.get_physical().MFm =smin.mMu; 
+      //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
+      // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
+      model.set_g3(std::sqrt(4*M_PI*smin.alphaS));
+      // these are not currently used but may be in future updates so set them anyway 
+      model.get_physical().MFe =smin.mE; 
+      model.get_physical().MFd =smin.mD; //MSbar
+      model.get_physical().MFs =smin.mS; //MSbar
+      model.get_physical().MFu =smin.mU; //MSbar
+      model.get_physical().MFc =smin.mCmC; // MSbar
+
+      /// Use hardcoded values as reccommended by GM2Calc authours
+      /// unless the user really wants to change these
+      double alpha_MZ = runOptions->getValueOrDef
+	<double>(0.00729735, "GM2Calc_extra_alpha_e_MZ");
+      double alpha_thompson = runOptions->getValueOrDef
+	<double>(0.00775531, "GM2Calc_extra_alpha_e_thompson_limit");
+      
+      if (alpha_MZ > std::numeric_limits<double>::epsilon())
+	model.set_alpha_MZ(alpha_MZ);
+
+      if (alpha_thompson > std::numeric_limits<double>::epsilon())
+	model.set_alpha_thompson(alpha_thompson);
+      
+      
       model.set_scale(mssm->GetScale());                   // 2L
      
       /// convert DR-bar parameters to on-shell
@@ -765,97 +809,6 @@ namespace Gambit
     }
 
 
-    /// Calculate a_mu_SUSY using the gm2calc_c backend (C version of gm2calc).
-    void GM2C_SUSY_c(triplet<double> &result)
-    {
-      using namespace Pipes::GM2C_SUSY_c;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
-
-      /// Note for the C backend to gm2calc: An extra ".pointer()" is needed for functions that take the pointer "model" as input.
-      /// Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
-
-      gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
-
-      BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, mssm->get(Par::Pole_Mass, "~nu", 2));
-      str msm1, msm2;
-      // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
-      // If we get a successful convergence to the pole mass scheme in the end it's OK  
-      const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
-      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, msm1));   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, msm2));   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi0", 1));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, "~chi0", 2));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, mssm->get(Par::Pole_Mass, "~chi0", 3)); /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, mssm->get(Par::Pole_Mass, "~chi0", 3));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi+", 1));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, "~chi+", 2));  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, mssm->get(Par::Pole_Mass, "A0"));      /* 2L */
-      
-      BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, mssm->get(Par::dimensionless,"tanbeta"));                        /* 1L */
-      BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, mssm->get(Par::mass1, "Mu"));                       /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, mssm->get(Par::mass1, "M1"));                    /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, mssm->get(Par::mass1, "M2"));                   /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, mssm->get(Par::mass1, "M3"));                   /* 2L */
-
-      for(int i = 1; i<=3; i++) {
-        for(int j = 1; j<=3; j++) {
-          BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "ml2", i,j));     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, i-1, j-1,mssm->get(Par::mass2, "me2", i,j) );     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mq2", i,j));     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "md2", i,j));     /* 2L */
-          BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mu2", i,j));     /* 2L */
-          double Au = 0.0, Ad = 0.0, Ae = 0.0;
-          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
-            Au = mssm->get(Par::mass1, "TYu", i, j)
-            / mssm->get(Par::dimensionless, "Yu", i, j);
-          }
-          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
-            Ae = mssm->get(Par::mass1, "TYe", i, j)
-            / mssm->get(Par::dimensionless, "Ye", i, j);
-          }
-          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
-            Ad = mssm->get(Par::mass1, "TYd", i, j)
-            / mssm->get(Par::dimensionless, "Yd", i, j);
-          }
-          BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, i-1, j-1, Au);
-          BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, i-1, j-1, Ad);
-          BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, i-1, j-1, Ae);
-        }
-      }
-
-      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm->GetScale());    
-      
-      /// convert DR-bar parameters to on-shell
-      gm2calc_c::gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
-
-      /// check for error
-      if (error != gm2calc_c::gm2calc_NoError) 
-      {
-        std::ostringstream err;
-        err << "gm2calc routine convert_to_onshell raised error: "
-            << BEreq::gm2calc_error_str.pointer()(error) << ".";
-        invalid_point().raise(err.str());
-      }	
-
-      const double amu =
-        + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
-        + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
-
-      BEreq::gm2calc_mssmnofv_free.pointer()(model);
-
-      double uncertainty = BEreq::gm2calc_mssmnofv_calculate_uncertainty_amu_2loop.pointer()(model);
-      
-      // Convert from a_mu to g-2
-      result.central = 2.0*amu;
-      result.upper = 2.0*uncertainty;
-      result.lower = 2.0*uncertainty;
-      
-      return;
-    }
-
-
     /// Calculation of g-2 with SuperIso
     void SI_muon_gm2(triplet<double> &result)
     {
@@ -876,7 +829,7 @@ namespace Gambit
       else
       {
         result.central = BEreq::muon_gm2(&param);
-        result.upper = result.central*0.2; //FIXME need to add theory uncertainty --> ask Nazila
+        result.upper = std::max(std::abs(result.central)*0.3, 6e-10); //Based on hep-ph/0609168v1 eqs 84 & 85
         result.lower = result.upper;
       }
 

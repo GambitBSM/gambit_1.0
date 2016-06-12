@@ -388,7 +388,7 @@ def ignoreFunction(func_el, limit_pointerness=False, remove_n_args=0, print_warn
                 infomsg.IgnoredFunction(is_operator*'operator'+func_name['long_templ_args'], reason).printMessage()
             arg_types_accepted = False
             break
-        if (not utils.isAcceptedType(arg_el)) and (not is_parent_of_accepted):
+        if (not utils.isAcceptedType(arg_el)):  # and (not is_parent_of_accepted):
             if print_warning:
                 reason = "Non-accepted argument type '%s'." % arg_type_name
                 infomsg.IgnoredFunction(is_operator*'operator'+func_name['long_templ_args'], reason).printMessage()

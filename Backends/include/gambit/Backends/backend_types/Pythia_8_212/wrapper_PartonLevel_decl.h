@@ -24,7 +24,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class PartonLevel : public WrapperBase
+        class PartonLevel : public virtual WrapperBase
         {
                 // Member variables: 
             public:
