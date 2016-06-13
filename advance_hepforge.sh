@@ -12,3 +12,5 @@ wget http://www.hepforge.org/archive/gm2calc/gm2calc-1.1.0.tar.gz
 mv gm2calc-1.1.0.tar.gz ../Backends/downloaded/
 wget http://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz
 mv susyhit.tar.gz ../Backends/downloaded
+wget http://www.hepforge.org/archive/spheno/SPheno-3.3.8.tar.gz
+mv SPheno-3.3.8.tar.gz ../Backends/downloaded

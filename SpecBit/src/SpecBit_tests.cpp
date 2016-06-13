@@ -52,14 +52,36 @@ namespace Gambit
        out << "Exception thrown was: "<<e.what()<<std::endl;
        return;
     }
-    
-    // Testing function for the SPheno backend for the CMSSM
+
+    // Testing function for SPheno
     void SPheno_MSSM_test(bool &result)
     {
       namespace myPipe = Pipes::SPheno_MSSM_test;
       const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
 
       std::cout << fullspectrum->getSLHAea() << std::endl;
+    }
+    
+    // Testing function for the SPheno backend for the CMSSM
+    void SPheno_CMSSM_test(bool &result)
+    {
+     
+      namespace myPipe = Pipes::SPheno_CMSSM_test;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+      Spectrum spectrum;
+  
+      int kont = myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      if(!kont)
+      {
+        std::cout << spectrum.getSLHAea() << std::endl;
+        result = true;
+      }
+      else
+      {
+        result = false;
+      }
 
     }
 
@@ -87,6 +109,7 @@ namespace Gambit
     // Testing function for the SPheno backend for the MSSM63atQ
     void SPheno_MSSM63atQ_test(bool &result)
     {
+     
       namespace myPipe = Pipes::SPheno_MSSM63atQ_test;
       const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
 
