@@ -23,6 +23,7 @@ LOAD_LIBRARY
 
 // Allow for CMSSM, MSSM63atMGUT and MSSM63atQ
 BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT,MSSM63atQ)
+//BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT)
 
 // Functions
 BE_FUNCTION(Set_All_Parameters_0, void, (), "__model_data_MOD_set_all_parameters_0", "SPheno_MSSMspectrum")
@@ -110,11 +111,11 @@ BE_FUNCTION(CalculateSpectrum, void,
 	 Freal8& //  m_GUT
 	), "__spheno_MOD_calculatespectrum", "SPheno_MSSMspectrum")
 BE_FUNCTION(GetRenormalizationScale, Freal8, (), "__loopfunctions_MOD_getrenormalizationscale", "SPheno_MSSMspectrum")
-BE_FUNCTION(SetRGEScale, void, (Freal8), "__sugraruns_MOD_setrgescale", "SPheno_MSSMspectrum")
+BE_FUNCTION(SetRGEScale, void, (Freal8&), "__sugraruns_MOD_setrgescale", "SPheno_MSSMspectrum")
 BE_FUNCTION(SetHighScaleModel, Flogical, (Fstring<20>), "__sugraruns_MOD_sethighscalemodel", "SPheno_MSSMspectrum")
 BE_FUNCTION(SetWriteMinBr, void, (Freal8&), "__inputoutput_MOD_setwriteminbr", "SPheno_MSSMspectrum")
 BE_FUNCTION(SetWriteMinSig, void, (Freal8&), "__inputoutput_MOD_setwriteminsig", "SPheno_MSSMspectrum")
-BE_FUNCTION(SetGUTScale, void, (Freal8), "__sugraruns_MOD_setgutscale", "SPheno_MSSMspectrum")
+BE_FUNCTION(SetGUTScale, void, (Freal8&), "__sugraruns_MOD_setgutscale", "SPheno_MSSMspectrum")
 BE_FUNCTION(SetStrictUnification, Flogical, (Flogical&), "__sugraruns_MOD_setstrictunification", "SPheno_MSSMspectrum")
 BE_FUNCTION(SetYukawaScheme, Finteger, (Finteger&), "__sugraruns_MOD_setyukawascheme", "SPheno_MSSMspectrum")
 BE_FUNCTION(Set_Use_bsstep_instead_of_rkqs, Flogical, (Flogical&), "__mathematics_MOD_set_use_bsstep_instead_of_rkqs", "SPheno_MSSMspectrum")
@@ -192,6 +193,8 @@ BE_FUNCTION(CalculateBR_MSSM, void,
         ), "__branchingratios_MOD_calculatebr_mssm", "SPheno_MSSMspectrum")
 
 //test
+BE_FUNCTION(CouplingsToG, void, (Farray_Freal8_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Freal8_1_57&), "__rges_MOD_couplingstog", "SPheno_MSSMspectrum");
+BE_FUNCTION(FirstGuess, void, (Fcomplex16&, Freal8&, Farray_Fcomplex16_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Fcomplex16&, Fcomplex16&, Farray_Freal8_1_2&, Freal8&, Freal8&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Freal8_1_2&, Farray_Freal8_1_2&, Farray_Freal8_1_2&, Finteger&), "__sugraruns_MOD_firstguess", "SPheno_MSSMspectrum")
 BE_FUNCTION(TreeMassesMSSM, void, (Freal8&, Freal8&, Farray_Freal8_1_2&, Fcomplex16&, Fcomplex16&, Fcomplex16&, Fcomplex16&, Fcomplex16&, Freal8&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Freal8&, Fcomplex16&, Farray_Freal8_1_2&, Farray_Freal8_1_2&, Farray_Fcomplex16_1_2_1_2&, Farray_Fcomplex16_1_2_1_2&, Farray_Freal8_1_4&, Farray_Freal8_1_4&, Farray_Fcomplex16_1_4_1_4&, Farray_Freal8_1_3&, Farray_Freal8_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Freal8_1_6&, Farray_Freal8_1_6&, Farray_Fcomplex16_1_6_1_6&, Farray_Freal8_1_6&, Farray_Freal8_1_6&, Farray_Fcomplex16_1_6_1_6&, Farray_Freal8_1_6&, Farray_Freal8_1_6&, Farray_Fcomplex16_1_6_1_6&, Farray_Freal8_1_2&, Farray_Freal8_1_2&, Farray_Freal8_1_2_1_2&, Farray_Freal8_1_2&, Farray_Freal8_1_2&, Farray_Freal8_1_2_1_2&, Farray_Freal8_1_2&, Farray_Freal8_1_2&, Farray_Fcomplex16_1_2_1_2&, Flogical&, Finteger&, Flogical&), "__susymasses_MOD_treemassesmssm", "SPheno_MSSMspectrum")
 BE_FUNCTION(BoundaryEWNew, void, (Finteger&, Freal8&, Freal8, Farray_Fcomplex16_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Farray_Fcomplex16_1_3_1_3&, Fcomplex16&, Freal8&, Freal8&, Flogical&, Flogical&, Freal8&, Freal8&, Farray<Freal8,1,57>&, Finteger&), "__sugraruns_MOD_boundaryewnew", "SPheno_MSSMspectrum")
 
@@ -381,6 +384,11 @@ BE_VARIABLE(M2_L, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_l", "SPheno_MS
 BE_VARIABLE(M2_D, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_d", "SPheno_MSSMspectrum")
 BE_VARIABLE(M2_Q, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_q", "SPheno_MSSMspectrum")
 BE_VARIABLE(M2_U, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_u", "SPheno_MSSMspectrum")
+BE_VARIABLE(M2_E_0, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_e_0", "SPheno_MSSMspectrum")
+BE_VARIABLE(M2_L_0, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_l_0", "SPheno_MSSMspectrum")
+BE_VARIABLE(M2_D_0, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_d_0", "SPheno_MSSMspectrum")
+BE_VARIABLE(M2_Q_0, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_q_0", "SPheno_MSSMspectrum")
+BE_VARIABLE(M2_U_0, Farray_Fcomplex16_1_3_1_3, "__model_data_MOD_m2_u_0", "SPheno_MSSMspectrum")
 BE_VARIABLE(vev_Q, Freal8, "__loopmasses_MOD_vev_q", "SPheno_MSSMspectrum")
 BE_VARIABLE(mA2_Q, Freal8, "__loopmasses_MOD_ma2_q", "SPheno_MSSMspectrum")
 // InitializeMSSM variables

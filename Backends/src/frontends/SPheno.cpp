@@ -57,12 +57,8 @@ BE_NAMESPACE
     Farray_Freal8_1_3 mSneut;
     Farray_Freal8_1_3 mSneut2;
     Freal8 mGlu;
- 
-    std::cout << "Calculating spectrum" << std::endl;
 
     CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
-
-    std::cout << "Spectrum calculated" << std::endl;
 
     if(!*kont)
     {
@@ -195,7 +191,7 @@ BE_NAMESPACE
 
       if(*GenerationMixing)
       {
-        // Missing
+        // TODO: GenerationMixing
       }
       else
       {
@@ -225,34 +221,57 @@ BE_NAMESPACE
 
     }
 
-    if(*HighScaleModel == "SUGRA")
+    if(*HighScaleModel == "SUGRA") // SUGRA
     {
       SLHAea_add_block(slha, "EXTPAR");
       if(input_Param.find("Qin") != input_Param.end())
         slha["EXTPAR"][""] << 0 << *input_Param.at("Qin") << "# scale Q where the parameters below are defined";
-      slha["EXTPAR"][""] << 1 << *input_Param.at("M1") << "# M_1";
-      slha["EXTPAR"][""] << 2 << *input_Param.at("M2") << "# M_2";
-      slha["EXTPAR"][""] << 3 << *input_Param.at("M3") << "# M_3";
-      slha["EXTPAR"][""] << 11 << *input_Param.at("Au_33") << "# A_t";
-      slha["EXTPAR"][""] << 12 << *input_Param.at("Ad_33") << "# A_b";
-      slha["EXTPAR"][""] << 13 << *input_Param.at("Ae_33") << "# A_l";
-      slha["EXTPAR"][""] << 21 << *input_Param.at("mHd2") << "# m_Hd^2";
-      slha["EXTPAR"][""] << 22 << *input_Param.at("mHd2") << "# m_Hu^2";
-      slha["EXTPAR"][""] << 31 << sqrt(*input_Param.at("ml2_11")) << "# M_(L,11)";
-      slha["EXTPAR"][""] << 32 << sqrt(*input_Param.at("ml2_22")) << "# M_(L,22)";
-      slha["EXTPAR"][""] << 33 << sqrt(*input_Param.at("ml2_33")) << "# M_(L,33)";
-      slha["EXTPAR"][""] << 34 << sqrt(*input_Param.at("me2_11")) << "# M_(E,11)";
-      slha["EXTPAR"][""] << 35 << sqrt(*input_Param.at("me2_22")) << "# M_(E,22)";
-      slha["EXTPAR"][""] << 36 << sqrt(*input_Param.at("me2_33")) << "# M_(E,33)";
-      slha["EXTPAR"][""] << 41 << sqrt(*input_Param.at("mq2_11")) << "# M_(Q,11)";
-      slha["EXTPAR"][""] << 42 << sqrt(*input_Param.at("mq2_22")) << "# M_(Q,22)";
-      slha["EXTPAR"][""] << 43 << sqrt(*input_Param.at("mq2_33")) << "# M_(Q,33)";
-      slha["EXTPAR"][""] << 44 << sqrt(*input_Param.at("mu2_11")) << "# M_(U,11)";
-      slha["EXTPAR"][""] << 45 << sqrt(*input_Param.at("mu2_22")) << "# M_(U,22)";
-      slha["EXTPAR"][""] << 46 << sqrt(*input_Param.at("mu2_33")) << "# M_(U,33)";
-      slha["EXTPAR"][""] << 47 << sqrt(*input_Param.at("md2_11")) << "# M_(D,11)";
-      slha["EXTPAR"][""] << 48 << sqrt(*input_Param.at("md2_22")) << "# M_(D,22)";
-      slha["EXTPAR"][""] << 49 << sqrt(*input_Param.at("md2_33")) << "# M_(D,33)";
+      if(input_Param.find("M1") != input_Param.end())
+        slha["EXTPAR"][""] << 1 << *input_Param.at("M1") << "# M_1";
+      if(input_Param.find("M2") != input_Param.end())
+        slha["EXTPAR"][""] << 2 << *input_Param.at("M2") << "# M_2";
+      if(input_Param.find("M3") != input_Param.end())
+        slha["EXTPAR"][""] << 3 << *input_Param.at("M3") << "# M_3";
+      if(input_Param.find("Au_33") != input_Param.end())
+        slha["EXTPAR"][""] << 11 << *input_Param.at("Au_33") << "# A_t";
+      if(input_Param.find("Ad_33") != input_Param.end())
+        slha["EXTPAR"][""] << 12 << *input_Param.at("Ad_33") << "# A_b";
+      if(input_Param.find("Ae_33") != input_Param.end())
+        slha["EXTPAR"][""] << 13 << *input_Param.at("Ae_33") << "# A_l";
+      if(input_Param.find("mHd2") != input_Param.end())
+        slha["EXTPAR"][""] << 21 << *input_Param.at("mHd2") << "# m_Hd^2";
+      if(input_Param.find("mHu2") != input_Param.end())
+        slha["EXTPAR"][""] << 22 << *input_Param.at("mHd2") << "# m_Hu^2";
+      if(input_Param.find("ml2_11") != input_Param.end())
+        slha["EXTPAR"][""] << 31 << sqrt(*input_Param.at("ml2_11")) << "# M_(L,11)";
+      if(input_Param.find("ml2_22") != input_Param.end())
+        slha["EXTPAR"][""] << 32 << sqrt(*input_Param.at("ml2_22")) << "# M_(L,22)";
+      if(input_Param.find("ml2_33") != input_Param.end())
+        slha["EXTPAR"][""] << 33 << sqrt(*input_Param.at("ml2_33")) << "# M_(L,33)";
+      if(input_Param.find("me2_11") != input_Param.end())
+        slha["EXTPAR"][""] << 34 << sqrt(*input_Param.at("me2_11")) << "# M_(E,11)";
+      if(input_Param.find("me2_22") != input_Param.end())
+        slha["EXTPAR"][""] << 35 << sqrt(*input_Param.at("me2_22")) << "# M_(E,22)";
+      if(input_Param.find("me2_33") != input_Param.end())
+        slha["EXTPAR"][""] << 36 << sqrt(*input_Param.at("me2_33")) << "# M_(E,33)";
+      if(input_Param.find("mq2_11") != input_Param.end())
+        slha["EXTPAR"][""] << 41 << sqrt(*input_Param.at("mq2_11")) << "# M_(Q,11)";
+      if(input_Param.find("mq2_22") != input_Param.end())
+        slha["EXTPAR"][""] << 42 << sqrt(*input_Param.at("mq2_22")) << "# M_(Q,22)";
+      if(input_Param.find("mq2_33") != input_Param.end())
+        slha["EXTPAR"][""] << 43 << sqrt(*input_Param.at("mq2_33")) << "# M_(Q,33)";
+      if(input_Param.find("mu2_11") != input_Param.end())
+        slha["EXTPAR"][""] << 44 << sqrt(*input_Param.at("mu2_11")) << "# M_(U,11)";
+      if(input_Param.find("mu2_22") != input_Param.end())
+        slha["EXTPAR"][""] << 45 << sqrt(*input_Param.at("mu2_22")) << "# M_(U,22)";
+      if(input_Param.find("mu2_33") != input_Param.end())
+        slha["EXTPAR"][""] << 46 << sqrt(*input_Param.at("mu2_33")) << "# M_(U,33)";
+      if(input_Param.find("md2_11") != input_Param.end())
+        slha["EXTPAR"][""] << 47 << sqrt(*input_Param.at("md2_11")) << "# M_(D,11)";
+      if(input_Param.find("md2_22") != input_Param.end())
+        slha["EXTPAR"][""] << 48 << sqrt(*input_Param.at("md2_22")) << "# M_(D,22)";
+      if(input_Param.find("md2_33") != input_Param.end())
+        slha["EXTPAR"][""] << 49 << sqrt(*input_Param.at("md2_33")) << "# M_(D,33)";
     }
 
     // parameters + masses for SPheno.spc
@@ -281,7 +300,7 @@ BE_NAMESPACE
 
     if(*GenerationMixing)
     {
-      // missing
+      // TODO: GenerationMixing
     }
     else
     {
@@ -331,7 +350,7 @@ BE_NAMESPACE
 
     if(*GenerationMixing)
     {
-      //missing
+      // TODO: GenerationMixing
     }
     else
     {
@@ -436,7 +455,7 @@ BE_NAMESPACE
     // squarks
     if(*GenerationMixing)
     {
-      // missing
+      // TODO: GenerationMixing
     }
     else
     {
@@ -490,7 +509,7 @@ BE_NAMESPACE
     // sleptons
     if(*GenerationMixing)
     {
-      // missing
+      // TODO: GenerationMixing
     }
     else
     {
@@ -570,7 +589,7 @@ BE_NAMESPACE
 
     if(*GenerationMixing)
     {
-      // missing
+      // TODO: GenerationMixing
     }
     else
     {
@@ -648,7 +667,7 @@ BE_NAMESPACE
         }
       }
 
-    // Missing Low Energy Observables
+    // TODO: Low Energy Observables
 
     // Create Spectrum object from the slhaea object
     Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha);    
@@ -691,32 +710,41 @@ BE_NAMESPACE
     if(*HighScaleModel == "mSUGRA")
     {
       // M0
-      for(int i=1; i<=3; i++)
-        (*M2D_0_sckm)(i,i) = pow(*Param.at("M0"),2);
-      *M2E_0_pmns = *M2D_0_sckm;
-      *M2L_0_pmns = *M2D_0_sckm;
-      *M2_R_0 = *M2D_0_sckm;
-      *M2Q_0_sckm = *M2D_0_sckm;
-      *M2U_0_sckm = *M2D_0_sckm;
-      for(int i=1; i<=2; i++)
-        (*M2_H_0)(i) = pow(*Param.at("M0"),2);
-      *M2_T_0 = *M2_H_0;
+      if(Param.find("M0") != Param.end())
+      {
+        for(int i=1; i<=3; i++)
+          (*M2D_0_sckm)(i,i) = pow(*Param.at("M0"),2);
+        *M2E_0_pmns = *M2D_0_sckm;
+        *M2L_0_pmns = *M2D_0_sckm;
+        *M2_R_0 = *M2D_0_sckm;
+        *M2Q_0_sckm = *M2D_0_sckm;
+        *M2U_0_sckm = *M2D_0_sckm;
+        for(int i=1; i<=2; i++)
+          (*M2_H_0)(i) = pow(*Param.at("M0"),2);
+        *M2_T_0 = *M2_H_0;
+      }
       // M12
-      for(int i=1; i<=3; i++)
-        (*Mi_0)(i) = *Param.at("M12");
+      if(Param.find("M12") != Param.end())
+      {
+        for(int i=1; i<=3; i++)
+          (*Mi_0)(i) = *Param.at("M12");
+      }
       // TanBeta
       *tanb = *Param.at("TanBeta");
       // SignMu
       *phase_mu = *Param.at("SignMu");
       // A0
-      for(int i=1; i<=3; i++)
-        (*AoY_d_0)(i,i) = *Param.at("A0"); 
-      *AoY_l_0 = *AoY_d_0;
-      *AoY_u_0 = *AoY_d_0;
-      *AoY_nu_0 = *AoY_d_0;
-      *AoT_0 = *AoY_d_0;
-      for(int i=1; i<=2; i++)
-        (*Aolam12_0)(i) = (*AoY_d_0)(1,1);
+      if(Param.find("A0") != Param.end())
+      {
+        for(int i=1; i<=3; i++)
+          (*AoY_d_0)(i,i) = *Param.at("A0"); 
+        *AoY_l_0 = *AoY_d_0;
+        *AoY_u_0 = *AoY_d_0;
+        *AoY_nu_0 = *AoY_d_0;
+        *AoT_0 = *AoY_d_0;
+        for(int i=1; i<=2; i++)
+          (*Aolam12_0)(i) = (*AoY_d_0)(1,1);
+      }
     }
     else if(*HighScaleModel == "GMSB")
     {
@@ -749,30 +777,40 @@ BE_NAMESPACE
     }
     else if(*HighScaleModel == "SUGRA")
     {
-      // TanBeta
-      *tanb = *Param.at("TanBeta");
       // SignMu
       *phase_mu = *Param.at("SignMu");
+      // TanBeta
+      *tanb = *Param.at("TanBeta");
     }
     // Missing pars 7 - 10
 
     // Block EXTPAR
-    if(*HighScaleModel == "SUGRA")
+    if(*HighScaleModel == "SUGRA") // SUGRA
     {
       // Scale of input parameters
       if(Param.find("Qin") != Param.end())
       {
-	SetGUTScale(*Param.at("Qin"));
+        Freal8 Qin = *Param.at("Qin");
+	SetGUTScale(Qin);
       }
       // M_1
-      (*Mi)(1).re = *Param.at("M1");
-      (*Mi_0)(1).re = *Param.at("M1");
+      if(Param.find("M1") != Param.end())
+      {
+        (*Mi)(1).re = *Param.at("M1");
+        (*Mi_0)(1).re = *Param.at("M1");
+      }
       // M_2
-      (*Mi)(2).re = *Param.at("M2");
-      (*Mi_0)(2).re = *Param.at("M2");
+      if(Param.find("M2") != Param.end())
+      {
+        (*Mi)(2).re = *Param.at("M2");
+        (*Mi_0)(2).re = *Param.at("M2");
+      }
       // M_3
-      (*Mi)(3).re = *Param.at("M3");
-      (*Mi_0)(3).re = *Param.at("M3");
+      if(Param.find("M3") != Param.end())
+      {
+        (*Mi)(3).re = *Param.at("M3");
+        (*Mi_0)(3).re = *Param.at("M3");
+      }
       // tanb
       // in GAMBIT tanb is always at mZ
       //*tanb_Q = *Param.at("TanBeta");
@@ -784,39 +822,63 @@ BE_NAMESPACE
           // A_u, Block TUIN
           std::stringstream parname;
           parname << "Au_" << i << j;
-          (*Au_0_sckm)(i,j).re = *Param.at(parname.str());
-          (*Au_sckm)(j,i).re = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*Au_0_sckm)(i,j).re = *Param.at(parname.str());
+            (*Au_sckm)(j,i).re = *Param.at(parname.str());
+          }
           // A_d, Block TDIN
           parname.str(std::string());
           parname << "Ad_" << i << j; 
-          (*Ad_0_sckm)(i,j).re = *Param.at(parname.str());
-          (*Ad_sckm)(j,i).re = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*Ad_0_sckm)(i,j).re = *Param.at(parname.str());
+            (*Ad_sckm)(j,i).re = *Param.at(parname.str());
+          }
           // A_l, Block TEIN
           parname.str(std::string());
           parname << "Ae_" << i << j;
-          (*Al_0_pmns)(i,j).re = *Param.at(parname.str());
-          (*Al_pmns)(j,i).re = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*Al_0_pmns)(i,j).re = *Param.at(parname.str());
+            (*Al_pmns)(j,i).re = *Param.at(parname.str());
+          }
         } 
 
       // A_t
-      (*AoY_u)(3,3).re = *Param.at("Au_33");
-      *At_save = (*AoY_u)(3,3);
-      *AoY_u_0 = *AoY_u;
+      if(Param.find("Au_33") != Param.end())
+      {
+        (*AoY_u)(3,3).re = *Param.at("Au_33");
+        *At_save = (*AoY_u)(3,3);
+        *AoY_u_0 = *AoY_u;
+      }
       // A_b
-      (*AoY_d)(3,3).re = *Param.at("Ad_33");
-      *Ab_save = (*AoY_d)(3,3);
-      *AoY_d_0 = *AoY_d;
+      if(Param.find("Ad_33") != Param.end())
+      {
+        (*AoY_d)(3,3).re = *Param.at("Ad_33");
+        *Ab_save = (*AoY_d)(3,3);
+        *AoY_d_0 = *AoY_d;
+      }
       // A_tau
-      (*AoY_l)(3,3).re = *Param.at("Ae_33");
-      *Atau_save = (*AoY_l)(3,3);
-      *AoY_l_0 = *AoY_l;
+      if(Param.find("Ae_33") != Param.end())
+      {
+        (*AoY_l)(3,3).re = *Param.at("Ae_33");
+        *Atau_save = (*AoY_l)(3,3);
+        *AoY_l_0 = *AoY_l;
+      }
        
       // M^2_Hd
-      (*M2_H)(1) = *Param.at("mHd2");
-      (*M2_H_0)(1) = *Param.at("mHd2");
+      if(Param.find("mHd2") != Param.end())
+      {
+        (*M2_H)(1) = *Param.at("mHd2");
+        (*M2_H_0)(1) = *Param.at("mHd2");
+      }
       // M^2_Hu
-      (*M2_H)(2) = *Param.at("mHu2");
-      (*M2_H_0)(2) = *Param.at("mHu2");
+      if(Param.find("mHu2") != Param.end())
+      { 
+        (*M2_H)(2) = *Param.at("mHu2");
+        (*M2_H_0)(2) = *Param.at("mHu2");
+      }
       // mu, not in GAMBIT input
       // M^2_A(Q), not in GAMBIT input
       // m_A, pole mass, not in GAMBIT input
@@ -826,28 +888,43 @@ BE_NAMESPACE
           // M^2_L, Block MSL2
           std::stringstream parname;
           parname << "ml2_" << i << j;
-          (*M2L_pmns)(i,j) = *Param.at(parname.str());
-          (*M2L_pmns)(j,i) = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+           (*M2L_pmns)(i,j) = *Param.at(parname.str());
+            (*M2L_pmns)(j,i) = *Param.at(parname.str());
+          }
           // M^2_E, Block MSE2
           parname.str(std::string());
           parname << "me2_" << i << j;
-          (*M2E_pmns)(i,j) = *Param.at(parname.str());
-          (*M2E_pmns)(j,i) = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*M2E_pmns)(i,j) = *Param.at(parname.str());
+            (*M2E_pmns)(j,i) = *Param.at(parname.str());
+          }
           // M^2_Q, Block MSQ2
           parname.str(std::string());
           parname << "mq2_" << i << j;
-          (*M2Q_sckm)(i,j) = *Param.at(parname.str());
-          (*M2Q_sckm)(j,i) = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*M2Q_sckm)(i,j) = *Param.at(parname.str());
+            (*M2Q_sckm)(j,i) = *Param.at(parname.str());
+          }
           // M^2_U, Block MSU2
           parname.str(std::string());
           parname << "mu2_" << i << j;
-          (*M2U_sckm)(i,j) = *Param.at(parname.str());
-          (*M2U_sckm)(j,i) = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*M2U_sckm)(i,j) = *Param.at(parname.str());
+            (*M2U_sckm)(j,i) = *Param.at(parname.str());
+          }
           // M^2_D, Block MSD2
           parname.str(std::string());
           parname << "md2_" << i << j;
-          (*M2D_sckm)(i,j) = *Param.at(parname.str());
-          (*M2D_sckm)(j,i) = *Param.at(parname.str());
+          if(Param.find(parname.str()) != Param.end())
+          {
+            (*M2D_sckm)(i,j) = *Param.at(parname.str());
+            (*M2D_sckm)(j,i) = *Param.at(parname.str());
+          }
         }
       *M2L_0_pmns = *M2L_pmns;
       *M2E_0_pmns = *M2E_pmns;
@@ -1205,7 +1282,7 @@ BE_INI_FUNCTION
     }
     else
     {
-      *HighScaleModel = "SUGRA";
+      *HighScaleModel = "SUGRA"; // SUGRA
       SetHighScaleModel("SUGRA");
     }
 
@@ -1217,7 +1294,9 @@ BE_INI_FUNCTION
 
     // 2
     *SPA_convention = runOptions->getValueOrDef<Flogical>(true, "SPA_convention");
-    SetRGEScale(1E6);
+    Freal8 scale = 1E6;
+    SetRGEScale(scale);
+    std::cout << GetRenormalizationScale() << std::endl;
 
     // 3
     *External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
@@ -1301,7 +1380,7 @@ BE_INI_FUNCTION
     // 31, setting a fixed GUT scale
     Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
     if(GUTScale > 0.0)
-       SetGUTScale(byVal(GUTScale)); 
+       SetGUTScale(GUTScale); 
 
     // 32, requires strict unification
     Flogical StrictUnification = runOptions->getValueOrDef<Flogical>(false, "StrictUnification");

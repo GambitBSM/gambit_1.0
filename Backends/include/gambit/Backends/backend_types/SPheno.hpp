@@ -39,6 +39,8 @@ namespace Gambit
     typedef Farray<Fcomplex16,1,5,1,5> Farray_Fcomplex16_1_5_1_5;
     typedef Farray<Fcomplex16,1,6,1,6> Farray_Fcomplex16_1_6_1_6;
     
+    // test
+    typedef Farray<Freal8,1,57> Farray_Freal8_1_57;
 
     struct particle2
     {
