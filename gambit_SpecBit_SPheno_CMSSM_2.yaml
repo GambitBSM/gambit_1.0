@@ -3,20 +3,12 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  MSSM7atQ:
-    Qin:
-      fixed_value: 100000
-    M2:
+  CMSSM:
+    M0:
       fixed_value: 100
-    mHd2:
-      fixed_value: 40000
-    mHu2:
-      fixed_value: 250000
-    mf2:
+    M12:
       fixed_value: 100
-    Ad_3:
-      fixed_value: 100
-    Au_3:
+    A0:
       fixed_value: 100
     SignMu:
       fixed_value: 1
@@ -45,9 +37,12 @@ ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
     type:         bool
-    function:     SPheno_MSSM63atQ_test
+    function:     SPheno_MSSM_test
 
 Rules:
+  - capabilty:    unimproved_MSSM_spectrum
+    type:         const Spectrum*
+    function:     get_SPheno_CMSSM_spectrum
   - capability:   SPheno_MSSMspectrum
     type:         void
     function:     run_SPheno

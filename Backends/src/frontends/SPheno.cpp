@@ -58,9 +58,11 @@ BE_NAMESPACE
     Farray_Freal8_1_3 mSneut2;
     Freal8 mGlu;
  
+    std::cout << "Calculating spectrum" << std::endl;
 
     CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
 
+    std::cout << "Spectrum calculated" << std::endl;
 
     if(!*kont)
     {
@@ -760,7 +762,7 @@ BE_NAMESPACE
       // Scale of input parameters
       if(Param.find("Qin") != Param.end())
       {
-        SetGUTScale(*Param.at("Qin"));
+	SetGUTScale(*Param.at("Qin"));
       }
       // M_1
       (*Mi)(1).re = *Param.at("M1");
@@ -1191,7 +1193,7 @@ BE_INI_FUNCTION
 {
 
     // Dump all internal output 
-    //*ErrCan = 0; 
+    *ErrCan = 0; 
 
     Set_All_Parameters_0();
 

@@ -432,7 +432,9 @@ namespace Gambit
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
-      result = &spectrum;
+      std::cout << spectrum.getSLHAea() << std::endl;
+
+      result = new Spectrum(spectrum);
 
     }
 
@@ -445,10 +447,9 @@ namespace Gambit
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
-      result = &spectrum;
+      result = new Spectrum(spectrum);
 
     }
-
 
     void get_SPheno_MSSMatQ_spectrum (const Spectrum* &result)
     {
@@ -459,12 +460,11 @@ namespace Gambit
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
-      result = &spectrum;
+      std::cout << spectrum.getSLHAea() << std::endl;
+
+      result = new Spectrum(spectrum);
 
     }
-
-
-
 
     void get_CMSSM_spectrum (const Spectrum* &result)
     {
