@@ -98,7 +98,7 @@ START_MODULE
     #define FUNCTION FH_MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
-     DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
+    DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
 
