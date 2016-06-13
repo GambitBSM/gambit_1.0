@@ -432,8 +432,6 @@ namespace Gambit
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
-      std::cout << spectrum.getSLHAea() << std::endl;
-
       result = new Spectrum(spectrum);
 
     }
@@ -459,8 +457,6 @@ namespace Gambit
       Spectrum spectrum;
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
-
-      std::cout << spectrum.getSLHAea() << std::endl;
 
       result = new Spectrum(spectrum);
 

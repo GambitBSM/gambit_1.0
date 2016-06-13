@@ -60,74 +60,9 @@ namespace Gambit
       const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
 
       std::cout << fullspectrum->getSLHAea() << std::endl;
+
+      result = 0;
     }
-    
-    // Testing function for the SPheno backend for the CMSSM
-    void SPheno_CMSSM_test(bool &result)
-    {
-     
-      namespace myPipe = Pipes::SPheno_CMSSM_test;
-      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
-
-      Spectrum spectrum;
-  
-      int kont = myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
-
-      if(!kont)
-      {
-        std::cout << spectrum.getSLHAea() << std::endl;
-        result = true;
-      }
-      else
-      {
-        result = false;
-      }
-
-    }
-
-    // Testing function for the SPheno backend for the MSSM63atMGUT
-    void SPheno_MSSM63atMGUT_test(bool &result)
-    {
-      namespace myPipe = Pipes::SPheno_MSSM63atMGUT_test;
-      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
-
-      Spectrum spectrum;
-
-      int kont = myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
-
-      if(!kont)
-      {
-        std::cout << spectrum.getSLHAea() << std::endl;
-        result = true;
-      } 
-      else
-      {
-        result = false;
-      }
-    }
-
-    // Testing function for the SPheno backend for the MSSM63atQ
-    void SPheno_MSSM63atQ_test(bool &result)
-    {
-     
-      namespace myPipe = Pipes::SPheno_MSSM63atQ_test;
-      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
-
-      Spectrum spectrum;
-
-      int kont = myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
-
-      if(!kont)
-      {
-        std::cout << spectrum.getSLHAea() << std::endl;
-        result = true;
-      }
-      else
-      {
-        result = false;
-      }
-    }
-
     
     /// Verify consistency of the contents of a Spectrum object of capability MSSMspectrum. 
     /// (derived from old 'exampleRead' function)

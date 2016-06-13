@@ -42,7 +42,7 @@ ObsLikes:
 Rules:
   - capability: unimproved_MSSM_spectrum 
     type: const Spectrum*
-    function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
+    function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1

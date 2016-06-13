@@ -35,31 +35,6 @@
      START_FUNCTION(bool)
      DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
-
-     #define FUNCTION SPheno_CMSSM_test
-     START_FUNCTION(bool)
-     DEPENDENCY(SMINPUTS, SMInputs)
-     ALLOW_MODELS(CMSSM)
-     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
-     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
-     #undef FUNCTION
-  
-     #define FUNCTION SPheno_MSSM63atMGUT_test
-     START_FUNCTION(bool)
-     DEPENDENCY(SMINPUTS, SMInputs)
-     ALLOW_MODELS(MSSM63atMGUT)
-     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
-     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
-     #undef FUNCTION
-
-     #define FUNCTION SPheno_MSSM63atQ_test
-     START_FUNCTION(bool)
-     DEPENDENCY(SMINPUTS, SMInputs)
-     ALLOW_MODELS(MSSM63atQ)
-     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
-     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
-     #undef FUNCTION
-
   
    #undef CAPABILITY
  
