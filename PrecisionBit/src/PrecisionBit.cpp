@@ -532,6 +532,7 @@ namespace Gambit
     }
     void mh_from_MSSM_spectrum(double &result)
     {
+      //FIXME this needs to use the PDG code provided by a new SpecBit function SMlikeHiggs (is not always lightest, therefore can be 25 or 35)
       using namespace Pipes::mh_from_MSSM_spectrum;
       const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
       result = HE->get(Par::Pole_Mass, 25, 0);
@@ -791,8 +792,10 @@ namespace Gambit
         std::ostringstream err;
         err << "gm2calc routine convert_to_onshell raised warning: "
             << model.get_problems().get_warnings() << ".";
-        /// may want to handle this in less harsh way
-        invalid_point().raise(err.str());	
+        logger() << err.str() << EOM;
+        // maybe we want to invalidate such points, but the DRbar-->OS
+        // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
+        //invalid_point().raise(err.str());	
       }
 
       double error = BEreq::calculate_uncertainty_amu_2loop(model);

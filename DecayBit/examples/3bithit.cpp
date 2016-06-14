@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 #include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Utils/file_lock.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/PrecisionBit/PrecisionBit_rollcall.hpp"
@@ -37,7 +38,7 @@ using std::cout;
 using std::endl;
 
 const std::string filename_in = "3bithit.in";
-const std::string filename_out = "3bithit.out";
+const std::string filename_out = "3bithit.out.slha";
 
 int main()
 {
@@ -552,32 +553,35 @@ int main()
       // Now the other EWPO.
       FH_precision_sinW2.reset_and_calculate();
       FH_precision_deltarho.reset_and_calculate();
-      //GM2C_SUSY.reset_and_calculate();
+      GM2C_SUSY.reset_and_calculate();
       
       // Dump the final results to an SLHA file.
-      SLHAstruct slha = make_MSSM_precision_spectrum().as_slhaea()
-      SLHAstruct decays = all_decays().getSLHAea();
+      SLHAstruct slha = make_MSSM_precision_spectrum(0)->getSLHAea();
+      SLHAstruct decays = all_decays(0).getSLHAea();
       slha.insert(slha.end(), decays.cbegin(), decays.cend());
       SLHAea::Block ewpo_block("EWPO");
       ewpo_block.push_back("BLOCK EWPO              # Electroweak precision observable predictions");
-      ewpo_block.push_back("#Index   Central   +1sigma   -1sigma");
+      ewpo_block.push_back("#       central                 +1sigma                 -1sigma");
       SLHAea::Line line1, line2, line3, line4, line5;
-      line1 << 1 << FH_precision_mw().central << "# Precision Higgs mass";
-      line1 << 2 << FH_precision_mw().central << "# Precision W mass";
-      line2 << 3 << FH_precision_sinW2().central << "# sin^2 \theta_W effective (leptonic)";
-      line2 << 4 << FH_precision_deltarho() << "# \Delta\rho";
+      const SubSpectrum* HE = make_MSSM_precision_spectrum(0)->get_HE();
+      line1 << 1 << HE->get(Par::Pole_Mass, 25, 0)   << "  " << HE->get(Par::Pole_Mass_1srd_high, 25, 0) << "  " << HE->get(Par::Pole_Mass_1srd_low, 25, 0) << "# Precision Higgs mass (GeV)";
+      line2 << 2 << FH_precision_mw(0).central       << "  " << FH_precision_mw(0).upper                 << "  " << FH_precision_mw(0).lower                << "# Precision W mass (GeV)";
+      line3 << 3 << FH_precision_sinW2(0).central    << "  " << FH_precision_sinW2(0).upper              << "  " << FH_precision_sinW2(0).lower             << "# sin^2 \\theta_W effective (leptonic)";
+      line4 << 4 << FH_precision_deltarho(0).central << "  " << FH_precision_deltarho(0).upper           << "  " << FH_precision_deltarho(0).lower          << "# \\Delta \\rho";
+      line5 << 5 << GM2C_SUSY(0).central             << "  " << GM2C_SUSY(0).upper                       << "  " << GM2C_SUSY(0).lower                      << "# SUSY contribution to muon g-2";
       ewpo_block.push_back(line1);
       ewpo_block.push_back(line2);
       ewpo_block.push_back(line3);
       ewpo_block.push_back(line4);
       ewpo_block.push_back(line5);
-      spec.push_back(ewpo_block);
+      slha.push_back(ewpo_block);
       Utils::FileLock mylock(filename_out);
       mylock.get_lock();
       std::ofstream ofs(filename_out);
       ofs << slha;
       ofs.close();
       mylock.release_lock();
+      cout << endl << "SLHA file " << filename_out << " successfully emitted." << endl << endl;
 
     }
     
