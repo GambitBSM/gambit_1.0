@@ -466,6 +466,11 @@ set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
 set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.1.2")
 set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/1.1.2")
 set(gm2calc_dl "gm2calc-1.1.2.tar.gz")
+# - Silence the deprecated-declarations warnings comming from Eigen3
+set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
+endif()
 ExternalProject_Add(gm2calc
   URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
   URL_MD5 459b3a49fdba0f7a5836ad364031e16b
@@ -475,7 +480,7 @@ ExternalProject_Add(gm2calc
   DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -p1 < ${gm2calc_patch}/check-negative-soft-mass.patch
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""
 )
 ExternalProject_Add_Step(gm2calc apply_hacks
