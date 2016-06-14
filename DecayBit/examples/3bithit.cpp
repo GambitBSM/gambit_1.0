@@ -229,6 +229,10 @@ int main()
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
 
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_1_2::Functown::calculate_amu_1loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_1_2::Functown::calculate_amu_2loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_1_2::Functown::calculate_uncertainty_amu_2loop);
+
     // Notify any module functions that care of the models being scanned.
     get_SMINPUTS.notifyOfModel("StandardModel_SLHA2");
     if (model_is_GUT_scale)
@@ -283,6 +287,7 @@ int main()
     FH_precision_deltarho.resolveDependency(&FH_PrecisionObs);
     make_MSSM_precision_spectrum.resolveDependency(&FH_precision_mw);
     make_MSSM_precision_spectrum.resolveDependency(&FH_HiggsMasses);
+    GM2C_SUSY.resolveDependency(&make_MSSM_precision_spectrum);
 
     FeynHiggs_2_11_3_init.resolveDependency(&get_SMINPUTS);
     SUSY_HIT_1_5_init.resolveDependency(&make_MSSM_precision_spectrum);
@@ -423,7 +428,7 @@ int main()
     all_decays.resolveDependency(&neutralino_4_decays); 
 
     // Set some module function options here if you need to, e.g.
-    //nevents_pred_rounded.setOption<double>("probability_of_validity", 0.1);
+    //all_decays.setOption<double>("blahblah", 0.1);
 
     try
     {
@@ -547,9 +552,32 @@ int main()
       // Now the other EWPO.
       FH_precision_sinW2.reset_and_calculate();
       FH_precision_deltarho.reset_and_calculate();
-      // call gm2calc here for gm2
+      //GM2C_SUSY.reset_and_calculate();
       
       // Dump the final results to an SLHA file.
+      SLHAstruct slha = make_MSSM_precision_spectrum().as_slhaea()
+      SLHAstruct decays = all_decays().getSLHAea();
+      slha.insert(slha.end(), decays.cbegin(), decays.cend());
+      SLHAea::Block ewpo_block("EWPO");
+      ewpo_block.push_back("BLOCK EWPO              # Electroweak precision observable predictions");
+      ewpo_block.push_back("#Index   Central   +1sigma   -1sigma");
+      SLHAea::Line line1, line2, line3, line4, line5;
+      line1 << 1 << FH_precision_mw().central << "# Precision Higgs mass";
+      line1 << 2 << FH_precision_mw().central << "# Precision W mass";
+      line2 << 3 << FH_precision_sinW2().central << "# sin^2 \theta_W effective (leptonic)";
+      line2 << 4 << FH_precision_deltarho() << "# \Delta\rho";
+      ewpo_block.push_back(line1);
+      ewpo_block.push_back(line2);
+      ewpo_block.push_back(line3);
+      ewpo_block.push_back(line4);
+      ewpo_block.push_back(line5);
+      spec.push_back(ewpo_block);
+      Utils::FileLock mylock(filename_out);
+      mylock.get_lock();
+      std::ofstream ofs(filename_out);
+      ofs << slha;
+      ofs.close();
+      mylock.release_lock();
 
     }
     
