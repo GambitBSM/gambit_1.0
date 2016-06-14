@@ -142,8 +142,8 @@ int main()
     sbottom_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbotwidth);
     
     sbottom_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot2body);
-    sbottom_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot3body);
-    sbottom_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbotwidth);
+    sbottom_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot3body);
+    sbottom_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbotwidth);
     
     sup_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sup2body);
     sup_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_supwidth);
@@ -216,7 +216,18 @@ int main()
     neutralino_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
     neutralino_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
     neutralino_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
+
+    neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2body);
+    neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2bodygrav);
+    neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
+    neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
+    neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
   
+    neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2body);
+    neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2bodygrav);
+    neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
+    neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
+    neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
 
     // Notify any module functions that care of the models being scanned.
     get_SMINPUTS.notifyOfModel("StandardModel_SLHA2");
@@ -262,6 +273,7 @@ int main()
     }
 
     get_SMINPUTS.resolveDependency(&Models::StandardModel_SLHA2::Functown::primary_parameters);
+    get_mass_es_pseudonyms.resolveDependency(&make_MSSM_precision_spectrum);
 
     FH_HiggsMasses.resolveDependency(&FH_MSSMMasses);
     FH_Couplings.resolveDependency(&FH_HiggsMasses);
@@ -410,7 +422,7 @@ int main()
     all_decays.resolveDependency(&neutralino_3_decays); 
     all_decays.resolveDependency(&neutralino_4_decays); 
 
-    // Set some module function options
+    // Set some module function options here if you need to, e.g.
     //nevents_pred_rounded.setOption<double>("probability_of_validity", 0.1);
 
     try
@@ -530,8 +542,6 @@ int main()
       neutralino_2_decays.reset_and_calculate(); 
       neutralino_3_decays.reset_and_calculate(); 
       neutralino_4_decays.reset_and_calculate(); 
-
-      // do the susy decays with susyhit
       all_decays.reset_and_calculate();
 
       // Now the other EWPO.
