@@ -1,4 +1,4 @@
-//   BIT-HIT: Calculate MSSM spectra, decays and EWPO.
+//   3-BIT-HIT: Calculate MSSM spectra, decays and EWPO.
 //   *************************************************
 ///  \file
 ///
@@ -50,8 +50,8 @@ int main()
     cout << "---------------------------------------------------------" << endl;
     cout << "  ____        ____ _____ _______   _    _ _____ _______  " << endl;
     cout << " |___ \\      |  _ \\_   _|__   __| | |  | |_   _|__   __|"<< endl;
-    cout << "   __) |_____| |_) || |    | |    | |__| | | |    | |    " << endl;
-    cout << "  |__ <______|  _ < | |    | |    |  __  | | |    | |    " << endl;
+    cout << "   __) |_____| |_) || |    | |____| |__| | | |    | |    " << endl;
+    cout << "  |__ <______|  _ < | |    | |____|  __  | | |    | |    " << endl;
     cout << "  ___) |     | |_) || |_   | |    | |  | |_| |_   | |    " << endl;
     cout << " |____/      |____/_____|  |_|    |_|  |_|_____|  |_|    " << endl;
     cout << "---------------------------------------------------------" << endl;
@@ -592,14 +592,14 @@ int main()
       cout << "Reason: " << e.message() << endl;
     }
 
-    cout << endl << "3-BIT HIT has finished." << endl << endl;
+    cout << endl << "3-BIT-HIT has finished." << endl << endl;
     return 0;
 
   }
 
   catch (std::exception& e)
   {
-    cout << endl << "3-BIT HIT has exited with fatal exception: " << e.what() << endl << endl;
+    cout << endl << "3-BIT-HIT has exited with fatal exception: " << e.what() << endl << endl;
   }
 
   return(1);
