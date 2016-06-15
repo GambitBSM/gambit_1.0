@@ -182,18 +182,13 @@ namespace Gambit
       // W mass
       //-------
 
-      HE->set(Par::Pole_Mass, Dep::prec_mw->central, "W+");
+      HE->set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
       HE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
       HE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
-      //FIXME this syntax doesn't work yet
-      //HE->set(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+");
-      //HE->set(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+");
-      LE->set(Par::Pole_Mass, Dep::prec_mw->central, "W+");
-      LE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", false); //FIXME these should contain some default error, no?
-      LE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", false);  //FIXME these should contain some default error, no?
-      //FIXME this syntax doesn't work yet
-      //LE->set(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+");
-      //LE->set(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+");
+
+      LE->set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
+      LE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true); //FIXME these should contain some default error, no?
+      LE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);  //FIXME these should contain some default error, no?
 
       // Higgs masses
       //-------------
@@ -244,7 +239,7 @@ namespace Gambit
       }
       if (central != 2)
       {
-        for (int i = 0; i < 4; i++) HE->set(Par::Pole_Mass, mh[i], higgses[i]);
+        for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass, mh[i], higgses[i]);
       }
 
       // Uncertainties:
@@ -469,12 +464,8 @@ namespace Gambit
         msg << "Unrecognised Higgs_predictions_error_method specified for make_MSSM_precision_spectrum: " << central;
         PrecisionBit_error().raise(LOCAL_INFO,msg.str());
       }
-      for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true);
+      for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true); // TODO: Ben: I changed the flags here to "false", because that means the uncertainties don't already have to exist. This is the case if e.g. the spectrum comes from an SLHA file.
       for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
-      //FIXME this syntax does not work yet
-      //for (int i = 0; i < 4; i++) HE->set(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i]);
-      //for (int i = 0; i < 4; i++) HE->set(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i]);
-
       #ifdef PRECISIONBIT_DEBUG
         for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE->get(Par::Pole_Mass, higgses[i])<< endl;
         for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE->get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;

@@ -18,9 +18,14 @@ Parameters:
 Priors:
 
 Printer:
-  printer: ascii
+  printer: hdf5
   options:
-    output_file: "gambit_output.txt"
+    output_file: "results.hdf5"
+    delete_file_on_restart: true
+
+ #printer: ascii
+ # options:
+ #   output_file: "gambit_output.txt"
 
 Scanner:
   use_scanner: toy_mcmc
@@ -28,7 +33,7 @@ Scanner:
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      point_number: 2
+      point_number: 3
       output_file:  output
       like:  Likelihood
 
@@ -44,10 +49,22 @@ ObsLikes:
   #  type:         double
   #  function:     specbit_test_func1
 
+  #- purpose:      Test
+  #  capability:   unimproved_MSSM_spectrum
+  #  function:     get_MSSM_spectrum_as_SLHAea
+  #  printme:      false  # this type is not printable
+
+
+  - purpose:      Observable
+    capability:   MSSM_spectrum
+    function:     get_MSSM_spectrum_as_map 
+
   - purpose:      Test
     capability:   unimproved_MSSM_spectrum
     function:     get_MSSM_spectrum_as_SLHAea
-    printme:      false
+  #  capability:   run_MSSMspectrum_test
+  #  function:     MSSMspectrum_test
+  #  printme:      false
 
   #- purpose:      Likelihood
   #  capability:   specbit_tests3
@@ -77,7 +94,9 @@ Rules:
       - capability: unimproved_MSSM_spectrum
         function: get_MSSMatMGUT_spectrum
 
-  - function: get_MSSMatMGUT_spectrum
+  - !weak
+    capability: unimproved_MSSM_spectrum
+    function: get_MSSMatMGUT_spectrum
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
@@ -110,7 +129,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "run/SpecBit"
+  default_output_path: "runs/SpecBit"
 
   dependency_resolution:
     prefer_model_specific_functions: false

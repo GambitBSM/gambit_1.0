@@ -600,21 +600,37 @@ namespace Gambit
          cout << "Original M1:" << clonedspec->get(Par::mass1,"M1") << endl;
          clonedspec->set_override(Par::mass1,-666,"M1");
          cout << "Override M1:" << clonedspec->get(Par::mass1,"M1") << endl;
+          // Check that original can still be accessed using special optional argument
+         cout << "Original M1 via no_overrides:" << clonedspec->get(Par::mass1,"M1",ignore_overrides) << endl;
 
          cout << "Original ~e-(1):" << clonedspec->get(Par::Pole_Mass,"~e-",1) << endl;
          clonedspec->set_override(Par::Pole_Mass,-667,"~e-",1);
          cout << "Override ~e-(1):" << clonedspec->get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << "Original ~e-(1) via no_overrides:" << clonedspec->get(Par::Pole_Mass,"~e-",1,ignore_overrides) << endl;
+
+         // Make sure that we can set overrides via long name strings properly
+         cout << "Original ~e-(2):" << clonedspec->get(Par::Pole_Mass,"~e-",2) << endl;
+         clonedspec->set_override(Par::Pole_Mass,-345,"~e-_2");
+         cout << "Override ~e-(2):" << clonedspec->get(Par::Pole_Mass,"~e-",2) << endl;
+         cout << "Original ~e-(2) via no_overrides:" << clonedspec->get(Par::Pole_Mass,"~e-",2,ignore_overrides) << endl;
+         clonedspec->set_override(Par::Pole_Mass,-347,"~e-",2);
+         cout << "Override ~e-(2) (second time):" << clonedspec->get(Par::Pole_Mass,"~e-",2) << endl;
+         cout << "Original ~e-(2) via no_overrides (second time):" << clonedspec->get(Par::Pole_Mass,"~e-",2,ignore_overrides) << endl;
+
+
 
          cout << "Original ml2(1,1):" << clonedspec->get(Par::mass2,"ml2",1,1) << endl;
          clonedspec->set_override(Par::mass2,-668,"ml2",1,1);
          cout << "Override ml2(1,1):" << clonedspec->get(Par::mass2,"ml2",1,1) << endl;
+         cout << "Original ml2(1,1) via no_overrides:" << clonedspec->get(Par::mass2,"ml2",1,1,ignore_overrides) << endl;
+
 
          /// Now add some entry that didn't exist before
          cout << "has 'new_entry'? " << clonedspec->has(Par::mass1,"new_entry") << endl;
          cout << "..." << endl;
          /// Note: if we try to do it like this, it should fail:
-         //clonedspec->set_override(Par::mass2,-1234,"new_entry"); // incorrect: safety still on
-         clonedspec->set_override(Par::mass1,-1234,"new_entry",false); // correct: safety check turned off
+         //clonedspec->set_override(Par::mass2,-1234,"new_entry"); // incorrect: "allow_new" false by default
+         clonedspec->set_override(Par::mass1,-1234,"new_entry",true); // correct: "allow_new" = true
          cout << "has 'new_entry'? " << clonedspec->has(Par::mass1,"new_entry") << endl;
          cout << "new_entry = " << clonedspec->get(Par::mass1,"new_entry") << endl;
          cout << endl; 
@@ -633,10 +649,11 @@ namespace Gambit
          cout << "'~e+' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e+",1) << endl;
          cout << "'~e-' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e-",1) << endl;
          cout << "Setting override ~e+ pole mass value" << endl;
-         // Need to turn off the safety check for this, because no explicit entry for
-         // ~e+_1 exists yet. This action will decouple the ~e-_1 and ~e+_1 masses from
+         // Need to turn on the "allow_new" check for this, because no explicit entry for
+         // ~e+_1 exists yet, and need to turn on the "decouple" option to prevent conversion
+         // to the antiparticle string name. This action will decouple the ~e-_1 and ~e+_1 masses from
          // here onwards.
-         clonedspec->set_override(Par::Pole_Mass,-999,"~e+",1,SafeBool(false));
+         clonedspec->set_override(Par::Pole_Mass,-999,"~e+",1,true,true); // "allow_new" + "decouple" = true
          cout << "'~e+' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e+",1) << endl;
          cout << "'~e-' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e-",1) << endl;
          cout << "Set ~e+ pole mass via PDG code" << endl;
@@ -662,7 +679,7 @@ namespace Gambit
          cout << "'~e+,2' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e+",2) << endl;
          cout << "'~e-,2' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e-",2) << endl;
          cout << "Setting override ~e+,2 pole mass value" << endl;
-         clonedspec->set_override(Par::Pole_Mass,-999,"~e+",2,SafeBool(false));
+         clonedspec->set_override(Par::Pole_Mass,-999,"~e+",2,true);
          cout << "'~e+,2' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e+",2) << endl;
          cout << "'~e-,2' pole mass = " << clonedspec->get(Par::Pole_Mass,"~e-",2) << endl;
          cout << "Set ~e+,2 pole mass via PDG code" << endl;

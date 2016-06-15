@@ -183,11 +183,11 @@ namespace Gambit
       MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
 
       // Add extra information about the scales used to the wrapper object
-      // (last parameter turns the 'safety' check for the override setter off, which allows
+      // (last parameter turns on the 'allow_new' option for the override setter, which allows
       //  us to set parameters that don't previously exist)
-      mssmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      mssmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      mssmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",true);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
 
       /// add theory errors
       static const MSSM_strs ms;
@@ -197,16 +197,16 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error"
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error"
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, true); // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, true); // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12,  true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12,  true);
 
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
@@ -214,13 +214,13 @@ namespace Gambit
       /// (TODO: are we happy assigning the same for both higgses?)
       /// FIXME this does not work for the second higgs
       double rd_mh = 3.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, true);
 
       /// Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())
       {
-        mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
+        mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", true);
       }
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
@@ -934,6 +934,15 @@ namespace Gambit
            std::ostringstream label;
            label << name <<" "<< Par::toString.at(tag);
            specmap[label.str()] = mssmspec->get_HE()->get(tag,name);
+           //std::cout << label.str() <<", " << mssmspec->get_HE()->has(tag,name,overrides_only) << "," << mssmspec->get_HE()->has(tag,name,ignore_overrides) << std::endl; // debugging
+           // Check again ignoring overrides (if the value has an override defined)
+           if(mssmspec->get_HE()->has(tag,name,overrides_only) and
+              mssmspec->get_HE()->has(tag,name,ignore_overrides))
+           {
+             label << " (unimproved)";
+             specmap[label.str()] = mssmspec->get_HE()->get(tag,name,ignore_overrides);          
+             //std::cout << label.str() << ": " << specmap[label.str()];
+           }
          }
          // Check vector case
          else if(shape.size()==1 and shape[0]>1)
@@ -942,6 +951,15 @@ namespace Gambit
              std::ostringstream label;
              label << name <<"_"<<i<<" "<< Par::toString.at(tag);
              specmap[label.str()] = mssmspec->get_HE()->get(tag,name,i);
+             //std::cout << label.str() <<", " << mssmspec->get_HE()->has(tag,name,i,overrides_only) << "," << mssmspec->get_HE()->has(tag,name,i,ignore_overrides) << std::endl; // debugging
+             // Check again ignoring overrides
+             if(mssmspec->get_HE()->has(tag,name,i,overrides_only) and
+                mssmspec->get_HE()->has(tag,name,i,ignore_overrides))
+             {
+               label << " (unimproved)";
+               specmap[label.str()] = mssmspec->get_HE()->get(tag,name,i,ignore_overrides);          
+               //std::cout << label.str() << ": " << specmap[label.str()];
+             }
            }
          }
          // Check matrix case
@@ -952,6 +970,13 @@ namespace Gambit
                std::ostringstream label;
                label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
                specmap[label.str()] = mssmspec->get_HE()->get(tag,name,i,j);
+               // Check again ignoring overrides
+               if(mssmspec->get_HE()->has(tag,name,i,j,overrides_only) and
+                  mssmspec->get_HE()->has(tag,name,i,j,ignore_overrides))
+               {
+                 label << " (unimproved)";
+                 specmap[label.str()] = mssmspec->get_HE()->get(tag,name,i,j,ignore_overrides);          
+               }
              }  
            }
          }

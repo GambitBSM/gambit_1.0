@@ -33,7 +33,7 @@ namespace Gambit {
 
    /// @{ No indices
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
       /// TODO: Could avoid dismantling the MapCollection struct by just letting the
@@ -42,6 +42,12 @@ namespace Gambit {
       ///       'has' function take an optional argument to return an FptrFinder, which can then
       ///       just be used to call the found function.
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+      
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
@@ -56,16 +62,24 @@ namespace Gambit {
                               .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
 			      .map0I( mapcoll.map0_extraI )
-                              .map1I( mapcoll.map1_extraI );
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       return finder.find(name,true,check_antiparticle);                                             
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
-      /* Create finder object, tell it what maps to search, and do the search */
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+  
+     /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
       FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
@@ -79,7 +93,9 @@ namespace Gambit {
                               .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1I( mapcoll.map1_extraI );
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       if( finder.find(name,true,check_antiparticle) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
       return 0;
@@ -126,10 +142,16 @@ namespace Gambit {
    /// @}
    /// @{ One index
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
@@ -144,15 +166,23 @@ namespace Gambit {
                               .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1I( mapcoll.map1_extraI );
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       return finder.find(name,i,true,check_antiparticle);                                             
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
@@ -167,7 +197,9 @@ namespace Gambit {
                               .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1I( mapcoll.map1_extraI );
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
      if( finder.find(name,i,true,check_antiparticle) ){ return finder.callfcn(); }
      finder.raise_error(LOCAL_INFO);
      return 0;
@@ -216,10 +248,16 @@ namespace Gambit {
    /// @{ Two indices
 
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, int j) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, int j, SpecOverrideOptions check_overrides) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
@@ -229,15 +267,23 @@ namespace Gambit {
                               .map2(  mapcoll.map2 )
                               .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
+                              .map2I( mapcoll.map2_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
      return finder.find(name,i,j);
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, int j) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, int j, SpecOverrideOptions check_overrides) const
    {
       typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
@@ -247,7 +293,9 @@ namespace Gambit {
                               .map2(  mapcoll.map2 )
                               .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
+                              .map2I( mapcoll.map2_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       if( finder.find(name,i,j) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
       return 0;
