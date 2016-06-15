@@ -168,6 +168,12 @@ Scanner:
       nTrials: 40000
       like: Likelihood
       aux_printer_ind_samples_options:
+    
+#twalk:
+#      plugin: twalk
+#      tolerance: 1.001
+#      projection_dimension: 4
+#      chain_number: 10
 
 
 ###############################

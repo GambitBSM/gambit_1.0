@@ -685,7 +685,8 @@
         namespace FUNCTION                                                     \
         {                                                                      \
           BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
-           namespace Dep {dep_bucket<TYPE> DEP;})                              \
+           namespace Dep {dep_bucket<TYPE> DEP(STRINGIFY(MODULE),              \
+           STRINGIFY(FUNCTION),STRINGIFY(DEP));})                              \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -819,7 +820,12 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Dep { dep_bucket<ModelParameters> CAT(MODEL,_parameters); }\
+          namespace Dep                                                        \
+          {                                                                    \
+            dep_bucket<ModelParameters> CAT(MODEL,_parameters)                 \
+             (STRINGIFY(MODULE),STRINGIFY(FUNCTION),                           \
+             STRINGIFY(CAT(MODEL,_parameters)));                               \
+          }                                                                    \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -1089,7 +1095,8 @@
              CONVERT_VARIADIC_ARG(ARGS)), TYPE                                 \
              INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))>                        \
              CAT(REQUIREMENT,func);                                            \
-            CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT;   \
+            CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT    \
+             (STRINGIFY(MODULE),STRINGIFY(FUNCTION),STRINGIFY(REQUIREMENT));   \
           }                                                                    \
         }                                                                      \
       }                                                                        \

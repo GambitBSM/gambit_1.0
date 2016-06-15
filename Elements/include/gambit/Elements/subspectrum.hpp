@@ -89,13 +89,13 @@ namespace Gambit
  
       public:
          /// @{ Constructors/destructors
-	 SubSpectrum() : override_maps(create_override_maps()) {}      
-	 virtual ~SubSpectrum() {} 
-	 /// @}
+         SubSpectrum() : override_maps(create_override_maps()) {}      
+         virtual ~SubSpectrum() {} 
+         /// @}
 
          /// @{ Main public interface functions
 
-	 /// Get name
+         /// Get name
          virtual std::string getName() const = 0;
  
          /// Clone the SubSpectrum object

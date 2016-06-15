@@ -43,7 +43,7 @@ namespace Gambit {
     };
 
 
-    /// @brief A class to contain the limit data from ALEPH_PLB526_2002_206, figure 3a.
+    /// @brief A class to contain the limit data from ALEPH_PLB526_2002_206, figure 3c.
     class ALEPHStauLimitAt208GeV : public BaseLimitContainer {
       /// @name Point interpolation, conversion, and region checks
       //@{

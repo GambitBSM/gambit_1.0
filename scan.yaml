@@ -65,9 +65,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: object_detection
+  use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: twalk
   #find_shift
   #find_kernel
   #object_detection
@@ -79,10 +79,9 @@ Scanner:
 
     twalk:
       plugin: twalk
-      options:
-        tolerance: 1.001
-        #chain_number: 20
-        projection_dimension: 4
+      tolerance: 1.001
+      #chain_number: 20
+      projection_dimension: 4
         
     tnest:
       plugin: tnest
@@ -186,7 +185,7 @@ Scanner:
       #selected_pts:
       #  - "gaussian::param_0"
       #  - "gaussian::param_1"
-      mult: ["Posterior"]
+      mult: ["mult"]
       #loglike: 1
       flags: ["linear"]
       #flags: ["linear", "noadjx", "logx"]
@@ -382,9 +381,9 @@ Scanner:
       purpose: LogLike
       parameters:
         param_0:
-          prior_type: none
+          #prior_type: none
           #plugin: flat
-          #range: [0, 1]
+          range: [0, 1]
         param_1:
           range: [0, 1]
           
@@ -522,7 +521,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/scan"
+  default_output_path: "runs/scan_me"
 
   # Some example keys and subkeys
   my_key: 123

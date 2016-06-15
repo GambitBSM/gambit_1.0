@@ -234,7 +234,7 @@ namespace Gambit
       #endif
       if( problems.have_problem() )
       {
-         if( runOptions.getValue<bool>("invalid_point_fatal") )
+         if( runOptions.getValueOrDef<bool>(false,"invalid_point_fatal") )
          {
             ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
             /// just die.

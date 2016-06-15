@@ -36,7 +36,7 @@ Scanner:
     mcmc:
       plugin: GreAT
       nTrialLists: 5
-      nTrials: 10000
+      nTrials: 10000   #note, this is *per process*
       like: Likelihood
 
 #======== Observables of interest ========

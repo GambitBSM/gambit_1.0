@@ -271,11 +271,11 @@ namespace Gambit
       }
     }
 
-    if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
-
     // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
     if (compute_aux)
     {
+      if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
+
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
         // Log the observables being tried.

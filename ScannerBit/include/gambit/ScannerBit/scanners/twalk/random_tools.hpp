@@ -919,7 +919,7 @@ public:
                 
                 Mult(ptrOut, ptr, ptr0, Z);
                 
-                return (proj - 1.0)*log(-Z);
+                return (proj - 2.0)*log(-Z);
         }
         
         void Mult2(double *ptrOut, double *ptr, double *ptr0, const double Z)
