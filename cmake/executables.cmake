@@ -53,7 +53,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/SpecBit/" AND (";${GAMBIT_BITS};" MATCHES ";Spe
    NOT EXCLUDE_FLEXIBLESUSY)
   set(BITHIT_XTRA ${flexiblesusy_LDFLAGS})
   if (NOT EXCLUDE_DELPHES)
-    set(BITHIT_XTRA ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+    set(BITHIT_XTRA ${BITHIT_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
   add_gambit_executable(3bithit "${BITHIT_XTRA}"
                         SOURCES ${PROJECT_SOURCE_DIR}/DecayBit/examples/3bithit.cpp 

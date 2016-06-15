@@ -188,7 +188,7 @@ namespace Gambit
         result.lower = 0.0;
         return;
       }
- 
+
       // Get the 4x4 neutralino mixing matrix
       MixMatrix neutmix(4,std::vector<double>(4));
       for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->safeget(Par::Pole_Mixing,"~chi0",i+1,j+1);

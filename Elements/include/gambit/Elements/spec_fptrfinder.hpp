@@ -28,7 +28,7 @@
 #define PDB Models::ParticleDB()        
 
 // Debugging
-//#define CHECK_WHERE_FOUND
+#define CHECK_WHERE_FOUND
 
 namespace Gambit {
 

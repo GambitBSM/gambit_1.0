@@ -462,7 +462,8 @@ add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssi
 
 
 # gm2calc (C++ interface)
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
+# TODO: The eigen3 include path should be automatically learned from GAMBIT to make it robust against version updates
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
 set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.1.2")
 set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/1.1.2")
 set(gm2calc_dl "gm2calc-1.1.2.tar.gz")

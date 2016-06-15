@@ -62,9 +62,11 @@ ObsLikes:
   - purpose:      Test
     capability:   unimproved_MSSM_spectrum
     function:     get_MSSM_spectrum_as_SLHAea
-  #  capability:   run_MSSMspectrum_test
-  #  function:     MSSMspectrum_test
-  #  printme:      false
+    printme:      false
+
+  - purpose:      Test
+    capability:   run_MSSMspectrum_test
+    function:     MSSMspectrum_test
 
   #- purpose:      Likelihood
   #  capability:   specbit_tests3

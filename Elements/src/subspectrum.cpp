@@ -134,8 +134,8 @@ namespace Gambit
 
    double SubSpectrum::safeget(const Par::Tags partype, 
                                const str& mass, 
-                               SpecOverrideOptions check_overrides, 
-                               SafeBool check_antiparticle) const
+                               const SpecOverrideOptions check_overrides, 
+                               const SafeBool check_antiparticle) const
    {
       double result = get( partype, mass, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
@@ -144,9 +144,9 @@ namespace Gambit
    }
 
    double SubSpectrum::safeget(const Par::Tags partype, 
-                               const str& mass, int i, 
-                               SpecOverrideOptions check_overrides, 
-                               SafeBool check_antiparticle) const
+                               const str& mass, const int i, 
+                               const SpecOverrideOptions check_overrides, 
+                               const SafeBool check_antiparticle) const
    {
       double result = get( partype, mass, i, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
@@ -155,8 +155,8 @@ namespace Gambit
    }
 
    double SubSpectrum::safeget(const Par::Tags partype,
-                               const str& mass, int i, int j,
-                               SpecOverrideOptions check_overrides) const
+                               const str& mass, const int i, const int j,
+                               const SpecOverrideOptions check_overrides) const
    {
       double result = get( partype, mass, i, j, check_overrides);
       if (Utils::isnan(result))
@@ -166,8 +166,8 @@ namespace Gambit
 
    double SubSpectrum::safeget(const Par::Tags partype, 
                                const int pdg_code, const int context, 
-                               SpecOverrideOptions check_overrides, 
-                               SafeBool check_antiparticle) const
+                               const SpecOverrideOptions check_overrides, 
+                               const SafeBool check_antiparticle) const
    {
       double result = get( partype, pdg_code, context, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
@@ -177,8 +177,8 @@ namespace Gambit
 
    double SubSpectrum::safeget(const Par::Tags partype, 
                                const std::pair<int,int> pdgpr,
-                               SpecOverrideOptions check_overrides, 
-                               SafeBool check_antiparticle) const
+                               const SpecOverrideOptions check_overrides, 
+                               const SafeBool check_antiparticle) const
    {
       double result = get( partype, pdgpr, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
@@ -188,8 +188,8 @@ namespace Gambit
 
    double SubSpectrum::safeget(const Par::Tags partype, 
                                const std::pair<str,int> shortpr, 
-                               SpecOverrideOptions check_overrides, 
-                               SafeBool check_antiparticle) const
+                               const SpecOverrideOptions check_overrides, 
+                               const SafeBool check_antiparticle) const
    {
       double result = get( partype, shortpr, check_overrides, check_antiparticle);
       if (Utils::isnan(result))
@@ -202,7 +202,7 @@ namespace Gambit
    /// @{ Parameter override functions
 
    void SubSpectrum::set_override(const Par::Tags partype,
-                      const double value, const str& name, bool allow_new, bool decouple)
+                      const double value, const str& name, const bool allow_new, const bool decouple)
    {   
       bool done = false;                  
       // No index input; check if direct string exists in map
@@ -355,7 +355,7 @@ namespace Gambit
    }
 
    void SubSpectrum::set_override(const Par::Tags partype,
-                      const double value, const str& name, int i, bool allow_new, bool decouple)
+                      const double value, const str& name, const int i, const bool allow_new, const bool decouple)
    {                                         
       bool done = false;                  
       // One index input; check if direct string plus index exists in map
@@ -467,7 +467,7 @@ namespace Gambit
    }
 
    void SubSpectrum::set_override(const Par::Tags partype,
-                      const double value, const str& name, int i, int j, bool allow_new)
+                      const double value, const str& name, const int i, const int j, const bool allow_new)
    {                                         
       if(not allow_new and not has(partype,name,i,j) )
       {                                      
@@ -483,18 +483,18 @@ namespace Gambit
    /// PDB overloads of set_override functions
 
    /* Input short name plus index pair */
-   void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<str,int> shortpr, const bool allow_new, bool decouple)
+   void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<str,int> shortpr, const bool allow_new, const bool decouple)
    {
       set_override(partype, value, shortpr.first, shortpr.second, allow_new, decouple);
    }
 
    /* Input PDG code plus context integer */
-   void SubSpectrum::set_override(const Par::Tags partype, const double value, const int PDGcode, const int context, const bool allow_new, bool decouple)
+   void SubSpectrum::set_override(const Par::Tags partype, const double value, const int PDGcode, const int context, const bool allow_new, const bool decouple)
    {
       set_override(partype, value, std::make_pair(PDGcode,context), allow_new, decouple);
    }
 
-   void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<int,int> pdgpr, const bool allow_new, bool decouple)
+   void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<int,int> pdgpr, const bool allow_new, const bool decouple)
    {
       /* If there is a short name, then retrieve that plus the index */      
       if( Models::ParticleDB().has_short_name(pdgpr) )                       
@@ -512,7 +512,7 @@ namespace Gambit
    /* Helpers for override functions which take parameter names and indices as vectors, and
       loop over them, to make it easy to set many parameters to the same value.
       No two-index versions at the moment, but could be added if needed. */
-   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, bool allow_new, bool decouple)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const bool allow_new, const bool decouple)
    {
       for(std::vector<str>::const_iterator it = params.begin();
     it != params.end(); ++it)
@@ -521,7 +521,7 @@ namespace Gambit
   }
    }
 
-   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const std::vector<int> indices, bool allow_new, bool decouple)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const std::vector<int> indices, const bool allow_new, const bool decouple)
    {
       for(std::vector<str>::const_iterator it = params.begin(); it != params.end(); ++it)
       {
@@ -532,21 +532,21 @@ namespace Gambit
       }
    }
 
-   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const int i, bool allow_new, bool decouple)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const int i, const bool allow_new, const bool decouple)
    {
       std::vector<int> indices;
       indices.push_back(i);
       this->set_override_vector(tag,value,params,indices,allow_new,decouple);    
    }
 
-   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const str& par, const std::vector<int> indices, bool allow_new, bool decouple)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const str& par, const std::vector<int> indices, const bool allow_new, const bool decouple)
    {
       std::vector<str> params;
       params.push_back(par);
       this->set_override_vector(tag,value,params,indices,allow_new,decouple);    
    }
 
-   void SubSpectrum::RunToScale(double scale, int behave)
+   void SubSpectrum::RunToScale(double scale, const int behave)
    {
       if(behave==0 or behave==1) 
       {

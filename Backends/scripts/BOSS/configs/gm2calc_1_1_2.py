@@ -36,7 +36,7 @@ input_files = [
 ]
 include_paths = [
     '../../../Backends/installed/gm2calc/1.1.2/src', 
-    '../../../contrib/eigen3'
+    '../../../contrib/eigen3.2.8' # This should be learned from GAMBIT somehow to future-protect against version changes (and if user uses own library!)
 ]
 base_paths = ['../../../Backends/installed/gm2calc/1.1.2']
 

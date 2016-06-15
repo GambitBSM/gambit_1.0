@@ -71,6 +71,7 @@ namespace Gambit
             /// @{ Constructors/destructors
             ScalarSingletDMSimpleSpec(const SingletDMModel& p)
              : params(p)
+            {}
 
             static int index_offset() {return -1;}
         
@@ -103,9 +104,9 @@ namespace Gambit
             void set_g3(double in)       { params.g3=in; }
             void set_sinW2(double in)       { params.sinW2=in; }
            
-            void set_Yd(int i, int j,double in)       { if (i==j){params.Yd[i]=in;}}
-            void set_Yu(int i, int j,double in)       { if (i==j){params.Yu[i]=in;}}
-            void set_Ye(int i, int j,double in)       { if (i==j){params.Ye[i]=in;}}
+            void set_Yd(double in, int i, int j)       { if (i==j){params.Yd[i]=in;}}
+            void set_Yu(double in, int i, int j)       { if (i==j){params.Yu[i]=in;}}
+            void set_Ye(double in, int i, int j)       { if (i==j){params.Ye[i]=in;}}
 
             /// @{ Map fillers
             static GetterMaps fill_getter_maps()
