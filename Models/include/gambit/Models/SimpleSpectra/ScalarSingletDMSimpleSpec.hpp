@@ -121,7 +121,7 @@ namespace Gambit
                getters[mass1]        .map0W["vev"]       = &Self::get_HiggsVEV;
                getters[dimensionless].map0W["lambda_hS"] = &Self::get_lambda_hS;
 
-               //getters[Pole_Mass].map0W["h0"]      = &Self::get_HiggsPoleMass;
+               getters[Pole_Mass].map0W["h0"]      = &Self::get_HiggsPoleMass;
                getters[Pole_Mass].map0W["h0_1"]    = &Self::get_HiggsPoleMass;
  
                getters[Pole_Mass].map0W["S"]       = &Self::get_SingletPoleMass; 
