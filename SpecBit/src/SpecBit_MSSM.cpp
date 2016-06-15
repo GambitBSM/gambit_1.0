@@ -624,7 +624,7 @@ namespace Gambit
       }
 
       // Ok the GAMBIT block exists, add the data to the MSSM SubSpectrum object.  
-      matched_spectra.get_HE()->set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
+      matched_spectra.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
 
       result = &matched_spectra;
     }
