@@ -71,6 +71,14 @@
     // Could add some kind of dependency here, like on the input filename, to allow dependency
     // resolver to ignore it most of the time. 
     #undef FUNCTION
+
+    // MSSM spectrum constructed from an SLHAstruct (SLHAea::Coll).
+    // Can use as an improvement upon creating a Spectrum object from an SLHA file (avoids
+    // disk access), but without going to a full SubSpectrum wrapper interface.
+    #define FUNCTION get_MSSM_spectrum_from_SLHAstruct
+    START_FUNCTION(const Spectrum*)
+    DEPENDENCY(unimproved_MSSM_spectrum, SLHAstruct)
+    #undef FUNCTION
     
     // ==============================
     // Get unimproved MSSM spectrum as an SLHAea object

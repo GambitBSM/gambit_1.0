@@ -10,7 +10,7 @@
 ///   
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@desy.de) 
-///  \date 2013 Jun -- 2015 May
+///  \date 2013 Jun -- 2016 May
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -48,16 +48,18 @@ namespace Gambit {
       result.resonances.clear();
       result.threshold_energy.clear();
 
-      // settings for coannihilations (default values if no input is specified
-      // in yaml file)
-      // FIXME: Add getValue documentation
+      /// Option CoannCharginosNeutralinos<bool>: Specify whether charginos and 
+      /// neutralinos are included in coannihilations (default: true)
       bool CoannCharginosNeutralinos = runOptions->getValueOrDef<bool>(true,
           "CoannCharginosNeutralinos");
-      // FIXME: Add getValue documentation
+          
+      /// Option CoannSfermions<bool>: Specify whether sfermions are included in 
+      /// coannihilations (default: true)
       bool CoannSfermions = runOptions->getValueOrDef<bool>(true,
           "CoannSfermions");
-      // TB: for me always the default value is used (not the one in the yaml file!?    
-      // FIXME: Add getValue documentation
+          
+      /// Option CoannMaxMass<double>: Maximal sparticle mass to be included in 
+      /// coannihilations, in units of DM mass (default: 1.6)
       double CoannMaxMass = runOptions->getValueOrDef<double>(1.6,
           "CoannMaxMass");
 
@@ -203,10 +205,9 @@ namespace Gambit {
       using namespace Pipes::RD_spectrum_ordered_func;
 
       result = *Dep::RD_spectrum;
-      // NB: coannihilatingParticles does not have to be ordered,
-      // but it is assumed that coannihilatingParticles[0] is the DM particle 
 
-      // FIXME: Discuss!!!
+      // NB: coannihilatingParticles does not necessarily have to be ordered,
+      // but it is assumed that coannihilatingParticles[0] is the DM particle 
       RD_coannihilating_particle tmp_co;
       if (result.coannihilatingParticles.size() > 1)
         for (std::size_t i=0; i<result.coannihilatingParticles.size()-1; i++)
@@ -289,7 +290,6 @@ namespace Gambit {
         // NB: only this particle code is DS/SUSY specific!
       }
 
-      // now order:  FIXME: Discuss!!!
       double tmp; int itmp;
       for (int i=1; i<=myrdmgev.nco-1; i++) {
         for (int j=i+1; j<=myrdmgev.nco; j++) {
@@ -325,8 +325,9 @@ namespace Gambit {
       }
       // similar for other BEs...
 
-      // TB : why testing this only for peff= 0.1 ?
-      // FIXME: Discuss!!!
+      // TB : why testing this only for peff= 0.1 ? Just commenting this out
+      // is not the solution ;)
+      // FIXME: !!!
 //      double peff = 0.1;
 //      if ( Utils::isnan((*result)(peff)) )
 //      {
@@ -404,7 +405,8 @@ namespace Gambit {
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
 
-      // FIXME: Add getValue documentation
+        /// Option fast<int>: Numerical performance of Boltzmann solver in DS
+        /// (default: 1) [NB: accurate is fast = 0 !]
         int fast = runOptions->getValueOrDef<int>(1, "fast");
         switch (fast)
         {
@@ -623,10 +625,8 @@ namespace Gambit {
       int fast;     // fast: 1, accurate: 0
       double Beps;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
 
-      // Set options via ini-file
-      // FIXME: Add getValue documentation
+      // Set options via ini-file (MicrOmegas-specific performance options)
       fast = runOptions->getValueOrDef<int>(0, "fast");
-      // FIXME: Add getValue documentation
       Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
       logger() << "Using fast: " << fast << " and Beps: " << Beps << endl;
 

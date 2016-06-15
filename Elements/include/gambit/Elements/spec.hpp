@@ -33,9 +33,9 @@ namespace Gambit {
 
    /// @{ No indices
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename DerivedSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
       /// TODO: Could avoid dismantling the MapCollection struct by just letting the
       ///       SetMaps class do it, but one step at a time...
       ///       Could also reduce duplication between getter and checker functions by making the 
@@ -69,9 +69,9 @@ namespace Gambit {
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename DerivedSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
 
       bool overrides=true;
       bool override_only=false;
@@ -102,7 +102,7 @@ namespace Gambit {
    }                                                                        
  
    template <class DerivedSpec>
-   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, SafeBool check_antiparticle)
+   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, const SafeBool check_antiparticle)
    {
       typedef typename DerivedSpec::MTset MTset;
 
@@ -142,9 +142,9 @@ namespace Gambit {
    /// @}
    /// @{ One index
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, const int i, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename DerivedSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
 
       bool overrides=true;
       bool override_only=false;
@@ -173,9 +173,9 @@ namespace Gambit {
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, SpecOverrideOptions check_overrides, SafeBool check_antiparticle) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, const int i, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename DerivedSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
 
       bool overrides=true;
       bool override_only=false;
@@ -206,7 +206,7 @@ namespace Gambit {
    }                                                                        
  
    template <class DerivedSpec>
-   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, int i, SafeBool check_antiparticle)
+   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, const int i, const SafeBool check_antiparticle)
    {
       typedef typename DerivedSpec::MTset MTset;
 
@@ -248,9 +248,9 @@ namespace Gambit {
    /// @{ Two indices
 
    template <class DerivedSpec>
-   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, int i, int j, SpecOverrideOptions check_overrides) const
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, const int i, const int j, const SpecOverrideOptions check_overrides) const
    {
-      typedef typename DerivedSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
 
       bool overrides=true;
       bool override_only=false;
@@ -274,9 +274,9 @@ namespace Gambit {
    }                                                                        
 
    template <class DerivedSpec>
-   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, int i, int j, SpecOverrideOptions check_overrides) const
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, const int i, const int j, const SpecOverrideOptions check_overrides) const
    {
-      typedef typename DerivedSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
 
       bool overrides=true;
       bool override_only=false;
@@ -302,7 +302,7 @@ namespace Gambit {
    }                                                                        
  
    template <class DerivedSpec>
-   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, int i, int j)
+   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, const int i, const int j)
    {
       typedef typename DerivedSpec::MTset MTset;
 

@@ -61,6 +61,8 @@ namespace Gambit
       const SubSpectrum& spec = fullspectrum.get_HE(); // MSSMSpec SubSpectrum object
       const SubSpectrum& SM   = fullspectrum.get_LE(); // QedQcdWrapper SubSpectrum object
 
+      using namespace Par; // Bring parameter tags into scope
+
       std::ostringstream report; // Information about any problems encountered
 
       // Extract SLHAea object
@@ -189,19 +191,19 @@ namespace Gambit
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
          cout<<"Lightest neutral Higgs boson pole mass:"<<endl;
-         ECHO(  fullspectrum.get(Par::Pole_Mass, PDB.short_name_pair(25,0) )   )
-         ECHO(  fullspectrum.get(Par::Pole_Mass, PDB.long_name(25,0) )         )
-         ECHO(  fullspectrum.get(Par::Pole_Mass,25,0)                          )
-         ECHO(  fullspectrum.get(Par::Pole_Mass, PDB.pdg_pair("h0",1) )        )
-         ECHO(  fullspectrum.get(Par::Pole_Mass,"h0",1)                        )
-         ECHO(  fullspectrum.get(Par::Pole_Mass,"h0_1")                        )
+         ECHO(  fullspectrum.get(Pole_Mass, PDB.short_name_pair(25,0) )   )
+         ECHO(  fullspectrum.get(Pole_Mass, PDB.long_name(25,0) )         )
+         ECHO(  fullspectrum.get(Pole_Mass,25,0)                          )
+         ECHO(  fullspectrum.get(Pole_Mass, PDB.pdg_pair("h0",1) )        )
+         ECHO(  fullspectrum.get(Pole_Mass,"h0",1)                        )
+         ECHO(  fullspectrum.get(Pole_Mass,"h0_1")                        )
 
-         ECHO(  spec.get(Par::Pole_Mass, PDB.short_name_pair(25,0) )   )
-         ECHO(  spec.get(Par::Pole_Mass, PDB.long_name(25,0) )         )
-         ECHO(  spec.get(Par::Pole_Mass,25,0)                          )
-         ECHO(  spec.get(Par::Pole_Mass, PDB.pdg_pair("h0",1) )        )
-         ECHO(  spec.get(Par::Pole_Mass,"h0",1)                        )
-         ECHO(  spec.get(Par::Pole_Mass,"h0_1")                        )
+         ECHO(  spec.get(Pole_Mass, PDB.short_name_pair(25,0) )   )
+         ECHO(  spec.get(Pole_Mass, PDB.long_name(25,0) )         )
+         ECHO(  spec.get(Pole_Mass,25,0)                          )
+         ECHO(  spec.get(Pole_Mass, PDB.pdg_pair("h0",1) )        )
+         ECHO(  spec.get(Pole_Mass,"h0",1)                        )
+         ECHO(  spec.get(Pole_Mass,"h0_1")                        )
 
          cout<<endl;
          cout<<"Retrieval of Spectrum object contents, with"<<endl;
@@ -701,7 +703,7 @@ namespace Gambit
     void light_quark_test(bool&)
     {
        namespace myPipe = Pipes::light_quark_test;
-       const SubSpectrum* qedqcd = *myPipe::Dep::qedqcd_subspectrum;
+       const SubSpectrum& qedqcd = **myPipe::Dep::qedqcd_subspectrum;
    
        // Check light quark mass ratios 
        logger() << "Checking light quark mass ratios:" << std::endl;
@@ -751,7 +753,7 @@ namespace Gambit
        for(std::vector<double>::iterator it = Qvec.begin(); it != Qvec.end(); ++it) 
        {
           // Clone to avoid buildup of errors
-          std::unique_ptr<SubSpectrum> SMloop = qedqcd->clone();
+          std::unique_ptr<SubSpectrum> SMloop = qedqcd.clone();
 
           SMloop->RunToScale(*it);
           double Q = SMloop->GetScale();

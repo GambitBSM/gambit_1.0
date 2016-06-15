@@ -19,7 +19,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ResonanceDecays : public WrapperBase
+        class ResonanceDecays : public virtual WrapperBase
         {
                 // Member variables: 
             public:

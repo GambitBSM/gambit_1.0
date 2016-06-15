@@ -29,8 +29,9 @@ namespace Gambit
 {
   namespace Printers 
   {
-    /// Forward declaration
+    /// Forward declarationa
     class BaseBasePrinter;
+    class BaseBaseReader;
 
     /// Manager class for creating printer objects  
     class BasePrinterManager 
@@ -49,8 +50,14 @@ namespace Gambit
         /// Create auxiliary printer object
         virtual void new_stream(const std::string&, const Options&) = 0;
 
+        /// Create reader object
+        virtual void new_reader(const std::string&, const Options&) = 0;
+
         /// Getter for auxiliary printer objects
         virtual BaseBasePrinter* get_stream(const std::string& = "") = 0;
+
+        /// Getter for readers
+        virtual BaseBaseReader* get_reader(const std::string&) = 0;
 
         /// Instruct printers that scan has finished and to perform cleanup
         virtual void finalise(bool abnormal=false) = 0;

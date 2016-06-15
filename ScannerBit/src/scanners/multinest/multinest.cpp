@@ -39,7 +39,7 @@ namespace Gambit
 }
 
 /// Typedef for the ScannerBit pointer to the external loglikelihood function
-typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
+typedef Gambit::Scanner::like_ptr scanPtr;
 
 
 /// =================================================
@@ -233,7 +233,7 @@ namespace Gambit {
          //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
          //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
          
-         double lnew = (*boundLogLike)(unitpars); 
+         double lnew = boundLogLike(unitpars); 
 
          // Extract the primary printer from the printer manager
          //printer* primary_stream( boundPrinter.get_stream() );
@@ -342,8 +342,8 @@ namespace Gambit {
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
              //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             txt_stream->print( myrank,  "MPIrank", myrank, pointID);
-             txt_stream->print( pointID, "pointID", myrank, pointID);
+             //txt_stream->print( myrank,  "MPIrank", myrank, pointID);
+             //txt_stream->print( pointID, "pointID", myrank, pointID);
              //txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   myrank, pointID);
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
              // Put rest of parameters into a vector for printing all together
@@ -359,8 +359,8 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             live_stream->print( myrank,  "MPIrank",  myrank, pointID);
-             live_stream->print( pointID, "pointID", myrank, pointID);
+             //live_stream->print( myrank,  "MPIrank",  myrank, pointID);
+             //live_stream->print( pointID, "pointID", myrank, pointID);
              //live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", myrank, pointID);
              live_stream->print( true, "LastLive", myrank, pointID); // Flag which points were the last live set
              // Put rest of parameters into a vector for printing all together

@@ -1,49 +1,99 @@
 Parameters:
 
-  #SM nuisance parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  # #SM nuisance parameters.
+  # StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
 
-  #Nuclear matrix parameters.
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      range:  [19, 67] 
-    sigmal:
-      range:  [31, 85]
-    deltau:
-      fixed_value:  0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
+  # #Nuclear matrix parameters.
+  # nuclear_params_sigmas_sigmal:
+  #   sigmas:
+  #     range:  [19, 67] 
+  #   sigmal:
+  #     range:  [31, 85]
+  #   deltau:
+  #     fixed_value:  0.842
+  #   deltad:
+  #     fixed_value: -0.427
+  #   deltas:
+  #     fixed_value: -0.085
 
+  # CMSSM:
+  #   M0:
+  #     range: [50, 10000]
+  #     prior_type: log
+  #   M12:
+  #     range: [50, 10000]
+  #     prior_type: log
+  #   A0:
+  #     range: [-10000, 10000]
+  #     prior_type: flat
+  #   TanBeta:
+  #     range: [3.0, 70]
+  #     prior_type: flat
+  #   SignMu: 1
+
+  # LocalHalo:
+  #   rho0: # Local dark matter density
+  #     fixed_value: .4 # GeV/cm^3
+  #     #range: [.2, .8]
+  #     #prior_type: flat
+  #   vrot: # Local disk rotation speed
+  #     fixed_value: 235 # km/s
+  #   v0: # Maxwellian most-probable speed
+  #     fixed_value: 235 # km/s
+  #   vesc: # Local galactic escape speed
+  #     fixed_value: 550 # km/s
+  #   vearth: # Keplerian velocity of the earth around the sun
+  #     fixed_value: 29.78 # km/s
+
+  # Parameter point test
   CMSSM:
-    M0:
-      range: [50, 10000]
-      prior_type: log
-    M12:
-      range: [50, 10000]
-      prior_type: log
-    A0:
-      range: [-10000, 10000]
-      prior_type: flat
-    TanBeta:
-      range: [3.0, 70]
-      prior_type: flat
+    A0: -1758.13
+    M0: 1381.96
+    M12: 143.026
     SignMu: 1
-
+    TanBeta: 44.8668
   LocalHalo:
-    rho0: # Local dark matter density
-      fixed_value: .4 # GeV/cm^3
-      #range: [.2, .8]
-      #prior_type: flat
-    vrot: # Local disk rotation speed
-      fixed_value: 235 # km/s
-    v0: # Maxwellian most-probable speed
-      fixed_value: 235 # km/s
-    vesc: # Local galactic escape speed
-      fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
+    rho0: 0.4
+    v0: 235
+    vearth: 29.78
+    vesc: 550
+    vrot: 235
+  StandardModel_SLHA2:
+    CKM_A: 0.814
+    CKM_etabar: 0.353
+    CKM_lambda: 0.22537
+    CKM_rhobar: 0.117
+    GF: 1.16638e-05
+    alpha1: 0
+    alpha2: 0
+    alphaS: 0.119608
+    alphainv: 127.938
+    delta13: 0
+    mBmB: 4.26271
+    mCmC: 1.275
+    mD: 0.0048
+    mE: 0.000510999
+    mMu: 0.105658
+    mNu1: 0
+    mNu2: 0
+    mNu3: 0
+    mS: 0.095
+    mT: 172.648
+    mTau: 1.77682
+    mU: 0.0023
+    mZ: 91.1876
+    theta12: 0.58376
+    theta13: 0.15495
+    theta23: 0.76958
+  nuclear_params_sigmas_sigmal:
+    deltad: -0.427
+    deltas: -0.085
+    deltau: 0.842
+    sigmal: 70.7982
+    sigmas: 58.821
+
+
+
 
 Priors:
 
@@ -248,7 +298,7 @@ Rules:
 
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
-    function: GM2C_SUSY_c
+    function: GM2C_SUSY
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2

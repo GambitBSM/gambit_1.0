@@ -112,21 +112,21 @@ namespace Gambit
          std::string getName() const { return SpecTraits<D>::name(); };
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         bool   has(const Par::Tags, const str&, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
-         double get(const Par::Tags, const str&, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
-         bool   has(const Par::Tags, const str&, int, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
-         double get(const Par::Tags, const str&, int, SpecOverrideOptions=use_overrides, SafeBool=SafeBool(true)) const;
-         bool   has(const Par::Tags, const str&, int, int, SpecOverrideOptions=use_overrides) const;
-         double get(const Par::Tags, const str&, int, int, SpecOverrideOptions=use_overrides) const;
+         bool   has(const Par::Tags, const str&, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, const int, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, const int, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, const int, const int, const SpecOverrideOptions=use_overrides) const;
+         double get(const Par::Tags, const str&, const int, const int, const SpecOverrideOptions=use_overrides) const;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         void set(const Par::Tags, const double, const str&, SafeBool=SafeBool(true));
-         void set(const Par::Tags, const double, const str&, int, SafeBool=SafeBool(true));
-         void set(const Par::Tags, const double, const str&, int, int);
+         void set(const Par::Tags, const double, const str&, const SafeBool=SafeBool(true));
+         void set(const Par::Tags, const double, const str&, const int, const SafeBool=SafeBool(true));
+         void set(const Par::Tags, const double, const str&, const int, const int);
 
          /// @{ Default (empty) map filler functions
          /// Override as needed in derived classes

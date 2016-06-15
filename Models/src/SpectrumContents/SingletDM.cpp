@@ -55,6 +55,8 @@ namespace Gambit {
      addParameter(Par::dimensionless, "g1", scalar);
      addParameter(Par::dimensionless, "g2", scalar);
      addParameter(Par::dimensionless, "g3", scalar);
+    
+     addParameter(Par::dimensionless, "sinW2", scalar);
   
      addParameter(Par::dimensionless, "Yd", m3x3);
      addParameter(Par::dimensionless, "Yu", m3x3);

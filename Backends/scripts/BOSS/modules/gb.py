@@ -42,12 +42,12 @@ std_include_paths       = []
 
 functions_done          = []
 classes_done            = []
+wr_func_names           = []
 
 factory_info            = OrderedDict()
 class_factory_file_dict = OrderedDict()
 
 function_file_dict      = OrderedDict()
-wr_func_names           = OrderedDict()
 
 symbol_name_counter     = 1
 function_name_counter   = 1
@@ -88,6 +88,21 @@ enum_decls_wrp_fname    = 'enum_decl_copies'
 
 frontend_fname          = gambit_backend_name_full + '.hpp'
 frontend_path           = os.path.join(frontend_dir_complete, frontend_fname)
+
+# Text modifications
+textmods = {
+    'blue'      : '\033[34m',
+    'green'     : '\033[32m',
+    'yellow'    : '\033[33m',
+    'red'       : '\033[31m',
+    'magenta'   : '\033[35m',
+    'cyan'      : '\033[36m',
+    'white'     : '\033[37m',
+    'bold'      : '\033[1m',
+    'underline' : '\033[4m',
+    'end'       : '\033[0m',
+}
+
 
 # Dictionary of what names to use for various operator symbols
 operator_names = {

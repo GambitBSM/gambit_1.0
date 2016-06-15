@@ -17,6 +17,8 @@
 #ifndef __particle_macros_hpp__
 #define __particle_macros_hpp__
 
+#include "gambit/Utils/boost_fallbacks.hpp"
+
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/arithmetic/add.hpp>

@@ -32,15 +32,15 @@ from optparse import OptionParser
 
 def main():
 
-    print
-    print
-    print '  ========================================'
-    print '  ||                                    ||'
-    print '  ||  BOSS - Backend-On-a-Stick-Script  ||'
-    print '  ||                                    ||'
-    print '  ========================================'
-    print 
-    print 
+    # print
+    # print
+    # print '  ========================================'
+    # print '  ||                                    ||'
+    # print '  ||  BOSS - Backend-On-a-Stick-Script  ||'
+    # print '  ||                                    ||'
+    # print '  ========================================'
+    # print 
+    # print 
 
 
     # Parse command line arguments and options
@@ -160,6 +160,18 @@ def main():
     import modules.infomsg as infomsg
 
 
+    # Print banner
+    msg = '''
+
+  ========================================
+  ||                                    ||
+  ||  BOSS - Backend-On-a-Stick-Script  ||
+  ||                                    ||
+  ========================================
+    '''
+    msg = utils.modifyText(msg,'bold')
+    print msg
+
 
 
     # If castxml compiler setting are given as command line input, 
@@ -186,23 +198,20 @@ def main():
         print '(Continuing from saved state.)'
         print 
         print 
-        print 'Parsing the generated factory function source files:'
-        print '----------------------------------------------------'
+        print utils.modifyText('Parsing the generated factory function source files:','underline')
         print 
 
         factory_xml_files = filehandling.parseFactoryFunctionFiles()
 
         print
         print
-        print 'Generating file loaded_types.hpp:'
-        print '---------------------------------'
+        print utils.modifyText('Generating file loaded_types.hpp:','underline')
         print 
 
         filehandling.createLoadedTypesHeader(factory_xml_files)
 
         print
-        print 'Done!'
-        print '-----' 
+        print utils.modifyText('Done!','bold')
         print
 
         sys.exit()
@@ -213,8 +222,7 @@ def main():
     if options.reset_info_file_name != '':
         print
         print
-        print 'Reset source code:'
-        print '------------------'
+        print utils.modifyText('Reset source code:','underline')
         print 
         print '  Input file: ' + options.reset_info_file_name
         print 
@@ -242,8 +250,7 @@ def main():
     #
     if cfg.auto_detect_stdlib_paths:
         print
-        print 'Identifying standard include paths:'
-        print '-----------------------------------'
+        print utils.modifyText('Identifying standard include paths:','underline')
         print 
 
         utils.identifyStdIncludePaths()
@@ -255,8 +262,7 @@ def main():
     #
 
     print
-    print 'Parsing the input files:'
-    print '------------------------'
+    print utils.modifyText('Parsing the input files:','underline')
     print 
 
     # Create the temp output dir if it does not exist
@@ -348,13 +354,13 @@ def main():
         all_function_names = list(OrderedDict.fromkeys(all_function_names))
         
         # Output lists
-        print 'Classes:'
-        print '--------'
+        print utils.modifyText('Classes:','underline')
+        print
         for demangled_class_name in all_class_names:
             print '  - ' + demangled_class_name
         print
-        print 'Functions:'
-        print '----------'
+        print utils.modifyText('Functions:','underline')
+        print
         for demangled_func_name in all_function_names:
             print '  - ' + demangled_func_name
         print
@@ -367,8 +373,7 @@ def main():
     # Analyse types and functions
     #
 
-    print 'Analysing types and functions:'
-    print '------------------------------'
+    print utils.modifyText('Analysing types and functions:','underline')
     print
     print '  (This may take a little while.)'
     print
@@ -509,8 +514,7 @@ def main():
         print
         print '  - No classes or functions to load!'
         print
-        print 'Done!'
-        print '-----' 
+        print utils.modifyText('Done!','bold')
 
         sys.exit()
 
@@ -518,16 +522,14 @@ def main():
 
     print
     print
-    print 'Generating code:'
-    print '----------------'
+    print utils.modifyText('Generating code:','underline')
 
     for xml_file in xml_files:
 
         # Output xml file name
         print 
         print
-        print '  Current XML file: %s' % xml_file
-        print '  ------------------' + '-'*len(xml_file)
+        print '  ' + utils.modifyText('Current XML file:', 'underline') + ' ' + xml_file
         print 
 
         #
@@ -586,8 +588,7 @@ def main():
         print
         print '  - No classes or functions loaded!'
         print
-        print 'Done!'
-        print '-----' 
+        print utils.modifyText('Done!','bold')
         print 
 
         sys.exit()
@@ -712,8 +713,7 @@ def main():
 
     print
     print
-    print 'Copying generated files to original source tree:'
-    print '------------------------------------------------'
+    print utils.modifyText('Copying generated files to original source tree:','underline')
     print 
 
     manipulated_files, new_files, new_dirs = filehandling.copyFilesToSourceTree(verbose=True)
@@ -746,8 +746,7 @@ def main():
 
     print 
     print 
-    print 'Parsing the generated factory function source files:'
-    print '----------------------------------------------------'
+    print utils.modifyText('Parsing the generated factory function source files:','underline')
     print 
 
     factory_xml_files = filehandling.parseFactoryFunctionFiles()
@@ -760,8 +759,7 @@ def main():
 
     print
     print
-    print 'Generating file loaded_types.hpp:'
-    print '---------------------------------'
+    print utils.modifyText('Generating file loaded_types.hpp:','underline')
     print 
 
     filehandling.createLoadedTypesHeader(factory_xml_files)
@@ -773,8 +771,7 @@ def main():
 
     print 
     print 
-    print 'Parsing the generated function source files:'
-    print '--------------------------------------------'
+    print utils.modifyText('Parsing the generated function source files:','underline')
     print 
 
     function_xml_files = filehandling.parseFunctionSourceFiles()
@@ -786,8 +783,7 @@ def main():
 
     print
     print
-    print 'Generating GAMBIT frontend header file:'
-    print '---------------------------------------'
+    print utils.modifyText('Generating GAMBIT frontend header file:','underline')
     print 
 
     filehandling.createFrontendHeader(function_xml_files)
@@ -798,8 +794,7 @@ def main():
     #
 
     print
-    print 'Done!'
-    print '-----' 
+    print utils.modifyText('Done!','bold')
     print
     print "  To prepare this backend for use with GAMBIT, do the following:"
     print 

@@ -15,7 +15,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class AlphaEM : public WrapperBase
+        class AlphaEM : public virtual WrapperBase
         {
                 // Member variables: 
             public:
