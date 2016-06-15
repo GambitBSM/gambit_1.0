@@ -65,13 +65,13 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 20000
-      tol: 0.0001
+      nlive: 4000
+      tol: 0.5
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 2000
+      NP: 5000
       verbosity: 1
 
 ObsLikes:
@@ -342,8 +342,8 @@ Rules:
     function: FH_A0_decays
   - capability: Higgs_decay_rates
     function: FH_MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: FH_Hplus_decays
+  - capability: H_plus_decay_rates
+    function: FH_H_plus_decays
   - capability: h0_2_decay_rates
     function: FH_h0_2_decays
   - capability: t_decay_rates
@@ -454,7 +454,8 @@ Rules:
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
                              "SUSY:all = on",
-                             "TauDecays:mode = 0"]
+                             "TauDecays:mode = 0",
+                             "TimeShower:pTmin = 20"]
 
   - capability: LHC_Combined_LogLike
     backends:

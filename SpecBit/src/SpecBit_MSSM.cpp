@@ -836,7 +836,7 @@ namespace Gambit
     }
 
     /// @{ Convert MSSM type Spectrum object into a map, so it can be printed
-    void fill_map_from_MSSMspectrum(std::map<std::string,double>&, /*TAG*/ Spectrum);
+    void fill_map_from_MSSMspectrum(std::map<std::string,double>&, const Spectrum&);
     void get_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_as_map;

@@ -36,7 +36,7 @@ input_files = [
 ]
 include_paths = [
     '../../../Backends/installed/gm2calc/1.0.0/src', 
-    '../../../contrib/eigen3'
+    '../../../contrib/eigen3.2.8'  #TODO: This should be learned via cmake somehow...
 ]
 base_paths = ['../../../Backends/installed/gm2calc/1.0.0']
 

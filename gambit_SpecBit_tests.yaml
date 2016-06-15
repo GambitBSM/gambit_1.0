@@ -10,9 +10,9 @@ Parameters:
       fixed_value: 100
     A0:
       fixed_value: 100
-    signmu:
+    SignMu:
       fixed_value: 1
-    tanb:
+    TanBeta:
       fixed_value: 3
   
 Priors:
@@ -41,7 +41,7 @@ ObsLikes:
 
 Rules:
   - capability: unimproved_MSSM_spectrum 
-    type: /*TAG*/ Spectrum
+    type: const Spectrum*
     function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in

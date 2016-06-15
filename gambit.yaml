@@ -312,8 +312,8 @@ Rules:
     function: A0_decays
   - capability: Higgs_decay_rates
     function: MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: Hplus_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
   - capability: h0_2_decay_rates
     function: h0_2_decays
   - capability: t_decay_rates

@@ -65,9 +65,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: gaussian
+  use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: grid
+  use_scanner: twalk
   #find_shift
   #find_kernel
   #object_detection
@@ -79,10 +79,10 @@ Scanner:
 
     twalk:
       plugin: twalk
-      options:
-        tolerance: 1.001
-        #chain_number: 20
-        projection_dimension: 4
+      like: LogLike
+      tolerance: 1.001
+      #chain_number: 20
+      projection_dimension: 4
         
     tnest:
       plugin: tnest
@@ -103,12 +103,13 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 100
+      point_number: 10008
       like: LogLike
           
     toy:
       like: LogLike
       plugin: toy_mcmc
+      point_number: 2000
       #plugin_path: /home/gmartine/libsample.so
 
     square_grid:
@@ -128,15 +129,19 @@ Scanner:
       like: LogLike
       nlive: 2000
       tol: 0.1
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
           
     gnest:
       plugin: gnest
       file_name: "output_file"
       like: LogLike
       live_number: 2000
+      
+    raster:
+      plugin: raster
+      like: LogLike
+      parameters:
+        "EggBox::param_0": 3.14
+        #"EggBox::param_1": [.2, .3]
           
     bin_grid:
       plugin: bin_grid
@@ -166,27 +171,26 @@ Scanner:
 
     hdf5:
       plugin: bin_grid
-      options:
-        use_hdf5: true
-        input_files: ["runs/scan/samples/gambit_output.hdf5"]
-        groups: ["/test/test2"]
-        output_file: "output_hdf5"
-        #xrange: [2.0, 6.0]
-        #xrange: [0, 1]
-        #yrange: [0, 1]
-        xrange: [-5, 5]
-        yrange: [-5, 5]
-        grid: [50, 50]
-        selected_pts:
-          - "EggBox::param_0"
-          - "EggBox::param_1"
-        #selected_pts:
-        #  - "gaussian::param_0"
-        #  - "gaussian::param_1"
-        mult: ["mult"]
-        #loglike: 1
-        flags: ["linear"]
-        #flags: ["linear", "noadjx", "logx"]
+      use_hdf5: true
+      input_files: ["runs/scan/samples/gambit_output.hdf5"]
+      groups: ["/test/test2"]
+      output_file: "output_hdf5"
+      #xrange: [2.0, 6.0]
+      xrange: [0, 1]
+      yrange: [0, 1]
+      #xrange: [-5, 5]
+      #yrange: [-5, 5]
+      grid: [50, 50]
+      selected_pts:
+        - "EggBox::param_0"
+        - "EggBox::param_1"
+      #selected_pts:
+      #  - "gaussian::param_0"
+      #  - "gaussian::param_1"
+      mult: ["mult"]
+      #loglike: 1
+      flags: ["linear"]
+      #flags: ["linear", "noadjx", "logx"]
 
     gal_0:
       plugin: bin_grid
@@ -343,11 +347,10 @@ Scanner:
     object_detection:
       plugin: object_detection
       purpose: LogLike
-      options:
-        psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
-        image_file: "/home/gmartine/fits/c0052.fits"
-        grid_file: "/home/gmartine/fits/grid.fits"
-        min_pixel_number: -1
+      psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
+      image_file: "/home/gmartine/fits/c0052.fits"
+      grid_file: "/home/gmartine/fits/grid.fits"
+      min_pixel_number: -1
       parameters:
         pos_x:
           range: [200, 800]
@@ -378,19 +381,21 @@ Scanner:
     EggBox:
       plugin: EggBox
       purpose: LogLike
-      options:
-        Printer:
-          printer: ascii
-          #options:
-          output_file: "gambit_output2.txt"
       parameters:
-        param...2:
-          prior_type: flat
+        param_0:
+          #prior_type: none
+          #plugin: flat
           range: [0, 1]
+        param_1:
+          range: [0, 1]
+          
+    flat:
+      plugin: flat_prior
+      range: [0, 1]
 
     gaussian:
       plugin: gaussian
-      purpose: LogLike2
+      purpose: LogLike
       #options:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
@@ -399,7 +404,7 @@ Scanner:
         ##  same_as: "gaussian::param_0"
         ##  scale: -2
         ##  shift: -1
-        param...2:
+        param...20:
           range: [-5, 5]
         params...2: 
           fixed_value: [-1, 1]
@@ -518,7 +523,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/scan"
+  default_output_path: "runs/scan_me"
 
   # Some example keys and subkeys
   my_key: 123

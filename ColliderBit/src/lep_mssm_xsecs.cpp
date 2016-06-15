@@ -149,7 +149,7 @@ namespace Gambit
 
     /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
     void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
-                            const double tol, const bool pt_error, /*TAG*/ Spectrum spec, const double gammaZ)
+                            const double tol, const bool pt_error, const Spectrum& spec, const double gammaZ)
     {
       // Subspectrum
       const SubSpectrum& mssm = spec.get_HE();
@@ -217,7 +217,7 @@ namespace Gambit
 
     /// Retrieve the production cross-section at an e+e- collider for chargino pairs
     void get_sigma_ee_chipm(triplet<double>& result, const double sqrts, const int chi_plus, const int chi_minus,
-                            const double tol, const bool pt_error, /*TAG*/ Spectrum spec, const double gammaZ)
+                            const double tol, const bool pt_error, const Spectrum& spec, const double gammaZ)
     {
       // Subspectrum
       const SubSpectrum& mssm = spec.get_HE();

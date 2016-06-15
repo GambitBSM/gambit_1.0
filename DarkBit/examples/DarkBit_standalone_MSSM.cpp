@@ -44,7 +44,7 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(const Spectrum& outSpec)
+    void createSpectrum(Spectrum& outSpec)
     {
       using namespace Pipes::createSpectrum;
       std::string inputFileName = runOptions->getValue<std::string>("filename");
