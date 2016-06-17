@@ -121,60 +121,107 @@ def plotMSSM7():
 
 def spokePlots():
 
-    data1 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM1.out_0")
-    data2 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM2.out_0")
+    dataSS1 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM1.out_0")
+    dataSS2 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM2.out_0")
+
+    dataJE56_M2=genfromtxt("runs/MSSM9/JE56C_003717/samples/M2.out_0")
+    dataJE56_mHd2=genfromtxt("runs/MSSM9/JE56C_003717/samples/mHd2.out_0")
     
-    mwimp = concatenate((data1[:,46], data2[:,46]))
-    sigma_SI_p = concatenate((data1[:,48], data2[:,48]))
-    sigma_SD_p = concatenate((data1[:,50], data2[:,50]))
-    sigmav = concatenate((data1[:,47], data2[:,47]))
-    LUXlnL = concatenate((data1[:,53], data2[:,53]))
-    FermiDwarflnL = concatenate((data1[:,44], data2[:,44]))
-    IceCubelnL = concatenate((data1[:,54], data2[:,54]))
+    mwimp_SS = concatenate((dataSS1[:,46], dataSS2[:,46]))
+    sigma_SI_p_SS = concatenate((dataSS1[:,48], dataSS2[:,48]))
+    sigma_SD_p_SS = concatenate((dataSS1[:,50], dataSS2[:,50]))
+    sigmav_SS = concatenate((dataSS1[:,47], dataSS2[:,47]))
+    LUXlnL_SS = concatenate((dataSS1[:,53], dataSS2[:,53]))
+    FermiDwarflnL_SS = concatenate((dataSS1[:,44], dataSS2[:,44]))
+    IceCubelnL_SS = concatenate((dataSS1[:,54], dataSS2[:,54]))
+
+    mwimp_JE56 = concatenate((dataJE56_M2[:,54], dataJE56_mHd2[:,54]))
+    sigma_SI_p_JE56 = concatenate((dataJE56_M2[:,56], dataJE56_mHd2[:,56]))
+    sigma_SD_p_JE56 = concatenate((dataJE56_M2[:,58], dataJE56_mHd2[:,58]))
+    sigmav_JE56 = concatenate((dataJE56_M2[:,55], dataJE56_mHd2[:,55]))
+    LUXlnL_JE56 = concatenate((dataJE56_M2[:,61], dataJE56_mHd2[:,61]))
+    FermiDwarflnL_JE56 = concatenate((dataJE56_M2[:,52], dataJE56_mHd2[:,52]))
+    IceCubelnL_JE56 = concatenate((dataJE56_M2[:,62], dataJE56_mHd2[:,62]))
+    m2 = concatenate((dataJE56_M2[:,33],dataJE56_mHd2[:,33]))
+    mHd2 = concatenate((dataJE56_M2[:,38],dataJE56_mHd2[:,38]))
+
+    print m2
+    print mHd2
 
     # Spin Independent Direct Detection
     plt.clf()
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+
+    # Spokes
+    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
+    cmax = max(concatenate((LUXlnL_SS,LUXlnL_JE56)))
+    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=LUXlnL_SS,s=30)
+    sc2 = ax1.scatter(mwimp_JE56,sigma_SI_p_JE56,c=LUXlnL_JE56,s=30)
+#    plt.plot(mwimp_SS[0:8],sigma_SI_p[0:8],color='k')
+#    plt.plot(mwimp_SS_SS[9:18],sigma_SI_p[9:18],color='k')
+    sc1.set_clim([cmin,cmax])
+    sc2.set_clim([cmin,cmax])
+
+    # Limit curves
     limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
-#    plt.plot(mwimp[0:8],sigma_SI_p[0:8],color='k')
-#    plt.plot(mwimp[9:18],sigma_SI_p[9:18],color='k')
-    sc = plt.scatter(mwimp,sigma_SI_p,c=LUXlnL,s=30)
-    cbar=plt.colorbar(sc)
-    cbar.set_label('ln L_LUX')
     plt.plot(limit[:,0],limit[:,1]*10**-36,label="LUX")
+
+    # Axes, legend, and colorbar
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SI_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-49,ymax=10**-39)
-    plt.savefig("SI_DD.eps")
+    plt.gca().set_ylim(ymin=10**-49,ymax=10**-30)
+    cbar = plt.colorbar(sc1)
+    cbar.set_label('ln L_LUX')
     plt.legend()
+
+    plt.savefig("SI_DD.eps")
     plt.show()
 
     # Spin Dependent Direct Detection
-    plt.clf()   
-#    plt.scatter(mwimp,sigma_SD_p)
+    plt.clf()  
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+
+    # Spokes
+#    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
+#    cmax = max(concatenate((LUXlnL_SS,LUXlnL_JE56)))
+    sc1 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,s=30)
+#    sc1.set_clim([cmin,cmax])
+
+    # Limit curves
+    limit = genfromtxt("DarkBit/examples/SIMPLE_2011_PhaseII_SDp.txt")
+    plt.plot(limit[:,0],limit[:,1]*10**-36)
+
+    # Axes, legend, and colorbar
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SD_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
     plt.gca().set_ylim(ymin=10**-41,ymax=10**-31)
-    limit = genfromtxt("DarkBit/examples/SIMPLE_2011_PhaseII_SDp.txt")
-    plt.plot(limit[:,0],limit[:,1]*10**-36)
-    plt.show("SD_DD.eps")
+
+    plt.savefig("SD_DD.eps")
+    plt.show()
 
     # Ice Cube
-    plt.clf()   
-    sc = plt.scatter(mwimp,sigma_SI_p,c=IceCubelnL,s=30,label="sigma_p_SI")
-    cbar=plt.colorbar(sc)
-    cbar.set_label('ln L_Ice Cube 79')
-    plt.xlabel("m [GeV]")
-    plt.ylabel("sigma_p [cm^2]")
-    plt.gca().set_xscale('log')
-    plt.gca().set_yscale('log')
-    plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-49,ymax=10**-31)
+    plt.clf()
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+
+    # Spokes
+    cmin = min(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
+    cmax = max(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
+    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=IceCubelnL_SS,s=30,label="sigma_p_SI")
+    sc2 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,c=IceCubelnL_SS,s=30,label="sigma_p_SD")
+    sc1.set_clim([cmin,cmax])
+    sc2.set_clim([cmin,cmax])
+
+
+    # Limit curves
     bbSI = genfromtxt("DarkBit/examples/IC79_bb_SI.dat", comments="#")
     tautauSI = genfromtxt("DarkBit/examples/IC79_tautau_SI.dat", comments="#")
     bbSD = genfromtxt("DarkBit/examples/IC79_bb_SD.dat", comments="#")
@@ -183,14 +230,42 @@ def spokePlots():
     plt.plot(tautauSI[:,0],tautauSI[:,2], label="SI tau+ tau-")
     plt.plot(bbSD[:,0],bbSD[:,2], label="SD bb")
     plt.plot(tautauSD[:,0],tautauSD[:,2], label="SD tau+ tau-")
+    
+    # Axes, legend, and colorbar
+    cbar = plt.colorbar(sc1)
+    cbar.set_label('ln L_Ice Cube 79')
+    plt.xlabel("m [GeV]")
+    plt.ylabel("sigma_p [cm^2]")
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=5,xmax=10000)
+    plt.gca().set_ylim(ymin=10**-49,ymax=10**-31)
     plt.legend()
+
     plt.savefig("IC.eps")
     plt.show()
 
     # Fermi Dwarf Galaxy Limits
     plt.clf()
-    sc = plt.scatter(mwimp,sigmav,c=FermiDwarflnL,s=30,label="<sigma v>")
-    cbar=plt.colorbar(sc)
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+
+    # Spokes
+    cmin = min(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
+    cmax = max(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
+    sc1 = ax1.scatter(mwimp_SS,sigmav_SS,c=FermiDwarflnL_SS,s=30,label="<sigma v>")
+    sc2 = ax1.scatter(mwimp_JE56,sigmav_JE56,c=FermiDwarflnL_JE56,s=30,label="<sigma v>")
+    sc1.set_clim([cmin,cmax])
+    sc2.set_clim([cmin,cmax])
+
+    # Limit Curves
+    bb = genfromtxt("DarkBit/examples/FermiLAT_limits_bb.txt")
+    tautau = genfromtxt("DarkBit/examples/FermiLAT_limits_tautau.txt")
+    plt.plot(bb[:,0],bb[:,26], label="Fermi bb")
+    plt.plot(tautau[:,0],tautau[:,26],label="Fermi tau+ tau-")
+
+    # Axes, legend, and colorbar
+    cbar = plt.colorbar(sc1)
     cbar.set_label("ln L_Fermi")
     plt.xlabel("m [GeV]")
     plt.ylabel("<sigma v>")
@@ -198,11 +273,8 @@ def spokePlots():
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
     plt.gca().set_ylim(ymin=10**-30,ymax=10**-20)
-    bb = genfromtxt("DarkBit/examples/FermiLAT_limits_bb.txt")
-    tautau = genfromtxt("DarkBit/examples/FermiLAT_limits_tautau.txt")
-    plt.plot(bb[:,0],bb[:,26], label="Fermi bb")
-    plt.plot(tautau[:,0],tautau[:,26],label="Fermi tau+ tau-")
     plt.legend()
+
     plt.savefig("Fermi.eps")
     plt.show()
 
