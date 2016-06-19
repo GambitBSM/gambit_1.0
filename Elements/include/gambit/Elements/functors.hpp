@@ -31,6 +31,10 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 June
+///
 ///  *********************************************
 
 
@@ -282,6 +286,12 @@ namespace Gambit
       /// Add a combination of model groups to the internal list of combinations for which this functor is allowed to be used.
       void setAllowedModelGroupCombo(str groups);
 
+      /// Test whether the model relationship is disabled for the functor
+      bool modelRelationshipDisabled(str model1, str model2);
+
+      /// Add a combination of disabled model relationship
+      void setDisabledModelRelationship(str model1, str model2);
+
     protected:
 
       /// Internal storage of the function name.
@@ -327,6 +337,9 @@ namespace Gambit
 
       /// List of allowed model group combinations
       std::set<std::set<str> > allowedGroupCombos;
+
+      /// List of disabled model relationships
+      std::set<sspair> disabledModelRelationships;
 
       /// Map from model group names to group contents
       std::map<str, std::set<str> > modelGroups;
@@ -467,6 +480,9 @@ namespace Gambit
 
       /// Add a model conditional dependency for a single model
       void setModelConditionalDependencySingular(str, str, str, void(*)(functor*, module_functor_common*));
+
+      /// Disable a model conditional dependency
+      void disableModelConditionalDependency(str, str, str);
 
       /// Add a rule for activating backend requirements according to the model being scanned.
       void makeBackendRuleForModel(str, str);

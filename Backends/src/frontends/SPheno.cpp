@@ -1286,6 +1286,8 @@ BE_INI_FUNCTION
       SetHighScaleModel("SUGRA");
     }
 
+    std::cout << HighScaleModel->str() << std::endl;
+
     // Set up options, same as BLOCK SPHENOINPUT
     // 1
     *ErrorLevel = runOptions->getValueOrDef<Finteger>(-1, "ErrorLevel");
@@ -1296,7 +1298,6 @@ BE_INI_FUNCTION
     *SPA_convention = runOptions->getValueOrDef<Flogical>(true, "SPA_convention");
     Freal8 scale = 1E6;
     SetRGEScale(scale);
-    std::cout << GetRenormalizationScale() << std::endl;
 
     // 3
     *External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");

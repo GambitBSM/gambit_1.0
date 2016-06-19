@@ -32,6 +32,10 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 June
+///
 ///  *********************************************
 
 #include <chrono>
@@ -396,7 +400,7 @@ namespace Gambit
         //Return true immediately if all entries in the allowed group combination have been matched.
         if (matches) return true;
       }
-      return false;
+       return false;
     }
 
     /// Test whether the functor has been explictly allowed to be used with a given combination of models
@@ -444,6 +448,46 @@ namespace Gambit
       allowedGroupCombos.insert(group_combo);
     }
 
+    /// Test whether the model relationship is disabled for the functor
+    bool functor::modelRelationshipDisabled(str model1, str model2)
+    {
+      if(model1 == model2 or disabledModelRelationships.empty()) return false;
+
+      sspair dis;
+      if(model1 < model2)
+        dis = sspair(model1,model2);
+      else
+        dis = sspair(model2,model1);
+      if(disabledModelRelationships.find(dis) != disabledModelRelationships.end()) return true;
+      
+      str parent1 = myClaw->get_parent(model1);
+      if(parent1 == model2) return false;
+
+      if(parent1 != "none" and !modelRelationshipDisabled(model1, parent1))
+      {
+        if(modelRelationshipDisabled(parent1, model2)) return true;
+      }
+      else
+      {
+        str parent2 = myClaw->get_parent(model2);
+        if(parent2 != "none" and !modelRelationshipDisabled(model2, parent2))
+          if(modelRelationshipDisabled(model1,parent2)) return true;
+      }
+                  
+      return false;
+    }
+
+    /// Add a combination of disabled model relationship
+    void functor::setDisabledModelRelationship(str model1, str model2)
+    {
+      sspair dis;
+      if(model1 < model2)
+        dis = sspair(model1,model2);
+      else
+        dis = sspair(model2,model1);
+      disabledModelRelationships.insert(dis);
+    }      
+
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
     {
@@ -463,7 +507,7 @@ namespace Gambit
       {
         if (myClaw->model_exists(*it))
         {
-          if (myClaw->downstream_of(model, *it)) return true;
+          if (myClaw->downstream_of(model, *it) and !modelRelationshipDisabled(model,*it)) return true;
         }
       }
       return false;
@@ -535,7 +579,8 @@ namespace Gambit
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->downstream_of(model, it->first)) return it->first;
+          if (myClaw->downstream_of(model, it->first) and !modelRelationshipDisabled(model, it->first))
+            return it->first;
         }
       }
       return "";
@@ -1006,6 +1051,18 @@ namespace Gambit
       dependency_map[key] = resolver;
     }
 
+    /// Disable a model conditional dependency 
+    void module_functor_common::disableModelConditionalDependency
+     (str model, str dep, str dep_type)
+    {
+      sspair key (dep, Utils::fix_type(dep_type));
+      if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
+      {
+        myModelConditionalDependencies[model].erase(key);
+        dependency_map.erase(key);
+      }
+    }
+
     /// Add an unconditional backend requirement
     /// The info gets updated later if this turns out to be conditional on a model.
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
@@ -1400,7 +1457,10 @@ namespace Gambit
         if (myClaw->model_exists(it->first))
         {
           if (myClaw->downstream_of(model, it->first)) it->second = true;
+          if (modelRelationshipDisabled(model, it->first)) it->second = false;
         }
+        //std::cout << myName << std::endl;
+        //std::cout << it->first << "? = " << it->second << std::endl;
       }
 
       // If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
