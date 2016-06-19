@@ -154,14 +154,18 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
+#    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
     cmax = max(concatenate((LUXlnL_SS,LUXlnL_JE56)))
-    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=LUXlnL_SS,s=30)
-    sc2 = ax1.scatter(mwimp_JE56,sigma_SI_p_JE56,c=LUXlnL_JE56,s=30)
-#    plt.plot(mwimp_SS[0:8],sigma_SI_p[0:8],color='k')
-#    plt.plot(mwimp_SS_SS[9:18],sigma_SI_p[9:18],color='k')
+    cmin = max(min(concatenate((LUXlnL_SS,LUXlnL_JE56))),(cmax-1)*10**2)
+    plt.plot(mwimp_SS[:9],sigma_SI_p_SS[:9],c='k',zorder=1)
+    plt.plot(mwimp_SS[9:],sigma_SI_p_SS[9:],c='k',zorder=1)
+    plt.plot(mwimp_JE56[:9],sigma_SI_p_JE56[:9],c='k',zorder=1)
+    plt.plot(mwimp_JE56[9:],sigma_SI_p_JE56[9:],c='k',zorder=1)
+    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=LUXlnL_SS,s=40,zorder=2,edgecolors="none")
+    sc2 = ax1.scatter(mwimp_JE56,sigma_SI_p_JE56,c=LUXlnL_JE56,s=40,zorder=2,edgecolors="none")
     sc1.set_clim([cmin,cmax])
     sc2.set_clim([cmin,cmax])
+
 
     # Limit curves
     limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
@@ -189,7 +193,9 @@ def spokePlots():
     # Spokes
 #    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
 #    cmax = max(concatenate((LUXlnL_SS,LUXlnL_JE56)))
-    sc1 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,s=30)
+    plt.plot(mwimp_JE56[:9],sigma_SD_p_JE56[:9],c="k",zorder=1)
+    plt.plot(mwimp_JE56[9:],sigma_SD_p_JE56[9:],c="k",zorder=1)
+    sc1 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,s=40,zorder=2,edgecolors="none")
 #    sc1.set_clim([cmin,cmax])
 
     # Limit curves
@@ -213,12 +219,18 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-    cmin = min(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
+    #cmin = min(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
     cmax = max(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
-    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=IceCubelnL_SS,s=30,label="sigma_p_SI")
-    sc2 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,c=IceCubelnL_SS,s=30,label="sigma_p_SD")
+    cmin = max(min(concatenate((IceCubelnL_SS,IceCubelnL_JE56))),(cmax-1)*10**2)
+    plt.plot(mwimp_SS[:9],sigma_SI_p_SS[:9],c='k',zorder=1)
+    plt.plot(mwimp_SS[9:],sigma_SI_p_SS[9:],c='k',zorder=1)
+    plt.plot(mwimp_JE56[:9],sigma_SD_p_JE56[:9],c='k',zorder=1)
+    plt.plot(mwimp_JE56[9:],sigma_SD_p_JE56[9:],c='k',zorder=1)
+    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=IceCubelnL_SS,s=40,zorder=2,edgecolors="none",label="sigma_p_SI")
+    sc2 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,c=IceCubelnL_SS,s=40,zorder=2,edgecolors="none",label="sigma_p_SD")
     sc1.set_clim([cmin,cmax])
     sc2.set_clim([cmin,cmax])
+
 
 
     # Limit curves
@@ -251,10 +263,15 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-    cmin = min(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
+    #cmin = min(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
     cmax = max(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
-    sc1 = ax1.scatter(mwimp_SS,sigmav_SS,c=FermiDwarflnL_SS,s=30,label="<sigma v>")
-    sc2 = ax1.scatter(mwimp_JE56,sigmav_JE56,c=FermiDwarflnL_JE56,s=30,label="<sigma v>")
+    cmin = max(min(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56))),(cmax-1)*10**2)
+    plt.plot(mwimp_SS[:9],sigmav_SS[:9],c='k',zorder=1)
+    plt.plot(mwimp_SS[9:],sigmav_SS[9:],c='k',zorder=1)
+    plt.plot(mwimp_JE56[:9],sigmav_JE56[:9],c='k',zorder=1)
+    plt.plot(mwimp_JE56[9:],sigmav_JE56[9:],c='k',zorder=1)
+    sc1 = ax1.scatter(mwimp_SS,sigmav_SS,c=FermiDwarflnL_SS,s=40,zorder=2,edgecolors="none",label="<sigma v>")
+    sc2 = ax1.scatter(mwimp_JE56,sigmav_JE56,c=FermiDwarflnL_JE56,s=40,zorder=2,edgecolors="none",label="<sigma v>")
     sc1.set_clim([cmin,cmax])
     sc2.set_clim([cmin,cmax])
 
