@@ -99,26 +99,63 @@ BE_NAMESPACE
 
       spectrum = Spectrum_Out(Param);
 
-      // TODO
-      //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, mP02, mS02, mSpm2, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau)
+      
+      *BRBtosgamma = 0.0;
+      *BtoSNuNu = 0.0;
+      *BrBToSLL = 0.0;
+      *DeltaMBd = 0.0;
+      *DeltaMBs = 0.0;
+      *Bs_ll = 0.0;
+      *Bd_ll = 0.0;
+      *BR_Bu_TauNu = 0.0;
+      *R_Bu_TauNu = 0.0;
+
+      *epsK = 0.0;
+      *DeltaMK2 = 0.0;
+      *K0toPi0NuNu = 0.0;
+      *KptoPipNuNu = 0.0;
+
+      *a_e = 0.0;
+      *a_mu = 0.0;
+      *a_tau = 0.0;
+      *d_e = 0.0;
+      *d_mu = 0.0;
+      *d_tau = 0.0;
+      *BrMutoEGamma = 0.0;
+      *BrTautoEGamma = 0.0;
+      *BrTautoMuGamma = 0.0;
+      *BrMu3e = 0.0;
+      *BrTau3e = 0.0;
+      *BrTau3Mu = 0.0;
+      *BR_Z_e_mu = 0.0;
+      *BR_Z_e_tau = 0.0;
+      *BR_Z_mu_tau = 0.0;
+      *rho_parameter = 0.0;
+       
+      // TODO: Low energy constraints, uncomment if needed
+      //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, mP02, mS02, mSpm2, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau);
       // reorder state identification if necessary
       // TODO: Swap Order
 
       // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
+      // TODO: Branching ratios, uncomment if needed
+      /*
       if(*L_BR and !*kont)
       {
-        if(*HighScaleModel == "SUGRA")
-        {  
-          // TODO
-          //CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
+        if(*HighScaleModel == "mSUGRA" or *HighScaleModel == "SUGRA")
+        {
+          CalculateBR_MSSM(*n_nu, *id_nu, *n_l, *id_l, *n_d, *id_d, *n_u, *id_u, *n_Z, *id_Z, *n_W, *id_W, *n_Snu, *n_Sle, *n_Sd, *n_Su, *n_N, *n_C, *n_g, *n_S0, *n_P0, *n_Spm, *id_grav, *id_gl, *id_ph, *gauge, *Glu, *PhaseGlu, *ChiPm, *U, *V, *Chi0, *N, *Sneut, *RSneut, *Slepton, *RSlepton, *Sup, *RSup, *Sdown, *RSdown, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *S0, *RS0, *P0, *RP0, *Spm, *RSpm, *epsI, *deltaM, *CalcTBD, *ratioWoM, *Y_d, *A_d, *Y_l, *A_l, *Y_u, *A_u, *mu, *vevSM, *F_GMSB, *m32, *grav_fac);
         }
         else
         {
           // TODO: NMSSM, etc
         }
       }
+      */
 
       // Calculation of the cross sections in e+ e- annihilation provided L_Cs is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0).  In the case that the file CrossSections.in does not exist, the following default values are used: Ecms = 500 GeV, Pm = Pp = 0, ISR = .TRUE.
+      // TODO: Cross sections, uncomment if needed
+      /*
       if(*L_CS and !*kont)
       {
         for(int i=1; i<=3; i++)
@@ -128,8 +165,46 @@ BE_NAMESPACE
             (*Ylp)(i,j).im = (*Y_l)(i,j).im / (*gauge)(2);
           }
         // TODO: Ecms check
-        // TODO: Cross Sections
+        Fstring<20> Tesla = "Tesla800";
+        int p_max = 100;
+        for(int i=1; i<=p_max; i++)
+        {
+          if((*Ecms)(i) != 0)
+          {
+            Farray_Freal8_1_6_1_6 SSup, SSdown, SSle;
+            Farray_Freal8_1_4_1_4 SChi0;
+            Farray_Freal8_1_3_1_3 SSn;
+            Farray_Freal8_1_2_1_2 SC;
+            Farray_Freal8_1_2 SS0, SSP;
+            Freal8 SHp;
+            CalculateCrossSectionsMSSM((*Ecms)(i), (*Pm)(i), (*Pp)(i), (*ISR)(i), (*Beam)(i), Tesla, mSup, *RSup, *mf_u, mSdown, *RSdown, *mf_d, mGlu, SSup, SSdown, mSlepton, *RSlepton, *Ylp, mSneut, *RSneut, SSle, SSn, mChiPm, *U, *V, mChi0, *N, SC, SChi0, mS0, *RS0, *vevSM, mP0, *RP0, mSpm, *RSpm, SS0, SSP, SHp);
+            for(int j=1; j<=6; j++)
+            {
+              for(int k=1; k<=6; k++)
+              {
+                (*SigSup)(i,j,k) = SSup(j,k);
+                (*SigSdown)(i,j,k) = SSdown(j,k);
+                (*SigSle)(i,j,k) = SSle(j,k);
+                if(j<=4 and k<=4) 
+                  (*SigChi0)(i,j,k) = SChi0(j,k);
+                if(j<=3 and k<=3)
+                  (*SigSn)(i,j,k) = SSn(j,k);
+                if(j<=2 and k<=2)
+                {
+                  (*SigC)(i,j,k) = SC(j,k);
+                }
+              }
+              if(j<=2)
+              {
+                (*SigS0)(i,j) = SS0(j); 
+                (*SigSP)(i,j,1) = SSP(j);
+              }
+            }
+            (*SigHp)(i,1,1) = SHp;
+          }
+        } 
       }
+      */
       
     }
    
@@ -138,7 +213,6 @@ BE_NAMESPACE
       std::stringstream msg;
       msg << ErrorHandling(*kont);
       logger() << msg.str() << EOM;
-      std::cout << msg.str() << std::endl;
       invalid_point().raise(msg.str());
     }
 
@@ -1286,8 +1360,6 @@ BE_INI_FUNCTION
       SetHighScaleModel("SUGRA");
     }
 
-    std::cout << HighScaleModel->str() << std::endl;
-
     // Set up options, same as BLOCK SPHENOINPUT
     // 1
     *ErrorLevel = runOptions->getValueOrDef<Finteger>(-1, "ErrorLevel");
@@ -1343,7 +1415,7 @@ BE_INI_FUNCTION
 
     // 22, CMS energy
     // TODO: Perhaps there is the option of setting more than one Ecms
-    static int p_max = 100;
+    static  int p_max = 100;
     static Finteger p_act = 0;
     p_act ++;
     if(p_act <= p_max)
