@@ -2028,14 +2028,21 @@ def constrLoadedTypesHeaderContent():
 
 
     #
-    # Construct include statements
+    # Construct include statements, surrounded by pragma directives
     #
     incl_statements_code = ''
+
+    for pragma_directive in cfg.pragmas_begin:
+        incl_statements_code += pragma_directive.strip() + '\n'
+
     for class_name in gb.classes_done:
         if class_name['long'] in gb.factory_info.keys():
             namespace, class_name_short = removeNamespace(class_name['long'], return_namespace=True)
             incl_statements_code += '#include "' + gb.wrapper_header_prefix + class_name['short'] + cfg.header_extension + '"\n'
     incl_statements_code += '#include "identification.hpp"\n'
+
+    for pragma_directive in cfg.pragmas_end:
+        incl_statements_code += pragma_directive.strip() + '\n'
 
 
     #

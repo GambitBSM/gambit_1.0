@@ -102,3 +102,23 @@ extra_output_dir       = 'BOSS_output'
 #                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
 known_classes = {"SLHAea::Coll" : "SLHAea/slhaea.h"}
+
+
+# ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
+
+# The listed pragma directives will be added before/after including the 
+# the BOSS-generated headers in GAMBIT.
+#
+# Example:
+#   pragmas_begin = [
+#       '#pragma GCC diagnostic push',
+#       '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"',
+#   ]
+# 
+#   pragmas_end = [
+#       '#pragma GCC diagnostic pop'
+#   ]
+
+pragmas_begin = []
+pragmas_end = []
+
