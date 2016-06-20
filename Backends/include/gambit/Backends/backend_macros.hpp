@@ -38,6 +38,16 @@
 #ifndef __BACKEND_MACROS_HPP__
 #define __BACKEND_MACROS_HPP__
 
+/// Suppress unused variable warnings in GCC (and do nothing for other compilers)
+#ifndef VARIABLE_IS_NOT_USED
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+#endif
+
+
 #include <iostream>
 #include <string>
 #include <dlfcn.h>
@@ -81,7 +91,7 @@ BE_NAMESPACE                                                                \
 {                                                                           \
   namespace                                                                 \
   {                                                                         \
-    const int CAT(MODEL,_OK) =                                              \
+    const int VARIABLE_IS_NOT_USED CAT(MODEL,_OK) =                         \
      vectorstr_push_back(allowed_models,STRINGIFY(MODEL));                  \
   }                                                                         \
 }                                                                           \

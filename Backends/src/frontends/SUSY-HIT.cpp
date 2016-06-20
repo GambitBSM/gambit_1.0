@@ -26,7 +26,7 @@ BE_NAMESPACE
 {
 
   /// Simple helper function for initialisation function, for adding missing SLHA1 2x2 family mixing matrices.
-  void attempt_to_add(const str& block, SLHAstruct& slha, const str& type, const SubSpectrum* spec, double tol, str& s1, str& s2, bool pterror)
+  void attempt_to_add(const str& block, SLHAstruct& slha, const str& type, const SubSpectrum& spec, double tol, str& s1, str& s2, bool pterror)
   {
     if (slha.find(block) == slha.end())
     {
@@ -391,13 +391,13 @@ BE_INI_FUNCTION
   {
     // Make sure the spectrum object is at the SUSY scale
     // FIXME uncomment when at_SUSY_scale is available
-    //if (not Dep::MSSM_spectrum->at_SUSY_scale())
+    //if (not (*Dep::MSSM_spectrum).at_SUSY_scale())
     //{
     //  backend_error().raise(LOCAL_INFO, "MSSM_spectrum dependency is not at the SUSY scale.");
     //}
 
-    slha = (*Dep::MSSM_spectrum)->getSLHAea();
-    const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+    slha = (*Dep::MSSM_spectrum).getSLHAea();
+    const SubSpectrum& mssm = (*Dep::MSSM_spectrum).get_HE();
 
     // Retrieve the tolerances for off-diagonal sfermion mixing
     const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");

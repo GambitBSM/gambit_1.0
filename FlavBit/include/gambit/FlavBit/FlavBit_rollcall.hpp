@@ -79,7 +79,7 @@ START_MODULE
     BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
     DEPENDENCY(Debug_Cap, bool)
     DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
