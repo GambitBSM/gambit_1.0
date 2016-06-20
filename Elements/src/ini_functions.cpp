@@ -184,7 +184,7 @@ namespace Gambit
       Backends::backendInfo().link_versions(be, ver, sv);
       Backends::backendInfo().classloader[be+ver] = with_BOSS;
       if (with_BOSS) Backends::backendInfo().classes_OK[be+ver] = true;
-      pHandle = dlopen(path.c_str(), RTLD_LAZY | RTLD_DEEPBIND);
+      pHandle = dlopen(path.c_str(), RTLD_LAZY);
       if (pHandle)
       {
         // If dlinfo is available, use it to verify the path of the backend that was just loaded.
