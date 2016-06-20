@@ -121,63 +121,97 @@ def plotMSSM7():
 
 def spokePlots():
 
-    dataSS1 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM1.out_0")
-    dataSS2 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM2.out_0")
+    SingletDM1_1 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM1.out_0")
+    SingletDM1_1_param = "m_S"
+    SingletDM1_2 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/SingletDM2.out_0")
+    SingletDM1_2_param = "lambda"
 
-    dataJE56_M2=genfromtxt("runs/MSSM9/JE56C_003717/samples/M2.out_0")
-    dataJE56_mHd2=genfromtxt("runs/MSSM9/JE56C_003717/samples/mHd2.out_0")
+    MSSM1_1=genfromtxt("runs/MSSM9/JE56C_003717/samples/M2.out_0")
+    MSSM1_1_param = "M_2"
+    #MSSM1_2=genfromtxt("runs/MSSM9/JE56C_003717/samples/mHd2.out_0")
+    #MSSM1_2=genfromtxt("runs/MSSM9/JE56C_003717/samples/mHu2.out_0")
+    #MSSM1_2=genfromtxt("runs/MSSM9/JE56C_003717/samples/TanBeta.out_0")
+    MSSM1_2=genfromtxt("runs/MSSM9/JE56C_003717/samples/M1.out_0")
+    #MSSM1_2=genfromtxt("runs/MSSM9/JE56C_003717/samples/mf2.out_0")
+    MSSM1_2_param = "M_1"
+
+    CMSSM1_1 = genfromtxt("runs/CMSSM/FMCp03000765/samples/M12.out_0")
+    CMSSM1_1_param = "M_1/2"
+    #CMSSM1_2 = genfromtxt("runs/CMSSM/FMCp03000765/samples/TanBeta.out_0")
+    CMSSM1_2 = genfromtxt("runs/CMSSM/FMCp03000765/samples/M0_flat.out_0")
+    #CMSSM1_2 = genfromtxt("runs/CMSSM/FMCp03000765/samples/A0.out_0")
+    CMSSM1_2_param = "M_0"
+
+    mwimp_SingletDM1 = concatenate((SingletDM1_1[:,46], SingletDM1_2[:,46]))
+    sigma_SI_p_SingletDM1 = concatenate((SingletDM1_1[:,48], SingletDM1_2[:,48]))
+    sigma_SD_SingletDM1 = concatenate((SingletDM1_1[:,50], SingletDM1_2[:,50]))
+    sigmav_SingletDM1 = concatenate((SingletDM1_1[:,47], SingletDM1_2[:,47]))
+    LUXlnL_SingletDM1 = concatenate((SingletDM1_1[:,53], SingletDM1_2[:,53]))
+    FermiDwarflnL_SingletDM1 = concatenate((SingletDM1_1[:,44], SingletDM1_2[:,44]))
+    IceCubelnL_SingletDM1 = concatenate((SingletDM1_1[:,54], SingletDM1_2[:,54]))
+
+    mwimp_MSSM1 = concatenate((MSSM1_1[:,54], MSSM1_2[:,54]))
+    sigma_SI_p_MSSM1 = concatenate((MSSM1_1[:,56], MSSM1_2[:,56]))
+    sigma_SD_p_MSSM1 = concatenate((MSSM1_1[:,58], MSSM1_2[:,58]))
+    sigmav_MSSM1 = concatenate((MSSM1_1[:,55], MSSM1_2[:,55]))
+    LUXlnL_MSSM1 = concatenate((MSSM1_1[:,61], MSSM1_2[:,61]))
+    FermiDwarflnL_MSSM1 = concatenate((MSSM1_1[:,52], MSSM1_2[:,52]))
+    SIMPLE_MSSM1 = concatenate((MSSM1_1[:,62], MSSM1_2[:,62]))
+    IceCubelnL_MSSM1 = concatenate((MSSM1_1[:,63], MSSM1_2[:,63]))
+
+    mwimp_CMSSM1 = concatenate((CMSSM1_1[:,48], CMSSM1_2[:,48]))
+    sigma_SI_p_CMSSM1 = concatenate((CMSSM1_1[:,50], CMSSM1_2[:,50]))
+    sigma_SD_p_CMSSM1 = concatenate((CMSSM1_1[:,52], CMSSM1_2[:,52]))
+    sigmav_CMSSM1 = concatenate((CMSSM1_1[:,49], CMSSM1_2[:,49]))
+    LUXlnL_CMSSM1 = concatenate((CMSSM1_1[:,55], CMSSM1_2[:,55]))
+    FermiDwarflnL_CMSSM1 = concatenate((CMSSM1_1[:,46], CMSSM1_2[:,46]))
+    SIMPLE_CMSSM1 = concatenate((CMSSM1_1[:,56], CMSSM1_2[:,56]))
+    IceCubelnL_CMSSM1 = concatenate((CMSSM1_1[:,57], CMSSM1_2[:,57]))
     
-    mwimp_SS = concatenate((dataSS1[:,46], dataSS2[:,46]))
-    sigma_SI_p_SS = concatenate((dataSS1[:,48], dataSS2[:,48]))
-    sigma_SD_p_SS = concatenate((dataSS1[:,50], dataSS2[:,50]))
-    sigmav_SS = concatenate((dataSS1[:,47], dataSS2[:,47]))
-    LUXlnL_SS = concatenate((dataSS1[:,53], dataSS2[:,53]))
-    FermiDwarflnL_SS = concatenate((dataSS1[:,44], dataSS2[:,44]))
-    IceCubelnL_SS = concatenate((dataSS1[:,54], dataSS2[:,54]))
-
-    mwimp_JE56 = concatenate((dataJE56_M2[:,54], dataJE56_mHd2[:,54]))
-    sigma_SI_p_JE56 = concatenate((dataJE56_M2[:,56], dataJE56_mHd2[:,56]))
-    sigma_SD_p_JE56 = concatenate((dataJE56_M2[:,58], dataJE56_mHd2[:,58]))
-    sigmav_JE56 = concatenate((dataJE56_M2[:,55], dataJE56_mHd2[:,55]))
-    LUXlnL_JE56 = concatenate((dataJE56_M2[:,61], dataJE56_mHd2[:,61]))
-    FermiDwarflnL_JE56 = concatenate((dataJE56_M2[:,52], dataJE56_mHd2[:,52]))
-    IceCubelnL_JE56 = concatenate((dataJE56_M2[:,62], dataJE56_mHd2[:,62]))
-    m2 = concatenate((dataJE56_M2[:,33],dataJE56_mHd2[:,33]))
-    mHd2 = concatenate((dataJE56_M2[:,38],dataJE56_mHd2[:,38]))
-
-    print m2
-    print mHd2
-
+    
     # Spin Independent Direct Detection
     plt.clf()
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
 
     # Spokes
-#    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
-    cmax = max(concatenate((LUXlnL_SS,LUXlnL_JE56)))
-    cmin = max(min(concatenate((LUXlnL_SS,LUXlnL_JE56))),(cmax-1)*10**2)
-    plt.plot(mwimp_SS[:9],sigma_SI_p_SS[:9],c='k',zorder=1)
-    plt.plot(mwimp_SS[9:],sigma_SI_p_SS[9:],c='k',zorder=1)
-    plt.plot(mwimp_JE56[:9],sigma_SI_p_JE56[:9],c='k',zorder=1)
-    plt.plot(mwimp_JE56[9:],sigma_SI_p_JE56[9:],c='k',zorder=1)
-    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=LUXlnL_SS,s=40,zorder=2,edgecolors="none")
-    sc2 = ax1.scatter(mwimp_JE56,sigma_SI_p_JE56,c=LUXlnL_JE56,s=40,zorder=2,edgecolors="none")
+#    cmin = min(concatenate((LUXlnL_SingletDM1,LUXlnL_MSSM1)))
+    cmax = max(concatenate((LUXlnL_SingletDM1,LUXlnL_MSSM1,LUXlnL_CMSSM1)))
+    cmin = max(min(
+        concatenate((LUXlnL_SingletDM1,LUXlnL_MSSM1,LUXlnL_CMSSM1))),(cmax-1)*10**2)
+    plt.plot(mwimp_SingletDM1[:9],sigma_SI_p_SingletDM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_SingletDM1[9:],sigma_SI_p_SingletDM1[9:],c='k',zorder=1,ls="--")
+    plt.plot(mwimp_MSSM1[:9],sigma_SI_p_MSSM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_MSSM1[9:],sigma_SI_p_MSSM1[9:],c='k',zorder=1,ls="--")
+    plt.plot(mwimp_CMSSM1[:9],sigma_SI_p_CMSSM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_CMSSM1[9:],sigma_SI_p_CMSSM1[9:],c='k',zorder=1,ls="--")
+    sc1 = ax1.scatter(mwimp_SingletDM1,sigma_SI_p_SingletDM1,c=LUXlnL_SingletDM1,
+        s=40,zorder=2,edgecolors="none",marker="o",label="Singlet DM")
+    sc2 = ax1.scatter(mwimp_MSSM1,sigma_SI_p_MSSM1,c=LUXlnL_MSSM1,
+        s=40,zorder=2,edgecolors="none",marker="s", label="MSSM 11")
+    sc3 = ax1.scatter(mwimp_CMSSM1,sigma_SI_p_CMSSM1,c=LUXlnL_CMSSM1,
+        s=40,zorder=2,edgecolors="none",marker="^", label="cMSSM")
     sc1.set_clim([cmin,cmax])
     sc2.set_clim([cmin,cmax])
-
+    sc3.set_clim([cmin,cmax])
 
     # Limit curves
     limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
-    plt.plot(limit[:,0],limit[:,1]*10**-36,label="LUX")
+    plt.plot(limit[:,0],limit[:,1]*10**-36,label="LUX 2013")
 
     # Axes, legend, and colorbar
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SI_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
-    plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-49,ymax=10**-30)
+    plt.gca().set_xlim(xmin=5,xmax=6000)
+    #plt.gca().set_ylim(ymin=10**-49,ymax=10**-38)
+    plt.text(mwimp_SingletDM1[1]*1.1,sigma_SI_p_SingletDM1[1]*1.1,SingletDM1_1_param)
+    plt.text(mwimp_SingletDM1[10]*1.1,sigma_SI_p_SingletDM1[10]*1.1,SingletDM1_2_param)
+    plt.text(mwimp_MSSM1[1]*1.1,sigma_SI_p_MSSM1[1]*1.1,MSSM1_1_param)
+    plt.text(mwimp_MSSM1[10]*1.1,sigma_SI_p_MSSM1[10]*1.1,MSSM1_2_param)
+    plt.text(mwimp_CMSSM1[1]*1.1,sigma_SI_p_CMSSM1[1]*1.1,CMSSM1_1_param)
+    plt.text(mwimp_CMSSM1[10]*1.1,sigma_SI_p_CMSSM1[10]*1.1,CMSSM1_2_param)
     cbar = plt.colorbar(sc1)
     cbar.set_label('ln L_LUX')
     plt.legend()
@@ -191,24 +225,41 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-#    cmin = min(concatenate((LUXlnL_SS,LUXlnL_JE56)))
-#    cmax = max(concatenate((LUXlnL_SS,LUXlnL_JE56)))
-    plt.plot(mwimp_JE56[:9],sigma_SD_p_JE56[:9],c="k",zorder=1)
-    plt.plot(mwimp_JE56[9:],sigma_SD_p_JE56[9:],c="k",zorder=1)
-    sc1 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,s=40,zorder=2,edgecolors="none")
-#    sc1.set_clim([cmin,cmax])
+    #cmin = min(concatenate((SIMPLE_MSSM1)))
+    #cmax = max(concatenate((SIMPLE_MSSM1)))
+    cmax = max(concatenate((SIMPLE_MSSM1,SIMPLE_CMSSM1)))
+    #cmin = max(min(concatenate((SIMPLE_MSSM1))),(cmax-1)*10**2)
+    cmin = max(min(concatenate((SIMPLE_MSSM1,SIMPLE_CMSSM1))),(cmax-1)*10**2)
+
+    plt.plot(mwimp_MSSM1[:9],sigma_SD_p_MSSM1[:9],c="k",zorder=1,ls="-")
+    plt.plot(mwimp_MSSM1[9:],sigma_SD_p_MSSM1[9:],c="k",zorder=1,ls="--")
+    plt.plot(mwimp_CMSSM1[:9],sigma_SD_p_CMSSM1[:9],c="k",zorder=1,ls="-")
+    plt.plot(mwimp_CMSSM1[9:],sigma_SD_p_CMSSM1[9:],c="k",zorder=1,ls="--")    
+    sc1 = ax1.scatter(mwimp_MSSM1,sigma_SD_p_MSSM1,c=SIMPLE_MSSM1,
+        s=40,zorder=2,edgecolors="none",marker="s",label="MSSM 11")
+    sc2 = ax1.scatter(mwimp_CMSSM1,sigma_SD_p_CMSSM1,c=SIMPLE_CMSSM1,
+        s=40,zorder=2,edgecolors="none",marker="^",label="cMSSM")
+    sc1.set_clim([cmin,cmax])
+    sc2.set_clim([cmin,cmax])
 
     # Limit curves
     limit = genfromtxt("DarkBit/examples/SIMPLE_2011_PhaseII_SDp.txt")
-    plt.plot(limit[:,0],limit[:,1]*10**-36)
+    plt.plot(limit[:,0],limit[:,1]*10**-36,label="SIMPLE 2011")
 
     # Axes, legend, and colorbar
     plt.xlabel("m [GeV]")
     plt.ylabel("sigma_SD_p [cm^2]")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
-    plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-41,ymax=10**-31)
+    plt.gca().set_xlim(xmin=5,xmax=3000)
+    #plt.gca().set_ylim(ymin=10**-41,ymax=10**-31)
+    plt.text(mwimp_MSSM1[1]*1.1,sigma_SD_p_MSSM1[1]*1.1,MSSM1_1_param)
+    plt.text(mwimp_MSSM1[10]*1.1,sigma_SD_p_MSSM1[10]*1.1,MSSM1_2_param)
+    plt.text(mwimp_CMSSM1[1]*1.1,sigma_SD_p_CMSSM1[1]*1.1,CMSSM1_1_param)
+    plt.text(mwimp_CMSSM1[10]*1.1,sigma_SD_p_CMSSM1[10]*1.1,CMSSM1_2_param)
+    cbar = plt.colorbar(sc1)
+    cbar.set_label('ln L_SIMPLE')
+    plt.legend()
 
     plt.savefig("SD_DD.eps")
     plt.show()
@@ -219,29 +270,34 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-    #cmin = min(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
-    cmax = max(concatenate((IceCubelnL_SS,IceCubelnL_JE56)))
-    cmin = max(min(concatenate((IceCubelnL_SS,IceCubelnL_JE56))),(cmax-1)*10**2)
-    plt.plot(mwimp_SS[:9],sigma_SI_p_SS[:9],c='k',zorder=1)
-    plt.plot(mwimp_SS[9:],sigma_SI_p_SS[9:],c='k',zorder=1)
-    plt.plot(mwimp_JE56[:9],sigma_SD_p_JE56[:9],c='k',zorder=1)
-    plt.plot(mwimp_JE56[9:],sigma_SD_p_JE56[9:],c='k',zorder=1)
-    sc1 = ax1.scatter(mwimp_SS,sigma_SI_p_SS,c=IceCubelnL_SS,s=40,zorder=2,edgecolors="none",label="sigma_p_SI")
-    sc2 = ax1.scatter(mwimp_JE56,sigma_SD_p_JE56,c=IceCubelnL_SS,s=40,zorder=2,edgecolors="none",label="sigma_p_SD")
+    #cmin = min(concatenate((IceCubelnL_SingletDM1,IceCubelnL_MSSM1)))
+    cmax = max(concatenate((IceCubelnL_SingletDM1,IceCubelnL_MSSM1,IceCubelnL_CMSSM1)))
+    cmin = max(min(concatenate((IceCubelnL_SingletDM1,IceCubelnL_MSSM1,IceCubelnL_CMSSM1))),(cmax-1)*10**2)
+    plt.plot(mwimp_SingletDM1[:9],sigma_SI_p_SingletDM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_SingletDM1[9:],sigma_SI_p_SingletDM1[9:],c='k',zorder=1,ls="--")
+    plt.plot(mwimp_MSSM1[:9],sigma_SD_p_MSSM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_MSSM1[9:],sigma_SD_p_MSSM1[9:],c='k',zorder=1,ls="--")
+    plt.plot(mwimp_CMSSM1[:9],sigma_SD_p_CMSSM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_CMSSM1[9:],sigma_SD_p_CMSSM1[9:],c='k',zorder=1,ls="--")
+    sc1 = ax1.scatter(mwimp_SingletDM1,sigma_SI_p_SingletDM1,c=IceCubelnL_SingletDM1,
+        s=40,zorder=2,edgecolors="none",marker="o",label="Singlet DM (sigma_SI)")
+    sc2 = ax1.scatter(mwimp_MSSM1,sigma_SD_p_MSSM1,c=IceCubelnL_MSSM1,s=40,zorder=2,
+        edgecolors="none",marker="s",label="MSSM 11 (sigma_SD)")
+    sc3 = ax1.scatter(mwimp_CMSSM1,sigma_SD_p_CMSSM1,c=IceCubelnL_CMSSM1,s=40,zorder=2,
+        edgecolors="none",marker="^",label="cMSSM (sigma_SD)")
     sc1.set_clim([cmin,cmax])
     sc2.set_clim([cmin,cmax])
-
-
+    sc3.set_clim([cmin,cmax])
 
     # Limit curves
     bbSI = genfromtxt("DarkBit/examples/IC79_bb_SI.dat", comments="#")
     tautauSI = genfromtxt("DarkBit/examples/IC79_tautau_SI.dat", comments="#")
     bbSD = genfromtxt("DarkBit/examples/IC79_bb_SD.dat", comments="#")
     tautauSD = genfromtxt("DarkBit/examples/IC79_tautau_SD.dat", comments="#")
-    plt.plot(bbSI[:,0],bbSI[:,2], label="SI bb")
-    plt.plot(tautauSI[:,0],tautauSI[:,2], label="SI tau+ tau-")
-    plt.plot(bbSD[:,0],bbSD[:,2], label="SD bb")
-    plt.plot(tautauSD[:,0],tautauSD[:,2], label="SD tau+ tau-")
+    plt.plot(bbSI[:,0],bbSI[:,2], label="IC SI bb")
+    plt.plot(tautauSI[:,0],tautauSI[:,2], label="IC SI tau+ tau-")
+    plt.plot(bbSD[:,0],bbSD[:,2], label="IC SD bb")
+    plt.plot(tautauSD[:,0],tautauSD[:,2], label="IC SD tau+ tau-")
     
     # Axes, legend, and colorbar
     cbar = plt.colorbar(sc1)
@@ -251,7 +307,13 @@ def spokePlots():
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-49,ymax=10**-31)
+    plt.gca().set_ylim(ymin=10**-49,ymax=10**-27)
+    plt.text(mwimp_SingletDM1[1]*1.1,sigma_SI_p_SingletDM1[1]*1.1,SingletDM1_1_param)
+    plt.text(mwimp_SingletDM1[10]*1.1,sigma_SI_p_SingletDM1[10]*1.1,SingletDM1_2_param)
+    plt.text(mwimp_MSSM1[1]*1.1,sigma_SD_p_MSSM1[1]*1.1,MSSM1_1_param)
+    plt.text(mwimp_MSSM1[10]*1.1,sigma_SD_p_MSSM1[10]*1.1,MSSM1_2_param)
+    plt.text(mwimp_CMSSM1[1]*1.1,sigma_SD_p_CMSSM1[1]*1.1,CMSSM1_1_param)
+    plt.text(mwimp_CMSSM1[10]*1.1,sigma_SD_p_CMSSM1[10]*1.1,CMSSM1_2_param)
     plt.legend()
 
     plt.savefig("IC.eps")
@@ -263,23 +325,30 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-    #cmin = min(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
-    cmax = max(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56)))
-    cmin = max(min(concatenate((FermiDwarflnL_SS,FermiDwarflnL_JE56))),(cmax-1)*10**2)
-    plt.plot(mwimp_SS[:9],sigmav_SS[:9],c='k',zorder=1)
-    plt.plot(mwimp_SS[9:],sigmav_SS[9:],c='k',zorder=1)
-    plt.plot(mwimp_JE56[:9],sigmav_JE56[:9],c='k',zorder=1)
-    plt.plot(mwimp_JE56[9:],sigmav_JE56[9:],c='k',zorder=1)
-    sc1 = ax1.scatter(mwimp_SS,sigmav_SS,c=FermiDwarflnL_SS,s=40,zorder=2,edgecolors="none",label="<sigma v>")
-    sc2 = ax1.scatter(mwimp_JE56,sigmav_JE56,c=FermiDwarflnL_JE56,s=40,zorder=2,edgecolors="none",label="<sigma v>")
+    #cmin = min(concatenate((FermiDwarflnL_SingletDM1,FermiDwarflnL_MSSM1)))
+    cmax = max(concatenate((FermiDwarflnL_SingletDM1,FermiDwarflnL_MSSM1,FermiDwarflnL_CMSSM1)))
+    cmin = max(min(concatenate((FermiDwarflnL_SingletDM1,FermiDwarflnL_MSSM1,FermiDwarflnL_CMSSM1))),(cmax-1)*10)
+    plt.plot(mwimp_SingletDM1[:9],sigmav_SingletDM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_SingletDM1[9:],sigmav_SingletDM1[9:],c='k',zorder=1,ls="--")
+    plt.plot(mwimp_MSSM1[:9],sigmav_MSSM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_MSSM1[9:],sigmav_MSSM1[9:],c='k',zorder=1,ls="--")
+    plt.plot(mwimp_CMSSM1[:9],sigmav_CMSSM1[:9],c='k',zorder=1,ls="-")
+    plt.plot(mwimp_CMSSM1[9:],sigmav_CMSSM1[9:],c='k',zorder=1,ls="--")
+    sc1 = ax1.scatter(mwimp_SingletDM1,sigmav_SingletDM1,c=FermiDwarflnL_SingletDM1,
+        s=40,zorder=2,edgecolors="none",label="Singlet DM",marker="o")
+    sc2 = ax1.scatter(mwimp_MSSM1,sigmav_MSSM1,c=FermiDwarflnL_MSSM1,
+        s=40,zorder=2,edgecolors="none",label="MSSM 11",marker="s")
+    sc3 = ax1.scatter(mwimp_CMSSM1,sigmav_CMSSM1,c=FermiDwarflnL_CMSSM1,
+        s=40,zorder=2,edgecolors="none",label="cMSSM",marker="^")
     sc1.set_clim([cmin,cmax])
     sc2.set_clim([cmin,cmax])
+    sc3.set_clim([cmin,cmax])
 
     # Limit Curves
     bb = genfromtxt("DarkBit/examples/FermiLAT_limits_bb.txt")
     tautau = genfromtxt("DarkBit/examples/FermiLAT_limits_tautau.txt")
-    plt.plot(bb[:,0],bb[:,26], label="Fermi bb")
-    plt.plot(tautau[:,0],tautau[:,26],label="Fermi tau+ tau-")
+    plt.plot(bb[:,0],bb[:,26], label="Fermi 2015 bb")
+    plt.plot(tautau[:,0],tautau[:,26],label="Fermi 2015 tau+ tau-")
 
     # Axes, legend, and colorbar
     cbar = plt.colorbar(sc1)
@@ -289,7 +358,13 @@ def spokePlots():
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=5,xmax=10000)
-    plt.gca().set_ylim(ymin=10**-30,ymax=10**-20)
+    plt.gca().set_ylim(ymin=10**-32,ymax=10**-19)
+    plt.text(mwimp_SingletDM1[1]*1.1,sigmav_SingletDM1[1]*1.1,SingletDM1_1_param)
+    plt.text(mwimp_SingletDM1[10]*1.1,sigmav_SingletDM1[10]*1.1,SingletDM1_2_param)
+    plt.text(mwimp_MSSM1[1]*1.1,sigmav_MSSM1[1]*1.1,MSSM1_1_param)
+    plt.text(mwimp_MSSM1[10]*1.1,sigmav_MSSM1[10]*1.1,MSSM1_2_param)
+    plt.text(mwimp_CMSSM1[1]*1.1,sigmav_CMSSM1[1]*1.1,CMSSM1_1_param)
+    plt.text(mwimp_CMSSM1[10]*1.1,sigmav_CMSSM1[10]*1.1,CMSSM1_2_param)
     plt.legend()
 
     plt.savefig("Fermi.eps")

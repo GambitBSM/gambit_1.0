@@ -30,41 +30,25 @@ Parameters:
     vearth: # Keplerian velocity of the earth around the sun
       fixed_value: 29.78 # km/s
 	
-  MSSM9atQ:
-    Qin:
-      fixed_value: 2.73209383e+03
-    SignMu:
-      fixed_value: -1
-    Ad_3:
-      fixed_value: 7.81414390e+00
-    Au_3:
-      fixed_value: 7.50040186e+01
-    M1:
-      #fixed_value: 4.78657584e+01
-      range: [4.78657584e+00, 4.78657584e+02]
-      prior_type: log
-    M2:
-      fixed_value: 4.78657584e+01     
-      #range: [4.78657584e+00, 4.78657584e+02]
+  CMSSM:
+    M0:
+      fixed_value: 1.00753000E+02
+      #range: [1.00753000E+02, 7000]
       #prior_type: log
-    M3:
-      fixed_value: 3.09885759e+01
-    TanBeta:
-      fixed_value: 6.99583720e+00
-      #range: [2.99583720e+00, 10.99583720e+00]
       #prior_type: flat
-    mHd2:
-      fixed_value: 8.38652700e+05
-      #range: [8.38652700e+04, 8.38652700e+06]
+    M12:
+      #fixed_value: 5.76403160E+02
+      range: [100, 5.76403160E+02]
+      prior_type: log
+    A0:
+      fixed_value: 2.82954660E+01
+      #range: [2.82954660E+00,2.82954660E+02]
       #prior_type: log
-    mHu2:
-      fixed_value: 7.49606737e+04
-      #range: [131.826, 133301]
-      #prior_type: log
-    mf2:
-      fixed_value: 7.46434e+06
-      #range: [1327360., 1.32736e+07]
-      #prior_type: log
+    TanBeta:
+      fixed_value: 3.90399390E+00
+      #range: [1.90399390E+00, 9.90399390E+00]
+      #prior_type: flat
+    SignMu: 1
 
 Priors:
 
@@ -76,13 +60,10 @@ Printer:
   printer: ascii
 
   options:
-    #output_file: "JE56C_003717.txt"
-    #output_file: "mHu2.out"
-    #output_file: "mHd2.out"
+    #output_file: "FMCp03000765.out"
     #output_file: "TanBeta.out"
-    output_file: "M1.out"
-    #output_file: "mf2.out"
-    #group: "/MSSM9"
+    #output_file: "M0_flat.out"  
+    output_file: "M12.out"
     #delete_file_on_restart: true
 
 Scanner:
@@ -317,7 +298,7 @@ Rules:
 
    #Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0
@@ -354,6 +335,14 @@ Rules:
   #  version: 2.11.3
   # In practice, the easiest option is just to not install / nuke the versions you don't want to use, e.g.
   #  make nuke-feynhiggs_2_11_2  
+
+ # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
+  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
+  # with the FH error estimate, to estimate the theoretical error on the prediction.
+  - capability: MSSM_spectrum
+    options:
+      Higgs_predictions_source: 1
+      Higgs_predictions_error_method: 4
 
   # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
   - capability: A0_decay_rates
@@ -445,4 +434,4 @@ KeyValues:
     model_invalid_for_lnlike_below: -1e10
     debug: true
 
-  default_output_path: "runs/MSSM9/JE56C_003717"
+  default_output_path: "runs/CMSSM/FMCp03000765"
