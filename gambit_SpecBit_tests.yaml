@@ -41,7 +41,7 @@ ObsLikes:
 
 Rules:
   - capability: unimproved_MSSM_spectrum 
-    type: const Spectrum*
+    type: Spectrum
     function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in

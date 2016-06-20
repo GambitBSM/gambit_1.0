@@ -33,7 +33,7 @@
  
      #define FUNCTION SPheno_MSSM_test
      START_FUNCTION(bool)
-     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+     DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
      #undef FUNCTION
   
    #undef CAPABILITY

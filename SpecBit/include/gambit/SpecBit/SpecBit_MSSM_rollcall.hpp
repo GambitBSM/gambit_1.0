@@ -43,7 +43,7 @@
     /// SPheno spectrum functions, parallel to the FS ones
     // CMSSM
     #define FUNCTION get_SPheno_CMSSM_spectrum
-    START_FUNCTION(const Spectrum*)
+    START_FUNCTION(Spectrum)
     ALLOW_MODELS(CMSSM)
     DEPENDENCY(SMINPUTS, SMInputs)
     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
@@ -52,7 +52,7 @@
 
     // MGUT scale MSSM
     #define FUNCTION get_SPheno_MSSMatMGUT_spectrum
-    START_FUNCTION(const Spectrum*)
+    START_FUNCTION(Spectrum)
     ALLOW_MODELS(MSSM63atMGUT)
     DEPENDENCY(SMINPUTS, SMInputs)
     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
@@ -61,7 +61,7 @@
 
     // Q scale MSSM
     #define FUNCTION get_SPheno_MSSMatQ_spectrum
-    START_FUNCTION(const Spectrum*)
+    START_FUNCTION(Spectrum)
     ALLOW_MODELS(MSSM63atQ)
     DEPENDENCY(SMINPUTS, SMInputs)
     BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )

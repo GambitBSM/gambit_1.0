@@ -41,7 +41,7 @@ ObsLikes:
 
 Rules:
   - capabilty:    unimproved_MSSM_spectrum
-    type:         const Spectrum*
+    type:         Spectrum
     function:     get_SPheno_CMSSM_spectrum
   - capability:   SPheno_MSSMspectrum
     type:         void
