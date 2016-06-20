@@ -73,13 +73,6 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 add_custom_target(clean-scratch COMMAND ${CMAKE_COMMAND} -E remove_directory scratch WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_dependencies(distclean clean-scratch)
 
-# Ensure that distclean sweeps out the backend and scanner download and install directories
-add_custom_target(clean-backend-download COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_custom_target(clean-backend-install COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_dependencies(distclean clean-backend-download clean-backend-install clean-scanner-download clean-scanner-install)
-
 # Ensure that distclean removes .pyc files
 add_custom_target(clean-pyc COMMAND ${CMAKE_COMMAND} -E remove *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_dependencies(distclean clean-pyc)
@@ -93,3 +86,17 @@ add_custom_target(clean-docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                              COMMAND ${CMAKE_COMMAND} -E remove_directory doc/html 
                              COMMAND ${CMAKE_COMMAND} -E remove doc/*.tmp)
 add_dependencies(distclean clean-docs)
+
+
+##### nuke ########
+
+# Do everything in distclean
+add_custom_target(nuke)
+add_dependencies(nuke distclean)
+
+# Ensure that nuke sweeps out the backend and scanner download and install directories
+add_custom_target(clean-backend-download COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-backend-install COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_dependencies(nuke clean-backend-download clean-backend-install clean-scanner-download clean-scanner-install)
