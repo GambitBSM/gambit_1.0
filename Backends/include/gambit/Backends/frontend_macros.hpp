@@ -15,9 +15,6 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2015 May
 ///
-///  \author Tomas Gonzalo
-///           (t.e.gonzalo@fys.uio.no)
-///  \date 2016 June
 ///
 ///  *********************************************
 
@@ -41,11 +38,6 @@
 /// Macro for assigning a single allowed model to an entire backend.
 #define BE_ALLOW_MODEL(MODEL) MODULE_ALLOWED_MODEL(BackendIniBit,           \
  CAT_4(BACKENDNAME,_,SAFE_VERSION,_init), MODEL)                            \
-
-/// Macro for disabling model relationships
-#define BE_DISABLE_MODEL_RELATIONSHIP(MODEL1,MODEL2)                        \
- MODULE_DISABLE_MODEL_RELATIONSHIP(BackendIniBit,                           \
- CAT_4(BACKENDNAME,_,SAFE_VERSION,_init), MODEL1, MODEL2)                   \
 
 /// Make the inUse pipe for a given backend functor.                        
 #define MAKE_INUSE_POINTER(NAME)                                            \
