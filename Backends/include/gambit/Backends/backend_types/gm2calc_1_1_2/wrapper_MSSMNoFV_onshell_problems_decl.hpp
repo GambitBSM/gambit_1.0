@@ -17,7 +17,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    namespace gm2calc
    {
       
-      class MSSMNoFV_onshell_problems : public virtual WrapperBase
+      class MSSMNoFV_onshell_problems : public WrapperBase
       {
             // Member variables: 
          public:

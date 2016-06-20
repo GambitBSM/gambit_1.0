@@ -14,7 +14,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class DecayChannel : public virtual WrapperBase
+        class DecayChannel : public WrapperBase
         {
                 // Member variables: 
             public:

@@ -15,7 +15,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Wrappers for original constructors: 
         inline Pythia8::Couplings::Couplings() :
-            WrapperBase(__factory0()),
             CoupSM(__factory0()),
             isSUSY( get_BEptr()->isSUSY_ref__BOSS())
         {
@@ -25,7 +24,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Special pointer-based constructor: 
         inline Pythia8::Couplings::Couplings(Pythia8::Abstract_Couplings* in) :
-            WrapperBase(in),
             CoupSM(in),
             isSUSY( get_BEptr()->isSUSY_ref__BOSS())
         {
@@ -35,7 +33,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Copy constructor: 
         inline Pythia8::Couplings::Couplings(const Couplings& in) :
-            WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
             CoupSM(in.get_BEptr()->pointer_copy__BOSS()),
             isSUSY( get_BEptr()->isSUSY_ref__BOSS())
         {
