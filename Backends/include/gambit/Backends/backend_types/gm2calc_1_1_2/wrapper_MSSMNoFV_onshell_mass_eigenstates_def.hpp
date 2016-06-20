@@ -875,7 +875,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Wrappers for original constructors: 
       inline gm2calc::MSSMNoFV_onshell_mass_eigenstates::MSSMNoFV_onshell_mass_eigenstates() :
-         WrapperBase(__factory0()),
          MSSMNoFV_onshell_soft_parameters(__factory0())
       {
          get_BEptr()->set_wptr(this);
@@ -884,7 +883,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Special pointer-based constructor: 
       inline gm2calc::MSSMNoFV_onshell_mass_eigenstates::MSSMNoFV_onshell_mass_eigenstates(gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates* in) :
-         WrapperBase(in),
          MSSMNoFV_onshell_soft_parameters(in)
       {
          get_BEptr()->set_wptr(this);
@@ -893,7 +891,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
       // Copy constructor: 
       inline gm2calc::MSSMNoFV_onshell_mass_eigenstates::MSSMNoFV_onshell_mass_eigenstates(const MSSMNoFV_onshell_mass_eigenstates& in) :
-         WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
          MSSMNoFV_onshell_soft_parameters(in.get_BEptr()->pointer_copy__BOSS())
       {
          get_BEptr()->set_wptr(this);

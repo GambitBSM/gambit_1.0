@@ -92,3 +92,19 @@ known_classes = {
     "Eigen::Array" : "<Eigen/Core>",
 }
 
+
+# ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
+
+# The listed pragma directives will be added before/after including the 
+# the BOSS-generated headers in GAMBIT.
+
+pragmas_begin = [
+    '#pragma GCC diagnostic push',
+    '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"',
+]
+
+pragmas_end = [
+    '#pragma GCC diagnostic pop'
+]
+
+

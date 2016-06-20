@@ -18,7 +18,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Particle : public virtual WrapperBase
+        class Particle : public WrapperBase
         {
                 // Member variables: 
             public:

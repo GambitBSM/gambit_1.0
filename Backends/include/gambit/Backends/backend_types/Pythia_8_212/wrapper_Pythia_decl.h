@@ -30,7 +30,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Pythia : public virtual WrapperBase
+        class Pythia : public WrapperBase
         {
                 // Member variables: 
             public:

@@ -15,7 +15,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Parm : public virtual WrapperBase
+        class Parm : public WrapperBase
         {
                 // Member variables: 
             public:

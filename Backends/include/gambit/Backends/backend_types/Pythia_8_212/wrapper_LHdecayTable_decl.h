@@ -17,7 +17,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class LHdecayTable : public virtual WrapperBase
+        class LHdecayTable : public WrapperBase
         {
                 // Member variables: 
             public:
