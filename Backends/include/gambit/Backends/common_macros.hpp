@@ -13,6 +13,9 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2015 May
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 June
 ///
 ///  *********************************************
 
@@ -37,6 +40,12 @@
 
 /// Intermediate macro for expanding BE_ALLOW_MODELS.
 #define BE_ALLOW_MODEL_INTERMEDIATE(r,data,MODEL) BE_ALLOW_MODEL(MODEL)
+
+/// Macro for disabling model relationships for the functor
+#define BE_DISABLE_MODEL_RELATIONSHIPS(MODEL, ...) BOOST_PP_SEQ_FOR_EACH(BE_DISABLE_MODEL_RELATIONSHIP_INTERMEDIATE, MODEL, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
+
+/// Intermediate macro for expanding BE_DISABLE_MODEL_RELATIONSHIPS
+#define BE_DISABLE_MODEL_RELATIONSHIP_INTERMEDIATE(r, MODEL1, MODEL2) BE_DISABLE_MODEL_RELATIONSHIP(MODEL1,MODEL2) 
 
 /// Boilerplate code for point-level backend initialisation function definitions
 #define BE_INI_FUNCTION                                                     \
