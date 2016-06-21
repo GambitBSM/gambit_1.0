@@ -76,6 +76,10 @@ add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
 add_custom_target(clean-backends)
 add_dependencies(distclean clean-backends)
 
+# Ensure that disclean cleans the scanners (the entry for each backend will be added in scanners.cmake)
+add_custom_target(clean-scanners)
+add_dependencies(distclean clean-scanners)
+
 # Ensure that distclean sweeps out the scratch directory
 add_custom_target(clean-scratch COMMAND ${CMAKE_COMMAND} -E remove_directory scratch WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_dependencies(distclean clean-scratch)
@@ -97,13 +101,11 @@ add_dependencies(distclean clean-docs)
 
 ##### nuke ########
 
-# Do everything in distclean
-add_custom_target(nuke)
-add_dependencies(nuke distclean)
-
-# Ensure that nuke sweeps out the backend and scanner download and install directories
+# Do everything in distclean and ensure that nuke sweeps out the backend and scanner download and install directories
 add_custom_target(clean-backend-download COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(clean-backend-install COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_dependencies(nuke clean-backend-download clean-backend-install clean-scanner-download clean-scanner-install)
+add_custom_target(nuke-backends DEPENDS clean-backend-download clean-backend-install) 
+add_custom_target(nuke-scanners DEPENDS clean-scanner-download clean-scanner-install) 
+add_custom_target(nuke distclean DEPENDS nuke-backends nuke-scanners) 
