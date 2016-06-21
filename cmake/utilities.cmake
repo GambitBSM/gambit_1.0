@@ -104,6 +104,9 @@ include(cmake/cleaning.cmake)
 # Arrange make backends command (will be filled in from backends.cmake)
 add_custom_target(backends)
 
+# Arrange make scanners command (will be filled in from scanners.cmake)
+add_custom_target(scanners)
+
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
@@ -116,7 +119,6 @@ macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
-  add_dependencies(clean-backends clean-${package})
   add_custom_target(nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
@@ -127,6 +129,15 @@ macro(add_extra_targets package dir dl target)
   enable_auto_rebuild(${package})
   add_external_clean(${package} ${dir} ${dl} ${target})
   set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-backends clean-${package})
+endmacro()
+
+# Macro to add all additional targets for a new scanner
+macro(add_extra_targets_scanner package dir dl target)
+  enable_auto_rebuild(${package})
+  add_external_clean(${package} ${dir} ${dl} ${target})
+  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-scanners clean-${package})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists

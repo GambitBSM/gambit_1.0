@@ -498,9 +498,10 @@ add_dependencies(backends higgssignals)
 
 # gm2calc
 set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
-set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.1.2")
-set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/1.1.2")
-set(gm2calc_dl "gm2calc-1.1.2.tar.gz")
+set(gm2calc_ver "1.2.0")
+set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/${gm2calc_ver}")
+set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/${gm2calc_ver}")
+set(gm2calc_dl "gm2calc-${gm2calc_ver}.tar.gz")
 # - Silence the deprecated-declarations warnings comming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -508,22 +509,17 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 endif()
 ExternalProject_Add(gm2calc
   URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
-  URL_MD5 459b3a49fdba0f7a5836ad364031e16b
+  URL_MD5 07d55bbbd648b8ef9b2d69ad1dfd8326
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${gm2calc_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  PATCH_COMMAND patch -p1 < ${gm2calc_patch}/check-negative-soft-mass.patch
+  PATCH_COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2calc_makefile.dif
+        COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2calc_module.dif
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""
 )
-ExternalProject_Add_Step(gm2calc apply_hacks
-  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calcHacks/Makefile ${gm2calc_dir}/Makefile
-  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calcHacks/module.mk ${gm2calc_dir}/src/module.mk
-  DEPENDEES download
-  DEPENDERS patch
-)
-BOSS_backend(gm2calc gm2calc 1.1.2)
+BOSS_backend(gm2calc gm2calc ${gm2calc_ver})
 add_extra_targets(gm2calc ${gm2calc_dir} ${backend_download}/${gm2calc_dl} clean)
 add_dependencies(backends gm2calc)

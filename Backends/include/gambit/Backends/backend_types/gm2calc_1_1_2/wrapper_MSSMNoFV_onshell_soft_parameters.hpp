@@ -1,9 +1,0 @@
-#ifndef __wrapper_MSSMNoFV_onshell_soft_parameters_gm2calc_1_1_2_hpp__
-#define __wrapper_MSSMNoFV_onshell_soft_parameters_gm2calc_1_1_2_hpp__
-
-
-#include "wrapper_MSSMNoFV_onshell_soft_parameters_decl.hpp"
-#include "wrapper_MSSMNoFV_onshell_soft_parameters_def.hpp"
-
-
-#endif /* __wrapper_MSSMNoFV_onshell_soft_parameters_gm2calc_1_1_2_hpp__ */

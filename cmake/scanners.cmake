@@ -54,6 +54,8 @@ ExternalProject_Add(diver
   INSTALL_COMMAND "" 
 )
 add_extra_targets(diver ${diver_dir} null cleanall)
+add_dependencies(scanners diver)
+
 
 # MultiNest
 set(mn_location "${GAMBIT_INTERNAL}/MultiNest_v3.9")
@@ -89,6 +91,8 @@ ExternalProject_Add(multinest
   INSTALL_COMMAND "" 
 )
 add_extra_targets(multinest ${mn_dir} null clean)
+add_dependencies(scanners multinest)
+
 
 # GreAT
 set(great_location "${GAMBIT_INTERNAL}/great-1.0.0")
@@ -109,11 +113,9 @@ ExternalProject_Add(great
   INSTALL_COMMAND ""
 )
 add_extra_targets(great ${great_dir} null cleanall)
+if (ROOT_FOUND)
+  add_dependencies(scanners great)
+endif()
+
 
 # All other scanners are implemented natively in ScannerBit.
-
-
-set_target_properties(diver multinest great PROPERTIES EXCLUDE_FROM_ALL 1)
-
-add_custom_target(scanners DEPENDS diver multinest great)
-add_custom_target(clean-scanners DEPENDS clean-diver clean-multinest clean-great)
