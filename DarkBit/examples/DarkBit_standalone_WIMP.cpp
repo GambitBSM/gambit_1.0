@@ -218,7 +218,7 @@ int main(int argc, char* argv[])
     // ---- Check that required backends are present ----
     
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
-    if (not Backends::backendInfo().works["gamlike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamlike 1.0.0 is missing!");
+    if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamlike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
 
 
