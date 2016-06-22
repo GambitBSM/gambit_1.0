@@ -108,4 +108,4 @@ add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_dire
 add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(nuke-backends DEPENDS clean-backend-download clean-backend-install) 
 add_custom_target(nuke-scanners DEPENDS clean-scanner-download clean-scanner-install) 
-add_custom_target(nuke distclean DEPENDS nuke-backends nuke-scanners) 
+add_custom_target(nuke-all distclean DEPENDS nuke-backends nuke-scanners) 

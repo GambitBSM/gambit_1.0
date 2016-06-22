@@ -94,7 +94,7 @@ int main()
     
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
     if (not Backends::backendInfo().works["MicrOmegasSingletDM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "SingletDM version of MicrOmegas 3.6.9.2 is missing!");
-    if (not Backends::backendInfo().works["gamlike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamlike 1.0.0 is missing!");
+    if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
     //if (not Backends::backendInfo().works["nulike_1_0_3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
   
