@@ -151,6 +151,7 @@ int main(int argc, char* argv[])
 
   // Initialize MicrOmegas backend
   MicrOmegas_3_6_9_2_init.resolveDependency(&createSpectrum);
+  MicrOmegas_3_6_9_2_init.notifyOfModel("MSSM30atQ");
   MicrOmegas_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
@@ -184,12 +185,13 @@ int main(int argc, char* argv[])
 
   // Relic density calculation with MicrOmegas
   RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::darkOmega);
+  RD_oh2_DarkSUSY.setOption<int>("fast", 0);  // 0: accurate; 1: fast
   RD_oh2_MicrOmegas.reset_and_calculate();
 
   // Relic density calculation with DarkSUSY (the sloppy version)
   RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
   RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+  RD_oh2_DarkSUSY.setOption<int>("fast", 0);  // 0: normal; 1: fast; 2: dirty
   RD_oh2_DarkSUSY.reset_and_calculate();
   // FIXME: Use "general" version instead
 
@@ -277,15 +279,26 @@ int main(int argc, char* argv[])
   LUX_2013_GetLogLikelihood.reset_and_calculate();
 
   // Set generic scattering cross-section for later use
-  sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+  double sigma_SI_p_DS, sigma_SI_p_MO;
+
+  sigma_SI_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
   sigma_SI_p_simple.resolveDependency(&mwimp_generic);
   sigma_SI_p_simple.reset_and_calculate();
+  sigma_SI_p_DS = sigma_SI_p_simple(0);
+  sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+  sigma_SI_p_simple.reset_and_calculate();
+  sigma_SI_p_MO = sigma_SI_p_simple(0);
+
 
   // Set generic scattering cross-section for later use
-  sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+  double sigma_SD_p_DS, sigma_SD_p_MO;
+  sigma_SD_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
   sigma_SD_p_simple.resolveDependency(&mwimp_generic);
   sigma_SD_p_simple.reset_and_calculate();
-
+  sigma_SD_p_DS = sigma_SD_p_simple(0);
+  sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+  sigma_SD_p_simple.reset_and_calculate();
+  sigma_SD_p_MO = sigma_SD_p_simple(0);
 
   // ---- Gamma-ray yields ----
 
@@ -476,6 +489,12 @@ int main(int argc, char* argv[])
   dd_gna = DD_couplings_DarkSUSY(0).gna;
   file << "    DS: " << dd_gna << std::endl;
 
+  file << " sigma_SI_p [cm^2]: " << std::endl;
+  file << "    MO: " << sigma_SI_p_MO << std::endl;
+  file << "    DS: " << sigma_SI_p_DS << std::endl;
+  file << " sigma_SD_p [cm^2]: " << std::endl;
+  file << "    MO: " << sigma_SD_p_MO << std::endl;
+  file << "    DS: " << sigma_SD_p_DS << std::endl;
   file.close();
 
   return 0;
