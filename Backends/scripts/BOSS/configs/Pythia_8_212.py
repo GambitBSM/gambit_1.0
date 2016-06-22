@@ -27,12 +27,12 @@ gambit_base_namespace  = ''
 # ~~~~~ Information about the external code ~~~~~
 
 # Use either absolute paths or paths relative to the main BOSS directory.
-input_files   = ['../../../Backends/installed/Pythia/8.212/include/Pythia8/Pythia.h']
-include_paths = ['../../../Backends/installed/Pythia/8.212/include', '../../../contrib/slhaea/include']
-base_paths    = ['../../../Backends/installed/Pythia/8.212/']
+input_files   = ['../../../Backends/installed/Pythia/'+gambit_backend_version+'/include/Pythia8/Pythia.h']
+include_paths = ['../../../Backends/installed/Pythia/'+gambit_backend_version+'/include', '../../../contrib/slhaea/include']
+base_paths    = ['../../../Backends/installed/Pythia/'+gambit_backend_version+'/']
 
-header_files_to = '../../../Backends/installed/Pythia/8.212/include'
-src_files_to    = '../../../Backends/installed/Pythia/8.212/src'
+header_files_to = '../../../Backends/installed/Pythia/'+gambit_backend_version+'/include'
+src_files_to    = '../../../Backends/installed/Pythia/'+gambit_backend_version+'/src'
 
 
 load_classes = [
