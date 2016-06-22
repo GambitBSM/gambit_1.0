@@ -13,7 +13,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/equivalency_singleton.hpp"
+#include "gambit/Elements/equivalency_singleton.hpp"
 
 namespace Gambit
 {

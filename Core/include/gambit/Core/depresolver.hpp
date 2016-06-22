@@ -34,7 +34,7 @@
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Utils/type_equivalency.hpp"
+#include "gambit/Elements/type_equivalency.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
@@ -103,7 +103,7 @@ namespace Gambit
     bool stringComp(const str &s1, const str &s2, bool with_regex = true);
 
     /// Type comparison taking into account equivalence classes
-    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq, bool with_regex = true);
+    bool typeComp(str, str, const Utils::type_equivalency&, bool with_regex = true);
 
     /// Main dependency resolver
     class DependencyResolver

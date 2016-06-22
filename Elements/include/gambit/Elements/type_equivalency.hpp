@@ -29,6 +29,9 @@ namespace Gambit
   namespace Utils
   {
 
+    /// Clean out whitespace and strip Gambit and default BOSSed class namespaces
+    str fix_type(str);
+
     /// Structure providing type equivalency classes to the dep resolver.
     struct type_equivalency
     {
