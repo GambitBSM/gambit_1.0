@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
 
   // Relic density calculation with MicrOmegas
   RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::darkOmega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 0);  // 0: accurate; 1: fast
+  RD_oh2_MicrOmegas.setOption<int>("fast", 0);  // 0: accurate; 1: fast
   RD_oh2_MicrOmegas.reset_and_calculate();
 
   // Relic density calculation with DarkSUSY (the sloppy version)
