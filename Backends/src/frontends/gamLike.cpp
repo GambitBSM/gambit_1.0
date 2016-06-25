@@ -30,5 +30,6 @@ BE_INI_FUNCTION
     std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
     set_data_path(path);  // Note that passing per reference is default per backend system
   }
+  daFunk::Funk profile = *Dep::GalacticHalo;
 }
 END_BE_INI_FUNCTION

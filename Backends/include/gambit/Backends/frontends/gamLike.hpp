@@ -33,5 +33,7 @@ BE_FUNCTION(init, void, (int), "init", "init")
 BE_FUNCTION(set_data_path, void, (const std::string &), "set_data_path", "set_data_path")
 BE_FUNCTION(lnL, double, (int, const std::vector<double> &, const std::vector<double> &), "lnL", "lnL")
 
+BE_INI_DEPENDENCY(GalacticHalo, daFunk::Funk)
+
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
