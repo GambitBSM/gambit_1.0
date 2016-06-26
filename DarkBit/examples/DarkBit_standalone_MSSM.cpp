@@ -113,7 +113,6 @@ int main(int argc, char* argv[])
     LocalHalo_primary_parameters->setValue("vrot", 235.);
     LocalHalo_primary_parameters->setValue("v0", 235.);
     LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
   
     // Initialize nuclear_params_fnq model
     ModelParameters* nuclear_params_fnq = Models::nuclear_params_fnq::Functown::primary_parameters.getcontentsPtr();
