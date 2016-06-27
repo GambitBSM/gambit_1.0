@@ -29,7 +29,7 @@
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Utils/equivalency_singleton.hpp"
+#include "gambit/Elements/equivalency_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Logs/logging.hpp"
@@ -76,7 +76,7 @@ namespace Gambit
   {
     try
     {
-      Backends::backendInfo().defaults[be] = def;
+      Backends::backendInfo().default_safe_versions[be] = def;
     }
     catch (std::exception& e) { ini_catch(e); }
     return 0;
@@ -404,17 +404,6 @@ namespace Gambit
         // Set the requirement in the functor
         f.setRequiredClassloader(be,*it,sv);
       }
-    }
-    catch (std::exception& e) { ini_catch(e); }
-    return 0;
-  }
-
-  /// Save default versions of BOSSed backends for later reference
-  int set_default_bossed_version(const str& be, const str& sv)
-  {
-    try
-    {
-      Backends::backendInfo().set_default_version(be, sv);
     }
     catch (std::exception& e) { ini_catch(e); }
     return 0;

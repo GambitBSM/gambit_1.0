@@ -160,13 +160,10 @@ START_MODULE
     #define FUNCTION GM2C_SUSY
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
-    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
-    BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 
-                             (const gm2calc_1_1_2::gm2calc::MSSMNoFV_onshell&))
-    BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, 
-                             (const gm2calc_1_1_2::gm2calc::MSSMNoFV_onshell&))
-    BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, 
-                             (const gm2calc_1_1_2::gm2calc::MSSMNoFV_onshell&))
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
+    BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
+    BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_OPTION( (gm2calc), (libgm2calc) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION

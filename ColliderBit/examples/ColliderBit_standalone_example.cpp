@@ -47,6 +47,7 @@ namespace Gambit
 
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec){
+    {
       static Spectrum mySpec;
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
     }
@@ -58,7 +59,8 @@ namespace Gambit
       outDecays = DecayTable(inputFileName, spec.PDG_translator(), 0, true);
     }
     
-    void createZDecays(DecayTable::Entry& result){
+    void createZDecays(DecayTable::Entry& result)
+    {
       // This function extracts the Z decay entry
       result.width_in_GeV = 2.4952;
       result.positive_error = 2.3e-03;
@@ -70,7 +72,8 @@ namespace Gambit
     }
     
     
-    void createSelDecays(DecayTable::Entry& outSelDecays){
+    void createSelDecays(DecayTable::Entry& outSelDecays)
+    {
       // This function extracts the left-handed selectron decay table
       // This is a little more complicated than the previous function
       // Need to get the string that corresponds to a left-handed selectron (the decay table entries are in the mass eigenstate basis)
@@ -80,7 +83,8 @@ namespace Gambit
       outSelDecays = (*Pipes::createSelDecays::Dep::decay_rates)(x);
     }
 
-    void createSerDecays(DecayTable::Entry& outSerDecays){
+    void createSerDecays(DecayTable::Entry& outSerDecays)
+    {
       // This function extracts the right-handed selectron decay table
       double max_mixing;
       const SubSpectrum& mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum).get_HE();
@@ -88,7 +92,8 @@ namespace Gambit
       outSerDecays = (*Pipes::createSerDecays::Dep::decay_rates)(x);
     }
 
-    void createSmulDecays(DecayTable::Entry& outSmulDecays){
+    void createSmulDecays(DecayTable::Entry& outSmulDecays)
+    {
       // This function extracts the left-handed smuon decay table
       double max_mixing;
       const SubSpectrum& mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum).get_HE();
@@ -96,7 +101,8 @@ namespace Gambit
       outSmulDecays = (*Pipes::createSmulDecays::Dep::decay_rates)(x);
     }
     
-    void createSmurDecays(DecayTable::Entry& outSmurDecays){
+    void createSmurDecays(DecayTable::Entry& outSmurDecays)
+    {
       //This function extracts the right-handed smuon decay table
       double max_mixing;
       const SubSpectrum& mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum).get_HE();
@@ -104,7 +110,8 @@ namespace Gambit
       outSmurDecays = (*Pipes::createSmurDecays::Dep::decay_rates)(x);
     }
     
-    void createStau1Decays(DecayTable::Entry& outStau1Decays){
+    void createStau1Decays(DecayTable::Entry& outStau1Decays)
+    {
       //This function extracts the stau1 decay table
       const SubSpectrum& mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum).get_HE();
       // Set these arguments by hand for this example
@@ -114,7 +121,8 @@ namespace Gambit
       outStau1Decays = (*Pipes::createStau1Decays::Dep::decay_rates)(stau1_string);
     }
 
-    void createStau2Decays(DecayTable::Entry& outStau2Decays){
+    void createStau2Decays(DecayTable::Entry& outStau2Decays)
+    {
       //This function extracts the stau2 decay table
       const SubSpectrum& mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum).get_HE();
       const static double tol = 0.001;
@@ -131,27 +139,14 @@ int main()
 
   try{
     
-    // Make a logging object
-    std::map<std::string, std::string> loggerinfo;
-    
-    // Define where the logs will end up
-    // User could change this if required
-    std::string prefix("runs/ColliderBit_standalone/logs/");
-
-    // Ensure that the above directory exists
-    Utils::ensure_path_exists(prefix);
-    
-    // Add entries to the loggerinfo map
-    loggerinfo["Core, Error"] = prefix+"core_errors.log";
-    loggerinfo["Default"]     = prefix+"default.log";
-    loggerinfo["Warning"]     = prefix+"warnings.log";
-    loggerinfo["ColliderBit, Info"] = prefix+"ColliderBit_info.log";
-    
-    // Initialise global LogMaster object
-    logger().initialise(loggerinfo);
-    
+    // Initialise logs  
+    initialise_standalone_logs("runs/ColliderBit_standalone/logs/");
     logger()<<"Running ColliderBit standalone example"<<LogTags::info<<EOM;
     
+    // ---- Check that required backends are present    
+    if (not Backends::backendInfo().works["Pythia8.212.EM"]) backend_error().raise(LOCAL_INFO, "Pythia 8.212.EM is missing!");
+    if (not Backends::backendInfo().works["nulike1.0.3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
+
     std::cout << std::endl << "My name is " << name() << std::endl;
     std::cout << " I can calculate: " << endl << iCanDo << std::endl;
     std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;

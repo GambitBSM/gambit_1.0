@@ -18,7 +18,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SlowJet : public virtual WrapperBase
+        class SlowJet : public WrapperBase
         {
                 // Member variables: 
             public:

@@ -98,6 +98,15 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
+# Arrange clean commands
+include(cmake/cleaning.cmake)
+
+# Arrange make backends command (will be filled in from backends.cmake)
+add_custom_target(backends)
+
+# Arrange make scanners command (will be filled in from scanners.cmake)
+add_custom_target(scanners)
+
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
@@ -119,6 +128,16 @@ endmacro()
 macro(add_extra_targets package dir dl target)
   enable_auto_rebuild(${package})
   add_external_clean(${package} ${dir} ${dl} ${target})
+  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-backends clean-${package})
+endmacro()
+
+# Macro to add all additional targets for a new scanner
+macro(add_extra_targets_scanner package dir dl target)
+  enable_auto_rebuild(${package})
+  add_external_clean(${package} ${dir} ${dl} ${target})
+  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-scanners clean-${package})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
@@ -305,7 +324,7 @@ macro(BOSS_backend cmake_project backend_name backend_version)
     endif()
     ExternalProject_Add_Step(${cmake_project} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
+      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} ${backend_name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
       COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
       COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp

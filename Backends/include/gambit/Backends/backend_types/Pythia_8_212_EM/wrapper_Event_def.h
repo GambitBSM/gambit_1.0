@@ -54,7 +54,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline const Pythia8::Particle& Event::operator[](int i) const
         {
-            return const_cast<Pythia8::Abstract_Particle&>(get_BEptr()->operator_square_bracket_pair__BOSS(i)).get_init_wref();
+            return const_cast<Pythia8::Abstract_Particle&>(const_cast<const Abstract_Event*>(get_BEptr())->operator_square_bracket_pair__BOSS(i)).get_init_wref();
         }
         
         inline Pythia8::Particle& Event::front()

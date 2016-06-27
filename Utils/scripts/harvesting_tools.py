@@ -30,11 +30,26 @@ import sys
 import getopt
 import itertools
 
+default_bossed_versions = "./Backends/include/gambit/Backends/default_bossed_versions.hpp"
 equiv_config = "./config/resolution_type_equivalency_classes.yaml"
+
+# Load the default_bossed_versions.hpp header, and work out the namespace aliases.
+def get_default_boss_namespaces():
+    result = dict()
+    # Load the default_bossed_version header.
+    with (open(default_bossed_versions)) as f:
+        for newline in readlines_nocomments(f):
+            newline = newline.strip()
+            if not newline.startswith("#define"): continue
+            line = neatsplit('\s',newline)
+            if not line[1].startswith("Default_"): continue
+            key = line[1][len("Default_"):]
+            result[key] = line[2]
+    return result
 
 # Load type equivalencies yaml file and return a dictionary containing all the equivalency classes.
 # Just use regex rather than pyYAML, as the latter chokes on :: in scalar entries >:-/
-def get_type_equivalencies():
+def get_type_equivalencies(nses):
     from collections import defaultdict
     result = defaultdict(set)
     # Load the equivalencies yaml file
@@ -45,7 +60,13 @@ def get_type_equivalencies():
             newline = re.sub("^\[\s*|\s*\]", "", newline)
             equivalency_class = set()
             for member in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", newline+","):
-                equivalency_class.add(re.sub("\"","",member[:-1].strip()))
+              member = re.sub("\"","",member[:-1].strip())
+              # Strip off the leading BOSSed namespace from all type equivalencies pertaining to the default version
+              for key in nses:
+                ns = key+"_"+nses[key]+"::"
+                if member.startswith(ns): member = member[len(ns):]        
+                member = re.sub("\s"+ns," ",member)
+                equivalency_class.add(member)
             for member in equivalency_class: result[member] = list(equivalency_class)
     return result
                     
@@ -158,10 +179,15 @@ def update_module(line,module):
 #  1. the existing equivalent entry
 #  2. the first equivalent entry that does not contain a comma
 #  3. the original type
-def first_simple_type_equivalent(candidate_in, equivs, existing):
+def first_simple_type_equivalent(candidate_in, equivs, nses, existing):
     if candidate_in in existing: return candidate_in
     candidate = candidate_in
     candidate.strip()
+    # Strip off the leading BOSSed namespace if it's from the default version
+    for key in nses:
+      ns = key+"_"+nses[key]+"::"
+      candidate = re.sub("\s"+ns," ",candidate)
+      if candidate.startswith(ns): candidate = cadidate[len(ns):]
     # Exists in the equivalency classes
     if candidate in equivs:
         candidate_suffix = ""
@@ -195,7 +221,7 @@ def strip_ws(s, qualifiers):
       
 
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
+def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,equiv_ns,verbose=False):
 
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
@@ -233,7 +259,7 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            candidate_type = first_simple_type_equivalent(candidate_type,equiv_classes,typeset)
+            candidate_type = first_simple_type_equivalent(candidate_type,equiv_classes,equiv_ns,typeset)
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
                 module+"::"+candidate_type in typeset or
@@ -273,7 +299,7 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
 
 
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
-def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=False):
+def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,equiv_ns,verbose=False):
 
     command_index = {"BE_VARIABLE":2,
                      "BE_FUNCTION":2, 
@@ -294,7 +320,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
             if re.search("\)\s*\)\s*$", line): 
                 #This is a backend function requirement
                 leading_type = strip_ws(re.sub("\s*,\s*\(.*?\)\s*$", "", args), qualifier_list)
-                leading_type = first_simple_type_equivalent(leading_type,equiv_classes,be_typeset)
+                leading_type = first_simple_type_equivalent(leading_type,equiv_classes,equiv_ns,be_typeset)
                 functor_template_types = list([leading_type])
                 args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
                 for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
@@ -303,11 +329,11 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
-                        arg = first_simple_type_equivalent(strip_ws(arg, qualifier_list),equiv_classes,be_typeset)
+                        arg = first_simple_type_equivalent(strip_ws(arg, qualifier_list),equiv_classes,equiv_ns,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #This is a backend variable requirement
-                args = first_simple_type_equivalent(strip_ws(args, qualifier_list),equiv_classes,be_typeset)
+                args = first_simple_type_equivalent(strip_ws(args, qualifier_list),equiv_classes,equiv_ns,be_typeset)
                 functor_template_types = list([args+"*"])
 
         else:
@@ -317,7 +343,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                 splitline[cmd_i:cmd_i+2] = [" ".join(splitline[cmd_i:cmd_i+2])]
 
             functor_template_types = list([strip_ws(splitline[command_index[splitline[0]]], qualifier_list)])
-            functor_template_types[0] = first_simple_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
+            functor_template_types[0] = first_simple_type_equivalent(functor_template_types[0],equiv_classes,equiv_ns,be_typeset)
             if splitline[0].endswith("FUNCTION"):
                 #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
                 args = re.sub("\s*BE_(CONV_)?FUNCTION\s*\(.*?,.*?,\s*?\(", "", line)
@@ -332,7 +358,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
-                        arg = first_simple_type_equivalent(strip_ws(arg, qualifier_list),equiv_classes,be_typeset)
+                        arg = first_simple_type_equivalent(strip_ws(arg, qualifier_list),equiv_classes,equiv_ns,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
@@ -346,7 +372,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            candidate_type = first_simple_type_equivalent(strip_ws(candidate_type, qualifier_list),equiv_classes,be_typeset)
+            candidate_type = first_simple_type_equivalent(strip_ws(candidate_type, qualifier_list),equiv_classes,equiv_ns,be_typeset)
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):

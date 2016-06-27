@@ -22,7 +22,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SLHAinterface : public virtual WrapperBase
+        class SLHAinterface : public WrapperBase
         {
                 // Member variables: 
             public:

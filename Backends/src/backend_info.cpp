@@ -182,26 +182,17 @@ namespace Gambit
     bepathoverrides[be][ver] = path;
   }
 
-  /// Set the default version of a BOSSed backend, for easy retrieval later. Returns true on success.
-  void Backends::backend_info::set_default_version(const str& be, const str& sv)
-  {
-    if (safe_version_map[be].first.count(sv) > 0)
-    {
-      default_versions[be] = version_from_safe_version(be, sv);
-    }
-  }
-
   /// Get the default version of a BOSSed backend.
   str Backends::backend_info::default_version(const str& be) const
   {
-    if (default_versions.find(be) == default_versions.end())
+    if (default_safe_versions.find(be) == default_safe_versions.end())
     {
       std::ostringstream msg;
       msg << "The backend \"" << be << "\" does not contain any classes for loading, "
           << endl << "and therefore has no default version."; 
       backend_error().raise(LOCAL_INFO, msg.str());
     } 
-    return default_versions.at(be);
+    return version_from_safe_version(be,default_safe_versions.at(be));
   }
 
   /// Get all versions of a given backend that are successfully loaded.

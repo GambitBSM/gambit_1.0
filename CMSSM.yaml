@@ -53,47 +53,16 @@ Parameters:
     SignMu: 1
     TanBeta: 44.8668
   LocalHalo:
-    rho0: 0.4
-    v0: 235
-    vearth: 29.78
-    vesc: 550
-    vrot: 235
-  StandardModel_SLHA2:
-    CKM_A: 0.814
-    CKM_etabar: 0.353
-    CKM_lambda: 0.22537
-    CKM_rhobar: 0.117
-    GF: 1.16638e-05
-    alpha1: 0
-    alpha2: 0
-    alphaS: 0.119608
-    alphainv: 127.938
-    delta13: 0
-    mBmB: 4.26271
-    mCmC: 1.275
-    mD: 0.0048
-    mE: 0.000510999
-    mMu: 0.105658
-    mNu1: 0
-    mNu2: 0
-    mNu3: 0
-    mS: 0.095
-    mT: 172.648
-    mTau: 1.77682
-    mU: 0.0023
-    mZ: 91.1876
-    theta12: 0.58376
-    theta13: 0.15495
-    theta23: 0.76958
-  nuclear_params_sigmas_sigmal:
-    deltad: -0.427
-    deltas: -0.085
-    deltau: 0.842
-    sigmal: 70.7982
-    sigmas: 58.821
-
-
-
+    rho0: # Local dark matter density
+      fixed_value: .4 # GeV/cm^3
+      #range: [.2, .8]
+      #prior_type: flat
+    vrot: # Local disk rotation speed
+      fixed_value: 235 # km/s
+    v0: # Maxwellian most-probable speed
+      fixed_value: 235 # km/s
+    vesc: # Local galactic escape speed
+      fixed_value: 550 # km/s
 
 Priors:
 
