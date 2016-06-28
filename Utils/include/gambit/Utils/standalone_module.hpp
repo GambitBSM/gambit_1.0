@@ -20,6 +20,7 @@
 
 #define STANDALONE
 
+#include "gambit/Utils/standalone_utils.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/backend_rollcall.hpp"
 #include "gambit/Models/model_rollcall.hpp"

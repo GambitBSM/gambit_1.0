@@ -92,8 +92,9 @@ def main(argv):
     # List of directory names to ignore when searching for headers
     exclude_dirs=set([".git","build","doc","cmake","extras","config","contrib","runs","Logs","Printers","scratch"])
 
-    # Load up the sets of equivalent types
-    equiv_classes = get_type_equivalencies()
+    # Load up the sets of equivalent types and namespaces
+    equiv_ns = get_default_boss_namespaces()
+    equiv_classes = get_type_equivalencies(equiv_ns)
 
     # Get list of rollcall header files to search
     module_rollcall_headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
@@ -178,7 +179,7 @@ def main(argv):
                 # If this line defines the module name, update it.
                 module = update_module(continued_line,module)
                 # Check for calls to module functor creation macros, and harvest the types used.
-                addiffunctormacro(continued_line,module,modules,returned_types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
+                addiffunctormacro(continued_line,module,modules,returned_types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,equiv_ns,verbose=verbose)
                 continued_line = ""
         
     print "Found types for module functions:"
@@ -196,7 +197,7 @@ def main(argv):
                 continued_line += line
                 if line.strip().endswith(","): continue
                 # Check for calls to backend functor creation macros, and harvest the types used.
-                addifbefunctormacro(continued_line,be_types,type_packs,equiv_classes,verbose=verbose)
+                addifbefunctormacro(continued_line,be_types,type_packs,equiv_classes,equiv_ns,verbose=verbose)
                 continued_line = ""
         
     print "Found types for backend functions and variables:"

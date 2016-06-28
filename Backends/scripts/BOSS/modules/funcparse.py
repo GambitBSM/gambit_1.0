@@ -50,8 +50,7 @@ def run():
 
         # Print current function
         print
-        print '  Function: ' + func_name['long_templ_args']
-        print '  ----------' + '-'*len(func_name['long_templ_args'])
+        print '  ' + utils.modifyText('Function:','underline') + ' ' + func_name['long_templ_args']
 
 
         # Check if this function is accepted
@@ -130,8 +129,8 @@ def run():
         # Generate code for wrapper class version
         #
         
-        # Register the wrapper name
-        func_name['wr_name'] = wr_func_name
+        # # Register the wrapper name
+        # func_name['wr_name'] = wr_func_name
 
         # Construct wrapper function code
         wrapper_code = generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_overloads) 
@@ -179,7 +178,7 @@ def run():
         # Keep track of functions done
         #
         gb.functions_done.append(func_name)
-
+        gb.wr_func_names.append(wr_func_name)
 
         print
 

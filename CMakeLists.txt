@@ -232,10 +232,7 @@ set(GAMBIT_VERSION_MINOR 0)
 set(GAMBIT_VERSION_REVISION 0)
 
 # Add doxygen build as an external project
-add_custom_target(docs  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
-
-# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
-add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
+add_custom_target(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
 
 # Work out which modules to include in the compile
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
@@ -346,6 +343,3 @@ include(cmake/executables.cmake)
 
 # Finish setting the link commands and rpath variables
 include(${PROJECT_BINARY_DIR}/linkedout.cmake)
-
-# Arrange clean commands
-include(cmake/cleaning.cmake)
