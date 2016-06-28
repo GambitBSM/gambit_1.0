@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas: #43.0 
-      range:  [19, 67]
-    sigmal: #58.0 
+    sigmas:
+      range:  [19, 67] 
+    sigmal:
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -16,33 +16,20 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  MSSM7atQ:
-    Qin:
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
-    Ad_3:
-      range: [-1e4, 1e4]
-      prior_type: flat
-    Au_3:
-      range: [-1e4, 1e4]
-      prior_type: flat
-    M2:
-      range: [1e2, 1e4]
+  CMSSM:
+    M0:
+      range: [50, 1e4]
       prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      range: [-1e4, 1e4]
+      prior_type: flat
     TanBeta:
-      range: [3.0, 70.0]
+      range: [3.0, 70]
       prior_type: flat
-    mHd2:
-      range: [-1e8, 1e8]
-      prior_type: flat    
-    mHu2:
-      range: [-1e8, 1e8]
-      prior_type: flat
-    mf2:
-      range: [1e4, 1e8]
-      prior_type: log
-
+    SignMu: 1
 
   LocalHalo:
     rho0: # Local dark matter density
@@ -67,12 +54,12 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "CMSSM.hdf5"
+    group: "/CMSSM"
 
 Scanner:
 
-  use_scanner: multinest
+  use_scanner: de
 
   scanners:
     multinest:
@@ -303,8 +290,10 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -494,6 +483,6 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e4
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM_Diver/"
 
   debug: true

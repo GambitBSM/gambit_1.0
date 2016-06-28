@@ -18,13 +18,13 @@ Parameters:
 
   CMSSM:
     M0:
-      range: [50, 10000]
+      range: [50, 1e4]
       prior_type: log
     M12:
-      range: [50, 10000]
+      range: [50, 1e4]
       prior_type: log
     A0:
-      range: [-10000, 10000]
+      range: [-1e4, 1e4]
       prior_type: flat
     TanBeta:
       range: [3.0, 70]
@@ -33,9 +33,9 @@ Parameters:
 
   LocalHalo:
     rho0: # Local dark matter density
-      fixed_value: .4 # GeV/cm^3
-      #range: [.2, .8]
-      #prior_type: flat
+      #fixed_value: .4 # GeV/cm^3
+      range: [.2, .8]
+      prior_type: flat
     vrot: # Local disk rotation speed
       fixed_value: 235 # km/s
     v0: # Maxwellian most-probable speed
@@ -72,6 +72,7 @@ Scanner:
       plugin: Diver
       like: LogLike
       NP: 5000
+      convthresh: 1e-3
       verbosity: 1
 
 ObsLikes:
@@ -481,6 +482,7 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4
-    debug: true
 
   default_output_path: "runs/CMSSM/"
+
+  debug: true

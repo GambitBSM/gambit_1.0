@@ -88,8 +88,8 @@ scanner_plugin(Diver, version(1, 0, 0))
     int    nDerived            =                                                 0;       // Number of derived quantities to output (GAMBIT printers handle these).
     int    nDiscrete           = get_inifile_value<int>   ("nDiscrete",          0);      // Number of parameters that are to be treated as discrete
     bool   partitionDiscrete   = get_inifile_value<bool>  ("partitionDiscrete",  false);  // Split the population evenly amongst discrete parameters and evolve separately
-    int    maxciv              = get_inifile_value<int>   ("maxciv",             10);     // Maximum number of civilisations
-    int    maxgen              = get_inifile_value<int>   ("maxgen",             200);    // Maximum number of generations per civilisation
+    int    maxciv              = get_inifile_value<int>   ("maxciv",             1);      // Maximum number of civilisations
+    int    maxgen              = get_inifile_value<int>   ("maxgen",             500);    // Maximum number of generations per civilisation
     int    NP                  = get_inifile_value<int>   ("NP");                         // Population size (individuals per generation)
     double Cr                  = get_inifile_value<double>("Cr",                 0.9);    // Crossover factor
     double lambda              = get_inifile_value<double>("lambda",             0.8);    // Mixing factor between best and rand/current
