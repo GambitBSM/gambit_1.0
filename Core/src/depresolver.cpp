@@ -1379,6 +1379,9 @@ namespace Gambit
       logger() << "################################################" << endl;
       logger() << EOM;
 
+      // Print something to stdout as well
+      std::cout << "Resolving dependency graph..." << std::endl;
+
       // Read ini entries
       use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
       print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
@@ -1498,21 +1501,26 @@ namespace Gambit
           logger() << LogTags::dependency_resolver << "Activate new module function" << endl;
           masterGraph[fromVertex]->setStatus(2); // activate node
           resolveVertexBackend(fromVertex);
-          if ( boundIniFile->getValueOrDef<bool>( false, "dependency_resolution", "use_old_routines") )
+
+          // Don't need options during dry-run, so skip this (just to simplify terminal output)
+          if(not boundCore->show_runorder)
           {
-            // Generate options object from ini-file entry that corresponds to
-            // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
-            iniEntry = findIniEntry(fromVertex, boundIniFile->getRules(), "Rules");
-            if ( iniEntry != NULL )
+            if ( boundIniFile->getValueOrDef<bool>( false, "dependency_resolution", "use_old_routines") )
             {
-              Options myOptions(iniEntry->options);
+              // Generate options object from ini-file entry that corresponds to
+              // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
+              iniEntry = findIniEntry(fromVertex, boundIniFile->getRules(), "Rules");
+              if ( iniEntry != NULL )
+              {
+                Options myOptions(iniEntry->options);
+                masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
+              }
+            }
+            else
+            {
+              Options myOptions = collectIniOptions(fromVertex);
               masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
             }
-          }
-          else
-          {
-            Options myOptions = collectIniOptions(fromVertex);
-            masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex
           fillParQueue(&parQueue, fromVertex);
