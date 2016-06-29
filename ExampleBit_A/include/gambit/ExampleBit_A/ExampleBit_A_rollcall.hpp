@@ -216,6 +216,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Flat test likelihood for checking prior distributions
+  #define CAPABILITY test_flat_likelihood
+  START_CAPABILITY
+    #define FUNCTION flat_likelihood
+    START_FUNCTION(double)
+    ALLOW_MODELS(TestModel1D)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 #undef MODULE
 
 

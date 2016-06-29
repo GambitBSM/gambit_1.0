@@ -87,8 +87,8 @@ int main(int argc, char* argv[])
   sigaddset(signal_mask(), SIGUSR1);
   sigaddset(signal_mask(), SIGUSR2);
  
-  /// Create an MPI communicator group for use by error handlers
   #ifdef WITH_MPI
+    /// Create an MPI communicator group for use by error handlers
     GMPI::Comm errorComm;
     errorComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
     const int ERROR_TAG=1;         // Tag for error messages
@@ -96,6 +96,10 @@ int main(int argc, char* argv[])
     int rank = errorComm.Get_rank();
     signaldata().set_MPI_comm(&errorComm); // Provide a communicator for signal handling routines to use.
     signaldata().rank = rank;      // set variable for use in signal handlers
+    /// Create an MPI communicator group for ScannerBit to use
+    GMPI::Comm scanComm;
+    scanComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
+    Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
   #endif
 
   try

@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas: #43.0 
-      range:  [19, 67]
-    sigmal: #58.0 
+    sigmas:
+      range:  [19, 67] 
+    sigmal:
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -16,32 +16,20 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  MSSM7atQ:
-    Qin:
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
-    Ad_3:
-      prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
-    Au_3:
-      prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
-    M2:
-      prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
-    TanBeta:
-      range: [3.0, 70.0]
-      prior_type: flat
-    mHd2:
-      prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]    
-    mHu2:
-      prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]    
-    mf2:
-      range: [2.5e3, 1e8]
+  CMSSM:
+    M0:
+      range: [50, 1e4]
       prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      range: [-1e4, 1e4]
+      prior_type: flat
+    TanBeta:
+      range: [3.0, 70]
+      prior_type: flat
+    SignMu: 1
 
   LocalHalo:
     rho0: # Local dark matter density
@@ -54,6 +42,8 @@ Parameters:
       fixed_value: 235 # km/s
     vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
+    vearth: # Keplerian velocity of the earth around the sun
+      fixed_value: 29.78 # km/s
 
 Priors:
 
@@ -64,12 +54,12 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "CMSSM.hdf5"
+    group: "/CMSSM"
 
 Scanner:
 
-  use_scanner: multinest
+  use_scanner: de
 
   scanners:
     multinest:
@@ -81,7 +71,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 5000
+      NP: 7200
       convthresh: 1e-3
       verbosity: 1
 
@@ -300,8 +290,10 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -491,6 +483,6 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e4
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM_Diver/"
 
   debug: true

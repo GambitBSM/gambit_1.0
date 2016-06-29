@@ -74,7 +74,7 @@ START_MODULE
 
     #define FUNCTION sigma_example          // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-    ALLOW_MODELS(demo_B,NormalDist)
+    ALLOW_MODELS(NormalDist)
     #undef FUNCTION
 
   #undef CAPABILITY

@@ -47,16 +47,25 @@ Parameters:
 
   # Parameter point test
   CMSSM:
-    A0: -1758.13
-    M0: 1381.96
-    M12: 143.026
+    M0:
+      range: [50, 1e4]
+      prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]      
+    TanBeta:
+      range: [3.0, 70]
+      prior_type: flat
     SignMu: 1
     TanBeta: 44.8668
   LocalHalo:
     rho0: # Local dark matter density
-      fixed_value: .4 # GeV/cm^3
-      #range: [.2, .8]
-      #prior_type: flat
+      #fixed_value: .4 # GeV/cm^3
+      range: [.2, .8]
+      prior_type: flat
     vrot: # Local disk rotation speed
       fixed_value: 235 # km/s
     v0: # Maxwellian most-probable speed
@@ -91,6 +100,7 @@ Scanner:
       plugin: Diver
       like: LogLike
       NP: 5000
+      convthresh: 1e-3
       verbosity: 1
 
 ObsLikes:
@@ -500,6 +510,7 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4
-    debug: true
 
   default_output_path: "runs/CMSSM/"
+
+  debug: true

@@ -31,6 +31,8 @@
 #include <unordered_map>
 #include <algorithm>
 #include <cctype>
+#include <boost/iterator/zip_iterator.hpp>
+#include <boost/range.hpp>
 
 #ifdef __GNUG__
   #include <cstdlib>
@@ -49,7 +51,6 @@
 #define scan_warn       SCAN_WARN
 #define scan_end        SCAN_END
 #define scan_flush      SCAN_FLUSH
-#define scan_for        SCAN_FOR
 
 #define SCAN_ERR                                                \
 Gambit::Scanner::Errors::_bool_() = true,                       \
@@ -75,11 +76,7 @@ Gambit::Scanner::Errors::_warn_()                               \
 
 #define SCAN_END std::endl, SCAN_END_INTERNAL
 
-#define SCAN_FLUSH std::flush, SCAN_END_INTERNAL
-
-#define SCAN_FOR(arg, vec)                                                                                      \
-for(auto it = Gambit::Scanner::__scan_for__<decltype(vec.begin())>(vec.begin(), vec.end()); it.notDone(); ++it) \
-for(auto &arg = *it(); it.isDone(); it.setTrue())                                                               \
+#define SCAN_FLUSH std::flush, SCAN_END_INTERNAL                                                             \
 
 namespace Gambit
 {
@@ -114,29 +111,17 @@ namespace Gambit
         /// Scanner warnings
         warning& scan_warning();
             
-        /*****************************************/
-        /****** scan range for loop class ********/
-        /*****************************************/
+        /**********************************/
+        /****** zip for range loop ********/
+        /**********************************/
         
-        template <typename T>
-        class __scan_for__
+        template <typename... T>
+        inline auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
         {
-        private:
-            T it;
-            T end;
-            bool done;
-        public:
-            __scan_for__ (const T& it, const T& end) : it(it), end(end), done(true) {}
-            
-            T operator()() {done = false; return it;}
-            
-            bool notDone() const {return (it != end)&&done;}
-            bool isDone() const {return !done;}
-            void setTrue() {done = true;}
-            
-            void operator ++ () {it++;}
-            void operator ++ (int) {++it;}
-        };
+            return boost::make_iterator_range(
+                boost::make_zip_iterator(boost::make_tuple(std::begin(containers)...)),
+                boost::make_zip_iterator(boost::make_tuple(std::end(containers)...)));
+        }
             
         /*********************************/
         /****** demangle function ********/
@@ -189,6 +174,16 @@ namespace Gambit
                 std::vector<T> ret;
                 T temp;
                 while (ss >> temp) ret.push_back(temp);
+                
+                return ret;
+            }
+            else if (node.IsMap())
+            {
+                std::vector<T> ret;
+                for (auto it = node.begin(), end = node.end(); it != end; ++it)
+                {
+                    ret.push_back(it->first.as<T>());
+                }
                 
                 return ret;
             }

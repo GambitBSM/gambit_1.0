@@ -63,8 +63,14 @@ namespace Gambit
       GMPI::Comm& errorComm;
       #endif
 
-      /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
+      /// Primary value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
+
+      /// Alternate value for the minimum log likelihood (scanner can trigger a switch to this in special circumstances)
+      double alt_min_valid_lnlike;
+
+      /// Active value for the minimum log likelihood (one of the above two values, whichever is currently in-use)
+      double active_min_valid_lnlike;
 
       /// Map of return types of target functors
       std::map<DRes::VertexID,str> return_types;
