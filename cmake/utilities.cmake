@@ -303,6 +303,8 @@ endmacro()
 
 # Macro for BOSSing a backend
 set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
+set(needs_BOSSing "")
+set(needs_BOSSing_failed "")
 macro(BOSS_backend cmake_project backend_name backend_version)
 
   # Replace "." by "_" in the backend version number
