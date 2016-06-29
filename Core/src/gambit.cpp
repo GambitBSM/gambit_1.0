@@ -23,7 +23,13 @@ using namespace Gambit;
 using namespace LogTags;
 
 /// Cleanup function
-void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
+void do_cleanup() { 
+  if(signaldata().jumppoint_set)
+  {
+    Gambit::Scanner::Plugins::plugin_info.dump(); 
+  }
+  // No cleanup needed if jump point is not set, means the scan never began.
+}
 
 #ifdef WITH_MPI
 bool use_mpi_abort = true; // Set later via inifile value
