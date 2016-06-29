@@ -36,7 +36,9 @@ namespace Gambit
         , C(0.0)  
         , P01(0.0) 
         , P12(0.0) 
-        , P23(0.0) 
+        , P23(0.0)
+        , no_lower_log(false)
+        , no_upper_log(false) 
       {
          // Only valid for 1D parameter transformation
          if (param.size()!=1)
@@ -78,12 +80,39 @@ namespace Gambit
          }
 
          // Make sure ordering of constraints makes sense
-         if(    not (lower < flat_start)
-             or not (flat_start < 0) 
-             or not (0 < flat_end) 
-             or not (flat_end < upper) )
+         if(     (lower < flat_start)
+             and (flat_start < 0) 
+             and (0 < flat_end) 
+             and (flat_end < upper) )
+         { 
+           // No problem  
+         }
+         else if( (lower==flat_start)
+             and  (flat_start <= flat_end)
+             and  (0 < flat_end)
+             and  (flat_end < upper) )
          {
-             scan_err << "Inconsistent values of options for DoubleLogFlatJoin prior detected! The required ordering is: lower < flat_start < 0 < flat_end < upper. Values received were: ["<<lower<<", "<<flat_start<<", "<<flat_end<<", "<<upper<<"]."<<scan_end;
+            // Lower log portion is collapsed; flat portion may now be fully above zero, and is allowed to collapse.
+            no_lower_log = true;
+         }
+         else if( (lower < flat_start)
+             and  (flat_start < 0)
+             and  (flat_start <= flat_end)
+             and  (flat_end==upper) )
+         {
+            // Upper log portion is collapsed; flat portion may now be fully below zero, and is allowed to collapse.
+            no_upper_log = true;
+         } 
+         else if( (lower==flat_start)
+             and  (flat_start < flat_end)
+             and  (flat_end==upper) )
+         {
+            // Both log portions collapsed; flat portion may now be anywhere, but is not allowed to collapse.
+            no_upper_log = true;
+         } 
+         else
+         {
+             scan_err << "Inconsistent values of options for DoubleLogFlatJoin prior detected! The required ordering is: lower <= flat_start < 0 < flat_end <= upper. Values received were: ["<<lower<<", "<<flat_start<<", "<<flat_end<<", "<<upper<<"]."<<"\n(if either log portion is collapsed then the flat portion is permitted to move from covering zero as appropriate)"<<scan_end;
          }
 
          // Useful quantities:
@@ -91,10 +120,15 @@ namespace Gambit
          double x1 = flat_start;
          double x2 = flat_end;
          double x3 = upper;
-         C   = 1. / ( (x2-x1) + x1*log(fabs(x1/x0)) + x2*log(fabs(x3/x2)) );   // Normalization factor 
-         P01 =   C * x1*log(fabs(x1/x0));  // Prob. of x in (x0,x1)
-         P12 =   C * (x2-x1);             // Prob. of x in (x1,x2)
-         P23 =   C * x2*log(fabs(x3/x2));  // Prob. of x in (x2,x3)
+         double Nlower = 0;
+         double Nupper = 0;
+         double Nflat = x2-x1;
+         if(not no_lower_log) Nlower = x1*log(fabs(x1/x0)); 
+         if(not no_upper_log) Nupper = x2*log(fabs(x3/x2)); 
+         C   = 1. / ( Nflat + Nlower + Nupper );   // Normalization factor 
+         P01 =   C * Nlower;  // Prob. of x in (x0,x1)
+         P12 =   C * Nflat;   // Prob. of x in (x1,x2)
+         P23 =   C * Nupper;  // Prob. of x in (x2,x3)
 
          // debugging:
          std::cout<<x1/x0<<std::endl;

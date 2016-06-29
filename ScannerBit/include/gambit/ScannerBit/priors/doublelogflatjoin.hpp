@@ -46,6 +46,10 @@ namespace Gambit
          double P01;
          double P12;
          double P23;
+
+         // Flags to register if special cases are active.
+         bool no_lower_log;
+         bool no_upper_log;
 	 
       public: 
          // Constructor defined in gaussian.cpp
