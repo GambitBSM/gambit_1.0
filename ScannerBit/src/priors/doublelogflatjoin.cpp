@@ -14,6 +14,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2016 Jun
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2016 Jun
+///
 ///  *********************************************
 
 #include "gambit/ScannerBit/priors/doublelogflatjoin.hpp"
@@ -25,7 +29,7 @@ namespace Gambit
    namespace Priors
    {
 
-      // Constructor
+      /// Constructor
       DoubleLogFlatJoin::DoubleLogFlatJoin(const std::vector<std::string>& param, const Options& options) 
         : BasePrior(param, 1)
         , myparameter(param_names[0])
@@ -43,7 +47,8 @@ namespace Gambit
          // Only valid for 1D parameter transformation
          if (param.size()!=1)
          {
-             scan_err << "Invalid input to DoubleLogFlatJoin prior (in constructor): Input parameters must be a vector of size 1! (has size=" << param.size() << ")" << scan_end;
+             scan_err << "Invalid input to DoubleLogFlatJoin prior (in constructor): " << endl
+                      << "Input parameters must be a vector of size 1! (has size=" << param.size() << ")" << scan_end;
          }
 
          // Read the entries we need from the options
@@ -53,30 +58,36 @@ namespace Gambit
              std::vector<double> ranges = options.getValue<std::vector<double>>("ranges");
              if(ranges.size()!=4)
              {
-                scan_err << "Invalid input to DoubleLogFlatJoin prior (in constructor): value of 'ranges' key must be a vector of length 4 (length was "<<ranges.size()<<"), where the entries specify 'lower', 'flat_start', 'flat_end', and 'upper'." << scan_end;
+                scan_err << "Invalid input to DoubleLogFlatJoin prior (in constructor): value " << endl
+                         << "of 'ranges' key must be a vector of length 4 (length was "<<ranges.size()<<"), " << endl
+                         << "where the entries specify 'lower', 'flat_start', 'flat_end', and 'upper'." << scan_end;
              }
              lower      = ranges[0];
              flat_start = ranges[1];
              flat_end   = ranges[2];
              upper      = ranges[3];
          }
+         else if ( options.hasKey("range") )
+         {
+             // Semi-shortcut option assignment method
+             std::vector<double> range = options.getValue<std::vector<double>>("range");
+             if(range.size()!=2)
+             {
+                scan_err << "Invalid input to DoubleLogFlatJoin prior (in constructor): value " << endl
+                         << "of 'range' key must be a vector of length 2 (length was "<<range.size()<<"), " << endl
+                         << "where the entries specify 'lower', and 'upper'." << scan_end;
+             }
+             lower      = range[0];
+             upper      = range[1];
+             flat_start = get_option("flat_start", options);
+             flat_end = get_option("flat_end", options);
+         }
          else
          {
-             // Try to get options individually
-             #define DLFJ_GET_OPTION(NAME)  \
-             if ( options.hasKey(STRINGIFY(NAME)) ) \
-             { \
-                NAME = options.getValue<double>(STRINGIFY(lower)); \
-             } \
-             else { \
-                scan_err << "Missing option "<<STRINGIFY(NAME)<<" (or 'ranges') for DoubleLogFlatJoin prior. Must specify 'lower', 'flat_start', 'flat_end', and 'upper', or else all of these at once in a vector labelled 'ranges'." << scan_end; \
-             } 
-
-             DLFJ_GET_OPTION(lower);
-             DLFJ_GET_OPTION(flat_start);
-             DLFJ_GET_OPTION(flat_end);
-             DLFJ_GET_OPTION(upper);
-             #undef DLFJ_GET_OPTION
+             lower = get_option("lower", options);
+             flat_start = get_option("flat_start", options);
+             flat_end = get_option("flat_end", options);
+             upper = get_option("upper", options);
          }
 
          // Make sure ordering of constraints makes sense
@@ -112,7 +123,10 @@ namespace Gambit
          } 
          else
          {
-             scan_err << "Inconsistent values of options for DoubleLogFlatJoin prior detected! The required ordering is: lower <= flat_start < 0 < flat_end <= upper. Values received were: ["<<lower<<", "<<flat_start<<", "<<flat_end<<", "<<upper<<"]."<<"\n(if either log portion is collapsed then the flat portion is permitted to move from covering zero as appropriate)"<<scan_end;
+             scan_err << "Inconsistent values of options for DoubleLogFlatJoin prior detected! " << endl
+                      << "The required ordering is: lower <= flat_start < 0 < flat_end <= upper."<< endl
+                      << "Values received were: ["<<lower<<", "<<flat_start<<", "<<flat_end<<", "<<upper<<"]." << endl
+                      << "(if either log portion is collapsed then the flat portion is permitted to move from covering zero as appropriate)" << scan_end;
          }
 
          // Useful quantities:
@@ -130,18 +144,26 @@ namespace Gambit
          P12 =   C * Nflat;   // Prob. of x in (x1,x2)
          P23 =   C * Nupper;  // Prob. of x in (x2,x3)
 
-         // debugging:
-         std::cout<<x1/x0<<std::endl;
-         std::cout<<fabs(x1/x0)<<std::endl;
-         std::cout<<log(fabs(x1/x0))<<std::endl;
-         std::cout<<log(fabs(x3/x2))<<std::endl;
-         std::cout<<"C = "<<C<<", P01 = "<<P01<<", P12 = "<<P12<<", P23 = "<<P23<<std::endl;
-         std::cout<<"x0 = "<<x0<<", x1 = "<<x1<<", x2 = "<<x2<<", x3 = "<<x3<<std::endl;
-
       }        
 
 
-      // Transformation from unit interval to the double log + flat join
+      /// Try to get options for double log-flat joined prior
+      double DoubleLogFlatJoin::get_option(const str& name, const Options& options)
+      {
+       if (options.hasKey(name))
+       {
+         return options.getValue<double>(name);
+       }
+       else
+       { 
+         scan_err << "Missing option " << name <<" (or 'ranges') for DoubleLogFlatJoin prior. Must specify " << endl
+                  << "'lower', 'flat_start', 'flat_end', and 'upper', or else all of these at once in a vector labelled 'ranges'." << scan_end;
+       }
+       return 0;
+      }
+    
+
+      /// Transformation from unit interval to the double log + flat join
       void DoubleLogFlatJoin::transform(const std::vector <double> &unitpars, std::unordered_map <std::string, double> &output) const
       {
          // Only valid for 1D parameter transformation
