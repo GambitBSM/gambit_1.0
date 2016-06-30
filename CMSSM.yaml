@@ -73,7 +73,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 5000
+      NP: 7200
       convthresh: 1e-3
       verbosity: 1
 
