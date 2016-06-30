@@ -577,16 +577,16 @@ namespace Gambit
             if (in.size() == 0)
                 return out << "[]";
             
-            out << "[";
+            
             auto it = in.begin();
             auto end = in.end();
-            end--;
-            for (; it != end; it++)
+            out << "[" << *it;
+            for (++it; it != end; ++it)
             {
-                out << *it << ", ";
+                out << ", " << *it;
             }
             
-            return out << *it << "]";
+            return out << "]";
         }
         
         template <typename T>

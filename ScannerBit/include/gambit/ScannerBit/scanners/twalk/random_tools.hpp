@@ -1005,7 +1005,7 @@ public:
         }
     }
     
-    double Max(double *ptr, double *ptr0)
+    void HopBlow(double *ptrOut, double *ptrIn, double *ptr, double *ptr0)
     {
         double max = 0;
         
@@ -1027,8 +1027,17 @@ public:
             if (pt > max)
                 max = pt;
         }
-
-        return max;
+        
+        double r = MultiDevDist();
+        
+        for (int j = 0; j < num; j++)
+        {
+            ptrOut[j] = ptrIn[j];
+            for (int i = 0; i < proj; i++)
+            {
+                ptrOut[j] += r*max*currentVec[i][j];
+            }
+        }
     }
     
     void RandRot(const int start = 0)

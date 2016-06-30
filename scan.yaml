@@ -55,7 +55,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "gambit_outputi.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/test/test2"
     delete_file_on_restart: true
 
@@ -67,7 +67,7 @@ Scanner:
 
   use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: twalk
+  use_scanner: multinest
   #find_shift
   #find_kernel
   #object_detection
@@ -81,6 +81,7 @@ Scanner:
       plugin: twalk
       like: LogLike
       tolerance: 1.003
+      kwalk_ratio: 0.9
       #chain_number: 20
       projection_dimension: 4
         
