@@ -15,6 +15,7 @@
 #************************************************
 
 set(source_files src/decay_table.cpp
+                 src/equivalency_singleton.cpp
                  src/functors.cpp
                  src/ini_functions.cpp
                  src/mssm_slhahelp.cpp
@@ -23,10 +24,12 @@ set(source_files src/decay_table.cpp
                  src/spectrum.cpp
                  src/subspectrum.cpp
                  src/terminator.cpp
+                 src/type_equivalency.cpp
                  src/virtual_higgs.cpp
 )
 
 set(header_files include/gambit/Elements/decay_table.hpp
+                 include/gambit/Elements/equivalency_singleton.hpp
                  include/gambit/Elements/functors.hpp
                  include/gambit/Elements/functor_definitions.hpp
                  include/gambit/Elements/funktions.hpp
@@ -49,6 +52,7 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/spec_head.hpp 
                  include/gambit/Elements/subspectrum.hpp
                  include/gambit/Elements/terminator.hpp
+                 include/gambit/Elements/type_equivalency.hpp
                  include/gambit/Elements/types_rollcall.hpp
                  include/gambit/Elements/virtual_higgs.hpp
 )

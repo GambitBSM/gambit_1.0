@@ -47,6 +47,11 @@ indices = range(len(lnL))
 for p,r,l in zip(pid[mask],rank[mask],lnL[mask]):
   print r, p, l
 
+# Check out whether invalid points are getting their likelihood printed (should not be)
+print "total points: ", len(lnL) 
+print "total valid likelihoods: ", np.sum(lnL_isvalid)
+
+
 # Compare to hypercube parameters to check dataset alignment
 #hc0 = group["Parameters[0]"]
 #hc0_isvalid = np.array(group["Parameters[0]_isvalid"],dtype=np.bool)

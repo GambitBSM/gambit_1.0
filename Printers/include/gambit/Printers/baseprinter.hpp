@@ -133,7 +133,7 @@ namespace Gambit
                    const int vertexID, const uint rank,
                    const ulong pointID)
         {
-          _print(in, label, vertexID, rank, pointID);
+          if(printer_enabled) _print(in, label, vertexID, rank, pointID);
         }
 
       protected:

@@ -27,6 +27,11 @@
   DEFINEPARS(mu,sigma)
 #undef MODEL
 
+// A one-parameter model for testing simple prior transformations
+#define MODEL TestModel1D
+  START_MODEL
+  DEFINEPARS(x)
+#undef MODEL
 
 // The following are some examples that demonstrate the available ways to declare
 // models and their relationships.  These are commented out as they are not necessary for  

@@ -254,6 +254,7 @@ namespace Gambit
         lnlike = active_min_valid_lnlike;
         compute_aux = false;
         if (debug) cout << "Point invalid." << endl;
+        printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
         break;
       }
 

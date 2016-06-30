@@ -52,8 +52,7 @@ def run():
 
         # Print current class
         print
-        print '  Class: ' + class_name['long_templ']
-        print '  -------' + '-'*len(class_name['long_templ'])
+        print '  ' + utils.modifyText('Class:','underline') + ' ' + class_name['long_templ']
 
         # Check if this is a template class
         is_template = utils.isTemplateClass(class_el)

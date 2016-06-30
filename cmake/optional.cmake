@@ -112,13 +112,15 @@ endif()
 # Check for ROOT.
 find_package(ROOT)
 if (NOT ROOT_FOUND OR ROOT_VERSION VERSION_GREATER 6)
-  # Excluding ColliderBit from GAMBIT
+  # Excluding Delphes and GreAT from GAMBIT
   if (NOT ROOT_FOUND)
-    message("${BoldRed}   No ROOT installation found. Excluding Delphes from GAMBIT configuration. ${ColourReset}")
+    message("${BoldRed}   No ROOT installation found. Excluding Delphes and GreAT from GAMBIT configuration. ${ColourReset}")
+    set (itch "${itch}" "Delphes" "great")
   else()
     message("${BoldRed}   Unsupported ROOT version found: ${ROOT_VERSION}. Delphes needs ROOT 5. Excluding Delphes from GAMBIT configuration. ${ColourReset}")
+    set (itch "${itch}" "Delphes")
+    include_directories(${ROOT_INCLUDE_DIR})
   endif()
-  set (itch "${itch}" "Delphes")
 else()
   include_directories(${ROOT_INCLUDE_DIR})
 endif()
