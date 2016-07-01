@@ -102,7 +102,7 @@ Scanner:
       aux_printer_txt_options:
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 10008
       like: LogLike
           
