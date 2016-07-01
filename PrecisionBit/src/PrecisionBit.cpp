@@ -791,9 +791,10 @@ namespace Gambit
         std::ostringstream err;
         err << "gm2calc routine convert_to_onshell raised warning: "
             << model.get_problems().get_warnings() << ".";
-        /// may want to handle this in less harsh way
-        invalid_point().raise(err.str());	
-      }
+        logger() << err.str() << EOM;
+        // Maybe you would argue that we want to invalidate such points, but the DRbar-->OS
+        // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
+        PrecisionBit_warning().raise(LOCAL_INFO, err.str());          }
 
       double error = BEreq::calculate_uncertainty_amu_2loop(model);
       
