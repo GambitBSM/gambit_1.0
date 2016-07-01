@@ -21,7 +21,7 @@
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/Utils/threadsafe_rng.hpp"
   
-scanner_plugin(random_sampler, version(1, 0, 0))
+scanner_plugin(random, version(1, 0, 0))
 {
     like_ptr LogLike;
     int num, dim;

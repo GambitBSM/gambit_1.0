@@ -54,8 +54,10 @@ Parameters:
       range: [50, 1e4]
       prior_type: log
     A0:
+      range: [-1e4, 1e4]
+      flat_start: -1e2
+      flat_end: 1e2
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]      
     TanBeta:
       range: [3.0, 70]
       prior_type: flat
@@ -99,7 +101,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 5000
+      NP: 7200
       convthresh: 1e-3
       verbosity: 1
 
