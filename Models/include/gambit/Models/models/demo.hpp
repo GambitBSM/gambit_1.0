@@ -77,10 +77,13 @@
       double M1 = myparams["M1"];
       double M2 = myparams["M2"];
       double M3 = myparams["M3"];
+      double AU1 = myparams["AU1"];
+      double AU2 = myparams["AU2"];
+      double AU3 = myparams["AU3"];
     
-      parentparams.setValue("p1", 0.01*M1*M2*M3);
-      parentparams.setValue("p2", 0.10*M1*M2*M3);
-      parentparams.setValue("p3", 1.00*M1*M2*M3);
+      parentparams.setValue("p1", 0.01*M1*M2+AU1);
+      parentparams.setValue("p2", 0.10*M2*M3+AU2);
+      parentparams.setValue("p3", 1.00*M1*M3+AU3);
   } 
 #undef PARENT
 #undef MODEL
