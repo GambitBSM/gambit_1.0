@@ -73,12 +73,14 @@ scanner_plugin(Diver, version(1, 0, 0))
       std::ifstream g(root+".devo");
       if (not f.good() or not g.good())
       {
-        scan_err << "Cannot resume previous Diver run because one or both of" << endl
-                 << " " << root+".rparam" << endl
-                 << " " << root+".devo" << endl
-                 << "is missing.  This is probably because your last run didn't " << endl
-                 << "complete even one generation.  Please restart the scan with -r." << scan_end;
+        scan_warn << "Cannot resume previous Diver run because one or both of" << endl
+                  << " " << root+".rparam" << endl
+                  << " " << root+".devo" << endl
+                  << "is missing.  This is probably because your last run didn't " << endl
+                  << "complete even one generation. Diver will start from scratch, " << endl
+                  << "as if you had specified -r." << scan_end;
       }
+      resume = false;
       f.close();
       g.close();
     }

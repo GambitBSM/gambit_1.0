@@ -28,33 +28,46 @@ namespace Gambit
 {
    namespace Priors
    {
-      // 1D double log prior with flat bridge over zero.
-      // (for creating a prior similar to log that works across positive and negative values continuously).
-      // Takes the arguments: [minval : flat_start : flat_end : maxval]
+      /// 1D double log prior with flat bridge over zero.
+      /// (for creating a prior similar to log that works across positive and negative values continuously).
+      /// Takes the arguments: [minval : flat_start : flat_end : maxval]
       class DoubleLogFlatJoin : public BasePrior
       {
       private:
-         // Name of the parameter that this prior is supposed to transform
+         /// Name of the parameter that this prior is supposed to transform
          const std::string &myparameter;
-         // Variables controlling the prior range etc.
+         /// Variables controlling the prior range etc.
+         /// @{
          double lower;
          double flat_start;
          double flat_end;
          double upper;
-         // Useful quantities
+         /// @}
+         /// Useful quantities
+         /// @{
          double C; 
          double P01;
          double P12;
          double P23;
+         /// @}
+
+         /// Flags to register if special cases are active.
+         /// @{
+         bool no_lower_log;
+         bool no_upper_log;
+         /// @}
 	 
+         /// Try to get options for double log-flat joined prior
+         double get_option(const str&, const Options&);
+
       public: 
-         // Constructor defined in gaussian.cpp
+         /// Constructor defined in doublelogflatjoin.cpp
          DoubleLogFlatJoin(const std::vector<std::string>& param, const Options&); 
 
-         // Transformation from unit interval to the double log + flat join (inverse prior transform)
+         /// Transformation from unit interval to the double log + flat join (inverse prior transform)
          void transform(const std::vector <double> &unitpars, std::unordered_map <std::string, double> &output) const;
 
-         // Probability density function
+         /// Probability density function
          double operator()(const std::vector<double> &vec) const;
       };
   
