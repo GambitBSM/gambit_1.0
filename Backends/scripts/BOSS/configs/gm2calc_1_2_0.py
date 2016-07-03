@@ -33,6 +33,7 @@ input_files = [
     '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src/gm2_1loop.hpp',
     '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src/gm2_2loop.hpp',
     '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src/gm2_uncertainty.hpp',
+    '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src/gm2_error.hpp',
 ]
 include_paths = [
     '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src', 
@@ -50,6 +51,11 @@ load_classes = [
     'gm2calc::MSSMNoFV_onshell_susy_parameters',
     'gm2calc::MSSMNoFV_onshell_physical',
     'gm2calc::MSSMNoFV_onshell_problems',
+    'gm2calc::Error',
+    'gm2calc::ESetupError',
+    'gm2calc::EInvalidInput',
+    'gm2calc::EPhysicalProblem',
+    'gm2calc::EReadError',
 ]
 
 load_functions = [

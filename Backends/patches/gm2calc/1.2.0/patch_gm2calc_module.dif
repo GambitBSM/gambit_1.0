@@ -1,6 +1,6 @@
 --- a/src/module.mk	2016-04-08 19:22:41.000000000 +0100
 +++ b/src/module.mk	2016-06-14 16:31:26.561635615 +0100
-@@ -19,7 +19,26 @@ LIBsrc_SRC := \
+@@ -19,7 +19,36 @@ LIBsrc_SRC := \
  		$(DIR)/MSSMNoFV_onshell_physical.cpp \
  		$(DIR)/MSSMNoFV_onshell_problems.cpp \
  		$(DIR)/MSSMNoFV_onshell_soft_parameters.cpp \
@@ -18,6 +18,16 @@
 +		$(DIR)/BOSS_MSSMNoFV_onshell_problems.cpp \
 +		$(DIR)/BOSS_MSSMNoFV_onshell_soft_parameters.cpp \
 +		$(DIR)/BOSS_MSSMNoFV_onshell_susy_parameters.cpp \
++		$(DIR)/BOSS_EInvalidInput.cpp \
++		$(DIR)/BOSS_EPhysicalProblem.cpp \
++		$(DIR)/BOSS_EReadError.cpp \
++		$(DIR)/BOSS_Error.cpp \
++		$(DIR)/BOSS_ESetupError.cpp \
++		$(DIR)/BOSS_factory_EInvalidInput.cpp \
++		$(DIR)/BOSS_factory_EPhysicalProblem.cpp \
++		$(DIR)/BOSS_factory_EReadError.cpp \
++		$(DIR)/BOSS_factory_Error.cpp \
++		$(DIR)/BOSS_factory_ESetupError.cpp \
 +		$(DIR)/BOSS_func_calculate_amu_1loop.cpp \
 +		$(DIR)/BOSS_func_calculate_amu_1loop_non_tan_beta_resummed.cpp \
 +		$(DIR)/BOSS_func_calculate_amu_2loop.cpp \
