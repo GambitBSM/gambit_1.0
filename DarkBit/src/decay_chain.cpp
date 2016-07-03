@@ -373,6 +373,7 @@ namespace Gambit
         {
           totalWidth   += DecayTable::getWidth(*it);
         }
+        // FIXME: Include genRateMisc in totalWidth
         if(randInit) generateRandTable();
       }
       bool DecayTableEntry::isEnabled(const TH_Channel *in) const

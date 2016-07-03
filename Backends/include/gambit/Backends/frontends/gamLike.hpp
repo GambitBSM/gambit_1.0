@@ -28,12 +28,16 @@
 // Load it
 LOAD_LIBRARY
 
+BE_ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
+
 // Import functions
 BE_FUNCTION(init, void, (int), "init", "init")
 BE_FUNCTION(set_data_path, void, (const std::string &), "set_data_path", "set_data_path")
 BE_FUNCTION(lnL, double, (int, const std::vector<double> &, const std::vector<double> &), "lnL", "lnL")
+BE_FUNCTION(set_MW_profile, void, (const std::vector<double> &, const std::vector<double> &, double), "set_MW_profile", "set_MW_profile")
 
-BE_INI_DEPENDENCY(GalacticHalo, daFunk::Funk)
+// Dependence on halo profile if scan over halo models
+BE_INI_CONDITIONAL_DEPENDENCY(GalacticHalo, daFunk::Funk, GalacticHalo_gNFW, GalacticHalo_Einasto)
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

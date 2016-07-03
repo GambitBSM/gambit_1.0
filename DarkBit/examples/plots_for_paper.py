@@ -10,9 +10,9 @@ def plotSpectraCascade():
     plt.clf()
     plt.figure(figsize=(5, 4))
     for filename, label in [ 
-            ['dNdE_FCMC_10.dat',  
-                r'$\chi\chi\to\phi_1\phi_2$; $\phi_1\to\gamma\gamma$; '+
-                r'$\phi_2\to\bar b b$'],
+            ['dNdE_FCMC_10.dat',   ''],
+#                r'$\chi\chi\to\phi_1\phi_2$; $\phi_1\to\gamma\gamma$; '+
+                #r'$\phi_2\to\bar b b$'],
 #            ['dNdE_FCMC_20.dat',  ''],
             ['dNdE_FCMC_30.dat',  ''],
 #            ['dNdE_FCMC_40.dat',  ''],
@@ -23,16 +23,18 @@ def plotSpectraCascade():
             ['dNdE_FCMC_90.dat',  ''],
             ]:
         x, y = loadtxt(filename).T
+        factor = (3e-26/100**2)**-1
         print trapz(y, x)/(3e-26/100**2)
 #        if filename[0] == "F":
 #            factor = 1/250**2
 #        else:
 #            factor = 1.
-        plt.loglog(x, y*x*x+1e-50, label=label)
-    plt.ylim([1e-33, 1e-26])
+        plt.loglog(x, factor*y*x*x+1e-50, label=label)
+    plt.text(1.3, 2e-2, r'$\chi\chi\to\phi_1\phi_2$; $\phi_1\to\gamma\gamma$; '+ r'$\phi_2\to\bar b b$')
+    plt.ylim([1e-3, 1e3])
     plt.xlim([1e0, 2e2])
     plt.xlabel(r"$E\, [\rmGeV]$")
-    plt.ylabel("$E^2 d\Phi/dE$")
+    plt.ylabel(r"$E^2 dN/dE$ $[\rm GeV]$")
     plt.tight_layout(pad=0.3)
     plt.legend(loc=2, frameon=False, fontsize=11, ncol=3)
     plt.savefig("DarkBit_spectra_FCMC.eps")
@@ -45,24 +47,29 @@ def plotSpectraValidation():
             ['dNdE0_MO.dat', r'$\chi\chi\to \bar b b\rm\, (MO) \times\, 2$'],
             ['dNdE1.dat', r'$\chi\chi\to Z^0\!\gamma$'],
             ['dNdE2.dat', r'$\chi\chi\to \gamma\gamma$'],
+            ['dNdE_VIB.dat', r'$\rm exemplary\, neutralino\, coannihilation$'],
 #            ['dNdE3.dat', 'phi phi->gggg'],
 #            ['dNdE4.dat', '2 x phi1 -> 4 x phi2 -> 8 x g'],
-            ['dNdE5.dat', r'$\chi\chi\to\gamma\nu\nu$'],
+#            ['dNdE5.dat', r'$\chi\chi\to\gamma\nu\nu$'],
 #            ['dNdE_MSSM.dat', 'input.slha'],
 #            ['FMCp03000765.gaspec', 'input.slha'],
             ]:
         x, y = loadtxt(filename).T
         print trapz(y, x)/(3e-26/100**2)
+        if "VIB" in filename:
+            factor = 1/(5.468e-29/225.8**2)
+        else:
+            factor = 1/(3e-26/100**2)
 #        if filename[0] == "F":
 #            factor = 1/250**2
 #        else:
 #            factor = 1.
-        factor = 2 if "MO" in filename else 1
+        factor *= 2 if "MO" in filename else 1
         plt.loglog(x, factor*y*x*x+1e-50, label=label)
-    plt.ylim([1e-32, 1e-26])
-    plt.xlim([1e0, 2e2])
+    plt.ylim([1e-3, 1e4])
+    plt.xlim([1e0, 3e2])
     plt.xlabel(r"$E\, [\rmGeV]$")
-    plt.ylabel("$E^2 d\Phi/dE$")
+    plt.ylabel(r"$E^2 dN/dE$ $[\rm GeV]$")
     plt.tight_layout(pad=0.3)
     plt.legend(loc=3, frameon=False, fontsize=11)
     plt.savefig("DarkBit_spectra_validation.eps")
@@ -611,9 +618,9 @@ def spokePlots():
     plt.show()
 
 if __name__ == '__main__':
-    plotMSSM7()
-    spokePlots()
+    #plotMSSM7()
+    #spokePlots()
     #plotLimits()
     #plotSpectraValidation()
-    #plotSpectraCascade()
+    plotSpectraCascade()
     #plotLUX()

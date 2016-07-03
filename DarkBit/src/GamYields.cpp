@@ -635,6 +635,7 @@ namespace Gambit {
       }
     }
 
+    // FIXME CW: Use local DM density instead as free parameter (including distance from Sun)
     // Dark matter halo profiles
     double profile_Einasto(double rhos, double rs, double alpha, double r)
     { return rhos*exp(-1/alpha*(pow(r/rs, alpha)-1)); }

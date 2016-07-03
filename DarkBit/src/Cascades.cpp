@@ -232,8 +232,9 @@ namespace Gambit {
         const TH_ProcessCatalog &catalog, 
         std::map<std::string, std::map<std::string, SimpleHist> > &histList, 
         std::string initialState, 
-        double weight, int cMC_minSpecSamples, int cMC_maxSpecSamples, 
-        double cMC_specValidThreshold)
+        double weight, int cMC_minSpecSamples, int cMC_maxSpecSamples
+//        double cMC_specValidThreshold
+        )
     {
       std::string p1,p2;
       double gamma,beta;
@@ -311,8 +312,8 @@ namespace Gambit {
         std::cout << "Channel: " << p1 << " " << p2 << std::endl;
         std::cout << "Final particles: " << finalState << std::endl;
         std::cout << "Event weight: "    << weight << std::endl;
-        std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold 
-          << std::endl;
+//        std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold 
+//          << std::endl;
         std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax 
           << std::endl;
         std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max 
@@ -332,15 +333,16 @@ namespace Gambit {
       while(((Nsampl<cMC_minSpecSamples) 
             or (Nsampl*Nsampl<specSum)) and (samplCounter<cMC_maxSpecSamples))
       {
+        // FIXME: Make sure that the Nsampl < sqrt(specSum) criterion makes sense
         samplCounter++;
         // Draw an energy in the CoM frame of the endpoint. Logarithmic
         // sampling.
         double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
         double dN_dE = chn.dNdE_bound->eval(E_CoM, M);
 
-        // Only accept point if dN_dE is above threshold value
-        if(dN_dE > cMC_specValidThreshold)
-        {
+//        // Only accept point if dN_dE is above threshold value
+//        if(dN_dE > cMC_specValidThreshold)
+//        {
           double weight2 = E_CoM*dlogE*dN_dE;
           specSum += weight2;
           weight2 *= weight;
@@ -349,7 +351,7 @@ namespace Gambit {
           // Add box spectrum to histogram
           spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
           Nsampl++;
-        }
+//        }
       }
       if(Nsampl>0)
       {
@@ -372,7 +374,7 @@ namespace Gambit {
       // YAML options
       static int    cMC_minSpecSamples;
       static int    cMC_maxSpecSamples;
-      static double cMC_specValidThreshold;
+//      static double cMC_specValidThreshold;
 //      static int    cMC_endCheckFrequency; 
 //      static double cMC_gammaBGPower;
 //      static double cMC_gammaRelError;      
@@ -390,8 +392,8 @@ namespace Gambit {
           cMC_minSpecSamples = runOptions->getValueOrDef<int>   (5, "cMC_minSpecSamples");    
           /// Option cMC_maxSpecSamples<int>: FIXME (default 25)
           cMC_maxSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_maxSpecSamples"); 
-          /// Option cMC_specValidThreshold<double>: FIXME (default 0.)
-          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
+//          /// Option cMC_specValidThreshold<double>: FIXME (default 0.)
+//          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
 //          cMC_endCheckFrequency  = 
 //            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
 //          cMC_gammaBGPower       = 
@@ -472,8 +474,9 @@ namespace Gambit {
               cascadeMC_sampleSimYield(
                   *Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog,
                   histList, *Dep::cascadeMC_InitialState, weight, 
-                  cMC_minSpecSamples, cMC_maxSpecSamples,
-                  cMC_specValidThreshold);
+                  cMC_minSpecSamples, cMC_maxSpecSamples
+//                  cMC_specValidThreshold
+                  );
               // Check if an error was raised
               if(piped_errors.inquire())
               {
@@ -481,8 +484,7 @@ namespace Gambit {
                 return;
               }
             }
-            // FIXME: What happens for single particle endpoints without
-            // tabulated spectra?
+            // FIXME: Issue warning if nothing is added to spectrum
           }
           // Analyze multiparticle endpoints (the endpoint particle is here the
           // parent of final state particles).
@@ -505,8 +507,9 @@ namespace Gambit {
                 cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit,
                     *Dep::TH_ProcessCatalog, histList,
                     *Dep::cascadeMC_InitialState, weight, 
-                    cMC_minSpecSamples, cMC_maxSpecSamples,
-                    cMC_specValidThreshold);
+                    cMC_minSpecSamples, cMC_maxSpecSamples
+//                    cMC_specValidThreshold
+                    );
                 // Check if an error was raised
                 if(piped_errors.inquire())
                 {
@@ -536,8 +539,9 @@ namespace Gambit {
                   cascadeMC_sampleSimYield(*Dep::SimYieldTable, child, *pit,
                       *Dep::TH_ProcessCatalog, histList,
                       *Dep::cascadeMC_InitialState, weight, 
-                      cMC_minSpecSamples, cMC_maxSpecSamples,
-                      cMC_specValidThreshold);
+                      cMC_minSpecSamples, cMC_maxSpecSamples
+//                      cMC_specValidThreshold
+                      );
                   // Check if an error was raised
                   if(piped_errors.inquire())
                   {
@@ -547,6 +551,7 @@ namespace Gambit {
                 }
               }
             }
+            // FIXME: Issue warning if nothing is added to spectrum
           }  
         }
       }

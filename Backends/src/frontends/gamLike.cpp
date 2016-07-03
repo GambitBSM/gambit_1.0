@@ -30,6 +30,17 @@ BE_INI_FUNCTION
     std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
     set_data_path(path);  // Note that passing per reference is default per backend system
   }
-  daFunk::Funk profile = *Dep::GalacticHalo;
+  if ( ModelInUse("GalacticHalo_gNFW") or ModelInUse("GalacticHalo_gNFW") )
+  {
+    daFunk::Funk profile = *Dep::GalacticHalo;
+    auto r = daFunk::logspace(-3, 2, 100);
+    auto rho = daFunk::logspace(-3, 2, 100);
+    double dist = 8.5;  // Sun GC distance [kpc]
+    for ( size_t i = 0; i<r.size(); i++ )
+    {
+      rho[i] = profile->bind("r")->eval(r[i]);
+    }
+    set_MW_profile(r, rho, dist);
+  }
 }
 END_BE_INI_FUNCTION

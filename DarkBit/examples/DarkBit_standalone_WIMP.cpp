@@ -265,6 +265,7 @@ int main(int argc, char* argv[])
 
 
   // Initialize gamLike backend
+  gamLike_1_0_0_init.notifyOfModel("GalacticHalo_Einasto");  // FIXME: Hack
   gamLike_1_0_0_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
@@ -295,8 +296,8 @@ int main(int argc, char* argv[])
   SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::dNdE);
 
   // Select SimYieldTable
-  auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;
-  //auto SimYieldTablePointer = &SimYieldTable_DarkSUSY;
+  //auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;
+  auto SimYieldTablePointer = &SimYieldTable_DarkSUSY;
 
   // Collect missing final states for simulation in cascade MC
   GA_missingFinalStates.resolveDependency(&TH_ProcessCatalog_WIMP);
