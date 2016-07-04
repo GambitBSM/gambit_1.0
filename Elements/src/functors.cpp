@@ -1533,6 +1533,8 @@ namespace Gambit
         }
         boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
+        // Explicitly notify the functor that none of the known models are being used, if notifyOfModel has not been called.
+        if (activeModelFlags.empty()) notifyOfModel("none");                                                             
         init_memory();                               // Init memory if this is the first run through.
         if (needs_recalculating[thread_num])
         {
