@@ -351,6 +351,11 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
         return __gambit_plugin_namespace__::myData.node[in];                                                \
     }                                                                                                       \
                                                                                                             \
+    inline YAML::Node get_inifile_node()                                                                    \
+    {                                                                                                       \
+        return __gambit_plugin_namespace__::myData.node;                                                    \
+    }                                                                                                       \
+                                                                                                            \
     template <typename T>                                                                                   \
     inline T get_inifile_value(std::string in, T defaults)                                                  \
     {                                                                                                       \

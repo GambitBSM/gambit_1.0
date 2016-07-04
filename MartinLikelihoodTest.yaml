@@ -61,7 +61,7 @@ Scanner:
         output_file: "weights ..."
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 5
       output_file:  output
       like:  Likelihood

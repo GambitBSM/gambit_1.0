@@ -89,7 +89,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Wrappers for original constructors: 
         inline Pythia8::CoupSUSY::CoupSUSY() :
-            WrapperBase(__factory0()),
             Couplings(__factory0()),
             isInit( get_BEptr()->isInit_ref__BOSS()),
             isNMSSM( get_BEptr()->isNMSSM_ref__BOSS()),
@@ -171,7 +170,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Special pointer-based constructor: 
         inline Pythia8::CoupSUSY::CoupSUSY(Pythia8::Abstract_CoupSUSY* in) :
-            WrapperBase(in),
             Couplings(in),
             isInit( get_BEptr()->isInit_ref__BOSS()),
             isNMSSM( get_BEptr()->isNMSSM_ref__BOSS()),
@@ -253,7 +251,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Copy constructor: 
         inline Pythia8::CoupSUSY::CoupSUSY(const CoupSUSY& in) :
-            WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
             Couplings(in.get_BEptr()->pointer_copy__BOSS()),
             isInit( get_BEptr()->isInit_ref__BOSS()),
             isNMSSM( get_BEptr()->isNMSSM_ref__BOSS()),

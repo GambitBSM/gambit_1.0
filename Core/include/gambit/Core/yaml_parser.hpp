@@ -28,6 +28,7 @@
 
 #include "gambit/Utils/yaml_parser_base.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Elements/type_equivalency.hpp"
 
 #include "yaml-cpp/yaml.h"
 

@@ -51,10 +51,10 @@ namespace Gambit
     class BaseBasePrinter  
     {
       public:
-        virtual ~BaseBasePrinter() {};
-
+        BaseBasePrinter(): printer_enabled(true) {}
+        virtual ~BaseBasePrinter() {}
         /// Function to signal to the printer to write buffer contents to disk
-        virtual void flush() {}; // TODO: needed?
+        //virtual void flush() {}; // TODO: needed?
 
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
         virtual void reset(bool force=false) = 0;
@@ -65,6 +65,12 @@ namespace Gambit
         /// Signal printer that scan is finished, and final output needs to be performed
         virtual void finalise(bool abnormal=false) = 0;
 
+        /// "Turn off" printer; i.e. calls to print functions will do nothing while this is active
+        void disable() { printer_enabled = false; }
+
+        /// "Turn on" printer; print calls will work as normal.
+        void enable() { printer_enabled = true; }
+
         // Printer dispatch function. If a virtual function override exists for
         // the print type, info is passed on, otherwise the function call is resolved
         // to a default function which raises an informative runtime error explaining
@@ -74,7 +80,7 @@ namespace Gambit
                    const int vertexID, const uint rank,
                    const ulong pointID)
         {
-          _print(in, label, vertexID, rank, pointID);
+          if(printer_enabled) _print(in, label, vertexID, rank, pointID);
         }
 
         // Overload which automatically determines a unique ID code
@@ -88,6 +94,9 @@ namespace Gambit
         }
 
       protected:
+        /// Flag to check if print functions are enabled or disabled
+        bool printer_enabled;
+
         /// Default _print function. Throws an error if no matching 
         /// virtual function for the type of the attempted print is
         /// found.

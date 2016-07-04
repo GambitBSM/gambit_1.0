@@ -36,6 +36,8 @@
 
 namespace Gambit
 {
+    /// Forward declare MPI class
+    namespace GMPI { class Comm; } 
 
     namespace Scanner
     {
@@ -136,7 +138,12 @@ namespace Gambit
                 Priors::BasePrior *prior;
                 Options options;
                 std::string def_out_path;
-                
+                int MPIrank;
+                #ifdef WITH_MPI
+                GMPI::Comm* scannerComm;
+                bool MPIdata_is_init;  
+                #endif
+
                 inline void set_resume(std::vector<__plugin_resume_base__ *> &){}
                                 
                 template<typename U, typename... T>
@@ -164,7 +171,8 @@ namespace Gambit
                 }
                 
             public:
-                pluginInfo() : keepRunning(true), funcCalculating(false) {}
+                pluginInfo();
+
                 ///Enter plugin inifile
                 void iniFile(const Options &);
                 void printer_prior(printer_interface &, Priors::BasePrior &);
@@ -172,7 +180,16 @@ namespace Gambit
                 void set_running(bool b){keepRunning = b;}
                 bool func_calculating() const {return funcCalculating;}
                 void set_calculating(bool b){funcCalculating = b;}
-                
+             
+                #ifdef WITH_MPI
+                // tags for messages sent via scannerComm
+                static const int MIN_LOGL_MSG = 0; 
+                ///Initialise any MPI functionality (currently just used to provide a communicator object to ScannerBit)
+                void initMPIdata(GMPI::Comm* newcomm); 
+                GMPI::Comm& scanComm();
+                #endif
+                int getRank() { return MPIrank; }
+
                 ///resume function
                 template <typename... T>
                 void resume(const std::string &name, T&... data)

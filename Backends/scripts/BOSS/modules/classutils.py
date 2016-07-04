@@ -1151,7 +1151,8 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
 
     # If no other parent classes, add WrapperBase
     if inheritance_line == '':
-        inheritance_line = ' : public virtual WrapperBase'
+        # inheritance_line = ' : public virtual WrapperBase'
+        inheritance_line = ' : public WrapperBase'
     else:
         inheritance_line = ' : ' + inheritance_line
 
@@ -1733,11 +1734,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
             temp_code += 'inline ' + class_name['long'] + '::' + class_name['short'] + args_bracket + ' :\n'
 
             parent_class_init_list = ''
-            parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
+            # parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
             for parent_dict in loaded_parent_classes:
                 parent_class_init_list += indent + parent_dict['class_name']['short'] + '(' + factory_ptr_name + args_bracket_notypes + '),\n'
-            # if parent_class_init_list == '':
-            #     parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
+            if parent_class_init_list == '':
+                parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
 
             if common_init_list_code != '':
                 temp_code += parent_class_init_list + common_init_list_code
@@ -1763,11 +1764,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(' + abstr_class_name['long'] +'* in) :\n'
 
     parent_class_init_list = ''
-    parent_class_init_list += indent + 'WrapperBase(in),\n'
+    # parent_class_init_list += indent + 'WrapperBase(in),\n'
     for parent_dict in loaded_parent_classes:
         parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in),\n'
-    # if parent_class_init_list == '':
-    #     parent_class_init_list += indent + 'WrapperBase(in),\n'
+    if parent_class_init_list == '':
+        parent_class_init_list += indent + 'WrapperBase(in),\n'
 
     if common_init_list_code != '':
         def_code += parent_class_init_list + common_init_list_code
@@ -1803,11 +1804,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
         def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(const ' + class_name['short'] +'& in) :\n'
 
         parent_class_init_list = ''
-        parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
+        # parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
         for parent_dict in loaded_parent_classes:
             parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
-        # if parent_class_init_list == '':
-        #     parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
+        if parent_class_init_list == '':
+            parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
 
         if common_init_list_code != '':
             def_code += parent_class_init_list + common_init_list_code

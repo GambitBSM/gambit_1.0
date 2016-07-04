@@ -64,6 +64,9 @@ namespace Gambit {
             /// Number of free parameters
             int my_ndim;
 
+            /// Variable to indicate whether the dumper function has been run at least once
+            bool dumper_runonce;
+
          public:
             /// Constructor
             LogLikeWrapper(scanPtr, printer_interface&, int);

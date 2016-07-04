@@ -67,7 +67,7 @@ Scanner:
       aux_printer_live_options:
 
     #random:
-    #  plugin: random_sampler
+    #  plugin: random
     #  point_number: 1
     #  output_file:  output
     #  like:  Likelihood
