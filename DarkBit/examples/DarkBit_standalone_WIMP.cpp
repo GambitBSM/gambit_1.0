@@ -92,10 +92,10 @@ namespace Gambit
 
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
-      TH_Process process_ann((string)"WIMP", (string)"WIMP");
-      TH_Process process_dec((string)"phi");
-      TH_Process process_dec1((string)"phi1");
-      TH_Process process_dec2((string)"phi2");
+      TH_Process process_ann("WIMP", "WIMP");
+      TH_Process process_dec("phi");
+      TH_Process process_dec1("phi1");
+      TH_Process process_dec2("phi2");
 
       ///////////////////////////////////////
       // Import particle masses and couplings
@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
 
 
   // Initialize gamLike backend
-  gamLike_1_0_0_init.notifyOfModel("GalacticHalo_Einasto");  // FIXME: Hack
+  gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
   gamLike_1_0_0_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend

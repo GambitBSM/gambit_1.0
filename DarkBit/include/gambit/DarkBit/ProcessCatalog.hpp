@@ -119,13 +119,13 @@ namespace Gambit
         // Functions
         
         /// Constructor for decay process
-        TH_Process(str particle1ID);
+        TH_Process(const str & particle1ID);
         
         /// Constructor for annihilation process
-        TH_Process(str particle1ID, str particle2ID);
+        TH_Process(const str & particle1ID, const str & particle2ID);
 
         /// Compare initial states
-        bool isProcess(str, str = "") const;
+        bool isProcess(const str &, const str & = std::string()) const;
  
         /// Check for given channel.  Return a pointer to it if found, NULL if not.
         const TH_Channel* find(std::vector<str>) const;

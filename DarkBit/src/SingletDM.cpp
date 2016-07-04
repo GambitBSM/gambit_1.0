@@ -254,7 +254,7 @@ namespace Gambit
 
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
-      TH_Process process_ann((string)"S", (string)"S");
+      TH_Process process_ann("S", "S");
 
 
       ///////////////////////////////////////
