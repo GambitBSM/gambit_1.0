@@ -28,8 +28,6 @@
 // Load it
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
-
 // Import functions
 BE_FUNCTION(init, void, (int), "init", "init")
 BE_FUNCTION(set_data_path, void, (const std::string &), "set_data_path", "set_data_path")

@@ -265,7 +265,8 @@ int main(int argc, char* argv[])
 
 
   // Initialize gamLike backend
-  gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
+  //gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
+  gamLike_1_0_0_init.notifyOfModel("GalacticHalo_gNFW");  // FIXME: Hack
   gamLike_1_0_0_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
