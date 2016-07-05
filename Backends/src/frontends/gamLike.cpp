@@ -32,7 +32,9 @@ BE_INI_FUNCTION
   }
   if ( ModelInUse("GalacticHalo_gNFW") or ModelInUse("GalacticHalo_gNFW") )
   {
-    //std::cout << "Using GalacticHalo initialization" << std::endl;
+#ifdef GAMLIKE_DEBUG
+    logger() << "Using GalacticHalo initialization" << EOM;
+#endif
     daFunk::Funk profile = *Dep::GalacticHalo;
     auto r = daFunk::logspace(-3, 2, 100);
     auto rho = daFunk::logspace(-3, 2, 100);
@@ -43,11 +45,11 @@ BE_INI_FUNCTION
     }
     set_MW_profile(r, rho, dist);
   }
-  /*
+#ifdef GAMLIKE_DEBUG
   else
   {
-    std::cout << "Not using GalacticHalo initialization" << std::endl;
+    logger() << "Not using GalacticHalo initialization" << EOM;
   }
-  */
+#endif
 }
 END_BE_INI_FUNCTION
