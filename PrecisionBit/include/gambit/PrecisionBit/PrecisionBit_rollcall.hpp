@@ -160,7 +160,7 @@ START_MODULE
     #define FUNCTION GM2C_SUSY
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
