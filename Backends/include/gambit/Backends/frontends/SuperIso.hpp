@@ -2,14 +2,14 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for SuperIso backend v3.4
+///  Frontend for SuperIso backend v3.6
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
 ///  
 ///  \author Nazila Mahmoudi
-///  \date   2015-02-28
+///  \date   2016 Jul
 ///  \author Pat Scott
 ///  \date   2015 May
 ///
@@ -18,8 +18,8 @@
 
 
 #define BACKENDNAME SuperIso
-#define VERSION 3.4
-#define SAFE_VERSION 3_4
+#define VERSION 3.6
+#define SAFE_VERSION 3_6
 
 LOAD_LIBRARY
 
@@ -29,15 +29,16 @@ BE_ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
 BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
 BE_FUNCTION(slha_adjust, void, (struct parameters*), "slha_adjust", "slha_adjust")
 
-BE_FUNCTION(CW_calculator, void, (double*, double*, double*, double, struct parameters*), "CW_calculator", "CW_calculator")
+BE_FUNCTION(CW_calculator, void, (int, double*, double*, double*, double, struct parameters*), "CW_calculator", "CW_calculator")
 BE_FUNCTION(C_calculator_base1, void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*), "C_calculator_base1", "C_calculator_base1")
 BE_FUNCTION(C_calculator_base2, void, (double*, double*, double, double*, double*, double, struct parameters*), "C_calculator_base2", "C_calculator_base2")
-BE_FUNCTION(Cprime_calculator, void, (double*, std::complex<double>*, double, double, struct parameters*), "Cprime_calculator", "Cprime_calculator")
-BE_FUNCTION(CQ_calculator, void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*), "CQ_calculator", "CQ_calculator")
+BE_FUNCTION(Cprime_calculator, void, (int, double*, std::complex<double>*, double, double, struct parameters*), "Cprime_calculator", "Cprime_calculator")
+BE_FUNCTION(CQ_calculator, void, (int, std::complex<double>*, std::complex<double>*, double, double, struct parameters*), "CQ_calculator", "CQ_calculator")
 
 BE_FUNCTION(bsgamma, double, (double*, double*, double*, double*, double, double, struct parameters*), "bsgamma", "bsgamma")
 BE_FUNCTION(Bsmumu, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsmumu", "Bsmumu")
 BE_FUNCTION(Bsmumu_untag, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsmumu_untag", "Bsmumu_untag")
+BE_FUNCTION(Bsll_untag, double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsll_untag", "Bsll_untag")
 BE_FUNCTION(Bdmumu, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double), "Bdmumu", "Bdmumu")
 BE_FUNCTION(Btaunu, double, (struct parameters*), "Btaunu", "Btaunu")
 BE_FUNCTION(BDtaunu, double, (struct parameters*), "BDtaunu", "BDtaunu")
@@ -56,9 +57,9 @@ BE_FUNCTION(A_BXsmumu_highq2, double, (double*, double*, double*, std::complex<d
 BE_FUNCTION(A_BXsmumu_zero, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "A_BXsmumu_zero", "A_BXsmumu_zero")
 BE_FUNCTION(BRBXstautau_highq2, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBXstautau_highq2", "BRBXstautau_highq2")
 BE_FUNCTION(A_BXstautau_highq2, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "A_BXstautau_highq2", "A_BXstautau_highq2")
-BE_FUNCTION(BRBKstarmumu, double, (double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBKstarmumu", "BRBKstarmumu")
-
-
+BE_FUNCTION(BRBKstarll, double, (int, int, double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBKstarll", "BRBKstarll")
+BE_FUNCTION(BRBKll, double, (int, int, double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBKll", "BRBKll")
+BE_FUNCTION(BRBsphill, double, (int, int, double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBsphill", "BRBsphill")
 BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, struct parameters*, double), "AI_BKstarmumu", "AI_BKstarmumu")
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 

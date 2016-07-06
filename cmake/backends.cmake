@@ -109,11 +109,11 @@ add_extra_targets(darksusy_5_1_1 ${darksusy_dir} ${backend_download}/${darksusy_
 
 
 # SuperIso
-set(superiso_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4")
-set(superiso_dl "superiso_v3.4.tgz")
+set(superiso_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.6")
+set(superiso_dl "superiso_v3.6.tgz")
 ExternalProject_Add(superiso
   URL http://superiso.in2p3.fr/download/${superiso_dl}
-  URL_MD5 ae4ecc45e7f608d9faf91ba8e5780053
+  URL_MD5 2b55e172ec2bb9622e5a6614c73c227e
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${superiso_dir}
   BUILD_IN_SOURCE 1

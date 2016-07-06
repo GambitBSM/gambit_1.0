@@ -9,7 +9,8 @@
 ///  Authors (add name and date if you modify):
 ///
 /// \author Marcin Chrzaszcz
-/// \date 2015 Sep
+/// \author Nazila Mahmoudi
+/// \date 2016 Jul
 ///
 ///  *********************************************
 
@@ -26,7 +27,7 @@ END_BE_INI_FUNCTION
 // Convenience functions (definitions)
 BE_NAMESPACE
 {
-  #define Nobs_BKsll 21
+  #define Nobs_BKsll 30
 
   Flav_KstarMuMu_obs SI_BRBKstarmumu_CONV(struct parameters *param, double Q2_min, double Q2_max)
   {
@@ -43,11 +44,11 @@ BE_NAMESPACE
     const double q2_max=Q2_max;
 
 
-    CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
+    CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
     C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
-    CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
-    Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
-    /*double BR =*/  BRBKstarmumu(byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
+    CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
+    Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
+    /*double BR =*/  BRBKstarll(2,0,byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
     
 
     
