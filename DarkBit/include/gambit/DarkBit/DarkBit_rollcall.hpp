@@ -967,11 +967,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkMatter_ID_SingletDM
     START_FUNCTION(std::string)
-    ALLOW_MODELS(SingletDM)
+    ALLOW_MODELS(SingletDM, SingletDM_running)
     #undef FUNCTION
-    #define FUNCTION DarkMatter_ID_MSSM30atQ
+    #define FUNCTION DarkMatter_ID_MSSM
     START_FUNCTION(std::string)
-    ALLOW_MODELS(MSSM30atQ, CMSSM)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     #undef FUNCTION
   #undef CAPABILITY
 

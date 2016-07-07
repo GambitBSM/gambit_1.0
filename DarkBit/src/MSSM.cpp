@@ -557,10 +557,10 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM30atQ(std::string & result)
+    void DarkMatter_ID_MSSM(std::string & result)
     {
-      using namespace Pipes::DarkMatter_ID_MSSM30atQ;
-      // FIXME: Is this always the lighest neutralino?  What happens for staus?
+      using namespace Pipes::DarkMatter_ID_MSSM;
+      // FIXME: need ask Dep::MSSM_spectrum in future; might have sneutralinos and gravitinos later.
       result = "~chi0_1";
     }
   }

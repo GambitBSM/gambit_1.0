@@ -188,12 +188,7 @@ namespace Gambit
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt, mZ0, mW;
     };
 
-    void DarkMatter_ID_SingletDM(std::string & result)
-    {
-      using namespace Pipes::DarkMatter_ID_SingletDM;
-      result = "S";
-    } // DarkMatter_ID_SingletDM
-
+    void DarkMatter_ID_SingletDM(std::string & result) { result = "S"; }
 
     /// Direct detection couplings for Singlet DM.
     void DD_couplings_SingletDM(DM_nucleon_couplings &result)
