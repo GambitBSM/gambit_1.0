@@ -39,10 +39,10 @@ namespace Gambit {
     void cascadeMC_FinalStates(std::vector<std::string> &list)
     {
       list.clear();
+      list.push_back("gamma");
       using namespace Pipes::cascadeMC_FinalStates;  
-      // FIXME: Add getValue documentation
-      list = runOptions->getValueOrDef<std::vector<std::string> >(
-          list,"cMC_finalStates");       
+      /// Option cMC_finalStates<std::vector<std::string>>: List of final states to simulate (default is ["gamma"])
+      list = runOptions->getValueOrDef<std::vector<std::string>>(list, "cMC_finalStates");       
 #ifdef DARKBIT_DEBUG
       std::cout << "Final states to generate: " << list.size() << std::endl;
       for(size_t i=0; i < list.size(); i++)
@@ -62,7 +62,7 @@ namespace Gambit {
       // These spectra should be handled using SimYields.
 // FIXME: Decide what to do with quark final states
 //      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
-//        disabled = Funk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
+//        disabled = daFunk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
 //            "cbar", "s", "sbar", "t", "tbar", "b", "bbar", "g");
       try
       {
@@ -82,10 +82,9 @@ namespace Gambit {
     {
       using namespace Pipes::cascadeMC_LoopManager;     
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
+      int cMC_minEvents = 2;  // runOptions->getValueOrDef<int>(2, "cMC_minEvents");
       // Get YAML options
-      // FIXME: Add getValue documentation
-      int cMC_minEvents = runOptions->getValueOrDef<int>(2, "cMC_minEvents");
-      // FIXME: Add getValue documentation
+      /// Option cMC_maxEvents<int>: Maximum number of cascade MC runs (default 10000)
       int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
 
 
@@ -200,12 +199,10 @@ namespace Gambit {
       switch(*Loop::iteration)
       {
         case MC_INIT:
-          cMC_maxChainLength = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
-          cMC_Emin           = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
+          /// Option cMC_maxChainLength<int>: Maximum chain length, -1 is infinite (default -1)
+          cMC_maxChainLength = runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
+          /// Option cMC_Emin<double>: Cutoff energy for cascade particles (default 0)
+          cMC_Emin = runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
           return;
         case MC_NEXT_STATE:
         case MC_FINALIZE:
@@ -235,8 +232,9 @@ namespace Gambit {
         const TH_ProcessCatalog &catalog, 
         std::map<std::string, std::map<std::string, SimpleHist> > &histList, 
         std::string initialState, 
-        double weight, int cMC_minSpecSamples, int cMC_maxSpecSamples, 
-        double cMC_specValidThreshold)
+        double weight, int cMC_minSpecSamples, int cMC_maxSpecSamples
+//        double cMC_specValidThreshold
+        )
     {
       std::string p1,p2;
       double gamma,beta;
@@ -290,7 +288,7 @@ namespace Gambit {
       // the histograms.  Limits are chosen such that we only sample energies
       // that can contribute to histogram bins.
       const double Ecmin = std::max( gamma*histEmin 
-          - gammaBeta*sqrt(histEmin*histEmin-msq) , chn.Ecm_min );
+          - gammaBeta*sqrt(histEmin*histEmin-msq) , 0*chn.Ecm_min );  // CW: chn.Ecm_min refers to initial not final energies
       const double Ecmax = std::min(std::min( 
             // Highest energy that can contribute to the histogram
             gamma*histEmax + gammaBeta*sqrt(histEmax*histEmax-msq),
@@ -314,8 +312,8 @@ namespace Gambit {
         std::cout << "Channel: " << p1 << " " << p2 << std::endl;
         std::cout << "Final particles: " << finalState << std::endl;
         std::cout << "Event weight: "    << weight << std::endl;
-        std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold 
-          << std::endl;
+//        std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold 
+//          << std::endl;
         std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax 
           << std::endl;
         std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max 
@@ -335,15 +333,16 @@ namespace Gambit {
       while(((Nsampl<cMC_minSpecSamples) 
             or (Nsampl*Nsampl<specSum)) and (samplCounter<cMC_maxSpecSamples))
       {
+        // FIXME: Make sure that the Nsampl < sqrt(specSum) criterion makes sense
         samplCounter++;
         // Draw an energy in the CoM frame of the endpoint. Logarithmic
         // sampling.
         double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
         double dN_dE = chn.dNdE_bound->eval(E_CoM, M);
 
-        // Only accept point if dN_dE is above threshold value
-        if(dN_dE > cMC_specValidThreshold)
-        {
+//        // Only accept point if dN_dE is above threshold value
+//        if(dN_dE > cMC_specValidThreshold)
+//        {
           double weight2 = E_CoM*dlogE*dN_dE;
           specSum += weight2;
           weight2 *= weight;
@@ -352,7 +351,7 @@ namespace Gambit {
           // Add box spectrum to histogram
           spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
           Nsampl++;
-        }
+//        }
       }
       if(Nsampl>0)
       {
@@ -375,10 +374,10 @@ namespace Gambit {
       // YAML options
       static int    cMC_minSpecSamples;
       static int    cMC_maxSpecSamples;
-      static double cMC_specValidThreshold;
-      static int    cMC_endCheckFrequency; 
-      static double cMC_gammaBGPower;
-      static double cMC_gammaRelError;      
+//      static double cMC_specValidThreshold;
+//      static int    cMC_endCheckFrequency; 
+//      static double cMC_gammaBGPower;
+//      static double cMC_gammaRelError;      
       static int    cMC_NhistBins;
       static double cMC_binLow;
       static double cMC_binHigh;
@@ -389,35 +388,26 @@ namespace Gambit {
       {
         case MC_INIT:
           // Initialization
-          cMC_minSpecSamples     = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (5,      "cMC_minSpecSamples");    
-          cMC_maxSpecSamples     = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (25,     "cMC_maxSpecSamples"); 
-          cMC_specValidThreshold = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(0.0,    "cMC_specValidThreshold");
-          cMC_endCheckFrequency  = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
-          cMC_gammaBGPower       = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
-          cMC_gammaRelError      = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
-          // FIXME: This sets equal binning for all particle types.  Each
-          // particle type should be allowed to have different binning.
-          cMC_NhistBins          = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
-          cMC_binLow             = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
-          cMC_binHigh            = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
+          /// Option cMC_minSpecSamples<int>: FIXME (default 5)
+          cMC_minSpecSamples = runOptions->getValueOrDef<int>   (5, "cMC_minSpecSamples");    
+          /// Option cMC_maxSpecSamples<int>: FIXME (default 25)
+          cMC_maxSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_maxSpecSamples"); 
+//          /// Option cMC_specValidThreshold<double>: FIXME (default 0.)
+//          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
+//          cMC_endCheckFrequency  = 
+//            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
+//          cMC_gammaBGPower       = 
+//            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
+//          cMC_gammaRelError      = 
+//            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
+
+          // Note: use same binning for all particle species
+          /// Option cMC_NhistBins<int>: Number of histogram bins (default 70)
+          cMC_NhistBins = runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
+          /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
+          cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
+          /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
+          cMC_binHigh = runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
           histList.clear();
           return;
         case MC_NEXT_STATE:
@@ -484,8 +474,9 @@ namespace Gambit {
               cascadeMC_sampleSimYield(
                   *Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog,
                   histList, *Dep::cascadeMC_InitialState, weight, 
-                  cMC_minSpecSamples, cMC_maxSpecSamples,
-                  cMC_specValidThreshold);
+                  cMC_minSpecSamples, cMC_maxSpecSamples
+//                  cMC_specValidThreshold
+                  );
               // Check if an error was raised
               if(piped_errors.inquire())
               {
@@ -493,8 +484,7 @@ namespace Gambit {
                 return;
               }
             }
-            // FIXME: What happens for single particle endpoints without
-            // tabulated spectra?
+            // FIXME: Issue warning if nothing is added to spectrum
           }
           // Analyze multiparticle endpoints (the endpoint particle is here the
           // parent of final state particles).
@@ -517,8 +507,9 @@ namespace Gambit {
                 cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit,
                     *Dep::TH_ProcessCatalog, histList,
                     *Dep::cascadeMC_InitialState, weight, 
-                    cMC_minSpecSamples, cMC_maxSpecSamples,
-                    cMC_specValidThreshold);
+                    cMC_minSpecSamples, cMC_maxSpecSamples
+//                    cMC_specValidThreshold
+                    );
                 // Check if an error was raised
                 if(piped_errors.inquire())
                 {
@@ -548,8 +539,9 @@ namespace Gambit {
                   cascadeMC_sampleSimYield(*Dep::SimYieldTable, child, *pit,
                       *Dep::TH_ProcessCatalog, histList,
                       *Dep::cascadeMC_InitialState, weight, 
-                      cMC_minSpecSamples, cMC_maxSpecSamples,
-                      cMC_specValidThreshold);
+                      cMC_minSpecSamples, cMC_maxSpecSamples
+//                      cMC_specValidThreshold
+                      );
                   // Check if an error was raised
                   if(piped_errors.inquire())
                   {
@@ -559,9 +551,14 @@ namespace Gambit {
                 }
               }
             }
+            // FIXME: Issue warning if nothing is added to spectrum
           }  
         }
       }
+      // Note: Spectrum-dependent convergence checks are commented out for the
+      // moment.  A fixed-number-of-runs scheme seems to work as well and is
+      // less dependent on user input.
+      /*
       // Check if finished every cMC_endCheckFrequency events
       if((*Loop::iteration % cMC_endCheckFrequency) == 0)
       {   
@@ -573,7 +570,7 @@ namespace Gambit {
         {
           // End conditions currently only implemented for gamma final state
           if(*it=="gamma")
-          {                  
+          {
             SimpleHist hist;
 #pragma omp critical (cascadeMC_histList)
             hist = histList[*Dep::cascadeMC_InitialState][*it];
@@ -604,14 +601,15 @@ namespace Gambit {
         {
           Loop::wrapup();
         }
-      }        
+      }
+      */
     }
 
-    // Convenience function for getting a Funk::Funk object of a given spectrum.
+    // Convenience function for getting a daFunk::Funk object of a given spectrum.
     // This function has no associated capability.
     // Function retrieving specific spectra (like cascadeMC_gammaSpectra)
     // should call this function.
-    void cascadeMC_fetchSpectra(std::map<std::string, Funk::Funk> &spectra,
+    void cascadeMC_fetchSpectra(std::map<std::string, daFunk::Funk> &spectra,
         std::string finalState, 
         const std::vector<std::string> &ini,
         const std::vector<std::string> &fin, 
@@ -651,7 +649,7 @@ namespace Gambit {
           }
           // FIXME: Default values provide 1-2% accuracy for singular integrals
           // Make this optional.
-          spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "lin"));
+          spectra[*it] = daFunk::Funk(new daFunk::FunkInterp("E", E, dN_dE, "lin"));
 
           for (size_t i = 1; i<E.size()-1; i++)
           {
@@ -667,13 +665,13 @@ namespace Gambit {
         }
         else
         {
-          spectra[*it] = Funk::zero("E");
+          spectra[*it] = daFunk::zero("E");
         }
       }
     }
 
     // Function requesting and returning gamma ray spectra from cascade decays.
-    void cascadeMC_gammaSpectra(std::map<std::string, Funk::Funk> &spectra)
+    void cascadeMC_gammaSpectra(std::map<std::string, daFunk::Funk> &spectra)
     {
       using namespace Pipes::cascadeMC_gammaSpectra;
       cascadeMC_fetchSpectra(spectra, "gamma", *Dep::GA_missingFinalStates,
@@ -695,7 +693,7 @@ namespace Gambit {
 #endif
     }
 
-
+    /*
     void cascadeMC_PrintResult(bool &dummy)
     {
       dummy=true;
@@ -729,6 +727,7 @@ namespace Gambit {
       }
       logger() << "************************" << std::endl;
     }
+    */
   } 
 }
 
