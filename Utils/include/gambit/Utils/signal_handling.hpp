@@ -52,8 +52,10 @@ namespace Gambit
    /// Variables for use in signal handlers
    class SignalData
    {
-     public:  
-       int myrank();
+     public: 
+       SignalData();
+ 
+       std::string myrank(); // MPI rank as a string
 
        /// Saved information on calling environment for longjmp
        jmp_buf env;
