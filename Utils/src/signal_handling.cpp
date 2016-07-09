@@ -55,7 +55,7 @@ namespace Gambit
    /// @{ SignalData member functions
   
    /// Constructor (initialise member variables)
-   SignalData()
+   SignalData::SignalData()
      : rank(-1)
      , jumppoint_set(false)
      , havejumped(1) // set to zero after jump point set
@@ -73,7 +73,7 @@ namespace Gambit
    {}
 
    /// Retrieve MPI rank as a string (for log messages etc.)
-   std::string myrank()
+   std::string SignalData::myrank()
    {
      std::ostringstream tmp;
      #ifdef WITH_MPI 
@@ -422,10 +422,6 @@ namespace Gambit
        utils_error().raise(LOCAL_INFO, errmsg.str());
      }
    }
-   #endif
-
-
-
    #endif
 
    /// @}
