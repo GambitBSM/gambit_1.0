@@ -401,7 +401,7 @@ namespace Gambit
      if(comm_ready())
      {
        logger() << LogTags::core << LogTags::info << "Broadcasting emergency shutdown signal to all processes" << EOM;
-       broadcast_shutdown_signal(comm,);
+       broadcast_shutdown_signal(EMERGENCY_SHUTDOWN);
        if(use_mpi_abort)      
        {
          // Another desperate attempt to kill all process, also not guaranteed to succeed
