@@ -153,8 +153,7 @@ namespace Gambit
        //static const int ERROR = 0; // Not in use
        static const int SOFT_SHUTDOWN = 1;
        static const int EMERGENCY_SHUTDOWN = 2;
-       static std::vector<std::string> set_shutdown_names();
-       static const std::vector<std::string> shutdown_name;
+       static std::string shutdown_name();
  
        /// Broadcast signal to shutdown all processes
        /// By default sends emergency shutdown code.

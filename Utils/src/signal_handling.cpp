@@ -41,14 +41,16 @@ namespace Gambit
    }
 
    /// Translate shutdown codes to strings
-   std::vector<std::string> SignalData::set_shutdown_names()
+   std::string SignalData::shutdown_name(int code)
    {
-     std::vector<std::string> tmp(3);
-     tmp[SOFT_SHUTDOWN]      = "SOFT_SHUTDOWN";
-     tmp[EMERGENCY_SHUTDOWN] = "EMERGENCY_SHUTDOWN";
-     return tmp;
+     std::string name;
+     switch(code){
+         case SOFT_SHUTDOWN:      name="SOFT_SHUTDOWN";      break;
+         case EMERGENCY_SHUTDOWN: name="EMERGENCY_SHUTDOWN"; break;
+         default: name="<invalid shutdown code>"; break;
+     }
+     return name;
    }
-   const std::vector<std::string> SignalData::shutdown_name(set_shutdown_names());
 
    /// @{ SignalData member functions
   
