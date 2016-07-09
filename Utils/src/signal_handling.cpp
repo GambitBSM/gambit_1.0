@@ -40,8 +40,55 @@ namespace Gambit
      return name;
    }
 
+   /// Translate shutdown codes to strings
+   std::vector<std::string> SignalData::set_shutdown_names()
+   {
+     std::vector<std::string> tmp(3);
+     tmp[SOFT_SHUTDOWN]      = "SOFT_SHUTDOWN";
+     tmp[EMERGENCY_SHUTDOWN] = "EMERGENCY_SHUTDOWN";
+     return tmp;
+   }
+   const std::vector<std::string> SignalData::shutdown_name(set_shutdown_names());
+
    /// @{ SignalData member functions
-   
+  
+   /// Constructor (initialise member variables)
+   SignalData()
+     : rank(-1)
+     , jumppoint_set(false)
+     , havejumped(1) // set to zero after jump point set
+     , cleanup_function_set(false)
+     , ignore_signals_during_shutdown(1) 
+     , shutdownBegun(0)
+     , emergency(0)
+     , shutdown_attempts(0)
+     , inside_omp_block(false)
+     , N_signals(0)
+     #ifdef WITH_MPI
+     , _comm_rdy(false)
+     , shutdown_broadcast_done(false)
+     #endif
+   {}
+
+   /// Retrieve MPI rank as a string (for log messages etc.)
+   std::string myrank()
+   {
+     std::ostringstream tmp;
+     #ifdef WITH_MPI 
+     if(rank==-1)
+     {
+       tmp << "UNKNOWN";
+     }
+     else
+     {
+       tmp << rank;
+     }
+     #else
+     tmp << "(MPI DISABLED)";
+     #endif
+     return tmp.str()
+   }
+ 
    /// Set jump point;
    void SignalData::setjump()
    {
@@ -164,7 +211,7 @@ namespace Gambit
        call_cleanup();
        std::ostringstream msg;
        #ifdef WITH_MPI
-       msg << "rank "<<rank<<": ";
+       msg << "rank "<<myrank()<<": ";
        #endif
        msg << "Performing soft shutdown!";
        throw SoftShutdownException(msg.str()); 
@@ -183,7 +230,7 @@ namespace Gambit
        call_cleanup();
        std::ostringstream msg;
        #ifdef WITH_MPI
-       msg << "rank "<<rank<<": ";
+       msg << "rank "<<myrank()<<": ";
        #endif
        msg << "Soft shutdown failed (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
        throw HardShutdownException(msg.str()); 
@@ -251,21 +298,15 @@ namespace Gambit
        if(not broadcast_done)
        {
          int shutdown_code;
-         std::string shutdown_name;
          if(emergency)
          {
            shutdown_code = EMERGENCY_SHUTDOWN;
-           shutdown_name = "EMERGENCY";
          }
          else
          {
            shutdown_code = SOFT_SHUTDOWN;
-           shutdown_name = "SOFT";
          }
-         /// This is basically the same function used in gambit.cpp ("broadcast_shutdown_signal"), would be good to unify the two.
-         MPI_Request req_null = MPI_REQUEST_NULL;
-         signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
-         logger() << LogTags::core << LogTags::info << shutdown_name<<" shutdown signal broadcast to all processes" << EOM;
+         broadcast_shutdown_signal(shutdown_code);
          broadcast_done = true;
        }
        #endif
@@ -324,7 +365,7 @@ namespace Gambit
 
    #ifdef WITH_MPI
    /// Report if MPI communicator object is prepared
-   bool SignalData::comm_ready() { return _comm_rdy; }
+   bool SignalData::comm_ready() { return (GMPI::Is_initialized() and _comm_rdy); }
 
    /// Set the MPI communicator object for the session
    /// Can be run multiple times, but I would not advise doing that.
@@ -332,7 +373,63 @@ namespace Gambit
    {
        signalComm = comm;
        _comm_rdy = true;
+       rank = comm.Get_rank();
    }
+
+   /// Broadcast signal to shutdown all processes
+   void SignalData::broadcast_shutdown_signal(int shutdown_code)
+   {
+     if(not shutdown_broadcast_done)
+     {
+       if(comm_ready())
+       {
+         // Broadcast signal to all processes (might not work if something errornous is occuring)
+         MPI_Request req_null = MPI_REQUEST_NULL;
+         signalComm.IsendToAll(&shutdown_code, 1, signalComm.mytag, &req_null);
+         logger() << LogTags::core << LogTags::info << shutdown_name(shutdown_code) <<" code broadcast to all processes" << EOM;
+       }
+       else
+       {
+         /// Should not be broadcasting
+         std::ostringstream errmsg;
+         errmsg << "Tried to broadcast_shutdown_signal ("<<shutdown_name(shutdown_code)<<"), but MPI communicator is not ready! (either MPI is uninitialised or a communicator has not been set). This is a bug, please report it.";
+         utils_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       shutdown_broadcast_done = true;
+     } // Don't need to broadcast twice (NOTE: might need to trigger change from soft to emergency shutdown?)
+   }
+   
+   /// Broadcast emergency shutdown command to all processes and abort if set to do so
+   void SignalData::do_emergency_MPI_shutdown(bool use_mpi_abort)
+   {
+     if(comm_ready())
+     {
+       logger() << LogTags::core << LogTags::info << "Broadcasting emergency shutdown signal to all processes" << EOM;
+       broadcast_shutdown_signal(comm,);
+       if(use_mpi_abort)      
+       {
+         // Another desperate attempt to kill all process, also not guaranteed to succeed
+         logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
+         signalComm.Abort();
+       }
+       // debugging; delay shutdown of process to prevent OpenMPI from automatically killing other processes
+       // struct timespec sleep_time;
+       // sleep_time.tv_sec  = 1;
+       // sleep_time.tv_nsec = 0;
+       // nanosleep(&sleep_time,NULL);
+     }
+     else
+     {
+       // Should not be doing this
+       std::ostringstream errmsg;
+       errmsg << "Tried to do_emergency_MPI_shutdown, but MPI communicator is not ready! (either MPI is uninitialised or a communicator has not been set). This is a bug, please report it.";
+       utils_error().raise(LOCAL_INFO, errmsg.str());
+     }
+   }
+   #endif
+
+
+
    #endif
 
    /// @}
@@ -379,7 +476,7 @@ namespace Gambit
      if(signaldata().shutdown_begun())
      {
        #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().rank<<": ";
+       std::cerr << "rank "<<signaldata().myrank()<<": ";
        #endif
        std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
        sighandler_hard(sig); // calls exit(sig)
@@ -418,7 +515,7 @@ namespace Gambit
      // {
      //   std::cerr << signaldata().display_received_signals();
      //   #ifdef WITH_MPI
-     //   std::cerr << "rank "<<signaldata().rank<<": ";
+     //   std::cerr << "rank "<<signaldata().myrank()<<": ";
      //   #endif
      //   std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
      //   std::cerr << "  variable dump: " << std::endl;
@@ -432,7 +529,7 @@ namespace Gambit
      signaldata().call_cleanup(); // Try to cleanup, though behaviour may be undefined.
      std::ostringstream ss;
      #ifdef WITH_MPI
-     ss << "rank "<<signaldata().rank<<": ";
+     ss << "rank "<<signaldata().myrank()<<": ";
      #endif
      ss << "Gambit has performed an emergency shutdown!" << std::endl;
      ss << signaldata().display_received_signals();
@@ -459,7 +556,7 @@ namespace Gambit
      if(signaldata().shutdown_begun())
      {
        #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().rank<<": ";
+       std::cerr << "rank "<<signaldata().myrank()<<": ";
        #endif
        std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown via longjmp, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
        sighandler_hard(sig); // calls exit(sig)
@@ -470,7 +567,7 @@ namespace Gambit
      {
        std::ostringstream ss;
        #ifdef WITH_MPI
-       ss << "rank "<<signaldata().rank<<": ";
+       ss << "rank "<<signaldata().myrank()<<": ";
        #endif
        ss << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! No jump point has been set, or jump has already occurred once! (Either is a bug; should not be able to reach this point if jump occurred already)" << std::endl;
        ss << signaldata().display_received_signals();
@@ -483,7 +580,7 @@ namespace Gambit
      //{
      //  std::cerr << signaldata().display_received_signals();
      //  #ifdef WITH_MPI
-     //  std::cerr << "rank "<<signaldata().rank<<": ";
+     //  std::cerr << "rank "<<signaldata().myrank()<<": ";
      //  #endif
      //  std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency_longjmp! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
      //  std::cerr << "  variable dump: " << std::endl;
@@ -511,7 +608,7 @@ namespace Gambit
      if(signaldata().shutdown_begun())
      {
        #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().rank<<": ";
+       std::cerr << "rank "<<signaldata().myrank()<<": ";
        #endif
        std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown (note: it was detected that we are inside an omp block), but shutdown is already in progress! Initiating hard shutdown." << std::endl;
        sighandler_hard(sig); // calls exit(sig)
@@ -562,7 +659,7 @@ namespace Gambit
      // std::cerr << " Saw signal " << sig << std::endl; // debugging
      // std::ostringstream msg;
      // #ifdef WITH_MPI
-     // msg << "rank "<<signaldata().rank<<": ";
+     // msg << "rank "<<signaldata().myrank()<<": ";
      // #endif
      // msg << "Calling sighandler_soft (detected signal "<<sig<<")" << std::endl;
      // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
@@ -570,7 +667,7 @@ namespace Gambit
      if(signaldata().shutdown_begun())
      {
        #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().rank<<": ";
+       std::cerr << "rank "<<signaldata().myrank()<<": ";
        #endif
        std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
        sighandler_emergency(sig); // calls exit(sig)
@@ -587,7 +684,7 @@ namespace Gambit
      signaldata().set_shutdown_begun();
      //Scanner::Plugins::plugin_info.dump();
      #ifdef WITH_MPI
-     std::cerr << "rank "<<signaldata().rank<<": ";
+     std::cerr << "rank "<<signaldata().myrank()<<": ";
      #endif
      std::cerr << "Gambit has performed a hard shutdown! Data loss is likely to have occurred." << std::endl;
      signaldata().add_signal(sig);
@@ -634,6 +731,7 @@ namespace Gambit
            exit(EXIT_FAILURE);
        }
    }
+
 }
 
 

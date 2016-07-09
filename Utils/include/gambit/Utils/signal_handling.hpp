@@ -44,20 +44,21 @@ namespace Gambit
    /// Translate signal codes to strings
    std::string signal_name(int sig);
 
+   #ifdef WITH_MPI
    /// Forward declare MPI class
    namespace GMPI { class Comm; } 
+   #endif
 
    /// Variables for use in signal handlers
    class SignalData
    {
      public:  
-       /// MPI rank
-       int rank = 0;
+       int myrank();
 
        /// Saved information on calling environment for longjmp
        jmp_buf env;
        bool jumppoint_set; // Check if jump point has been set yet.
-       int havejumped = 1; // Store result of setjmp here so we can use it to test if a jump point has been set
+       int havejumped;     // Store result of setjmp here so we can use it to test if a jump point has been set
                            // Value will be zero on first invocation of setjmp. Will be set to the argument
                            // of longjmp when the jump executes and returns to the setjmp point. 
        /// Set jump point;
@@ -66,7 +67,7 @@ namespace Gambit
        /// Set cleanup function to run during emergency shutdown
        typedef void (*void_func)(); 
        void_func cleanup;
-       bool cleanup_function_set = false;
+       bool cleanup_function_set;
        void set_cleanup(void_func f);
        void call_cleanup();    
 
@@ -95,7 +96,7 @@ namespace Gambit
 
        // Disable shutdown signals after the first one
        // Override via inifile value
-       volatile sig_atomic_t ignore_signals_during_shutdown = 1; 
+       volatile sig_atomic_t ignore_signals_during_shutdown; 
 
        /// Switch to threadsafe signal handling mode
        void entering_multithreaded_region();
@@ -116,23 +117,25 @@ namespace Gambit
        #endif
    
      private:
+       int rank; 
+
        /// Flag to warn if early shutdown is already in process
-       volatile sig_atomic_t shutdownBegun = 0;
+       volatile sig_atomic_t shutdownBegun;
        /// Flag to warn if the shutdown that is in progress is an emergency shutdown
        /// (use to decided whether to attempt MPI synchronisation)
-       volatile sig_atomic_t emergency = 0;
+       volatile sig_atomic_t emergency;
 
        /// Number of times synchronisation for soft shutdown has been attempted;
-       int shutdown_attempts = 0;
+       int shutdown_attempts;
 
        /// Flag to switch signal handling behavior to multithreaded mode
        /// (i.e. triggers switch to threadsafe emergency shutdown behaviour)
-       bool inside_omp_block = 0;
+       bool inside_omp_block;
 
        /// Array to record received signals (up to max_signals)
        static const int MAX_SIGNALS = 10;
        int received_signals[MAX_SIGNALS];
-       int N_signals = 0;
+       int N_signals;
 
        /// Attempt to synchronise all processes, but abort if it takes too long
        bool all_processes_ready();
@@ -150,6 +153,19 @@ namespace Gambit
        //static const int ERROR = 0; // Not in use
        static const int SOFT_SHUTDOWN = 1;
        static const int EMERGENCY_SHUTDOWN = 2;
+       static std::vector<std::string> set_shutdown_names();
+       static const std::vector<std::string> shutdown_name;
+ 
+       /// Broadcast signal to shutdown all processes
+       /// By default sends emergency shutdown code.
+       void broadcast_shutdown_signal(int shutdown_code=SignalData::EMERGENCY_SHUTDOWN);
+       
+       /// Broadcast emergency shutdown command to all processes, or abort if set to do so
+       /// (calls broadcast_shutdown_signal, just does extra things as well)
+       void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
+
+       /// Flag to check if shutdown message has already been broadcast
+       bool shutdown_broadcast_done;
        #endif
    };
 
