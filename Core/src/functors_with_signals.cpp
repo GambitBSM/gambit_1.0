@@ -55,7 +55,7 @@ namespace Gambit
            {                                                    /* OpenMP parallel block, perform the shutdown.     */
              signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency) */
              // Throw error if we haven't jumped!
-             std::cerr << "rank " << signaldata().rank <<": No emergency shutdown occurred, but according to previous logic the signal to do so must have already been received! Please file a bug report." << std::endl;
+             std::cerr << "rank " << signaldata().myrank() <<": No emergency shutdown occurred, but according to previous logic the signal to do so must have already been received! Please file a bug report." << std::endl;
              exit(EXIT_FAILURE);
            } 
            else if(functor.iCanManageLoops)
@@ -79,7 +79,7 @@ namespace Gambit
             /* Debugging */
             if(omp_get_level()!=0)
             {
-              std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=1 (in "<<functor.myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;
+              std::cerr << "rank " << signaldata().myrank() <<": Tried to set signaldata().inside_omp_block=1 (in "<<functor.myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;
               exit(EXIT_FAILURE);
             } \
             /* end debugging */
@@ -95,7 +95,7 @@ namespace Gambit
             /* Debugging */
             if(omp_get_level()!=0)
             {
-              std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=0 (in "<<functor.myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;
+              std::cerr << "rank " << signaldata().myrank() <<": Tried to set signaldata().inside_omp_block=0 (in "<<functor.myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;
               exit(EXIT_FAILURE);
             }
             /* end debugging */
