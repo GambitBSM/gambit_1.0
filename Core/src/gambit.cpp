@@ -59,9 +59,7 @@ int main(int argc, char* argv[])
     errorComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
     const int ERROR_TAG=1;         // Tag for error messages
     errorComm.mytag = ERROR_TAG;
-    int rank = errorComm.Get_rank();
     signaldata().set_MPI_comm(&errorComm); // Provide a communicator for signal handling routines to use.
-    signaldata().rank = rank;      // set variable for use in signal handlers
     /// Create an MPI communicator group for ScannerBit to use
     GMPI::Comm scanComm;
     scanComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
@@ -268,7 +266,7 @@ int main(int argc, char* argv[])
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
     }
     #ifdef WITH_MPI
-    do_emergency_MPI_shutdown(errorComm,use_mpi_abort);
+    signaldata().do_emergency_MPI_shutdown(use_mpi_abort);
     #endif     
     return EXIT_FAILURE;  
   }
@@ -283,7 +281,7 @@ int main(int argc, char* argv[])
     cout << "exceptions that inherit from std::exception.  Error string: " << endl;
     cout << e << endl;
     #ifdef WITH_MPI
-    do_emergency_MPI_shutdown(errorComm,use_mpi_abort);
+    signaldata().do_emergency_MPI_shutdown(use_mpi_abort);
     #endif     
     return EXIT_FAILURE;  
   }
