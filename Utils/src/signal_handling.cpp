@@ -75,18 +75,12 @@ namespace Gambit
    {
      std::ostringstream tmp;
      #ifdef WITH_MPI 
-     if(rank==-1)
-     {
-       tmp << "UNKNOWN";
-     }
-     else
-     {
-       tmp << rank;
-     }
+     if(rank==-1) { tmp << "UNKNOWN"; }
+     else         { tmp << rank; }
      #else
      tmp << "(MPI DISABLED)";
      #endif
-     return tmp.str()
+     return tmp.str();
    }
  
    /// Set jump point;
@@ -373,7 +367,7 @@ namespace Gambit
    {
        signalComm = comm;
        _comm_rdy = true;
-       rank = comm.Get_rank();
+       rank = comm->Get_rank();
    }
 
    /// Broadcast signal to shutdown all processes
@@ -385,7 +379,7 @@ namespace Gambit
        {
          // Broadcast signal to all processes (might not work if something errornous is occuring)
          MPI_Request req_null = MPI_REQUEST_NULL;
-         signalComm.IsendToAll(&shutdown_code, 1, signalComm.mytag, &req_null);
+         signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
          logger() << LogTags::core << LogTags::info << shutdown_name(shutdown_code) <<" code broadcast to all processes" << EOM;
        }
        else
@@ -410,7 +404,7 @@ namespace Gambit
        {
          // Another desperate attempt to kill all process, also not guaranteed to succeed
          logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
-         signalComm.Abort();
+         signalComm->Abort();
        }
        // debugging; delay shutdown of process to prevent OpenMPI from automatically killing other processes
        // struct timespec sleep_time;
