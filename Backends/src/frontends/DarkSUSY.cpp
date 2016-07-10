@@ -612,6 +612,8 @@ BE_NAMESPACE
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     }
 
+    // FIXME: Commenting out these lines might help to fix the DD coupling
+    // problems (CW 2016-07-09)
     // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
