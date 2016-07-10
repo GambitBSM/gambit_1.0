@@ -550,15 +550,15 @@ namespace Gambit
           double rho0 = *Param["rho0"];
           double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
           double vrot = *Param["vrot"];
-          double vearth = *Param["vearth"];
           double vd_3d = sqrt(3./2.)*(*Param["v0"]);
           double vesc = *Param["vesc"];
-
+          // Keplerian velocity of the Earth around the Sun (km/s)
+          double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
 
           BEreq::dshmcom->rho0 = rho0;
           BEreq::dshmcom->rhox = rho0;
           BEreq::dshmcom->v_sun = vrot;
-          BEreq::dshmcom->v_earth = vearth;
+          BEreq::dshmcom->v_earth = v_earth;
           BEreq::dshmcom->rhox = rho0_eff;
 
           BEreq::dshmframevelcom->v_obs = vrot;
@@ -572,7 +572,7 @@ namespace Gambit
           logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
           logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
           logger() << "    v_sun [km/s]  = " << vrot<< EOM;
-          logger() << "    v_earth [km/s]  = " << vearth << EOM;
+          logger() << "    v_earth [km/s]  = " << v_earth << EOM;
           logger() << "    v_obs [km/s]  = " << vrot << EOM;
           logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
           logger() << "    v_esc [km/s]  = " << vesc << EOM;

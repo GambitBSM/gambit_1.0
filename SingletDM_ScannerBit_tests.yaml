@@ -107,8 +107,6 @@ Parameters:
       fixed_value: 235 # km/s
     vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
