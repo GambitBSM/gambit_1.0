@@ -271,9 +271,12 @@ namespace Gambit {
     /// \brief Likelihoods for spin dependent nuclear parameters. Follows treatment
     /// of Akrami, et. al. JCAP04 (2011) 012. (Note that all deltaq are for proton.)
     /// Default data:
-    ///  a3 = deltau - deltad = 1.2695 +/- 0.0029
+    ///  a3 = deltau - deltad = 1.2723 +/- 0.0023
+    ///     PDG 2015 lambda parameter from neutron beta decay
     ///  a8 = deltau + deltad - 2*deltas = 0.585 +/- 0.025
+    ///     http://arxiv.org/abs/hep-ph/0001046
     ///  deltas = -0.09 +/- 0.03
+    ///     COMPASS: https://arxiv.org/abs/hep-ex/0609038
     void lnL_deltaq(double &result)
     {
         using namespace Pipes::lnL_deltaq;
@@ -284,9 +287,9 @@ namespace Gambit {
         double a8 = deltau + deltad - 2*deltas;
 
       // FIXME: Add getValue documentation
-        double a3_central = runOptions->getValueOrDef<double>(1.2695, "a3_central");
+        double a3_central = runOptions->getValueOrDef<double>(1.2723, "a3_central");
       // FIXME: Add getValue documentation
-        double a3_error = runOptions->getValueOrDef<double>(0.0029, "a3_error");
+        double a3_error = runOptions->getValueOrDef<double>(0.0023, "a3_error");
       // FIXME: Add getValue documentation
         double a8_central = runOptions->getValueOrDef<double>(0.585, "a8_central");
       // FIXME: Add getValue documentation
