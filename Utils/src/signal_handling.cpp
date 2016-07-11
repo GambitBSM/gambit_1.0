@@ -684,7 +684,14 @@ namespace Gambit
      std::cerr << std::endl;
      exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
    }
-   
+ 
+   void sighandler_hard_quiet(int sig)
+   {
+     signaldata().add_signal(sig);
+     signaldata().display_received_signals();
+     exit(sig);
+   }
+  
    void sighandler_null(int sig) {signaldata().add_signal(sig);}
    
    /// @}

@@ -39,11 +39,12 @@ int main(int argc, char* argv[])
     GMPI::Init();
   #endif
 
-  // Set default signal handling in case they are received before initialisation occurs properly
-  signal(SIGTERM, sighandler_hard);
-  signal(SIGINT,  sighandler_hard);
-  signal(SIGUSR1, sighandler_soft);
-  signal(SIGUSR2, sighandler_soft);
+  // Set default signal handling in case they are received before initialisation occurs properly.
+  // Will just do a hard shutdown in that case, since there should be no scan data to worry about.
+  signal(SIGTERM, sighandler_hard_quiet);
+  signal(SIGINT,  sighandler_hard_quiet);
+  signal(SIGUSR1, sighandler_hard_quiet);
+  signal(SIGUSR2, sighandler_hard_quiet);
 
   // Add these signals to the list of signals to be blocked by global 
   // block/unblock functions (see Utils/signal_helpers.hpp)
@@ -92,15 +93,6 @@ int main(int argc, char* argv[])
     // Read YAML file, which also initialises the logger. 
     IniParser::IniFile iniFile;
     iniFile.readFile(filename);
-
-    // Check for user requests for shutdown methods used during signal handling
-    logger() << core << "Setting up signal handling" << std::endl;
-    YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
-    signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
-    set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
-    set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
-    set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
-    set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
 
     // Check if user wants to disable automatic triggering of emergency 
     // shutdown on signals received while shutdown is already in progress
@@ -191,9 +183,20 @@ int main(int argc, char* argv[])
           throw HardShutdownException(msg.str()); 
       }
 
+      // Check for user requests for shutdown methods used during signal handling
+      // We do this after the rest of the initialisation, because we want to use
+      // the default signal handling during that period.
+      block_signals();
+      logger() << core << "Setting up signal handling" << std::endl;
+      YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
+      signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
+      set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
+      set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
+      set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
+      set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
+
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      block_signals();
       scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
       unblock_signals();    
 
