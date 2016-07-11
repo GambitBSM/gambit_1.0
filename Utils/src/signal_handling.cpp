@@ -24,6 +24,8 @@
 #include "yaml-cpp/yaml.h"
 //#include "gambit/ScannerBit/plugin_loader.hpp"
 
+#define SIGNAL_DEBUG // comment out when not debugging.
+
 namespace Gambit
 {
    /// Translate signal codes to strings
@@ -251,8 +253,14 @@ namespace Gambit
 
      #ifdef WITH_MPI
      /// Check for shutdown signals from other processes
+     #ifdef SIGNAL_DEBUG
+     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes" << EOM;
+     #endif
      if(signalComm->Iprobe(MPI_ANY_SOURCE, signalComm->mytag))
      {
+       #ifdef SIGNAL_DEBUG
+       logger() << LogTags::core << LogTags::info << "Shutdown signal detected; doing Recv" << EOM;
+       #endif
        int code;
        MPI_Status msg_status;
        signalComm->Recv(&code, 1, MPI_ANY_SOURCE, signalComm->mytag, &msg_status);
@@ -271,7 +279,7 @@ namespace Gambit
        else
        {
          std::ostringstream ss;
-         ss << "Received UNRECOGNISED shutdown signal from process with rank " << msg_status.MPI_SOURCE<<". Performing emergnecy shutdown, but please note that this indicates a ***BUG*** somewhere in the signal handling code!!!";
+         ss << "Received UNRECOGNISED shutdown signal from process with rank " << msg_status.MPI_SOURCE<<". Performing emergency shutdown, but please note that this indicates a ***BUG*** somewhere in the signal handling code!!!";
          std::cout << ss.str() << std::endl;
          logger() << LogTags::core << LogTags::info << ss.str() << EOM;
          set_shutdown_begun(1); // '1' argument means emergency set also.
@@ -279,6 +287,12 @@ namespace Gambit
 
        // Set flag to begin emergency shutdown
      }
+     #ifdef SIGNAL_DEBUG
+     else
+     {
+        logger() << LogTags::core << LogTags::info << "No shutdown signal detected; continuing as normal" << EOM;
+     }
+     #endif
      #endif
 
      if(shutdownBegun)
@@ -290,21 +304,15 @@ namespace Gambit
        logger() << ss.str() << EOM;
        #ifdef WITH_MPI
        // Broadcast shutdown message to all processes
-       static bool broadcast_done(false); // slightly ugly way of making the broadcast only occur once
-       if(not broadcast_done)
+       if(emergency)
        {
-         int shutdown_code;
-         if(emergency)
-         {
-           shutdown_code = EMERGENCY_SHUTDOWN;
-         }
-         else
-         {
-           shutdown_code = SOFT_SHUTDOWN;
-         }
-         broadcast_shutdown_signal(shutdown_code);
-         broadcast_done = true;
+         shutdown_code = EMERGENCY_SHUTDOWN;
        }
+       else
+       {
+         shutdown_code = SOFT_SHUTDOWN;
+       }
+       broadcast_shutdown_signal(shutdown_code);
        #endif
        // Go to emergency shutdown routine if needed
        check_for_emergency_shutdown_signal();
@@ -380,6 +388,9 @@ namespace Gambit
        if(comm_ready())
        {
          // Broadcast signal to all processes (might not work if something errornous is occuring)
+         #ifdef SIGNAL_DEBUG
+         logger() << LogTags::core << LogTags::info << "Broadcasting shutcode code " <<shutdown_name(shutdown_code)<< EOM;
+         #endif
          MPI_Request req_null = MPI_REQUEST_NULL;
          signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
          logger() << LogTags::core << LogTags::info << shutdown_name(shutdown_code) <<" code broadcast to all processes" << EOM;
@@ -393,6 +404,12 @@ namespace Gambit
        }
        shutdown_broadcast_done = true;
      } // Don't need to broadcast twice (NOTE: might need to trigger change from soft to emergency shutdown?)
+     #ifdef SIGNAL_DEBUG
+     else
+     {
+       logger() << LogTags::core << LogTags::info << "Received instruction to broadcast code " <<shutdown_name(shutdown_code)<<", however shutdown_broadcast_done=true is already set, so skipping the broadcast!"<< EOM;
+     }
+     #endif
    }
    
    /// Broadcast emergency shutdown command to all processes and abort if set to do so
@@ -680,15 +697,14 @@ namespace Gambit
      #endif
      std::cerr << "Gambit has performed a hard shutdown! Data loss is likely to have occurred." << std::endl;
      signaldata().add_signal(sig);
-     signaldata().display_received_signals();
-     std::cerr << std::endl;
+     std::cerr << signaldata().display_received_signals();
      exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
    }
  
    void sighandler_hard_quiet(int sig)
    {
      signaldata().add_signal(sig);
-     signaldata().display_received_signals();
+     std::cerr << signaldata().display_received_signals();
      exit(sig);
    }
   
