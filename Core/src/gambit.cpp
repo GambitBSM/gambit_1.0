@@ -96,6 +96,7 @@ int main(int argc, char* argv[])
 
     // Check if user wants to disable automatic triggering of emergency 
     // shutdown on signals received while shutdown is already in progress
+    YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
     signaldata().ignore_signals_during_shutdown = true;
     if(keyvalnode["signal_handling"]) {
        YAML::Node signal_options = keyvalnode["signal_handling"];
@@ -188,7 +189,6 @@ int main(int argc, char* argv[])
       // the default signal handling during that period.
       block_signals();
       logger() << core << "Setting up signal handling" << std::endl;
-      YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
       signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
       set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
       set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
