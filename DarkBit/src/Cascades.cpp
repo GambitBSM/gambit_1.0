@@ -457,6 +457,7 @@ namespace Gambit {
           // of available decay channels and total decay width)
           double weight;        
           // Analyze single particle endpoints            
+          bool ignored = true;
           if((*it)->getnChildren() ==0)
           {
             weight = (*it)->getWeight();     
@@ -467,6 +468,7 @@ namespace Gambit {
               double E = (*it)->E_Lab();
 #pragma omp critical (cascadeMC_histList)
               histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
+              ignored = false;
             }
             // Check if tabulated spectra exist for this final state
             else if((*Dep::SimYieldTable).hasChannel( (*it)->getpID(), *pit ))
@@ -478,13 +480,13 @@ namespace Gambit {
 //                  cMC_specValidThreshold
                   );
               // Check if an error was raised
+              ignored = false;
               if(piped_errors.inquire())
               {
                 Loop::wrapup();
                 return;
               }
             }
-            // FIXME: Issue warning if nothing is added to spectrum
           }
           // Analyze multiparticle endpoints (the endpoint particle is here the
           // parent of final state particles).
@@ -511,6 +513,7 @@ namespace Gambit {
 //                    cMC_specValidThreshold
                     );
                 // Check if an error was raised
+                ignored = false;
                 if(piped_errors.inquire())
                 {
                   Loop::wrapup();
@@ -531,6 +534,7 @@ namespace Gambit {
 #pragma omp critical (cascadeMC_histList)
                   histList[
                     *Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
+                  ignored = false;
                 }
                 // Check if tabulated spectra exist for this final state
                 else if((*Dep::SimYieldTable).hasChannel( child->getpID(),
@@ -543,6 +547,7 @@ namespace Gambit {
 //                      cMC_specValidThreshold
                       );
                   // Check if an error was raised
+                  ignored = false;
                   if(piped_errors.inquire())
                   {
                     Loop::wrapup();
@@ -551,8 +556,11 @@ namespace Gambit {
                 }
               }
             }
-            // FIXME: Issue warning if nothing is added to spectrum
           }  
+          if (ignored)
+          {
+            DarkBit_warning().raise(LOCAL_INFO, "WARNING FCMC: No spectrum added for some final state particles");
+          }
         }
       }
       // Note: Spectrum-dependent convergence checks are commented out for the
