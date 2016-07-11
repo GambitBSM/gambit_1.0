@@ -304,6 +304,7 @@ namespace Gambit
        logger() << ss.str() << EOM;
        #ifdef WITH_MPI
        // Broadcast shutdown message to all processes
+       int shutdown_code;
        if(emergency)
        {
          shutdown_code = EMERGENCY_SHUTDOWN;
