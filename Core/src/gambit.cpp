@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
     GMPI::Comm scanComm;
     scanComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
     Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
+    /// MPI rank for use in error messages;
+    int rank = scanComm.Get_rank();
   #endif
 
   try

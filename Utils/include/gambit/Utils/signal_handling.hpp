@@ -116,6 +116,10 @@ namespace Gambit
 
        /// Check that the communicator has been set
        bool comm_ready();
+ 
+       /// Broadcast emergency shutdown command to all processes, or abort if set to do so
+       /// (calls broadcast_shutdown_signal, just does extra things as well)
+       void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
        #endif
    
      private:
@@ -161,10 +165,6 @@ namespace Gambit
        /// By default sends emergency shutdown code.
        void broadcast_shutdown_signal(int shutdown_code=EMERGENCY_SHUTDOWN);
        
-       /// Broadcast emergency shutdown command to all processes, or abort if set to do so
-       /// (calls broadcast_shutdown_signal, just does extra things as well)
-       void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
-
        /// Flag to check if shutdown message has already been broadcast
        bool shutdown_broadcast_done;
        #endif
