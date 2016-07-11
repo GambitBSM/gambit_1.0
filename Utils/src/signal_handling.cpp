@@ -254,7 +254,7 @@ namespace Gambit
      #ifdef WITH_MPI
      /// Check for shutdown signals from other processes
      #ifdef SIGNAL_DEBUG
-     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes" << EOM;
+     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes (with MPI tag "<<signalComm->mytag<<")" << EOM;
      #endif
      if(signalComm->Iprobe(MPI_ANY_SOURCE, signalComm->mytag))
      {
@@ -390,7 +390,7 @@ namespace Gambit
        {
          // Broadcast signal to all processes (might not work if something errornous is occuring)
          #ifdef SIGNAL_DEBUG
-         logger() << LogTags::core << LogTags::info << "Broadcasting shutcode code " <<shutdown_name(shutdown_code)<< EOM;
+         logger() << LogTags::core << LogTags::info << "Broadcasting shutcode code " <<shutdown_name(shutdown_code)<< "with MPI tag "<<signalComm->mytag<< EOM;
          #endif
          MPI_Request req_null = MPI_REQUEST_NULL;
          signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
