@@ -185,6 +185,7 @@ namespace Gambit
    void sighandler_emergency_longjmp(int sig);
    void sighandler_soft(int sig);
    void sighandler_hard(int sig);
+   void sighandler_hard_quiet(int sig);
    void sighandler_null(int sig);
    
    /// @}

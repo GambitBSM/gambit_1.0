@@ -56,12 +56,12 @@ namespace Gambit
   
    /// Constructor (initialise member variables)
    SignalData::SignalData()
-     : rank(-1)
-     , jumppoint_set(false)
+     : jumppoint_set(false)
      , havejumped(1) // set to zero after jump point set
      , cleanup_function_set(false)
      , ignore_signals_during_shutdown(1) 
      , shutdownBegun(0)
+     , rank(-1)
      , emergency(0)
      , shutdown_attempts(0)
      , inside_omp_block(false)
