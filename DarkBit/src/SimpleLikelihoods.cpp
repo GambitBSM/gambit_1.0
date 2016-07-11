@@ -255,16 +255,16 @@ namespace Gambit {
         double sigmas = *Param["sigmas"];
         double sigmal = *Param["sigmal"];
       // FIXME: Add getValue documentation
-        double sigmas_central = runOptions->getValueOrDef<double>(43., "sigmas_central");
+        double sigmas_obs = runOptions->getValueOrDef<double>(43., "sigmas_obs");
       // FIXME: Add getValue documentation
-        double sigmas_error = runOptions->getValueOrDef<double>(8., "sigmas_error");
+        double sigmas_obserr = runOptions->getValueOrDef<double>(8., "sigmas_obserr");
       // FIXME: Add getValue documentation
-        double sigmal_central = runOptions->getValueOrDef<double>(58., "sigmal_central");
+        double sigmal_obs = runOptions->getValueOrDef<double>(58., "sigmal_obs");
       // FIXME: Add getValue documentation
-        double sigmal_error = runOptions->getValueOrDef<double>(9., "sigmal_error");
+        double sigmal_obserr = runOptions->getValueOrDef<double>(9., "sigmal_obserr");
 
-        result = Stats::gaussian_loglikelihood(sigmas, sigmas_central, 0, sigmas_error)
-            + Stats::gaussian_loglikelihood(sigmal, sigmal_central, 0, sigmal_error);
+        result = Stats::gaussian_loglikelihood(sigmas, sigmas_obs, 0, sigmas_obserr)
+            + Stats::gaussian_loglikelihood(sigmal, sigmal_obs, 0, sigmal_obserr);
         logger() << "lnL for SI nuclear parameters is " << result << EOM;
     }
 
@@ -287,21 +287,21 @@ namespace Gambit {
         double a8 = deltau + deltad - 2*deltas;
 
       // FIXME: Add getValue documentation
-        double a3_central = runOptions->getValueOrDef<double>(1.2723, "a3_central");
+        double a3_obs = runOptions->getValueOrDef<double>(1.2723, "a3_obs");
       // FIXME: Add getValue documentation
-        double a3_error = runOptions->getValueOrDef<double>(0.0023, "a3_error");
+        double a3_obserr = runOptions->getValueOrDef<double>(0.0023, "a3_obserr");
       // FIXME: Add getValue documentation
-        double a8_central = runOptions->getValueOrDef<double>(0.585, "a8_central");
+        double a8_obs = runOptions->getValueOrDef<double>(0.585, "a8_obs");
       // FIXME: Add getValue documentation
-        double a8_error = runOptions->getValueOrDef<double>(0.025, "a8_error");
+        double a8_obserr = runOptions->getValueOrDef<double>(0.025, "a8_obserr");
       // FIXME: Add getValue documentation
-        double deltas_central = runOptions->getValueOrDef<double>(-0.09, "deltas_central");
+        double deltas_obs = runOptions->getValueOrDef<double>(-0.09, "deltas_obs");
       // FIXME: Add getValue documentation
-         double deltas_error = runOptions->getValueOrDef<double>(0.03, "deltas_error");
+         double deltas_obserr = runOptions->getValueOrDef<double>(0.03, "deltas_obserr");
 
-        result = Stats::gaussian_loglikelihood(a3, a3_central, 0, a3_error) +
-                 Stats::gaussian_loglikelihood(a8, a8_central, 0, a8_error) +
-                 Stats::gaussian_loglikelihood(deltas, deltas_central, 0, deltas_error);
+        result = Stats::gaussian_loglikelihood(a3, a3_obs, 0, a3_obserr) +
+                 Stats::gaussian_loglikelihood(a8, a8_obs, 0, a8_obserr) +
+                 Stats::gaussian_loglikelihood(deltas, deltas_obs, 0, deltas_obserr);
     }
 
     /// \brief Likelihoods for halo parameters. The likelihood for the local DM density follows a
@@ -316,10 +316,10 @@ namespace Gambit {
       // FIXME: Add getValue documentation
         double rho0_obs = runOptions->getValueOrDef<double>(.4, "rho0_obs");
       // FIXME: Add getValue documentation
-        double rho0_obserror = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
+        double rho0_obserr = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
 
         result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0.,
-                rho0_obserror);
+                rho0_obserr);
         logger() << "lnL_rho0 yields " << result << EOM;
     }
 

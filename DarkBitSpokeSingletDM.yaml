@@ -366,10 +366,10 @@ Rules:
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_obs: 43.
+      sigmas_obserr: 8.
+      sigmal_obs: 58.
+      sigmal_obserr: 9.
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
