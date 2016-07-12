@@ -5,47 +5,43 @@ NEW TODO list
 DarkBit
 =======
 
-Before runs:
+Urgent:
 - Figure out 175 GeV complaints of DS -- add debug information
 - Figure out h+ higgswidth problems with DS SLHA initialization
 - Make final decision about local dark matter density uncertainties
-- Prepare post-processing of CMSSM results with alternative DarkBit configurations
 
 Do:
+- Prepare post-processing of CMSSM results with alternative DarkBit configurations
 - GalacticHalo model
   - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
   - Update GalacticHalo model to include Sun distance
   - Update GalacticHalo model in gamlike
+  - Make sure that halo model is used consistently between nuLike, gamLike and 
+    DDCalc
 - Check again convergernce critrion in cascade code (seems to be uncritical right now)
 - Add genRateMisc to cascade code (FIXME - not used right now)
 - Clean up header and src files from old mess
-- Make sure that halo model is used consistently between nuLike, gamLike and 
-  DDCalc (Christoph)
 - Check whether DD calculations require decay information from ProcessCatalog
-- Remove RDeffannrateDSprep (Torsten)
 - Move micromegas installation routines into the cmake system
-- Ensure that masses in DS and Gambit are used consistently (Introduce 
-  compile-time removal of error messages for DS lib)
 - Check that masses given to DD calc are always positive (Chris mail from 28 May)
 - Check content of SloopyDarkBit.cpp
-- Switch off kinematical warnings for IB routines in DarkSUSY (as discussed with Torsten)
 - Start adding descriptions to the capability database
 - Mention all options in the darkbit paper
 - Update valid energy ranges in SimYieldTables (GamYields.cpp)
 - Check t tbar final single states in GamYields.cpp
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ...
-- Decide what to do with quark final states in cascade code (Cascades.cpp:61)
-- Double-check sampling in cascade code
-- Think about convergence criterion in cascade code
+- Cascade code
+  - Decide what to do with quark final states in cascade code (Cascades.cpp:61)
+  - Double-check sampling in cascade code
+  - Think about convergence criterion in cascade code
 - Double-check SingletDM expression
-- Go through RelicDensity FIXME items via skype with Torsten (see file)
-- Go through diskless init problems via skype with Joakim (see file)
+- Skypes
+  - Go through RelicDensity FIXME items via skype with Torsten (see file)
+  - Go through diskless init problems via skype with Joakim (see file)
 - Update SunNeutrinos.cpp once BF become available from ProcessCatalog
 - DarkMatterID should come from MSSM_spectrum -- MSSM.cpp
 - gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep?
 - Make decision about default speeds for RD in DS
-- Joakim to check 333 of DarkSUSY.cpp, maybe cause for current problems with 
-  SLHA initialization?
 - Check FIXME in Cascades.cpp, decay_chain.cpp
 - Check again boost gsl integration for stability (SingletDM_test...)
 - Check NUHM_Diver.yaml, and whether it works with micromegas
@@ -58,8 +54,7 @@ Discussion/wait:
   annihilation channels (Pat mail 13 May).  Should use rescaling.  Using 
   nothing now.
 
-
-Later:
+Later/maybe:
 - Weff plot
 - Renormalize the Fermi and other likelihoods in gamLike
 - SunNeutrinos.cpp: change below to >= when version numbers are available as 

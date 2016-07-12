@@ -1,5 +1,6 @@
 Discuss with Joakim via skype
 -----------------------------
+Joakim to check 333 of DarkSUSY.cpp, maybe cause for current problems with SLHA initialization?
 Darksusy backend:  Add checks with particle width 
 MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model information?
   -- Pat: I think this should probably go into the DS diskless initialisation function, with a check for MODSEL in the slhaea, and then setting MODSEL in darksusy only if it is missing/inappropriate in the slhaea object.
@@ -14,6 +15,7 @@ MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model
 
 Discuss with Torsten via skype
 ------------------------------
+- Remove RDeffannrateDSprep ??
 DarkSUSY.cpp:  90	:     * FIXME: Fix BackendIniBit_error problems?
 DarkSUSY.cpp: 247	:  // FIXME: add channel codes!
 DarkSUSY.cpp: 295	:    }else if (particleID=="~e-_4" or particleID=="~e+_4"){ //FIXME: someone should check this...
@@ -24,3 +26,7 @@ RelicDensity.cpp: 129	:          // FIXME: This is no longer needed here.  Remov
 RelicDensity.cpp: 180	:      // FIXME: coannihilation thresholds have to be added once they are included
 RelicDensity.cpp: 255	:      // FIXME: Here goes a translation GAMBIT particle identifiers
 RelicDensity.cpp: 367	:        // FIXME: keep track of error flags in oh2_general
+Ensure that masses in DS and Gambit are used consistently (Introduce
+compile-time removal of error messages for DS lib)
+Switch off kinematical warnings for IB routines in DarkSUSY (as discussed with Torsten)
+
