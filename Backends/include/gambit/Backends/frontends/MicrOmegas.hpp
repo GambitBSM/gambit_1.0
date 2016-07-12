@@ -11,7 +11,7 @@
 
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT, LocalHalo)
+BE_ALLOW_MODELS(MSSM63atQ, LocalHalo)
 // FIXME "LocalHalo" is just a workaround to allow initializing MO without MSSM
 // model
 
