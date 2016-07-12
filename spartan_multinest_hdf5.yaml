@@ -36,7 +36,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 1000
+      nlive: 10000
       updInt: 5000
       tol: 1e-2
       mmodal: 0
@@ -85,7 +85,7 @@ KeyValues:
 
   # Customise shutdown behaviour on receiving OS signals
   signal_handling:
-    SIGINT : "emergency_shutdown"    # default: emergency_shutdown
+    SIGINT : "soft_shutdown" #"emergency_shutdown"    # default: emergency_shutdown
     SIGTERM: "emergency_shutdown_longjmp"    # default: emergency_shutdown
     SIGUSR1: "soft_shutdown"    # default: soft_shutdown
     SIGUSR2: "soft_shutdown"    # default: soft_shutdown
