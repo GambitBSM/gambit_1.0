@@ -388,11 +388,11 @@ namespace Gambit {
       {
         case MC_INIT:
           // Initialization
-          /// Option cMC_minSpecSamples<int>: FIXME (default 5)
+          /// Option cMC_minSpecSamples<int>: (default 5)
           cMC_minSpecSamples = runOptions->getValueOrDef<int>   (5, "cMC_minSpecSamples");    
-          /// Option cMC_maxSpecSamples<int>: FIXME (default 25)
+          /// Option cMC_maxSpecSamples<int>: (default 25)
           cMC_maxSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_maxSpecSamples"); 
-//          /// Option cMC_specValidThreshold<double>: FIXME (default 0.)
+//          /// Option cMC_specValidThreshold<double>: (default 0.)
 //          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
 //          cMC_endCheckFrequency  = 
 //            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
@@ -655,7 +655,7 @@ namespace Gambit {
 #endif
             i++;                                       
           }
-          // FIXME: Default values provide 1-2% accuracy for singular integrals
+          // Default values provide 1-2% accuracy for singular integrals
           // Make this optional.
           spectra[*it] = daFunk::Funk(new daFunk::FunkInterp("E", E, dN_dE, "lin"));
 

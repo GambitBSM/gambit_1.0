@@ -141,7 +141,7 @@ namespace Gambit
       TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
-      process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
+      process_ann.TH_resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
       auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "d_3", "phi");
       auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "dbar_3", "phi2");
       {
@@ -161,7 +161,7 @@ namespace Gambit
           }
           else
           {
-            process_ann.thresholdResonances.threshold_energy.
+            process_ann.TH_resonances_thresholds.threshold_energy.
               push_back(mtot_final);
           }
         }
@@ -415,7 +415,7 @@ int main(int argc, char* argv[])
     sigma_SI_p_simple.resolveDependency(&DD_couplings_WIMP);
     sigma_SI_p_simple.resolveDependency(&mwimp_generic);
 
-    // Spectral tests
+    // Generate gamma-ray spectra for various final states
     if ( (mode >= 0) and (mode < 6) )
     {
       std::cout << "Producing test spectra." << std::endl;
@@ -429,6 +429,7 @@ int main(int argc, char* argv[])
       if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
     }
 
+    // Generate gamma-ray spectra for various masses
     if (mode >= 10)
     {
       std::cout << "Producing test spectra." << std::endl;
@@ -438,6 +439,7 @@ int main(int argc, char* argv[])
       dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.), mode);
     }
 
+    // Generate gamma-ray likelihood maps
     if (mode==6)
     {
       // Systematic parameter maps annihilation
@@ -487,6 +489,7 @@ int main(int argc, char* argv[])
       dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
     }
 
+    // Generate direct detection likelihood maps
     if (mode==7)
     {
       // Systematic parameter maps scattering

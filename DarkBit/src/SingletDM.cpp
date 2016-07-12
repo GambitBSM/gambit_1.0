@@ -344,9 +344,7 @@ namespace Gambit
       std::set<string> importedDecays;
 
       // Minimum branching ratio to include
-      double minBranching = 
-      // FIXME: Add getValue documentation
-        runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
+      double minBranching = 0;
 
       // Import relevant decays (only Higgs and subsequent decays)
       using DarkBit_utils::ImportDecays;
@@ -360,7 +358,7 @@ namespace Gambit
       // list.
       // (remark: the lowest threshold is here = 2*mS, whereas in DS-internal
       // conventions, this lowest threshold is not listed)
-      process_ann.thresholdResonances.threshold_energy.push_back(2*mS); 
+      process_ann.TH_resonances_thresholds.threshold_energy.push_back(2*mS); 
       auto channel = 
         daFunk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
       auto p1 = 
@@ -374,7 +372,6 @@ namespace Gambit
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
           // Include final states that are open for T~m/20
-          // FIXME: Is threshold sufficient?
           if ( mS*2 > mtot_final*0.5 )
           {
             daFunk::Funk kinematicFunction = daFunk::funcM(singletDM,
@@ -386,14 +383,14 @@ namespace Gambit
           }
           if ( mS*2 > mtot_final )
           {
-            process_ann.thresholdResonances.threshold_energy.
+            process_ann.TH_resonances_thresholds.threshold_energy.
               push_back(mtot_final);
           }
         }
       }
 
       // Populate resonance list
-      if ( mH >= mS*2 ) process_ann.thresholdResonances.resonances.
+      if ( mH >= mS*2 ) process_ann.TH_resonances_thresholds.resonances.
           push_back(TH_Resonance(mH, gammaH));
 
       catalog.processList.push_back(process_ann);

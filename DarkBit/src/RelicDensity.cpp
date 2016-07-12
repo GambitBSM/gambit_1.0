@@ -177,8 +177,8 @@ namespace Gambit {
               (*Dep::TH_ProcessCatalog).getParticleProperty(DMid);
 
       // get thresholds & resonances from process catalog
-      result.resonances = annihilation.thresholdResonances.resonances;
-      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
+      result.resonances = annihilation.TH_resonances_thresholds.resonances;
+      result.threshold_energy = annihilation.TH_resonances_thresholds.threshold_energy;
 
       result.coannihilatingParticles.clear();
       // add WIMP=least massive 'coannihilating particle'

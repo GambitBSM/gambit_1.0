@@ -1,0 +1,86 @@
+NEW TODO list
+2016-07-12 (CW)
+
+
+DarkBit
+=======
+
+Do:
+- Clean up header and src files from old mess
+- Make sure that halo model is used consistently between nuLike, gamLike and 
+  DDCalc (Christoph)
+- Check whether DD calculations require decay information from ProcessCatalog
+- Remove RDeffannrateDSprep (Torsten)
+- Move micromegas installation routines into the cmake system
+- Ensure that masses in DS and Gambit are used consistently (Introduce 
+  compile-time removal of error messages for DS lib)
+- Check that masses given to DD calc are always positive (Chris mail from 28 May)
+- Check content of SloopyDarkBit.cpp
+- Switch off kinematical warnings for IB routines in DarkSUSY (as discussed with Torsten)
+- Start adding descriptions to the capability database
+- Mention all options in the darkbit paper
+- Update valid energy ranges in SimYieldTables (GamYields.cpp)
+- Check t tbar final single states in GamYields.cpp
+- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ...
+- Decide what to do with quark final states in cascade code (Cascades.cpp:61)
+- Double-check sampling in cascade code
+- Think about convergence criterion in cascade code
+- Double-check SingletDM expression
+- Go through RelicDensity FIXME items via skype with Torsten (see file)
+- Go through diskless init problems via skype with Joakim (see file)
+- Update SunNeutrinos.cpp once BF become available from ProcessCatalog
+- DarkMatterID should come from MSSM_spectrum -- MSSM.cpp
+- gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep?
+- Make decision about default speeds for RD in DS
+- Joakim to check 333 of DarkSUSY.cpp, maybe cause for current problems with 
+  SLHA initialization?
+- Check FIXME in Cascades.cpp, decay_chain.cpp
+
+Later:
+- SunNeutrinos.cpp: change below to >= when version numbers are available as 
+  ints
+- Check directly nested integral bug DarkBit.cpp:200 (37bf52e9f79a)
+- Implement filter module for masses from Spectrum object to masses used in 
+  DarkBit
+- Split GamYield in cascade and tabulated parts, to allow dynamic stopping
+  conditions for the cascade codes
+- Remove dependency on mwimp capability everywhere
+- Implement Higgs yields
+- Test Nazlias `DarkBit_SuperIsoRelic` routines (mail from 14-07-2015)
+- Backend PPPC yields table (inclusive Higgs yields)
+- CMB likelihoods
+- Implement gamma-ray line limits (HESS-II, Fermi)
+
+
+Paper
+=====
+
+Do:
+- More details on FCMC:DecayTable object in paper
+
+
+SingletDM
+=========
+
+Later:
+- Use singlet scalar spectrum object (which is not existing up to now)
+
+
+Core
+====
+
+Do:
+- Understand why the timing system does not work properly for parallel codes 
+  (looping)
+
+Later/maybe:
+- Dependencies of loop-manager managed functions to be added to loop-manager
+  loop should only run after *all* relevant parent functors have been evaluated
+- Implement function > module rules
+- Check out FIXME statements in funktions.hpp again and resolve SegFault issues
+- Avoid minimal loops in the dep-resolver / cyclic dependency fix
+- Documentation for BaseFunctions
+- Set backend versions globally in YAML file as of Pats mail from 21-12-15
+- Specify only function name in ObsLike section
+- Think about "!ignore" flag for debug purposes
+- Implement printing of stand-alone code in core

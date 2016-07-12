@@ -197,8 +197,6 @@ namespace Gambit {
               ygrid[i] = dsigmavde->bind("E")->eval(xgrid[i]);
             }
             auto interp = daFunk::interp("E", xgrid, ygrid);
-            // FIXME: Directly nested integrals seems to be buggy
-            // double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
             double svTOT = interp->gsl_integration("E", 10., 20.)->set_epsabs(1e-3)->bind()->eval();
             os << ": " << svTOT;
           }

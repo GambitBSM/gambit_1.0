@@ -146,8 +146,7 @@ namespace Gambit
         std::vector<TH_Channel> channelList;
 
         /// List of resonances and thresholds 
-        // FIXME: rename thresholdResonances to TH_resonances_thresholds
-        TH_resonances_thresholds thresholdResonances;
+        TH_resonances_thresholds TH_resonances_thresholds;
 
         /// Additional decay rate or sigmav (in addition to above channels)
         daFunk::Funk genRateMisc;

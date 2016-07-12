@@ -160,7 +160,6 @@ namespace Gambit {
           logger() << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
-          // FIXME: Check whether DS initialized correctly
           result = true;
         }
         // Do pure diskless SLHA initialisation, including (s)particle widths from GAMBIT.
@@ -462,7 +461,6 @@ namespace Gambit {
       if(m_1 + m_2 < 2*M_DM)                                                 \
       {                                                                      \
         index = SV_IDX;                                                      \
-        /* FIXME: Double-check that import works correctly */                \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
         daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
             STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"), daFunk::var("E1"),     \

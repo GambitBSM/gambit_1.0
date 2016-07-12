@@ -250,6 +250,7 @@ namespace Gambit {
           else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[0]) )
           {
             double gamma0 = E0/m0;
+            //std::cout << it->finalStateIDs[0] << " " << gamma0 << std::endl;
             spec0 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[0]), gamma0, 0.0);
           }        
 
@@ -266,6 +267,7 @@ namespace Gambit {
           else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[1]) )
           {
             double gamma1 = E1/m1;
+            //std::cout << it->finalStateIDs[1] << " " << gamma1 << std::endl;
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
@@ -343,7 +345,6 @@ namespace Gambit {
         {
           if ( it->finalStateIDs[1] == "gamma" or it->finalStateIDs[2] == "gamma")
           {
-            // FIXME: Decide whether this is acceptable for the first release
             DarkBit_warning().raise(LOCAL_INFO, "Second and/or third primary gamma rays in three-body final states ignored.");
           }
           double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
@@ -405,7 +406,6 @@ namespace Gambit {
         result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);  
 
         // specifies also center of mass energy range
-        // FIXME: What to do with channels that return zero (ee, uu, dd, ss)?
         ADD_CHANNEL(12, "Z0", "Z0", "gamma", 91.2*2, 100000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 80.25*2, 100000.)
         ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 100000.)  // Zero
@@ -424,12 +424,10 @@ namespace Gambit {
         ADD_CHANNEL(24, "t", "tbar", "gamma", 175.0*2, 100000.)
         ADD_CHANNEL(25, "b", "bbar", "gamma", 5.0*2, 100000.)
         ADD_CHANNEL(26, "g", "g", "gamma", 0., 100000.)
-        // FIXME: Double-check validity of neutrino channels
-        // FIXME: Make sure that approximate light-quark channels are used consistently everywhere
 #undef ADD_CHANNEL
 
         // Add approximations for single-particle cases.
-        // FIXME: We could actually use boosted rest-frame spectra instead -- discuss
+        // FIXME: Replace by boosted rest frame spectrum Z0
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 12, yieldk, flag);
         result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 50000.);
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 13, yieldk, flag);
@@ -444,7 +442,7 @@ namespace Gambit {
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 19, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 1.7841, 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 1.7841, 50000.);
-        // FIXME: Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
+        // FIXME: Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 24, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 175., 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);        
@@ -607,7 +605,7 @@ namespace Gambit {
 
         double operator()(std::string channel, double /*m*/, double /*e*/)
         {
-          // FIXME: Write interpolation routine
+          // Not yet implemented
           std::vector<double> y(table[channel].begin(), table[channel].end());
           return 0;
         }
@@ -626,7 +624,6 @@ namespace Gambit {
 
       if ( not initialized )
       {
-        // FIXME: Implemented PPPC4 tables
         std::string filename = "DarkBit/data/AtProductionNoEW_gammas.dat";
         PPPC_gam_object = PPPC_interpolation(filename);
         initialized = true;
@@ -635,7 +632,6 @@ namespace Gambit {
       }
     }
 
-    // FIXME CW: Use local DM density instead as free parameter (including distance from Sun)
     // Dark matter halo profiles
     double profile_Einasto(double rhos, double rs, double alpha, double r)
     { return rhos*exp(-1/alpha*(pow(r/rs, alpha)-1)); }
