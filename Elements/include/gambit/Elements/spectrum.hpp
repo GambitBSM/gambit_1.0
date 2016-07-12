@@ -81,12 +81,17 @@ namespace Gambit
          /// Construct new object, wrapping existing SubSpectrum objects
          ///  Make sure the original objects don't get deleted before this wrapper does!
          Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
+
+         /// Construct new object, automatically creating an SMSimpleSpec as the LE subspectrum, and cloning the HE SubSpectrum object supplied and taking possession of it.
+         /// (won't make a version of this taking a pointer, since this is an "advanced" task, let people use the full contructor to do it.)
+         Spectrum(const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
+
          /// Copy constructor, clones SubSpectrum objects.
          /// Make a non-const copy in order to use e.g. RunBothToScale function.
          Spectrum(const Spectrum& other);
          /// Copy-assignment
          /// Using "copy-and-swap" idiom
-         Spectrum& operator=(Spectrum other);
+         Spectrum& operator=(const Spectrum& other);
          /// Move constructor
          Spectrum(Spectrum&& other);
    
@@ -97,14 +102,14 @@ namespace Gambit
          void RunBothToScale(double scale);
    
          /// @{ Standard SubSpectrum getters
-         /// Return non-owning pointers. Make sure original Spectrum object doesn't
+         /// Return references to internal data members. Make sure original Spectrum object doesn't
          /// get destroyed before you finish using these or you will cause a segfault.
-         SubSpectrum* get_LE();
-         SubSpectrum* get_HE();
+         SubSpectrum& get_LE();
+         SubSpectrum& get_HE();
          SMInputs&    get_SMInputs();
          // const versions
-         const SubSpectrum* get_LE() const; 
-         const SubSpectrum* get_HE() const; 
+         const SubSpectrum& get_LE() const; 
+         const SubSpectrum& get_HE() const; 
          const SMInputs& get_SMInputs() const;
          /// @}
    

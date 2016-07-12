@@ -49,7 +49,7 @@
 #include "flexiblesusy/src/numerics2.hpp"
 #include "flexiblesusy/src/two_loop_corrections.hpp"
 // Switch for debug mode
-#define SpecBit_DBUG
+//#define SPECBIT_DEBUG
 
 namespace Gambit
 {
@@ -59,61 +59,89 @@ namespace Gambit
     using namespace LogTags;
     using namespace flexiblesusy;
 
-    /// Get a Spectrum object wrapper for the SingletDM model
-    void get_SingletDM_spectrum(const Spectrum* &result)
+    /// Get a (simple) Spectrum object wrapper for the SingletDM model
+    void get_SingletDM_spectrum(Spectrum& result)
     {
       namespace myPipe = Pipes::get_SingletDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
-      // SoftSUSY object used to set quark and lepton masses and gauge
-      // couplings in QEDxQCD effective theory
-      softsusy::QedQcd oneset;
-
-      // Fill QedQcd object with SMInputs values
-      setup_QedQcd(oneset,sminputs);
-
-      // Run everything to Mz
-      oneset.toMz();
-
-      // Create a SubSpectrum object to wrap the qedqcd object
-      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
-      // extracted from the QedQcd object, so use the values that we put into it.)
-      QedQcdWrapper qedqcdspec(oneset,sminputs);
-
       // Initialise an object to carry the Singlet plus Higgs sector information
       Models::SingletDMModel singletmodel;
-      singletmodel.HiggsPoleMass   = *myPipe::Param.at("mH");
-      singletmodel.HiggsVEV        = 1. / sqrt(sqrt(2.)*sminputs.GF);
+      
+      
+      // quantities needed to fill container spectrum, intermediate calculations
+      double alpha_em = 1.0 / sminputs.alphainv;
+      double mz2 = pow(sminputs.mZ,2);
+      double GF = sminputs.GF;
+      double sinW2cosW2 = Pi * alpha_em / (pow(2,0.5) * mz2 * GF ) ;
+      
+
+      double e = pow( 4*Pi*( alpha_em ),0.5) ;
+      
+      
+      double sin2W = pow(2 * sinW2cosW2, 0.5);
+      double tW = 0.5* asin( sin2W );
+      double sinW2 = pow( sin (tW) , 2);
+      double cosW2 = pow( cos (tW) , 2);
+    
+      
+      // Higgs sector
+      double mh   = *myPipe::Param.at("mH");
+      singletmodel.HiggsPoleMass   = mh;
+      
+      
+      
+      
+      
+      double vev        = 1. / sqrt(sqrt(2.)*GF);
+      singletmodel.HiggsVEV        = vev;
+    //  singletmodel.LambdaH   = GF*pow(mh,2)/pow(2,0.5) ;
+      
+      // Scalar singlet sector
+      
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
+      singletmodel.SingletLambdaS   = 0;
+      
+      
+      // Standard model
+      
+      singletmodel.sinW2 = sinW2;
+      
+      // gauge couplings
+      singletmodel.g1 = e / sinW2;
+      singletmodel.g2 = e / cosW2;
+      singletmodel.g3   = pow( 4*Pi*( sminputs.alphaS ),0.5) ;
+      
+      double sqrt2v = pow(2.0,0.5)/vev;
+      // Yukawas
+      
+      singletmodel.Yu[0] = sqrt2v * sminputs.mU;
+      singletmodel.Yu[1] = sqrt2v * sminputs.mCmC;
+      singletmodel.Yu[2] = sqrt2v * sminputs.mT;
+      
+      singletmodel.Ye[0] = sqrt2v * sminputs.mE;
+      singletmodel.Ye[1] = sqrt2v * sminputs.mMu;
+      singletmodel.Ye[2] = sqrt2v * sminputs.mTau;
+      
+      singletmodel.Yd[0] = sqrt2v * sminputs.mD;
+      singletmodel.Yd[1] = sqrt2v * sminputs.mS;
+      singletmodel.Yd[2] = sqrt2v * sminputs.mBmB;
+      
+      
+      
 
       // Create a SubSpectrum object to wrap the EW sector information
       Models::ScalarSingletDMSimpleSpec singletspec(singletmodel);
 
-      // Create full Spectrum object from components above
-      // Note: SubSpectrum objects cannot be copied, but Spectrum
-      // objects can due to a special copy constructor which does
-      // the required cloning of the constituent SubSpectra.
-      static Spectrum full_spectrum;
-
-      // Note subtlety! There are TWO constructors for the Spectrum object:
-      // If pointers to SubSpectrum objects are passed, it is assumed that
-      // these objects are managed EXTERNALLY! So if we were to do this:
-      //   full_spectrum = Spectrum(&qedqcdspec,&singletspec,sminputs);
-      // then the SubSpectrum objects would end up DELETED at the end of
-      // this scope, and we will get a segfault if we try to access them
-      // later. INSTEAD, we should just pass the objects themselves, and
-      // then they will be CLONED and the Spectrum object will take
-      // possession of them:
-      full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs,&myPipe::Param);
-
-      result = &full_spectrum;
+      // We don't supply a LE subspectrum here; an SMSimpleSpec will therefore be automatically created from 'sminputs'
+      result = Spectrum(singletspec,sminputs,&myPipe::Param);
     }
     
     
   //  template <class MI,class SI,class SIinfo>
     template<class MI,class SI>
-    const Spectrum* run_FS_spectrum_generator
+    Spectrum run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
         , const Options& runOptions
@@ -210,7 +238,7 @@ namespace Gambit
       #endif
       if( problems.have_problem() )
       {
-         if( runOptions.getValue<bool>("invalid_point_fatal") )
+         if( runOptions.getValueOrDef<bool>(false,"invalid_point_fatal") )
          {
             ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
             // just die.
@@ -232,11 +260,7 @@ namespace Gambit
          }
       }
       
-      
-      static Spectrum matched_spectra;
-      matched_spectra = Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
-    
-      return &matched_spectra;
+      return Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
     }
 
 
@@ -264,121 +288,148 @@ namespace Gambit
       input.mu3Input=*Param.at("mu3");
     }
 
-    void get_SingletDM_spectrum_pole(const Spectrum* &result)
+    bool check_perturb(const Spectrum& spec,double scale,int pts)
+    {
+    using namespace flexiblesusy;
+    using namespace Gambit;
+    using namespace SpecBit;
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
+    double step = log10(scale) / pts;
+    double runto;
+   
+    double ul=3.5449077018110318; // sqrt(4*Pi), maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
+    for (int i=0;i<pts;i++)
+    {
+    runto = pow(10,step*float(i+1.0)); // scale to run spectrum to
+    if (runto<100){runto=200.0;}// avoid running to low scales
+  
+    SingletDM -> RunToScale(runto);
+   
+    static const SpectrumContents::SingletDM contents;
+    static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters_with_tag(Par::dimensionless);
+      
+    for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+          it != required_parameters.end(); ++it)
+      {
+         const Par::Tags        tag   = it->tag();
+         const std::string      name  = it->name();
+         const std::vector<int> shape = it->shape();
+           std::ostringstream label;
+           label << name <<" "<< Par::toString.at(tag);
+          if(shape.size()==1 and shape[0]==1)
+         {
+           if (abs(SingletDM->get(tag,name))>ul)
+           {
+            return false;
+           }
+         }
+        
+          else if(shape.size()==1 and shape[0]>1)
+         {
+           for(int k = 1; k<=shape[0]; ++k) {
+           if (abs(SingletDM->get(tag,name,k))>ul)
+           {
+            return false;
+           }
+           
+           }
+          }
+          else if(shape.size()==2)
+         {
+           for(int k = 1; k<=shape[0]; ++k) {
+             for(int j = 1; j<=shape[0]; ++j) {
+             if (abs(SingletDM->get(tag,name,k,j))>ul)
+           {
+            return false;
+           }
+           }
+           }
+          }
+    }
+    
+    }
+    return true;
+    }
+    
+    void get_SingletDM_spectrum_pole(Spectrum& result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_SingletDM_spectrum_pole;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       const Options& runOptions=*myPipe::runOptions;
-      double scale = runOptions.getValueOrDef<double>(173.34,"set_high_scale");
+      double scale = runOptions.getValueOrDef<double>(173.34,"FS_high_scale");
       SingletDM_input_parameters input;
       fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
-      //bool error;
-     // result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMZ3Spec<SingletDM_interface<ALGORITHM1>>,Problems<SingletDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
-      result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
-    }
     
-    void get_SingletDMZ3_spectrum(const Spectrum* &result)
+      result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+    
+      int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
+      double do_check_perturb = runOptions.getValueOrDef<bool>(false,"check_perturb");
+      double check_perturb_scale = runOptions.getValueOrDef<double>(1.22e19,"check_high_scale");
+      
+      
+      
+      if (do_check_perturb)
+      {
+      if (!check_perturb(result,check_perturb_scale,check_perturb_pts))
+      {
+      // invalidate point as spectrum not perturbative up to scale
+      std::ostringstream msg;
+      msg << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  std::endl;
+      #ifdef SPECBIT_DEBUG
+      cout << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  endl;
+      #endif
+      invalid_point().raise(msg.str());
+      }
+      }
+    
+    }
+
+    void get_SingletDMZ3_spectrum(Spectrum& result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_SingletDMZ3_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       const Options& runOptions=*myPipe::runOptions;
-      double scale = runOptions.getValueOrDef<double>(173.34,"set_high_scale");
+      double scale = runOptions.getValueOrDef<double>(173.34,"FS_high_scale");
       SingletDMZ3_input_parameters input;
       fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
       fill_extra_input(input,myPipe::Param);
-     result = run_FS_spectrum_generator<SingletDMZ3_interface<ALGORITHM1>,SingletDMZ3Spec<SingletDMZ3_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+      result = run_FS_spectrum_generator<SingletDMZ3_interface<ALGORITHM1>,SingletDMZ3Spec<SingletDMZ3_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
+      int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
+      double do_check_perturb = runOptions.getValueOrDef<bool>(false,"check_perturb");
+      double check_perturb_scale = runOptions.getValueOrDef<double>(1.22e19,"check_high_scale");
+      
+      if (do_check_perturb)
+      {
+      if (!check_perturb(result,check_perturb_scale,check_perturb_pts))
+      {
+      // invalidate point as spectrum not perturbative up to scale
+      std::ostringstream msg;
+      
+      msg << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  std::endl;
+      #ifdef SPECBIT_DEBUG
+      cout << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  endl;
+      #endif
+      invalid_point().raise(msg.str());
+      }
+      }
+      
     }
 
-    
-    // simple function for generating a spectrum up to a given high scale, this does not save the spectrum object, so only used when the spectrum was already
-    // calculated before hand for use with find_min_lambda for vacuum stability
-    template <class T>
-    bool check_perturb_func_SingletDM(T& input,const SMInputs& sminputs)   //const Spectrum* fullspectrum)
-    {
-    using namespace flexiblesusy;
-    using namespace softsusy;
-    using namespace Gambit;
-    using namespace SpecBit;
-    softsusy::QedQcd oneset;
-    setup_QedQcd(oneset,sminputs);
-    oneset.toMz();
-    
-    typename SingletDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
-    spectrum_generator.run(oneset, input);
-    
-    std::ostringstream warnings;
-    const Problems<SingletDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-    bool error = problems.have_problem();
-    return error;
-    }
-    
-    template <class T>
-    bool check_perturb_func_SingletDMZ3(T& input,const SMInputs& sminputs)   //const Spectrum* fullspectrum)
-    {
-    using namespace flexiblesusy;
-    using namespace softsusy;
-    using namespace Gambit;
-    using namespace SpecBit;
-    //SMInputs sminputs = fullspectrum->get_SMInputs();
-    softsusy::QedQcd oneset;
-    setup_QedQcd(oneset,sminputs);
-    oneset.toMz();
-    
-    typename SingletDMZ3_interface<Two_scale>::SpectrumGenerator spectrum_generator;
-    spectrum_generator.run(oneset, input);
-    
-    std::ostringstream warnings;
-    const Problems<SingletDMZ3_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-    bool error = problems.have_problem();
-    return error;
-    }
-    
-    void check_perturb_SingletDM(double &lnlike)
-    {
-    namespace myPipe = Pipes::check_perturb_SingletDM;
-    const Options& runOptions=*myPipe::runOptions;
-    double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
-    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-    
-    #ifdef SPECBIT_DEBUG
-        std::cout<<"checking perturbativity to scale =  " << scale<<std::endl;
-    #endif
-    
-    SingletDM_input_parameters input;
-    fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
-    if(check_perturb_func_SingletDM(input,sminputs)){lnlike=1e-300;}
-    else{lnlike=0;}
-    }
-    
-    void check_perturb_SingletDMZ3(double &lnlike)
-    {
-    namespace myPipe = Pipes::check_perturb_SingletDMZ3;
-    const Options& runOptions=*myPipe::runOptions;
-    double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
-    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-
-    SingletDMZ3_input_parameters input;
-    fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
-    fill_extra_input(input,myPipe::Param);
-    if(check_perturb_func_SingletDMZ3(input,sminputs)){lnlike=1e-300;}
-    else{lnlike=0;}
-    }
-    
     
     // print spectrum out, stripped down copy from MSSM version with variable names changed
-    void fill_map_from_SingletDMspectrum(std::map<std::string,double>&, const Spectrum*);
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>&, const Spectrum&);
    
     void get_SingletDM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
       namespace myPipe = Pipes::get_SingletDM_spectrum_as_map;
-      const Spectrum* singletdmspec(*myPipe::Dep::SingletDM_spectrum);
+      const Spectrum& singletdmspec(*myPipe::Dep::SingletDM_spectrum);
       fill_map_from_SingletDMspectrum(specmap, singletdmspec);
     }
     
-    void fill_map_from_SingletDMspectrum(std::map<std::string,double>& specmap, const Spectrum* singletdmspec)
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>& specmap, const Spectrum& singletdmspec)
     {
       /// Add everything... use spectrum contents routines to automate task
       static const SpectrumContents::SingletDM contents;
@@ -398,7 +449,7 @@ namespace Gambit
          {
            std::ostringstream label;
            label << name <<" "<< Par::toString.at(tag);
-           specmap[label.str()] = singletdmspec->get_HE()->get(tag,name);
+           specmap[label.str()] = singletdmspec.get_HE().get(tag,name);
          }
          // Check vector case
          else if(shape.size()==1 and shape[0]>1)
@@ -406,7 +457,7 @@ namespace Gambit
            for(int i = 1; i<=shape[0]; ++i) {
              std::ostringstream label;
              label << name <<"_"<<i<<" "<< Par::toString.at(tag);
-             specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i);
+             specmap[label.str()] = singletdmspec.get_HE().get(tag,name,i);
            }
          }
          // Check matrix case
@@ -416,7 +467,7 @@ namespace Gambit
              for(int j = 1; j<=shape[0]; ++j) {
                std::ostringstream label;
                label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
-               specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i,j);
+               specmap[label.str()] = singletdmspec.get_HE().get(tag,name,i,j);
              }  
            }
          }
@@ -433,62 +484,6 @@ namespace Gambit
 
     }
     
-//    void check_perturb_to_min_lambda_SingletDMZ3(double &error)
-//    {
-//    using namespace flexiblesusy;
-//    using namespace softsusy;
-//    namespace myPipe = Pipes::check_perturb_to_min_lambda_SingletDMZ3;
-//    using namespace Gambit;
-//    using namespace SpecBit;
-//    triplet<double> age = *myPipe::Dep::vacuum_stability;
-//    double scale=age.upper;//std::get<1>(age);
-//    cout<< "checking perturbative up to high scale (of minimum lambda) = " << scale << endl;
-//    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-//    
-//   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-//   // SingletDMZ3_input_parameters input;
-//   // fill_SingletDMZ3_input(input,myPipe::Param);
-//
-//   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-//
-//    SingletDMZ3_input_parameters input;
-//    fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
-//
-//    fill_extra_input(input,myPipe::Param);
-//    
-//    error=float(check_perturb_func_SingletDMZ3(input,sminputs));
-//    }
-//    
-//    void check_perturb_to_min_lambda_SingletDM(double &error)
-//    {
-//    using namespace flexiblesusy;
-//    using namespace softsusy;
-//    namespace myPipe = Pipes::check_perturb_to_min_lambda_SingletDM;
-//    using namespace Gambit;
-//    using namespace SpecBit;
-//    triplet<double> age = *myPipe::Dep::vacuum_stability;
-//    double scale=age.upper;//std::get<1>(age);
-//    cout<< "checking perturbative up to high scale (of minimum lambda) = " << scale << endl;
-//    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-//    
-//   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-//   // SingletDMZ3_input_parameters input;
-//   // fill_SingletDMZ3_input(input,myPipe::Param);
-//
-//   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-//
-//    SingletDM_input_parameters input;
-//    fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
-//
-//    
-//    error=float(check_perturb_func_SingletDM(input,sminputs));
-//    }
-//
-//
-
-   
-   
-
   } // end namespace SpecBit
 } // end namespace Gambit
 

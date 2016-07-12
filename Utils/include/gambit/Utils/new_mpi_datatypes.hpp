@@ -36,10 +36,7 @@ namespace Gambit
     struct VBIDpair {
       int vertexID;
       int index;
-      VBIDpair() 
-        : vertexID(0)
-        , index(0)
-      {}
+      VBIDpair() = default; // Want the trivial default constructor to make this class "POD" so that calls to 'offsetof' are allowed.
       VBIDpair(const int v, const int i)
         : vertexID(v)
         , index(i)

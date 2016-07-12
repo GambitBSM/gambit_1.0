@@ -99,15 +99,15 @@ namespace Gambit
      
 
 //    
-//      template <class Model>
-//      double get_sinthW2_DRbar(const Model& model)
-//      {
-//       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
-//                      (0.6 * Utils::sqr(model.get_g1()) + 
-//                      Utils::sqr(model.get_g2()));
-//       return sthW2;
-//      }
-//      
+      template <class Model>
+      double get_sinthW2_MSbar(const Model& model)
+      {
+       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
+                      (0.6 * Utils::sqr(model.get_g1()) + 
+                      Utils::sqr(model.get_g2()));
+       return sthW2;
+      }
+      
 //
 //      
 //      template <class Model>
@@ -225,6 +225,14 @@ namespace Gambit
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
+        
+        
+          {
+            typename MTget::fmap0_extraM tmp_map;
+            tmp_map["sinW2"] = &get_sinthW2_MSbar<Model>;
+            map_collection[Par::dimensionless].map0_extraM = tmp_map;
+         }
+        
 
 
          {

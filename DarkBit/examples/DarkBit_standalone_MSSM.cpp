@@ -26,7 +26,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, MSSM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
+QUICK_FUNCTION(DarkBit, MSSM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, ())
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 
@@ -42,15 +42,12 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(const Spectrum *& outSpec)
+    void createSpectrum(Spectrum& outSpec)
     {
       using namespace Pipes::createSpectrum;
-      static Spectrum mySpec;
-      /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
-      outSpec = &mySpec;
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
     }
 
     // Create decay object from SLHA file input.slha

@@ -58,7 +58,7 @@ namespace Gambit
       // Module function asks for Spectrum* with capability MSSM_spectrum.
       // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*) 
       namespace myPipe = Pipes::exampleRead;
-      const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;
+      /*TAG*/ Spectrum fullspectrum = *myPipe::Dep::MSSM_spectrum;
       const SubSpectrum* spec = fullspectrum->get_HE(); // MSSMSpec SubSpectrum object
       const SubSpectrum* SM   = fullspectrum->get_LE(); // QedQcdWrapper SubSpectrum object
 
@@ -359,7 +359,7 @@ namespace Gambit
              }
            }
 
-           get_polemass_functor(std::ostringstream& report, const Spectrum* fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
+           get_polemass_functor(std::ostringstream& report, /*TAG*/ Spectrum fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
              : report(report)
              , fullspectrum(fullin)
              , spec(specin)
@@ -368,7 +368,7 @@ namespace Gambit
 
            private:
              std::ostringstream& report;
-             const Spectrum* fullspectrum;
+             /*TAG*/ Spectrum fullspectrum;
              const SubSpectrum* spec;
              SLHAea::Coll slhaea;
          }; 

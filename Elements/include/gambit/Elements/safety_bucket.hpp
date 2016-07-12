@@ -38,6 +38,9 @@ namespace Gambit
     
     public:
 
+      /// Master constructor
+      safety_bucket_base(str myinfo) : whoami(myinfo) {}
+
       /// Get capability name.
       str name()
       { 
@@ -45,7 +48,7 @@ namespace Gambit
         return _functor_base_ptr->name();
       }
 
-      // Get name of origin (module/backend).
+      /// Get name of origin (module/backend).
       str origin()
       { 
         if (not _initialized) dieGracefully();
@@ -59,13 +62,18 @@ namespace Gambit
 
       bool _initialized;
 
+      const str whoami;
+
       /// Failure message invoked when the user tries to access the object before it is initialized.
-      static void dieGracefully()
+      void dieGracefully() const
       {
-        str errmsg = "You just tried to access a GAMBIT object (derived from 'safety_bucket_base')"
-                   "\nthat has not been initialized with a non-zero functor pointer. Bad idea."
-                   "\nProbably you tried to retrieve a backend or module dependency"
-                   "\nthat has not been activated.";
+        str errmsg = "You just just tried to access the dependency or backend requirement\n"
+                     + whoami + "\n"
+                     "Unfortunately this does not yet point to anything, because the dependency\n"
+                     "or backend requirement has not been satistified yet.  If using GAMBIT in \n"
+                     "full, please check your rollcall declaration of this module function, and\n"
+                     "its source code.  If you are writing a standalone executable using some  \n"
+                     "GAMBIT modules, please check that you have correctly filled this dep/req.";
         utils_error().raise(LOCAL_INFO,errmsg);
       }
   };
@@ -80,7 +88,8 @@ namespace Gambit
     public:
 
       /// Constructor for dep_bucket.
-      dep_bucket(module_functor<TYPE> * functor_ptr_in = NULL, module_functor_common* dependent_functor_ptr_in = NULL)
+      dep_bucket(str mym, str myf, str me, module_functor<TYPE> * functor_ptr_in = NULL, module_functor_common* dependent_functor_ptr_in = NULL)
+      : safety_bucket_base(mym+"::Pipes::"+myf+"::Dep::"+me)
       {
         initialize(functor_ptr_in, dependent_functor_ptr_in);
       }
@@ -163,6 +172,10 @@ namespace Gambit
 
     public:
 
+      /// Constructor for BE_bucket_base.
+      BE_bucket_base(str mym, str myf, str me)
+      : safety_bucket_base(mym+"::Pipes::"+myf+"::BEreq::"+me) {}
+
       /// Get backend name.
       str backend()
       { 
@@ -192,7 +205,8 @@ namespace Gambit
     public:
 
       /// Constructor for BEvariable_bucket.
-      BEvariable_bucket(backend_functor<TYPE*(*)(),TYPE*> * functor_ptr_in = NULL)
+      BEvariable_bucket(str mym, str myf, str me, backend_functor<TYPE*(*)(),TYPE*> * functor_ptr_in = NULL)
+      : BE_bucket_base(mym, myf, me)
       {
         initialize(functor_ptr_in);
       }
@@ -254,7 +268,8 @@ namespace Gambit
    public:
 
       /// Constructor for BEfunction_bucket_common.
-      BEfunction_bucket_common(backend_functor<PTR_TYPE, TYPE, ARGS...>* functor_ptr_in = NULL)
+      BEfunction_bucket_common(str mym, str myf, str me, backend_functor<PTR_TYPE, TYPE, ARGS...>* functor_ptr_in = NULL)
+      : BE_bucket_base(mym, myf, me)
       {
         initialize(functor_ptr_in);
       }
@@ -301,8 +316,8 @@ namespace Gambit
     public:
 
       /// Constructor for non-variadic BEfunction_bucket.
-      BEfunction_bucket(backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>* functor_ptr_in = NULL)
-       : BEfunction_bucket_common<TYPE(*)(ARGS...),TYPE,ARGS...>(functor_ptr_in) {}
+      BEfunction_bucket(str mym, str myf, str me, backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>* functor_ptr_in = NULL)
+       : BEfunction_bucket_common<TYPE(*)(ARGS...),TYPE,ARGS...>(mym, myf, me, functor_ptr_in) {}
 
       /// Call backend function.
       TYPE operator ()(ARGS&& ...args)
@@ -322,8 +337,8 @@ namespace Gambit
     public:
 
       /// Constructor for variadic BEfunction_bucket.
-      BEfunction_bucket(backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>* functor_ptr_in = NULL)
-       : BEfunction_bucket_common<typename variadic_ptr<TYPE,ARGS...>::type,TYPE,ARGS...>(functor_ptr_in) {}
+      BEfunction_bucket(str mym, str myf, str me, backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>* functor_ptr_in = NULL)
+       : BEfunction_bucket_common<typename variadic_ptr<TYPE,ARGS...>::type,TYPE,ARGS...>(mym, myf, me, functor_ptr_in) {}
 
       /// Call backend function.
       template <typename... VARARGS>

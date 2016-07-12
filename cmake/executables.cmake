@@ -46,6 +46,29 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   endif()
 endif()
 
+# Add the 3-BIT HIT executable
+if(EXISTS "${PROJECT_SOURCE_DIR}/SpecBit/" AND (";${GAMBIT_BITS};" MATCHES ";SpecBit;") AND
+   EXISTS "${PROJECT_SOURCE_DIR}/DecayBit/" AND (";${GAMBIT_BITS};" MATCHES ";DecayBit;") AND
+   EXISTS "${PROJECT_SOURCE_DIR}/PrecisionBit/" AND (";${GAMBIT_BITS};" MATCHES ";PrecisionBit;") AND
+   NOT EXCLUDE_FLEXIBLESUSY)
+  set(BITHIT_XTRA ${flexiblesusy_LDFLAGS})
+  if (NOT EXCLUDE_DELPHES)
+    set(BITHIT_XTRA ${BITHIT_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  endif()
+  add_gambit_executable(3bithit "${BITHIT_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/DecayBit/examples/3bithit.cpp 
+                                ${PROJECT_SOURCE_DIR}/DecayBit/examples/standalone_functors.cpp 
+                                $<TARGET_OBJECTS:SpecBit>
+                                $<TARGET_OBJECTS:DecayBit>
+                                $<TARGET_OBJECTS:PrecisionBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
+  add_dependencies(3bithit flexiblesusy)
+  if (NOT EXCLUDE_DELPHES)
+    add_dependencies(3bithit delphes)
+  endif()
+endif()
+
 # Add the ExampleBit_A_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;"))
   if (NOT EXCLUDE_FLEXIBLESUSY)
