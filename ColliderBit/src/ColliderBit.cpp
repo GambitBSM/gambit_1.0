@@ -3435,15 +3435,15 @@ namespace Gambit
     void SMlikeHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::SMlikeHiggs_ModelParameters;
-      const Spectrum& fullspectrum;
-      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3")){ fullspectrum = *Dep::SingletDM_spectrum; }
+      const Spectrum* fullspectrum;
+      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3")){ fullspectrum = &(*Dep::SingletDM_spectrum); }
       else if (false) { /* fullspectrum = <blah> */ } // Placeholder clause; expand each time new model dependency added.
       else 
       { 
         ColliderBit_error().raise(LOCAL_INFO, "Bug! You have not finished writing this module function to work with all the models that it is declared to work with!");
       }
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      set_SMHiggs_ModelParameters(*fullspectrum,decays,result);
     }
 
     /// MSSM Higgs model parameters
