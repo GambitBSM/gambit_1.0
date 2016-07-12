@@ -583,7 +583,7 @@ namespace Gambit
     /// Get an MSSMSpectrum object from an SLHAstruct
     /// Wraps it up in MSSMSimpleSpec; i.e. no RGE running possible.
     /// This can be used as a poor-man's interface to backend spectrum generators
-    void get_MSSM_spectrum_from_SLHAstruct(const Spectrum* &result)
+    void get_MSSM_spectrum_from_SLHAstruct(Spectrum& result)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAstruct;
       const SLHAstruct& input_slha_tmp = *myPipe::Dep::unimproved_MSSM_spectrum; // Retrieve dependency on SLHAstruct
@@ -595,11 +595,10 @@ namespace Gambit
       std::cout << input_slha << std::endl; // test
 
       // Create Spectrum object from the slhaea object
-      static Spectrum matched_spectra;
-      matched_spectra = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
+      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
 
       // No sneaking in charged LSPs via SLHA, jävlar.
-      if (not has_neutralino_LSP(matched_spectra)) invalid_point().raise("Neutralino is not LSP.");
+      if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
       // In order to translate from e.g. MSSM63atMGUT to MSSM63atQ, we need 
       // to know that input scale Q. This is generally not stored in SLHA format,
@@ -624,9 +623,7 @@ namespace Gambit
       }
 
       // Ok the GAMBIT block exists, add the data to the MSSM SubSpectrum object.  
-      matched_spectra.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
-
-      result = &matched_spectra;
+      result.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
     }
 
     /// FeynHiggs SUSY masses and mixings
