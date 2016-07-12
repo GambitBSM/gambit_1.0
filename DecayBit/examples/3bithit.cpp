@@ -230,9 +230,9 @@ int main()
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
 
-    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_1_2::Functown::calculate_amu_1loop);
-    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_1_2::Functown::calculate_amu_2loop);
-    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_1_2::Functown::calculate_uncertainty_amu_2loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_2_0::Functown::calculate_amu_1loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_2_0::Functown::calculate_amu_2loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_2_0::Functown::calculate_uncertainty_amu_2loop);
 
     // Notify any module functions that care of the models being scanned.
     get_SMINPUTS.notifyOfModel("StandardModel_SLHA2");
