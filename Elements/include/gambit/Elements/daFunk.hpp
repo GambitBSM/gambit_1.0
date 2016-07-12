@@ -456,7 +456,7 @@ namespace daFunk
                     if ( size == 1 ) size = it->size();
                     if ( size != it->size() )
                     {
-                        std::cout << "daFunk::FunkBase WARNING: Inconsistent vector lengths." << std::endl;
+                        std::cerr << "daFunk::FunkBase WARNING: Inconsistent vector lengths." << std::endl;
                         return vec<double>();
                     }
                 }
@@ -1600,13 +1600,15 @@ namespace daFunk
                     // FIXME: Implement flags to optionally throw an error
                     if (status)
                     {
-                        std::cout << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
-                        std::cout << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
-                        std::cout << "Details about the integrand:" << std::endl;
+                        std::cerr << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
+                        std::cerr << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
+                        std::cerr << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
+                        std::cerr << "Details about the integrand:" << std::endl;
                         functions[0]->help();
-                        std::cout << "Dumping integrand:" << std::endl;
-                        for ( double x = x0; x <= x1; x = (x0>0) ? x*1.01 : x+(x1-x0)/1000)
-                            std::cout << "  " << x << " " << invoke(x, this) << std::endl;
+//                        std::cout << "Dumping integrand:" << std::endl;
+//                        for ( double x = x0; x <= x1; x = (x0>0) ? x*1.01 : x+(x1-x0)/1000)
+//                            std::cerr << "  " << x << " " << invoke(x, this) << std::endl;
+                        std::cerr << "Returning zero." << std::endl;
                         result = 0.;
                     }
                 }
