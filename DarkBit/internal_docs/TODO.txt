@@ -5,7 +5,19 @@ NEW TODO list
 DarkBit
 =======
 
+Before runs:
+- Figure out 175 GeV complaints of DS -- add debug information
+- Figure out h+ higgswidth problems with DS SLHA initialization
+- Make final decision about local dark matter density uncertainties
+- Prepare post-processing of CMSSM results with alternative DarkBit configurations
+
 Do:
+- GalacticHalo model
+  - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
+  - Update GalacticHalo model to include Sun distance
+  - Update GalacticHalo model in gamlike
+- Check again convergernce critrion in cascade code (seems to be uncritical right now)
+- Add genRateMisc to cascade code (FIXME - not used right now)
 - Clean up header and src files from old mess
 - Make sure that halo model is used consistently between nuLike, gamLike and 
   DDCalc (Christoph)
@@ -35,8 +47,21 @@ Do:
 - Joakim to check 333 of DarkSUSY.cpp, maybe cause for current problems with 
   SLHA initialization?
 - Check FIXME in Cascades.cpp, decay_chain.cpp
+- Check again boost gsl integration for stability (SingletDM_test...)
+- Check NUHM_Diver.yaml, and whether it works with micromegas
+
+Discussion/wait:
+- Diskless initialization
+- Z0 spectrum
+- Check IB mass setting routines
+- Check what happens with kinematically close but virtually open 
+  annihilation channels (Pat mail 13 May).  Should use rescaling.  Using 
+  nothing now.
+
 
 Later:
+- Weff plot
+- Renormalize the Fermi and other likelihoods in gamLike
 - SunNeutrinos.cpp: change below to >= when version numbers are available as 
   ints
 - Check directly nested integral bug DarkBit.cpp:200 (37bf52e9f79a)
@@ -57,6 +82,8 @@ Paper
 
 Do:
 - More details on FCMC:DecayTable object in paper
+- Redo plots Fig. 7 (more channels) and Fig. 8 (official limits)
+- Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained
 
 
 SingletDM
@@ -74,6 +101,7 @@ Do:
   (looping)
 
 Later/maybe:
+- Target options to specific function -- is this possible (Mail from 26 May from Pat)
 - Dependencies of loop-manager managed functions to be added to loop-manager
   loop should only run after *all* relevant parent functors have been evaluated
 - Implement function > module rules
