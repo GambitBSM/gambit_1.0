@@ -101,7 +101,7 @@ namespace Gambit
       using namespace std;
 
       // Obtain SLHAea object from spectrum
-      SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+      SLHAstruct spectrum = (*Dep::MSSM_spectrum).getSLHAea();
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
 

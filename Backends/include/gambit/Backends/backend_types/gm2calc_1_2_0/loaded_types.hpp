@@ -1,8 +1,6 @@
 #ifndef __loaded_types_gm2calc_1_2_0_hpp__
 #define __loaded_types_gm2calc_1_2_0_hpp__ 1
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include "wrapper_MSSMNoFV_onshell_susy_parameters.hpp"
 #include "wrapper_MSSMNoFV_onshell.hpp"
 #include "wrapper_MSSMNoFV_onshell_mass_eigenstates.hpp"
@@ -15,7 +13,6 @@
 #include "wrapper_EPhysicalProblem.hpp"
 #include "wrapper_EReadError.hpp"
 #include "identification.hpp"
-#pragma GCC diagnostic pop
 
 // Indicate which types are provided by this backend, and what the symbols of their factories are.
 #define gm2calc_1_2_0_all_data \

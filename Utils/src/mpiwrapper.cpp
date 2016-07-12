@@ -25,6 +25,8 @@
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
 
+//#define MPI_DEBUG_OUTPUT // Turn on debugging messages
+
 namespace Gambit
 {
 
@@ -444,7 +446,9 @@ namespace Gambit
         Printers::queue_mpidefs();
 
         // Do basic interrogation
+        #ifdef MPI_DEBUG_OUTPUT
         std::cerr << "Hooking up to MPI..." << std::endl;
+        #endif
         if(Is_initialized())
         {
            std::ostringstream errmsg;
@@ -484,15 +488,19 @@ namespace Gambit
         // Create communicator and check out basic info
         Comm COMM_WORLD;
 
+        #ifdef MPI_DEBUG_OUTPUT
         std::cerr << "  Process pool size : " << COMM_WORLD.Get_size() << std::endl;
         std::cerr << "  I am process number " << COMM_WORLD.Get_rank() << std::endl;
 
         // Run externally defined initialisation functions
         std::cerr << "  Running MPI initialisation functions..." << std::endl;
+        #endif
         for (std::vector<MpiIniFunc>::iterator it=get_mpi_ini_functions().begin();
               it != get_mpi_ini_functions().end(); it++)
         {
-          std::cerr << "    - Running function '"<<it->myname()<<"'" << std::endl;
+         #ifdef MPI_DEBUG_OUTPUT
+         std::cerr << "    - Running function '"<<it->myname()<<"'" << std::endl;
+         #endif
           try
           {
              it->runme(); // Run function.
@@ -504,7 +512,9 @@ namespace Gambit
              throw(e);
           }
         }
+        #ifdef MPI_DEBUG_OUTPUT
         std::cerr << "  MPI initialisation complete." << std::endl;
+        #endif
       }
       
    }

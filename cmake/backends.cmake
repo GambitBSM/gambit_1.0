@@ -497,7 +497,8 @@ add_dependencies(backends higgssignals)
 
 
 # gm2calc
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
+# TODO: The eigen3 include path should be automatically learned from GAMBIT to make it robust against version updates
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
 set(gm2calc_ver "1.2.0")
 set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/${gm2calc_ver}")
 set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/${gm2calc_ver}")
