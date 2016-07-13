@@ -8,7 +8,6 @@ DarkBit
 Urgent (for production runs):
 - Figure out 175 GeV complaints of DS (CMSSM_ttbar_problem.yaml) [CW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
-- Fix diskless initialization problems with DD couplings [JE/JC/CW]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Make final decision about local dark matter density uncertainties [JC]
 
@@ -37,6 +36,7 @@ After internal paper review started:
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
   - Check content of SloopyDarkBit.cpp [CW]
   - gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
+    indicating a bug? [PS?]
 - Move micromegas installation routines into the cmake system [PS]
 - Check that masses given to DD calc are always positive (Chris mail from 28
   May) [JC/PS/JE]
@@ -78,6 +78,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Fix diskless initialization problems with DD couplings [JE/JC/CW]
 - Figure out DD problems without SLHA initialization
 - Check NUHM_Diver.yaml, and whether it works with micromegas
 
