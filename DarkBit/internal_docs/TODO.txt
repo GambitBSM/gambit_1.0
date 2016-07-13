@@ -23,7 +23,7 @@ Do:
 - Add genRateMisc to cascade code (FIXME - not used right now)
 - Clean up header and src files from old mess
 - Check whether DD calculations require decay information from ProcessCatalog
-- Move micromegas installation routines into the cmake system
+- Move micromegas installation routines into the cmake system (Pat to do)
 - Check that masses given to DD calc are always positive (Chris mail from 28 May)
 - Check content of SloopyDarkBit.cpp
 - Start adding descriptions to the capability database
