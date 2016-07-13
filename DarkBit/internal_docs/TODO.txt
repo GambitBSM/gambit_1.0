@@ -5,27 +5,23 @@ NEW TODO list
 DarkBit
 =======
 
-Discussion/wait:
-- Z0 spectrum [JE]
-- Check IB mass setting routines [TB, CW]
-- Check what happens with kinematically close but virtually open 
-  annihilation channels (Pat mail 13 May).  Should use rescaling.  Using 
-  nothing now. [CW]
-- Diskless initialization problems [JE]
-
 Urgent (for production runs):
-- Figure out 175 GeV complaints of DS (CMSSM_ttbar_problem.yaml)
-- Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml)
-- Make final decision about local dark matter density uncertainties
+- Figure out 175 GeV complaints of DS (CMSSM_ttbar_problem.yaml) [CW]
+- Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
+- Fix diskless initialization problems with DD couplings [JE/JC/CW]
+- Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
+- Make final decision about local dark matter density uncertainties [JC]
 
 Before internal paper review:
-- More details on FCMC:DecayTable object in paper
-- Redo plots Fig. 7 (more channels) and Fig. 8 (official limits)
-- Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained
+- More details on FCMC:DecayTable object in paper [CW]
+- Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
+- Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
 - Do Skypes [CW, JE, TB]
   - Go through RelicDensity FIXME items via skype with Torsten (see file)
+  - Check IB mass setting routines
+  - Make decision about default speeds for RD in DS [TB, CW]
   - Go through diskless init problems via skype with Joakim (see file)
 - GalacticHalo model [CW]
   - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
@@ -33,31 +29,34 @@ After internal paper review started:
   - Update GalacticHalo model in gamlike
   - Make sure that halo model is used consistently between nuLike, gamLike and 
     DDCalc
-<<<<<<< HEAD
-- Add genRateMisc to cascade code [CW]
-- Prepare post-processing of CMSSM results with alternative DarkBit configurations [CW]
-- Check again convergernce critrion in cascade code (seems to be uncritical right now) [CW]
+- Prepare post-processing of CMSSM results with alternative DarkBit
+  configurations [CW/JC/SH]
 - Clean up header and src files from old mess [CW]
-- Check whether DD calculations require decay information from ProcessCatalog [CW]
+- Concepts/cosmetics
+  - Check whether DD calculations require decay information from ProcessCatalog [CW]
+  - Check content of SloopyDarkBit.cpp [CW]
+  - gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
 - Move micromegas installation routines into the cmake system [PS]
-- Check that masses given to DD calc are always positive (Chris mail from 28 May) [CW]
-- Check content of SloopyDarkBit.cpp [CW]
+- Check that masses given to DD calc are always positive (Chris mail from 28
+  May) [JC/PS/JE]
 - Start adding descriptions to the capability database [CW, PS, JE, TB, JC]
-- Mention all options in the darkbit paper [CW]
+- Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
 - Update valid energy ranges in SimYieldTables (GamYields.cpp) [JC]
 - Check t tbar final single states in GamYields.cpp [CW]
-- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [CW, PS, JE, TB, JC]
+- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
 - Cascade code [CW]
+  - Add genRateMisc to cascade code
+  - Check again convergernce critrion in cascade code (seems to be uncritical right now)
   - Decide what to do with quark final states in cascade code (Cascades.cpp:61)
   - Double-check sampling in cascade code
   - Think about convergence criterion in cascade code
+  - Check FIXME in Cascades.cpp, decay_chain.cpp [CW]
 - Double-check SingletDM expression [JC]
-- gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
-- Make decision about default speeds for RD in DS [TB, CW]
-- Check FIXME in Cascades.cpp, decay_chain.cpp [CW]
 - Check again boost gsl integration for stability (SingletDM_test...) [CW]
 
 Later/maybe/not-first-release:
+- In GamYields, we should use rescaling for kinematically close but virtually
+  open annihilation channels
 - Use singlet scalar spectrum object (which is not existing up to now)
 - DarkMatterID should come from MSSM_spectrum -- MSSM.cpp
 - Update SunNeutrinos.cpp once BF become available from ProcessCatalog [PS]
