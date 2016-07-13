@@ -54,7 +54,7 @@ namespace Gambit
       /// @{ Members of FileLock class
 
       /// Initialise prefix path name to lock files, and extension
-      const std::string FileLock::lock_prefix(GAMBIT_DIR "scratch/locks/");
+      const std::string FileLock::lock_prefix(GAMBIT_DIR "/scratch/locks/");
       const std::string FileLock::lock_suffix(".lock");
 
       const std::string hardmsg("Now calling abort (will produce a core file for analysis if this is enabled on your system; if so please include this with the bug report)");
