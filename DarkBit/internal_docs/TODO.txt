@@ -33,12 +33,13 @@ After internal paper review started:
   - Update GalacticHalo model in gamlike
   - Make sure that halo model is used consistently between nuLike, gamLike and 
     DDCalc
+<<<<<<< HEAD
 - Add genRateMisc to cascade code [CW]
 - Prepare post-processing of CMSSM results with alternative DarkBit configurations [CW]
 - Check again convergernce critrion in cascade code (seems to be uncritical right now) [CW]
 - Clean up header and src files from old mess [CW]
 - Check whether DD calculations require decay information from ProcessCatalog [CW]
-- Move micromegas installation routines into the cmake system [JC]
+- Move micromegas installation routines into the cmake system [PS]
 - Check that masses given to DD calc are always positive (Chris mail from 28 May) [CW]
 - Check content of SloopyDarkBit.cpp [CW]
 - Start adding descriptions to the capability database [CW, PS, JE, TB, JC]
