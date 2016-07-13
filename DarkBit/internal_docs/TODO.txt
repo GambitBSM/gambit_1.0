@@ -18,6 +18,7 @@ Before internal paper review:
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Add RD_oh2_general to MSSM standalone (update numbers in paper) [JC]
 - Do Skypes [CW, JE, TB]
   - Go through RelicDensity FIXME items via skype with Torsten (see file)
   - Check IB mass setting routines
