@@ -358,7 +358,7 @@ namespace Gambit
       // list.
       // (remark: the lowest threshold is here = 2*mS, whereas in DS-internal
       // conventions, this lowest threshold is not listed)
-      process_ann.TH_resonances_thresholds.threshold_energy.push_back(2*mS); 
+      process_ann.resonances_thresholds.threshold_energy.push_back(2*mS); 
       auto channel = 
         daFunk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
       auto p1 = 
@@ -383,14 +383,14 @@ namespace Gambit
           }
           if ( mS*2 > mtot_final )
           {
-            process_ann.TH_resonances_thresholds.threshold_energy.
+            process_ann.resonances_thresholds.threshold_energy.
               push_back(mtot_final);
           }
         }
       }
 
       // Populate resonance list
-      if ( mH >= mS*2 ) process_ann.TH_resonances_thresholds.resonances.
+      if ( mH >= mS*2 ) process_ann.resonances_thresholds.resonances.
           push_back(TH_Resonance(mH, gammaH));
 
       catalog.processList.push_back(process_ann);

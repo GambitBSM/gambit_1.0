@@ -617,7 +617,7 @@ BE_NAMESPACE
     // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
-    mssmiuseful->kln = DSpart->kn(1);
+    mssmiuseful->kln = 1;
     dsvertx();
 
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).

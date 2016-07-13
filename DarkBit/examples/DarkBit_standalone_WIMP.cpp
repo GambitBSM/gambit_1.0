@@ -141,7 +141,7 @@ namespace Gambit
       TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
-      process_ann.TH_resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
+      process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
       auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "d_3", "phi");
       auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "dbar_3", "phi2");
       {
@@ -161,7 +161,7 @@ namespace Gambit
           }
           else
           {
-            process_ann.TH_resonances_thresholds.threshold_energy.
+            process_ann.resonances_thresholds.threshold_energy.
               push_back(mtot_final);
           }
         }
