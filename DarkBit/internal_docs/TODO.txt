@@ -7,8 +7,8 @@ DarkBit
 
 Urgent:
 - DONE Figure out DD problems without SLHA initialization
-- Figure out 175 GeV complaints of DS -- add debug information
-- Figure out h+ higgswidth problems with DS SLHA initialization
+- Figure out 175 GeV complaints of DS -- add debug information (CMSSM_ttbar_problem.yaml)
+- Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml)
 - Make final decision about local dark matter density uncertainties
 
 Do:
