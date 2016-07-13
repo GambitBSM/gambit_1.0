@@ -45,7 +45,7 @@ namespace Gambit {
      * indicating if point initialization was successful, which is essentially
      * always true for models that satisfy the dependency resolver.
      *
-     * Supported models: CMSSM, MSSM30atQ
+     * Supported models: MSSM63atQ
      */
     void DarkSUSY_PointInit_MSSM(bool &result)
     {
@@ -85,8 +85,8 @@ namespace Gambit {
         double am0    = *Param["M0"];     // m0
         double amhf   = *Param["M12"];    // m_1/2
         double aa0    = *Param["A0"];     // A0
-        double asgnmu = *Param["signmu"];  // sign(mu)
-        double atanbe = *Param["tanb"];   // tan(beta)
+        double asgnmu = *Param["SignMu"];  // sign(mu)
+        double atanbe = *Param["TanBeta"];   // tan(beta)
         logger() << "Initializing DarkSUSY via dsgive_model_isasugra:"
           << std::endl;
         logger() << "  m0        =" << am0    << std::endl;
@@ -119,8 +119,8 @@ namespace Gambit {
         }
       }
 
-      // use SLHA format for initialization of MSSM30atQ or CMSSM
-      else if (ModelInUse("MSSM30atQ") or ModelInUse("CMSSM"))
+      // use SLHA format for initialization
+      else if (ModelInUse("MSSM63atQ") || ModelInUse("CMSSM"))
       {
         // Retrieve SLHAea object from spectrum object 
         const Spectrum* mySpec = *Dep::MSSM_spectrum;

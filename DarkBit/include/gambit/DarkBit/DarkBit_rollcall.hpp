@@ -66,7 +66,7 @@ START_MODULE
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*) 
       DEPENDENCY(decay_rates, DecayTable) 
-      ALLOW_MODELS(CMSSM,MSSM30atQ)
+      ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
@@ -179,7 +179,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      ALLOW_MODELS(CMSSM,MSSM30atQ)
+      ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -361,7 +361,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_MSSM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      //ALLOW_MODELS(CMSSM, MSSM30atQ)
+      //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*)      
       DEPENDENCY(DarkMatter_ID, std::string)
@@ -516,9 +516,9 @@ START_MODULE
       BACKEND_REQ(nucleonAmplitudes, (gimmemicro), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
       BACKEND_REQ(FeScLoop, (gimmemicro), double, (double, double, double, double))
       BACKEND_REQ(MOcommon, (gimmemicro), MicrOmegas::MOcommonSTR)
-      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM30atQ, MSSM30atMGUT, SingletDM)
+      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM63atQ, SingletDM)
       MODEL_GROUP(group1, (nuclear_params_fnq))
-      MODEL_GROUP(group2, (MSSM30atQ, MSSM30atMGUT, SingletDM))
+      MODEL_GROUP(group2, (MSSM63atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
       BACKEND_OPTION((MicrOmegas),(gimmemicro))
       BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
