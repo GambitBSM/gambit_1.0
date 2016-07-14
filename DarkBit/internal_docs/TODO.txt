@@ -6,12 +6,15 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Fix mixed final quark states in SimYieldsTable_darksusy (GamYields.cpp:464ff) [?]
+- Fix mixed final quark states in SimYieldsTable_darksusy (GamYields.cpp:464ff) [CW/SW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Make final decision about local dark matter density uncertainties [JC]
+- Merge DarkBit back into master and inform Martin [CW]
 
 Before internal paper review:
+- Update likelihood technical details in physics papers [all]
+- Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
@@ -29,7 +32,6 @@ After internal paper review started:
     DDCalc
 - Prepare post-processing of CMSSM results with alternative DarkBit
   configurations [CW/JC/SW]
-- Clean up header and src files from old mess [CW]
 - Concepts/cosmetics
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
   - Check content of SloopyDarkBit.cpp [CW]
@@ -54,6 +56,7 @@ After internal paper review started:
 - Check again boost gsl integration for stability (SingletDM_test...) [CW]
 
 Before release:
+- Clean up header and src files from old mess [CW]
 - Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
