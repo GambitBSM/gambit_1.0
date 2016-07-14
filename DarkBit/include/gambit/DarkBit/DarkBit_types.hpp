@@ -288,7 +288,7 @@ namespace Gambit
             auto Ecm = daFunk::var("Ecm");
             this->dNdE = daFunk::ifelse(Ecm - Ecm_min, daFunk::ifelse(Ecm_max - Ecm, dNdE, error), error);
 //#endif
-            dNdE_bound = dNdE->bind("E", "Ecm");
+            dNdE_bound = this->dNdE->bind("E", "Ecm");
         }
         daFunk::Funk dNdE;       
         daFunk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays

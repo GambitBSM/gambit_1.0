@@ -447,6 +447,9 @@ namespace Gambit {
         result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 175., 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);        
         
+        // FIXME: CW 2016-07-14, this needs to be added agin but with proper
+        // treatment of particle kinematics.
+        /*
         // Approximations for mixed quark channels
         daFunk::Funk dNdE_u = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
                               daFunk::var("mwimp"), daFunk::var("E"), 20, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);
@@ -460,7 +463,7 @@ namespace Gambit {
                               daFunk::var("mwimp"), daFunk::var("E"), 24, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);
         daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
                               daFunk::var("mwimp"), daFunk::var("E"), 25, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);  
-                  
+
         // FIXME: Update energy validty ranges
         result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 100000.); 
         result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 100000.); 
@@ -482,6 +485,7 @@ namespace Gambit {
         result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 100000.);    
         result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 100000.);            
         result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 100000.);    
+        */
    
         initialized = true;
       }
