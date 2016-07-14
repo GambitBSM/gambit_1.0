@@ -243,7 +243,6 @@ int main(int argc, char* argv[])
     LocalHalo_primary_parameters->setValue("vrot", 235.);
     LocalHalo_primary_parameters->setValue("v0", 235.);
     LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
 
     // ---- Initialize backends ----
 
