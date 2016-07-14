@@ -243,14 +243,10 @@ int main(int argc, char* argv[])
     LocalHalo_primary_parameters->setValue("vrot", 235.);
     LocalHalo_primary_parameters->setValue("v0", 235.);
     LocalHalo_primary_parameters->setValue("vesc", 550.);
-//<<<<<<< HEAD
     LocalHalo_primary_parameters->setValue("vearth", 29.78);
 
     // ---- Initialize backends ----
 
-//=======
-  
-//>>>>>>> notify_of_model_fix
     // Set up DDCalc backend initialization
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);

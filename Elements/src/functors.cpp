@@ -1394,11 +1394,7 @@ namespace Gambit
     /// Construct the list of known models only if it doesn't yet exist
     void module_functor_common::fill_activeModelFlags()
     {
-//<<<<<<< HEAD
-//=======
-//      cout << this->origin() << "::" << this->name() << endl;
       // Construct the list of known models only if it doesn't yet exist
-//>>>>>>> notify_of_model_fix
       if (activeModelFlags.empty())
       {
         // First get all the explicitly allowed models.
