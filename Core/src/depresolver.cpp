@@ -29,6 +29,7 @@
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
@@ -260,10 +261,17 @@ namespace Gambit
     }
 
     // Same thing for types (taking into account equivalence classes)
-    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq, bool with_regex)
+    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq, bool with_regex)
     {
       bool match1, match2;
-      if (stringComp(s1, s2, with_regex)) return true;  // Does it just match?
+      // Loop over all the default versions of BOSSed backends and strip off any corresponding leading namespace.
+      for (auto it = Backends::backendInfo().default_safe_versions.begin(); it != Backends::backendInfo().default_safe_versions.end(); ++it)
+      {
+        s1 = Utils::strip_leading_namespace(s1, it->first+"_"+it->second);
+        s2 = Utils::strip_leading_namespace(s2, it->first+"_"+it->second);
+      }
+      // Does it just match?
+      if (stringComp(s1, s2, with_regex)) return true;
       // Otherwise loop over equivalence classes.
       for (auto it1 = eq.equivalency_classes.begin(); it1 != eq.equivalency_classes.end(); it1++)
       {

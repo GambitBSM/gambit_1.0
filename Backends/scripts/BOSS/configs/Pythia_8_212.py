@@ -27,12 +27,12 @@ gambit_base_namespace  = ''
 # ~~~~~ Information about the external code ~~~~~
 
 # Use either absolute paths or paths relative to the main BOSS directory.
-input_files   = ['../../../Backends/installed/Pythia/8.212/include/Pythia8/Pythia.h']
-include_paths = ['../../../Backends/installed/Pythia/8.212/include', '../../../contrib/slhaea/include']
-base_paths    = ['../../../Backends/installed/Pythia/8.212/']
+input_files   = ['../../../Backends/installed/Pythia/'+gambit_backend_version+'/include/Pythia8/Pythia.h']
+include_paths = ['../../../Backends/installed/Pythia/'+gambit_backend_version+'/include', '../../../contrib/slhaea/include']
+base_paths    = ['../../../Backends/installed/Pythia/'+gambit_backend_version+'/']
 
-header_files_to = '../../../Backends/installed/Pythia/8.212/include'
-src_files_to    = '../../../Backends/installed/Pythia/8.212/src'
+header_files_to = '../../../Backends/installed/Pythia/'+gambit_backend_version+'/include'
+src_files_to    = '../../../Backends/installed/Pythia/'+gambit_backend_version+'/src'
 
 
 load_classes = [
@@ -102,3 +102,23 @@ extra_output_dir       = 'BOSS_output'
 #                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
 known_classes = {"SLHAea::Coll" : "SLHAea/slhaea.h"}
+
+
+# ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
+
+# The listed pragma directives will be added before/after including the 
+# the BOSS-generated headers in GAMBIT.
+#
+# Example:
+#   pragmas_begin = [
+#       '#pragma GCC diagnostic push',
+#       '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"',
+#   ]
+# 
+#   pragmas_end = [
+#       '#pragma GCC diagnostic pop'
+#   ]
+
+pragmas_begin = []
+pragmas_end = []
+

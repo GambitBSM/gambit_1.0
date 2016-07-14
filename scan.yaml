@@ -55,7 +55,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "gambit_output.hdf5"
+    output_file: "gambit_outputi.hdf5"
     group: "/test/test2"
     delete_file_on_restart: true
 
@@ -65,7 +65,7 @@ Printer:
 
 Scanner:
 
-  use_objectives: EggBox
+  use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
   use_scanner: twalk
   #find_shift
@@ -80,7 +80,7 @@ Scanner:
     twalk:
       plugin: twalk
       like: LogLike
-      tolerance: 1.001
+      tolerance: 1.003
       #chain_number: 20
       projection_dimension: 4
         
@@ -102,7 +102,7 @@ Scanner:
       aux_printer_txt_options:
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 10008
       like: LogLike
           
@@ -176,17 +176,17 @@ Scanner:
       groups: ["/test/test2"]
       output_file: "output_hdf5"
       #xrange: [2.0, 6.0]
-      xrange: [0, 1]
-      yrange: [0, 1]
-      #xrange: [-5, 5]
-      #yrange: [-5, 5]
+      #xrange: [0, 1]
+      #yrange: [0, 1]
+      xrange: [-5, 5]
+      yrange: [-5, 5]
       grid: [50, 50]
-      selected_pts:
-        - "EggBox::param_0"
-        - "EggBox::param_1"
       #selected_pts:
-      #  - "gaussian::param_0"
-      #  - "gaussian::param_1"
+      #  - "EggBox::param_0"
+      #  - "EggBox::param_1"
+      selected_pts:
+        - "gaussian::param_0"
+        - "gaussian::param_1"
       mult: ["mult"]
       #loglike: 1
       flags: ["linear"]
@@ -406,8 +406,8 @@ Scanner:
         ##  shift: -1
         param...20:
           range: [-5, 5]
-        params...2: 
-          fixed_value: [-1, 1]
+        #params...2: 
+        #  fixed_value: [-1, 1]
     test:
       plugin: test_plug
       #plugin_path: /home/gmartine/test.so
@@ -523,7 +523,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/scan_me"
+  default_output_path: "runs/scan"
 
   # Some example keys and subkeys
   my_key: 123

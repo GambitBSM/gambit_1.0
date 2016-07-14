@@ -351,8 +351,8 @@ namespace Gambit {
         double mDM = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
         const double GeV2tocm3s1 = 1.16733e-17;
 
-        auto Weff = Funk::zero("peff");
-        auto peff = Funk::var("peff");
+        auto Weff = daFunk::zero("peff");
+        auto peff = daFunk::var("peff");
         auto s = 4*(peff*peff + mDM*mDM);
 
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
@@ -361,6 +361,8 @@ namespace Gambit {
           Weff = Weff + 
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
+        // Add genRateMisc to Weff
+        Weff = Weff + annProc.genRateMisc->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         if ( Weff->getNArgs() != 1 )
           DarkBit_error().raise(LOCAL_INFO, 
               "RD_eff_annrate_from_ProcessCatalog: Wrong number of arguments.\n"

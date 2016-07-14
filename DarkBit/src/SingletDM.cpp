@@ -40,7 +40,7 @@ namespace Gambit
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(
             TH_ProcessCatalog* const catalog,
-            const std::map<std::string, Funk::Funk> & arg_f_vs_mass,
+            const std::map<std::string, daFunk::Funk> & arg_f_vs_mass,
             double vev,
             double alpha_strong)
         : v0 (vev),
@@ -182,18 +182,13 @@ namespace Gambit
         }
 
       private:
-        std::map<std::string, Funk::Funk> f_vs_mass;
-        Funk::BoundFunk Gamma;
+        std::map<std::string, daFunk::Funk> f_vs_mass;
+        daFunk::BoundFunk Gamma;
 
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt, mZ0, mW;
     };
 
-    void DarkMatter_ID_SingletDM(std::string & result)
-    {
-      using namespace Pipes::DarkMatter_ID_SingletDM;
-      result = "S";
-    } // DarkMatter_ID_SingletDM
-
+    void DarkMatter_ID_SingletDM(std::string & result) { result = "S"; }
 
     /// Direct detection couplings for Singlet DM.
     void DD_couplings_SingletDM(DM_nucleon_couplings &result)
@@ -222,7 +217,7 @@ namespace Gambit
 
     } // function DD_couplings_SingletDM
 
-    std::map<std::string, Funk::Funk> get_f_vs_mass(std::string filename)
+    std::map<std::string, daFunk::Funk> get_f_vs_mass(std::string filename)
     {
       // Higgs branching ratios and total width Gamma [GeV], as function of
       // mass [GeV] (90 - 150 GeV)
@@ -233,10 +228,10 @@ namespace Gambit
             "WW", "ZZ", "Gamma");
       table.setcolnames(colnames);
 
-      std::map<std::string, Funk::Funk> f_vs_mass;
+      std::map<std::string, daFunk::Funk> f_vs_mass;
       for (auto it = colnames.begin(); it != colnames.end(); it++)
       {
-        f_vs_mass[*it] = Funk::interp("mass", table["mass"], table[*it]);
+        f_vs_mass[*it] = daFunk::interp("mass", table["mass"], table[*it]);
       }
       return f_vs_mass;
     }
@@ -249,12 +244,12 @@ namespace Gambit
       using std::string;
 
       // Initialize Higgs decay tables (static, hence only once)
-      static std::map<string, Funk::Funk> f_vs_mass = 
+      static std::map<string, daFunk::Funk> f_vs_mass = 
         get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
 
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
-      TH_Process process_ann((string)"S", (string)"S");
+      TH_Process process_ann("S", "S");
 
 
       ///////////////////////////////////////
@@ -356,7 +351,7 @@ namespace Gambit
       // Import relevant decays (only Higgs and subsequent decays)
       using DarkBit_utils::ImportDecays;
       ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching,
-          Funk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3"));
+          daFunk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3"));
 
       // Instantiate new SingletDM object
       auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass, v, alpha_s);
@@ -367,11 +362,11 @@ namespace Gambit
       // conventions, this lowest threshold is not listed)
       process_ann.thresholdResonances.threshold_energy.push_back(2*mS); 
       auto channel = 
-        Funk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
+        daFunk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
       auto p1 = 
-        Funk::vec<string>("d_3",   "W+", "u_2",   "e+_3", "Z0", "u_3",   "h0_1");
+        daFunk::vec<string>("d_3",   "W+", "u_2",   "e+_3", "Z0", "u_3",   "h0_1");
       auto p2 = 
-        Funk::vec<string>("dbar_3","W-", "ubar_2","e-_3", "Z0", "ubar_3","h0_1");
+        daFunk::vec<string>("dbar_3","W-", "ubar_2","e-_3", "Z0", "ubar_3","h0_1");
       {
         for ( unsigned int i = 0; i < channel.size(); i++ )
         {
@@ -382,10 +377,10 @@ namespace Gambit
           // FIXME: Is threshold sufficient?
           if ( mS*2 > mtot_final*0.5 )
           {
-            Funk::Funk kinematicFunction = Funk::funcM(singletDM,
-                &SingletDM::sv, channel[i], lambda, mS, Funk::var("v"));
+            daFunk::Funk kinematicFunction = daFunk::funcM(singletDM,
+                &SingletDM::sv, channel[i], lambda, mS, daFunk::var("v"));
             TH_Channel new_channel(
-                Funk::vec<string>(p1[i], p2[i]), kinematicFunction
+                daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
             process_ann.channelList.push_back(new_channel);
           }

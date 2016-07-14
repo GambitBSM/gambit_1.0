@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas:
+    sigmas: #43.0 
       range:  [19, 67]
-    sigmal:
+    sigmal: #58.0 
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -22,33 +22,32 @@ Parameters:
     SignMu:
       fixed_value: 1
     Ad_3:
-      range: [1e2, 1e4]
-      prior_type: log
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]    
     Au_3:
-      range: [1e2, 1e4]
-      prior_type: log
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]    
     M2:
-      range: [1e2, 1e4]
-      prior_type: log
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]    
     TanBeta:
       range: [3.0, 70.0]
       prior_type: flat
     mHd2:
-      range: [1e4, 1e8]
-      prior_type: log    
+      prior_type: double_log_flat_join
+      ranges: [-1e8, -1e4, 1e4, 1e8]    
     mHu2:
-      range: [1e4, 1e8]
-      prior_type: log
+      prior_type: double_log_flat_join
+      ranges: [-1e8, -1e4, 1e4, 1e8]    
     mf2:
-      range: [1e4, 1e8]
-      prior_type: log
-
+      prior_type: double_log_flat_join
+      ranges: [0, 0, 1e4, 1e8]    
 
   LocalHalo:
     rho0: # Local dark matter density
-      fixed_value: .4 # GeV/cm^3
-      #range: [.2, .8]
-      #prior_type: flat
+      #fixed_value: .4 # GeV/cm^3
+      range: [.2, .8]
+      prior_type: flat
     vrot: # Local disk rotation speed
       fixed_value: 235 # km/s
     v0: # Maxwellian most-probable speed
@@ -85,6 +84,7 @@ Scanner:
       plugin: Diver
       like: LogLike
       NP: 5000
+      convthresh: 1e-3
       verbosity: 1
 
 ObsLikes:
@@ -492,6 +492,7 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4
-    debug: true
 
   default_output_path: "runs/MSSM7/"
+
+  debug: true

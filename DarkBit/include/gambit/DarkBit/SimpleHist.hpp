@@ -24,7 +24,7 @@
 
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/daFunk.hpp"
 
 
 namespace Gambit
@@ -98,7 +98,7 @@ namespace Gambit
 
     typedef std::map<str, std::map<str, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
     typedef std::map<str, int> stringIntMap;
-    typedef std::map<str, Funk::Funk> stringFunkMap;
+    typedef std::map<str, daFunk::Funk> stringFunkMap;
 
   }
 

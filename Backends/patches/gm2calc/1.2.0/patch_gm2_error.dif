@@ -1,0 +1,18 @@
+--- a/src/gm2_error.hpp	2016-06-21 01:02:57.000000000 +0200
++++ b/src/gm2_error.hpp	2016-07-03 18:14:26.895046545 +0200
+@@ -19,12 +19,14 @@
+ #ifndef GM2_ERROR_H
+ #define GM2_ERROR_H
+ 
++#include <string>
++
+ namespace gm2calc {
+ 
+ class Error {
+ public:
+    virtual ~Error() {}
+-   virtual std::string what() const = 0;
++   virtual std::string what() const { return "Empty error message."; }
+ };
+ 
+ /**

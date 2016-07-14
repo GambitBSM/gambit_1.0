@@ -469,7 +469,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline const Pythia8::DecayChannel& ParticleDataEntry::channel(int i) const
         {
-            return const_cast<Pythia8::Abstract_DecayChannel&>(get_BEptr()->channel__BOSS(i)).get_init_wref();
+            return const_cast<Pythia8::Abstract_DecayChannel&>(const_cast<const Abstract_ParticleDataEntry*>(get_BEptr())->channel__BOSS(i)).get_init_wref();
         }
         
         inline void ParticleDataEntry::rescaleBR(double newSumBR)

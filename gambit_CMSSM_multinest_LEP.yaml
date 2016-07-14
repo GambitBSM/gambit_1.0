@@ -64,7 +64,7 @@ Scanner:
         info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.live_info"
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 100
       output_file:  output
       like:  LogLike

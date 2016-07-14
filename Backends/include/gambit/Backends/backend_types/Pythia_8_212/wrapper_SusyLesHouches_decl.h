@@ -19,7 +19,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SusyLesHouches : public virtual WrapperBase
+        class SusyLesHouches : public WrapperBase
         {
                 // Member variables: 
             public:

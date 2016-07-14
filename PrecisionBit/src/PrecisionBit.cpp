@@ -651,7 +651,7 @@ namespace Gambit
       using namespace Pipes::lnL_gm2_chi2;
       double amu_bsm = 0.5*Dep::muon_gm2->central; 
       double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper,
-				       Dep::muon_gm2->lower); 
+               Dep::muon_gm2->lower); 
       /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
       double amu_sm  = 11659180.2e-10;
       double amu_sm_error = 4.9e-10;
@@ -661,9 +661,9 @@ namespace Gambit
       double amu_exp_error = 6.3e-10;
       double amu_theory = amu_sm + amu_bsm;
       double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
-				     + Gambit::Utils::sqr(amu_bsm_error) );
+             + Gambit::Utils::sqr(amu_bsm_error) );
       result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
-      					     amu_theory_err, amu_exp_error);
+                     amu_theory_err, amu_exp_error);
     }
 
 
@@ -675,116 +675,126 @@ namespace Gambit
       const SubSpectrum& mssm = spec.get_HE();
       
       gm2calc::MSSMNoFV_onshell model;
-
-      /// fill pole masses.
-      /// note: that the indices start from 0 in gm2calc,
-      /// gambit indices start from 1, hence the offsets here
-      model.get_physical().MSvmL = mssm.get(Par::Pole_Mass, "~nu", 2); // 1L
-      str msm1, msm2;
-      // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
-      // If we get a successful convergence to the pole mass scheme in the end it's OK  
-      const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
-      model.get_physical().MSm(0)  =  mssm.get(Par::Pole_Mass, msm1); // 1L
-      model.get_physical().MSm(1)  =  mssm.get(Par::Pole_Mass, msm2); // 1L
-      
-      model.get_physical().MChi(0) = mssm.get(Par::Pole_Mass, "~chi0", 1); // 1L
-      model.get_physical().MChi(1) =  mssm.get(Par::Pole_Mass, "~chi0", 2); // 1L
-      model.get_physical().MChi(2) = mssm.get(Par::Pole_Mass, "~chi0", 3); // 1L
-      model.get_physical().MChi(3) = mssm.get(Par::Pole_Mass, "~chi0", 4); // 1L
-      
-      model.get_physical().MCha(0) =  mssm.get(Par::Pole_Mass, "~chi+", 1); // 1L
-      model.get_physical().MCha(1) =  mssm.get(Par::Pole_Mass, "~chi+", 2); // 1L
-      model.get_physical().MAh(1)  = mssm.get(Par::Pole_Mass, "A0"); // 2L
-      
-      model.set_TB(mssm.get(Par::dimensionless,"tanbeta"));
-      model.set_Mu(mssm.get(Par::mass1, "Mu"));
-      model.set_MassB(mssm.get(Par::mass1, "M1"));
-      model.set_MassWB(mssm.get(Par::mass1, "M2"));
-      model.set_MassG(mssm.get(Par::mass1, "M3"));
-      for(int i = 1; i<=3; i++) {
-        for(int j = 1; j<=3; j++) {	
-          model.set_mq2(i-1,j-1, mssm.get(Par::mass2, "mq2", i, j)); 
-          model.set_ml2(i-1,j-1, mssm.get(Par::mass2, "ml2", i, j)); 
-          model.set_md2(i-1,j-1, mssm.get(Par::mass2, "md2", i, j)); 
-          model.set_mu2(i-1,j-1, mssm.get(Par::mass2, "mu2", i, j)); 
-          model.set_me2(i-1,j-1, mssm.get(Par::mass2, "me2", i, j));
-          double Au = 0.0, Ad = 0.0, Ae = 0.0;
-          if(mssm.get(Par::dimensionless, "Yu", i, j) > 1e-14){
-            Au = mssm.get(Par::mass1, "TYu", i, j)
-            / mssm.get(Par::dimensionless, "Yu", i, j);
+  
+      try
+      {
+        /// fill pole masses.
+        /// note: that the indices start from 0 in gm2calc,
+        /// gambit indices start from 1, hence the offsets here
+        model.get_physical().MSvmL = mssm.get(Par::Pole_Mass, "~nu", 2); // 1L
+        str msm1, msm2;
+        // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
+        // If we get a successful convergence to the pole mass scheme in the end it's OK  
+        const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
+        const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+        slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
+        model.get_physical().MSm(0)  =  mssm.get(Par::Pole_Mass, msm1); // 1L
+        model.get_physical().MSm(1)  =  mssm.get(Par::Pole_Mass, msm2); // 1L
+        
+        model.get_physical().MChi(0) = mssm.get(Par::Pole_Mass, "~chi0", 1); // 1L
+        model.get_physical().MChi(1) =  mssm.get(Par::Pole_Mass, "~chi0", 2); // 1L
+        model.get_physical().MChi(2) = mssm.get(Par::Pole_Mass, "~chi0", 3); // 1L
+        model.get_physical().MChi(3) = mssm.get(Par::Pole_Mass, "~chi0", 4); // 1L
+        
+        model.get_physical().MCha(0) =  mssm.get(Par::Pole_Mass, "~chi+", 1); // 1L
+        model.get_physical().MCha(1) =  mssm.get(Par::Pole_Mass, "~chi+", 2); // 1L
+        model.get_physical().MAh(1)  = mssm.get(Par::Pole_Mass, "A0"); // 2L
+        
+        model.set_TB(mssm.get(Par::dimensionless,"tanbeta"));
+        model.set_Mu(mssm.get(Par::mass1, "Mu"));
+        model.set_MassB(mssm.get(Par::mass1, "M1"));
+        model.set_MassWB(mssm.get(Par::mass1, "M2"));
+        model.set_MassG(mssm.get(Par::mass1, "M3"));
+        for(int i = 1; i<=3; i++) {
+          for(int j = 1; j<=3; j++) { 
+            model.set_mq2(i-1,j-1, mssm.get(Par::mass2, "mq2", i, j)); 
+            model.set_ml2(i-1,j-1, mssm.get(Par::mass2, "ml2", i, j)); 
+            model.set_md2(i-1,j-1, mssm.get(Par::mass2, "md2", i, j)); 
+            model.set_mu2(i-1,j-1, mssm.get(Par::mass2, "mu2", i, j)); 
+            model.set_me2(i-1,j-1, mssm.get(Par::mass2, "me2", i, j));
+            double Au = 0.0, Ad = 0.0, Ae = 0.0;
+            if(mssm.get(Par::dimensionless, "Yu", i, j) > 1e-14){
+              Au = mssm.get(Par::mass1, "TYu", i, j)
+              / mssm.get(Par::dimensionless, "Yu", i, j);
+            }
+            if(mssm.get(Par::dimensionless, "Ye", i, j) > 1e-14){
+              Ae = mssm.get(Par::mass1, "TYe", i, j)
+              / mssm.get(Par::dimensionless, "Ye", i, j);
+            }
+            if(mssm.get(Par::dimensionless, "Yd", i, j) > 1e-14){
+              Ad = mssm.get(Par::mass1, "TYd", i, j)
+              / mssm.get(Par::dimensionless, "Yd", i, j);
+            }
+       
+            model.set_Au(i-1, j-1, Au);
+            model.set_Ad(i-1, j-1, Ad);
+            model.set_Ae(i-1, j-1, Ae);
           }
-          if(mssm.get(Par::dimensionless, "Ye", i, j) > 1e-14){
-            Ae = mssm.get(Par::mass1, "TYe", i, j)
-            / mssm.get(Par::dimensionless, "Ye", i, j);
-          }
-          if(mssm.get(Par::dimensionless, "Yd", i, j) > 1e-14){
-            Ad = mssm.get(Par::mass1, "TYd", i, j)
-            / mssm.get(Par::dimensionless, "Yd", i, j);
-          }
-     
-          model.set_Au(i-1, j-1, Au);
-          model.set_Ad(i-1, j-1, Ad);
-          model.set_Ae(i-1, j-1, Ae);
         }
-      }
-      
-      const SMInputs& smin = spec.get_SMInputs();
+        
+        const SMInputs& smin = spec.get_SMInputs();
 
-      model.get_physical().MVZ =smin.mZ;
-      model.get_physical().MFb =smin.mBmB;
-      model.get_physical().MFt =smin.mT; 
-      model.get_physical().MFtau =smin.mTau; 
-      model.get_physical().MVWm =mssm.get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
-      model.get_physical().MFm =smin.mMu; 
-      //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
-      // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
-      model.set_g3(std::sqrt(4*M_PI*smin.alphaS));
-      // these are not currently used but may be in future updates so set them anyway 
-      model.get_physical().MFe =smin.mE; 
-      model.get_physical().MFd =smin.mD; //MSbar
-      model.get_physical().MFs =smin.mS; //MSbar
-      model.get_physical().MFu =smin.mU; //MSbar
-      model.get_physical().MFc =smin.mCmC; // MSbar
+        model.get_physical().MVZ =smin.mZ;
+        model.get_physical().MFb =smin.mBmB;
+        model.get_physical().MFt =smin.mT; 
+        model.get_physical().MFtau =smin.mTau; 
+        model.get_physical().MVWm =mssm.get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
+        model.get_physical().MFm =smin.mMu; 
+        //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
+        // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
+        model.set_g3(std::sqrt(4*M_PI*smin.alphaS));
+        // these are not currently used but may be in future updates so set them anyway 
+        model.get_physical().MFe =smin.mE; 
+        model.get_physical().MFd =smin.mD; //MSbar
+        model.get_physical().MFs =smin.mS; //MSbar
+        model.get_physical().MFu =smin.mU; //MSbar
+        model.get_physical().MFc =smin.mCmC; // MSbar
 
-      /// Use hardcoded values as reccommended by GM2Calc authours
-      /// unless the user really wants to change these
-      double alpha_MZ = runOptions->getValueOrDef
-	<double>(0.00729735, "GM2Calc_extra_alpha_e_MZ");
-      double alpha_thompson = runOptions->getValueOrDef
-	<double>(0.00775531, "GM2Calc_extra_alpha_e_thompson_limit");
-      
-      if (alpha_MZ > std::numeric_limits<double>::epsilon())
-	model.set_alpha_MZ(alpha_MZ);
+        /// Use hardcoded values as reccommended by GM2Calc authours
+        /// unless the user really wants to change these
+        double alpha_MZ = runOptions->getValueOrDef
+        <double>(0.00729735, "GM2Calc_extra_alpha_e_MZ");
+        double alpha_thompson = runOptions->getValueOrDef
+        <double>(0.00775531, "GM2Calc_extra_alpha_e_thompson_limit");
+        
+        if (alpha_MZ > std::numeric_limits<double>::epsilon())
+          model.set_alpha_MZ(alpha_MZ);
 
-      if (alpha_thompson > std::numeric_limits<double>::epsilon())
-	model.set_alpha_thompson(alpha_thompson);
-      
-      
-      model.set_scale(mssm.GetScale());                   // 2L
-     
-      /// convert DR-bar parameters to on-shell
-      model.convert_to_onshell();
+        if (alpha_thompson > std::numeric_limits<double>::epsilon())
+          model.set_alpha_thompson(alpha_thompson);
+        
+        model.set_scale(mssm.GetScale());                   // 2L
+       
+        /// convert DR-bar parameters to on-shell
+        model.convert_to_onshell();
 
-      /// need to hook up errors properly
-      /// check for problems 
-      if( model.get_problems().have_problem() == true) {
+        /// need to hook up errors properly
+        /// check for problems 
+        if( model.get_problems().have_problem() == true) {
+          std::ostringstream err;
+          err << "gm2calc routine convert_to_onshell raised error: "
+              << model.get_problems().get_problems() << ".";
+          invalid_point().raise(err.str());
+        }
+        /// check for warnings
+        if( model.get_problems().have_warning() == true) {
+          std::ostringstream err;
+          err << "gm2calc routine convert_to_onshell raised warning: "
+              << model.get_problems().get_warnings() << ".";
+          logger() << err.str() << EOM;
+          // Maybe you would argue that we want to invalidate such points, but the DRbar-->OS
+          // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
+          PrecisionBit_warning().raise(LOCAL_INFO, err.str());          
+        }
+        
+      } 
+      catch (const gm2calc_1_2_0::gm2calc::Abstract_Error& e) 
+      {
         std::ostringstream err;
-        err << "gm2calc routine convert_to_onshell raised error: "
-            << model.get_problems().get_problems() << ".";
+        err << "gm2calc routine convert_to_onshell raised error: " 
+        << e.what() << ".";
         invalid_point().raise(err.str());
-      }
-      /// check for warnings
-      if( model.get_problems().have_warning() == true) {
-        std::ostringstream err;
-        err << "gm2calc routine convert_to_onshell raised warning: "
-            << model.get_problems().get_warnings() << ".";
-        logger() << err.str() << EOM;
-        // maybe we want to invalidate such points, but the DRbar-->OS
-        // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
-        //invalid_point().raise(err.str());	
-      }
+      }  
 
       double error = BEreq::calculate_uncertainty_amu_2loop(model);
       

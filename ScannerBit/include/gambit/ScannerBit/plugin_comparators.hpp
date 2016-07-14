@@ -52,7 +52,7 @@ namespace Gambit
                         class VersionCompareBottom : public VersionCompareBase
                         {
                         private:
-                                static const unsigned char GREATER = 0x01;
+                                constexpr static unsigned char GREATER = 0x01;
                                 static const unsigned char EQUAL = 0x02;
                                 static const unsigned char LESS = 0x04;
                                 static const unsigned char NEG = 0x08;

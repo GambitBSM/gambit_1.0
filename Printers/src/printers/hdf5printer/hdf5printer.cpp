@@ -706,7 +706,7 @@ namespace Gambit
         // printer
         location_id = primary_printer->get_location();
         RA_location_id = primary_printer->get_RA_location();
-        startpos = primary_printer->get_startpos();
+        //startpos = primary_printer->get_startpos(); // OBSOLETE
       }
       // Now that communicator is set up, get its properties.
 #ifdef WITH_MPI
@@ -1021,7 +1021,7 @@ namespace Gambit
 
       // Set the starting position for new output
       //startpos = dsetdata.lengths[0]; // don't overwrite final is_valid==false entries
-      startpos = lastvalid+1;             // do overwrite final is_valid==false entries
+      //startpos = lastvalid+1; //OBSOLETE         // do overwrite final is_valid==false entries
 
       // Checks finished, close file and group
       HDF5::closeGroup(group_id);

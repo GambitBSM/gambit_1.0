@@ -27,6 +27,7 @@
 
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit 
 {
@@ -431,7 +432,9 @@ namespace Gambit
                 std::string &priorname = *priorname_it;
                 if (options_in.hasKey(priorname, "parameters") && options_in.hasKey(priorname, "prior_type"))
                 {
-                    auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
+                    //auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
+                    
+                    auto params = Gambit::Scanner::get_yaml_vector<std::string>(options_in.getNode(priorname, "parameters"));
                     
                     for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                     {

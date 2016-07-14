@@ -47,12 +47,24 @@ Parameters:
 
   # Parameter point test
   CMSSM:
-    A0: -1758.13
-    M0: 1381.96
-    M12: 143.026
+    M0:
+      range: [50, 1e4]
+      prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      range: [-1e4, 1e4]
+      flat_start: -1e2
+      flat_end: 1e2
+      prior_type: double_log_flat_join
+    TanBeta:
+      range: [3.0, 70]
+      prior_type: flat
     SignMu: 1
     TanBeta: 44.8668
   LocalHalo:
+<<<<<<< HEAD
     rho0: 0.4
     v0: 235
     vearth: 29.78
@@ -94,6 +106,20 @@ Parameters:
 
 
 
+=======
+    rho0: # Local dark matter density
+      #fixed_value: .4 # GeV/cm^3
+      range: [.2, .8]
+      prior_type: flat
+    vrot: # Local disk rotation speed
+      fixed_value: 235 # km/s
+    v0: # Maxwellian most-probable speed
+      fixed_value: 235 # km/s
+    vesc: # Local galactic escape speed
+      fixed_value: 550 # km/s
+    vearth: # Keplerian velocity of the earth around the sun
+      fixed_value: 29.78 # km/s
+>>>>>>> master
 
 Priors:
 
@@ -117,11 +143,13 @@ Scanner:
       like:  LogLike
       nlive: 4000
       tol: 0.5
+      updInt: 1
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 5000
+      NP: 7200
+      convthresh: 1e-3
       verbosity: 1
 
 ObsLikes:
@@ -530,7 +558,9 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e4
-    debug: true
+    model_invalid_for_lnlike_below: -1e6
+    model_invalid_for_lnlike_below_alt: -1e5
 
   default_output_path: "runs/CMSSM/"
+
+  debug: true

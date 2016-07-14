@@ -40,13 +40,13 @@ using Gambit::Printers::get_point_id;                                           
                                                                                                                 \
 inline std::vector<std::string> &get_keys() {return get_input_value<std::vector<std::string>>(0);}              \
 inline void set_dimension(unsigned int val) {get_input_value<unsigned int>(1) = val;}                           \
-inline void print_parameters(const std::unordered_map<std::string, double> &key_map)                            \
+inline void print_parameters(std::unordered_map<std::string, double> &key_map)                                  \
 {                                                                                                               \
     using Gambit::Printers::get_main_param_id;                                                                  \
     Gambit::Scanner::printer *printer = get_printer().get_stream();                                             \
     for (auto it = get_keys().begin(), end = get_keys().end(); it != end; ++it)                                 \
     {                                                                                                           \
-        printer->print(key_map.at(*it), *it, get_main_param_id(*it), printer->getRank(), get_point_id());       \
+        printer->print(key_map[*it], *it, get_main_param_id(*it), printer->getRank(), get_point_id());          \
     }                                                                                                           \
 }                                                                                                               \
 
