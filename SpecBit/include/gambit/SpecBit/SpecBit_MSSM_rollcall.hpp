@@ -42,7 +42,7 @@
 
     /// SPheno spectrum functions, parallel to the FS ones
     // CMSSM
-    #define FUNCTION get_SPheno_CMSSM_spectrum
+    #define FUNCTION get_CMSSM_spectrum_SPheno
     START_FUNCTION(Spectrum)
     ALLOW_MODELS(CMSSM)
     DEPENDENCY(SMINPUTS, SMInputs)
@@ -51,7 +51,7 @@
     #undef FUNCTION
 
     // MGUT scale MSSM
-    #define FUNCTION get_SPheno_MSSMatMGUT_spectrum
+    #define FUNCTION get_MSSMatMGUT_spectrum_SPheno
     START_FUNCTION(Spectrum)
     ALLOW_MODELS(MSSM63atMGUT)
     DEPENDENCY(SMINPUTS, SMInputs)
@@ -60,7 +60,7 @@
     #undef FUNCTION
 
     // Q scale MSSM
-    #define FUNCTION get_SPheno_MSSMatQ_spectrum
+    #define FUNCTION get_MSSMatQ_spectrum_SPheno
     START_FUNCTION(Spectrum)
     ALLOW_MODELS(MSSM63atQ)
     DEPENDENCY(SMINPUTS, SMInputs)

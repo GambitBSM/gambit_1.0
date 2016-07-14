@@ -67,7 +67,7 @@ ObsLikes:
 Rules:
   - capabilty:    unimproved_MSSM_spectrum
     type:         Spectrum
-    function:     get_SPheno_MSSMatQ_spectrum
+    function:     get_MSSMatQ_spectrum_SPheno
   - capability:   SPheno_MSSMspectrum
     type:         void
     function:     run_SPheno

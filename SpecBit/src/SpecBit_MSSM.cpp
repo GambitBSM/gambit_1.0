@@ -425,9 +425,9 @@ namespace Gambit
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
-    void get_SPheno_CMSSM_spectrum (Spectrum& result)
+    void get_CMSSM_spectrum_SPheno (Spectrum& result)
     {
-      namespace myPipe = Pipes::get_SPheno_CMSSM_spectrum;
+      namespace myPipe = Pipes::get_CMSSM_spectrum_SPheno;
       const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
 
       Spectrum spectrum;
@@ -438,9 +438,9 @@ namespace Gambit
 
     }
 
-    void get_SPheno_MSSMatMGUT_spectrum (Spectrum& result)
+    void get_MSSMatMGUT_spectrum_SPheno (Spectrum& result)
     {
-      namespace myPipe = Pipes::get_SPheno_MSSMatMGUT_spectrum;
+      namespace myPipe = Pipes::get_MSSMatMGUT_spectrum_SPheno;
       const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
 
       Spectrum spectrum;
@@ -451,9 +451,9 @@ namespace Gambit
 
     }
 
-    void get_SPheno_MSSMatQ_spectrum (Spectrum& result)
+    void get_MSSMatQ_spectrum_SPheno (Spectrum& result)
     {
-      namespace myPipe = Pipes::get_SPheno_MSSMatQ_spectrum;
+      namespace myPipe = Pipes::get_MSSMatQ_spectrum_SPheno;
       const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
 
       Spectrum spectrum;

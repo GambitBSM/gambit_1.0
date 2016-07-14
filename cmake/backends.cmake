@@ -540,6 +540,7 @@ ExternalProject_Add(gm2calc
   DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2calc_makefile.dif
         COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2calc_module.dif
+        COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2_error.dif
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""

@@ -32,6 +32,26 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    {
       class MSSMNoFV_onshell_soft_parameters;
    }
+   namespace gm2calc
+   {
+      class Error;
+   }
+   namespace gm2calc
+   {
+      class ESetupError;
+   }
+   namespace gm2calc
+   {
+      class EInvalidInput;
+   }
+   namespace gm2calc
+   {
+      class EPhysicalProblem;
+   }
+   namespace gm2calc
+   {
+      class EReadError;
+   }
    
    
 }

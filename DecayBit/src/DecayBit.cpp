@@ -2673,12 +2673,12 @@ namespace Gambit
     /// @}
 
     // Read and interpolate chi2 table
-    Funk::Funk get_Higgs_invWidth_chi2(std::string filename)
+    daFunk::Funk get_Higgs_invWidth_chi2(std::string filename)
     {
       ASCIItableReader table(filename);
       std::vector<std::string> colnames = initVector<std::string>("BR", "Delta_chi2");
       table.setcolnames(colnames);
-      return Funk::interp("BR", table["BR"], table["Delta_chi2"]);
+      return daFunk::interp("BR", table["BR"], table["Delta_chi2"]);
     }
 
     // Implemented: Belanger et al. 2013, arXiv:1306.2941
@@ -2686,7 +2686,7 @@ namespace Gambit
     {
       using namespace Pipes::lnL_Higgs_invWidth_SMonly;
       double BF = Dep::Higgs_decay_rates->BF("S","S");
-      static Funk::Funk chi2 = get_Higgs_invWidth_chi2("Elements/data/GammaInv_SM_higgs_DeltaChi2.dat");
+      static daFunk::Funk chi2 = get_Higgs_invWidth_chi2("Elements/data/GammaInv_SM_higgs_DeltaChi2.dat");
       result = (BF > 0.0) ? -chi2->bind("BR")->eval(BF)*0.5 : -0.0;
     }
 

@@ -36,6 +36,26 @@ namespace Gambit
          {
             typedef ::gm2calc_1_2_0::gm2calc::MSSMNoFV_onshell_soft_parameters MSSMNoFV_onshell_soft_parameters;
          }
+         namespace gm2calc
+         {
+            typedef ::gm2calc_1_2_0::gm2calc::Error Error;
+         }
+         namespace gm2calc
+         {
+            typedef ::gm2calc_1_2_0::gm2calc::ESetupError ESetupError;
+         }
+         namespace gm2calc
+         {
+            typedef ::gm2calc_1_2_0::gm2calc::EInvalidInput EInvalidInput;
+         }
+         namespace gm2calc
+         {
+            typedef ::gm2calc_1_2_0::gm2calc::EPhysicalProblem EPhysicalProblem;
+         }
+         namespace gm2calc
+         {
+            typedef ::gm2calc_1_2_0::gm2calc::EReadError EReadError;
+         }
       }
    }
 }
@@ -45,7 +65,7 @@ BE_FUNCTION(calculate_amu_1loop, double, (const gm2calc_1_2_0::gm2calc::MSSMNoFV
 BE_FUNCTION(calculate_amu_1loop_non_tan_beta_resummed, double, (const gm2calc_1_2_0::gm2calc::MSSMNoFV_onshell&), "calculate_amu_1loop_non_tan_beta_resummed__BOSS_11", "calculate_amu_1loop_non_tan_beta_resummed")
 BE_FUNCTION(calculate_amu_2loop, double, (const gm2calc_1_2_0::gm2calc::MSSMNoFV_onshell&), "calculate_amu_2loop__BOSS_12", "calculate_amu_2loop")
 BE_FUNCTION(calculate_amu_2loop_non_tan_beta_resummed, double, (const gm2calc_1_2_0::gm2calc::MSSMNoFV_onshell&), "calculate_amu_2loop_non_tan_beta_resummed__BOSS_13", "calculate_amu_2loop_non_tan_beta_resummed")
-BE_FUNCTION(calculate_uncertainty_amu_2loop, double, (const gm2calc_1_2_0::gm2calc::MSSMNoFV_onshell&), "calculate_uncertainty_amu_2loop__BOSS_14", "calculate_uncertainty_amu_2loop")
+BE_FUNCTION(calculate_uncertainty_amu_2loop, double, (const gm2calc_1_2_0::gm2calc::MSSMNoFV_onshell&), "calculate_uncertainty_amu_2loop__BOSS_19", "calculate_uncertainty_amu_2loop")
 // Variables
 
 // Initialisation function (dependencies)

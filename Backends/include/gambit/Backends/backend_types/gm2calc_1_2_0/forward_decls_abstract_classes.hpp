@@ -20,6 +20,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
    
    
+   namespace gm2calc
+   {
+      class Abstract_Error;
+      class Abstract_ESetupError;
+      class Abstract_EInvalidInput;
+      class Abstract_EPhysicalProblem;
+      class Abstract_EReadError;
+   }
+   
    
    
    

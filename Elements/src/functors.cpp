@@ -1447,11 +1447,9 @@ namespace Gambit
 
     }
 
-    /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
-    void module_functor_common::notifyOfModel(str model)
+    /// Construct the list of known models only if it doesn't yet exist
+    void module_functor_common::fill_activeModelFlags()
     {
-      cout << this->origin() << "::" << this->name() << endl;
-      // Construct the list of known models only if it doesn't yet exist
       if (activeModelFlags.empty())
       {
         // First get all the explicitly allowed models.
@@ -1463,6 +1461,13 @@ namespace Gambit
         for (auto it = myModelConditionalDependencies.begin(); it != myModelConditionalDependencies.end(); ++it) { activeModelFlags[it->first] = false; }
         for (auto it = myModelConditionalBackendReqs.begin();  it != myModelConditionalBackendReqs.end();  ++it) { activeModelFlags[it->first] = false; }
       }
+    }
+
+    /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
+    void module_functor_common::notifyOfModel(str model)
+    {
+      // If activeModels hasn't been populated yet, make sure it is.
+      fill_activeModelFlags();
 
       // Now activate the flags for the models that are being used.
       for (auto it = activeModelFlags.begin(); it != activeModelFlags.end(); ++it)
@@ -1626,6 +1631,7 @@ namespace Gambit
         }
         boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
+        fill_activeModelFlags();                     // If activeModels hasn't been populated yet, make sure it is.
         init_memory();                               // Init memory if this is the first run through.
         if (needs_recalculating[thread_num])
         {

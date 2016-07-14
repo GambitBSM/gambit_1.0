@@ -548,6 +548,9 @@ namespace Gambit
       /// Initialise the memory of this functor.
       virtual void init_memory();
 
+      /// Construct the list of known models only if it doesn't yet exist
+      void fill_activeModelFlags();
+
       /// Beginning and end timing points
       std::chrono::time_point<std::chrono::system_clock> *start, *end;
 

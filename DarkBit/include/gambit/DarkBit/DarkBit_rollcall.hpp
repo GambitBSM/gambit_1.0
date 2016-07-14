@@ -52,15 +52,6 @@
 #define MODULE DarkBit
 START_MODULE
 
-  #define CAPABILITY MSSM_spectrum
-  START_CAPABILITY
-    #define FUNCTION get_MSSM_spectrum_from_file
-      START_FUNCTION(SLHAstruct)
-      ALLOW_MODELS(MSSM25atQ)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
   // Backend point initialization --------------------------
 
   // Function to initialize DarkSUSY to a specific model point.
@@ -197,9 +188,7 @@ START_MODULE
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
       BACKEND_REQ(oh2, (MicrOmegas, MicrOmegasSingletDM), double, (double*,int,double))
-      // FIXME: Is model CMSSM here really necessary?
-      // FIXME: Is model MSSM30atQ enough?
-      ALLOW_MODELS(CMSSM,MSSM30atQ,SingletDM)  
+      ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -305,7 +294,7 @@ START_MODULE
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
-
+  /*
   // Function for printing test result of cascade decays
   #define CAPABILITY cascadeMC_PrintResult
   START_CAPABILITY
@@ -315,6 +304,7 @@ START_MODULE
       DEPENDENCY(cascadeMC_EventCount, DarkBit::stringIntMap)
     #undef FUNCTION
   #undef CAPABILITY
+  */
 
   /*
   // Process catalog for testing purposes
@@ -351,7 +341,7 @@ START_MODULE
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_General
-      START_FUNCTION(Funk::Funk)
+      START_FUNCTION(daFunk::Funk)
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)
       DEPENDENCY(cascadeMC_gammaSpectra, DarkBit::stringFunkMap)
@@ -359,7 +349,7 @@ START_MODULE
     #undef FUNCTION
   /*
     #define FUNCTION GA_AnnYield_DarkSUSY
-      START_FUNCTION(Funk::Funk)
+      START_FUNCTION(daFunk::Funk)
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, std::string)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
@@ -398,14 +388,14 @@ START_MODULE
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
-    #define FUNCTION lnL_FermiLATdwarfsSimple
-      START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
-      DEPENDENCY(RD_fraction, double)
-    #undef FUNCTION
+//    #define FUNCTION lnL_FermiLATdwarfsSimple
+//      START_FUNCTION(double)
+//      DEPENDENCY(GA_AnnYield, daFunk::Funk)
+//      DEPENDENCY(RD_fraction, double)
+//    #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -415,7 +405,27 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
+      DEPENDENCY(RD_fraction, double)
+      BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_CTAGC
+  START_CAPABILITY
+    #define FUNCTION lnL_CTAGC_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
+      DEPENDENCY(RD_fraction, double)
+      BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_HESSGC
+  START_CAPABILITY
+    #define FUNCTION lnL_HESSGC_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -425,7 +435,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION dump_GammaSpectrum
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(GA_AnnYield, daFunk::Funk)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -535,6 +545,14 @@ START_MODULE
     #define FUNCTION lnL_sigmas_sigmal
       START_FUNCTION(double)
       ALLOW_MODEL(nuclear_params_sigmas_sigmal)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_SD_nuclear_parameters
+  START_CAPABILITY
+    #define FUNCTION lnL_deltaq
+      START_FUNCTION(double)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -924,7 +942,7 @@ START_MODULE
     START_FUNCTION(int)
     DEPENDENCY(DD_couplings, DM_nucleon_couplings)
     DEPENDENCY(RD_oh2, double)
-    DEPENDENCY(GA_AnnYield, Funk::Funk)
+    DEPENDENCY(GA_AnnYield, daFunk::Funk)
     DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
     DEPENDENCY(DarkMatter_ID, std::string)
     #undef FUNCTION
@@ -949,13 +967,20 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkMatter_ID_SingletDM
     START_FUNCTION(std::string)
-    ALLOW_MODELS(SingletDM)
+    ALLOW_MODELS(SingletDM, SingletDM_running)
     #undef FUNCTION
-    #define FUNCTION DarkMatter_ID_MSSM30atQ
+    #define FUNCTION DarkMatter_ID_MSSM
     START_FUNCTION(std::string)
-    ALLOW_MODELS(MSSM30atQ, CMSSM)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY GalacticHalo
+  START_CAPABILITY
+    #define FUNCTION GalacticHalo
+    START_FUNCTION(daFunk::Funk)
+    ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
+    #undef FUNCTION
+  #undef CAPABILITY
 #undef MODULE
 #endif /* defined(__DarkBit_rollcall_hpp__) */

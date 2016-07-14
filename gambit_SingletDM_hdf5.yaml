@@ -5,17 +5,17 @@
 ###################################
 
 Parameters:
-    StandardModel_SLHA2: !import StandardModel_SLHA2_SingletDM_scan.yaml
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
       mH:
-            #fixed_value: 125.7
-            range: [124.9, 126.5] # 2-sigma range PDG 2015
-            prior_type: flat
+            fixed_value: 125.7
+            #range: [124.9, 126.5] # 2-sigma range PDG 2015
+            #prior_type: flat
 
     SingletDM:
         mS:
-            range: [45., 10000.]
+            range: [45., 1000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
@@ -60,12 +60,12 @@ Parameters:
 
     nuclear_params_sigmas_sigmal:
       sigmas:
-        #fixed_value: 42.0 # From MicrOmegas?
-        range: [27.0, 59.0] # 2 sigma range from Cline et. al.
+        fixed_value: 42.0 # From MicrOmegas?
+        #range: [27.0, 59.0] # 2 sigma range from Cline et. al.
         prior_type: flat
       sigmal:
-        #fixed_value: 34.0 # From MicrOmegas?
-        range: [40.0, 76.0] # 2 sigma range from Cline et. al.
+        fixed_value: 34.0 # From MicrOmegas?
+        #range: [40.0, 76.0] # 2 sigma range from Cline et. al.
         prior_type: flat
       # proton spin content
       deltad:
@@ -77,8 +77,8 @@ Parameters:
 
     LocalHalo:
       rho0: # Local dark matter density
-        #fixed_value: .4 # GeV/cm^3
-        range: [.2, .8]
+        fixed_value: .4 # GeV/cm^3
+        #range: [.2, .8]
         prior_type: flat
       vrot: # Local disk rotation speed
         fixed_value: 235 # km/s
@@ -115,8 +115,8 @@ Printer:
   options:
     # name of output file
     output_file: "gambit_output.hdf5"
-    group: "/sing/let"
-    delete_file_on_restart: true
+    group: "/singlet"
+    delete_file_if_exists: true
 
 
 ##############################
@@ -131,7 +131,7 @@ Scanner:
       plugin: square_grid
       version: ">=1.0"
       like: LogLike
-      grid_pts: 1 #NxN grid
+      grid_pts: 2 #NxN grid
 
     multinest:
       plugin: MultiNest

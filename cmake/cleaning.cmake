@@ -72,7 +72,7 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
 
-# Ensure that disclean cleans the backends (the entry for each backend will be added in backends.cmake)
+# Ensure that distclean cleans the backends (the entry for each backend will be added in backends.cmake)
 add_custom_target(clean-backends)
 add_dependencies(distclean clean-backends)
 
@@ -108,4 +108,4 @@ add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_dire
 add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(nuke-backends DEPENDS clean-backend-download clean-backend-install) 
 add_custom_target(nuke-scanners DEPENDS clean-scanner-download clean-scanner-install) 
-add_custom_target(nuke-all distclean DEPENDS nuke-backends nuke-scanners) 
+add_custom_target(nuke-all DEPENDS distclean nuke-backends nuke-scanners) 

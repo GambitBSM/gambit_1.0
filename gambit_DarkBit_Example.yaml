@@ -82,7 +82,7 @@ Scanner:
      tol: 0.0001
 
     #random:
-    #  plugin: random_sampler
+    #  plugin: random
     #  point_number: 1
     #  output_file:  output
     #  like:  Likelihood

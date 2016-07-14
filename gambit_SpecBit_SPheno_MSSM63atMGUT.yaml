@@ -102,7 +102,7 @@ ObsLikes:
 Rules:
   - capability:   unimproved_MSSM_spectrum
     type:         Spectrum
-    function:     get_SPheno_MSSMatMGUT_spectrum
+    function:     get_MSSMatMGUT_spectrum_SPheno
   - capability:   SPheno_MSSMspectrum
     type:         void
     function:     run_SPheno

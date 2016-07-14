@@ -97,6 +97,7 @@ Scanner:
       like:  LogLike
       nlive: 4000
       tol: 0.5
+      updInt: 1
 
     de:
       plugin: Diver
@@ -511,7 +512,8 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e4
+    model_invalid_for_lnlike_below: -1e6
+    model_invalid_for_lnlike_below_alt: -1e5
 
   default_output_path: "runs/CMSSM/"
 

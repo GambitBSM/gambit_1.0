@@ -1372,83 +1372,104 @@ BE_INI_FUNCTION
     SetRGEScale(scale);
 
     // 3
-    *External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
-    *External_Higgs = runOptions->getValueOrDef<Flogical>(false, "External_Higgs");
+    // GAMBIT: no need for external spectrum options
+    //*External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
+    //*External_Higgs = runOptions->getValueOrDef<Flogical>(false, "External_Higgs");
 
     // 4
-    // TODO: private variable, cannot import
+    // GAMBIT: private variable, cannot import
     //*Use_Flavour_States = runOptions->getValueOrDef<Flogical>(false, "Use_Flavour_States");
 
     // 5
-    *FermionMassResummation = runOptions->getValueOrDef<Flogical>(true, "FermionMassResummation");
+    // GAMBIT: not covered
+    //*FermionMassResummation = runOptions->getValueOrDef<Flogical>(true, "FermionMassResummation");
 
     // 6
-    *Ynu_at_MR3 = runOptions->getValueOrDef<Flogical>(false, "Ynu_at_MR3");
-    *Fixed_Nu_Yukawas = !runOptions->getValueOrDef<Flogical>(true, "Fixed_Nu_Yukawas");
+    // GAMBIT: not covered
+    //*Ynu_at_MR3 = runOptions->getValueOrDef<Flogical>(false, "Ynu_at_MR3");
+    //*Fixed_Nu_Yukawas = !runOptions->getValueOrDef<Flogical>(true, "Fixed_Nu_Yukawas");
 
     // 7
-    *Only_1loop_Higgsmass = runOptions->getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
+    // GAMBIT: not covered
+    //*Only_1loop_Higgsmass = runOptions->getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
 
     // 8, Calculates Masses for extra scales if required
-    *Calc_Mass = runOptions->getValueOrDef<Flogical>(false, "Calc_Mass");
+    // GAMBIT: not covered
+    //*Calc_Mass = runOptions->getValueOrDef<Flogical>(false, "Calc_Mass");
 
     // 9, Use old version of BoundaryEW
-    *UseNewBoundaryEW = runOptions->getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
+    // GAMBIT: not covered
+    //*UseNewBoundaryEW = runOptions->getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
 
     // 10, use old version to calculate scale
-    *UseNewScale = runOptions->getValueOrDef<Flogical>(true, "UseNewScale");
+    // GAMBIT: not covered
+    //*UseNewScale = runOptions->getValueOrDef<Flogical>(true, "UseNewScale");
 
     // 11, whether to calculate branching ratios or not
-    *L_BR = runOptions->getValueOrDef<Flogical>(false, "L_BR");
+    // TODO: Branching ratios, not covered yet
+    //*L_BR = runOptions->getValueOrDef<Flogical>(false, "L_BR");
 
     // 12, minimal value such that a branching ratio is written out
-    Freal8 BrMin = runOptions->getValueOrDef<Freal8>(0.0, "BRMin");
+    // TODO: Branching ratios, not covered yet
+    /*Freal8 BrMin = runOptions->getValueOrDef<Freal8>(0.0, "BRMin");
     if(BrMin > 0.0)
       SetWriteMinBr(BrMin);
+    */
 
     // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
     // TODO: private variable, cannot import
     //*BR_Higgs_with_offshell_V = runOptions->getValueOrDef<Flogical>(false, "BR_Higgs_with_offshell_V");
 
     // 21, whether to calculate cross sections or not
-    *L_CS = runOptions->getValueOrDef<Flogical>(false, "L_CS");
+    // TODO: Cross sections, not covered yet
+    //*L_CS = runOptions->getValueOrDef<Flogical>(false, "L_CS");
 
     // 22, CMS energy
     // TODO: Perhaps there is the option of setting more than one Ecms
-    static  int p_max = 100;
+    // TODO: Cross sections, not covered yet 
+    /*static  int p_max = 100;
     static Finteger p_act = 0;
     p_act ++;
     if(p_act <= p_max)
       (*Ecms)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Ecms");
     else
       backend_error().raise(LOCAL_INFO, "The number of required points for the calculation of cross sections exceeds the maximum");
+    */
 
     // 23, polarisation of incoming e- beam
-    if(p_act <= p_max)
+    // TODO: Cross sections, not covered yet
+    /*if(p_act <= p_max)
       (*Pm)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pm");
     if((*Pm)(p_act) > 1)
     {
       backend_error().raise(LOCAL_INFO, "e- beam polarisation has to be between -1 and 1");
       (*Pm)(p_act) = 0;
     }
+    */
 
     // 24, polarisation of incoming e+ beam
-    if(p_act <= p_max)
+    // TODO: Cross sections, not covered yet
+    /*if(p_act <= p_max)
       (*Pp)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pp");
     if((*Pp)(p_act) > 1)
     {
       backend_error().raise(LOCAL_INFO, "e+ beam polarisation has to be between -1 and 1");
       (*Pp)(p_act) = 0;
     }
+    */
 
     // 25, caluclate initial state radiation
-    if(p_act <= p_max)
+    // TODO: Cross sections, not covered yet
+    /*if(p_act <= p_max)
       (*ISR)(p_act) = runOptions->getValueOrDef<Flogical>(false, "ISR");
+    */
 
     // 26, minimal value such that a cross section is written out
-    Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
+    // TODO: Cross sections, not covered yet
+    /*Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
     if(SigMin > 0.0)
       SetWriteMinSig(SigMin);
+    */
 
     // 31, setting a fixed GUT scale
     Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
@@ -1467,31 +1488,32 @@ BE_INI_FUNCTION
     *n_run = runOptions->getValueOrDef<Finteger>(40, "n_run");
 
     // 36, write out debug information
-    *WriteOut = runOptions->getValueOrDef<Flogical>(false, "WriteOut");
+    // GAMBIT: no write out, all debug info is handled by GAMBIT
+    //*WriteOut = runOptions->getValueOrDef<Flogical>(false, "WriteOut");
 
     // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
-    Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
+    // GAMBIT: not covered
+    /*Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
     if(YukawaScheme > 0)
       SetYukawaScheme(YukawaScheme);   
-    
+    */
+
     // 38, set looplevel of RGEs
-    *TwoLoopRGE = runOptions->getValueOrDef<Flogical>(false, "TwoLoopRGE");
+    *TwoLoopRGE = runOptions->getValueOrDef<Flogical>(true, "TwoLoopRGE");
 
     // 39, write additional SLHA1 file
     // GABMIT: Always false, no file output
     *Write_SLHA1 = false;
 
     // 40, alpha(0)
-    // TODO: default
-    *Alpha = 1.0 / runOptions->getValueOrDef<Freal8>(1, "Alpha");
+    Freal8 alpha = 1.0/137.035999074;
+    *Alpha = 1.0 / runOptions->getValueOrDef<Freal8>(alpha,"Alpha");
 
     // 41, Z-boson width
-    // TODO: default
-    *gamZ = runOptions->getValueOrDef<Freal8>(0, "gamZ");
+    *gamZ = runOptions->getValueOrDef<Freal8>(2.49,"gamZ");
 
     // 42, W-boson width
-    // TODO: default
-    *gamW = runOptions->getValueOrDef<Freal8>(0, "gamW");
+    *gamW = runOptions->getValueOrDef<Freal8>(2.06,"gamW");
 
     // 80, exit for sure with non-zero value if problem occurs
     *Non_Zero_Exit = runOptions->getValueOrDef<Flogical>(false, "Non_Zero_Exit");
