@@ -442,7 +442,6 @@ namespace Gambit {
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 19, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 1.7841, 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 1.7841, 50000.);
-        // FIXME: Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 24, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 175., 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);        

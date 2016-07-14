@@ -43,7 +43,6 @@ After internal paper review started:
 - Start adding descriptions to the capability database [CW, PS, JE, TB, JC]
 - Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
 - Update valid energy ranges in SimYieldTables (GamYields.cpp) [JC]
-- Check t tbar final single states in GamYields.cpp [CW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
 - Cascade code [CW]
   - Add genRateMisc to cascade code
@@ -82,6 +81,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Check t tbar final single states in GamYields.cpp [CW]
 - More details on FCMC:DecayTable object in paper [CW]
 - Figure out 175 GeV complaints of DS (CMSSM_ttbar_problem.yaml) [CW]
 - Fix diskless initialization problems with DD couplings [JE/JC/CW]
