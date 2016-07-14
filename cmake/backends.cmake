@@ -521,7 +521,7 @@ add_extra_targets(spheno ${spheno_dir} ${backend_download}/${spheno_dl} clean)
 
 
 # gm2calc
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
 set(gm2calc_ver "1.2.0")
 set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/${gm2calc_ver}")
 set(gm2calc_patch "${PROJECT_SOURCE_DIR}/Backends/patches/gm2calc/${gm2calc_ver}")

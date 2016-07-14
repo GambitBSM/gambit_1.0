@@ -80,11 +80,7 @@ Scanner:
     twalk:
       plugin: twalk
       like: LogLike
-<<<<<<< HEAD
-      tolerance: 1.001
-=======
       tolerance: 1.003
->>>>>>> master
       #chain_number: 20
       projection_dimension: 4
         
