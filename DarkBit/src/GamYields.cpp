@@ -395,6 +395,8 @@ namespace Gambit {
         int flag = 0;      // some flag
         int yieldk = 152;  // gamma ray yield
         daFunk::Funk dNdE;
+        daFunk::Funk dNdE_1;
+        daFunk::Funk dNdE_2;
 
         using DarkBit_utils::str_flav_to_mass;
         
@@ -463,45 +465,40 @@ namespace Gambit {
         // two body final state kinematics
         */
         
-        // FIXME: CW 2016-07-14, this needs to be added agin but with proper
-        // treatment of particle kinematics.
-        /*
-        // Approximations for mixed quark channels
-        daFunk::Funk dNdE_u = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
-                              daFunk::var("mwimp"), daFunk::var("E"), 20, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);
-        daFunk::Funk dNdE_d = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
-                              daFunk::var("mwimp"), daFunk::var("E"), 21, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);
-        daFunk::Funk dNdE_c = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
-                              daFunk::var("mwimp"), daFunk::var("E"), 22, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);
-        daFunk::Funk dNdE_s = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
-                              daFunk::var("mwimp"), daFunk::var("E"), 23, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);   
-        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
-                              daFunk::var("mwimp"), daFunk::var("E"), 24, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);
-        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
-                              daFunk::var("mwimp"), daFunk::var("E"), 25, yieldk, flag)->set("mwimp", daFunk::var("Ecm")/2);  
+        daFunk::Funk Ecm = daFunk::var("Ecm");
+#define ADD_CHANNEL_MIXEDMASSES(ch1, ch2, P1, P2, FINAL, m1, m2)                \
+        dNdE_1 = daFunk::func_fromThreadsafe(                           \
+            BEreq::dshayield.pointer(), daFunk::var("E1"),         \
+            daFunk::var("E"), ch1, yieldk, flag)->set("E1",         \
+            Ecm/2 + (m1*m1 - m2*m2)/(2*Ecm));        \
+        dNdE_2 = daFunk::func_fromThreadsafe(                           \
+            BEreq::dshayield.pointer(), daFunk::var("E2"),         \
+            daFunk::var("E"), ch2, yieldk, flag)->set("E2",         \
+            Ecm/2 + (m2*m2 - m1*m1)/(2*Ecm));                                   \
+        result.addChannel(0.5*(dNdE_1 + dNdE_2), str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, m1+m2, 100000.);
 
-        // FIXME: Update energy validty ranges
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 100000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 100000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 100000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 100000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 100000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 100000.); 
+        ADD_CHANNEL_MIXEDMASSES(20, 21, "u", "dbar", "gamma", 0.0, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(21, 20, "d", "ubar", "gamma", 0.0, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(20, 23, "u", "sbar", "gamma", 0.0, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(23, 20, "s", "ubar", "gamma", 0.0, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(20, 25, "u", "bbar", "gamma", 0.0, 5.0)
+        ADD_CHANNEL_MIXEDMASSES(25, 20, "b", "ubar", "gamma", 5.0, 0.0)
 
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 100000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 100000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 100000.);        
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 100000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 100000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 100000.);        
+        ADD_CHANNEL_MIXEDMASSES(22, 21, "c", "dbar", "gamma", 1.35, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(21, 22, "d", "cbar", "gamma", 0.0, 1.35)
+        ADD_CHANNEL_MIXEDMASSES(22, 23, "c", "sbar", "gamma", 1.35, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(23, 22, "s", "cbar", "gamma", 0.0, 1.35)
+        ADD_CHANNEL_MIXEDMASSES(22, 25, "c", "bbar", "gamma", 1.35, 5.0)
+        ADD_CHANNEL_MIXEDMASSES(25, 22, "b", "cbar", "gamma", 5.0, 1.35)
 
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 100000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 100000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 100000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 100000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 100000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 100000.);    
-        */
+        ADD_CHANNEL_MIXEDMASSES(24, 21, "t", "dbar", "gamma", 175.0, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(21, 24, "d", "tbar", "gamma", 0.0, 175.0)
+        ADD_CHANNEL_MIXEDMASSES(24, 23, "t", "sbar", "gamma", 175.0, 0.0)
+        ADD_CHANNEL_MIXEDMASSES(23, 24, "s", "tbar", "gamma", 0.0, 175.0)
+        ADD_CHANNEL_MIXEDMASSES(24, 25, "t", "bbar", "gamma", 175.0, 5.0)
+        ADD_CHANNEL_MIXEDMASSES(25, 24, "b", "tbar", "gamma", 5.0, 175.0)
+
+#undef ADD_CHANNEL_MIXEDMASSES
    
         initialized = true;
       }
