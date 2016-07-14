@@ -29,7 +29,7 @@ After internal paper review started:
   - Make sure that halo model is used consistently between nuLike, gamLike and 
     DDCalc
 - Prepare post-processing of CMSSM results with alternative DarkBit
-  configurations [CW/JC/SH]
+  configurations [CW/JC/SW]
 - Clean up header and src files from old mess [CW]
 - Concepts/cosmetics
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
