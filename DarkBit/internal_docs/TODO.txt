@@ -9,10 +9,10 @@ Urgent (for production runs):
 - Fix mixed final quark states in SimYieldsTable_darksusy (GamYields.cpp:464ff) [CW/SW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
-- Make final decision about local dark matter density uncertainties [JC]
 - Merge DarkBit back into master and inform Martin [CW]
 
 Before internal paper review:
+- Update paper discussion about local density [JC/CW]
 - Update likelihood technical details in physics papers [all]
 - Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
@@ -81,12 +81,14 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Make final decision about local dark matter density uncertainties [JC]
 - Check t tbar final single states in GamYields.cpp [CW]
 - More details on FCMC:DecayTable object in paper [CW]
 - Figure out 175 GeV complaints of DS (CMSSM_ttbar_problem.yaml) [CW]
 - Fix diskless initialization problems with DD couplings [JE/JC/CW]
 - Figure out DD problems without SLHA initialization
 - Check NUHM_Diver.yaml, and whether it works with micromegas
+- Final decision about DD couplings [JC]
 
 
 Core
