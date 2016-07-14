@@ -9,7 +9,6 @@ Parameters:
   LocalHalo:
     rho0: 0.4
     v0: 235
-    vearth: 29.78
     vesc: 550
     vrot: 235
   StandardModel_SLHA2:
