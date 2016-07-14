@@ -445,6 +445,23 @@ namespace Gambit {
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 24, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 175., 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);        
+
+        // Example for SW (CW 2016-07-14)
+        /*
+        // Define one particle final state spectrum as function of particle energy E_x and photon energy E
+        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
+                              daFunk::var("E_t"), daFunk::var("E"), 24, yieldk, flag)/2;
+        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
+                              daFunk::var("E_b"), daFunk::var("E"), 25, yieldk, flag)/2;
+        // Define COM energy variable
+        daFunk::Funk Ecm = daFunk::var("Ecm");  
+        // Define combined spectrum, replacing the final state energy properly
+        daFunk::Funk dNdE_tb = 
+            dNdE_t->set("E_t", (pow(Ecm,2)+pow(m_t,2)-pow(m_b,2))/2/Ecm)
+          + dNdE_b->set("E_b", (pow(Ecm,2)+pow(m_b,2)-pow(m_t,2))/2/Ecm);
+        // replace m_t and m_b by the appropriate masses, as given above for
+        // two body final state kinematics
+        */
         
         // FIXME: CW 2016-07-14, this needs to be added agin but with proper
         // treatment of particle kinematics.
