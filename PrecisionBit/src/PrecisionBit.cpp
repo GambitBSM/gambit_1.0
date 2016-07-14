@@ -681,49 +681,49 @@ namespace Gambit
         /// fill pole masses.
         /// note: that the indices start from 0 in gm2calc,
         /// gambit indices start from 1, hence the offsets here
-        model.get_physical().MSvmL = mssm->get(Par::Pole_Mass, "~nu", 2); // 1L
+        model.get_physical().MSvmL = mssm.get(Par::Pole_Mass, "~nu", 2); // 1L
         str msm1, msm2;
         // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
         // If we get a successful convergence to the pole mass scheme in the end it's OK  
         const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
         const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
         slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
-        model.get_physical().MSm(0)  =  mssm->get(Par::Pole_Mass, msm1); // 1L
-        model.get_physical().MSm(1)  =  mssm->get(Par::Pole_Mass, msm2); // 1L
+        model.get_physical().MSm(0)  =  mssm.get(Par::Pole_Mass, msm1); // 1L
+        model.get_physical().MSm(1)  =  mssm.get(Par::Pole_Mass, msm2); // 1L
         
-        model.get_physical().MChi(0) = mssm->get(Par::Pole_Mass, "~chi0", 1); // 1L
-        model.get_physical().MChi(1) =  mssm->get(Par::Pole_Mass, "~chi0", 2); // 1L
-        model.get_physical().MChi(2) = mssm->get(Par::Pole_Mass, "~chi0", 3); // 1L
-        model.get_physical().MChi(3) = mssm->get(Par::Pole_Mass, "~chi0", 4); // 1L
+        model.get_physical().MChi(0) = mssm.get(Par::Pole_Mass, "~chi0", 1); // 1L
+        model.get_physical().MChi(1) =  mssm.get(Par::Pole_Mass, "~chi0", 2); // 1L
+        model.get_physical().MChi(2) = mssm.get(Par::Pole_Mass, "~chi0", 3); // 1L
+        model.get_physical().MChi(3) = mssm.get(Par::Pole_Mass, "~chi0", 4); // 1L
         
-        model.get_physical().MCha(0) =  mssm->get(Par::Pole_Mass, "~chi+", 1); // 1L
-        model.get_physical().MCha(1) =  mssm->get(Par::Pole_Mass, "~chi+", 2); // 1L
-        model.get_physical().MAh(1)  = mssm->get(Par::Pole_Mass, "A0"); // 2L
+        model.get_physical().MCha(0) =  mssm.get(Par::Pole_Mass, "~chi+", 1); // 1L
+        model.get_physical().MCha(1) =  mssm.get(Par::Pole_Mass, "~chi+", 2); // 1L
+        model.get_physical().MAh(1)  = mssm.get(Par::Pole_Mass, "A0"); // 2L
         
-        model.set_TB(mssm->get(Par::dimensionless,"tanbeta"));
-        model.set_Mu(mssm->get(Par::mass1, "Mu"));
-        model.set_MassB(mssm->get(Par::mass1, "M1"));
-        model.set_MassWB(mssm->get(Par::mass1, "M2"));
-        model.set_MassG(mssm->get(Par::mass1, "M3"));
+        model.set_TB(mssm.get(Par::dimensionless,"tanbeta"));
+        model.set_Mu(mssm.get(Par::mass1, "Mu"));
+        model.set_MassB(mssm.get(Par::mass1, "M1"));
+        model.set_MassWB(mssm.get(Par::mass1, "M2"));
+        model.set_MassG(mssm.get(Par::mass1, "M3"));
         for(int i = 1; i<=3; i++) {
           for(int j = 1; j<=3; j++) { 
-            model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
-            model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
-            model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
-            model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
-            model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j));
+            model.set_mq2(i-1,j-1, mssm.get(Par::mass2, "mq2", i, j)); 
+            model.set_ml2(i-1,j-1, mssm.get(Par::mass2, "ml2", i, j)); 
+            model.set_md2(i-1,j-1, mssm.get(Par::mass2, "md2", i, j)); 
+            model.set_mu2(i-1,j-1, mssm.get(Par::mass2, "mu2", i, j)); 
+            model.set_me2(i-1,j-1, mssm.get(Par::mass2, "me2", i, j));
             double Au = 0.0, Ad = 0.0, Ae = 0.0;
-            if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
-              Au = mssm->get(Par::mass1, "TYu", i, j)
-              / mssm->get(Par::dimensionless, "Yu", i, j);
+            if(mssm.get(Par::dimensionless, "Yu", i, j) > 1e-14){
+              Au = mssm.get(Par::mass1, "TYu", i, j)
+              / mssm.get(Par::dimensionless, "Yu", i, j);
             }
-            if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
-              Ae = mssm->get(Par::mass1, "TYe", i, j)
-              / mssm->get(Par::dimensionless, "Ye", i, j);
+            if(mssm.get(Par::dimensionless, "Ye", i, j) > 1e-14){
+              Ae = mssm.get(Par::mass1, "TYe", i, j)
+              / mssm.get(Par::dimensionless, "Ye", i, j);
             }
-            if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
-              Ad = mssm->get(Par::mass1, "TYd", i, j)
-              / mssm->get(Par::dimensionless, "Yd", i, j);
+            if(mssm.get(Par::dimensionless, "Yd", i, j) > 1e-14){
+              Ad = mssm.get(Par::mass1, "TYd", i, j)
+              / mssm.get(Par::dimensionless, "Yd", i, j);
             }
        
             model.set_Au(i-1, j-1, Au);
@@ -732,13 +732,13 @@ namespace Gambit
           }
         }
         
-        const SMInputs& smin = spec->get_SMInputs();
+        const SMInputs& smin = spec.get_SMInputs();
 
         model.get_physical().MVZ =smin.mZ;
         model.get_physical().MFb =smin.mBmB;
         model.get_physical().MFt =smin.mT; 
         model.get_physical().MFtau =smin.mTau; 
-        model.get_physical().MVWm =mssm->get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
+        model.get_physical().MVWm =mssm.get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
         model.get_physical().MFm =smin.mMu; 
         //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
         // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
@@ -763,7 +763,7 @@ namespace Gambit
         if (alpha_thompson > std::numeric_limits<double>::epsilon())
           model.set_alpha_thompson(alpha_thompson);
         
-        model.set_scale(mssm->GetScale());                   // 2L
+        model.set_scale(mssm.GetScale());                   // 2L
        
         /// convert DR-bar parameters to on-shell
         model.convert_to_onshell();
