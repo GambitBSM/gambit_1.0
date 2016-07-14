@@ -12,8 +12,6 @@ Urgent (for production runs):
 - Make final decision about local dark matter density uncertainties [JC]
 
 Before internal paper review:
-- More details on FCMC:DecayTable object in paper [CW]
-- Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
@@ -55,6 +53,9 @@ After internal paper review started:
 - Double-check SingletDM expression [JC]
 - Check again boost gsl integration for stability (SingletDM_test...) [CW]
 
+Before release:
+- Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
+
 Later/maybe/not-first-release:
 - In GamYields, we should use rescaling for kinematically close but virtually
   open annihilation channels
@@ -78,6 +79,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- More details on FCMC:DecayTable object in paper [CW]
 - Figure out 175 GeV complaints of DS (CMSSM_ttbar_problem.yaml) [CW]
 - Fix diskless initialization problems with DD couplings [JE/JC/CW]
 - Figure out DD problems without SLHA initialization
