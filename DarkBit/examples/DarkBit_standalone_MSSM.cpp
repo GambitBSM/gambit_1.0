@@ -315,7 +315,6 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.reset_and_calculate();
 
     // Set up MC loop manager for cascade MC
-    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1000);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
     cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);

@@ -271,23 +271,24 @@ namespace Gambit {
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
-          #ifdef DARKBIT_DEBUG
+#ifdef DARKBIT_DEBUG
             std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
-            std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
+            //std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
             daFunk::Funk chnSpec = (daFunk::zero("v", "E")
               +  spec0
               +  spec1)-> set("v", 0.);
+            auto x = daFunk::logspace(0, 3, 10);
             std::vector<double> y = chnSpec->bind("E")->vect(x);
-            os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
-            os << "  E: [";
+            std::cout << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
+            std::cout << "  E: [";
             for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-            os << "  dNdE: [";
+              std::cout << *it2 << ", ";
+            std::cout << "]\n";
+            std::cout << "  dNdE: [";
             for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-          #endif
+              std::cout << *it2 << ", ";
+            std::cout << "]\n";
+#endif
 
           Yield = Yield + (spec0 + spec1) * it->genRate;
         }
