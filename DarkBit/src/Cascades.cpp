@@ -303,9 +303,9 @@ namespace Gambit {
       const double dlogE=logmax-logmin;       
 
 #ifdef DARKBIT_DEBUG
-        std::cout << M << std::endl;
-        std::cout << endpoint->E_Lab() << std::endl;
-        std::cout << endpoint->p_Lab() << std::endl;
+        std::cout << "M = " << M << std::endl;
+        std::cout << "E_lab = " << endpoint->E_Lab() << std::endl;
+        std::cout << "p_lab = " << endpoint->p_Lab() << std::endl;
         std::cout << "Lorentz factors gamma, beta: " << gamma << ", " 
           << beta << std::endl;
         std::cout << "Initial state: " << initialState << std::endl;
