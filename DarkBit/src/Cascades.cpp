@@ -296,7 +296,6 @@ namespace Gambit {
             // Estimate for highest kinematically allowed CoM energy
           0.5*(M*M + msq)/M );
       if(Ecmin>=Ecmax) return;
-      // FIXME: Double-check that sampling is done correctly
       const double logmin = log(Ecmin);
       const double logmax = log(Ecmax);
       const double dlogE=logmax-logmin;
@@ -321,12 +320,9 @@ namespace Gambit {
 
       double specSum=0;
       int Nsampl=0;
-      int samplCounter = 0;
       SimpleHist spectrum(histList[initialState][finalState].binLower);
-      while(samplCounter<cMC_numSpecSamples)
+      while(Nsampl<cMC_numSpecSamples)
       {
-        // FIXME: Make sure that the Nsampl < sqrt(specSum) criterion makes sense
-        samplCounter++;
         // Draw an energy in the CoM frame of the endpoint. Logarithmic
         // sampling.
         double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());

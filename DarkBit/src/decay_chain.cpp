@@ -546,7 +546,6 @@ namespace Gambit
             }
           }
           entry.setInvisibleWidth(it->genRateMisc->bind()->eval());
-          // FIXME: Make sure that decay widths are correctly used everywhere
           if(!stable and entry.enabledDecays.size() == 0)
           {
             piped_warnings.request(LOCAL_INFO,
