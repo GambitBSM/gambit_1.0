@@ -500,6 +500,7 @@ int main(int argc, char* argv[])
       int sBins = 40;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
       std::vector<double> s_list = daFunk::logspace(-10, -6, sBins);
+      boost::multi_array<double, 2> sigma_SI_p_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
@@ -527,10 +528,13 @@ int main(int argc, char* argv[])
           LUX_2013_GetLogLikelihood.reset_and_calculate();
           double lnL = LUX_2013_GetLogLikelihood(0);
           std::cout << "LUX2013 lnL = " << lnL << std::endl;
+          sigma_SI_p_array[i][j] = sigma_SI_p;
           lnL_array[i][j] = lnL;
         }
       }
-      dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
+
+      dump_array_to_file("LUX2013_lnL_table.dat", lnL_array, m_list, s_list);
+      dump_array_to_file("LUX2013_sigmaSIp_table.dat", sigma_SI_p_array, m_list, s_list);
     }
   }
 
