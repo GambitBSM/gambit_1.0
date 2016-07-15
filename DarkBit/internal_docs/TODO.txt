@@ -6,7 +6,6 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Fix mixed final quark states in SimYieldsTable_darksusy (GamYields.cpp:464ff) [CW/SW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Merge DarkBit back into master and inform Martin [CW]
@@ -24,7 +23,7 @@ After internal paper review started:
   - Check IB mass setting routines
   - Make decision about default speeds for RD in DS [TB, CW]
   - Go through diskless init problems via skype with Joakim (see file)
-- GalacticHalo model [CW]
+- GalacticHalo model [CW/SW]
   - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
   - Update GalacticHalo model to include Sun distance
   - Update GalacticHalo model in gamlike
@@ -42,7 +41,7 @@ After internal paper review started:
   May) [JC/PS/JE]
 - Start adding descriptions to the capability database [CW, PS, JE, TB, JC]
 - Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
-- Update valid energy ranges in SimYieldTables (GamYields.cpp) [JC]
+- Update valid energy ranges in SimYieldTables (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
 - Cascade code [CW]
   - Add genRateMisc to cascade code
@@ -51,7 +50,7 @@ After internal paper review started:
   - Double-check sampling in cascade code
   - Think about convergence criterion in cascade code
   - Check FIXME in Cascades.cpp, decay_chain.cpp [CW]
-- Double-check SingletDM expression [JC]
+- Double-check SingletDM expression [SW]
 - Check again boost gsl integration for stability (SingletDM_test...) [CW]
 
 Before release:
@@ -81,6 +80,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Fix mixed final quark states in SimYieldsTable_darksusy (GamYields.cpp:464ff) [CW/SW]
 - Make final decision about local dark matter density uncertainties [JC]
 - Check t tbar final single states in GamYields.cpp [CW]
 - More details on FCMC:DecayTable object in paper [CW]
