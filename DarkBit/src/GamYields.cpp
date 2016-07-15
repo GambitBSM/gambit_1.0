@@ -2,13 +2,13 @@
 //   *********************************************
 ///  \file
 ///
-///  Routines for the calculation of gamma-ray yield 
+///  Routines for the calculation of gamma-ray yield
 ///  from dark matter annihilation / decay.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
@@ -69,7 +69,7 @@ namespace Gambit {
           if ( not runOptions->getValueOrDef(false, "ignore_two_body") )
           {
             #ifdef DARKBIT_DEBUG
-              std::cout << "Checking for missing two-body final states: " 
+              std::cout << "Checking for missing two-body final states: "
                         << it->finalStateIDs[0] << " " << it->finalStateIDs[1]  << std::endl;
             #endif
             if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
@@ -87,8 +87,8 @@ namespace Gambit {
           if ( not runOptions->getValueOrDef(false, "ignore_three_body") )
           {
             #ifdef DARKBIT_DEBUG
-              std::cout << "Checking for missing three-body final states: " 
-                        << it->finalStateIDs[0] << " " << it->finalStateIDs[1]  
+              std::cout << "Checking for missing three-body final states: "
+                        << it->finalStateIDs[0] << " " << it->finalStateIDs[1]
                         << " " << it->finalStateIDs[2] << std::endl;
             #endif
             if (not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
@@ -101,9 +101,9 @@ namespace Gambit {
         }
       }
       // Remove particles we don't have decays for.
-      for (auto it = missingFinalStates.begin(); it != missingFinalStates.end();) 
+      for (auto it = missingFinalStates.begin(); it != missingFinalStates.end();)
       {
-          if ((*Dep::TH_ProcessCatalog).find(*it, "") == NULL) 
+          if ((*Dep::TH_ProcessCatalog).find(*it, "") == NULL)
           {
             #ifdef DARKBIT_DEBUG
               std::cout << "Erasing (because no decays known): " << *it << std::endl;
@@ -142,7 +142,7 @@ namespace Gambit {
       if ( gamma < 1.0 + .02 )  // Ignore less than 2% boosts
       {
         if (gamma < 1.0)
-          DarkBit_error().raise(LOCAL_INFO, 
+          DarkBit_error().raise(LOCAL_INFO,
             "boost_dNdE: Requested Lorentz boost with gamma < 1");
         return dNdE;
       }
@@ -169,13 +169,13 @@ namespace Gambit {
      * - TH_ProcessCatalog
      * - cascadeMC_gammaSpectra
      *
-     * This function returns 
+     * This function returns
      *
      *   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
      *
      * the energy spectrum of photons times sigma*v/m^2, as function of
      * energy (GeV) and velocity (c).  By default, only the v=0 component
-     * is calculated.  
+     * is calculated.
      *
      */
     void GA_AnnYield_General(daFunk::Funk &result)
@@ -204,7 +204,7 @@ namespace Gambit {
       {
         // Here only take care of two-body final states
         if (it->nFinalStates != 2) continue;
-        
+
         // Get final state masses
         double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(
             it->finalStateIDs[0]).mass;
@@ -232,7 +232,7 @@ namespace Gambit {
         else
         {
           daFunk::Funk spec0 = daFunk::zero("E");
-          daFunk::Funk spec1 = daFunk::zero("E");        
+          daFunk::Funk spec1 = daFunk::zero("E");
 
           // Final state particle one
           // Tabulated spectrum available?
@@ -252,7 +252,7 @@ namespace Gambit {
             double gamma0 = E0/m0;
             //std::cout << it->finalStateIDs[0] << " " << gamma0 << std::endl;
             spec0 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[0]), gamma0, 0.0);
-          }        
+          }
 
           // Final state particle two
           if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
@@ -274,8 +274,8 @@ namespace Gambit {
           #ifdef DARKBIT_DEBUG
             std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
             std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
-            daFunk::Funk chnSpec = (daFunk::zero("v", "E") 
-              +  spec0 
+            daFunk::Funk chnSpec = (daFunk::zero("v", "E")
+              +  spec0
               +  spec1)-> set("v", 0.);
             std::vector<double> y = chnSpec->bind("E")->vect(x);
             os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
@@ -292,11 +292,11 @@ namespace Gambit {
           Yield = Yield + (spec0 + spec1) * it->genRate;
         }
       } // End adding two-body final states
-          
+
       #ifdef DARKBIT_DEBUG
         std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
         std::vector<std::string> test2 = initVector<std::string> ("A0_test",  "A0_test",  "Z0_test",  "Z0_test",  "WH_test", "Z0_test", "h0_2_test", "W-");
-      
+
         for(size_t i=0; i<test1.size();i++)
         {
             daFunk::Funk chnSpec = (*Dep::SimYieldTable)(test1[i], test2[i], "gamma", Ecm);
@@ -312,7 +312,7 @@ namespace Gambit {
             os  << "]\n";
         }
       #endif
-      
+
       // Adding three-body final states
       //
       // NOTE:  Three body processes are added even if they are closed for at v=0
@@ -331,11 +331,11 @@ namespace Gambit {
            )
            {
            daFunk::Funk dNdE1dE2 = it->genRate->set("v",0.);
-           daFunk::Funk spec0 = 
+           daFunk::Funk spec0 =
              (*Dep::SimYieldTable)(it->finalStateIDs[0], "gamma");
-           daFunk::Funk spec1 = 
+           daFunk::Funk spec1 =
              (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma");
-           daFunk::Funk spec2 = 
+           daFunk::Funk spec2 =
              (*Dep::SimYieldTable)(it->finalStateIDs[2], "gamma");
            Yield = Yield + convspec(spec0, spec1, spec2, dNdE1dE2);
            }
@@ -379,7 +379,7 @@ namespace Gambit {
         if(debug) os.close();
       #endif
 
-      result = daFunk::ifelse(1e-6 - daFunk::var("v"), Yield/(mass*mass), 
+      result = daFunk::ifelse(1e-6 - daFunk::var("v"), Yield/(mass*mass),
           daFunk::throwError("Spectrum currently only defined for v=0."));
     }
 
@@ -399,13 +399,13 @@ namespace Gambit {
         daFunk::Funk dNdE_2;
 
         using DarkBit_utils::str_flav_to_mass;
-        
+
 #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                \
         dNdE = daFunk::func_fromThreadsafe(                           \
             BEreq::dshayield.pointer(), daFunk::var("mwimp"),         \
             daFunk::var("E"), ch, yieldk, flag)->set("mwimp",         \
             daFunk::var("Ecm")/2);                                    \
-        result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);  
+        result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);
 
         // specifies also center of mass energy range
         ADD_CHANNEL(12, "Z0", "Z0", "gamma", 91.2*2, 100000.)
@@ -440,31 +440,31 @@ namespace Gambit {
         result.addChannel(dNdE/2, str_flav_to_mass("e-"), "gamma", 0., 50000.);
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 17, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0.10566, 50000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0.10566, 50000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0.10566, 50000.);
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 19, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 1.7841, 50000.);
         result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 1.7841, 50000.);
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 24, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 175., 50000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);
 
         // Example for SW (CW 2016-07-14)
         /*
         // Define one particle final state spectrum as function of particle energy E_x and photon energy E
-        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
+        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(),
                               daFunk::var("E_t"), daFunk::var("E"), 24, yieldk, flag)/2;
-        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
+        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(),
                               daFunk::var("E_b"), daFunk::var("E"), 25, yieldk, flag)/2;
         // Define COM energy variable
-        daFunk::Funk Ecm = daFunk::var("Ecm");  
+        daFunk::Funk Ecm = daFunk::var("Ecm");
         // Define combined spectrum, replacing the final state energy properly
-        daFunk::Funk dNdE_tb = 
+        daFunk::Funk dNdE_tb =
             dNdE_t->set("E_t", (pow(Ecm,2)+pow(m_t,2)-pow(m_b,2))/2/Ecm)
           + dNdE_b->set("E_b", (pow(Ecm,2)+pow(m_b,2)-pow(m_t,2))/2/Ecm);
         // replace m_t and m_b by the appropriate masses, as given above for
         // two body final state kinematics
         */
-        
+
         daFunk::Funk Ecm = daFunk::var("Ecm");
 #define ADD_CHANNEL_MIXEDMASSES(ch1, ch2, P1, P2, FINAL, m1, m2)                \
         dNdE_1 = daFunk::func_fromThreadsafe(                           \
@@ -499,7 +499,7 @@ namespace Gambit {
         ADD_CHANNEL_MIXEDMASSES(25, 24, "b", "tbar", "gamma", 5.0, 175.0)
 
 #undef ADD_CHANNEL_MIXEDMASSES
-   
+
         initialized = true;
       }
     }
@@ -540,67 +540,67 @@ namespace Gambit {
             daFunk::zero("Ecm", "E"), "nu_mu", "nubar_mu", "gamma", 0., 10000.);
         result.addChannel(
             daFunk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 0., 10000.);
-            
+
         // Add approximations for single-particle cases.
         // FIXME: Update energy validty ranges
-        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 8, outN) 
+        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 8, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
         result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);        
-        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 9, outN) 
+        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);
+        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 9, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
         result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 0., 10000.);        
-        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 10, outN) 
+        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 0., 10000.);
+        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 10, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
         result.addChannel(dNdE/2, "Z0", "gamma", 0., 10000.);
-        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 13, outN) 
+        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 13, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
         result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
-        
+
         // Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
-        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 6, outN) 
+        dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 6, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
         result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 0., 10000.);        
-        
+        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 0., 10000.);
+
         // Approximations for mixed quark channels
-        daFunk::Funk dNdE_d = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
+        daFunk::Funk dNdE_d = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
                               daFunk::var("Ecm"), daFunk::var("E"), 1, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_u = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
+        daFunk::Funk dNdE_u = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
                               daFunk::var("Ecm"), daFunk::var("E"), 2, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_s = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
-                              daFunk::var("Ecm"), daFunk::var("E"), 3, outN)/daFunk::var("E");        
-        daFunk::Funk dNdE_c = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
+        daFunk::Funk dNdE_s = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
+                              daFunk::var("Ecm"), daFunk::var("E"), 3, outN)/daFunk::var("E");
+        daFunk::Funk dNdE_c = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
                               daFunk::var("Ecm"), daFunk::var("E"), 4, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
-                              daFunk::var("Ecm"), daFunk::var("E"), 5, outN)/daFunk::var("E");          
-        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
+        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
+                              daFunk::var("Ecm"), daFunk::var("E"), 5, outN)/daFunk::var("E");
+        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
                               daFunk::var("Ecm"), daFunk::var("E"), 6, outN)/daFunk::var("E");
-                  
+
         // FIXME: Update energy validty ranges
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 10000.);
 
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);        
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);
 
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);             
-            
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);
+
         initialized = true;
       }
     }

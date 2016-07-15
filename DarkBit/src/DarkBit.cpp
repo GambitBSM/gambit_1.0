@@ -2,18 +2,18 @@
 //   *********************************************
 ///  \file
 ///
-///  Central module file of DarkBit.  Calculates dark matter 
+///  Central module file of DarkBit.  Calculates dark matter
 ///  related observables.
-///  
-///  Most of the model- or observable-specific code is 
+///
+///  Most of the model- or observable-specific code is
 ///  stored in separate source files.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de) 
+///          (torsten.bringmann@desy.de)
 ///  \date 2013 Jun
 ///  \date 2014 Mar
 ///
@@ -21,15 +21,15 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct
-///  
+///
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
 ///  \date 2015 Jan, Feb
-///  
+///
 ///  \author Pat Scott
 ///          (pscott@imperial.ac.uk)
 ///  \date 2014 Mar
@@ -51,9 +51,9 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    void mwimp_generic(double &result) { 
+    void mwimp_generic(double &result) {
       using namespace Pipes::mwimp_generic;
-      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
+      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
     }
 
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
@@ -99,8 +99,8 @@ namespace Gambit {
        * afterwards can be checked against the expectations.
        */
 
-      double M_DM = 
-        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
+      double M_DM =
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
       double Gps = (*Dep::DD_couplings).gps;
       double Gpa = (*Dep::DD_couplings).gpa;
       double Gns = (*Dep::DD_couplings).gns;
@@ -144,10 +144,10 @@ namespace Gambit {
         os << "\n";
 
         // Output gamma-ray spectrum (grid be set in YAML file).
-        double x_min = 
+        double x_min =
           /// Option GA_AnnYield::Emin<double>: Minimum energy in GeV (default 0.1)
           runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-        double x_max = 
+        double x_max =
           /// Option GA_AnnYield::Emax<double>: Maximum energy in GeV (default 1e4)
           runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
           /// Option GA_AnnYield::nbins<int>: Number of energy bins (default 26)
@@ -173,7 +173,7 @@ namespace Gambit {
             it != annProc.channelList.end(); ++it)
         {
           os << "  ";
-          for (std::vector<std::string>::iterator 
+          for (std::vector<std::string>::iterator
               jt = it->finalStateIDs.begin(); jt!=it->finalStateIDs.end(); jt++)
           {
             os << *jt << "";

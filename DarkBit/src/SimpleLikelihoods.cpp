@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
@@ -38,7 +38,7 @@ namespace Gambit {
 //      // Above L = 36, we use linear extrapolation up to L = 360000
 //      //
 //      // phi (defined as phi = sigmav/mDM**2*Ntot/8/pi * 1e26)
-//      double xgridArray [101] = { 0. , 6.74308086122e-05 , 0.000123192463137 , 
+//      double xgridArray [101] = { 0. , 6.74308086122e-05 , 0.000123192463137 ,
 //        0.000171713798503 , 0.000215245918518 , 0.000255093268618 , 0.00029207805123 ,
 //        0.000326751732695 , 0.000359503469472 , 0.000390620122006 , 0.000420321264006,
 //        0.00044878042576 , 0.000476138421008 , 0.000502511975672 , 0.000527999496499,
@@ -68,8 +68,8 @@ namespace Gambit {
 //      // Normalization w.r.t. p-value of phi=0
 //      //
 //      // chi^2
-//      double ygridArray [101] = { 0.0, 
-//        0.0513551, 0.177438, 0.35228, 0.561353, 0.795726, 1.04953, 1.3187, 1.60032, 
+//      double ygridArray [101] = { 0.0,
+//        0.0513551, 0.177438, 0.35228, 0.561353, 0.795726, 1.04953, 1.3187, 1.60032,
 //        1.89222, 2.19274, 2.50059, 2.81476, 3.13441, 3.45887, 3.78757, 4.12006,
 //        4.45594, 4.79486, 5.13653, 5.48072, 5.82719, 6.17576, 6.52625, 6.87853,
 //        7.23244, 7.58789, 7.94475, 8.30294, 8.66236, 9.02294, 9.38462, 9.74731,
@@ -92,7 +92,7 @@ namespace Gambit {
 //
 //      double fraction = *Dep::RD_fraction;
 //
-//      // Integate spectrum 
+//      // Integate spectrum
 //      // (the zero velocity limit of the differential annihilation
 //      // cross-section as function of individual final state photons)
 //      double AnnYieldint = (*Dep::GA_AnnYield)->
@@ -204,9 +204,9 @@ namespace Gambit {
     }
 
     /// \brief Likelihood for cosmological relic density constraints.
-    /// Default data: 
+    /// Default data:
     ///   Omega_c h^2 = 0.1188 +/- 0.0010 (1 sigma), Gaussian.  Planck TT,TE,EE+lowP+lensing+ext 2015, arxiv:1502.01589v2
-    ///   theory error: 5% 
+    ///   theory error: 5%
     void lnL_oh2_Simple(double &result)
     {
       using namespace Pipes::lnL_oh2_Simple;
@@ -222,9 +222,9 @@ namespace Gambit {
     }
 
     /// \brief Likelihood for cosmological relic density constraints, implemented as an upper limit only
-    /// Default data: 
+    /// Default data:
     ///   Omega_c h^2 = 0.1188 +/- 0.0010 (1 sigma), Gaussian.  Planck TT,TE,EE+lowP+lensing+ext 2015, arxiv:1502.01589v2
-    ///   theory error: 5% 
+    ///   theory error: 5%
     void lnL_oh2_upperlimit(double &result)
     {
       using namespace Pipes::lnL_oh2_upperlimit;

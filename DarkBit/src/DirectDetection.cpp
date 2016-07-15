@@ -2,18 +2,18 @@
 //   *********************************************
 ///  \file
 ///
-///  Routines for direct detection couplings and 
+///  Routines for direct detection couplings and
 ///  likelihoods.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
 ///  \date 2015 Jan, Feb, June
-///  
+///
 ///  \author Jonathan Cornell
 ///          (jcornell@ucsc.edu)
 ///  \date 2015 Mar
@@ -54,7 +54,7 @@ namespace Gambit {
       logger() << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
       logger() << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
       logger() << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
-      logger() << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " << 
+      logger() << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " <<
         (*BEreq::ddcom).ftp(9) << endl;
 
       // Set neutron hadronic matrix elements
@@ -71,7 +71,7 @@ namespace Gambit {
       logger() << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
       logger() << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
       logger() << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
-      logger() << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " << 
+      logger() << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " <<
         (*BEreq::ddcom).ftn(9) << endl;
 
       // Set deltaq
@@ -87,7 +87,7 @@ namespace Gambit {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        double factor = 
+        double factor =
         /// Option rescale_couplings<double>: Rescaling factor for WIMP-nucleon couplings (default 1.)
           runOptions->getValueOrDef<double>(1., "rescale_couplings");
         result.gps *= factor;
@@ -153,10 +153,10 @@ namespace Gambit {
         << (*BEreq::MOcommon).par[7] << endl;
 
       double p1[2], p2[2], p3[2], p4[2];
-      int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), 
+      int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()),
           byVal(p1), byVal(p2), byVal(p3), byVal(p4));
       if(error!=0)
-        DarkBit_error().raise(LOCAL_INFO, 
+        DarkBit_error().raise(LOCAL_INFO,
             "micrOMEGAs nucleonAmplitudes function failed with "
             "error code " + std::to_string(error) + ".");
 
@@ -173,7 +173,7 @@ namespace Gambit {
       logger() << " gna: " << result.gna << endl;
     }
 
-    /// Simple calculator of the spin-independent WIMP-proton cross-section 
+    /// Simple calculator of the spin-independent WIMP-proton cross-section
     void sigma_SI_p_simple(double &result)
     {
       using namespace Pipes::sigma_SI_p_simple;
@@ -182,7 +182,7 @@ namespace Gambit {
       result = gev2cm2/pi*pow(reduced_mass*gps,2.0);
     }
 
-    /// Simple calculator of the spin-independent WIMP-neutron cross-section 
+    /// Simple calculator of the spin-independent WIMP-neutron cross-section
     void sigma_SI_n_simple(double &result)
     {
       using namespace Pipes::sigma_SI_n_simple;
@@ -191,7 +191,7 @@ namespace Gambit {
       result = gev2cm2/pi*pow(reduced_mass*gns,2.0);
     }
 
-    /// Simple calculator of the spin-dependent WIMP-proton cross-section 
+    /// Simple calculator of the spin-dependent WIMP-proton cross-section
     void sigma_SD_p_simple(double &result)
     {
       using namespace Pipes::sigma_SD_p_simple;
@@ -200,7 +200,7 @@ namespace Gambit {
       result = 3.0*gev2cm2/pi*pow(reduced_mass*gpa,2.0);
     }
 
-    /// Simple calculator of the spin-dependent WIMP-neutron cross-section 
+    /// Simple calculator of the spin-dependent WIMP-neutron cross-section
     void sigma_SD_n_simple(double &result)
     {
       using namespace Pipes::sigma_SD_n_simple;
@@ -241,7 +241,7 @@ namespace Gambit {
       DDCALC_RESULT(EXPERIMENT, double, SignalSI)                                  \
       DDCALC_RESULT(EXPERIMENT, double, SignalSD)                                  \
       DDCALC_RESULT(EXPERIMENT, double, LogLikelihood)                             \
-            
+
     // Experiments
     DD_EX(XENON100_2012)        // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
     DD_EX(LUX_2013)             // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]

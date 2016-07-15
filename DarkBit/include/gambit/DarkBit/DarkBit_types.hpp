@@ -4,19 +4,19 @@
 ///
 ///  Type definition header for module DarkBit.
 ///
-///  Compile-time registration of type definitions 
+///  Compile-time registration of type definitions
 ///  required for the rest of the code to
 ///  communicate with DarkBit.
 ///
 ///  Add to this if you want to define a new type
 ///  for the functions in DarkBit to return, but
-///  you don't expect that type to be needed by 
+///  you don't expect that type to be needed by
 ///  any other modules.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2012 Mar, 2014 Jan
@@ -25,13 +25,13 @@
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
 ///  \date 2014 Jan, Apr
 ///  \date 2015 Mar
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct, Dec
 ///  \date 2015 Jan
@@ -126,7 +126,7 @@ namespace Gambit
         bool threadsafe;
         nuyield_function_pointer pointer;
     };
-    
+
     /// Neutrino telescope data container
     struct nudata
     {
@@ -143,7 +143,7 @@ namespace Gambit
     //////////////////////////////////////////////
     // Direct detection data structures
     //////////////////////////////////////////////
-    
+
     // NOTE:
     // The structures here are
     // preliminary ideas for generic, robust means of
@@ -179,7 +179,7 @@ namespace Gambit
         double vpec[3];  // Sun's peculiar velocity
         double vsun[3];  // Sun's total velocity: vsun = vLSR + vpec
         // Earth's motion -------------
-        // At some point in the future, this structure may 
+        // At some point in the future, this structure may
         // contain parameterizations of the Earth's motion
         // relative to the Sun.
     };
@@ -231,7 +231,7 @@ namespace Gambit
         // only used here, but this is meant to mirror the
         // distributions in external DDCalc package.
         std::vector<DDHaloComponentS> C;
-        // A key-value array 
+        // A key-value array
         //std::map<int,DDHaloComponentS> C;
     };
 
@@ -278,7 +278,7 @@ namespace Gambit
     struct SimYieldChannel
     {
         SimYieldChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
-            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
+            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max)
         {
 //#ifdef DARBIT_DEBUG
             std::ostringstream msg;
@@ -290,13 +290,13 @@ namespace Gambit
 //#endif
             dNdE_bound = this->dNdE->bind("E", "Ecm");
         }
-        daFunk::Funk dNdE;       
+        daFunk::Funk dNdE;
         daFunk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays
         std::string p1;
         std::string p2;
         std::string finalState;
         double Ecm_min;
-        double Ecm_max;        
+        double Ecm_max;
     };
 
     // Channel container
@@ -306,7 +306,7 @@ namespace Gambit
          * final states.
          */
         public:
-            SimYieldTable() : 
+            SimYieldTable() :
                 dummy_channel(daFunk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
 
             void addChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
@@ -318,7 +318,7 @@ namespace Gambit
                 }
                 channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
             }
-            
+
             void addChannel(daFunk::Funk dNdE, std::string p1, std::string finalState, double Ecm_min, double Ecm_max)
             {
                 addChannel(dNdE, p1, "", finalState, Ecm_min, Ecm_max);
@@ -333,12 +333,12 @@ namespace Gambit
             {
                 return hasChannel(p1, "", finalState);
             }
-            
+
             bool hasAnyChannel(std::string p1) const
             {
                 return hasAnyChannel(p1, "");
-            }         
-            
+            }
+
             bool hasAnyChannel(std::string p1, std::string p2) const
             {
                 const std::vector<SimYieldChannel> &cl = channel_list;
@@ -351,7 +351,7 @@ namespace Gambit
                 }
                 return false;
             }
-            
+
             const SimYieldChannel& getChannel(std::string p1, std::string p2, std::string finalState) const
             {
                 int index = findChannel(p1, p2, finalState);
