@@ -48,6 +48,7 @@ namespace Gambit {
      *
      */
 
+#define DARKBIT_DEBUG
     void GA_missingFinalStates(std::vector<std::string> &result)
     {
       using namespace Pipes::GA_missingFinalStates;
@@ -129,6 +130,7 @@ namespace Gambit {
 
       result.assign(missingFinalStates.begin(), missingFinalStates.end());
     }
+#undef DARKBIT_DEBUG
 
     /*! \brief Boosts an energy spectrum of isotropic particles into another
      *         frame (and isotropizes again).
@@ -271,7 +273,7 @@ namespace Gambit {
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
-#ifdef DARKBIT_DEBUG
+//#ifdef DARKBIT_DEBUG
             std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
             //std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
             daFunk::Funk chnSpec = (daFunk::zero("v", "E")
@@ -288,7 +290,7 @@ namespace Gambit {
             for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
               std::cout << *it2 << ", ";
             std::cout << "]\n";
-#endif
+//#endif
 
           Yield = Yield + (spec0 + spec1) * it->genRate;
         }
