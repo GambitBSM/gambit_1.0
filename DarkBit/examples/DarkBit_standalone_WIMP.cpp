@@ -11,6 +11,8 @@
 ///   
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
+///  \author Jonathan Cornell
+///  \date 2016 July
 ///
 ///  *********************************************
 
@@ -233,7 +235,7 @@ int main(int argc, char* argv[])
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
-
+    if (not Backends::backendInfo().works["MicrOmegas3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
 
     // ---- Initialize models ----
 
@@ -260,7 +262,7 @@ int main(int argc, char* argv[])
 
     // Initialize gamLike backend
     //gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
-    gamLike_1_0_0_init.notifyOfModel("GalacticHalo_gNFW");  // FIXME: Hack
+    //gamLike_1_0_0_init.notifyOfModel("GalacticHalo_gNFW");  // FIXME: Hack
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
