@@ -22,6 +22,7 @@
 ///  \date 2015 May
 ///  \date 2015 July
 ///  \date 2015 August
+///  \data 2016 July
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)

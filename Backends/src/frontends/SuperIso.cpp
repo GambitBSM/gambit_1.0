@@ -49,29 +49,45 @@ BE_NAMESPACE
     CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
     Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
     /*double BR =*/  BRBKstarll(2,0,byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
-    
 
-    
+
 
     // filling results
     Flav_KstarMuMu_obs results;
     results.q2_min=Q2_min;
-    results.q2_max=Q2_max;      
-    
-    results.FL=obs[2];                                                                  
-    double Fl=obs[2];                                                                  
-    results.AFB=obs[1];                                                                 
-                                                                                    
+    results.q2_max=Q2_max;
+
+    results.FL=obs[2];
+    double Fl=obs[2];
+    results.AFB=obs[1];
+
     results.S3=obs[5]*(1.-Fl)/2.; // this is ok
-    results.S4=obs[17]*sqrt(Fl*(1.-Fl))/(2.);                                                 
-    results.S5=obs[18]*sqrt(Fl*(1.-Fl));                                                
-    results.S7=(-1.)*obs[19]*sqrt(Fl*(1.-Fl));                                                
-    results.S8=obs[21]*sqrt(Fl*(1.-Fl))/(2.);                                                
-    results.S9=(-1.)*obs[15]*(1.-Fl); // this is ok                                                  
+    results.S4=obs[17]*sqrt(Fl*(1.-Fl))/(2.);
+    results.S5=obs[18]*sqrt(Fl*(1.-Fl));
+    results.S7=(-1.)*obs[19]*sqrt(Fl*(1.-Fl));
+    results.S8=obs[21]*sqrt(Fl*(1.-Fl))/(2.);
+    results.S9=(-1.)*obs[15]*(1.-Fl); // this is ok
 
     return results;
   }
+  //###################################################################################
+  double SI_bsgamma_CONV(struct parameters *param, double E_t)
+  {
+    double result=0.;
+    if(param->model<0) result=0.;
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b_1S/2.;
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	std::complex<double> CQpb[3];
 
-
+	CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
+	C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
+	Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
+	result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
+      }
+    return result;
+  }
 }
 END_BE_NAMESPACE
