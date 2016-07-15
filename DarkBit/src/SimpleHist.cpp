@@ -175,8 +175,8 @@ namespace Gambit {
       {
         binVals[i]*=x;
         wtSq[i]   *=x*x;
-      } 
-    }       
+      }
+    }
 
     int SimpleHist::findIndex(double val) const
     {

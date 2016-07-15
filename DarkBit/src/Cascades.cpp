@@ -58,12 +58,9 @@ namespace Gambit {
       using namespace DecayChain;
       using namespace Pipes::cascadeMC_DecayTable;     
       std::set<std::string> disabled;
-      // Force quarks and gluons to be stable in cascade context.
-      // These spectra should be handled using SimYields.
-// FIXME: Decide what to do with quark final states
-//      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
-//        disabled = daFunk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
-//            "cbar", "s", "sbar", "t", "tbar", "b", "bbar", "g");
+      // Note: One could add to "disabled" particles decays in that are in the
+      // process catalog but should for some reason not propagate to the FCMC
+      // DecayTable.
       try
       {
         table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable, disabled);
@@ -232,10 +229,12 @@ namespace Gambit {
         const TH_ProcessCatalog &catalog, 
         std::map<std::string, std::map<std::string, SimpleHist> > &histList, 
         std::string initialState, 
-        double weight, int cMC_minSpecSamples, int cMC_maxSpecSamples
-//        double cMC_specValidThreshold
+        double weight, int cMC_numSpecSamples
         )
     {
+#ifdef DARKBIT_DEBUG
+      std::cout << "SampleSimYield" << std::endl;
+#endif
       std::string p1,p2;
       double gamma,beta;
       double M;
@@ -312,8 +311,6 @@ namespace Gambit {
         std::cout << "Channel: " << p1 << " " << p2 << std::endl;
         std::cout << "Final particles: " << finalState << std::endl;
         std::cout << "Event weight: "    << weight << std::endl;
-//        std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold 
-//          << std::endl;
         std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax 
           << std::endl;
         std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max 
@@ -326,12 +323,7 @@ namespace Gambit {
       int Nsampl=0;
       int samplCounter = 0;
       SimpleHist spectrum(histList[initialState][finalState].binLower);        
-      // Dynamic sampling of tabulated spectrum.  specSum/Nsampl gives an
-      // estimate for how many particles our sampling so far corresponds to.
-      // To reduce noise, keep sampling until Nsampl>=specSum/Nsampl or
-      // maxSamples is reached.
-      while(((Nsampl<cMC_minSpecSamples) 
-            or (Nsampl*Nsampl<specSum)) and (samplCounter<cMC_maxSpecSamples))
+      while(samplCounter<cMC_numSpecSamples)
       {
         // FIXME: Make sure that the Nsampl < sqrt(specSum) criterion makes sense
         samplCounter++;
@@ -340,19 +332,18 @@ namespace Gambit {
         double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
         double dN_dE = chn.dNdE_bound->eval(E_CoM, M);
 
-//        // Only accept point if dN_dE is above threshold value
-//        if(dN_dE > cMC_specValidThreshold)
-//        {
-          double weight2 = E_CoM*dlogE*dN_dE;
-          specSum += weight2;
-          weight2 *= weight;
-          double tmp1 = gamma*E_CoM;
-          double tmp2 = gammaBeta*sqrt(E_CoM*E_CoM-msq);
-          // Add box spectrum to histogram
-          spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
-          Nsampl++;
-//        }
+        double weight2 = E_CoM*dlogE*dN_dE;
+        specSum += weight2;
+        weight2 *= weight;
+        double tmp1 = gamma*E_CoM;
+        double tmp2 = gammaBeta*sqrt(E_CoM*E_CoM-msq);
+        // Add box spectrum to histogram
+        spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
+        Nsampl++;
       }
+#ifdef DARKBIT_DEBUG
+      std::cout << "Number of samples = " << Nsampl << std::endl;
+#endif
       if(Nsampl>0)
       {
         spectrum.multiply(1.0/Nsampl);
@@ -372,12 +363,10 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_Histograms; 
 
       // YAML options
-      static int    cMC_minSpecSamples;
-      static int    cMC_maxSpecSamples;
-//      static double cMC_specValidThreshold;
-//      static int    cMC_endCheckFrequency; 
-//      static double cMC_gammaBGPower;
-//      static double cMC_gammaRelError;      
+      static int    cMC_numSpecSamples;
+      static int    cMC_endCheckFrequency; 
+      static double cMC_gammaBGPower;
+      static double cMC_gammaRelError;      
       static int    cMC_NhistBins;
       static double cMC_binLow;
       static double cMC_binHigh;
@@ -388,18 +377,14 @@ namespace Gambit {
       {
         case MC_INIT:
           // Initialization
-          /// Option cMC_minSpecSamples<int>: (default 5)
-          cMC_minSpecSamples = runOptions->getValueOrDef<int>   (5, "cMC_minSpecSamples");    
-          /// Option cMC_maxSpecSamples<int>: (default 25)
-          cMC_maxSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_maxSpecSamples"); 
-//          /// Option cMC_specValidThreshold<double>: (default 0.)
-//          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
-//          cMC_endCheckFrequency  = 
-//            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
-//          cMC_gammaBGPower       = 
-//            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
-//          cMC_gammaRelError      = 
-//            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
+          /// Option cMC_numSpecSamples<int>: (default 10)
+          cMC_numSpecSamples = runOptions->getValueOrDef<int>   (10, "cMC_numSpecSamples"); 
+          cMC_endCheckFrequency  = 
+            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
+          cMC_gammaBGPower       = 
+            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
+          cMC_gammaRelError      = 
+            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
 
           // Note: use same binning for all particle species
           /// Option cMC_NhistBins<int>: Number of histogram bins (default 70)
@@ -449,7 +434,7 @@ namespace Gambit {
             it != endpoints.end(); it++)
         {
 #ifdef DARKBIT_DEBUG
-          std::cout << "  working on endpoint:" << (*it)->getpID() << std::endl;
+          std::cout << "  working on endpoint: " << (*it)->getpID() << std::endl;
           (*it)->printChain();
 #endif
 
@@ -476,8 +461,7 @@ namespace Gambit {
               cascadeMC_sampleSimYield(
                   *Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog,
                   histList, *Dep::cascadeMC_InitialState, weight, 
-                  cMC_minSpecSamples, cMC_maxSpecSamples
-//                  cMC_specValidThreshold
+                  cMC_numSpecSamples
                   );
               // Check if an error was raised
               ignored = false;
@@ -509,8 +493,7 @@ namespace Gambit {
                 cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit,
                     *Dep::TH_ProcessCatalog, histList,
                     *Dep::cascadeMC_InitialState, weight, 
-                    cMC_minSpecSamples, cMC_maxSpecSamples
-//                    cMC_specValidThreshold
+                    cMC_numSpecSamples
                     );
                 // Check if an error was raised
                 ignored = false;
@@ -543,8 +526,7 @@ namespace Gambit {
                   cascadeMC_sampleSimYield(*Dep::SimYieldTable, child, *pit,
                       *Dep::TH_ProcessCatalog, histList,
                       *Dep::cascadeMC_InitialState, weight, 
-                      cMC_minSpecSamples, cMC_maxSpecSamples
-//                      cMC_specValidThreshold
+                      cMC_numSpecSamples
                       );
                   // Check if an error was raised
                   ignored = false;
@@ -563,10 +545,6 @@ namespace Gambit {
           }
         }
       }
-      // Note: Spectrum-dependent convergence checks are commented out for the
-      // moment.  A fixed-number-of-runs scheme seems to work as well and is
-      // less dependent on user input.
-      /*
       // Check if finished every cMC_endCheckFrequency events
       if((*Loop::iteration % cMC_endCheckFrequency) == 0)
       {   
@@ -582,6 +560,11 @@ namespace Gambit {
             SimpleHist hist;
 #pragma omp critical (cascadeMC_histList)
             hist = histList[*Dep::cascadeMC_InitialState][*it];
+#ifdef DARKBIT_DEBUG
+            std::cout << "Checking whether convergence is reached" << std::endl;
+            for ( int i = 0; i < hist.nBins; i++ )
+              std::cout << "Estimated error at " << hist.binCenter(i) << " GeV : " << hist.getRelError(i) << std::endl;
+#endif
             double sbRatioMax=-1.0;
             int maxBin=0;
             for(int i=0; i<hist.nBins; i++)
@@ -595,6 +578,11 @@ namespace Gambit {
                 maxBin=i;
               }
             }
+#ifdef DARKBIT_DEBUG
+            std::cout << "Estimated maxBin: " << maxBin << std::endl;
+            std::cout << "Energy at maxBin: " << hist.binCenter(maxBin) << std::endl;
+            std::cout << "Estimated error at maxBin: " << hist.getRelError(maxBin) << std::endl;
+#endif
             // Check if end condition is fulfilled. If not, set cond to
             // unfinished.
             if(hist.getRelError(maxBin) > cMC_gammaRelError) cond = unfinished;
@@ -607,10 +595,12 @@ namespace Gambit {
         // Break Monte Carlo loop if all end conditions are fulfilled.
         if(cond==finished)
         {
+#ifdef DARKBIT_DEBUG
+          std::cout << "!! wrapping up !!" << std::endl;
+#endif
           Loop::wrapup();
         }
       }
-      */
     }
 
     // Convenience function for getting a daFunk::Funk object of a given spectrum.

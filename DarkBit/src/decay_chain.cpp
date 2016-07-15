@@ -21,6 +21,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
+//#define DARKBIT_DEBUG
 
 namespace Gambit 
 {
@@ -373,7 +374,7 @@ namespace Gambit
         {
           totalWidth   += DecayTable::getWidth(*it);
         }
-        // FIXME: Include genRateMisc in totalWidth
+        totalWidth += invisibleWidth;
         if(randInit) generateRandTable();
       }
       bool DecayTableEntry::isEnabled(const TH_Channel *in) const
@@ -418,6 +419,11 @@ namespace Gambit
       {   
         disabledDecays.push_back(in);
         totalWidth   += DecayTable::getWidth(in);
+      }       
+      void DecayTableEntry::setInvisibleWidth(double width)
+      {   
+        invisibleWidth = width;
+        totalWidth  += width;
       }       
       bool DecayTableEntry::enableDecay(const TH_Channel *in)
       {
@@ -504,6 +510,9 @@ namespace Gambit
           string pID = it->particle1ID;
           double m = cat.getParticleProperty(pID).mass;
           bool stable = ((it->channelList).size()<1);
+#ifdef DARKBIT_DEBUG
+          std::cout << "Importing " << pID << std::endl;
+#endif
           if(disabledList.count(pID)==1) stable = true;
           // If tabulated spectra exist for decays of this particle, consider
           // it stable for the purpose of decay chain generation.
@@ -536,6 +545,7 @@ namespace Gambit
               finalStates.insert(*it3);
             }
           }
+          entry.setInvisibleWidth(it->genRateMisc->bind()->eval());
           // FIXME: Make sure that decay widths are correctly used everywhere
           if(!stable and entry.enabledDecays.size() == 0)
           {
@@ -681,6 +691,7 @@ namespace Gambit
             }
             std::cout << "Width: " << getWidth(*it2) << endl;
           }
+          std::cout << std::endl;
         } 
 #endif
       }
@@ -870,20 +881,20 @@ namespace Gambit
       }
       void ChainParticle::printChain() const
       {
-        logger() << "*********************" << endl;
-        logger() << "Decay chain printout:" << endl;
-        logger() << "---------------------" << endl;
-        logger() << "Generation " << chainGeneration << ":" << endl;
-        logger() << "0  " << pID << ", p = " << p_Lab() << 
+        std::cout << "*********************" << endl;
+        std::cout << "Decay chain printout:" << endl;
+        std::cout << "---------------------" << endl;
+        std::cout << "Generation " << chainGeneration << ":" << endl;
+        std::cout << "0  " << pID << ", p = " << p_Lab() << 
           ", Weight: " << weight  << endl;
-        logger() << "---------------------" << endl;
+        std::cout << "---------------------" << endl;
         if(nChildren>0)
         {
           bool run = false;
           int gen = chainGeneration+1;
           do
           {
-            logger() << "Generation " << gen <<":" << endl;
+            std::cout << "Generation " << gen <<":" << endl;
             run= false;
             for(int i=0;i<nChildren;i++)
             {
@@ -894,7 +905,7 @@ namespace Gambit
               run = more || run;
             }
             gen++;
-            logger() << "---------------------" << endl;
+            std::cout << "---------------------" << endl;
           }
           while(run);
         }
@@ -916,9 +927,9 @@ namespace Gambit
         for(vector<int>::const_iterator it=ancestry.begin();
             it!=ancestry.end(); ++it)
         {
-          logger() << *it << "  ";
+          std::cout << *it << "  ";
         }
-        logger() << pID  << ", p = " << p_Lab() << ", Weight: " << weight  << endl;
+        std::cout << pID  << ", p = " << p_Lab() << ", Weight: " << weight  << endl;
         if(nChildren>0) return true;
         return false;
       }

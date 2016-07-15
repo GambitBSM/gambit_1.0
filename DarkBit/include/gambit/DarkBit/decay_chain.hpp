@@ -162,11 +162,11 @@ namespace Gambit
                     // Constructor
                     DecayTableEntry(string pID, double m, bool stable) : 
                         m(m), stable(stable), enabledWidth(0), 
-                        totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(pID), randInit(false){}
+                        invisibleWidth(0), totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(pID), randInit(false){}
                     // Dummy constructor (for the DecayTable map)
                     DecayTableEntry() : 
                         m(0), stable(false), enabledWidth(0), 
-                        totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(""),  randInit(false){}
+                        invisibleWidth(0), totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(""),  randInit(false){}
                     // Pick a random decay channel
                     bool randomDecay(const TH_Channel* &decay) const;
                     // Update decay widths and if necessary Monte Carlo table
@@ -178,6 +178,7 @@ namespace Gambit
                     // Add decay channel as enabled or disabled
                     void addChannel(const TH_Channel *in);    
                     void addDisabled(const TH_Channel *in);
+                    void setInvisibleWidth(double width);
                     // Functions for enabling/disabling (registered) decays. 
                     // Returns false if decay is in the list of disabled/enabled decays 
                     bool enableDecay(const TH_Channel *in);
@@ -198,6 +199,7 @@ namespace Gambit
                     // Decay widths of enabled channels and all channels
                     double enabledWidth;
                     double totalWidth; 
+                    double invisibleWidth;
                     bool useForcedTotalWidth;
                     double forcedTotalWidth;
                     // String particle identifier
