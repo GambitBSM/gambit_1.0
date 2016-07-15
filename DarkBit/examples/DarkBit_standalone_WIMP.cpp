@@ -216,7 +216,7 @@ int main(int argc, char* argv[])
   {
     if (argc==1)
     {
-      std::cout << "Please select test mode (1-7)" << std::endl;
+      std::cout << "Please select test mode>=0" << std::endl;
       exit(1);
     }
     int mode = std::stoi((std::string)argv[1]);
@@ -309,9 +309,11 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.resolveDependency(SimYieldTablePointer);
 
     // Set up MC loop manager for cascade MC
-    // FIXME: Systematically test accuracy and dependence on setup parameters
-    // FIXME: Add maximum width for energy bins
-    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
+    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 20000);
+    cascadeMC_Histograms.setOption<double>("cMC_endCheckFrequency", 25);
+    cascadeMC_Histograms.setOption<double>("cMC_gammaRelError", .05);
+    cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
+    cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
     cascadeMC_LoopManager.resolveDependency(SimYieldTablePointer);
@@ -332,8 +334,6 @@ int main(int argc, char* argv[])
     //cascadeMC_GenerateChain.reset_and_calculate();
 
     // Generate histogram for cascade MC
-    cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 600);
-    // FIXME: Check dependence on histogram parameters
     cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
     cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
     cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_WIMP);

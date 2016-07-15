@@ -21,7 +21,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
-//#define DARKBIT_DEBUG
+#define DARKBIT_DEBUG
 
 namespace Gambit {
   namespace DarkBit {
@@ -81,8 +81,8 @@ namespace Gambit {
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
       int cMC_minEvents = 2;  // runOptions->getValueOrDef<int>(2, "cMC_minEvents");
       // Get YAML options
-      /// Option cMC_maxEvents<int>: Maximum number of cascade MC runs (default 10000)
-      int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
+      /// Option cMC_maxEvents<int>: Maximum number of cascade MC runs (default 20000)
+      int cMC_maxEvents = runOptions->getValueOrDef<int>(20000, "cMC_maxEvents");
 
 
       // Initialization run
@@ -374,17 +374,17 @@ namespace Gambit {
         case MC_INIT:
           // Initialization
           /// Option cMC_numSpecSamples<int>: (default 10)
-          cMC_numSpecSamples = runOptions->getValueOrDef<int>   (10, "cMC_numSpecSamples");
+          cMC_numSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_numSpecSamples");
           cMC_endCheckFrequency  =
             runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
           cMC_gammaBGPower       =
             runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
           cMC_gammaRelError      =
-            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");
+            runOptions->getValueOrDef<double>(0.05,   "cMC_gammaRelError");
 
           // Note: use same binning for all particle species
-          /// Option cMC_NhistBins<int>: Number of histogram bins (default 70)
-          cMC_NhistBins = runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");
+          /// Option cMC_NhistBins<int>: Number of histogram bins (default 350)
+          cMC_NhistBins = runOptions->getValueOrDef<int>   (350,     "cMC_NhistBins");
           /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
           cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");
           /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
@@ -593,6 +593,7 @@ namespace Gambit {
         {
 #ifdef DARKBIT_DEBUG
           std::cout << "!! wrapping up !!" << std::endl;
+          std::cout << "Perfomed iterations: " << *Loop::iteration << std::endl;
 #endif
           Loop::wrapup();
         }

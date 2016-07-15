@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
     // Relic density calculation with DarkSUSY (the sloppy version)
     RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
     RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-    RD_oh2_DarkSUSY.setOption<int>("fast", 0);  // 0: normal; 1: fast; 2: dirty
+    RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
     RD_oh2_DarkSUSY.reset_and_calculate();
     // FIXME: Use "general" version instead
 
@@ -315,7 +315,6 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.reset_and_calculate();
 
     // Set up MC loop manager for cascade MC
-    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1000);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
     cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
