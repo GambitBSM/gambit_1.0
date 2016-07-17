@@ -101,7 +101,7 @@ START_MODULE
     DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY bsgamma_Ecut
   START_CAPABILITY
     #define FUNCTION SI_bsgamma_Ecut
@@ -116,7 +116,7 @@ START_MODULE
     DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
-
+*/
 
   // Observable: BR(Bs -> mu+ mu-)
   #define CAPABILITY Bsmumu
@@ -609,6 +609,7 @@ START_MODULE
     #define FUNCTION b2ll_measurements
     START_FUNCTION(FlavBit::Flav_measurement_assym)
           DEPENDENCY(SuperIso_modelinfo, parameters)
+          BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double,(struct parameters*, int))
           DEPENDENCY(Bsmumu_untag, double )
           DEPENDENCY(Bdmumu, double )
           DEPENDENCY(Debug_Cap, bool)

@@ -475,26 +475,6 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_bsgamma"<<endl;
 
     }
-    /*
-    void SI_bsgamma_(double &result)
-    {
-      
-      using namespace Pipes::SI_BRBKstarmumu_11_25;                                     
-                                                                                  
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;                
-                                                                                  
-      struct parameters param = *Dep::SuperIso_modelinfo;                               
-                                                                                  
-      double q2min=1.1;                                                                 
-      double q2max=2.5;                                                                 
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );          
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;                
-
-      
-      
-      
-    }
-    */
     // *************************************************
     /// Calculating Br in Bs->mumu decays
     // *************************************************
@@ -627,6 +607,9 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Bdmumu"<<endl;
     }
 
+
+
+
     // *************************************************
     /// Calculating Br in B->tau nu_tau decays
     // *************************************************
@@ -728,7 +711,7 @@ namespace Gambit
     // *************************************************
     /// Calculating Br B->D* tau nu
     // *************************************************
-
+    
     void SI_Dstaunu(double &result)
     {
       using namespace Pipes::SI_Dstaunu;
@@ -744,7 +727,7 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Dstaunu"<<endl;
 
     }
-
+    
     // *************************************************
     /// Calculating Br B->Ds mu nu
     // *************************************************
@@ -1490,6 +1473,8 @@ namespace Gambit
       using namespace Pipes::b2ll_measurements;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2ll_measurements"<<endl;
+      
+      struct parameters param = *Dep::SuperIso_modelinfo; 
 
 
       // experimental measurement
@@ -1507,6 +1492,7 @@ namespace Gambit
       red.create_global_corr();
 
       double theory_bs2mumu=*(Dep::Bsmumu_untag);
+      //double theory_bs2mumu=SI_Bsll_untag_CONV(&param, byVal(2));
       //SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=*(Dep::Bdmumu);
       //SI_Bdmumu(theory_bd2mumu);
