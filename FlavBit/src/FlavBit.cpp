@@ -464,7 +464,7 @@ namespace Gambit
     double mu_b=param.mass_b_1S/2.;
     double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
     std::complex<double> CQpb[3];
-
+        
     BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
     BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
     BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
@@ -475,7 +475,26 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_bsgamma"<<endl;
 
     }
+    /*
+    void SI_bsgamma_(double &result)
+    {
+      
+      using namespace Pipes::SI_BRBKstarmumu_11_25;                                     
+                                                                                  
+      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;                
+                                                                                  
+      struct parameters param = *Dep::SuperIso_modelinfo;                               
+                                                                                  
+      double q2min=1.1;                                                                 
+      double q2max=2.5;                                                                 
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );          
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;                
 
+      
+      
+      
+    }
+    */
     // *************************************************
     /// Calculating Br in Bs->mumu decays
     // *************************************************
