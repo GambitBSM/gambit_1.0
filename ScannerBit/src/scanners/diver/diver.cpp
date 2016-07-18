@@ -79,8 +79,8 @@ scanner_plugin(Diver, version(1, 0, 0))
                   << "is missing.  This is probably because your last run didn't " << endl
                   << "complete even one generation. Diver will start from scratch, " << endl
                   << "as if you had specified -r." << scan_end;
+        resume = false;
       }
-      resume = false;
       f.close();
       g.close();
     }

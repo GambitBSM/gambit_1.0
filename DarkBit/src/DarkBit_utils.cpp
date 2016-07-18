@@ -143,7 +143,7 @@ namespace Gambit
         if(totalWidth>0)
         {
           TH_Process process(pID);
-          process.genRateMisc = Funk::cnst(0.);
+          process.genRateMisc = daFunk::cnst(0.);
           for(auto fState_it = entry->channels.begin();
               fState_it!= entry->channels.end(); ++fState_it)
           {
@@ -176,7 +176,7 @@ namespace Gambit
               if(m_final<=m_init)
               {
                 process.channelList.push_back(
-                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
+                    TH_Channel(pIDs, daFunk::cnst(partialWidth)));
                 // Recursively import decays of final states (for cascades)
                 for(auto f_it=pIDs.begin(); f_it!=pIDs.end();++f_it)
                 {

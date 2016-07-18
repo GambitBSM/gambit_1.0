@@ -48,7 +48,6 @@ ExternalProject_Add(diver
            COMMAND ${CMAKE_COMMAND} -E copy_directory ${diver_location} ${diver_dir}
   SOURCE_DIR ${diver_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${diver_lib}.so FF=${CMAKE_Fortran_COMPILER} MODULE=${FMODULE} FOPT=${diverFFLAGS} SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
   INSTALL_COMMAND "" 
@@ -81,7 +80,6 @@ ExternalProject_Add(multinest
            COMMAND ${CMAKE_COMMAND} -E copy_directory ${mn_location} ${mn_dir}
   SOURCE_DIR ${mn_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
                                  -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@[[:space:]]*\\$^#-o \\$\\(LIBS\\)\\$@ \\$^ ${mnLAPACK}#g"
                                  <SOURCE_DIR>/Makefile 
@@ -104,7 +102,6 @@ ExternalProject_Add(great
   DOWNLOAD_DIR ${scanner_download}
   SOURCE_DIR ${great_dir}
   BINARY_DIR ${great_dir}/build
-  DOWNLOAD_ALWAYS 0
   CMAKE_COMMAND ${CMAKE_COMMAND} ..
   CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}

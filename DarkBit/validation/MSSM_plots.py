@@ -108,7 +108,7 @@ def showSpec():
   plt.legend(frameon=False, loc=2)
   plt.xlabel("Energy [GeV]")
   plt.ylabel("dN/dE * E^2 <sigma v> / mass**2")
-  plt.savefig("DarkBit/dNdE_MSSM.eps")
+  plt.savefig("DarkBit/validation/dNdE_MSSM.eps")
 
 def showRelic():
   plt.clf()
@@ -128,7 +128,7 @@ def showRelic():
   plt.legend(frameon=False, loc=2)
   plt.xlabel("Original oh2")
   plt.ylabel("Gambit oh2 (DS (o) & MO (*))")
-  plt.savefig("DarkBit/oh2_MSSM.eps")
+  plt.savefig("DarkBit/validation/oh2_MSSM.eps")
 
 def showBR():
   plt.clf()
@@ -169,7 +169,7 @@ def showBR():
   plt.ylabel("BR")
   plt.tight_layout(pad=0.3)
   plt.legend(frameon=False, loc=3, ncol=5)
-  plt.savefig("DarkBit/BR_MSSM.eps")
+  plt.savefig("DarkBit/validation/BR_MSSM.eps")
 
 
 def showDD():
@@ -196,7 +196,7 @@ def showDD():
   plt.legend(frameon=False, loc=2)
   plt.xlabel("Couplings original, gps (down), gns (up), gpa (left), gna (right)")
   plt.ylabel("Couplings Gambit, DS (filled) & MO (empty)")
-  plt.savefig("DarkBit/DD_MSSM.eps")
+  plt.savefig("DarkBit/validation/DD_MSSM.eps")
 
 if __name__ == '__main__':
   runtests()  # This can take *very* long thanks to DS relic density routines
