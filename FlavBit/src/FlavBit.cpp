@@ -22,6 +22,7 @@
 ///  \date 2015 May
 ///  \date 2015 July
 ///  \date 2015 August
+///  \data 2016 July
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -463,7 +464,7 @@ namespace Gambit
     double mu_b=param.mass_b_1S/2.;
     double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
     std::complex<double> CQpb[3];
-
+        
     BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
     BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
     BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
@@ -474,7 +475,6 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_bsgamma"<<endl;
 
     }
-
     // *************************************************
     /// Calculating Br in Bs->mumu decays
     // *************************************************
@@ -607,6 +607,9 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Bdmumu"<<endl;
     }
 
+
+
+
     // *************************************************
     /// Calculating Br in B->tau nu_tau decays
     // *************************************************
@@ -708,7 +711,7 @@ namespace Gambit
     // *************************************************
     /// Calculating Br B->D* tau nu
     // *************************************************
-
+    
     void SI_Dstaunu(double &result)
     {
       using namespace Pipes::SI_Dstaunu;
@@ -724,7 +727,7 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Dstaunu"<<endl;
 
     }
-
+    
     // *************************************************
     /// Calculating Br B->Ds mu nu
     // *************************************************
@@ -1470,6 +1473,8 @@ namespace Gambit
       using namespace Pipes::b2ll_measurements;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2ll_measurements"<<endl;
+      
+      struct parameters param = *Dep::SuperIso_modelinfo; 
 
 
       // experimental measurement
@@ -1487,6 +1492,7 @@ namespace Gambit
       red.create_global_corr();
 
       double theory_bs2mumu=*(Dep::Bsmumu_untag);
+      //double theory_bs2mumu=SI_Bsll_untag_CONV(&param, byVal(2));
       //SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=*(Dep::Bdmumu);
       //SI_Bdmumu(theory_bd2mumu);

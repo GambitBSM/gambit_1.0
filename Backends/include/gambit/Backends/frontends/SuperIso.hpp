@@ -36,6 +36,8 @@ BE_FUNCTION(Cprime_calculator, void, (int, double*, std::complex<double>*, doubl
 BE_FUNCTION(CQ_calculator, void, (int, std::complex<double>*, std::complex<double>*, double, double, struct parameters*), "CQ_calculator", "CQ_calculator")
 
 BE_FUNCTION(bsgamma, double, (double*, double*, double*, double*, double, double, struct parameters*), "bsgamma", "bsgamma")
+BE_FUNCTION(bsgamma_Ecut, double, (double*, double*, double*, double*, double, double, double, struct parameters*), "bsgamma_Ecut", "bsgamma_Ecut")
+
 BE_FUNCTION(Bsmumu, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsmumu", "Bsmumu")
 BE_FUNCTION(Bsmumu_untag, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsmumu_untag", "Bsmumu_untag")
 BE_FUNCTION(Bsll_untag, double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsll_untag", "Bsll_untag")
