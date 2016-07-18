@@ -506,90 +506,93 @@ namespace Gambit {
       if ( not initialized )
       {
         daFunk::Funk dNdE;
+        daFunk::Funk dNdE_1;
+        daFunk::Funk dNdE_2;
 
 #define ADD_CHANNEL(inP, P1, P2, FINAL, EcmMin, EcmMax)                                                   \
         dNdE = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("Ecm"), daFunk::var("E"), inP, outN)/daFunk::var("E"); \
         result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
-        // FIXME: Update energy validty ranges
-        ADD_CHANNEL(0, "g", "g", "gamma", 0., 10000.)
-        ADD_CHANNEL(1, "d", "dbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(2, "u", "ubar", "gamma", 0., 10000.)
-        ADD_CHANNEL(3, "s", "sbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(4, "c", "cbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(5, "b", "bbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(6, "t", "tbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(7, "e+", "e-", "gamma", 0., 10000.)
-        ADD_CHANNEL(8, "mu+", "mu-", "gamma", 0., 10000.)
-        ADD_CHANNEL(9, "tau+", "tau-", "gamma", 0., 10000.)
-        ADD_CHANNEL(10, "Z0", "Z0", "gamma", 0., 10000.)
-        ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
+
+        ADD_CHANNEL(0, "g", "g", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(1, "d", "dbar", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(2, "u", "ubar", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(3, "s", "sbar", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(4, "c", "cbar", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(5, "b", "bbar", "gamma", 2*5., 2*5000.)
+        ADD_CHANNEL(6, "t", "tbar", "gamma", 2*176., 2*5000.)
+        ADD_CHANNEL(7, "e+", "e-", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(8, "mu+", "mu-", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(9, "tau+", "tau-", "gamma", 2*2., 2*5000.)
+        ADD_CHANNEL(10, "Z0", "Z0", "gamma", 2*91.2, 2*5000.)
+        ADD_CHANNEL(13, "W+", "W-", "gamma", 2*80.3, 2*5000.)
 #undef ADD_CHANNEL
         result.addChannel(
-            daFunk::zero("Ecm", "E"), "nu_e", "nubar_e", "gamma", 0., 10000.);
+            daFunk::zero("Ecm", "E"), "nu_e", "nubar_e", "gamma", 0., 100000.);
         result.addChannel(
-            daFunk::zero("Ecm", "E"), "nu_mu", "nubar_mu", "gamma", 0., 10000.);
+            daFunk::zero("Ecm", "E"), "nu_mu", "nubar_mu", "gamma", 0., 100000.);
         result.addChannel(
-            daFunk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 0., 10000.);
+            daFunk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 0., 100000.);
 
         // Add approximations for single-particle cases.
-        // FIXME: Update energy validty ranges
         dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 8, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
-        result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 2., 5000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 2., 5000.);
         dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 9, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
-        result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 2., 5000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 2., 5000.);
         dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 10, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
-        result.addChannel(dNdE/2, "Z0", "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 5000.);
         dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 13, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
-        result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, "W+", "gamma", 80.3, 5000.);
+        result.addChannel(dNdE/2, "W-", "gamma", 80.3, 5000.);
 
         // Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
         dNdE = (daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(), daFunk::var("_Ecm"), daFunk::var("E"), 6, outN)
                /daFunk::var("E"))->set("_Ecm", daFunk::var("Ecm")*2);
-        result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 176., 5000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 176., 5000.);
 
-        // Approximations for mixed quark channels
-        daFunk::Funk dNdE_d = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
-                              daFunk::var("Ecm"), daFunk::var("E"), 1, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_u = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
-                              daFunk::var("Ecm"), daFunk::var("E"), 2, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_s = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
-                              daFunk::var("Ecm"), daFunk::var("E"), 3, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_c = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
-                              daFunk::var("Ecm"), daFunk::var("E"), 4, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_b = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
-                              daFunk::var("Ecm"), daFunk::var("E"), 5, outN)/daFunk::var("E");
-        daFunk::Funk dNdE_t = daFunk::func_fromThreadsafe(BEreq::dNdE.pointer(),
-                              daFunk::var("Ecm"), daFunk::var("E"), 6, outN)/daFunk::var("E");
+        // add channels with "mixed final states", i.e. final state particles with (potentially) different masses        
+        daFunk::Funk Ecm = daFunk::var("Ecm");
+#define ADD_CHANNEL_MIXEDMASSES(inP1, inP2, P1, P2, FINAL, m1, m2, EcmMin, EcmMax)                \
+        dNdE_1 = (daFunk::func_fromThreadsafe(                           \
+            BEreq::dNdE.pointer(), daFunk::var("Ecm1"),         \
+            daFunk::var("E"), inP1, outN)->set("Ecm1",         \
+            Ecm + (m1*m1 - m2*m2)/Ecm))/daFunk::var("E");        \
+        dNdE_2 = (daFunk::func_fromThreadsafe(                           \
+            BEreq::dNdE.pointer(), daFunk::var("Ecm2"),         \
+            daFunk::var("E"), inP2, outN)->set("Ecm2",         \
+            Ecm + (m2*m2 - m1*m1)/Ecm))/daFunk::var("E");        \
+        result.addChannel(0.5*(dNdE_1 + dNdE_2), str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);
 
-        // FIXME: Update energy validty ranges
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 10000.);
+        // - The numerical values for EcmMin and EcmMax are obtained from applying the corresponding two-body kinematics
+        //   to the minimal/maximal center-of-mass energies allowed by the micromegas tables
+        ADD_CHANNEL_MIXEDMASSES(2, 1, "u", "dbar", "gamma", 0.0, 0.0, 2*2., 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(1, 2, "d", "ubar", "gamma", 0.0, 0.0, 2*2., 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(2, 3, "u", "sbar", "gamma", 0.0, 0.0, 2*2., 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(3, 2, "s", "ubar", "gamma", 0.0, 0.0, 2*2., 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(2, 5, "u", "bbar", "gamma", 0.0, 5.0, 7.39, 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(5, 2, "b", "ubar", "gamma", 5.0, 0.0, 7.39, 2*5000.)
 
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);
+        ADD_CHANNEL_MIXEDMASSES(4, 1, "c", "dbar", "gamma", 1.35, 0.0, 4.42, 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(1, 4, "d", "cbar", "gamma", 0.0, 1.35, 4.42, 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(4, 3, "c", "sbar", "gamma", 1.35, 0.0, 4.42, 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(3, 4, "s", "cbar", "gamma", 0.0, 1.35, 4.42, 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(4, 5, "c", "bbar", "gamma", 1.35, 5.0, 7.22, 2*5000.)
+        ADD_CHANNEL_MIXEDMASSES(5, 4, "b", "cbar", "gamma", 5.0, 1.35, 7.22, 2*5000.)
 
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);
+        ADD_CHANNEL_MIXEDMASSES(6, 1, "t", "dbar", "gamma", 175.0, 0.0, 194.74, 9996.94)
+        ADD_CHANNEL_MIXEDMASSES(1, 6, "d", "tbar", "gamma", 0.0, 175.0, 194.74, 9996.94)
+        ADD_CHANNEL_MIXEDMASSES(6, 3, "t", "sbar", "gamma", 175.0, 0.0, 194.74, 9996.94)
+        ADD_CHANNEL_MIXEDMASSES(3, 6, "s", "tbar", "gamma", 0.0, 175.0, 194.74, 9996.94)
+        ADD_CHANNEL_MIXEDMASSES(6, 5, "t", "bbar", "gamma", 175.0, 5.0, 195.40, 9996.94)
+        ADD_CHANNEL_MIXEDMASSES(5, 6, "b", "tbar", "gamma", 5.0, 175.0, 195.40, 9996.94)
+
+#undef ADD_CHANNEL_MIXEDMASSES
 
         initialized = true;
       }
