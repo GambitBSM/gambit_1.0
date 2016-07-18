@@ -125,7 +125,7 @@ Scanner:
 
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 200
       output_file:  output
       like:  LogLike

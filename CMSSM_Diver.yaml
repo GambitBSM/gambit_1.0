@@ -25,7 +25,9 @@ Parameters:
       prior_type: log
     A0:
       range: [-1e4, 1e4]
-      prior_type: flat
+      flat_start: -1e2
+      flat_end: 1e2
+      prior_type: double_log_flat_join
     TanBeta:
       range: [3.0, 70]
       prior_type: flat

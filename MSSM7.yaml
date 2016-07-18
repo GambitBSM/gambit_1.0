@@ -22,27 +22,26 @@ Parameters:
     SignMu:
       fixed_value: 1
     Ad_3:
-      range: [-1e4, 1e4]
-      prior_type: flat
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]    
     Au_3:
-      range: [-1e4, 1e4]
-      prior_type: flat
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]    
     M2:
-      range: [1e2, 1e4]
-      prior_type: log
+      prior_type: double_log_flat_join
+      ranges: [-1e4, -1e2, 1e2, 1e4]    
     TanBeta:
       range: [3.0, 70.0]
       prior_type: flat
     mHd2:
-      range: [-1e8, 1e8]
-      prior_type: flat    
+      prior_type: double_log_flat_join
+      ranges: [-1e8, -1e4, 1e4, 1e8]    
     mHu2:
-      range: [-1e8, 1e8]
-      prior_type: flat
+      prior_type: double_log_flat_join
+      ranges: [-1e8, -1e4, 1e4, 1e8]    
     mf2:
-      range: [1e4, 1e8]
-      prior_type: log
-
+      prior_type: double_log_flat_join
+      ranges: [0, 0, 1e4, 1e8]    
 
   LocalHalo:
     rho0: # Local dark matter density

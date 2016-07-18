@@ -6,7 +6,7 @@ Parameters:
   TestModel1D:
     x: 
       prior_type: double_log_flat_join
-      ranges: [-2000, -100, 1000, 3000]      
+      ranges: [-2000, 0, 0, 0]      
 
 #======== Prior setup ========
 Priors:
@@ -27,7 +27,7 @@ Scanner:
 
   scanners:
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 50000
       like: LogLike
 
