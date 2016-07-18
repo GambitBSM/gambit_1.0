@@ -1035,7 +1035,7 @@ public:
             ptrOut[j] = ptrIn[j];
             for (int i = 0; i < proj; i++)
             {
-                ptrOut[j] += r*max*currentVec[i][j];
+                ptrOut[j] += r*max*currentVec[i][j]/3.0;
             }
         }
     }

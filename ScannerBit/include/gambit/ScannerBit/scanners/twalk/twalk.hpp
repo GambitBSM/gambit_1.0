@@ -183,11 +183,11 @@ public:
                 //for (int i = 0; i < ma; i++)
                 //    cov[i][i] = ct*ct;
                 //gDev[0]->EnterMat(cov);
-                //gDev[0]->HopBlow(&aNext[0], &a0[t][0], &a0[tt][0], &a0[ttt][0]);
-                gDev[0]->EnterMat(calcIndent(temp));
+                gDev[0]->HopBlow(&aNext[0], &a0[t][0], &a0[tt][0], &a0[ttt][0]);
+                //gDev[0]->EnterMat(calcIndent(temp));
             }
                     
-            gDev[0]->MultiDev(&aNext[0], &a0[t][0]);
+            //gDev[0]->MultiDev(&aNext[0], &a0[t][0]);
             logZ = 0.0;
         }
         else
@@ -233,11 +233,11 @@ public:
                 //for (int i = 0; i < ma; i++)
                 //    cov[i][i] = ct*ct;
                 //gDev[0]->EnterMat(cov);
-                //gDev[0]->HopBlow(&aNext[0], &a0[tt][0], &a0[tt][0], &a0[ttt][0]);
-                gDev[0]->EnterMat(calcIndent(temp));
+                gDev[0]->HopBlow(&aNext[0], &a0[tt][0], &a0[tt][0], &a0[ttt][0]);
+                //gDev[0]->EnterMat(calcIndent(temp));
             }
             
-            gDev[0]->MultiDev(&aNext[0], &a0[tt][0]);
+            //gDev[0]->MultiDev(&aNext[0], &a0[tt][0]);
             logZ = 0.0;
         }
         

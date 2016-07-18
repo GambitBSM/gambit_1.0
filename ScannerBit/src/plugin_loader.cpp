@@ -21,6 +21,7 @@
 
 #include <cstdlib>
 #include <iomanip>
+#include <unistd.h>
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -66,29 +67,40 @@ namespace Gambit
             Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
             {
                 std::string p_str;
-                if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                std::ifstream lib_list(path + "plugin_libraries.list");
+                //if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                if (lib_list.is_open())
                 {
-                    char path_buffer[1024];
+                    /*char path_buffer[1024];
                     int p_n;
                     std::stringstream p_ss;
 
                     while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
                     {
                         p_ss << std::string(path_buffer, p_n);
-                    }
+                    }*/
 
-                    while (p_ss >> p_str)
+                    //while (p_ss >> p_str)
+                    while (lib_list >> p_str)
                     {
-                        if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
-                            loadLibrary (path + p_str);
+                        //if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
+                        p_str = path + p_str;
+                        if(access(p_str.c_str(), F_OK) != -1) //can use R_OK|W_OK|X_OK also
+                            loadLibrary (p_str);
+                        else
+                            scan_warn << "Could not find plugin library \"" << p_str << "\"." << scan_end;
                     }
                     
-                    pclose(p_f);
+                    //pclose(p_f);
                     
                     loadExcluded(GAMBIT_DIR "/scratch/scanbit_excluded_libs.yaml");
                     
                     flags_node = YAML::LoadFile(GAMBIT_DIR "/scratch/scanbit_flags.yaml");
                     process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml", GAMBIT_DIR "/scratch/scanbit_flags.yaml");
+                }
+                else
+                {
+                    scan_err << "Cannot open ./ScannerBit/lib/plugin_libraries.list" << scan_end;
                 }
             }
 
