@@ -326,7 +326,7 @@ namespace Gambit {
          if(dspace_id<0) 
          {
             std::ostringstream errmsg;
-            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<"\", offset="<<offset<<") in HDF5 file. H5Dget_space failed." << std::endl;
+            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<"\", offset="<<offset<<", length="<<selection_dims[0]<<") in HDF5 file. H5Dget_space failed." << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
@@ -343,20 +343,20 @@ namespace Gambit {
          if(err_hs<0) 
          {
             std::ostringstream errmsg;
-            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<"\", offset="<<offset<<") in HDF5 file. H5Sselect_hyperslab failed." << std::endl;
+            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<"\", offset="<<offset<<", length="<<selection_dims[0]<<") in HDF5 file. H5Sselect_hyperslab failed." << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
          // Define memory space
          //H5::DataSpace memspace( DSETRANK, this->get_chunkdims() );
-         hid_t memspace_id = H5Screate_simple(DSETRANK, this->get_chunkdims(), NULL);         
+         hid_t memspace_id = H5Screate_simple(DSETRANK, selection_dims, NULL);         
 
          #ifdef HDF5_DEBUG 
          std::cout << "Debug variables:" << std::endl
                    << "  dsetdims()[0]      = " << this->dsetdims()[0] << std::endl
                    << "  offsets[0]         = " << offsets[0] << std::endl
                    << "  CHUNKLENGTH        = " << CHUNKLENGTH << std::endl
-                   << "  get_chunkdims()[0] = " << this->get_chunkdims()[0] << std::endl;
+                   << "  selection_dims[0] = " << selection_dims[0] << std::endl;
          #endif
 
          return std::make_pair(memspace_id, dspace_id); // Be sure to close these identifiers after using them!
@@ -386,7 +386,9 @@ namespace Gambit {
          {
             std::ostringstream errmsg;
             errmsg << "Error retrieving chunk (offset="<<offset<<", length="<<length<<") from dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dread failed." << std::endl;
-            printer_error().raise(LOCAL_INFO, errmsg.str());
+            errmsg << "  offset+length = "<< length << std::endl;
+            errmsg << "  dset_length() = "<< this->dset_length() << std::endl;
+           printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
          H5Sclose(dspace_id);
