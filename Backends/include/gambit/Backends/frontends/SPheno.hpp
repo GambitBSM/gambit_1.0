@@ -563,6 +563,54 @@ BE_VARIABLE(Ylp, Farray_Fcomplex16_1_3_1_3, "__spheno_MOD_ylp", "SPheno_MSSMspec
 BE_VARIABLE(ratioWoM, Freal8, "__spheno_MOD_ratiowom","SPheno_MSSMspectrum")
 BE_VARIABLE(CalcTBD,Flogical, "__spheno_MOD_calctbd","SPheno_MSSMspectrum")
 
+// Tests
+BE_FUNCTION(FirstGuess, void, (Fcomplex16&, // phase_mu
+                               Freal8&, // tanb
+                               Farray_Fcomplex16_1_3&, // Mi
+                               Farray_Fcomplex16_1_3_1_3&, // M_E2
+                               Farray_Fcomplex16_1_3_1_3&, // M_L2
+                               Farray_Fcomplex16_1_3_1_3&, // A_e
+                               Farray_Fcomplex16_1_3_1_3&, // M_D2
+                               Farray_Fcomplex16_1_3_1_3&, // M_Q2
+                               Farray_Fcomplex16_1_3_1_3&, // M_U2
+                               Farray_Fcomplex16_1_3_1_3&, // A_d
+                               Farray_Fcomplex16_1_3_1_3&, // A_u
+                               Fcomplex16&, // mu
+                               Fcomplex16&, // BImu
+                               Farray_Freal8_1_2&, // M_H2
+                               Freal8&, // gU1
+                               Freal8&, // gSU2 
+                               Farray_Fcomplex16_1_3_1_3&, // Y_l 
+                               Farray_Fcomplex16_1_3_1_3&, // Y_d
+                               Farray_Fcomplex16_1_3_1_3&, // Y_u
+                               Farray_Freal8_1_2&, // vevs
+                               Farray_Freal8_1_2&, // mP02
+                               Farray_Freal8_1_2&, // mP0
+                               Finteger& // kont
+                              ), "__sugraruns_MOD_firstguess", "SPheno_MSSMspectrum")
+BE_FUNCTION(CouplingsToG, void, (Farray_Freal8_1_3&, // gauge
+                                 Farray_Fcomplex16_1_3_1_3&, // Y_l
+                                 Farray_Fcomplex16_1_3_1_3&, // Y_d
+                                 Farray_Fcomplex16_1_3_1_3&, // Y_u
+                                 Farray<Freal8,1,57>& // g1
+                                ), "__rges_MOD_couplingstog", "SPheno_MSSMspectrum")
+BE_FUNCTION(RunRGE, void, (Finteger&, // kont
+                           Freal8&, // val
+                           Farray_Freal8_1_2&, // vevSM
+                           Farray<Freal8,1,57>&, // g1
+                           Farray<Freal8,1,213>&, // g0
+                           Freal8& // mGUT
+                          ), "__sugraruns_MOD_runrge", "SPheno_MSSMspectrum")
+//BE_FUNCTION(odeint, void, (Farray<Freal8,1,57>&, // g1
+  //                         Finteger, // 57
+    //                       Freal8&, // tz
+      //                     Freal8, // 0.0
+        //                   Freal8&, // delta
+          //                 Freal8&, // dt
+            //               Freal8, // 0.0
+              //             // rge57
+                //           Finteger& // kont
+                  //        ), "__mathematics_MOD_odeint", "SPheno_MSSMspectrum")
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(run_SPheno, int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")

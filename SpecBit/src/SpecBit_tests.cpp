@@ -56,7 +56,6 @@ namespace Gambit
     // Testing function for SPheno
     void SPheno_MSSM_test(bool &result)
     {
-      std::cout << "testing spheno" << std::endl;
       namespace myPipe = Pipes::SPheno_MSSM_test;
       const Spectrum& fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
 

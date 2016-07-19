@@ -107,10 +107,9 @@ Rules:
     type:         void
     function:     run_SPheno
     options:
-      ErrorLevel:                 -1
-      SPA_convention:             true
-      Calculate_Branching_Ratios: false
-      Calculate_Cross_Sections:   false
+      SPA_convention: true
+      delta_mass:     1.0e-4
+      n_run:          30
 
 Logger:
 

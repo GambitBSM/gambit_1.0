@@ -18,6 +18,7 @@
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
 #include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
+#include "gambit/Utils/version.hpp"
 
 // Convenience functions (definition)
 BE_NAMESPACE
@@ -26,6 +27,7 @@ BE_NAMESPACE
   // Run SPheno
   int run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
   {
+    Set_All_Parameters_0();
 
     ReadingData(sminputs, Param);
 
@@ -58,11 +60,8 @@ BE_NAMESPACE
     Farray_Freal8_1_3 mSneut2;
     Freal8 mGlu;
  
-    cout << "about to calculate spectrum" << endl;
-
     CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
 
-    cout << "spectrum calculated" << std::endl;
 
     if(!*kont)
     {
@@ -232,6 +231,11 @@ BE_NAMESPACE
 
     Freal8 Q = sqrt(GetRenormalizationScale());
     Farray_Freal8_1_3 Yu, Yd, Yl;
+
+    // Spectrum generator information
+    SLHAea_add_block(slha, "SPINFO");
+    SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+str(STRINGIFY(BACKENDNAME)));
+    SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+str(STRINGIFY(VERSION))+" ("+str(STRINGIFY(BACKENDNAME))+")");
 
     // General information
     SLHAea_add_block(slha, "SPhenoINFO");
@@ -780,14 +784,13 @@ BE_NAMESPACE
     *m32 = 1E10;
 
     *kont = 0;
- 
+
     // Block SMINPUTS
     // Already in InitializeStandardModel
    
     // Block MINPAR
     if(*HighScaleModel == "mSUGRA")
     {
-      std::cout << "this is mSUGRA "<< std::endl;
       // M0
       if(Param.find("M0") != Param.end())
       {
@@ -1033,7 +1036,7 @@ BE_NAMESPACE
 
     if(*SPA_convention)
     {
-      //backend_warning().raise(LOCAL_INFO,"SPheno Warning: in case of SPA conventions, tan(beta) should be given at 1 TeV.");
+      backend_warning().raise(LOCAL_INFO,"SPheno Warning: in case of SPA conventions, tan(beta) should be given at 1 TeV.");
     }
 
     // recalculate quantities to be sure
@@ -1148,12 +1151,6 @@ BE_NAMESPACE
     }
 
     // couplings: Alpha(Q=0), Alpha(mZ), Alpha_S(mZ), Fermi constant G_F
-    if(*Alpha == 1.0)
-      *Alpha = 1.0/137.03599974;
-    else
-    {
-      // TODO: Warning
-    }
     *Alpha_mZ = 1.0/sminputs.alphainv;
     *Alpha_mZ_MS = *Alpha_mZ; // from SMINPUTS
     *MZ_input = true;
@@ -1524,7 +1521,7 @@ BE_INI_FUNCTION
 
     // 40, alpha(0)
     Freal8 alpha = 1.0/137.035999074;
-    *Alpha = 1.0 / runOptions->getValueOrDef<Freal8>(alpha,"Alpha");
+    *Alpha = runOptions->getValueOrDef<Freal8>(alpha,"Alpha");
 
     // 41, Z-boson width
     *gamZ = runOptions->getValueOrDef<Freal8>(2.49,"gamZ");
