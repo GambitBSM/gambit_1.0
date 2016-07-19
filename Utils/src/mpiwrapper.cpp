@@ -37,7 +37,7 @@ namespace Gambit
             
       /// @{ Constructors
       /// Default (attaches to MPI_COMM_WORLD):
-      Comm::Comm() : boundcomm(MPI_COMM_WORLD)
+      Comm::Comm() : boundcomm(MPI_COMM_WORLD), myname("COMM_WORLD")
       {
          if(not Is_initialized())
          {
@@ -46,7 +46,7 @@ namespace Gambit
       }
 
       /// Copy existing communicator
-      Comm::Comm(const MPI_Comm& comm) : boundcomm(comm)
+      Comm::Comm(const MPI_Comm& comm, std::string& name) : boundcomm(comm), myname(name)
       {
          if(not Is_initialized())
          {
@@ -57,9 +57,9 @@ namespace Gambit
       /// Duplicate input communicator into boundcomm
       /// (creates new context)
       /// NOTE! MPI_Comm_dup is a COLLECTIVE call, so all processes
-      /// must call it! Beware deadlocks. May be better to duplicate
+      /// must call it! Beware deadlocks. May sometimes be better to duplicate
       /// first and then wrap in a communicator.
-      void Comm::dup(const MPI_Comm& comm)
+      void Comm::dup(const MPI_Comm& comm, std::string& name)
       {
          int errflag = MPI_Comm_dup(comm, &boundcomm);
          if(errflag!=0) {
@@ -67,6 +67,8 @@ namespace Gambit
            errmsg << "Error performing MPI_Comm_dup! Received error flag: "<<errflag; 
            utils_error().raise(LOCAL_INFO, errmsg.str());
          }
+         // Change bound name
+         myname = name;
       }
 
       /// @{ Destructor
@@ -87,7 +89,7 @@ namespace Gambit
           {
             int source = status.MPI_SOURCE;
             int tag = status.MPI_TAG;
-            errmsg << "rank " << Get_rank() << ": WARNING! Unreceived MPI message detected (source="<<source<<", tag="<<tag<<"). This may cause problems when MPI_Finalize is run." << std::endl;
+            errmsg << "rank " << Get_rank() << ": WARNING! Unreceived MPI message detected (source="<<source<<", tag="<<tag<<", communicator group="<<Get_name()<<"). This may cause problems when MPI_Finalize is run." << std::endl;
           }
           return errmsg.str();
         }
@@ -109,6 +111,11 @@ namespace Gambit
         return rank;
       }
 
+      /// Get name of communicator group (for error messages)
+      std::string Get_name() const
+      {
+        return myname;
+      }
 
       /// Null buffer for use in master_wait_for_tag
       int null_send_buffer = 0;
@@ -552,12 +559,13 @@ namespace Gambit
       {
         if(not Is_finalized() and Is_initialized())
         {
-          Comm COMM_WORLD;
-          #ifdef MPI_DEBUG_OUTPUT
-          std::cerr << "rank " << COMM_WORLD.Get_rank() << ": Shutting down MPI..." << std::endl;
-          #endif
-          // Warn if any unreceived messages exist from WORLD. Undelivered messages from other communicators are checked when their wrappers are destructed, so try to make sure this happens before finalize is called, otherwise the warnings will not occur. 
-          std::cerr << COMM_WORLD.check_for_undelivered_messages();
+          {
+            Comm COMM_WORLD;
+            #ifdef MPI_DEBUG_OUTPUT
+            std::cerr << "rank " << COMM_WORLD.Get_rank() << ": Shutting down MPI..." << std::endl;
+            #endif
+          // Warn if any unreceived messages exist from WORLD (when it is destructed). Undelivered messages from other communicators are checked when their wrappers are destructed, so try to make sure this happens before finalize is called, otherwise the warnings will not occur. 
+          }
           MPI_Finalize();
         }
       }

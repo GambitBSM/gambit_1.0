@@ -607,7 +607,7 @@ namespace Gambit
 
         // Set up communicator context for HDF5 printer system
 #ifdef WITH_MPI
-        myComm.dup(MPI_COMM_WORLD); // duplicates MPI_COMM_WORLD
+        myComm.dup(MPI_COMM_WORLD,"HDF5printerComm"); // duplicates MPI_COMM_WORLD
         mpiSize = myComm.Get_size();
 #endif
 

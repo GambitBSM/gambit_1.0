@@ -152,7 +152,7 @@ namespace Gambit
             Comm();
 
             /// Constructor which copies existing communicator into boundcomm
-            Comm(const MPI_Comm& comm);
+            Comm(const MPI_Comm& comm, std::string& name);
 
             /// Destructor
             ~Comm();
@@ -162,13 +162,16 @@ namespace Gambit
 
             /// Duplicate existing communicator
             /// (NOTE, this is a collective operation on all procceses)
-            void dup(const MPI_Comm& comm);
+            void dup(const MPI_Comm& comm, std::string& newname);
         
             /// Get total number of MPI tasks in this communicator group
             int Get_size() const;
 
             /// Get "rank" (ID number) of current task in this communicator group
             int Get_rank() const;
+
+            /// Get name of communicator group (for error messages)
+            std::string Get_name() const;
 
             /// Prevent further executation until all members of the bound communicator group enter the call
             void Barrier()
@@ -374,6 +377,9 @@ namespace Gambit
 
             // The MPI communicator to which the current object "talks".
             MPI_Comm boundcomm;
+
+            // A name to identify the communicator group to which this object is bound
+            std::string myname;
       };
 
       /// Check if MPI_Init has been called (it is an error to call it twice)

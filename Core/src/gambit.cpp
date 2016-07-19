@@ -65,13 +65,13 @@ int main(int argc, char* argv[])
     #ifdef WITH_MPI
       /// Create an MPI communicator group for use by error handlers
       GMPI::Comm errorComm;
-      errorComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
+      errorComm.dup(MPI_COMM_WORLD,"errorComm"); // duplicates the COMM_WORLD context
       const int ERROR_TAG=1;         // Tag for error messages
       errorComm.mytag = ERROR_TAG;
       signaldata().set_MPI_comm(&errorComm); // Provide a communicator for signal handling routines to use.
       /// Create an MPI communicator group for ScannerBit to use
       GMPI::Comm scanComm;
-      scanComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
+      scanComm.dup(MPI_COMM_WORLD,"scanComm"); // duplicates the COMM_WORLD context
       Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
       /// MPI rank for use in error messages;
       int rank = scanComm.Get_rank();
