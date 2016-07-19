@@ -326,7 +326,7 @@ namespace Gambit {
          if(dspace_id<0) 
          {
             std::ostringstream errmsg;
-            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<"\", offset="<<offset<<", length="<<selection_dims[0]<<") in HDF5 file. H5Dget_space failed." << std::endl;
+            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dget_space failed." << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
