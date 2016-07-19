@@ -153,7 +153,13 @@ namespace Gambit
 
             /// Constructor which copies existing communicator into boundcomm
             Comm(const MPI_Comm& comm);
+
+            /// Destructor
+            ~Comm();
  
+            /// As name
+            std::string check_for_undelivered_messages();
+
             /// Duplicate existing communicator
             /// (NOTE, this is a collective operation on all procceses)
             void dup(const MPI_Comm& comm);
@@ -375,6 +381,9 @@ namespace Gambit
       
       /// Initialise MPI
       void Init();
+
+      /// Finalize MPI
+      void Finalize();
 
       /// Nice wrapper for getting the message size from an MPI_status struct.
       /// Provide the type whose MPI_Datatype you want to retrieve as the

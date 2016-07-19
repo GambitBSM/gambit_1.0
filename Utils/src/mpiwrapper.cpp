@@ -69,7 +69,29 @@ namespace Gambit
          }
       }
 
+      /// @{ Destructor
+      ///    Warn if any undelivered messages exist
+      Comm::~Comm() { std::cerr << check_for_undelivered_messages(); }
       /// @}      
+
+      /// Check for undelivered messages (unless finalize has already been called)
+      std::string Comm::check_for_undelivered_messages()
+      {
+        if(not Is_finalized())
+        {
+          std::ostringstream errmsg;
+          // Warn if any unreceived messages exist
+          MPI_Status status;
+          bool message_waiting = Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, &status)
+          if(message_waiting)
+          {
+            int source = status.MPI_SOURCE;
+            int tag = status.MPI_TAG;
+            errmsg << "rank " << Get_rank() << ": WARNING! Unreceived MPI message detected (source="<<source<<", tag="<<tag<<"). This may cause problems when MPI_Finalize is run." << endl;
+          }
+          return errmsg.str();
+        }
+      }
   
       /// Get total number of MPI tasks in this communicator group
       int Comm::Get_size() const
@@ -394,7 +416,7 @@ namespace Gambit
                if(not entered[source]) errorlog << source << ", ";
             }
             errorlog << std::endl;
-            /// Need to clear out any remaining MPI messages we might have missed.
+            /// TODO: Need to clear out any remaining MPI messages we might have missed.
 
          }
          errorlog << "Leaving BarrierWithCommonTimeout (tag_entered="<<tag_entered<<")"<<std::endl;
@@ -410,6 +432,14 @@ namespace Gambit
       { 
         int flag;
         MPI_Initialized(&flag);
+        return (flag!=0);
+      }
+
+      /// Check if MPI_Finalize has been called (it is an error to do anything else after this)
+      bool Is_finalized()
+      {
+        int flag
+        MPI_Finalized(&flag);
         return (flag!=0);
       }
 
@@ -516,7 +546,21 @@ namespace Gambit
         std::cerr << "  MPI initialisation complete." << std::endl;
         #endif
       }
-      
+
+      // Finalize MPI, also check for pending messages as these could cause MPI_Finalize() to hang
+      void Finalize()
+      {
+        if(not Is_finalized() and Is_initialized())
+        {
+          Comm COMM_WORLD;
+          #ifdef MPI_DEBUG_OUTPUT
+          cerr << "rank " << COMM_WORLD.Get_rank() << ": Shutting down MPI..." << endl;
+          #endif
+          // Warn if any unreceived messages exist from WORLD. Undelivered messages from other communicators are checked when their wrappers are destructed, so try to make sure this happens before finalize is called, otherwise the warnings will not occur. 
+          cerr << COMM_WORLD.check_for_undelivered_messages();
+          MPI_Finalize();
+        }
+      }
    }
 }
 

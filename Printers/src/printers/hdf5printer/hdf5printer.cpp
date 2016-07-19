@@ -1507,7 +1507,7 @@ namespace Gambit
       unsigned long pointID = ppid.pointID; // unsigned versions were coming out gibberish in python...
       unsigned int mpirank = ppid.rank;
       //std::cout << "rank "<<myRank<<": adding new RA PPID to list: (" << pointID << "," << mpirank << ")" << std::endl;
-      _print(pointID, "RA_pointID", -2000, mpirank, pointID);
+      _print(pointID, "RA_pointID", -2000, mpirank, pointID); //TODO should get these ID numbers from the ScannerBit ID assignment system
       _print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
     }
 
