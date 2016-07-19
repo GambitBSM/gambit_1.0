@@ -311,6 +311,17 @@ namespace Gambit {
          std::cout << "Selecting chunk in dataset "<<this->get_myname()<<" with offset "<<offset<<std::endl;
          #endif
 
+         // Make sure that this chunk lies within the dataset extents
+         if(offset + this->get_chunkdims()[0] > this->dset_length())
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<") in HDF5 file. Tried to select a hyperslab which extends beyond the dataset extents:" << std::endl;
+            errmsg << "  offset = " << offset << std::endl;
+            errmsg << "  offset+chunkdims[0] = " << offset+this->get_chunkdims()[0] << std::endl;
+            errmsg << "  dset_length() = "<< this->dset_length() << std::endl;
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+
          // Select a hyperslab.
          //H5::DataSpace filespace = this->my_dataset.getSpace();
          hid_t dspace_id = H5Dget_space(this->get_dset_id());
@@ -374,6 +385,11 @@ namespace Gambit {
          {
             std::ostringstream errmsg;
             errmsg << "Error retrieving "<<i<<"th chunk from dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dread failed." << std::endl;
+            errmsg << "Tried to retrieve selection with offset:" << std::endl;
+            errmsg << "  offset = " << offset << std::endl;
+            errmsg << "  offset+CHUNKLENGTH = " << offset+CHUNKLENGTH << std::endl;
+            errmsg << "from dataset with length:" << std::endl;
+            errmsg << "  dset_length() = "<< this->dset_length() << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
