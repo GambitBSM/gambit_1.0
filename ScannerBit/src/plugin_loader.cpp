@@ -29,6 +29,7 @@
 #include "gambit/Utils/table_formatter.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/ScannerBit/priors_rollcall.hpp"
 
 namespace Gambit
 {
@@ -129,7 +130,7 @@ namespace Gambit
             
             void Plugin_Loader::loadExcluded (const std::string& file)
             {
-                    YAML::Node node = YAML::LoadFile(file);
+                YAML::Node node = YAML::LoadFile(file);
                     
                 if (node.IsMap())
                 {
@@ -251,24 +252,87 @@ namespace Gambit
                 return vec;
             }
             
-            std::string Plugin_Loader::print_priors() const
+            std::vector<std::string> Plugin_Loader::list_prior_groups() const
             {
-                std::string path = GAMBIT_DIR "/config/priors.dat";
-                YAML::Node node = YAML::LoadFile(path);
+                YAML::Node node = YAML::LoadFile(GAMBIT_DIR "/config/priors.dat");
+                std::vector<std::string> vec;
+                
+                for(auto &&n : node)
+                {
+                    if (n.second.IsSequence())
+                        vec.push_back(n.first.as<std::string>());
+                }
+                
+                vec.push_back("priors");
+                
+                return vec;
+            }
+            
+            std::string Plugin_Loader::print_priors(const std::string &prior_group) const
+            {
+                YAML::Node node = YAML::LoadFile(GAMBIT_DIR "/config/priors.dat");
                 std::stringstream out;
                 
-                out << "\x1b[01m\x1b[04mPRIORS\x1b[0m\n" << std::endl;
-                out << node["priors"].as<std::string>() << "\n" << std::endl;
-                
-                if (node.IsMap())
+                if (prior_group == "priors")
                 {
-                    for (auto it = node.begin(), end = node.end(); it != end; ++it)
+                    table_formatter table("Prior Name", "Prior Group");
+                    //table.top_line(true);
+                    table.bottom_line(true);
+                    std::unordered_set<std::string> prior_set;
+                    for(auto &&n : node)
                     {
-                        if (it->first.as<std::string>() != "priors")
+                        if (n.second.IsSequence())
                         {
-                            out << "\x1b[01m\x1b[04m" << it->first.as<std::string>() << "\x1b[0m\n" << std::endl;
-                            out << it->second.as<std::string>() << "\n" << std::endl;
+                            for(auto &&v : n.second.as<std::vector<std::string>>())
+                            {
+                                prior_set.insert(v);
+                                if (Gambit::Priors::prior_creators.find(v) != Gambit::Priors::prior_creators.end())
+                                table.no_newline() << v << n.first.as<std::string>();
+                            }
                         }
+                    }
+                    
+                    for (auto &&v : Gambit::Priors::prior_creators)
+                    {
+                        if (prior_set.find(v.first) == prior_set.end())
+                        {
+                            table.no_newline() << v.first << "none";
+                        }
+                    }
+                    
+                    table.no_newline() << "" << "";
+                    out << "\x1b[01m\x1b[04mPRIOR LIST\x1b[0m\n" << std::endl;
+                    out << format_for_screen("For information in a specific prior, see its prior group's dianostic via \"./gambit group_name\".");
+                    out << table.str() << std::endl;
+                    out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
+                    if (node["priors"])
+                        out << format_for_screen(node["priors"].as<std::string>()) << std::endl;
+                }
+                else
+                {
+                    std::vector<std::string> prior_names;
+                    std::string description;
+                    for(auto &&n : node)
+                    {
+                        if (n.first.as<std::string>() == prior_group)
+                        {
+                            if (n.second.IsSequence())
+                            {
+                                prior_names = n.second.as<decltype(prior_names)>();
+                            }
+                            else if (n.second.IsScalar())
+                            {
+                                description = n.second.as<std::string>();
+                            }
+                        }
+                    }
+                    
+                    if (prior_names.size() >0 || description != "")
+                    {
+                        out << "\x1b[01m\x1b[04mPRIORS INFO\x1b[0m\n" << std::endl;
+                        out << "\x1b[01mprior group name:  \x1b[0m" << prior_group << std::endl;
+                        out << "\x1b[01mpriors:  \x1b[0m" << prior_names << "\n" << std::endl;
+                        out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n\n" << description << std::endl;
                     }
                 }
                 

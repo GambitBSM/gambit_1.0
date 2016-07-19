@@ -598,9 +598,11 @@ namespace Gambit
         for (auto it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it) valid_commands.push_back((*it)->origin());
         std::vector<std::string> scanner_names = Scanner::Plugins::plugin_info().print_plugin_names("scanner");
         std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");
+        std::vector<std::string> prior_groups = Scanner::Plugins::plugin_info().list_prior_groups();
         valid_commands.insert(valid_commands.end(), scanner_names.begin(), scanner_names.end());
         valid_commands.insert(valid_commands.end(), objective_names.begin(), objective_names.end());
-        valid_commands.push_back("priors");
+        valid_commands.insert(valid_commands.end(), prior_groups.begin(), prior_groups.end());
+        //valid_commands.push_back("priors");
 
         // If the user hasn't asked for a diagnostic at all, process the command line options for the standard run mode and get out.
         if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -673,6 +675,7 @@ namespace Gambit
         ff_capability_diagnostic(command);
         ff_scanner_diagnostic(command);
         ff_test_function_diagnostic(command);
+        ff_prior_diagnostic(command);
         cout << endl;
       }
    

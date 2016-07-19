@@ -113,6 +113,7 @@ namespace Gambit
       void ff_model_diagnostic(str&);
       void ff_scanner_diagnostic(str&);
       void ff_test_function_diagnostic(str&);
+      void ff_prior_diagnostic(str&);
       /// @}
  
       /// Compute the status of a given backend

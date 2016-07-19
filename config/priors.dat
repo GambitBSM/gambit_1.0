@@ -31,8 +31,9 @@
 
 priors: |
   #remove_newlines
-  Prior are specified either in the parameters section when a parameter is 
-  declared as so ...
+  In gambit, prior are implamented as transformations.  Formally, this can
+  be discribed by calculating the inverse CDF. Prior are specified either 
+  in the parameters section when a parameter is declared as so ...
   
   parameter:
     prior_type: flat
@@ -49,7 +50,13 @@ priors: |
   #remove_newlines
   Listed below are various priors that GAMBIT recognizes seperated into five groups: one dimensional priors (flat, log, sin, cos, tan, cot), multidimensional priors (gaussian, cauchy), same_as (same_as), fixed value (fixed_value), and dummy (dummy)).I
 
-one dimensional priors: |
+"1dpriors": [flat,log, sin, cos, tan, cot]
+"same_as": [same_as]
+"ndpriors": [gaussian, cauchy]
+"fixed_value": [fixed_value]
+"dummy": [dummy]
+  
+1dpriors: |
   #remove_newlines
   Specifies a one dimensional prior.  Different prior types that fall into this
   catagory are flat (uniform distribution), log (1/x distribution), and trig
@@ -63,7 +70,7 @@ one dimensional priors: |
 
       output_scaled_values (true):  Outputs the scaled parameters if true.  Set to false if "degrees" is specified.
 
-multidimensional priors: |
+ndpriors: |
   #remove_newlines
   Specifies the a multi-variate prior.  There are two priors of this type -- 
   gaussian and cauchy
