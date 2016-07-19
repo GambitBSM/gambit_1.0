@@ -112,7 +112,7 @@ namespace Gambit
       }
 
       /// Get name of communicator group (for error messages)
-      std::string Get_name() const
+      std::string Comm::Get_name() const
       {
         return myname;
       }
