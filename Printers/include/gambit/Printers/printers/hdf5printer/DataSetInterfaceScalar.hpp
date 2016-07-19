@@ -334,7 +334,8 @@ namespace Gambit {
          offsets[0] = offset;
          //offsets[1] = 0; // don't need: only 1D for now.
 
-         hsize_t selection_dims[DSETRANK] = this->get_chunkdims(); // Same as output chunks, but may have a different length
+         hsize_t selection_dims[DSETRANK]; // Set same as output chunks, but may have a different length
+         for(std::size_t i=0; i<DSETRANK; i++) { selection_dims[i] = this->get_chunkdims()[i]; }
          selection_dims[0] = length; // Adjust chunk length to input specification
 
          herr_t err_hs = H5Sselect_hyperslab(dspace_id, H5S_SELECT_SET, offsets, NULL, selection_dims, NULL);        
@@ -384,7 +385,7 @@ namespace Gambit {
          if(err_read<0)
          {
             std::ostringstream errmsg;
-            errmsg << "Error retrieving "<<i<<"th chunk from dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dread failed." << std::endl;
+            errmsg << "Error retrieving chunk (offset="<<offset<<", length="<<length<<") from dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dread failed." << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
