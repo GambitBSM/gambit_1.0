@@ -78,7 +78,8 @@ add_dependencies(distclean clean-backends)
 
 # Ensure that disclean cleans the scanners (the entry for each backend will be added in scanners.cmake)
 add_custom_target(clean-scanners)
-add_dependencies(distclean clean-scanners)
+add_custom_target(clean-scanners-lib COMMAND ${CMAKE_COMMAND} -E remove * WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ScannerBit/lib)
+add_dependencies(distclean clean-scanners clean-scanners-lib)
 
 # Ensure that distclean sweeps out the scratch directory
 add_custom_target(clean-scratch COMMAND ${CMAKE_COMMAND} -E remove_directory scratch WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})

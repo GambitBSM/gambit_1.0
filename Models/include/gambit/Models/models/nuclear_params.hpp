@@ -23,7 +23,8 @@ namespace Gambit {
   class SMInputs;
 }
 
-// Explicitly defined hadronic matrix elements
+// Explicitly defined hadronic matrix elements. deltaq are the
+// spin content of the proton.
 #define MODEL nuclear_params_fnq
   START_MODEL
   DEFINEPARS(fpd, fpu, fps, fnd, fnu, fns)

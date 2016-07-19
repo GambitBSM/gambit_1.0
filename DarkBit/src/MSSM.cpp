@@ -35,43 +35,6 @@ namespace Gambit {
 
     //////////////////////////////////////////////////////////////////////////
     //
-    //                       Convenience functions
-    //
-    //////////////////////////////////////////////////////////////////////////
-
-    /// Retrieve MSSM spectra directly from a list of SLHA files
-    void get_MSSM_spectrum_from_file(SLHAstruct &result)
-    {
-      using namespace Pipes::get_MSSM_spectrum_from_file;
-      // Static counter running in a loop over all filenames
-      static unsigned int counter = 0;
-      SLHAstruct spectrum;
-
-      // Read filename from yaml file
-      std::vector<std::string> filenames = 
-      /// Option filename<std::string>: Input SLHA filename (required)
-        runOptions->getValue<std::vector<std::string> >("filenames");
-
-      std::string filename = filenames[counter];
-
-      logger() << "Reading SLHA file: " << filename << std::endl;
-      std::ifstream ifs(filename.c_str());
-      if(!ifs.good())
-      {
-        logger() << "ERROR: SLHA file not found." << std::endl;
-        exit(1);
-      }
-      ifs >> spectrum;
-      ifs.close();
-      result = spectrum;
-      counter++;
-      if ( counter >= filenames.size() )
-        counter = 0;
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////
-    //
     //                    Backend point initialization
     //
     //////////////////////////////////////////////////////////////////////////
@@ -434,8 +397,8 @@ namespace Gambit {
         double CAT(sigma_,NAME) = BEreq::dssigmav(index);                      \
         /* Create associated kinematical functions (just dependent on vrel)    \
          *  here: s-wave, vrel independent 1-dim constant function */          \
-        Funk::Funk CAT(kinematicFunction_,NAME) =                              \
-              Funk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                     \
+        daFunk::Funk CAT(kinematicFunction_,NAME) =                            \
+              daFunk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                   \
         /* Create channel identifier string */                                 \
         std::vector<std::string> CAT(finalStates_,NAME);                       \
         CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                       \
@@ -501,8 +464,8 @@ namespace Gambit {
         index = SV_IDX;                                                      \
         /* FIXME: Double-check that import works correctly */                \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
-        Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(sv,"v")*Funk::func(DSgamma3bdy, \
-            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, Funk::var("E"), Funk::var("E1"),     \
+        daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
+            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
             M_DM, m_1, m_2);                                                 \
         /* Create channel identifier string */                               \
         std::vector<std::string> CAT(finalStates_,NAME);                     \
@@ -569,7 +532,7 @@ namespace Gambit {
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
-      auto excludeDecays = Funk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3");
+      auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3");
 
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
@@ -594,10 +557,10 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM30atQ(std::string & result)
+    void DarkMatter_ID_MSSM(std::string & result)
     {
-      using namespace Pipes::DarkMatter_ID_MSSM30atQ;
-      // FIXME: Is this always the lighest neutralino?  What happens for staus?
+      using namespace Pipes::DarkMatter_ID_MSSM;
+      // FIXME: need ask Dep::MSSM_spectrum in future; might have sneutralinos and gravitinos later.
       result = "~chi0_1";
     }
   }

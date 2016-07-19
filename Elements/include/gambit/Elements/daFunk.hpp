@@ -1,24 +1,57 @@
 /*
- *  ______           _    _   _                             
- *  |  ___|         | |  | | (_)                  _     _   
- *  | |_ _   _ _ __ | | _| |_ _  ___  _ __  ___ _| |_ _| |_ 
- *  |  _| | | | '_ \| |/ / __| |/ _ \| '_ \/ __|_   _|_   _|
- *  | | | |_| | | | |   <| |_| | (_) | | | \__ \ |_|   |_|  
- *  \_|  \__,_|_| |_|_|\_\\__|_|\___/|_| |_|___/            
+ * _______                                                            
+ * \  ___ `'.                                 _..._        .          
+ *  ' |--.\  \                _.._          .'     '.    .'|          
+ *  | |    \  '             .' .._|        .   .-.   . .'  |          
+ *  | |     |  '    __      | '            |  '   '  |<    |          
+ *  | |     |  | .:--.'.  __| |__  _    _  |  |   |  | |   | ____     
+ *  | |     ' .'/ |   \ ||__   __|| '  / | |  |   |  | |   | \ .'     
+ *  | |___.' /' `" __ | |   | |  .' | .' | |  |   |  | |   |/  .      
+ * /_______.'/   .'.''| |   | |  /  | /  | |  |   |  | |    /\  \     
+ * \_______|/   / /   | |_  | | |   `'.  | |  |   |  | |   |  \  \    
+ *              \ \._,\ '/  | | '   .'|  '/|  |   |  | '    \  \  \   
+ *               `--'  `"   |_|  `-'  `--' '--'   '--''------'  '---' 
+ *
+ *                         daFunk - dynamisch allokierbare Funktionen
  *                                    
  *  v0.1 Dec 2014
  *  v0.2 Mar 2015 - Completely rewritten internal structure
+ *  v0.3 May 2016 - Extensions
  *
- *  Christoph Weniger, created Dec 2014, edited until Mar 2016
+ *  Christoph Weniger, created Dec 2014, edited until May 2016
  *  <c.weniger@uva.nl>
  *  
  *  with contributions related to thread-safety from
  *  Lars A. Dal, Apr, Jun 2015
  *  <l.a.dal@fys.uio.no>
+ *
+ *
+ *
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2016 Christoph Weniger
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
-#ifndef __FUNK_HPP__
-#define __FUNK_HPP__
+#ifndef __DAFUNK_HPP__
+#define __DAFUNK_HPP__
                                             
 #include <iostream>
 #include <vector>
@@ -44,25 +77,25 @@
 //using std::shared_ptr;
 //using std::enable_shared_from_this;
 
-namespace Funk {class FunkPlain;}
+namespace daFunk {class FunkPlain;}
 
-#define DEF_FUNKTRAIT(C)                          \
-class C {                                         \
-    public:                                       \
-        static Funk::FunkPlain* ptr;              \
-        static void set(Funk::FunkPlain* new_ptr) \
-        {                                         \
-            delete ptr;                           \
-            ptr = new_ptr;                        \
-        }                                         \
-};                                                \
-Funk::FunkPlain* C::ptr = NULL;
+#define DEF_FUNKTRAIT(C)                            \
+class C {                                           \
+    public:                                         \
+        static daFunk::FunkPlain* ptr;              \
+        static void set(daFunk::FunkPlain* new_ptr) \
+        {                                           \
+            delete ptr;                             \
+            ptr = new_ptr;                          \
+        }                                           \
+};                                                  \
+daFunk::FunkPlain* C::ptr = NULL;
 
 // Extensions
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 
-namespace Funk
+namespace daFunk
 {
     //
     // Type declarations etc.
@@ -423,7 +456,7 @@ namespace Funk
                     if ( size == 1 ) size = it->size();
                     if ( size != it->size() )
                     {
-                        std::cout << "FunkBase WARNING: Inconsistent vector lengths." << std::endl;
+                        std::cout << "daFunk::FunkBase WARNING: Inconsistent vector lengths." << std::endl;
                         return vec<double>();
                     }
                 }
@@ -645,7 +678,7 @@ namespace Funk
                 functions = vec(f, g);
                 Singularities tmp_singl = f->getSingl();
                 if ( tmp_singl.erase(arg) > 0 )
-                    std::cout << "FunkBase WARNING: Loosing singularity information while setting " << arg << std::endl;
+                    std::cout << "daFunk::FunkBase WARNING: Loosing singularity information while setting " << arg << std::endl;
                 singularities = joinSingl(g->getSingl(), tmp_singl);
                 arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
             };
@@ -707,7 +740,7 @@ namespace Funk
             double (*ptr)(funcargs...);
 
             // Digest input parameters 
-            // (forwarding everything except Funk::Funk types, which is mapped onto
+            // (forwarding everything except daFunk::Funk types, which is mapped onto
             // funktion parameters)
             template<typename T, typename... Args>
             void digest_input(T x, Args... argss)
@@ -799,7 +832,7 @@ namespace Funk
             O* obj;
 
             // Digest input parameters 
-            // (forwarding everything except Funk::Funk types, which is mapped onto
+            // (forwarding everything except daFunk::Funk types, which is mapped onto
             // funktion parameters)
             template<typename T, typename... Args>
             void digest_input(T x, Args... argss)
@@ -973,7 +1006,7 @@ namespace Funk
         }
         else
         {
-            std::cout << "FunkBase WARNING: Ignoring \"" << arg << "\" = function." << std::endl;
+            std::cout << "daFunk::FunkBase WARNING: Ignoring \"" << arg << "\" = function." << std::endl;
         }
         return f->set(args...);
     }
@@ -1355,9 +1388,9 @@ namespace Funk
               (void)bindID;
               (void)data;
 #ifdef GAMBIT_DIR
-              Gambit::utils_error().raise(LOCAL_INFO, "Funk::ThrowError says: " + msg);
+              Gambit::utils_error().raise(LOCAL_INFO, "daFunk::ThrowError says: " + msg);
 #else
-              throw std::invalid_argument("Funk::ThrowError says: " + msg);
+              throw std::invalid_argument("daFunk::ThrowError says: " + msg);
 #endif
               return 0;
             }
@@ -1378,8 +1411,8 @@ namespace Funk
             {
               (void)bindID;
               (void)data;
-              Gambit::utils_warning().raise(LOCAL_INFO, "Funk::RaiseInvalidPoint says: " + msg);
-              Gambit::invalid_point().raise("Funk::RaiseInvalidPoint says: " + msg);
+              Gambit::utils_warning().raise(LOCAL_INFO, "daFunk::RaiseInvalidPoint says: " + msg);
+              Gambit::invalid_point().raise("daFunk::RaiseInvalidPoint says: " + msg);
               return 0;
             }
 
@@ -1405,7 +1438,7 @@ namespace Funk
             }
             double value(const std::vector<double> & data, size_t bindID)
             {
-              std::cout << "Funk::Message says:\n" << msg << std::endl;
+              std::cout << "daFunk::Message says:\n" << msg << std::endl;
               return functions[0]->value(data, bindID);
             }
 
@@ -1551,7 +1584,7 @@ namespace Funk
                             double z0 = mean - singl_factor*sigma;
                             double z1 = mean + singl_factor*sigma;
                             if ( z0 == z1 )
-                                std::cout << "FunkBase WARNING: Singularity width is beyond machine precision." << std::endl;
+                                std::cout << "daFunk::FunkBase WARNING: Singularity width is beyond machine precision." << std::endl;
                             if ( z0 > x0 and z0 < x1 ) ranges.push_back(z0);
                             if ( z1 > x0 and z1 < x1 ) ranges.push_back(z1);
                         }
@@ -1567,7 +1600,7 @@ namespace Funk
                     // FIXME: Implement flags to optionally throw an error
                     if (status)
                     {
-                        std::cout << "FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
+                        std::cout << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
                         std::cout << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
                         std::cout << "Details about the integrand:" << std::endl;
                         functions[0]->help();
@@ -1673,4 +1706,4 @@ namespace Funk
 }
 
 
-#endif  // __FUNK_HPP__
+#endif  // __DAFUNK_HPP__
