@@ -386,25 +386,28 @@ namespace Gambit
        if(REMAINDER==0) { NCHUNKIT = NCHUNKS; }
        else             { NCHUNKIT = NCHUNKS+1; } // Need an extra iteration to deal with incomplete chunk
 
-       // Iterate through chunks
+       // Iterate through dataset in chunks
        for(std::size_t i=0; i<NCHUNKIT; ++i)
        {
-          const std::vector<unsigned long> pID_chunk = pointIDs.get_chunk(i);
-          const std::vector<int> pIDvalid_chunk = pointIDs_isvalid.get_chunk(i);
-          const std::vector<int> rank_chunk = mpiranks.get_chunk(i);
-          const std::vector<int> rankvalid_chunk = mpiranks_isvalid.get_chunk(i);
-         
-          // Iterate within the chunk
+          std::size_t offset = i*CHUNKLENGTH; 
           std::size_t length;
           if(i==NCHUNKS){ length = REMAINDER; }
           else          { length = CHUNKLENGTH; }
 
+          const std::vector<unsigned long> pID_chunk = pointIDs.get_chunk(offset,length);
+          const std::vector<int> pIDvalid_chunk  = pointIDs_isvalid.get_chunk(offset,length);
+          const std::vector<int> rank_chunk      =         mpiranks.get_chunk(offset,length);
+          const std::vector<int> rankvalid_chunk = mpiranks_isvalid.get_chunk(offset,length);
+         
           // Check that retrieved lengths make sense
           if (pID_chunk.size() != CHUNKLENGTH)
           {
+            if(not (i==NCHUNKS and pID_chunk.size()==REMAINDER) )
+            {
               std::ostringstream errmsg;
-              errmsg << "Error retrieving highest PPID from previous dataset! Size of chunk vector retrieved from pointID dataset ("<<pID_chunk.size()<<") does not match CHUNKLENGTH ("<<CHUNKLENGTH<<"). This probably indicates a bug in the DataSetInterfaceScalar.get_chunk routine, please report it. Error occurred while reading chunk i="<<i<<std::endl;
+              errmsg << "Error retrieving highest PPID from previous dataset! Size of chunk vector retrieved from pointID dataset ("<<pID_chunk.size()<<") does not match CHUNKLENGTH ("<<CHUNKLENGTH<<"), nor the expected remainder for the last chunk ("<<REMAINDER<<"). This probably indicates a bug in the DataSetInterfaceScalar.get_chunk routine, please report it. Error occurred while reading chunk i="<<i<<std::endl;
               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
           }   
           if( (pID_chunk.size() != pIDvalid_chunk.size())
            or (rank_chunk.size() != rankvalid_chunk.size())
@@ -421,6 +424,7 @@ namespace Gambit
             printer_error().raise(LOCAL_INFO, errmsg.str());
           }
 
+          // Iterate within the chunk
           for(std::size_t j=0; j<length; ++j)
           { 
             //Check validity flags agree

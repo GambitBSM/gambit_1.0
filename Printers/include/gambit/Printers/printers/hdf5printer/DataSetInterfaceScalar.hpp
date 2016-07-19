@@ -53,7 +53,7 @@ namespace Gambit {
           DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume); 
  
           /// Select a hyperslab chunk in the hosted dataset
-          std::pair<hid_t,hid_t> select_chunk(std::size_t offset) const;
+          std::pair<hid_t,hid_t> select_chunk(std::size_t offset, std::size_t length) const;
 
           /// Write data to a new chunk in the hosted dataset
           void writenewchunk(const T (&chunkdata)[CHUNKLENGTH]);
@@ -68,7 +68,7 @@ namespace Gambit {
          /// @{ READ methods (perhaps can generalise to non-scalar case, but this doesn't exist yet for writing anyway so not bothering yet)
 
          // Extracts the ith chunk of length CHUNKLENGTH from the dataset
-         std::vector<T> get_chunk(std::size_t i) const;
+         std::vector<T> get_chunk(std::size_t i, std::size_t length) const;
 
          /// @}
 
@@ -102,7 +102,7 @@ namespace Gambit {
 
          // Select a hyperslab.
          std::size_t offset = this->dsetnextemptyslab;
-         std::pair<hid_t,hid_t> selection_ids = select_chunk(offset);
+         std::pair<hid_t,hid_t> selection_ids = select_chunk(offset,CHUNKLENGTH);
          hid_t memspace_id = selection_ids.first;
          hid_t dspace_id   = selection_ids.second;
  
@@ -303,24 +303,22 @@ namespace Gambit {
      /// To facilitate code factorisation, the hyperslab selection is now contained here
      /// Only selects whole chunks at the moment.
      template<class T, std::size_t CHUNKLENGTH>
-     std::pair<hid_t,hid_t> DataSetInterfaceScalar<T,CHUNKLENGTH>::select_chunk(std::size_t offset) const
+     std::pair<hid_t,hid_t> DataSetInterfaceScalar<T,CHUNKLENGTH>::select_chunk(std::size_t offset, std::size_t length) const
      {
-         hsize_t offsets[DSETRANK];
-
          #ifdef HDF5_DEBUG
          std::cout << "Selecting chunk in dataset "<<this->get_myname()<<" with offset "<<offset<<std::endl;
          #endif
 
          // Make sure that this chunk lies within the dataset extents
-         if(offset + this->get_chunkdims()[0] > this->dset_length())
+         if(offset + length > this->dset_length())
          {
             std::ostringstream errmsg;
             errmsg << "Error selecting chunk from dataset (with name: \""<<this->get_myname()<<") in HDF5 file. Tried to select a hyperslab which extends beyond the dataset extents:" << std::endl;
             errmsg << "  offset = " << offset << std::endl;
-            errmsg << "  offset+chunkdims[0] = " << offset+this->get_chunkdims()[0] << std::endl;
+            errmsg << "  offset+length = " << length << std::endl;
             errmsg << "  dset_length() = "<< this->dset_length() << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
+         }
 
          // Select a hyperslab.
          //H5::DataSpace filespace = this->my_dataset.getSpace();
@@ -332,10 +330,14 @@ namespace Gambit {
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
+         hsize_t offsets[DSETRANK];
          offsets[0] = offset;
          //offsets[1] = 0; // don't need: only 1D for now.
 
-         herr_t err_hs = H5Sselect_hyperslab(dspace_id, H5S_SELECT_SET, offsets, NULL, this->get_chunkdims(), NULL);        
+         hsize_t selection_dims[DSETRANK] = this->get_chunkdims(); // Same as output chunks, but may have a different length
+         selection_dims[0] = length; // Adjust chunk length to input specification
+
+         herr_t err_hs = H5Sselect_hyperslab(dspace_id, H5S_SELECT_SET, offsets, NULL, selection_dims, NULL);        
 
          if(err_hs<0) 
          {
@@ -361,17 +363,15 @@ namespace Gambit {
 
      ///   {@ READ methods
 
-     /// Extracts the ith chunk of length CHUNKLENGTH from the dataset
+     /// Extract a data slice from the linked dataset
      template<class T, std::size_t CHUNKLENGTH>
-     std::vector<T> DataSetInterfaceScalar<T,CHUNKLENGTH>::get_chunk(std::size_t i) const
+     std::vector<T> DataSetInterfaceScalar<T,CHUNKLENGTH>::get_chunk(std::size_t offset, std::size_t length) const
      {
          // Buffer to receive data (and return from function)
-         std::vector<T> chunkdata(CHUNKLENGTH);
-
-         std::size_t offset = i*CHUNKLENGTH; // Index of first element in the target chunk
+         std::vector<T> chunkdata(length);
  
          // Select hyperslab
-         std::pair<hid_t,hid_t> selection_ids = select_chunk(offset);
+         std::pair<hid_t,hid_t> selection_ids = select_chunk(offset,length);
          hid_t memspace_id = selection_ids.first;
          hid_t dspace_id   = selection_ids.second;
 
@@ -385,11 +385,6 @@ namespace Gambit {
          {
             std::ostringstream errmsg;
             errmsg << "Error retrieving "<<i<<"th chunk from dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dread failed." << std::endl;
-            errmsg << "Tried to retrieve selection with offset:" << std::endl;
-            errmsg << "  offset = " << offset << std::endl;
-            errmsg << "  offset+CHUNKLENGTH = " << offset+CHUNKLENGTH << std::endl;
-            errmsg << "from dataset with length:" << std::endl;
-            errmsg << "  dset_length() = "<< this->dset_length() << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
