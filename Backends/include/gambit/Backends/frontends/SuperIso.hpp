@@ -64,7 +64,15 @@ BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, s
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 
 
+// Convenience functions:
+
 BE_CONV_FUNCTION(SI_BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "SI_BRBKstarmumu_CONV")    
+BE_CONV_FUNCTION(SI_bsgamma_CONV, double, (struct parameters*, double), "SI_bsgamma_CONV")
+//BE_CONV_FUNCTION(SI_Bsll_untag_CONV, double, (struct parameters*, int), "SI_Bsll_untag_CONV")
+BE_CONV_FUNCTION(SI_Bsll_untag_CONV, double, (struct parameters*), "SI_Bsll_untag_CONV")
+
+
+
 
 // moved to SuperIso.cpp
 //BE_INI_FUNCTION{}

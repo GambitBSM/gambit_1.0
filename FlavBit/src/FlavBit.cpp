@@ -1491,8 +1491,8 @@ namespace Gambit
 
       red.create_global_corr();
 
-      double theory_bs2mumu=*(Dep::Bsmumu_untag);
-      //double theory_bs2mumu=SI_Bsll_untag_CONV(&param, byVal(2));
+      //double theory_bs2mumu=*(Dep::Bsmumu_untag);
+      double theory_bs2mumu=SI_Bsll_untag_CONV(&param);
       //SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=*(Dep::Bdmumu);
       //SI_Bdmumu(theory_bd2mumu);

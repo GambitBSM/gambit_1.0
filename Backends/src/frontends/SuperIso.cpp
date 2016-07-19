@@ -91,8 +91,9 @@ BE_NAMESPACE
     return result;
   }
   //###################################################################################
-  double SI_Bsll_untag_CONV(struct parameters *param, int flav)
+  double SI_Bsll_untag_CONV(struct parameters *param)//, int flav)
   {
+    int flav=2;
     double result = 0.;
 
     if(flav !=1 && flav != 2) return -10.;

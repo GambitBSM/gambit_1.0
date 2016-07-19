@@ -609,7 +609,7 @@ START_MODULE
     #define FUNCTION b2ll_measurements
     START_FUNCTION(FlavBit::Flav_measurement_assym)
           DEPENDENCY(SuperIso_modelinfo, parameters)
-          BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double,(struct parameters*, int))
+          BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*))// , int))
           DEPENDENCY(Bsmumu_untag, double )
           DEPENDENCY(Bdmumu, double )
           DEPENDENCY(Debug_Cap, bool)
