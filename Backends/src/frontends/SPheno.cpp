@@ -57,8 +57,12 @@ BE_NAMESPACE
     Farray_Freal8_1_3 mSneut;
     Farray_Freal8_1_3 mSneut2;
     Freal8 mGlu;
+ 
+    cout << "about to calculate spectrum" << endl;
 
     CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
+
+    cout << "spectrum calculated" << std::endl;
 
     if(!*kont)
     {
@@ -783,6 +787,7 @@ BE_NAMESPACE
     // Block MINPAR
     if(*HighScaleModel == "mSUGRA")
     {
+      std::cout << "this is mSUGRA "<< std::endl;
       // M0
       if(Param.find("M0") != Param.end())
       {
@@ -1028,7 +1033,7 @@ BE_NAMESPACE
 
     if(*SPA_convention)
     {
-      backend_warning().raise(LOCAL_INFO,"SPheno Warning: in case of SPA conventions, tan(beta) should be given at 1 TeV.");
+      //backend_warning().raise(LOCAL_INFO,"SPheno Warning: in case of SPA conventions, tan(beta) should be given at 1 TeV.");
     }
 
     // recalculate quantities to be sure
@@ -1375,6 +1380,8 @@ BE_INI_FUNCTION
     // GAMBIT: no need for external spectrum options
     //*External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
     //*External_Higgs = runOptions->getValueOrDef<Flogical>(false, "External_Higgs");
+    *External_Spectrum = false;
+    *External_Higgs = false;
 
     // 4
     // GAMBIT: private variable, cannot import
@@ -1383,31 +1390,39 @@ BE_INI_FUNCTION
     // 5
     // GAMBIT: not covered
     //*FermionMassResummation = runOptions->getValueOrDef<Flogical>(true, "FermionMassResummation");
+    *FermionMassResummation = true;
 
     // 6
     // GAMBIT: not covered
     //*Ynu_at_MR3 = runOptions->getValueOrDef<Flogical>(false, "Ynu_at_MR3");
     //*Fixed_Nu_Yukawas = !runOptions->getValueOrDef<Flogical>(true, "Fixed_Nu_Yukawas");
+    *Ynu_at_MR3 = false;
+    *Fixed_Nu_Yukawas = false;
 
     // 7
     // GAMBIT: not covered
     //*Only_1loop_Higgsmass = runOptions->getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
+    *Only_1loop_Higgsmass = false;
 
     // 8, Calculates Masses for extra scales if required
     // GAMBIT: not covered
     //*Calc_Mass = runOptions->getValueOrDef<Flogical>(false, "Calc_Mass");
+    *Calc_Mass = false;
 
     // 9, Use old version of BoundaryEW
     // GAMBIT: not covered
     //*UseNewBoundaryEW = runOptions->getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
+    *UseNewBoundaryEW = true;
 
     // 10, use old version to calculate scale
     // GAMBIT: not covered
     //*UseNewScale = runOptions->getValueOrDef<Flogical>(true, "UseNewScale");
+    *UseNewScale = true;
 
     // 11, whether to calculate branching ratios or not
     // TODO: Branching ratios, not covered yet
     //*L_BR = runOptions->getValueOrDef<Flogical>(false, "L_BR");
+    *L_BR = false;
 
     // 12, minimal value such that a branching ratio is written out
     // TODO: Branching ratios, not covered yet
@@ -1417,12 +1432,13 @@ BE_INI_FUNCTION
     */
 
     // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
-    // TODO: private variable, cannot import
+    // GAMBIT: private variable, cannot import
     //*BR_Higgs_with_offshell_V = runOptions->getValueOrDef<Flogical>(false, "BR_Higgs_with_offshell_V");
 
     // 21, whether to calculate cross sections or not
     // TODO: Cross sections, not covered yet
     //*L_CS = runOptions->getValueOrDef<Flogical>(false, "L_CS");
+    *L_CS = false;
 
     // 22, CMS energy
     // TODO: Perhaps there is the option of setting more than one Ecms
@@ -1490,6 +1506,7 @@ BE_INI_FUNCTION
     // 36, write out debug information
     // GAMBIT: no write out, all debug info is handled by GAMBIT
     //*WriteOut = runOptions->getValueOrDef<Flogical>(false, "WriteOut");
+    *WriteOut = false;
 
     // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
     // GAMBIT: not covered
@@ -1516,31 +1533,40 @@ BE_INI_FUNCTION
     *gamW = runOptions->getValueOrDef<Freal8>(2.06,"gamW");
 
     // 80, exit for sure with non-zero value if problem occurs
-    *Non_Zero_Exit = runOptions->getValueOrDef<Flogical>(false, "Non_Zero_Exit");
+    // GAMBIT: never brute exit, let GAMBIT do a controlled exit
+    //*Non_Zero_Exit = runOptions->getValueOrDef<Flogical>(false, "Non_Zero_Exit");
+    *Non_Zero_Exit = false;
 
     // 81, quick and dirty way to implement model by Suchita Kulkarni
-    *Model_Suchita = runOptions->getValueOrDef<Flogical>(false, "Model_Suchita");
+    // GAMBIT: not covered
+    //*Model_Suchita = runOptions->getValueOrDef<Flogical>(false, "Model_Suchita");
+    *Model_Suchita = false;
 
     // 90, add R-parity at low energies
-    *Add_RParity = runOptions->getValueOrDef<Flogical>(false, "Add_RParity");
+    // TODO: RParity, not covered yet
+    //*Add_RParity = runOptions->getValueOrDef<Flogical>(false, "Add_RParity");
+    *Add_RParity = false;
 
     // 91, fit RP parameters such that neutrino data are ok
-    *L_Fit_RP_Parameters = runOptions->getValueOrDef<Flogical>(false, "L_Fit_RP_Parameters");
+    // TODO: RParity, not covered yet    
+    //*L_Fit_RP_Parameters = runOptions->getValueOrDef<Flogical>(false, "L_Fit_RP_Parameters");
+    *L_Fit_RP_Parameters = false;
 
     // 92, for Pythia input
-    // TODO: private variable, cannot import
+    // GAMBIT: private variable, cannot import
     // *L_RP_Pythia = runOptions->getValueOrDef<Flogical>(false, "L_RP_Pythia");
 
     // 93, calculates cross sectionin case of RP, only partially implemented
-    *L_CSrp = runOptions->getValueOrDef<Flogical>(false, "L_CSrp");
+    // TODO: RParity and Cross Sections, not covered yet
+    //*L_CSrp = runOptions->getValueOrDef<Flogical>(false, "L_CSrp");
+    *L_CSrp = false;
 
     // 94, io_RP
-    // TODO: private variable, cannot import
+    // GAMBIT: private variable, cannot import
     // *io_RP = runOptions->getValueOrDef<Finteger>(0, "io_RP");
 
     // 99, MADGraph output style, some additional information
-    // TODO: private variable, cannot import
-    // GAMBIT: always false, no file output
+    // GAMBIT: always false, no file output, private variable, cannot import
     // *MADGraph_style = false;
  
     // 100, use bsstep instead of rkqs
@@ -1554,7 +1580,7 @@ BE_INI_FUNCTION
       Set_Use_rzextr_instead_of_pzextr(rzextr);
 
     // 110, write ouput for LHC observables
-    // TODO: private variable, cannot import
+    // GAMBIT: private variable, cannot import
     // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
    
 }

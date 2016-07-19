@@ -1491,12 +1491,12 @@ namespace Gambit
                 if (myClaw->downstream_of(active_model, activation_candidate)) it->second = false;
                 // If the candidate can be upcast to the already active model, activate the candidate instead of the already active model.
                 if (myClaw->downstream_of(activation_candidate, active_model)) jt->second = false;
-                cout << "model: " << model << " " << "model to be activated: " << activation_candidate << "(" << it->second << ") active model: " << active_model << "(" << jt->second << ")" << endl;
-                cout << "active model lives below:" << myClaw->downstream_of(active_model, activation_candidate) << endl;
-                cout << "activation candidate lives below:" << myClaw->downstream_of(activation_candidate, active_model) << endl;
+                if(verbose) cout << "model: " << model << " " << "model to be activated: " << activation_candidate << "(" << it->second << ") active model: " << active_model << "(" << jt->second << ")" << endl;
+                if(verbose) cout << "active model lives below:" << myClaw->downstream_of(active_model, activation_candidate) << endl;
+                if(verbose) cout << "activation candidate lives below:" << myClaw->downstream_of(activation_candidate, active_model) << endl;
               }
             }
-            cout << "Activate candidate " << activation_candidate << "?" << it->second << endl;
+            if(verbose) cout << "Activate candidate " << activation_candidate << "?" << it->second << endl;
           }
         }
         //std::cout << myName << std::endl;

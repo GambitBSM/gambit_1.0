@@ -427,10 +427,13 @@ namespace Gambit
 
     void get_CMSSM_spectrum_SPheno (Spectrum& result)
     {
+      cout << "getting CMSSM spectrum" << std::endl;
       namespace myPipe = Pipes::get_CMSSM_spectrum_SPheno;
       const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
 
       Spectrum spectrum;
+
+      cout << "about to calculate SPheno spectrum" << std::endl;
 
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
