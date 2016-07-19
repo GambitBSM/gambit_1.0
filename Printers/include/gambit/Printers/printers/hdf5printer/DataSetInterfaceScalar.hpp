@@ -321,7 +321,7 @@ namespace Gambit {
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
-         offsets[0] = offset
+         offsets[0] = offset;
          //offsets[1] = 0; // don't need: only 1D for now.
 
          herr_t err_hs = H5Sselect_hyperslab(dspace_id, H5S_SELECT_SET, offsets, NULL, this->get_chunkdims(), NULL);        

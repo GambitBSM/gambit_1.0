@@ -343,7 +343,7 @@ namespace Gambit
     // But this should be no problem; if there are new processes added, the highest
     // previous PPID number for those ranks is just zero. If there are fewer, then
     // there will be still be matching old-process ranks for all of the new ranks.
-    PPIDpair get_highest_PPID_from_HDF5(hid_t group_id)
+    PPIDpair HDF5Printer::get_highest_PPID_from_HDF5(hid_t group_id)
     {
        std::size_t highest_pointID = -1; // Highest ID found so far
 
@@ -353,10 +353,10 @@ namespace Gambit
        // Interfaces for the datasets
        // Make sure the types used here don't get out of sync with the types used to write the original datasets
        // We open the datasets in "resume" mode to access existing dataset, and make "const" to disable writing of new data. i.e. "Read-only" mode.
-       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group, "MPIrank", true); 
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group, "MPIrank_isvalid", true); 
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group, "pointID", true);
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group, "pointID_isvalid", true);
+       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "MPIrank", true); 
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "MPIrank_isvalid", true); 
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "pointID", true);
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "pointID_isvalid", true);
 
        // Error check lengths. This should already have been done for all datasets in the group, but
        // we will double-check these four here.
@@ -382,7 +382,7 @@ namespace Gambit
        const std::size_t NCHUNKS = dset_length / CHUNKLENGTH; // Number of FULL chunks
        const std::size_t REMAINDER = dset_length - (NCHUNKS*CHUNKLENGTH); // leftover after last full chunk
 
-       const std::size_t NCHUNKIT; // Number of chunk iterations to perform
+       std::size_t NCHUNKIT; // Number of chunk iterations to perform
        if(REMAINDER==0) { NCHUNKIT = NCHUNKS; }
        else             { NCHUNKIT = NCHUNKS+1; } // Need an extra iteration to deal with incomplete chunk
 
@@ -418,7 +418,6 @@ namespace Gambit
             errmsg << "  rankvalid_chunk.size()= " << rankvalid_chunk.size() << std::endl;
             errmsg << "  CHUNKLENGTH           = " << CHUNKLENGTH << std::endl;
             errmsg << "This indicates either a bug in the HDF5printer or corruption of the datasets (possibly due to unsafe shutdown). Error occurred while reading chunk i="<<i<<std::endl;
-";
             printer_error().raise(LOCAL_INFO, errmsg.str());
           }
 
