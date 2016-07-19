@@ -382,6 +382,9 @@ namespace Gambit
       /// Initialise MPI
       void Init();
 
+      /// Check if MPI_Finalize has been called (it is an error to do anything else after this)
+      bool Is_finalized();
+
       /// Finalize MPI
       void Finalize();
 
