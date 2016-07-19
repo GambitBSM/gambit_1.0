@@ -130,6 +130,7 @@ namespace Gambit {
 
          /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
          void extend_dset(const unsigned long i);
+
       };
 
 
