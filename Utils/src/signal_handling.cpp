@@ -175,7 +175,7 @@ namespace Gambit
      #ifdef WITH_MPI
      // sleep setup
      bool timedout = false;
-     std::chrono::milliseconds bar_timeout(std::round(timeout)); 
+     std::chrono::milliseconds bar_timeout(std::lround(timeout)); 
      // This is a fancy barrier that waits a certain amount of time after the FIRST process
      // enters before unlocking (so that other action can be taken). This means that all the
      // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
@@ -336,11 +336,11 @@ namespace Gambit
    }
 
    /// Add a new loop time to internal array used to decide barrier timeout
-   void SignalData::update_looptime(double newtime);
+   void SignalData::update_looptime(double newtime)
    {
      #ifdef WITH_MPI
      // We don't need these times unless MPI is active
-     if(myrank()>1)
+     if(rank>1)
      {
        looptimes[next] = newtime;
        ++next;
