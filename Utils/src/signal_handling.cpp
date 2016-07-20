@@ -338,7 +338,8 @@ namespace Gambit
      int max_loops = 2*signalComm->Get_size(); // At most should be one message from every process (minus one), so we will check twice as many times as this before deciding that something has gone horribly wrong.
 
      std::ostringstream logmsg;    
-     signalComm->receive_all_with_tag(MPI_ANY_SOURCE, signalComm->mytag, max_loops, logmsg);
+     int code;
+     signalComm->receive_all_with_tag(&code, 1, MPI_ANY_SOURCE, signalComm->mytag, max_loops, logmsg);
      logger() << LogTags::core << LogTags::info << logmsg.str() << EOM;
    }
    #endif

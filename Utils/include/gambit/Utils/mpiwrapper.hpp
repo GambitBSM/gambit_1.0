@@ -370,8 +370,36 @@ namespace Gambit
                                           const int tag_timeleft, 
                                           std::ostream& errorlog);
       
-            /// Receive (and discard) any waiting messages with a given tag from a given source (both possibly MPI_ANY_*)
-            void receive_all_with_tag(int source, int tag, int max_loops, std::ostream& log);
+            /// Receive (and discard) any waiting messages with a given tag from a given source (possibly MPI_ANY_SOURCE)
+            /// Need to know what the messages are in order to provide an appropriate Recv buffer (and size)
+            template<class T>
+            void receive_all_with_tag(T* buffer, int size, int source, int tag, int max_loops, std::ostream& log)
+            {
+              int loop = 0;
+      
+              MPI_Status status;
+              while(loop<max_loops and Iprobe(source, tag, &status))
+              {
+                #ifdef SIGNAL_DEBUG
+                log << "Detected message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<"; doing Recv" << std::endl;
+                #endif
+                MPI_Status recv_status;
+                Recv(buffer, size, status.MPI_SOURCE, status.MPI_TAG, &recv_status);
+                #ifdef SIGNAL_DEBUG
+                log << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding it as obsolete..." << std::endl;
+                #endif
+                ++loop;
+              }
+      
+              if(loop==max_loops)
+              {
+                std::ostringstream errmsg;
+                errmsg << "Error while attempting to clean out unreceived messages from other processes! Received maximum allowed number of messages ("<<loop<<", note that MPI size is "<<Get_size()<<")";  
+                utils_error().raise(LOCAL_INFO, errmsg.str());
+              }
+      
+              if(loop>0) log << "Cleaned out "<<loop<<" unreceived messages with tag "<<tag<<std::endl;
+            }
 
             /// A generic place to store a tag commonly used by this communicator
             int mytag = 1;
