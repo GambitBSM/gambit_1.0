@@ -356,6 +356,11 @@ namespace Gambit
                      entered[source] = true;
                      Recv(&null_recv_buffer, 1, source, tag_entered);
                      errorlog << "Process "<<source<<" entered BarrierWithCommonTimeout."<<std::endl;
+
+                     // Clear out any other barrier entry messages that this process may have sent in previous loops
+                     // (for example if it has already timed out waiting for us in this barrier for several attempts)
+                     int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
+                     receive_all_with_tag(&null_recv_buffer, 1, source, tag_entered, max_loops, errorlog);
                   } 
                }
 
