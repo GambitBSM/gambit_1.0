@@ -359,6 +359,7 @@ namespace Gambit
          sum += looptimes[i];
        }
        timeout = sum/N;
+       if(timeout<50) timeout=50; // Set minimum timeout of 50ms
      }
      #endif
    }
