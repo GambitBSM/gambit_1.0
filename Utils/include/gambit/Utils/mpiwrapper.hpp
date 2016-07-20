@@ -152,7 +152,7 @@ namespace Gambit
             Comm();
 
             /// Constructor which copies existing communicator into boundcomm
-            Comm(const MPI_Comm& comm, std::string& name);
+            Comm(const MPI_Comm& comm, const std::string& name);
 
             /// Destructor
             ~Comm();
@@ -162,7 +162,7 @@ namespace Gambit
 
             /// Duplicate existing communicator
             /// (NOTE, this is a collective operation on all procceses)
-            void dup(const MPI_Comm& comm, std::string& newname);
+            void dup(const MPI_Comm& comm, const std::string& newname);
         
             /// Get total number of MPI tasks in this communicator group
             int Get_size() const;
@@ -421,7 +421,7 @@ namespace Gambit
           std::string name;
           void (*func)();
         public:
-          MpiIniFunc(std::string l, std::string n, void(*f)())
+          MpiIniFunc(const std::string& l, const std::string& n, void(*f)())
             : location(l)
             , name(n)
             , func(f)
@@ -440,7 +440,7 @@ namespace Gambit
       /// on the same idea as the "ini_code" struct, except it doesn't
       /// cause the functions to be run, just "queues them up" so to speak.
       struct AddMpiIniFunc {
-        AddMpiIniFunc(std::string local_info, std::string name, void(*func)());
+        AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)());
       };
 
       /// @}

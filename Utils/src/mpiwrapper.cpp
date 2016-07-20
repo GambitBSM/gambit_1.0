@@ -46,7 +46,7 @@ namespace Gambit
       }
 
       /// Copy existing communicator
-      Comm::Comm(const MPI_Comm& comm, std::string& name) : boundcomm(comm), myname(name)
+      Comm::Comm(const MPI_Comm& comm, const std::string& name) : boundcomm(comm), myname(name)
       {
          if(not Is_initialized())
          {
@@ -59,7 +59,7 @@ namespace Gambit
       /// NOTE! MPI_Comm_dup is a COLLECTIVE call, so all processes
       /// must call it! Beware deadlocks. May sometimes be better to duplicate
       /// first and then wrap in a communicator.
-      void Comm::dup(const MPI_Comm& comm, std::string& name)
+      void Comm::dup(const MPI_Comm& comm, const std::string& name)
       {
          int errflag = MPI_Comm_dup(comm, &boundcomm);
          if(errflag!=0) {
@@ -464,7 +464,7 @@ namespace Gambit
       /// AddMpiInitFunc will add functions to the map when it is constructed. Works
       /// on the same idea as the "ini_code" struct, except it doesn't
       /// cause the functions to be run, just "queues them up" so to speak.
-      AddMpiIniFunc::AddMpiIniFunc(std::string local_info, std::string name, void(*func)())
+      AddMpiIniFunc::AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)())
       {
          get_mpi_ini_functions().push_back(MpiIniFunc(local_info,name,func));
       }
