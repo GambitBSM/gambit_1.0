@@ -299,13 +299,14 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;  
     }
 
+    #ifdef WITH_MPI
+    signaldata().discard_excess_shutdown_messages(); 
+    #endif
   } // End main scope; want to destruct all communicators before MPI_Finalize() is called
 
   // FIXME to be done in ScannerBit
-  // Finalise MPI
   #ifdef WITH_MPI
-  signaldata().discard_excess_shutdown_messages(); 
-  GMPI::Finalize();
+  GMPI::Finalize(); // Finalise MPI
   #endif
 
   return EXIT_SUCCESS;

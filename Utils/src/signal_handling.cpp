@@ -361,9 +361,7 @@ namespace Gambit
        utils_error().raise(LOCAL_INFO, errmsg.str());
      }
 
-     #ifdef SIGNAL_DEBUG
      logger() << LogTags::core << LogTags::info << "Cleaned out "<<loop<<" excess shutdown messages." << EOM;
-     #endif
    }
    #endif
 
