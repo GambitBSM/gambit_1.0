@@ -46,6 +46,9 @@
 #include "gambit/FlavBit/flav_obs.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
+#include "gambit/Utils/statistics.hpp"  
+
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
 #include <boost/numeric/ublas/lu.hpp>
@@ -464,7 +467,7 @@ namespace Gambit
     double mu_b=param.mass_b_1S/2.;
     double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
     std::complex<double> CQpb[3];
-        
+
     BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
     BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
     BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
@@ -600,8 +603,10 @@ namespace Gambit
     BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
     BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
 
-    result = BEreq::Bdmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
-    }
+    int flav=2;
+    //result = BEreq::Bdmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+    result = BEreq::Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+      }
 
       if(*Dep::Debug_Cap) printf("BR(Bd->mumu)=%.3e\n",result);
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Bdmumu"<<endl;
@@ -711,7 +716,7 @@ namespace Gambit
     // *************************************************
     /// Calculating Br B->D* tau nu
     // *************************************************
-    
+
     void SI_Dstaunu(double &result)
     {
       using namespace Pipes::SI_Dstaunu;
@@ -727,7 +732,7 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Dstaunu"<<endl;
 
     }
-    
+
     // *************************************************
     /// Calculating Br B->Ds mu nu
     // *************************************************
@@ -1279,10 +1284,8 @@ namespace Gambit
       red.create_global_corr();
       //cov matirces
 
-      boost::numeric::ublas::matrix<double> M_cov_uu=red.get_cov_uu();
-      boost::numeric::ublas::matrix<double> M_cov_du=red.get_cov_du();
-      boost::numeric::ublas::matrix<double> M_cov_ud=red.get_cov_ud();
-      boost::numeric::ublas::matrix<double> M_cov_dd=red.get_cov_dd();
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+  
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
       // we assert if the exrimental size and the observables are differnt size
@@ -1367,16 +1370,11 @@ namespace Gambit
 
 
       measurement_assym.value_exp=M_exp;
-      measurement_assym.cov_exp_uu=M_cov_uu;
-      measurement_assym.cov_exp_du=M_cov_du;
-      measurement_assym.cov_exp_ud=M_cov_ud;
-      measurement_assym.cov_exp_dd=M_cov_dd;
-
+      measurement_assym.cov_exp=M_cov;
+  
       measurement_assym.value_th=M_th;
-      measurement_assym.cov_th_uu=M_cov_th;
-      measurement_assym.cov_th_ud=M_cov_th;
-      measurement_assym.cov_th_du=M_cov_th;
-      measurement_assym.cov_th_dd=M_cov_th;
+      measurement_assym.cov_th=M_cov_th;
+  
 
       int n_experiments=M_cov_th.size1();
       vector<double> diff;
@@ -1410,33 +1408,24 @@ namespace Gambit
       b2sll_measurements(measurement_assym);
       // got everything ;)
 
-      boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
-      boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;
-      boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;
-      boost::numeric::ublas::matrix<double> cov_dd=measurement_assym.cov_exp_dd;
+      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+
 
       // adding theory and experimenta covariance
-      cov_uu+=measurement_assym.cov_th_uu;
-      cov_ud+=measurement_assym.cov_th_ud;
-      cov_du+=measurement_assym.cov_th_du;
-      cov_dd+=measurement_assym.cov_th_dd;
+      cov+=measurement_assym.cov_th;
+
 
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
 
 
-      boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+     
 
 
-
-      InvertMatrix(cov_uu, cov_uu_inv);
-      InvertMatrix(cov_du, cov_du_inv);
-      InvertMatrix(cov_ud, cov_ud_inv);
-      InvertMatrix(cov_dd, cov_dd_inv);
+      InvertMatrix(cov, cov_inv);
+     
 
       double Chi2=0;
 
@@ -1445,10 +1434,8 @@ namespace Gambit
         for(int j=0; j<measurement_assym.dim; ++j)
           {
 
-            if( diff[i] >= 0. && diff[j] >=0.) Chi2+= diff[i] * cov_uu_inv(i,j)*diff[j];
-            if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
-            if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
-            if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
+            Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+
 
           }
 
@@ -1464,17 +1451,48 @@ namespace Gambit
     }
 
     // *************************************************
+    /// measurement for b->s gamma
+    // *************************************************
+    void b2sgamma_likelihood(double &result)
+    {
+      using namespace Pipes::b2sgamma_likelihood;
+      if(*Dep::Debug_Cap)  cout<<"Starting b2sgamma_measurements"<<endl;
+      
+      struct parameters param = *Dep::SuperIso_modelinfo;
+      
+      double E_cut=1.; //check this! FIXME!
+      double theory_prediction=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
+
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");          
+      red.debug_mode(*Dep::Debug_Cap);                       
+                                                       
+      if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;  
+      red.read_yaml_mesurement("example.yaml", "BR_b2sgamma");
+      
+      red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+
+      double exp_meas=M_exp(0,0);
+
+      double exp_b2sgamma_err=M_cov(0,0);
+      double theory_b2sgamma_err=0.1; //check this! FIXME!
+      
+      
+      result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err);
+      
+    }
+
+    // *************************************************
     /// measurement for b->mumu
     // *************************************************
-
-
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2ll_measurements;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2ll_measurements"<<endl;
-      
-      struct parameters param = *Dep::SuperIso_modelinfo; 
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
 
       // experimental measurement
@@ -1490,9 +1508,10 @@ namespace Gambit
 
 
       red.create_global_corr();
+      int flav=2;
 
       //double theory_bs2mumu=*(Dep::Bsmumu_untag);
-      double theory_bs2mumu=SI_Bsll_untag_CONV(&param);
+      double theory_bs2mumu=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
       //SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=*(Dep::Bdmumu);
       //SI_Bdmumu(theory_bd2mumu);
@@ -1518,10 +1537,8 @@ namespace Gambit
 
       // #########################
 
-      boost::numeric::ublas::matrix<double> M_cov_uu=red.get_cov_uu();
-      boost::numeric::ublas::matrix<double> M_cov_du=red.get_cov_du();
-      boost::numeric::ublas::matrix<double> M_cov_ud=red.get_cov_ud();
-      boost::numeric::ublas::matrix<double> M_cov_dd=red.get_cov_dd();
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+
 
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
@@ -1531,16 +1548,10 @@ namespace Gambit
 
 
       measurement_assym.value_exp=M_exp;
-      measurement_assym.cov_exp_uu=M_cov_uu;
-      measurement_assym.cov_exp_du=M_cov_du;
-      measurement_assym.cov_exp_ud=M_cov_ud;
-      measurement_assym.cov_exp_dd=M_cov_dd;
+      measurement_assym.cov_exp=M_cov;
 
       measurement_assym.value_th=M_th;
-      measurement_assym.cov_th_uu=M_cov_th;
-      measurement_assym.cov_th_ud=M_cov_th;
-      measurement_assym.cov_th_du=M_cov_th;
-      measurement_assym.cov_th_dd=M_cov_th;
+      measurement_assym.cov_th=M_cov_th;
 
 
       vector<double> diff;
@@ -1573,31 +1584,22 @@ namespace Gambit
 
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
 
-      boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
-      boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;
-      boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;
-      boost::numeric::ublas::matrix<double> cov_dd=measurement_assym.cov_exp_dd;
+      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+      
 
       // adding theory and experimenta covariance
-      cov_uu+=measurement_assym.cov_th_uu;
-      cov_ud+=measurement_assym.cov_th_ud;
-      cov_du+=measurement_assym.cov_th_du;
-      cov_dd+=measurement_assym.cov_th_dd;
-
+      cov+=measurement_assym.cov_th;
+      
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
 
-      boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
 
 
-      InvertMatrix(cov_uu, cov_uu_inv);
-      InvertMatrix(cov_du, cov_du_inv);
-      InvertMatrix(cov_ud, cov_ud_inv);
-      InvertMatrix(cov_dd, cov_dd_inv);
+
+      InvertMatrix(cov, cov_inv);
+
 
       // calculating the chi2
       double Chi2=0;
@@ -1607,11 +1609,8 @@ namespace Gambit
         for(int j=0; j<measurement_assym.dim; ++j)
           {
 
-            if( diff[i] >= 0. && diff[j] >=0.) Chi2+= diff[i] * cov_uu_inv(i,j)*diff[j];
-            if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
-            if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
-            if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
-
+	    Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+            
           }
 
       }
@@ -1715,10 +1714,8 @@ namespace Gambit
 
       // theory error done
 
-      boost::numeric::ublas::matrix<double> M_cov_uu=red.get_cov_uu();
-      boost::numeric::ublas::matrix<double> M_cov_du=red.get_cov_du();
-      boost::numeric::ublas::matrix<double> M_cov_ud=red.get_cov_ud();
-      boost::numeric::ublas::matrix<double> M_cov_dd=red.get_cov_dd();
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+
 
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
@@ -1727,16 +1724,11 @@ namespace Gambit
       measurement_assym.LL_name="SL_likelihood";
 
       measurement_assym.value_exp=M_exp;
-      measurement_assym.cov_exp_uu=M_cov_uu;
-      measurement_assym.cov_exp_du=M_cov_du;
-      measurement_assym.cov_exp_ud=M_cov_ud;
-      measurement_assym.cov_exp_dd=M_cov_dd;
+      measurement_assym.cov_exp=M_cov;
 
       measurement_assym.value_th=M_th;
-      measurement_assym.cov_th_uu=M_cov_th;
-      measurement_assym.cov_th_ud=M_cov_th;
-      measurement_assym.cov_th_du=M_cov_th;
-      measurement_assym.cov_th_dd=M_cov_th;
+      measurement_assym.cov_th=M_cov_th;
+
 
 
       vector<double> diff;
@@ -1771,44 +1763,31 @@ namespace Gambit
       Flav_measurement_assym measurement_assym = *Dep::SL_M;
       //SL_measurements(measurement_assym);
       // calculating the chi2:
-      boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
-      boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;
-      boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;
-      boost::numeric::ublas::matrix<double> cov_dd=measurement_assym.cov_exp_dd;
+      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
       // adding theory and experimenta covariance
-      cov_uu+=measurement_assym.cov_th_uu;
-      cov_ud+=measurement_assym.cov_th_ud;
-      cov_du+=measurement_assym.cov_th_du;
-      cov_dd+=measurement_assym.cov_th_dd;
+      cov+=measurement_assym.cov_th;
+
 
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
 
 
-      boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim);
-      boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+     
 
-
-      InvertMatrix(cov_uu, cov_uu_inv);
-      InvertMatrix(cov_du, cov_du_inv);
-      InvertMatrix(cov_ud, cov_ud_inv);
-      InvertMatrix(cov_dd, cov_dd_inv);
-
+      InvertMatrix(cov, cov_inv);
+     
 
       double Chi2=0;
       for(int i=0; i < measurement_assym.dim; ++i)
       {
         for(int j=0; j<measurement_assym.dim; ++j)
           {
-
-            if( diff[i] >= 0. && diff[j] >=0.) Chi2+= diff[i] * cov_uu_inv(i,j)*diff[j];
-            if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
-            if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
-            if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
+	    
+	    Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+            
 
           }
       }

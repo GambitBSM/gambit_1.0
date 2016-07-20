@@ -176,6 +176,7 @@ START_MODULE
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Bdmumu, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+    BACKEND_REQ(Bdll, (libsuperiso), double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
     BACKEND_REQ(CW_calculator, (libsuperiso), void, (int, double*, double*, double*, double, struct parameters*))
     BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (int, std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
@@ -565,6 +566,18 @@ START_MODULE
 
 
 // complicated likelihoods
+ #define CAPABILITY b2sgamma_LL 
+ START_CAPABILITY 
+   #define FUNCTION b2sgamma_likelihood
+START_FUNCTION(double)
+         DEPENDENCY(Debug_Cap, bool)
+         DEPENDENCY(SuperIso_modelinfo, parameters)
+         BACKEND_REQ(SI_bsgamma_CONV, (libsuperiso), double,(struct parameters*, double))
+         
+   #undef FUNCTION  
+ #undef CAPABILITY  
+
+
  #define CAPABILITY b2sll_M
  START_CAPABILITY
    #define FUNCTION b2sll_measurements
@@ -609,7 +622,7 @@ START_MODULE
     #define FUNCTION b2ll_measurements
     START_FUNCTION(FlavBit::Flav_measurement_assym)
           DEPENDENCY(SuperIso_modelinfo, parameters)
-          BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*))// , int))
+          BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
           DEPENDENCY(Bsmumu_untag, double )
           DEPENDENCY(Bdmumu, double )
           DEPENDENCY(Debug_Cap, bool)
