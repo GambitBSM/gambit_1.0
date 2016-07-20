@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
     }
 
     #ifdef WITH_MPI
-    //signaldata().discard_excess_shutdown_messages(); 
+    signaldata().discard_excess_shutdown_messages();  // Note: if all processes receive a POSIX signal to shutdown there might be many of these (e.g. says 1000 processes all independently get a POSIX signal to shut down; they will each broadcast this command via MPI to all other processes, i.e. 1000*1000 messages will be sent. Could be slow.
     #endif
   } // End main scope; want to destruct all communicators before MPI_Finalize() is called
 
