@@ -203,7 +203,8 @@ namespace Gambit
 
      /// Start counting...
      static std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
-
+    
+     logger() << "Attempting to synchronise for soft shutdown (previous attempts: "<<shutdown_attempts<<")" << EOM;
      // Will continue trying to sync until BOTH the max_attempts 
      // has been exceeded, AND the max_time has been exceeded.
      // In other words if it takes more than 6 attempts for
@@ -395,6 +396,7 @@ namespace Gambit
    /// Only check for emergency shutdown signals (i.e. do not attempt synchronisation) 
    void SignalData::check_for_emergency_shutdown_signal()
    {
+     logger() << "Checking if emergency shutdown is required" << EOM;
      if(shutdownBegun and emergency)
      {
        logger() << "Emergency shutdown signal detected! Attempting to performing cleanup (but data loss is possible)" << std::endl;
