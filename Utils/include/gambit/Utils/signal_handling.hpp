@@ -124,6 +124,9 @@ namespace Gambit
        /// Absorb any extra shutdown messages that may be unreceived (for cleanup before MPI_Finalize)
        void discard_excess_shutdown_messages();
        #endif
+
+       /// Add a new loop time to internal array used to decide barrier timeout
+       void update_looptime(double newtime);
    
      private:
        int rank; 
@@ -170,7 +173,14 @@ namespace Gambit
        
        /// Flag to check if shutdown message has already been broadcast
        bool shutdown_broadcast_done;
+
+       /// Variables needed to compute sensible shutdown timeout length
+       std::vector<double> looptimes(1000);       
+       int next; // next slot to be overwritten
+       bool listfull; // looptime vector is full
+       double timeout; // Computed timeout value for shutdowns
        #endif
+
    };
 
    /// Retrieve global instance of signal handler options struct

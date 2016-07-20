@@ -71,7 +71,10 @@ namespace Gambit
      #ifdef WITH_MPI
      , _comm_rdy(false)
      , shutdown_broadcast_done(false)
-     #endif
+     , next(0)
+     , listfull(false)
+     , timeout(100)
+    #endif
    {}
 
    /// Retrieve MPI rank as a string (for log messages etc.)
@@ -167,17 +170,17 @@ namespace Gambit
    /// Attempt to synchronise all processes, but abort if it takes too long
    bool SignalData::all_processes_ready()
    {
-     logger() << "Waiting up to 30 seconds for all processes to sync..." << std::endl;
+     logger() << "Waiting up to "<<timeout/1000<<" seconds for all processes to sync..." << std::endl;
      #ifdef WITH_MPI
      // sleep setup
      bool timedout = false;
-     std::chrono::milliseconds timeout(30000); // FIXME: replace with estimated plugin evaluation time
+     std::chrono::milliseconds bar_timeout(timeout); 
      // This is a fancy barrier that waits a certain amount of time after the FIRST process
      // enters before unlocking (so that other action can be taken). This means that all the
      // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
      // This helps the synchronisation to be achieved next time.
      std::ostringstream logmsg;
-     if( signalComm->BarrierWithCommonTimeout(timeout, 9999, 9998, logmsg) )
+     if( signalComm->BarrierWithCommonTimeout(bar_timeout, 9999, 9998, logmsg) )
      {
        timedout = true; // Barrier timed out waiting for some process to enter
      }
@@ -329,6 +332,34 @@ namespace Gambit
        // and then shut down.
        attempt_soft_shutdown();
      }
+   }
+
+   /// Add a new loop time to internal array used to decide barrier timeout
+   void SignalData::update_looptime(double newtime);
+   {
+     #ifdef WITH_MPI
+     // We don't need these times unless MPI is active
+     if(myrank()>1)
+     {
+       looptimes[next] = newtime;
+       ++next;
+       if(next>=looptimes.size()) 
+       {
+         next=0;
+         listfull=true;
+       }
+       
+       // Compute average of known loop times
+       int N = next+1;
+       if(listfull) N = looptimes.size();
+       double sum = 0;
+       for(unsigned int i=0; i<N; ++i)
+       {
+         sum += looptimes[i];
+       }
+       timeout = sum/N;
+     }
+     #endif
    }
 
    /// Absorb any extra shutdown messages that may be unreceived

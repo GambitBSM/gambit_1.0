@@ -53,9 +53,9 @@ namespace Gambit
     min_valid_lnlike    (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
     alt_min_valid_lnlike(iniFile.getValueOrDef<double>(min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")),
     active_min_valid_lnlike(min_valid_lnlike), // can be switched to the alternate value by the scanner
-    intralooptime_label("Runtime(ns) intraloop"),
-    interlooptime_label("Runtime(ns) interloop"),
-    totallooptime_label("Runtime(ns) totalloop"),
+    intralooptime_label("Runtime(ms) intraloop"),
+    interlooptime_label("Runtime(ms) interloop"),
+    totallooptime_label("Runtime(ms) totalloop"),
     /* Note, likelihood container should be constructed after dependency 
        resolution, so that new printer IDs can be safely acquired without
        risk of collision with graph vertex IDs */
@@ -165,6 +165,7 @@ namespace Gambit
     }
 
     bool compute_aux = true;
+    bool point_invalidated = false;
 
     // Set the values of the parameter point in the PrimaryParameters functor, and log them to cout and/or the logs if desired.
     setParameters(in);
@@ -253,30 +254,9 @@ namespace Gambit
         logger().leaving_module();
         lnlike = active_min_valid_lnlike;
         compute_aux = false;
+        point_invalidated = true;
         if (debug) cout << "Point invalid." << endl;
-        printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
         break;
-      }
-
-      // End timing of total likelihood evaluation
-      std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
- 
-      // Compute time since the previous likelihood evaluation ended
-      // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
-      std::chrono::duration<double> true_total_loop_time = endL - previous_endL;
-
-      // Update stored timing information for use in next loop
-      previous_startL = startL;
-      previous_endL   = endL;
-
-      // Print timing data
-      if(dependencyResolver.printTiming())
-      {
-        int rank = printer.getRank();
-        std::chrono::duration<double> runtimeL = endL - startL;
-        printer.print(runtimeL.count(),            intralooptime_label,intraloopID,rank,getPtID());
-        printer.print(interloop_time.count(),      interlooptime_label,interloopID,rank,getPtID());
-        printer.print(true_total_loop_time.count(),totallooptime_label,totalloopID,rank,getPtID());
       }
     }
 
@@ -305,6 +285,33 @@ namespace Gambit
       }
     }
 
+    // End timing of total likelihood evaluation
+    std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
+ 
+    // Compute time since the previous likelihood evaluation ended
+    // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
+    std::chrono::duration<double> true_total_loop_time = endL - previous_endL;
+
+    // Update stored timing information for use in next loop
+    previous_startL = startL;
+    previous_endL   = endL;
+
+    // Print timing data
+    if(dependencyResolver.printTiming())
+    {
+      int rank = printer.getRank();
+      std::chrono::duration<double> runtimeL = endL - startL;
+      typedef std::chrono::milliseconds ms;
+      printer.print(std::chrono::duration_cast<ms>(runtimeL).count(),            intralooptime_label,intraloopID,rank,getPtID());
+      printer.print(std::chrono::duration_cast<ms>(interloop_time).count(),      interlooptime_label,interloopID,rank,getPtID());
+      printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
+    }
+
+    // Inform signal handling system of latest loop time, so it can compute sensible timeout values for sync attempts
+    // But only do it if the point was valid, since invalid points can be evaluated much faster, and we need to wait
+    // long enough for valid points to finish computing.
+    signaldata().update_looptime(std::chrono::duration_cast<ms>(runtimeL).count()); // A running average will be computed based on these.  
+
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
 
@@ -313,6 +320,8 @@ namespace Gambit
 
     /// Re-block signals 
     block_signals();    
+
+    if(point_invalidated) printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
 
     return lnlike;
   }
