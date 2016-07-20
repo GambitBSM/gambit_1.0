@@ -251,6 +251,10 @@ namespace Gambit
         }
      }
 
+     // Flag to indicate if we are shutting down because of communication from another processes,
+     // rather than because of a local event.
+     bool shutdown_due_to_MPI_message = false;
+
      #ifdef WITH_MPI
      /// Check for shutdown signals from other processes
      #ifdef SIGNAL_DEBUG
@@ -285,7 +289,7 @@ namespace Gambit
          set_shutdown_begun(1); // '1' argument means emergency set also.
        }
 
-       // Set flag to begin emergency shutdown
+       shutdown_due_to_MPI_message = true;
      }
      #ifdef SIGNAL_DEBUG
      else
@@ -303,17 +307,20 @@ namespace Gambit
        std::cerr << ss.str();
        logger() << ss.str() << EOM;
        #ifdef WITH_MPI
-       // Broadcast shutdown message to all processes
-       int shutdown_code;
-       if(emergency)
+       if(not shutdown_due_to_MPI_message) // Don't broadcast another shutdown message if we are shutting down due to an MPI message we received. Assume that all processes will get the first message (otherwise for 1000 process job we will end up with 1000*1000 shutdown messages clogging up the network) 
        {
-         shutdown_code = EMERGENCY_SHUTDOWN;
+         // Broadcast shutdown message to all processes
+         int shutdown_code;
+         if(emergency)
+         {
+           shutdown_code = EMERGENCY_SHUTDOWN;
+         }
+         else
+         {
+           shutdown_code = SOFT_SHUTDOWN;
+         }
+         broadcast_shutdown_signal(shutdown_code);
        }
-       else
-       {
-         shutdown_code = SOFT_SHUTDOWN;
-       }
-       broadcast_shutdown_signal(shutdown_code);
        #endif
        // Go to emergency shutdown routine if needed
        check_for_emergency_shutdown_signal();
