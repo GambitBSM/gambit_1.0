@@ -347,14 +347,14 @@ namespace Gambit
        #endif
        int code;
        MPI_Status recv_status;
-       signalComm->Recv(&code, 1, status.MPI_SOURCE, signalComm->mytag, &msg_status);
+       signalComm->Recv(&code, 1, status.MPI_SOURCE, signalComm->mytag, &recv_status);
        #ifdef SIGNAL_DEBUG
        logger() << LogTags::core << LogTags::info << "Received shutdown signal '"<<code<<"' from process "<<status.MPI_SOURCE<< EOM;
        #endif
        ++loop;
      }
 
-     if(loop==maxloops)
+     if(loop==max_loops)
      {
        std::ostringstream errmsg;
        errmsg << "Error while attempting to clean out unreceived (excess) shutdown messages from other processes! Received maximum allowed number of messages ("<<loop<<", note that MPI size is only "<<signalComm->Get_size()<<"); this is way too many, and indicates that the other processes have sent multiple shutdown messages. This is a bug, please report it.";  
