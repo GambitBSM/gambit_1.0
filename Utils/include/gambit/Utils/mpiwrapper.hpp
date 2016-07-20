@@ -398,7 +398,7 @@ namespace Gambit
                 utils_error().raise(LOCAL_INFO, errmsg.str());
               }
       
-              if(loop>0) log << "Cleaned out "<<loop<<" unreceived messages with tag "<<tag<<std::endl;
+              if(loop>0) log << "Communicator '"<<myname<<"' cleaned out "<<loop<<" unreceived messages with tag "<<tag<<std::endl;
             }
 
             /// A generic place to store a tag commonly used by this communicator

@@ -182,13 +182,13 @@ namespace Gambit
      // enters before unlocking (so that other action can be taken). This means that all the
      // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
      // This helps the synchronisation to be achieved next time.
-     std::ostringstream logmsg;
-     if( signalComm->BarrierWithCommonTimeout(bar_timeout, 9999, 9998, logmsg) )
+     //std::ostringstream logmsg;
+     if( signalComm->BarrierWithCommonTimeout(bar_timeout, 9999, 9998, std::cerr) ) //logmsg) )
      {
        timedout = true; // Barrier timed out waiting for some process to enter
      }
      // else the barrier succeed in synchronising all processes
-     logger() << logmsg.str();
+     //logger() << logmsg.str();
      logger() << "Synchronised? " << !timedout << EOM;
      return !timedout; 
      #else
