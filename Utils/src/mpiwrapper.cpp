@@ -346,56 +346,57 @@ namespace Gambit
             // Now, loop and wait for all other processes to send their own entering signals
             while( not timedout and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
             {
-               // Check whether other processes have entered the barrier
+               // Check which other processes have entered the barrier
                for(std::size_t source=0;source<mpiSize;source++)
                {
                   //std::cerr<<"rank "<<myRank<<": has process "<<source<<" entered BarrierWithTimeout? "<<entered[source]<<std::endl;
-                  if(not entered[source])
+                  if(not entered[source] and Iprobe(source, tag_entered, &status) )
                   {
-                     if( Iprobe(source, tag_entered, &status) )
-                     {
-                        // Ok the source has now reached this barrier.
-                        entered[source] = true;
-                        Recv(&null_recv_buffer, 1, source, tag_entered);
-                        errorlog << "Process "<<source<<" entered BarrierWithCommonTimeout."<<std::endl;
-                    } 
-                  }
-                  else
-                  {
-                    // Send our "timeleft" data to processes waiting in this loop, if we haven't already done so
-                    if(not sent_timeleft[source])
-                    {
-                      unsigned long buf_timeleft;
-                      std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
-                      std::chrono::duration<double> our_timeleft = timeout - (current - start);
-                      buf_timeleft = std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count();
-                      Isend(&buf_timeleft, 1, source, tag_timeleft, &req_null); 
-                      sent_timeleft[source] = true;
-                      errorlog << "Sent our_timeleft ("<<buf_timeleft<<" ms) to process "<<source<<std::endl;
-                   }
+                     // Ok the source has now reached this barrier.
+                     entered[source] = true;
+                     Recv(&null_recv_buffer, 1, source, tag_entered);
+                     errorlog << "Process "<<source<<" entered BarrierWithCommonTimeout."<<std::endl;
+                  } 
+               }
 
-                    // From processes that we know are waiting in this loop, check for messages from them with their time_left data
-                    if(not received_timeleft[source] and Iprobe(source, tag_timeleft, &status) )
-                    {
-                       // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
-                       received_timeleft[source] = true;
-                       unsigned long buf_timeleft;
-                       Recv(&buf_timeleft, 1, source, tag_timeleft);
-                       errorlog << "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<std::endl;
-                       //Update our own timeleft to reflect this
-                       //i.e. subtract difference between our timeleft and theirs from total timeout time.
-                       std::chrono::milliseconds their_timeleft(buf_timeleft);
-                       std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
-                       std::chrono::duration<double> our_timeleft = timeout - (current - start);
-                       std::chrono::duration<double> diff = our_timeleft - their_timeleft;
-                       if(diff>std::chrono::milliseconds(100)) // We have more time left than them, need to correct. But ignore discrepances of less than 100 ms.
-                       {
-                          timeout = timeout - diff; 
-                          // Debug
-                          errorlog << "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << std::endl;
-                       }
-                    } 
+               // Send our "timeleft" data to all processes waiting in this loop, if we haven't already done so
+               for(std::size_t source=0;source<mpiSize;source++)
+               {
+                  if(entered[source] and not sent_timeleft[source])
+                  {
+                     unsigned long buf_timeleft;
+                     std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+                     std::chrono::duration<double> our_timeleft = timeout - (current - start);
+                     buf_timeleft = std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count();
+                     Isend(&buf_timeleft, 1, source, tag_timeleft, &req_null); 
+                     sent_timeleft[source] = true;
+                     errorlog << "Sent our_timeleft ("<<buf_timeleft<<" ms) to process "<<source<<std::endl;
                   }
+               }
+
+               // From processes that we know are waiting in this loop, check for messages from them with their time_left data
+               for(std::size_t source=0;source<mpiSize;source++)
+               {
+                  if(entered[source] and not received_timeleft[source]) // and Iprobe(source, tag_timeleft, &status) ) // wait to receive regardless of whether they have sent the message yet.
+                  {
+                     // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
+                     received_timeleft[source] = true;
+                     unsigned long buf_timeleft;
+                     Recv(&buf_timeleft, 1, source, tag_timeleft);
+                     errorlog << "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<std::endl;
+                     //Update our own timeleft to reflect this
+                     //i.e. subtract difference between our timeleft and theirs from total timeout time.
+                     std::chrono::milliseconds their_timeleft(buf_timeleft);
+                     std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+                     std::chrono::duration<double> our_timeleft = timeout - (current - start);
+                     std::chrono::duration<double> diff = our_timeleft - their_timeleft;
+                     if(diff>std::chrono::milliseconds(100)) // We have more time left than them, need to correct. But ignore discrepances of less than 100 ms.
+                     {
+                        timeout = timeout - diff; 
+                        // Debug
+                        errorlog << "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << std::endl;
+                     }
+                  } 
                }
 
                // While waiting, could do work here.
@@ -411,6 +412,30 @@ namespace Gambit
                
                if(time_waited >= timeout) timedout = true;
                errorlog << "End of wait loop; time left to timeout: "<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout - time_waited).count()<<" ms"<<std::endl;
+            }
+         }
+
+         // Check that we didn't screw up the logic and leave some message unreceived somehow
+         for(std::size_t source=0;source<mpiSize;source++)
+         {
+            if((not timeout) and not entered[source])
+            {
+              // Supposedly the synchronisation succeeded, but process 'source' is not recorded as having entered the barrier!
+              errorlog << "Error! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Synchronisation registered as successful, but process "<<source<" was not detected as having entered the barrier!"<<std::endl;
+            }
+
+            if(entered[source])
+            {
+              if(not sent_timeleft[source])
+              {
+                 errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<std::endl;
+              }
+
+              // From processes that we know are waiting in this loop, check for messages from them with their time_left data
+              if(not received_timeleft[source])
+              {
+                errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<std::endl;
+              }
             }
          }
 
