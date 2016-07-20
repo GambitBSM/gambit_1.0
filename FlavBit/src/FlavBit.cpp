@@ -503,8 +503,10 @@ namespace Gambit
     BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
     BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
 
+    int flav=2;
     result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
+    
+      }
 
       if(*Dep::Debug_Cap)      printf("BR(Bs->mumu)=%.3e\n",result);
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsmumu"<<endl;
@@ -1513,7 +1515,7 @@ namespace Gambit
       //double theory_bs2mumu=*(Dep::Bsmumu_untag);
       double theory_bs2mumu=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
       //SI_Bsmumu_untag(theory_bs2mumu);
-      double theory_bd2mumu=*(Dep::Bdmumu);
+      double theory_bd2mumu=BEreq::SI_Bdll_CONV(&param, byVal(flav));
       //SI_Bdmumu(theory_bd2mumu);
 
 

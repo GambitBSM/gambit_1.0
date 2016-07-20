@@ -71,6 +71,7 @@ BE_FUNCTION(Bdll, double, (int, double*, double*, double*, std::complex<double>*
 BE_CONV_FUNCTION(SI_BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "SI_BRBKstarmumu_CONV")    
 BE_CONV_FUNCTION(SI_bsgamma_CONV, double, (struct parameters*, double), "SI_bsgamma_CONV")
 BE_CONV_FUNCTION(SI_Bsll_untag_CONV, double, (struct parameters*, int), "SI_Bsll_untag_CONV")
+BE_CONV_FUNCTION(SI_Bdll_CONV, double, (struct parameters*, int), "SI_Bdll_CONV")
 
 
 

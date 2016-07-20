@@ -96,7 +96,7 @@ BE_NAMESPACE
 
     double result = 0.;
 
-    if(flav !=1 && flav != 2) return -10.;
+    if(flav !=1 && flav != 2 && flav != 3) return -10.;
 
     if(param->model<0) result=0.;
     else
@@ -110,11 +110,36 @@ BE_NAMESPACE
 	C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
 	CQ_calculator(flav,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
 	Cprime_calculator(flav,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
-	
+
 	result = Bsll_untag(flav,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
       }
-    
-    
+
+
+    return result;
+  }
+  double SI_Bdll_CONV(struct parameters *param, int flav)
+  {
+
+    double result = 0.;
+
+    if(flav !=1 && flav != 2 && flav != 3) return -10.;
+
+    if(param->model<0) result=0.;
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
+	C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
+	CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
+
+	result = Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
+      }
+
+
     return result;
   }
 
