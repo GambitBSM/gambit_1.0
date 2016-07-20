@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
     }
 
     #ifdef WITH_MPI
-    signaldata().discard_excess_shutdown_messages(); 
+    //signaldata().discard_excess_shutdown_messages(); 
     #endif
   } // End main scope; want to destruct all communicators before MPI_Finalize() is called
 
