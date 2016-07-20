@@ -6,19 +6,19 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Get correct validation plots for MSSM spectra (DarkBit_standalone_MSSM,
-  MSSM_plots.py) [?]
-- Fix missing states (h0_1 etc) in ProcessCatalog [?]
 - Merge DarkBit back into master and inform Martin [CW]
+- Add warning to FCMC about missing final states (e.g. h0_1) [CW/JC]
 - Confirm valid energy ranges in SimYieldTables_DarkSUSY - mail from SW 2016-07-15 [TB, JE, SW]
 
 Before internal paper review:
+- Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
 - Update likelihood technical details in physics papers [all]
 - Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Check again boost gsl integration for stability (SingletDM_test...) [CW/JC]
 - Update cascade code discussions in paper to new treatment [CW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
@@ -48,7 +48,6 @@ After internal paper review started:
 - Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
-- Check again boost gsl integration for stability (SingletDM_test...) [CW]
 
 Before release:
 - Clean up header and src files from old mess [CW]
@@ -77,6 +76,12 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Get correct validation plots for MSSM spectra (DarkBit_standalone_MSSM,
+  MSSM_plots.py) [JC]
+  Note: Plots look reasonable if SLHA files with decay information are used
+- Fix missing states (h0_1 etc) in ProcessCatalog [JC]
+  Note: the states were not actually missing but just not initialized if SLHA
+  files without decay blocks are used
 - Update valid energy ranges in SimYieldTables_DarkSUSY (GamYields.cpp) [SW]
 - Double-check SingletDM expression [SW]
 - Cascade decay code checks (after update) [CW]
