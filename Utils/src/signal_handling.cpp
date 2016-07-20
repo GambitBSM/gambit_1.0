@@ -336,32 +336,10 @@ namespace Gambit
      logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes (with MPI tag "<<signalComm->mytag<<"). These will be discarded (since we are inside the 'discard_excess_shutdown_messages' routine)" << EOM;
      #endif
      int max_loops = 2*signalComm->Get_size(); // At most should be one message from every process (minus one), so we will check twice as many times as this before deciding that something has gone horribly wrong.
-     
-     int loop = 0;
 
-     MPI_Status status;
-     while(loop<max_loops and signalComm->Iprobe(MPI_ANY_SOURCE, signalComm->mytag, &status))
-     {
-       #ifdef SIGNAL_DEBUG
-       logger() << LogTags::core << LogTags::info << "Shutdown signal detected from process "<<status.MPI_SOURCE<<"; doing Recv" << EOM;
-       #endif
-       int code;
-       MPI_Status recv_status;
-       signalComm->Recv(&code, 1, status.MPI_SOURCE, signalComm->mytag, &recv_status);
-       #ifdef SIGNAL_DEBUG
-       logger() << LogTags::core << LogTags::info << "Received shutdown signal '"<<code<<"' from process "<<status.MPI_SOURCE<< EOM;
-       #endif
-       ++loop;
-     }
-
-     if(loop==max_loops)
-     {
-       std::ostringstream errmsg;
-       errmsg << "Error while attempting to clean out unreceived (excess) shutdown messages from other processes! Received maximum allowed number of messages ("<<loop<<", note that MPI size is only "<<signalComm->Get_size()<<"); this is way too many, and indicates that the other processes have sent multiple shutdown messages. This is a bug, please report it.";  
-       utils_error().raise(LOCAL_INFO, errmsg.str());
-     }
-
-     logger() << LogTags::core << LogTags::info << "Cleaned out "<<loop<<" excess shutdown messages." << EOM;
+     std::ostringstream logmsg;    
+     signalComm->receive_all_with_tag(MPI_ANY_SOURCE, signalComm->mytag, max_loops, logmsg);
+     logger() << LogTags::core << LogTags::info << logmsg.str() << EOM;
    }
    #endif
 

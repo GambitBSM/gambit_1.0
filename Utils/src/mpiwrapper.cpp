@@ -71,8 +71,8 @@ namespace Gambit
          myname = name;
       }
 
-      /// @{ Destructor
-      ///    Warn if any undelivered messages exist
+      /// Destructor
+      ///́ Warn if any undelivered messages exist
       Comm::~Comm() { std::cerr << check_for_undelivered_messages(); }
       /// @}      
 
@@ -423,15 +423,45 @@ namespace Gambit
                if(not entered[source]) errorlog << source << ", ";
             }
             errorlog << std::endl;
-            /// TODO: Need to clear out any remaining MPI messages we might have missed.
 
+            /// Clear out any remaining MPI messages related to this barrier that we might have missed.
+            int max_loops = 2*Get_size();
+            receive_all_with_tag(MPI_ANY_SOURCE, tag_entered, max_loops, errorlog);
+            receive_all_with_tag(MPI_ANY_SOURCE, tag_timeleft, max_loops, errorlog);
          }
          errorlog << "Leaving BarrierWithCommonTimeout (tag_entered="<<tag_entered<<")"<<std::endl;
          return timedout;
       }
 
+      /// Receive (and discard) any waiting messages with a given tag from a given source (both possibly MPI_ANY_*)
+      void Comm::receive_all_with_tag(int source, int tag, int max_loops, std::ostream& log)
+      {
+        int loop = 0;
 
+        MPI_Status status;
+        while(loop<max_loops and Iprobe(source, tag, &status))
+        {
+          #ifdef SIGNAL_DEBUG
+          log << "Detected message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<"; doing Recv" << std::endl;
+          #endif
+          int code;
+          MPI_Status recv_status;
+          signalComm->Recv(&code, 1, status.MPI_SOURCE, status.MPI_TAG, &recv_status);
+          #ifdef SIGNAL_DEBUG
+          log << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding it as obsolete..." << std::endl;
+          #endif
+          ++loop;
+        }
 
+        if(loop==max_loops)
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error while attempting to clean out unreceived messages from other processes! Received maximum allowed number of messages ("<<loop<<", note that MPI size is "<<Get_size()<<")";  
+          utils_error().raise(LOCAL_INFO, errmsg.str());
+        }
+
+        if(loop>0) log << "Cleaned out "<<loop<<" unreceived messages with tag "<<tag<<std::endl;
+      }
       /// @}
 
       /// Check if MPI_Init has been called (it is an error to call it twice)

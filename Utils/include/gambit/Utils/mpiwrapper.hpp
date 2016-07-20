@@ -370,6 +370,9 @@ namespace Gambit
                                           const int tag_timeleft, 
                                           std::ostream& errorlog);
       
+            /// Receive (and discard) any waiting messages with a given tag from a given source (both possibly MPI_ANY_*)
+            void receive_all_with_tag(int source, int tag, int max_loops, std::ostream& log);
+
             /// A generic place to store a tag commonly used by this communicator
             int mytag = 1;
 
