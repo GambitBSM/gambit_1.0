@@ -156,7 +156,7 @@ namespace Gambit {
       daFunk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       daFunk::Funk integrand = dNdE/(2*halfBox_int);
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
-        ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
+        ->set_epsabs(0)->set_limit(100)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
       //
       // TODO: Check whether to use numerically more stable integration over lnE instead
       // Note: this causes problems in the WIMP example (3) as the singularity is dropped
