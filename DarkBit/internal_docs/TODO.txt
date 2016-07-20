@@ -49,12 +49,15 @@ After internal paper review started:
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
 - Check again boost gsl integration for stability (SingletDM_test...) [CW]
+— Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 
 Before release:
 - Clean up header and src files from old mess [CW]
 - Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
+— Upgrade MicrOmegas to most recent version [JC] [Added by JC]
+— Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
   open annihilation channels
 - Use singlet scalar spectrum object (which is not existing up to now)
