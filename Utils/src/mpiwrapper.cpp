@@ -408,7 +408,7 @@ namespace Gambit
 
                // While waiting, could do work here.
   
-               //std::cerr << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
+               errorlog << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
                nanosleep(&sleeptime,NULL);
 
