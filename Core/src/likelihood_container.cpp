@@ -296,12 +296,13 @@ namespace Gambit
     previous_startL = startL;
     previous_endL   = endL;
 
+    std::chrono::duration<double> runtimeL = endL - startL;
+    typedef std::chrono::milliseconds ms;
+
     // Print timing data
     if(dependencyResolver.printTiming())
     {
       int rank = printer.getRank();
-      std::chrono::duration<double> runtimeL = endL - startL;
-      typedef std::chrono::milliseconds ms;
       printer.print(std::chrono::duration_cast<ms>(runtimeL).count(),            intralooptime_label,intraloopID,rank,getPtID());
       printer.print(std::chrono::duration_cast<ms>(interloop_time).count(),      interlooptime_label,interloopID,rank,getPtID());
       printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
