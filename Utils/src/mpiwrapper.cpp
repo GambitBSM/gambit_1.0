@@ -390,11 +390,13 @@ namespace Gambit
                      std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                      std::chrono::duration<double> our_timeleft = timeout - (current - start);
                      std::chrono::duration<double> diff = our_timeleft - their_timeleft;
-                     if(diff>std::chrono::milliseconds(100)) // We have more time left than them, need to correct. But ignore discrepances of less than 100 ms.
+                     if(diff>std::chrono::milliseconds(10)) // We have more time left than them, need to correct. But ignore discrepances of less than 100 ms.
                      {
                         timeout = timeout - diff; 
                         // Debug
                         errorlog << "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << std::endl;
+                     } else {
+                        errorlog << "Difference between their_timeleft and our_timeleft is less than 10ms; will not bother to adjust." << std::endl;
                      }
                   } 
                }

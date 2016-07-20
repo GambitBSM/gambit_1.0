@@ -65,6 +65,8 @@ namespace Gambit
      , shutdownBegun(0)
      , rank(-1)
      , emergency(0)
+     , POSIX_signal_noticed(false)
+     , shutdown_due_to_MPI_message(false)
      , shutdown_attempts(0)
      , inside_omp_block(false)
      , N_signals(0)
@@ -255,19 +257,15 @@ namespace Gambit
         }
      }
 
-     // Flag to indicate if we are shutting down because of communication from another processes,
-     // rather than because of a local event.
-     bool shutdown_due_to_MPI_message = false;
-
      #ifdef WITH_MPI
      /// Check for shutdown signals from other processes
      #ifdef SIGNAL_DEBUG
-     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes (with MPI tag "<<signalComm->mytag<<")" << EOM;
+     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown messages from other processes (with MPI tag "<<signalComm->mytag<<")" << EOM;
      #endif
      if(signalComm->Iprobe(MPI_ANY_SOURCE, signalComm->mytag))
      {
        #ifdef SIGNAL_DEBUG
-       logger() << LogTags::core << LogTags::info << "Shutdown signal detected; doing Recv" << EOM;
+       logger() << LogTags::core << LogTags::info << "Shutdown message detected; doing Recv" << EOM;
        #endif
        int code;
        MPI_Status msg_status;
@@ -277,17 +275,17 @@ namespace Gambit
        if(code==SOFT_SHUTDOWN)
        {
          set_shutdown_begun();
-         logger() << LogTags::core << LogTags::info << "Received SOFT shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+         logger() << LogTags::core << LogTags::info << "Received SOFT shutdown message from process with rank " << msg_status.MPI_SOURCE << EOM;
        }
        else if(code==EMERGENCY_SHUTDOWN)
        {
          set_shutdown_begun(1); // '1' argument means emergency set also.
-         logger() << LogTags::core << LogTags::info << "Received EMERGENCY shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+         logger() << LogTags::core << LogTags::info << "Received EMERGENCY shutdown message from process with rank " << msg_status.MPI_SOURCE << EOM;
        }
        else
        {
          std::ostringstream ss;
-         ss << "Received UNRECOGNISED shutdown signal from process with rank " << msg_status.MPI_SOURCE<<". Performing emergency shutdown, but please note that this indicates a ***BUG*** somewhere in the signal handling code!!!";
+         ss << "Received UNRECOGNISED shutdown message from process with rank " << msg_status.MPI_SOURCE<<". Performing emergency shutdown, but please note that this indicates a ***BUG*** somewhere in the signal handling code!!!";
          std::cout << ss.str() << std::endl;
          logger() << LogTags::core << LogTags::info << ss.str() << EOM;
          set_shutdown_begun(1); // '1' argument means emergency set also.
@@ -298,18 +296,28 @@ namespace Gambit
      #ifdef SIGNAL_DEBUG
      else
      {
-        logger() << LogTags::core << LogTags::info << "No shutdown signal detected; continuing as normal" << EOM;
+        logger() << LogTags::core << LogTags::info << "No shutdown message detected; continuing as normal" << EOM;
      }
      #endif
      #endif
 
      if(shutdownBegun)
      {
+       if(not POSIX_signal_noticed and not shutdown_due_to_MPI_message)
+       {
+         std::ostringstream ss;
+         ss << "Shutdown signal detected! (in SignalData)"<< std::endl;
+         ss << display_received_signals();
+         std::cerr << ss.str();
+         logger() << ss.str() << EOM;
+         POSIX_signal_noticed = true;
+       }
+
        std::ostringstream ss;
-       ss << "Shutdown signal detected! (in SignalData); emergency="<< emergency << std::endl;
-       ss << display_received_signals();
+       ss << "Shutdown is in progress; emergency="<< emergency << std::endl;
        std::cerr << ss.str();
        logger() << ss.str() << EOM;
+
        #ifdef WITH_MPI
        if(not shutdown_due_to_MPI_message) // Don't broadcast another shutdown message if we are shutting down due to an MPI message we received. Assume that all processes will get the first message (otherwise for 1000 process job we will end up with 1000*1000 shutdown messages clogging up the network) 
        {

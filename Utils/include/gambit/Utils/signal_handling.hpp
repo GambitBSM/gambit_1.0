@@ -136,6 +136,11 @@ namespace Gambit
        /// Flag to warn if the shutdown that is in progress is an emergency shutdown
        /// (use to decided whether to attempt MPI synchronisation)
        volatile sig_atomic_t emergency;
+       /// Flag to indicate if POSIX shutdown signal has been noticed.
+       bool POSIX_signal_noticed;
+       // Flag to indicate if we are shutting down because of communication from another processes,
+       // rather than because of a local event.
+       bool shutdown_due_to_MPI_message;
 
        /// Number of times synchronisation for soft shutdown has been attempted;
        int shutdown_attempts;
