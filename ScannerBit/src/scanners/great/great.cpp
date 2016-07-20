@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <limits>
+#include <cstdio>
 
 #include "gambit/ScannerBit/scanners/great/great.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -68,11 +69,28 @@ scanner_plugin(GreAT, version(1, 0, 0))
 
   int plugin_main(void)
   {
-    int nPar        = get_dimension();                            // Dimensionality of the parameter space
-    int nTrialLists = get_inifile_value<int> ("nTrialLists", 10); // Number of trial lists (e.g. Markov chains)
-    int nTrials     = get_inifile_value<int> ("nTrials",  20000); // Number of trials (e.g. Markov steps)
 
-    static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
+    // Run parameters
+    const int  nPar        = get_dimension();                            // Dimensionality of the parameter space
+    const int  nTrialLists = get_inifile_value<int> ("nTrialLists", 10); // Number of trial lists (e.g. Markov chains)
+    const int  nTrials     = get_inifile_value<int> ("nTrials",  20000); // Number of trials (e.g. Markov steps)
+    const int  MPIrank     = get_printer().get_stream()->getRank();      // MPI rank of this process
+    const bool resume_mode = get_printer().resume_mode();                // Resuming run or not
+    const str  outpath     = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT-native/");
+
+    // Set up output and MultiRun log filenames
+    std::ostringstream ss1, ss2; 
+    ss1 << outpath << "MCMC_" << MPIrank << ".root";
+    ss2 << outpath << "MultiRun.txt";
+    std::string outputfilename = ss1.str();
+    std::string multifilename = ss2.str();
+
+    // Wipe previous GreAT output if not resuming
+    if (not resume_mode)
+    {
+      remove(outputfilename.c_str());
+      if (MPIrank == 0) remove(multifilename.c_str());
+    }
 
     // Creating GreAT Model, i.e. parameter space and function to be minimised
     TGreatModel* MyModel = new TGreatModel();
@@ -87,7 +105,6 @@ scanner_plugin(GreAT, version(1, 0, 0))
     }
 
     // Setting up the logarithmic likelihoodfunction
-    // MyModel->SetLogLikelihoodFunction(double (*functionpointer)(TGreatPoint&));
     MyModel->SetLogLikelihoodFunction(LogLikelihoodFunction);
 
     // Setting up the GreAT Manager
@@ -98,18 +115,14 @@ scanner_plugin(GreAT, version(1, 0, 0))
     // Tell the algorithm to use former points to update its prior
     MyManager.GetAlgorithm()->SetUpdateStatus(true);
     // Set the output path, file name, and name for the TTree
-    std::string defpath = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT-native/");
-    std::ostringstream ss; 
-    ss << defpath << "MCMC_" << MPIrank << ".root";
-    std::string filename = ss.str();
-    MyManager.SetOutputFileName(filename);
+    MyManager.SetOutputFileName(outputfilename);
     MyManager.SetTreeName("mcmc");
     // Set number of trials (steps) and triallists (chains)
     MyManager.SetNTrialLists(nTrialLists);
     MyManager.SetNTrials(nTrials);
     // Run GreAT
     std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
-    MyManager.ActivateMultiRun();
+    MyManager.ActivateMultiRun(multifilename.c_str());
     MyManager.Run();
 
     // Analyse
