@@ -387,6 +387,7 @@ namespace Gambit
                      // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
                      received_timeleft[source] = true;
                      unsigned long buf_timeleft;
+                     errorlog << "Attempting to received their_timeleft from process "<<source<<std::endl;
                      Recv(&buf_timeleft, 1, source, tag_timeleft);
                      errorlog << "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<std::endl;
                      //Update our own timeleft to reflect this
