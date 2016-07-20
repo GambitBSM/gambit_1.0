@@ -120,6 +120,9 @@ namespace Gambit
        /// Broadcast emergency shutdown command to all processes, or abort if set to do so
        /// (calls broadcast_shutdown_signal, just does extra things as well)
        void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
+ 
+       /// Absorb any extra shutdown messages that may be unreceived (for cleanup before MPI_Finalize)
+       void discard_excess_shutdown_messages();
        #endif
    
      private:

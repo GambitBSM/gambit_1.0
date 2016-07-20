@@ -304,6 +304,7 @@ int main(int argc, char* argv[])
   // FIXME to be done in ScannerBit
   // Finalise MPI
   #ifdef WITH_MPI
+  signaldata().discard_excess_shutdown_messages(); 
   GMPI::Finalize();
   #endif
 
