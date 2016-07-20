@@ -413,30 +413,41 @@ namespace Gambit
                if(time_waited >= timeout) timedout = true;
                errorlog << "End of wait loop; time left to timeout: "<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout - time_waited).count()<<" ms"<<std::endl;
             }
-         }
 
-         // Check that we didn't screw up the logic and leave some message unreceived somehow
-         for(std::size_t source=0;source<mpiSize;source++)
-         {
-            if((not timeout) and not entered[source])
+
+            // Check that we didn't screw up the logic and leave some message unreceived somehow
+            for(std::size_t source=0;source<mpiSize;source++)
             {
-              // Supposedly the synchronisation succeeded, but process 'source' is not recorded as having entered the barrier!
-              errorlog << "Error! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Synchronisation registered as successful, but process "<<source<" was not detected as having entered the barrier!"<<std::endl;
+               if((not timedout) and not entered[source])
+               {
+                 // Supposedly the synchronisation succeeded, but process 'source' is not recorded as having entered the barrier!
+                 errorlog << "Error! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Synchronisation registered as successful, but process "<<source<<" was not detected as having entered the barrier!"<<std::endl;
+               }
+   
+               if(entered[source])
+               {
+                 if(not sent_timeleft[source])
+                 {
+                    errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<std::endl;
+                 }
+   
+                 // From processes that we know are waiting in this loop, check for messages from them with their time_left data
+                 if(not received_timeleft[source])
+                 {
+                   errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<std::endl;
+                 }
+               }
             }
 
-            if(entered[source])
-            {
-              if(not sent_timeleft[source])
-              {
-                 errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<std::endl;
-              }
+            /// Clear out any remaining MPI messages related to this barrier that we might have missed.
+            //int max_loops = 2*Get_size();
 
-              // From processes that we know are waiting in this loop, check for messages from them with their time_left data
-              if(not received_timeleft[source])
-              {
-                errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<std::endl;
-              }
-            }
+            //int null_recv_buffer = 0;
+            //receive_all_with_tag(&null_recv_buffer, 1, MPI_ANY_SOURCE, tag_entered, max_loops, errorlog);
+
+            //unsigned long null_buf_timeleft;
+            //receive_all_with_tag(&null_buf_timeleft, 1, MPI_ANY_SOURCE, tag_timeleft, max_loops, errorlog);
+
          }
 
          // if we timed out, spit out some errors
@@ -448,15 +459,6 @@ namespace Gambit
                if(not entered[source]) errorlog << source << ", ";
             }
             errorlog << std::endl;
-
-            /// Clear out any remaining MPI messages related to this barrier that we might have missed.
-            int max_loops = 2*Get_size();
-
-            int null_recv_buffer = 0;
-            receive_all_with_tag(&null_recv_buffer, 1, MPI_ANY_SOURCE, tag_entered, max_loops, errorlog);
-
-            unsigned long null_buf_timeleft;
-            receive_all_with_tag(&null_buf_timeleft, 1, MPI_ANY_SOURCE, tag_timeleft, max_loops, errorlog);
          }
          errorlog << "Leaving BarrierWithCommonTimeout (tag_entered="<<tag_entered<<")"<<std::endl;
          return timedout;
