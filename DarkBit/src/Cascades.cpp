@@ -537,7 +537,9 @@ namespace Gambit {
           }
           if (ignored)
           {
-            DarkBit_warning().raise(LOCAL_INFO, "WARNING FCMC: No spectrum added for some final state particles");
+            DarkBit_warning().raise(LOCAL_INFO, 
+                "WARNING FCMC: Missing complete decay information for " 
+                + (*it)->getpID() + ". This state is ignored.");
           }
         }
       }

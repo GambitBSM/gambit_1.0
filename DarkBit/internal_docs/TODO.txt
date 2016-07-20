@@ -7,7 +7,6 @@ DarkBit
 
 Urgent (for production runs):
 - Merge DarkBit back into master and inform Martin [CW]
-- Add warning to FCMC about missing final states (e.g. h0_1) [CW/JC]
 - Confirm valid energy ranges in SimYieldTables_DarkSUSY - mail from SW 2016-07-15 [TB, JE, SW]
 
 Before internal paper review:
@@ -76,6 +75,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Add warning to FCMC about missing final states (e.g. h0_1) [CW/JC]
 - Get correct validation plots for MSSM spectra (DarkBit_standalone_MSSM,
   MSSM_plots.py) [JC]
   Note: Plots look reasonable if SLHA files with decay information are used
