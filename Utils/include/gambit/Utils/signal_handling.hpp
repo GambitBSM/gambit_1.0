@@ -175,7 +175,7 @@ namespace Gambit
        bool shutdown_broadcast_done;
 
        /// Variables needed to compute sensible shutdown timeout length
-       std::vector<double> looptimes(1000);       
+       std::vector<double> looptimes;       
        int next; // next slot to be overwritten
        bool listfull; // looptime vector is full
        double timeout; // Computed timeout value for shutdowns

@@ -71,6 +71,7 @@ namespace Gambit
      #ifdef WITH_MPI
      , _comm_rdy(false)
      , shutdown_broadcast_done(false)
+     , looptimes(1000)
      , next(0)
      , listfull(false)
      , timeout(100)
@@ -174,7 +175,7 @@ namespace Gambit
      #ifdef WITH_MPI
      // sleep setup
      bool timedout = false;
-     std::chrono::milliseconds bar_timeout(timeout); 
+     std::chrono::milliseconds bar_timeout(std::round(timeout)); 
      // This is a fancy barrier that waits a certain amount of time after the FIRST process
      // enters before unlocking (so that other action can be taken). This means that all the
      // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
