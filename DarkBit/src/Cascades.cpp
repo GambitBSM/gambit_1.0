@@ -21,7 +21,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
-#define DARKBIT_DEBUG
+//#define DARKBIT_DEBUG
 
 namespace Gambit {
   namespace DarkBit {
@@ -537,7 +537,9 @@ namespace Gambit {
           }
           if (ignored)
           {
-            DarkBit_warning().raise(LOCAL_INFO, "WARNING FCMC: No spectrum added for some final state particles");
+            DarkBit_warning().raise(LOCAL_INFO, 
+                "WARNING FCMC: Missing complete decay information for " 
+                + (*it)->getpID() + ". This state is ignored.");
           }
         }
       }

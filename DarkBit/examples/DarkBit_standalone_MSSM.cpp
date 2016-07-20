@@ -314,6 +314,12 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
     cascadeMC_DecayTable.reset_and_calculate();
 
+    // cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 100000);
+    // cascadeMC_Histograms.setOption<double>("cMC_endCheckFrequency", 25);
+    // cascadeMC_Histograms.setOption<double>("cMC_gammaRelError", .05);
+    // cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
+    // cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
+
     // Set up MC loop manager for cascade MC
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);

@@ -6,13 +6,22 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Get correct validation plots for MSSM spectra (DarkBit_standalone_MSSM,
-  MSSM_plots.py) [?]
-- Fix missing states (h0_1 etc) in ProcessCatalog [?]
-- Merge DarkBit back into master and inform Martin [CW]
+- Fix gsl_integration integration problems [CW]
+  - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
+  - Apparently related to integration over noisy FCMC results, when e.g.
+    boosting h0_1 spectra
+  - Problem can be reduced by increasing the FCMC sample size
+  - Unclear why it does not appear in CMSSM or MSSM-7 scans
+  - Possible solution options:
+    - Write simple trapz integration routine; not accurate/very noisy but
+      stable -- could be used as fallback if gsl fails
+    - Extend daFunk.hpp to integrate internaly over lists (lots of work)
+    - Replace spectrum PDFs by CDFs (might be not enough in all cases)
 - Confirm valid energy ranges in SimYieldTables_DarkSUSY - mail from SW 2016-07-15 [TB, JE, SW]
+- Merge DarkBit back into master and inform Martin [CW]
 
 Before internal paper review:
+- Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
 - Update likelihood technical details in physics papers [all]
 - Double check likelihood descriptions in physics papers [all]
@@ -48,7 +57,6 @@ After internal paper review started:
 - Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
-- Check again boost gsl integration for stability (SingletDM_test...) [CW]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 
 Before release:
@@ -80,6 +88,14 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Check again boost gsl integration for stability (SingletDM_test...) [CW/JC]
+- Add warning to FCMC about missing final states (e.g. h0_1) [CW/JC]
+- Get correct validation plots for MSSM spectra (DarkBit_standalone_MSSM,
+  MSSM_plots.py) [JC]
+  Note: Plots look reasonable if SLHA files with decay information are used
+- Fix missing states (h0_1 etc) in ProcessCatalog [JC]
+  Note: the states were not actually missing but just not initialized if SLHA
+  files without decay blocks are used
 - Update valid energy ranges in SimYieldTables_DarkSUSY (GamYields.cpp) [SW]
 - Double-check SingletDM expression [SW]
 - Cascade decay code checks (after update) [CW]

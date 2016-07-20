@@ -156,7 +156,7 @@ namespace Gambit {
       daFunk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       daFunk::Funk integrand = dNdE/(2*halfBox_int);
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
-        ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
+        ->set_epsabs(0)->set_limit(100)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
       //
       // TODO: Check whether to use numerically more stable integration over lnE instead
       // Note: this causes problems in the WIMP example (3) as the singularity is dropped
@@ -204,6 +204,8 @@ namespace Gambit {
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        bool added = false;  // If spectrum is not available from any source
+
         // Here only take care of two-body final states
         if (it->nFinalStates != 2) continue;
 
@@ -229,12 +231,14 @@ namespace Gambit {
           Yield = Yield +
             it->genRate*(*Dep::SimYieldTable)(
                 it->finalStateIDs[0], it->finalStateIDs[1], "gamma", Ecm);
+          added = true;
         }
         // Deal with composite final states
         else
         {
           daFunk::Funk spec0 = daFunk::zero("E");
           daFunk::Funk spec1 = daFunk::zero("E");
+          added = true;
 
           // Final state particle one
           // Tabulated spectrum available?
@@ -255,6 +259,7 @@ namespace Gambit {
             //std::cout << it->finalStateIDs[0] << " " << gamma0 << std::endl;
             spec0 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[0]), gamma0, 0.0);
           }
+          else added = false;
 
           // Final state particle two
           if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
@@ -272,6 +277,7 @@ namespace Gambit {
             //std::cout << it->finalStateIDs[1] << " " << gamma1 << std::endl;
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
+          else added = false;
 
 //#ifdef DARKBIT_DEBUG
             std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
@@ -291,6 +297,12 @@ namespace Gambit {
               std::cout << *it2 << ", ";
             std::cout << "]\n";
 //#endif
+          if (!added)
+          {
+            DarkBit_warning().raise(LOCAL_INFO, 
+                "GA_AnnYield_General: cannot find spectra for " 
+                + it->finalStateIDs[0] + " " + it->finalStateIDs[1]);
+          }
 
           Yield = Yield + (spec0 + spec1) * it->genRate;
         }
@@ -322,6 +334,8 @@ namespace Gambit {
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        bool added = true;
+
         // Here only take care of three-body final states
         if (it->nFinalStates != 3) continue;
 
@@ -376,6 +390,14 @@ namespace Gambit {
           #endif
 
           Yield = Yield + dsigmavde;
+        }
+        else added = false;
+
+        if (!added)
+        {
+          DarkBit_warning().raise(LOCAL_INFO, 
+              "GA_AnnYield_General: ignoring final state " 
+              + it->finalStateIDs[0] + " " + it->finalStateIDs[1] + " " + it->finalStateIDs[2]);
         }
       }
       #ifdef DARKBIT_DEBUG
