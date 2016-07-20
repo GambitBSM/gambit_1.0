@@ -30,5 +30,26 @@ BE_INI_FUNCTION
     std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
     set_data_path(path);  // Note that passing per reference is default per backend system
   }
+  if ( ModelInUse("GalacticHalo_gNFW") or ModelInUse("GalacticHalo_gNFW") )
+  {
+#ifdef GAMLIKE_DEBUG
+    logger() << "Using GalacticHalo initialization" << EOM;
+#endif
+    daFunk::Funk profile = *Dep::GalacticHalo;
+    auto r = daFunk::logspace(-3, 2, 100);
+    auto rho = daFunk::logspace(-3, 2, 100);
+    double dist = 8.5;  // FIXME: Sun GC distance [kpc] should be free parameter
+    for ( size_t i = 0; i<r.size(); i++ )
+    {
+      rho[i] = profile->bind("r")->eval(r[i]);
+    }
+    set_MW_profile(r, rho, dist);
+  }
+#ifdef GAMLIKE_DEBUG
+  else
+  {
+    logger() << "Not using GalacticHalo initialization" << EOM;
+  }
+#endif
 }
 END_BE_INI_FUNCTION

@@ -56,7 +56,6 @@ ExternalProject_Add(darksusy
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -p1 < ${darksusy_patch}/patchDS_sharedlib_+_threadsafety.dif
         COMMAND patch -p1 -d src < ${darksusy_patch}/patchDS.dif
         COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${darksusy_patch}/patchISA.dif
@@ -92,7 +91,6 @@ ExternalProject_Add(darksusy_5_1_1
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
         COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
         #COMMAND patch -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
@@ -117,7 +115,6 @@ ExternalProject_Add(superiso
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${superiso_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile
         COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" <SOURCE_DIR>/Makefile
@@ -141,7 +138,6 @@ ExternalProject_Add(ddcalc
            COMMAND ${CMAKE_COMMAND} -E copy_directory ${ddcalc_location} ${ddcalc_dir}
   SOURCE_DIR ${ddcalc_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc.so FC=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} DDCALC_DIR=${ddcalc_dir} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
@@ -174,7 +170,6 @@ ExternalProject_Add(gamlike
            COMMAND ${CMAKE_COMMAND} -E copy_directory ${gamlike_location} ${gamlike_dir}
   SOURCE_DIR ${gamlike_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS} GAMLIKE_DATA_PATH=${gamlike_data_path}
   INSTALL_COMMAND ""
@@ -191,7 +186,6 @@ ExternalProject_Add(micromegas
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegas_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND cd ${micromegas_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
@@ -208,7 +202,6 @@ ExternalProject_Add(micromegasSingletDM
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegasSingletDM_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND cd ${micromegasSingletDM_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
@@ -248,7 +241,6 @@ ExternalProject_Add(pythia
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   COMMAND echo DEBUG: CONFIGURE COMMAND = ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}" lib/libpythia8.so
@@ -284,7 +276,6 @@ ExternalProject_Add(pythiaEM
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${pythiaEM_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}" lib/libpythia8.so
   INSTALL_COMMAND ""
@@ -338,7 +329,6 @@ ExternalProject_Add(nulike
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
   INSTALL_COMMAND ""
@@ -360,7 +350,6 @@ ExternalProject_Add(susyhit
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${susyhit_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -p1 < ${susyhit_patch}/patch_SUSYHIT_1_5.dif
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
@@ -386,7 +375,6 @@ ExternalProject_Add(feynhiggs
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   # Fix bug preventing the use of array bounds checking.
   CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" <SOURCE_DIR>/src/Decays/VecSet.F
             COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
@@ -413,7 +401,6 @@ ExternalProject_Add(feynhiggs_2_11_2
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   # Fix bug preventing the use of array bounds checking.
   CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" <SOURCE_DIR>/src/Decays/VecSet.F
             COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
@@ -433,7 +420,6 @@ ExternalProject_Add(higgsbounds_tables
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_tables_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
@@ -452,7 +438,6 @@ ExternalProject_Add(higgsbounds
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
             COMMAND sed ${dashi} -e "s|clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_loc}\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
@@ -476,7 +461,6 @@ ExternalProject_Add(higgssignals
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgssignals_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND cp configure my_configure
             COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
@@ -513,9 +497,9 @@ ExternalProject_Add(gm2calc
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${gm2calc_dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2calc_makefile.dif
         COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2calc_module.dif
+        COMMAND patch -p1 < ${gm2calc_patch}/patch_gm2_error.dif
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
   INSTALL_COMMAND ""
