@@ -1,4 +1,0 @@
-172a173,175
-> extern int readSpectra();
-> extern void mInterp(double,int,int,double*);
-> 
