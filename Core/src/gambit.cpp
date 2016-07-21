@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
         // We do this after the rest of the initialisation, because we want to use
         // the default signal handling during that period.
         logger() << core << "Waiting for all processes to be ready in order to start scan." << EOM;
-        GMPI::Barrier();
+        scanComm.Barrier();
         block_signals(); // No more interruptions allowed until scan starts properly
 
         logger() << core << "Setting up signal handling" << std::endl;
