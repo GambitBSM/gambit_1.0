@@ -342,9 +342,15 @@ namespace Gambit
             // Vector to keep track of processes to which we have sent *our* "time remaining" counts.
             std::vector<bool>  sent_timeleft(mpiSize,false);
             sent_timeleft[myRank] = true; // Don't need to message ourselves
+
+            // Counter for extra loops used to clean up timing messages
+            unsigned int overtime_loop = 0;
+            unsigned int max_overtime_loops = 10; // Should really only need 1 on average
+            bool overtime_exceeded = true; // No overtime used by default, only turned on if extra message cleanup needed
  
             // Now, loop and wait for all other processes to send their own entering signals
-            while( not timedout and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
+            while( (not (timedout and overtime_exceeded)) // Exit if both timeout and overtime loops are elapsed.
+               and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
             {
                // Check which other processes have entered the barrier
                for(std::size_t source=0;source<mpiSize;source++)
@@ -411,7 +417,6 @@ namespace Gambit
                }
 
                // While waiting, could do work here.
-  
                LOGGER << myRank <<": "<< "sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl << std::flush << EOM; // Seem to need to flush before the nanosleep for some reason, or else the message vanishes (if output to std::cerr).
                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
                nanosleep(&sleeptime,NULL);
@@ -422,6 +427,31 @@ namespace Gambit
                //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
                
                if(time_waited >= timeout) timedout = true;
+
+               if(timedout)
+               {
+                  // Check if we have received all the timing messages that we were supposed to.
+                  // (i.e. make sure that we received timing messages from everyone who was supposed to have entered the barrier)
+                  // If we have not, then we enter overtime loops to try and collect them.
+                  overtime_exceeded = true; // If no problems, will not perform overtime loop
+                  for(std::size_t source=0;source<mpiSize;source++)
+                  {
+                     if(entered[source] and not received_timeleft[source])
+                     {
+                        // Doh, missing a message (they may not have realised we are in the loop yet, and so have been delayed in sending us their timing data. We will do some extra loops to try and collect it)
+                        if(overtime_loop < max_overtime_loops)
+                        {
+                          // We are allowed to keep looping, and have a reason to do so. Activate overtime loops.
+                          overtime_exceeded = false;
+                          LOGGER << "BarrierWithCommonTimeout has timed out, but we have not received 'their_timeleft' from process "<<source<<" despite it having been detected as having entered the barrier. We will do an overtime loop to try to Recv this message. (overtime_loop="<<overtime_loop<<" of max "<<max_overtime_loops<<")"<<EOM;
+                        } else {
+                          LOGGER << "BarrierWithCommonTimeout has timed out, but we have not received 'their_timeleft' from process "<<source<<" despite it having been detected as having entered the barrier. No more overtime loops are permitted, so that message will be abandoned!"<<EOM;
+                        }
+                     }
+                  }
+                  ++overtime_loop;
+               }
+
                LOGGER << myRank <<": "<< "End of wait loop; time left to timeout: "<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout - time_waited).count()<<" ms"<<EOM;
             }
 
@@ -439,13 +469,13 @@ namespace Gambit
                {
                  if(not sent_timeleft[source])
                  {
-                    LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<EOM;
+                    LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<EOM;
                  }
    
                  // From processes that we know are waiting in this loop, check for messages from them with their time_left data
                  if(not received_timeleft[source])
                  {
-                    LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<EOM;
+                    LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<EOM;
                  }
                }
             }
