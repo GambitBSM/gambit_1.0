@@ -214,7 +214,7 @@ diff -rupN ./SingletDM/work/models/vars1.mdl ../../../installed/micromegas/3.6.9
 diff -rupN ./SingletDM/Makefile ../../installed/micromegas/3.6.9.2/SingletDM/Makefile
 --- ./SingletDM/Makefile	2014-04-03 15:29:30.000000000 +0100
 +++ ../../installed/micromegas/3.6.9.2/SingletDM/Makefile	2016-07-21 18:37:48.038256099 +0100
-@@ -45,6 +45,13 @@ libs:
+@@ -45,7 +45,15 @@ libs:
  	$(MAKE) -C work
  	$(MAKE) -C lib
  
@@ -226,5 +226,7 @@ diff -rupN ./SingletDM/Makefile ../../installed/micromegas/3.6.9.2/SingletDM/Mak
 +endif
 +
  clean: 
++	rm -rf libmicromegas.so
  	$(MAKE) -C lib  clean
  	$(MAKE) -C work clean 
+ 	rm -fr calchep/tmp/* calchep/results/*

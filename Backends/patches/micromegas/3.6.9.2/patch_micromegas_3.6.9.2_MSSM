@@ -101,7 +101,7 @@ diff -rupN ./MSSM/main.c ../../installed/micromegas/3.6.9.2/MSSM/main.c
 diff -rupN ./MSSM/Makefile ../../installed/micromegas/3.6.9.2/MSSM/Makefile
 --- ./MSSM/Makefile	2016-07-21 15:59:50.514026631 +0100
 +++ ../../installed/micromegas/3.6.9.2/MSSM/Makefile	2016-07-21 16:06:46.826036710 +0100
-@@ -45,6 +45,13 @@ libs:
+@@ -45,7 +45,15 @@ libs:
  	$(MAKE) -C work
  	$(MAKE) -C lib
  
@@ -113,5 +113,7 @@ diff -rupN ./MSSM/Makefile ../../installed/micromegas/3.6.9.2/MSSM/Makefile
 +endif
 +
  clean: 
++	rm -rf libmicromegas.so
  	rm -fr calchep/tmp/* calchep/results/*  lanhep/*.mdl 
  	rm -f suspect2_lha.in suspect2_lha.out HB.in HB.slha nngg.out nngg.in Key.dat output.flha
+ 	../sources/cleanexe

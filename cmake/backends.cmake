@@ -225,6 +225,7 @@ ExternalProject_Add(micromegas_${micromegas_model}
   BUILD_COMMAND cd ${micromegas_model} && make sharedlib main=main.c
   INSTALL_COMMAND ""
 )
+add_chained_extra_targets(micromegas_${micromegas_model} ${micromegas_dir}/${micromegas_model} clean micromegas)
 add_dependencies(micromegas_${micromegas_model} micromegas)
 add_dependencies(backends micromegas_${micromegas_model})
 
@@ -242,6 +243,7 @@ ExternalProject_Add(micromegas_${micromegas_model}
   BUILD_COMMAND cd ${micromegas_model} && make sharedlib main=main.c
   INSTALL_COMMAND ""
 )
+add_chained_extra_targets(micromegas_${micromegas_model} ${micromegas_dir}/${micromegas_model} clean micromegas)
 add_dependencies(micromegas_${micromegas_model} micromegas)
 add_dependencies(backends micromegas_${micromegas_model})
 
