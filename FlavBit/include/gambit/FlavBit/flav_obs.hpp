@@ -58,8 +58,12 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_glob_correlation_inv;
       
       boost::numeric::ublas::matrix<double> M_glob_cov;
-      
       boost::numeric::ublas::matrix<double> M_glob_cov_inv;
+
+      boost::numeric::ublas::matrix<double> th_err;
+
+
+      
       
     public:
       
@@ -81,7 +85,8 @@ namespace Gambit
       //double calc_Chi2(vector<double> theory, vector<double> theory_error);
       boost::numeric::ublas::matrix<double> get_cov(){return M_glob_cov;};
       boost::numeric::ublas::matrix<double> get_exp_value(){return M_measurement;};
-      
+      boost::numeric::ublas::matrix<double> get_th_err(){return th_err;};   
+
 
       
     };

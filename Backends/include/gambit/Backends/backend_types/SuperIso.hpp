@@ -75,7 +75,7 @@ namespace Gambit
 	double zeta3A,zeta3V,wA10,deltatp,deltatm,deltatp_phi,deltatm_phi;
 	double lambda_Bp,lambda_Bsp,rho1,lambda2;
 	double BR_BXclnu_exp; /* Used in bsgamma.c and bsll.c */
-	double fullFF; /* full or soft form factor approach */
+	int fullFF; /* full or soft form factor approach */
 	
 	/* CKM matrix */
 	std::complex<double> Vud,Vus,Vub,Vcd,Vcs,Vcb,Vtd,Vts,Vtb;

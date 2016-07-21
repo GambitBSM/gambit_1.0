@@ -503,7 +503,7 @@ namespace Gambit
     BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
     BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
 
-    int flav=2;
+    //int flav=2;
     result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
     
       }
@@ -631,7 +631,7 @@ namespace Gambit
 
       if(param.model<0) result=0.;
       else result = BEreq::Btaunu(&param);
-
+      
       if(*Dep::Debug_Cap) printf("BR(B->tau nu)=%.3e\n",result);
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Btaunu"<<endl;
 
@@ -662,9 +662,9 @@ namespace Gambit
     /// Calculating  B->tau nu_tau / B-> D e nu_e decays
     // *************************************************
 
-    void SI_BDtaunu_BDenu(double &result)
+    void SI_RD(double &result)
     {
-      using namespace Pipes::SI_BDtaunu_BDenu;
+      using namespace Pipes::SI_RD;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BDtaunu_BDenu"<<endl;
 
@@ -1272,15 +1272,13 @@ namespace Gambit
       {
         for(unsigned j=0;j<observablesn.size();++j)
           {
-
-            observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
-
+	    observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
           }
       }
 
       for(unsigned i=0;i<observables.size();++i)
       {
-        red.read_yaml_mesurement("example.yaml", observables[i]);
+        red.read_yaml_mesurement("flav_data.yaml", observables[i]);
       }
 
       red.create_global_corr();
@@ -1462,23 +1460,25 @@ namespace Gambit
       
       struct parameters param = *Dep::SuperIso_modelinfo;
       
-      double E_cut=1.; //check this! FIXME!
+      double E_cut=1.6; 
       double theory_prediction=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");          
       red.debug_mode(*Dep::Debug_Cap);                       
                                                        
       if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;  
-      red.read_yaml_mesurement("example.yaml", "BR_b2sgamma");
+      red.read_yaml_mesurement("flav_data.yaml", "BR_b2sgamma");
       
       red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+      boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
+      
 
       double exp_meas=M_exp(0,0);
 
       double exp_b2sgamma_err=M_cov(0,0);
-      double theory_b2sgamma_err=0.1; //check this! FIXME!
+      double theory_b2sgamma_err=th_err(0,0)*theory_prediction;
       
       
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err);
@@ -1504,14 +1504,16 @@ namespace Gambit
       red.debug_mode(*Dep::Debug_Cap);
 
       if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;
-      red.read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
+      red.read_yaml_mesurement("flav_data.yaml", "BR_Bs2mumu");
 
-      red.read_yaml_mesurement("example.yaml", "BR_B02mumu");
+      red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
 
 
       red.create_global_corr();
       int flav=2;
 
+      boost::numeric::ublas::matrix<double> th_err = red.get_th_err();
+      
       //double theory_bs2mumu=*(Dep::Bsmumu_untag);
       double theory_bs2mumu=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
       //SI_Bsmumu_untag(theory_bs2mumu);
@@ -1520,8 +1522,8 @@ namespace Gambit
 
 
       // Naliza doesn't provide the errors, need to take them from paper
-      double theory_bs2mumu_error=0.23e-9;
-      double theory_bd2mumu_error=0.09e-10;
+      double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
+      double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
 
       // we have everything, correlation
 
@@ -1540,15 +1542,12 @@ namespace Gambit
       // #########################
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
-
-
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
-
-
-
+      
+      
       measurement_assym.LL_name="b2ll_likelihood";
-
-
+      
+      
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp=M_cov;
 
@@ -1644,34 +1643,30 @@ namespace Gambit
       red.debug_mode(*Dep::Debug_Cap);
 
       if(*Dep::Debug_Cap)   cout<<"inited falv reader"<<endl;
-      red.read_yaml_mesurement("example.yaml", "BR_Btaunu");
+      red.read_yaml_mesurement("flav_data.yaml", "BR_Btaunu");
 
-      //#####################################################################
-      red.read_yaml_mesurement("example.yaml", "BR_BDtaunu");
-
-
-      //#####################################################################
-      red.read_yaml_mesurement("example.yaml", "BR_Dstaunu");
-
-
-      //#####################################################################
-      red.read_yaml_mesurement("example.yaml", "BR_Dsmunu");
-
-
-      //#####################################################################
-      red.read_yaml_mesurement("example.yaml", "BR_Dmunu");
-
+      //#########################################################
+      red.read_yaml_mesurement("flav_data.yaml", "BR_BDtaunu");
+      
+      //#########################################################
+      red.read_yaml_mesurement("flav_data.yaml", "BR_Dstaunu");
+      
+      //#########################################################
+      red.read_yaml_mesurement("flav_data.yaml", "BR_Dsmunu");
+      
+      //#########################################################
+      red.read_yaml_mesurement("flav_data.yaml", "BR_Dmunu");
+      
       red.create_global_corr();
 
-
-
+      
       double theory_Btaunu=*(Dep::Btaunu);
 
       double theory_BDtaunu=*(Dep::BDtaunu);
 
-      //double theory_BDtaunu_BDenu=*(Dep::BDtaunu_BDenu);
+      // double theory_BDtaunu_BDenu=*(Dep::RD);
 
-      //double theory_Kmunu_pimunu=*(Dep::Kmunu_pimunu);
+      // double theory_Kmunu_pimunu=*(Dep::Kmunu_pimunu);
 
       double theory_Dstaunu=*(Dep::Dstaunu);
 
@@ -1680,6 +1675,7 @@ namespace Gambit
       double theory_Dmunu=*(Dep::Dmunu);
 
       // theory results;
+      boost::numeric::ublas::matrix<double> th_err=red.get_th_err();  
 
       boost::numeric::ublas::matrix<double> M_th(n_experiments,1);
       M_th(0,0)=theory_Btaunu;
@@ -1690,11 +1686,13 @@ namespace Gambit
 
       // hardoceded errors :( move it to include later
 
-      double theory_Btaunu_error=0.12e-4;
-      double theory_BDtaunu_error=0.04e-2;
-      double theory_Dstaunu_error=0.14e-2;
-      double theory_Dsmunu_error=0.15e-3;
-      double theory_Dmunu_error=0.2e-4;
+      
+
+      double theory_Btaunu_error=th_err(0,0);
+      double theory_BDtaunu_error=th_err(1,0);
+      double theory_Dstaunu_error=th_err(2,0);
+      double theory_Dsmunu_error=th_err(3,0);
+      double theory_Dmunu_error=th_err(4,0);
 
 
       // theory cov:

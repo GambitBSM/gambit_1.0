@@ -45,6 +45,8 @@ BE_FUNCTION(Bdmumu, double, (double*, double*, double*, std::complex<double>*, s
 BE_FUNCTION(Btaunu, double, (struct parameters*), "Btaunu", "Btaunu")
 BE_FUNCTION(BDtaunu, double, (struct parameters*), "BDtaunu", "BDtaunu")
 BE_FUNCTION(BDtaunu_BDenu, double, (struct parameters*), "BDtaunu_BDenu", "BDtaunu_BDenu")
+BE_FUNCTION(Blnu, double, (int, struct parameters*), "Blnu", "Blnu")
+
 BE_FUNCTION(Kmunu_pimunu, double, (struct parameters*), "Kmunu_pimunu", "Kmunu_pimunu")
 BE_FUNCTION(Rmu23, double, (struct parameters*), "Rmu23", "Rmu23")
 BE_FUNCTION(Dstaunu, double, (struct parameters*), "Dstaunu", "Dstaunu")
