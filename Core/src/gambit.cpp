@@ -193,6 +193,7 @@ int main(int argc, char* argv[])
         // We do this after the rest of the initialisation, because we want to use
         // the default signal handling during that period.
         logger() << core << "Waiting for all processes to be ready in order to start scan." << EOM;
+        std::cerr        << "Waiting for all processes to be ready in order to start scan." << std::endl;
         scanComm.Barrier();
         block_signals(); // No more interruptions allowed until scan starts properly
 
@@ -208,6 +209,7 @@ int main(int argc, char* argv[])
 
         //Do the scan!
         logger() << core << "Starting scan." << EOM;
+        std::cerr        << "Starting scan." << std::endl;
         scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
 
         // Check why we have exited the scanner; scan may have been terminated early by a signal. 
