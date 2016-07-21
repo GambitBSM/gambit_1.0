@@ -199,7 +199,7 @@ namespace Gambit
    void SignalData::attempt_soft_shutdown()
    {
      const int max_attempts=6; // 6 extra likelihood evaluations allowed before we fail 
-     const int maxtime_s = 120; // ... or 120 seconds, whichever happens *last*
+     const int maxtime_s = 1; //120; // ... or 120 seconds, whichever happens *last* (TODO; temporarilyset to 1 to speed up testing)
      const std::chrono::seconds max_time(maxtime_s);
 
      /// Start counting...
