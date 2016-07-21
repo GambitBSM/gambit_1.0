@@ -55,6 +55,21 @@
 
 #include "gambit/Core/error_handlers.hpp"
 
+// I wanted to keep the GAMBIT logger separate from this code so that it 
+// would be more streamlined for using elsewhere. But the logger is very
+// useful for debugging, so this preprocessor flag can be used to turn
+// it on and off
+// Though it might already be included via the error handlers anyway.
+#define USE_GAMBIT_LOGGER
+
+#ifdef USE_GAMBIT_LOGGER
+  #include "gambit/Logs/logger.hpp"
+  #define LOGGER logger() << LogTags::utils << LogTags::info
+#else
+  #define LOGGER std::cerr
+  #define EOM std::endl
+#endif
+
 
 /// Provide template specialisation of get_mpi_data_type only if the requested type hasn't been used to define one already.
 #define SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_MPI_TYPE)                                                   \
@@ -158,7 +173,7 @@ namespace Gambit
             ~Comm();
  
             /// As name
-            std::string check_for_undelivered_messages();
+            void check_for_undelivered_messages();
 
             /// Duplicate existing communicator
             /// (NOTE, this is a collective operation on all procceses)
@@ -267,7 +282,7 @@ namespace Gambit
                                   MPI_Request *request /*out*/)
             {
               #ifdef MPI_MSG_DEBUG
-              std::cout<<"rank "<<Get_rank()<<": Isend() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
+              std::cerr<<"rank "<<Get_rank()<<": Isend() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
               #endif 
               int errflag; 
                errflag = MPI_Isend(buf, count, datatype, destination, tag, boundcomm, request);
@@ -318,7 +333,7 @@ namespace Gambit
                }
                #ifdef MPI_MSG_DEBUG
                if(you_have_mail!=0) {
-                     std::cout<<"rank "<<Get_rank()<<": Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
+                     std::cerr<<"rank "<<Get_rank()<<": Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
                }
                #endif
                return (you_have_mail != 0);
@@ -345,7 +360,7 @@ namespace Gambit
             // for messages that will never arrive).
             void Abort()
             {
-              std::cout << "rank "<<Get_rank()<<": MPI_Abort command received, attempting to terminate all processes..." << std::endl;
+              std::cerr << "rank "<<Get_rank()<<": MPI_Abort command received, attempting to terminate all processes..." << std::endl;
               MPI_Abort(boundcomm, 1);
             }
 
@@ -359,7 +374,7 @@ namespace Gambit
             /// Could modify to take a function pointer to run while waiting.
             /// Supply MPI tag to identify each particular barrier.
             /// Returns 'false' if barrier succeeds, 'true' if barrier times out (i.e. answers the question "did the barrier time out?")
-            bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog = std::cout);
+            bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag);
 
             /// This is a fancy barrier that waits a certain amount of time after the FIRST process
             /// enters before unlocking (so that other action can be taken). This means that all the
@@ -367,13 +382,12 @@ namespace Gambit
             /// This helps the synchronisation to be achieved next time.
             bool BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
                                           const int tag_entered, 
-                                          const int tag_timeleft, 
-                                          std::ostream& errorlog);
+                                          const int tag_timeleft);
       
             /// Receive (and discard) any waiting messages with a given tag from a given source (possibly MPI_ANY_SOURCE)
             /// Need to know what the messages are in order to provide an appropriate Recv buffer (and size)
             template<class T>
-            void receive_all_with_tag(T* buffer, int size, int source, int tag, int max_loops, std::ostream& log)
+            void receive_all_with_tag(T* buffer, int size, int source, int tag, int max_loops)
             {
               int loop = 0;
       
@@ -381,12 +395,12 @@ namespace Gambit
               while(loop<max_loops and Iprobe(source, tag, &status))
               {
                 #ifdef SIGNAL_DEBUG
-                log << "Detected message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<"; doing Recv" << std::endl;
+                LOGGER << "Detected message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<"; doing Recv" << EOM;
                 #endif
                 MPI_Status recv_status;
                 Recv(buffer, size, status.MPI_SOURCE, status.MPI_TAG, &recv_status);
                 #ifdef SIGNAL_DEBUG
-                log << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding it as obsolete..." << std::endl;
+                LOGGER << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding it as obsolete..." << EOM;
                 #endif
                 ++loop;
               }
@@ -398,7 +412,7 @@ namespace Gambit
                 utils_error().raise(LOCAL_INFO, errmsg.str());
               }
       
-              if(loop>0) log << "Communicator '"<<myname<<"' cleaned out "<<loop<<" unreceived messages with tag "<<tag<<std::endl;
+              if(loop>0) LOGGER << "Communicator '"<<myname<<"' cleaned out "<<loop<<" unreceived messages with tag "<<tag<<EOM;
             }
 
             /// A generic place to store a tag commonly used by this communicator

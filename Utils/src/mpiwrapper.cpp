@@ -27,6 +27,7 @@
 
 //#define MPI_DEBUG_OUTPUT // Turn on debugging messages
 
+
 namespace Gambit
 {
 
@@ -73,11 +74,11 @@ namespace Gambit
 
       /// Destructor
       ///́ Warn if any undelivered messages exist
-      Comm::~Comm() { std::cerr << check_for_undelivered_messages(); }
+      Comm::~Comm() { check_for_undelivered_messages(); }
       /// @}      
 
       /// Check for undelivered messages (unless finalize has already been called)
-      std::string Comm::check_for_undelivered_messages()
+      void Comm::check_for_undelivered_messages()
       {
         if(not Is_finalized())
         {
@@ -89,9 +90,8 @@ namespace Gambit
           {
             int source = status.MPI_SOURCE;
             int tag = status.MPI_TAG;
-            errmsg << "rank " << Get_rank() << ": WARNING! Unreceived MPI message detected (source="<<source<<", tag="<<tag<<", communicator group="<<Get_name()<<"). This may cause problems when MPI_Finalize is run." << std::endl;
+            LOGGER << "rank " << Get_rank() << ": WARNING! Unreceived MPI message detected (source="<<source<<", tag="<<tag<<", communicator group="<<Get_name()<<"). This may cause problems when MPI_Finalize is run." << EOM;
           }
-          return errmsg.str();
         }
       }
   
@@ -233,7 +233,7 @@ namespace Gambit
          //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
 
-      bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog)
+      bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag)
       {
          std::size_t mpiSize = Get_size(); 
          std::size_t myRank  = Get_rank();
@@ -294,11 +294,12 @@ namespace Gambit
          // if we timed out, spit out some errors
          if(timedout)
          {
-            errorlog << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): ";
+            LOGGER << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): ";
             for(std::size_t source=0;source<mpiSize;source++)
             {
-               if(not entered[source]) errorlog << source << ", ";
+               if(not entered[source]) LOGGER << source << ", ";
             }
+            LOGGER << EOM;
          }
          return timedout;
       }
@@ -309,8 +310,7 @@ namespace Gambit
       /// This helps the synchronisation to be achieved next time.
       bool Comm::BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
                                           const int tag_entered, 
-                                          const int tag_timeleft, 
-                                          std::ostream& errorlog)
+                                          const int tag_timeleft)
       {
          std::size_t mpiSize = Get_size(); 
          std::size_t myRank  = Get_rank();
@@ -318,7 +318,7 @@ namespace Gambit
 
          std::vector<bool> entered(mpiSize,false); // should init to "false"
          entered[myRank] = true; // we know that we have entered the barrier
-         errorlog << "Entered BarrierWithCommonTimeout; timeout="<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count()<<" ms; tag_entered="<<tag_entered<<"; tag_timeleft="<<tag_timeleft<<std::endl;
+         LOGGER << "Entered BarrierWithCommonTimeout; timeout="<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count()<<" ms; tag_entered="<<tag_entered<<"; tag_timeleft="<<tag_timeleft<<EOM;
          if(mpiSize>1)
          {
             int null_recv_buffer = 0; // To receive the null messages
@@ -355,12 +355,12 @@ namespace Gambit
                      // Ok the source has now reached this barrier.
                      entered[source] = true;
                      Recv(&null_recv_buffer, 1, source, tag_entered);
-                     errorlog << "Process "<<source<<" entered BarrierWithCommonTimeout."<<std::endl;
+                     LOGGER << myRank <<": "<<"Process "<<source<<" entered BarrierWithCommonTimeout."<< EOM;
 
                      // Clear out any other barrier entry messages that this process may have sent in previous loops
                      // (for example if it has already timed out waiting for us in this barrier for several attempts)
                      int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
-                     receive_all_with_tag(&null_recv_buffer, 1, source, tag_entered, max_loops, errorlog);
+                     receive_all_with_tag(&null_recv_buffer, 1, source, tag_entered, max_loops);
                   } 
                }
 
@@ -375,7 +375,7 @@ namespace Gambit
                      buf_timeleft = std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count();
                      Isend(&buf_timeleft, 1, source, tag_timeleft, &req_null); 
                      sent_timeleft[source] = true;
-                     errorlog << "Sent our_timeleft ("<<buf_timeleft<<" ms) to process "<<source<<std::endl;
+                     LOGGER << myRank <<": "<< "Sent our_timeleft ("<<buf_timeleft<<" ms) to process "<<source<< EOM;
                   }
                }
 
@@ -387,9 +387,9 @@ namespace Gambit
                      // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
                      received_timeleft[source] = true;
                      unsigned long buf_timeleft;
-                     errorlog << "Attempting to received their_timeleft from process "<<source<<std::endl;
+                     LOGGER << myRank <<": "<< "Attempting to received their_timeleft from process "<<source<<EOM;
                      Recv(&buf_timeleft, 1, source, tag_timeleft);
-                     errorlog << "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<std::endl;
+                     LOGGER << myRank <<": "<< "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<EOM;
                      //Update our own timeleft to reflect this
                      //i.e. subtract difference between our timeleft and theirs from total timeout time.
                      std::chrono::milliseconds their_timeleft(buf_timeleft);
@@ -400,17 +400,16 @@ namespace Gambit
                      {
                         timeout = timeout - diff; 
                         // Debug
-                        errorlog << "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << std::endl;
+                        LOGGER << myRank <<": "<< "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << EOM;
                      } else {
-                        errorlog << "Difference between their_timeleft and our_timeleft is less than 10ms; will not bother to adjust." << std::endl;
+                        LOGGER << myRank <<": "<< "Difference between their_timeleft and our_timeleft is less than 10ms; will not bother to adjust." << EOM;
                      }
                   } 
                }
 
                // While waiting, could do work here.
   
-               errorlog << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
-               std::cerr << "WTF why isn't this getting displayed " << std::endl << std::flush;
+               LOGGER << myRank <<": "<< "sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl << std::flush << EOM; // Seem to need to flush before the nanosleep for some reason, or else the message vanishes (if output to std::cerr).
                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
                nanosleep(&sleeptime,NULL);
 
@@ -420,7 +419,7 @@ namespace Gambit
                //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
                
                if(time_waited >= timeout) timedout = true;
-               errorlog << "End of wait loop; time left to timeout: "<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout - time_waited).count()<<" ms"<<std::endl;
+               LOGGER << myRank <<": "<< "End of wait loop; time left to timeout: "<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout - time_waited).count()<<" ms"<<EOM;
             }
 
 
@@ -430,20 +429,20 @@ namespace Gambit
                if((not timedout) and not entered[source])
                {
                  // Supposedly the synchronisation succeeded, but process 'source' is not recorded as having entered the barrier!
-                 errorlog << "Error! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Synchronisation registered as successful, but process "<<source<<" was not detected as having entered the barrier!"<<std::endl;
+                 LOGGER << "Error! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Synchronisation registered as successful, but process "<<source<<" was not detected as having entered the barrier!"<<EOM;
                }
    
                if(entered[source])
                {
                  if(not sent_timeleft[source])
                  {
-                    errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<std::endl;
+                    LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<EOM;
                  }
    
                  // From processes that we know are waiting in this loop, check for messages from them with their time_left data
                  if(not received_timeleft[source])
                  {
-                   errorlog << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<std::endl;
+                    LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detect. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not received 'their_timeleft' from that process"<<EOM;
                  }
                }
             }
@@ -462,14 +461,14 @@ namespace Gambit
          // if we timed out, spit out some errors
          if(timedout)
          {
-            errorlog << "rank " << myRank << ": timed out in BarrierWithCommonTimeout (tag_entered="<<tag_entered<<") waiting for the following process(es): ";
+            LOGGER << "rank " << myRank << ": timed out in BarrierWithCommonTimeout (tag_entered="<<tag_entered<<") waiting for the following process(es): ";
             for(std::size_t source=0;source<mpiSize;source++)
             {
-               if(not entered[source]) errorlog << source << ", ";
+               if(not entered[source]) LOGGER << source << ", ";
             }
-            errorlog << std::endl;
+            LOGGER << std::endl;
          }
-         errorlog << "Leaving BarrierWithCommonTimeout (tag_entered="<<tag_entered<<")"<<std::endl;
+         LOGGER << "Leaving BarrierWithCommonTimeout (tag_entered="<<tag_entered<<")"<<EOM;
          return timedout;
       }
 
