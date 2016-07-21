@@ -116,9 +116,9 @@ namespace Gambit
             unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
 
             /// Tell ScannerBit that we are aborting the scan and it should tell the scanner plugin to stop, and return control to the calling code.
-            void tell_scanner_early_shutdown_in_progess()
+            void tell_scanner_early_shutdown_in_progress()
             { 
-              Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progess();
+              Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress();
             }
 
             /// Tell log-likelihood function (defined by driver code) to switch to an alternate value for the minimum

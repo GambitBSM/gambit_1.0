@@ -31,6 +31,10 @@
 #include "gambit/ScannerBit/plugin_macros.hpp"
 #include "gambit/ScannerBit/factory_defs.hpp"
 
+// Needed for plugin_info access. If there is a better way to call the "early_shutdown_in_progress"
+// function then feel free to change this.
+#include "gambit/ScannerBit/plugin_loader.hpp"
+
 ///\name Scanner Plugin Macros 
 ///Macros used by the scanner plugin
 ///@{
@@ -53,9 +57,6 @@ void *get_purpose(const std::string &purpose)                                   
 }                                                                                           \
                                                                                             \
 inline unsigned int &get_dimension() {return get_input_value<unsigned int>(0);}             \
-                                                                                            \
-bool shutdown_command_received() {return Plugins::plugin_info::early_shutdown_in_progess(); } \
-
 
 #define SCANNER_PLUGIN(plug_name, ...)                                                      \
     GAMBIT_PLUGIN_INITIALIZE(__SCANNER_SETUP__, plug_name, scanner, __VA_ARGS__)            \

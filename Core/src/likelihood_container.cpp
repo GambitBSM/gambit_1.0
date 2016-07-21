@@ -160,7 +160,7 @@ namespace Gambit
     if(signaldata().shutdown_begun())
     {
       // Once soft shutdown signal is received, we give the scanner code one chance to shut itself down (ending the Run() routine called in gambit.cpp). If it cannot do this then we will get control back next loop, and attempt to shut things down from the outside.
-      tell_scanner_early_shutdown_in_progess();
+      tell_scanner_early_shutdown_in_progress();
     }
 
     // Check for signals to switch to an alternate minimum log likelihood value.

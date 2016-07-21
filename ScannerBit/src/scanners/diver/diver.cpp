@@ -58,7 +58,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     // it at the same time the likelihood is evaluated, don't need to create an auxilliary one.
     //data.printer->new_stream("txt",get_inifile_node("aux_printer_txt_options"));
   }
-  
+ 
   int plugin_main (void)
   {   
     // Path to save Diver samples, resume files, etc 
@@ -195,7 +195,7 @@ namespace Gambit
       fcall += 1;
 
       // Check whether the calling code wants us to shut down early
-      if(shutdown_command_received())
+      if(Gambit::Scanner::Plugins::plugin_info.early_shutdown_in_progress())
       {
         std::cout << "Diver received 'quit' command! Run will be terminated safely in preparation for future resuming." << std::endl;
         quit = true;

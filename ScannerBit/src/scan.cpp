@@ -168,7 +168,7 @@ namespace Gambit
                     //GMPI::Init(argc,argv);
 #endif
                     plugin_interface();
-                    if(Plugins::plugin_info.early_shutdown_in_progess())
+                    if(Plugins::plugin_info.early_shutdown_in_progress())
                     {
                       cout << "Scan has terminated early due to receiving a shutdown signal. Finalising resume data..." << endl;
                       printerInterface->finalise(true); // abnormal (early) termination
