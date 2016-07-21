@@ -147,6 +147,7 @@ namespace Gambit
   /// Evaluate total likelihood function
   double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
   {
+    logger() << LogTags::core << "Entered Likelihood_Container::main" << EOM; // Debugging
     double lnlike = 0;
 
     // Unblock system signals (these are blocked to prevent external scanner 
@@ -326,6 +327,7 @@ namespace Gambit
 
     if(point_invalidated) printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
 
+    logger() << LogTags::core << "Returning control to ScannerBit" << EOM; // Debugging
     return lnlike;
   }
 
