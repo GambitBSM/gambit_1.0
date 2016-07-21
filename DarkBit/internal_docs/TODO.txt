@@ -6,6 +6,7 @@ DarkBit
 =======
 
 Urgent (for production runs):
+- Update LUX constraints [PS/FK?]
 - Fix gsl_integration integration problems [CW]
   - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
   - Apparently related to integration over noisy FCMC results, when e.g.
