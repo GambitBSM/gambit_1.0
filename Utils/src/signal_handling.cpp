@@ -62,8 +62,8 @@ namespace Gambit
      , havejumped(1) // set to zero after jump point set
      , cleanup_function_set(false)
      , ignore_signals_during_shutdown(1) 
-     , shutdownBegun(0)
      , rank(-1)
+     , shutdownBegun(0)
      , emergency(0)
      , POSIX_signal_noticed(false)
      , shutdown_due_to_MPI_message(false)
@@ -76,7 +76,7 @@ namespace Gambit
      , looptimes(1000)
      , next(0)
      , listfull(false)
-     , timeout(100)
+     , timeout(1000)
     #endif
    {}
 
@@ -212,6 +212,7 @@ namespace Gambit
      // until the 6 attempts complete.
      if (all_processes_ready()) 
      {
+       logger() << "Calling cleanup routines" << EOM;
        call_cleanup();
        std::ostringstream msg;
        #ifdef WITH_MPI
@@ -231,6 +232,7 @@ namespace Gambit
 
      if (shutdown_attempts>=max_attempts and time_waited>=max_time) 
      {
+       logger() << "Failed to synchronise for soft shutdown! Attempting cleanup anyway, but cannot guarantee safety of the scan output." << EOM;
        call_cleanup();
        std::ostringstream msg;
        #ifdef WITH_MPI
@@ -363,7 +365,7 @@ namespace Gambit
        }
        
        // Compute average of known loop times
-       int N = next+1;
+       unsigned int N = next+1;
        if(listfull) N = looptimes.size();
        double sum = 0;
        for(unsigned int i=0; i<N; ++i)
@@ -371,7 +373,7 @@ namespace Gambit
          sum += looptimes[i];
        }
        timeout = sum/N;
-       if(timeout<50) timeout=50; // Set minimum timeout of 50ms
+       if(timeout<1000) timeout=1000; // Set minimum timeout of 1s (to allow for possibly slow network speed during MPI tasks)
      }
      #endif
    }
