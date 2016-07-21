@@ -391,7 +391,7 @@ namespace Gambit
                      unsigned long buf_timeleft;
                      LOGGER << myRank <<": "<< "Attempting to receive their_timeleft from process "<<source<<EOM;
                      int max_loops = 10000; // This is pretty extreme, if this many old timing messages have piled up then something has gone terribly wrong.
-                     Recv_all_with_tag(&buf_timeleft, 1, source, tag_timeleft, max_loops);
+                     Recv_all(&buf_timeleft, 1, source, tag_timeleft, max_loops); // Recv all timing messages that may have piled up
                      LOGGER << myRank <<": "<< "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<EOM;
                      //Update our own timeleft to reflect this
                      //i.e. subtract difference between our timeleft and theirs from total timeout time.
