@@ -271,7 +271,11 @@ namespace Gambit
                      {
                         // Ok the source has now reached this barrier.
                         entered[source] = true;
-                        Recv(&recv_buffer, 1, source, tag);
+                        //Recv(&recv_buffer, 1, source, tag);
+                        // Clear out any other barrier entry messages that this process may have sent in previous loops
+                        // (for example if it has already timed out waiting for us in this barrier for several attempts)
+                        int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
+                        Recv_all(&recv_buffer, 1, source, tag, max_loops);
                      } 
                   }
                }
@@ -300,7 +304,19 @@ namespace Gambit
                if(not entered[source]) LOGGER << source << ", ";
             }
             LOGGER << EOM;
-         }
+         } 
+         else
+         {
+            int recv_buffer = 0; // To receive the null messages
+            // If we succeeded, make sure to clean out any remaining Barrier entry messages
+            int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
+            Recv_all(&recv_buffer, 1, MPI_ANY_SOURCE, tag, max_loops);
+
+            // Do a barrier to sync the processes
+            LOGGER << "rank " << myRank << ": Entering final sync Barrier in BarrierWithTimeout (tag="<<tag<<")!";
+            Barrier();
+            LOGGER << "rank " << myRank << ": Synchronisation succeeded in BarrierWithTimeout (tag="<<tag<<")!";
+         }  
          return timedout;
       }
 
@@ -308,6 +324,8 @@ namespace Gambit
       /// enters before unlocking (so that other action can be taken). This means that all the
       /// processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
       /// This helps the synchronisation to be achieved next time.
+      /// NOTE! Don't use this! It is still experimental. It works, but can leave some messages
+      /// lying around which can screw up MPI_Finalize. Stick to plain BarrierWithTimeout for now.
       bool Comm::BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
                                           const int tag_entered, 
                                           const int tag_timeleft)

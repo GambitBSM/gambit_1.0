@@ -182,7 +182,8 @@ namespace Gambit
      // enters before unlocking (so that other action can be taken). This means that all the
      // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
      // This helps the synchronisation to be achieved next time.
-     if( signalComm->BarrierWithCommonTimeout(bar_timeout, 9999, 9998) )
+     //if( signalComm->BarrierWithCommonTimeout(bar_timeout, 9999, 9998) )
+     if( signalComm->BarrierWithTimeout(bar_timeout, 9999) ) // BarrierWithCommonTimeout not working so well. This one is simpler.
      {
        timedout = true; // Barrier timed out waiting for some process to enter
      }
