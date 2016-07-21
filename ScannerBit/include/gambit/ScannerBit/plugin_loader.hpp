@@ -143,6 +143,8 @@ namespace Gambit
                 GMPI::Comm* scannerComm;
                 bool MPIdata_is_init;  
                 #endif
+                /// Flag to indicate if early shutdown is in progess (e.g. due to intercepted OS signal). When set to 'true' scanners should at minimum close off their output files, and if possible they should stop scanning and return control to GAMBIT (or whatever the host code might be).
+                bool earlyShutdownInProgess;
 
                 inline void set_resume(std::vector<__plugin_resume_base__ *> &){}
                                 
@@ -180,7 +182,9 @@ namespace Gambit
                 void set_running(bool b){keepRunning = b;}
                 bool func_calculating() const {return funcCalculating;}
                 void set_calculating(bool b){funcCalculating = b;}
-             
+                bool set_early_shutdown_in_progess(){earlyShutdownInProgess=true;}
+                bool early_shutdown_in_progess(){return earlyShutdownInProgess;}
+
                 #ifdef WITH_MPI
                 // tags for messages sent via scannerComm
                 static const int MIN_LOGL_MSG = 0; 
@@ -203,7 +207,7 @@ namespace Gambit
                         }
                         if (resume_streams[name]->is_open())
                         {
-                            get_resume(*resume_streams[name], data...);
+                           get_resume(*resume_streams[name], data...);
                         }
                         else
                         {

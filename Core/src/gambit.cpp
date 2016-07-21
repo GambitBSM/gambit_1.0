@@ -206,13 +206,24 @@ int main(int argc, char* argv[])
         //Do the scan!
         logger() << core << "Starting scan." << EOM;
         scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
+
+        // Check why we have exited the scanner; scan may have been terminated early by a signal. 
+        // We assume here that because the scanner has exited that it has already down whatever 
+        // cleanup it requires, including finalising the printers, i.e. the 'do_cleanup()' function will NOT run.
+        if(signaldata().shutdown_begun())
+        {
+           cout << "GAMBIT has performed a controlled early shutdown." << endl;
+           cout << endl;
+           logger() << "GAMBIT has performed a controlled early shutdown due to early termination of the scanner plugin." << EOM;
+        } 
+        else
+        {
+           //Scan is done; inform signal handlers 
+           signaldata().set_shutdown_begun();
+           cout << "GAMBIT has finished successfully!" << endl;
+           cout << endl;
+        }
         unblock_signals();    
-
-        //Scan is done; inform signal handlers 
-        signaldata().set_shutdown_begun();
-
-        cout << "GAMBIT has finished successfully!" << endl;
-        cout << endl;
       }
     
     }

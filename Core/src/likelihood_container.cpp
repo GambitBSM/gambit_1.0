@@ -157,6 +157,11 @@ namespace Gambit
 
     // Check for signals to abort run
     signaldata().check_for_shutdown_signal();
+    if(signaldata().shutdown_begun())
+    {
+      // Once soft shutdown signal is received, we give the scanner code one chance to shut itself down (ending the Run() routine called in gambit.cpp). If it cannot do this then we will get control back next loop, and attempt to shut things down from the outside.
+      tell_scanner_early_shutdown_in_progess();
+    }
 
     // Check for signals to switch to an alternate minimum log likelihood value.
     if(check_for_switch_to_alternate_min_LogL())
@@ -315,9 +320,6 @@ namespace Gambit
 
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
-
-    /// Check once more for signals to abort run
-    signaldata().check_for_shutdown_signal();
 
     /// Re-block signals 
     block_signals();    

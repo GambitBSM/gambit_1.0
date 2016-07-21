@@ -193,7 +193,17 @@ namespace Gambit
 
       // Increment the number of function calls, tell Diver to continue and return the likelihood
       fcall += 1;
-      quit = false;
+
+      // Check whether the calling code wants us to shut down early
+      if(shutdown_command_received())
+      {
+        std::cout << "Diver received 'quit' command! Run will be terminated safely in preparation for future resuming." << std::endl;
+        quit = true;
+      }
+      else
+      {
+        quit = false;
+      }
       return -lnlike;
       
     }

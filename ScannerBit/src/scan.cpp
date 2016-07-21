@@ -168,7 +168,16 @@ namespace Gambit
                     //GMPI::Init(argc,argv);
 #endif
                     plugin_interface();
-                    printerInterface->finalise();
+                    if(Plugins::plugin_info.early_shutdown_in_progess())
+                    {
+                      cout << "Scan has terminated early due to receiving a shutdown signal. Finalising resume data..." << endl;
+                      printerInterface->finalise(true); // abnormal (early) termination
+                      // TODO: do we also need to call the ScannerBit cleanup routines? i.e. for resuming? Or can we assume that the plugin already took care of that if it exited?
+                    }
+                    else
+                    {
+                      printerInterface->finalise();                     
+                    }
 #ifdef WITH_MPI
                     //MPI_Finalize(); 
 #endif

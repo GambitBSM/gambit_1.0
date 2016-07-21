@@ -303,7 +303,7 @@ namespace Gambit
          // if we timed out, spit out some errors
          if(timedout)
          {
-            LOGGER << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): ";
+            LOGGER << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): " << EOM;
             for(std::size_t source=0;source<mpiSize;source++)
             {
                if(not entered[source]) LOGGER << source << ", ";
@@ -318,9 +318,9 @@ namespace Gambit
             Recv_all(&recv_buffer, 1, MPI_ANY_SOURCE, tag, max_loops);
 
             // Do a barrier to sync the processes
-            LOGGER << "rank " << myRank << ": Entering final sync Barrier in BarrierWithTimeout (tag="<<tag<<")!";
+            LOGGER << "rank " << myRank << ": Entering final sync Barrier in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
             Barrier();
-            LOGGER << "rank " << myRank << ": Synchronisation succeeded in BarrierWithTimeout (tag="<<tag<<")!";
+            LOGGER << "rank " << myRank << ": Synchronisation succeeded in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
          }  
          return timedout;
       }

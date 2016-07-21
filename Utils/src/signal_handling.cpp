@@ -197,54 +197,62 @@ namespace Gambit
 
    void SignalData::attempt_soft_shutdown()
    {
-     const int max_attempts=6; // 6 attempts ==> 3 plugin loops (we attempt shutdown both before and after the plugin evaluation) 
-     const std::chrono::seconds max_time(120);
+     const int max_attempts=6; // 6 extra likelihood evaluations allowed before we fail 
+     const int maxtime_s = 120; // ... or 120 seconds, whichever happens *last*
+     const std::chrono::seconds max_time(maxtime_s);
 
      /// Start counting...
      static std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
-    
-     logger() << "Attempting to synchronise for soft shutdown (previous attempts: "<<shutdown_attempts<<")" << EOM;
-     // Will continue trying to sync until BOTH the max_attempts 
-     // has been exceeded, AND the max_time has been exceeded.
-     // In other words if it takes more than 6 attempts for
-     // 120 seconds to elapse, we just keep trying, or if 6
-     // attempts take long than 120 seconds, then we wait
-     // until the 6 attempts complete.
-     if (all_processes_ready()) 
+   
+     if(shutdown_attempts==0)
      {
-       logger() << "Calling cleanup routines" << EOM;
-       call_cleanup();
-       std::ostringstream msg;
-       #ifdef WITH_MPI
-       msg << "rank "<<myrank()<<": ";
-       #endif
-       msg << "Performing soft shutdown!";
-       throw SoftShutdownException(msg.str()); 
-     } 
-     else 
-     {
-       shutdown_attempts+=1;
-     }                    
-
-     // Compute elapsed time since shutdown began
-     std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
-     std::chrono::duration<double> time_waited = current - start;
-
-     if (shutdown_attempts>=max_attempts and time_waited>=max_time) 
-     {
-       logger() << "Failed to synchronise for soft shutdown! Attempting cleanup anyway, but cannot guarantee safety of the scan output." << EOM;
-       call_cleanup();
-       std::ostringstream msg;
-       #ifdef WITH_MPI
-       msg << "rank "<<myrank()<<": ";
-       #endif
-       msg << "Soft shutdown failed (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
-       throw HardShutdownException(msg.str()); 
-     } 
+       /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
+       /// so that it can get its own affairs in order.
+       logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown, and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, or for "<<maxtime_s<<" seconds, whichever takes longer, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
+     }  
      else
      {
-       logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << std::endl;
+        logger() << "Attempting to synchronise for soft shutdown (attempt "<<shutdown_attempts<<")" << EOM;
+        if (all_processes_ready()) 
+        {
+          logger() << "Calling cleanup routines" << EOM;
+          call_cleanup();
+          std::ostringstream msg;
+          #ifdef WITH_MPI
+          msg << "rank "<<myrank()<<": ";
+          #endif
+          msg << "Performing soft shutdown!";
+          throw SoftShutdownException(msg.str()); 
+        } 
+
+        // Compute elapsed time since shutdown began
+        std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+        std::chrono::duration<double> time_waited = current - start;
+
+        // Will continue trying to sync until BOTH the max_attempts 
+        // has been exceeded, AND the max_time has been exceeded.
+        // In other words if it takes more than 6 attempts for
+        // 120 seconds to elapse, we just keep trying, or if 6
+        // attempts take long than 120 seconds, then we wait
+        // until the 6 attempts complete.
+        if (shutdown_attempts>=max_attempts and time_waited>=max_time) 
+        {
+          logger() << "Failed to synchronise for soft shutdown! Attempting cleanup anyway, but cannot guarantee safety of the scan output." << EOM;
+          call_cleanup();
+          std::ostringstream msg;
+          #ifdef WITH_MPI
+          msg << "rank "<<myrank()<<": ";
+          #endif
+          msg << "Soft shutdown failed (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
+          throw HardShutdownException(msg.str()); 
+        } 
+        else
+        {
+          logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << std::endl;
+        }
      }
+
+     shutdown_attempts+=1;
    }
  
    /// Check if shutdown is in progress and raise appropriate termination 

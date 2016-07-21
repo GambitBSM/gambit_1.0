@@ -17,6 +17,10 @@
 ///          (p.scott@imperial.ac.uk)   
 ///  \date 2014 Dec
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2016 Jul
+///
 ///  *********************************************
 
 #ifndef SCANNER_PLUGIN_HPP
@@ -49,6 +53,9 @@ void *get_purpose(const std::string &purpose)                                   
 }                                                                                           \
                                                                                             \
 inline unsigned int &get_dimension() {return get_input_value<unsigned int>(0);}             \
+                                                                                            \
+bool shutdown_command_received() {return Plugins::plugin_info::early_shutdown_in_progess(); } \
+
 
 #define SCANNER_PLUGIN(plug_name, ...)                                                      \
     GAMBIT_PLUGIN_INITIALIZE(__SCANNER_SETUP__, plug_name, scanner, __VA_ARGS__)            \
