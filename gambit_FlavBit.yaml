@@ -23,6 +23,7 @@ Scanner:
 
 ObsLikes:
 
+
   - purpose:      Observable
     capability:   bsgamma
   - purpose:      Observable
@@ -36,7 +37,7 @@ ObsLikes:
   - purpose:      Observable
     capability:   BDtaunu
   - purpose:      Observable
-    capability:   BDtaunu_BDenu
+    capability:   RD
   - purpose:      Observable
     capability:   Kmunu_pimunu
   - purpose:      Observable
@@ -47,8 +48,8 @@ ObsLikes:
     capability:   Dsmunu
   - purpose:      Observable
     capability:   Dmunu
-  - purpose:      Observable
-    capability:   muon_gm2
+#  - purpose:      Observable
+#    capability:   muon_gm2
   - purpose:      Observable
     capability:   delta0
   - purpose:      Observable
