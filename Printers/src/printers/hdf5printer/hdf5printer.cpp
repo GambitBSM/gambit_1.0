@@ -93,6 +93,7 @@
 #include <fstream>
 #include <iomanip>
 #include <cstdlib> // For popen in finalise()
+#include <chrono>
 
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
@@ -707,7 +708,13 @@ namespace Gambit
             if(tmp_files.size()!=0)
             {
               logger() << LogTags::info << "Found "<<tmp_files.size()<<" temporary files from previous scan; preparing to combine them" << EOM;
+
+              // This might take a while; for debugging purposes we will time it.
+              std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
               prepare_and_combine_tmp_files();
+              std::chrono::time_point<std::chrono::system_clock> end(std::chrono::system_clock::now());
+              std::chrono::duration<double> time_taken = end - start;
+              logger() << LogTags::info << "HDF5 files from previous scan combined successfully. Operation took "<<std::chrono::duration_cast<std::chrono::seconds>(time_taken).count()<<" seconds." << EOM; 
             }
             else
             {
@@ -776,8 +783,14 @@ namespace Gambit
             group_id = HDF5::openGroup(file_id,group);
 
             // Get previous highest pointID for our rank from the existing output file
+            // Might take a while, so time it.
+            std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
             PPIDpair highest_PPID = get_highest_PPID_from_HDF5(group_id);
+            std::chrono::time_point<std::chrono::system_clock> end(std::chrono::system_clock::now());
+            std::chrono::duration<double> time_taken = end - start;
             highest = highest_PPID.pointID;
+
+            logger() << LogTags::info << "Extracted highest pointID reached rank "<<myRank<<" process during previous scan (it was "<<highest<<") from combined output. Operation took "<<std::chrono::duration_cast<std::chrono::seconds>(time_taken).count()<<" seconds." << EOM; 
 
             // Cleanup
             HDF5::closeGroup(group_id);
