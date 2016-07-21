@@ -238,10 +238,11 @@ namespace Gambit
          std::size_t mpiSize = Get_size(); 
          std::size_t myRank  = Get_rank();
          bool timedout = false;
+         double total_timeout = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
 
          std::vector<bool> entered(mpiSize); // should init to "false"
          entered[myRank] = true; // we know that we have entered the barrier
-         //std::cerr<<"rank "<<myRank<<": Entered BarrierWithTimeout (with tag "<<tag<<")"<<std::endl;
+         LOGGER<<"rank "<<myRank<<": Entered BarrierWithTimeout (with tag "<<tag<<")"<<EOM;
          if(mpiSize>1)
          {
             int recv_buffer = 0; // To receive the null messages
@@ -271,6 +272,7 @@ namespace Gambit
                      {
                         // Ok the source has now reached this barrier.
                         entered[source] = true;
+                        LOGGER << "rank " << myRank <<": Process "<<source<<" has entered BarrierWithTimout (with tag "<<tag<<")"<<EOM;
                         //Recv(&recv_buffer, 1, source, tag);
                         // Clear out any other barrier entry messages that this process may have sent in previous loops
                         // (for example if it has already timed out waiting for us in this barrier for several attempts)
@@ -281,15 +283,18 @@ namespace Gambit
                }
 
                // While waiting, could do work here.
-  
-               //std::cerr << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
+ 
+               LOGGER << "rank " << myRank <<": sleeping... (total timeout = "<<total_timeout<<"ms; sleeptime = "<<sleeptime.tv_nsec*1e-6<<"ms)"<< EOM;
                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
                nanosleep(&sleeptime,NULL);
 
                // Check if timeout interval has been exceeded
                std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                std::chrono::duration<double> time_waited = current - start;
-               //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
+               double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
+
+               double fraction = time_waited_d/total_timeout; 
+               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed)"<< EOM;
                
                if(time_waited >= timeout) timedout = true;
             }
