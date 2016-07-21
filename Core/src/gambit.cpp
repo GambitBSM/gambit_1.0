@@ -165,9 +165,6 @@ int main(int argc, char* argv[])
         scanner_node["Parameters"] = iniFile.getParametersNode();
         scanner_node["Priors"] = iniFile.getPriorsNode();
         
-        //Create the master scan manager 
-        Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
-
         // Signal handing can be set to trigger a longjmp back to here upon receiving some signal
         signaldata().havejumped = setjmp(signaldata().env);
         if(signaldata().havejumped)
@@ -195,13 +192,19 @@ int main(int argc, char* argv[])
         // Check for user requests for shutdown methods used during signal handling
         // We do this after the rest of the initialisation, because we want to use
         // the default signal handling during that period.
-        block_signals();
+        logger() << core << "Waiting for all processes to be ready in order to start scan." << EOM;
+        GMPI::Barrier();
+        block_signals(); // No more interruptions allowed until scan starts properly
+
         logger() << core << "Setting up signal handling" << std::endl;
         signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
         set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
         set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
         set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
         set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
+
+        //Create the master scan manager 
+        Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
 
         //Do the scan!
         logger() << core << "Starting scan." << EOM;
