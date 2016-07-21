@@ -130,6 +130,7 @@ namespace Gambit
    
      private:
        int rank; 
+       int MPIsize; 
 
        /// Flag to warn if early shutdown is already in process
        volatile sig_atomic_t shutdownBegun;

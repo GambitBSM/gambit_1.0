@@ -63,6 +63,7 @@ namespace Gambit
      , cleanup_function_set(false)
      , ignore_signals_during_shutdown(1) 
      , rank(-1)
+     , MPIsize(1)
      , shutdownBegun(0)
      , emergency(0)
      , POSIX_signal_noticed(false)
@@ -208,10 +209,14 @@ namespace Gambit
      {
        /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
        /// so that it can get its own affairs in order.
-       logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown, and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, or for "<<maxtime_s<<" seconds, whichever takes longer, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
+       logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, or for "<<maxtime_s<<" seconds, whichever takes longer, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
      }  
      else
      {
+        if(shutdown_attempts==1)
+        {
+           logger() << "Scanner did not shut down when given the chance; we will therefore assume responsibility for terminating the scan." << EOM;
+        }
         logger() << "Attempting to synchronise for soft shutdown (attempt "<<shutdown_attempts<<")" << EOM;
         if (all_processes_ready()) 
         {
@@ -460,38 +465,42 @@ namespace Gambit
        signalComm = comm;
        _comm_rdy = true;
        rank = comm->Get_rank();
+       MPIsize = comm->Get_size();
    }
 
    /// Broadcast signal to shutdown all processes
    void SignalData::broadcast_shutdown_signal(int shutdown_code)
    {
-     if(not shutdown_broadcast_done)
+     if(MPIsize>1)
      {
-       if(comm_ready())
+       if(not shutdown_broadcast_done)
        {
-         // Broadcast signal to all processes (might not work if something errornous is occuring)
-         #ifdef SIGNAL_DEBUG
-         logger() << LogTags::core << LogTags::info << "Broadcasting shutcode code " <<shutdown_name(shutdown_code)<< " with MPI tag "<<signalComm->mytag<< EOM;
-         #endif
-         MPI_Request req_null = MPI_REQUEST_NULL;
-         signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
-         logger() << LogTags::core << LogTags::info << shutdown_name(shutdown_code) <<" code broadcast to all processes" << EOM;
-       }
+         if(comm_ready())
+         {
+           // Broadcast signal to all processes (might not work if something errornous is occuring)
+           #ifdef SIGNAL_DEBUG
+           logger() << LogTags::core << LogTags::info << "Broadcasting shutcode code " <<shutdown_name(shutdown_code)<< " with MPI tag "<<signalComm->mytag<< EOM;
+           #endif
+           MPI_Request req_null = MPI_REQUEST_NULL;
+           signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
+           logger() << LogTags::core << LogTags::info << shutdown_name(shutdown_code) <<" code broadcast to all processes" << EOM;
+         }
+         else
+         {
+           /// Should not be broadcasting
+           std::ostringstream errmsg;
+           errmsg << "Tried to broadcast_shutdown_signal ("<<shutdown_name(shutdown_code)<<"), but MPI communicator is not ready! (either MPI is uninitialised or a communicator has not been set). This is a bug, please report it.";
+           utils_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         shutdown_broadcast_done = true;
+       } // Don't need to broadcast twice (NOTE: might need to trigger change from soft to emergency shutdown?)
+       #ifdef SIGNAL_DEBUG
        else
        {
-         /// Should not be broadcasting
-         std::ostringstream errmsg;
-         errmsg << "Tried to broadcast_shutdown_signal ("<<shutdown_name(shutdown_code)<<"), but MPI communicator is not ready! (either MPI is uninitialised or a communicator has not been set). This is a bug, please report it.";
-         utils_error().raise(LOCAL_INFO, errmsg.str());
+         logger() << LogTags::core << LogTags::info << "Received instruction to broadcast code " <<shutdown_name(shutdown_code)<<", however shutdown_broadcast_done=true is already set, so skipping the broadcast!"<< EOM;
        }
-       shutdown_broadcast_done = true;
-     } // Don't need to broadcast twice (NOTE: might need to trigger change from soft to emergency shutdown?)
-     #ifdef SIGNAL_DEBUG
-     else
-     {
-       logger() << LogTags::core << LogTags::info << "Received instruction to broadcast code " <<shutdown_name(shutdown_code)<<", however shutdown_broadcast_done=true is already set, so skipping the broadcast!"<< EOM;
+       #endif
      }
-     #endif
    }
    
    /// Broadcast emergency shutdown command to all processes and abort if set to do so
