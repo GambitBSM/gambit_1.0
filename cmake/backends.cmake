@@ -182,15 +182,31 @@ add_dependencies(backends-nonfree gamlike)
 set(micromegas_model "MSSM")
 set(micromegas_version "3.6.9.2")
 set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${micromegas_version}/${micromegas_model}")
-set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/${micromegas_model}")
+set(micromegas_patch "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/${micromegas_model}/patch_micromegas_${micromegas_version}_${micromegas_model}")
 ExternalProject_Add(micromegas_${micromegas_model}
   URL https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${micromegas_version}.tgz
   URL_MD5 72807f6d0ef80737554d8702b6b212c1
   DOWNLOAD_DIR ${backend_download}
+  PATCH_COMMAND patch -p1 < ${micromegas_patch}
   SOURCE_DIR ${micromegas_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make && cd ${micromegas_model} && make main=main.c
+  BUILD_COMMAND make flags
+        COMMAND sed ${dashi} -e "s|FC =.*|FC = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CC =.*|CC = ${CMAKE_C_COMPILER}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CXX =.*|CXX = ${CMAKE_CXX_COMPILER}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|FFLAGS =.*|FFLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CFLAGS =.*|CFLAGS = ${CMAKE_C_FLAGS}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CXXFLAGS =.*|CXXFLAGS = ${CMAKE_CXX_FLAGS}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|FC=.*|FC=\"${CMAKE_Fortran_COMPILER}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CC=.*|CC=\"${CMAKE_C_COMPILER}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CXX=.*|CXX=\"${CMAKE_CXX_COMPILER}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|FFLAGS=.*|FFLAGS=\"${CMAKE_Fortran_FLAGS}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CFLAGS=.*|CFLAGS=\"${CMAKE_C_FLAGS}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CXXFLAGS=.*|CXXFLAGS=\"${CMAKE_CXX_FLAGS}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|lFort=.*|lFort=|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND make
+        COMMAND cd ${micromegas_model} && make sharedlib main=main.c
   INSTALL_COMMAND ""
 )
 add_extra_targets(micromegas_${micromegas_model} ${micromegas_dir} ${backend_download}/${micromegas_dl} clean)
