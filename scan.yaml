@@ -67,7 +67,7 @@ Scanner:
 
   use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: twalk
   #find_shift
   #find_kernel
   #object_detection
@@ -77,6 +77,12 @@ Scanner:
 
   scanners:
 
+    mcmc:
+      plugin: GreAT
+      nTrialLists: 5
+      nTrials: 40000
+      like: LogLike
+      
     twalk:
       plugin: twalk
       like: LogLike
