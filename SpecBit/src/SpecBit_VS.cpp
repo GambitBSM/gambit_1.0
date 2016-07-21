@@ -143,6 +143,8 @@ namespace Gambit
       int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
       using namespace Gambit;
       using namespace SpecBit;
+      
+      
       const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
       // const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
       //std::unique_ptr<SubSpectrum> SingletDM = fullspectrum->clone_HE(); // COPIES Spectrum object
@@ -156,6 +158,30 @@ namespace Gambit
       double u_2=10;
       double u_3=12;
       double lambda_1,lambda_2,lambda_3;
+      double lambda_min =0 , fu =0 , u = 0  ;
+      
+      
+      bool min_exists = 1;// check if gradient is positive at electroweak scale
+      if ( run_lambda(fullspectrum, 101) > run_lambda(fullspectrum, 100 ) )
+      {
+      // gradient is positive, the minimum is less than electroweak scale so
+      // lambda_h must be monotonally increasing
+      min_exists = 0;
+      lambda_min = run_lambda(fullspectrum, 100);
+      }
+      
+      
+      
+
+
+
+
+
+
+
+
+      if (min_exists)
+      {
 
       // fit parabola (in log space) to the 3 trial points and use this to estimate the minimum, zooming in on the region of interest
       for (int i=1;i<3;i++)
@@ -164,6 +190,7 @@ namespace Gambit
       lambda_1 = run_lambda(fullspectrum, pow(10,u_1));
       lambda_2 = run_lambda(fullspectrum, pow(10,u_2));
       lambda_3 = run_lambda(fullspectrum, pow(10,u_3));
+
       
       double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
       min_u=(min_u/( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2)))/2;
@@ -176,12 +203,16 @@ namespace Gambit
       double bx=pow(10,u_2);
       double cx=pow(10,u_3);
 
+  
+
+
+
       int ITMAX=100;
       double tol=0.0001;
       const double CGOLD=0.3819660; // "Golden ratio"
       const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3; // this small number is used to deal with potential issue if lambda_min=0 exactly
-      double d=0.0,etemp,fu,fv,fw,fx;
-      double p,q,r,tol1,tol2,u,v,w,x,xm;
+      double d=0.0,etemp,fv,fw,fx;
+      double p,q,r,tol1,tol2,v,w,x,xm;
       double e=0.0;
       double a=(ax < cx ? ax : cx);
       double b=(ax > cx ? ax : cx);
@@ -248,6 +279,13 @@ namespace Gambit
               }
           }
       }
+      
+      
+      lambda_min=fu;
+      }
+      
+      
+      
 
     #ifdef SPECBIT_DEBUG
         std::cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<std::endl;
@@ -255,7 +293,7 @@ namespace Gambit
     
 
 
-      double lambda_min=fu;
+      
       double lifetime,LB;
       if (lambda_min<0) // second minimum exists, now determine stability and lifetime
       {

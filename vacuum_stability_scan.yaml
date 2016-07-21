@@ -64,15 +64,18 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        #range: [100.098,100.098]
-        range: [225.487,225.487]
+        range: [120,300]
         #prior_type: flat
       QEWSB: 173
 
 
     SingletDM:
-      mS: 179.793
-      lambda_hS: 0.000214376 #0.30
+      mS:
+        range: [45., 10000.]
+        prior_type: log
+      lambda_hS:
+        range: [0.0001, 1.00]
+        prior_type: log
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -105,12 +108,17 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: grid
+  use_scanner: de
 
 # Scanners
 
   scanners:
 
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 1000
+      verbosity: 1
 
     random:
       plugin: random
@@ -174,11 +182,14 @@ ObsLikes:
     - capability: check_perturb_min_lambda
       purpose: Observable
 
- #   - capability: expected_lifetime
+ #   - capability: check_perturb
  #     purpose: Observable
 
-#    - capability: LHC_Higgs_LogLike
-#      purpose:  LogLike
+    - capability: expected_lifetime
+      purpose: Observable
+
+    - capability: LHC_Higgs_LogLike
+      purpose:  LogLike
 
     - capability: SingletDM_spectrum
       purpose: Observable
@@ -186,7 +197,6 @@ ObsLikes:
       dependencies:
          - capability: SingletDM_spectrum
            type: const Spectrum*
-
 
 
 
@@ -207,7 +217,6 @@ Rules:
 
     - capability: Higgs_decay_rates
       function: SingletDM_Higgs_decays
-
 #########################
 # Logging setup
 #########################
@@ -267,8 +276,9 @@ KeyValues:
     ExampleBit_A_error: non-fatal
     DecayBit_error: non-fatal
     utils_error: non-fatal
+    invalid_point_fatal: false
 
   enable_testing: false
 
-  default_output_path: "runs/vacuum_stability3/"
+  default_output_path: "runs/vacuum_stability_scan/"
 
