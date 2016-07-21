@@ -179,19 +179,22 @@ add_dependencies(backends-nonfree gamlike)
 
 
 # MicrOmegas for MSSM
-set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/MSSM")
-set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/MSSM")
-set(micromegas_dl "micromegas_3.6.9.2.tgz")
-ExternalProject_Add(micromegas
-  DOWNLOAD_COMMAND ""
+set(micromegas_model "MSSM")
+set(micromegas_version "3.6.9.2")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${micromegas_version}/${micromegas_model}")
+set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/${micromegas_model}")
+ExternalProject_Add(micromegas_${micromegas_model}
+  URL https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${micromegas_version}.tgz
+  URL_MD5 72807f6d0ef80737554d8702b6b212c1
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${micromegas_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND cd ${micromegas_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
+  BUILD_COMMAND make && cd ${micromegas_model} && make main=main.c
   INSTALL_COMMAND ""
 )
-add_extra_targets(micromegas ${micromegas_dir} ${backend_download}/${micromegas_dl} clean)
-add_dependencies(backends micromegas)
+add_extra_targets(micromegas_${micromegas_model} ${micromegas_dir} ${backend_download}/${micromegas_dl} clean)
+add_dependencies(backends micromegas_${micromegas_model})
 
 
 # MicrOmegas for SingletDM
