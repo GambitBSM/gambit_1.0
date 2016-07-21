@@ -79,12 +79,17 @@ scanner_plugin(GreAT, version(1, 0, 0))
     const str  outpath     = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT-native/");
 
     // Set up output and MultiRun log filenames
-    std::ostringstream ss1, ss2; 
+    std::ostringstream ss1, ss2, ss3; 
     ss1 << outpath << "MCMC_" << MPIrank << ".root";
     ss2 << outpath << "MultiRun.txt";
+    ss3 << outpath << "MultiRun.txt.lock";
     std::string outputfilename = ss1.str();
     std::string multifilename = ss2.str();
+    std::string lockfilename = ss3.str();
 
+    // Clear GreAT lock file
+    remove(lockfilename.c_str());
+    
     // Wipe previous GreAT output if not resuming
     if (not resume_mode)
     {
