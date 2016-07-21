@@ -384,10 +384,12 @@ namespace Gambit
                                           const int tag_entered, 
                                           const int tag_timeleft);
       
-            /// Receive (and discard) any waiting messages with a given tag from a given source (possibly MPI_ANY_SOURCE)
+            /// Receive any waiting messages with a given tag from a given source (possibly MPI_ANY_SOURCE)
             /// Need to know what the messages are in order to provide an appropriate Recv buffer (and size)
+            /// The last message received will remain in the buffer and may be used (useful if several messages
+            /// about the same thing are expected to pile up)
             template<class T>
-            void receive_all_with_tag(T* buffer, int size, int source, int tag, int max_loops)
+            void Recv_all(T* buffer, int size, int source, int tag, int max_loops)
             {
               int loop = 0;
       
@@ -400,7 +402,7 @@ namespace Gambit
                 MPI_Status recv_status;
                 Recv(buffer, size, status.MPI_SOURCE, status.MPI_TAG, &recv_status);
                 #ifdef SIGNAL_DEBUG
-                LOGGER << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding it as obsolete..." << EOM;
+                LOGGER << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding any existing message in the output buffer as obsolete..." << EOM;
                 #endif
                 ++loop;
               }
@@ -412,7 +414,7 @@ namespace Gambit
                 utils_error().raise(LOCAL_INFO, errmsg.str());
               }
       
-              if(loop>0) LOGGER << "Communicator '"<<myname<<"' cleaned out "<<loop<<" unreceived messages with tag "<<tag<<EOM;
+              if(loop>0) LOGGER << "Communicator '"<<myname<<"' received "<<loop<<" messages with tag "<<tag<<". Only the last of these will be readable from the output buffer, the rest were discarded."<<EOM;
             }
 
             /// A generic place to store a tag commonly used by this communicator

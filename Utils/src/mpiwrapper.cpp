@@ -360,11 +360,13 @@ namespace Gambit
                      // Clear out any other barrier entry messages that this process may have sent in previous loops
                      // (for example if it has already timed out waiting for us in this barrier for several attempts)
                      int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
-                     receive_all_with_tag(&null_recv_buffer, 1, source, tag_entered, max_loops);
+                     Recv_all(&null_recv_buffer, 1, source, tag_entered, max_loops);
                   } 
                }
 
-               // Send our "timeleft" data to all processes waiting in this loop, if we haven't already done so
+               // Send our "timeleft" data to all processes waiting in this loop (that we know about), if we haven't already done so
+               // Some processes might be in the loop but we haven't gotten the message yet; they will have to wait until at least
+               // the next loop iteration before getting our timing data.
                for(std::size_t source=0;source<mpiSize;source++)
                {
                   if(entered[source] and not sent_timeleft[source])
@@ -382,13 +384,14 @@ namespace Gambit
                // From processes that we know are waiting in this loop, check for messages from them with their time_left data
                for(std::size_t source=0;source<mpiSize;source++)
                {
-                  if(entered[source] and not received_timeleft[source]) // and Iprobe(source, tag_timeleft, &status) ) // wait to receive regardless of whether they have sent the message yet.
+                  if(entered[source] and not received_timeleft[source] and Iprobe(source, tag_timeleft, &status)) // wait to receive regardless of whether they have sent the message yet.
                   {
                      // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
                      received_timeleft[source] = true;
                      unsigned long buf_timeleft;
-                     LOGGER << myRank <<": "<< "Attempting to received their_timeleft from process "<<source<<EOM;
-                     Recv(&buf_timeleft, 1, source, tag_timeleft);
+                     LOGGER << myRank <<": "<< "Attempting to receive their_timeleft from process "<<source<<EOM;
+                     int max_loops = 10000; // This is pretty extreme, if this many old timing messages have piled up then something has gone terribly wrong.
+                     Recv_all_with_tag(&buf_timeleft, 1, source, tag_timeleft, max_loops);
                      LOGGER << myRank <<": "<< "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<EOM;
                      //Update our own timeleft to reflect this
                      //i.e. subtract difference between our timeleft and theirs from total timeout time.
