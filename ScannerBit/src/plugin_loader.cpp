@@ -27,6 +27,7 @@
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Utils/table_formatter.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit
 {
@@ -535,7 +536,7 @@ namespace Gambit
                 
                 printer->finalise(true);
                 #ifdef WITH_MPI 
-                  std::cout << "rank " << printer->getRank() <<": ";
+                  std::cout << "rank " << getRank() <<": ";
                 #endif
                 std::cout << "Gambit info dump, preparing to stop!" << std::endl;
             }
@@ -556,6 +557,33 @@ namespace Gambit
                 }
             }
             
+            pluginInfo::pluginInfo()
+              : keepRunning(true), funcCalculating(false), MPIrank(0) 
+              #ifdef WITH_MPI
+              , scannerComm(NULL), MPIdata_is_init(false)
+              #endif
+            {}
+
+            #ifdef WITH_MPI
+            ///Initialise any MPI functionality (currently just used to provide a communicator object to ScannerBit)
+            void pluginInfo::initMPIdata(GMPI::Comm* newcomm) 
+            { 
+               scannerComm = newcomm; 
+               MPIdata_is_init = true;
+               MPIrank = scanComm().Get_rank();     
+            }
+
+            GMPI::Comm& pluginInfo::scanComm() 
+            {
+               if(not MPIdata_is_init)
+               {
+                  std::cerr << "Tried to retrieve scanComm MPI communicator (in ScannerBit), but it has not been initialised! Please be sure to call 'initMPIdata' and provide a communicator before allowing any scans to commence." << std::endl;
+                  exit(1); //TODO not sure if this should be a standard GAMBIT error or not. Going with 'not' for now. 
+               } 
+               return *scannerComm; 
+            }
+            #endif
+ 
             pluginInfo plugin_info;
         }
     }

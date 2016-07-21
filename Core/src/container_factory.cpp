@@ -24,6 +24,7 @@
 ///  *********************************************
 
 #include "gambit/Core/likelihood_container.hpp"
+#include "gambit/Elements/type_equivalency.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit

@@ -78,12 +78,12 @@ namespace Gambit
         BasePrinter()
           : primary_printer(NULL)
           , is_aux(false)
-        {}
+       {}
 
         BasePrinter(BasePrinter* const primary, bool is_aux_IN)
           : primary_printer(primary)
           , is_aux(is_aux_IN)
-        {}
+       {}
 
         /// Destructor
         virtual ~BasePrinter() {}
@@ -133,7 +133,7 @@ namespace Gambit
                    const int vertexID, const uint rank,
                    const ulong pointID)
         {
-          _print(in, label, vertexID, rank, pointID);
+          if(printer_enabled) _print(in, label, vertexID, rank, pointID);
         }
 
       protected:

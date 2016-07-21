@@ -50,7 +50,9 @@ namespace Gambit
     #ifdef WITH_MPI
     errorComm          (comm), 
     #endif
-    min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    min_valid_lnlike    (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    alt_min_valid_lnlike(iniFile.getValueOrDef<double>(min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")),
+    active_min_valid_lnlike(min_valid_lnlike), // can be switched to the alternate value by the scanner
     intralooptime_label("Runtime(ns) intraloop"),
     interlooptime_label("Runtime(ns) interloop"),
     totallooptime_label("Runtime(ns) totalloop"),
@@ -156,6 +158,12 @@ namespace Gambit
     // Check for signals to abort run
     signaldata().check_for_shutdown_signal();
 
+    // Check for signals to switch to an alternate minimum log likelihood value.
+    if(check_for_switch_to_alternate_min_LogL())
+    {
+       active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
+    }
+
     bool compute_aux = true;
 
     // Set the values of the parameter point in the PrimaryParameters functor, and log them to cout and/or the logs if desired.
@@ -232,7 +240,7 @@ namespace Gambit
         }
 
         // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
-        if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
+        if (lnlike <= active_min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
 
         // Log completion of this likelihood.
         if (debug) logger() << LogTags::core << "Computed l" << likelihood_tag << "." << EOM;
@@ -243,9 +251,10 @@ namespace Gambit
       {
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         logger().leaving_module();
-        lnlike = min_valid_lnlike;
+        lnlike = active_min_valid_lnlike;
         compute_aux = false;
         if (debug) cout << "Point invalid." << endl;
+        printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
         break;
       }
 
@@ -271,11 +280,11 @@ namespace Gambit
       }
     }
 
-    if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
-
     // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
     if (compute_aux)
     {
+      if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
+
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
         // Log the observables being tried.

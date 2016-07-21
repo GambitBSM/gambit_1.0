@@ -98,6 +98,15 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
+# Arrange clean commands
+include(cmake/cleaning.cmake)
+
+# Arrange make backends command (will be filled in from backends.cmake)
+add_custom_target(backends)
+
+# Arrange make scanners command (will be filled in from scanners.cmake)
+add_custom_target(scanners)
+
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
@@ -111,7 +120,7 @@ macro(add_external_clean package dir dl target)
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
-                                    COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${dl} || true
+                                    COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
 endmacro()
 
@@ -119,6 +128,16 @@ endmacro()
 macro(add_extra_targets package dir dl target)
   enable_auto_rebuild(${package})
   add_external_clean(${package} ${dir} ${dl} ${target})
+  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-backends clean-${package})
+endmacro()
+
+# Macro to add all additional targets for a new scanner
+macro(add_extra_targets_scanner package dir dl target)
+  enable_auto_rebuild(${package})
+  add_external_clean(${package} ${dir} ${dl} ${target})
+  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-scanners clean-${package})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
@@ -284,6 +303,8 @@ endmacro()
 
 # Macro for BOSSing a backend
 set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
+set(needs_BOSSing "")
+set(needs_BOSSing_failed "")
 macro(BOSS_backend cmake_project backend_name backend_version)
 
   # Replace "." by "_" in the backend version number
@@ -305,7 +326,7 @@ macro(BOSS_backend cmake_project backend_name backend_version)
     endif()
     ExternalProject_Add_Step(${cmake_project} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
+      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} ${backend_name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
       COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
       COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp

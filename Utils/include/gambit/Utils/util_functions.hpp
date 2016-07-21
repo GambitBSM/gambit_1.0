@@ -80,9 +80,6 @@ namespace Gambit
     /// in which case the whitespace is replaced by a single space.
     void strip_whitespace_except_after_const(str&);
 
-    /// Strip Gambit namespace and clean out whitespace
-    inline str fix_type(str s) { strip_whitespace_except_after_const(s); return strip_leading_namespace(s, "Gambit"); } 
-
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);
 

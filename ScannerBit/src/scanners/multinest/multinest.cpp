@@ -202,7 +202,7 @@ namespace Gambit {
 
       /// LogLikeWrapper Constructor
       LogLikeWrapper::LogLikeWrapper(scanPtr loglike, printer_interface& printer, int ndim)
-        : boundLogLike(loglike), boundPrinter(printer), my_ndim(ndim)
+        : boundLogLike(loglike), boundPrinter(printer), my_ndim(ndim), dumper_runonce(false)
       { }
    
       /// Main interface function from MultiNest to ScannerBit-supplied loglikelihood function 
@@ -303,6 +303,20 @@ namespace Gambit {
                       <<"if e.g. the described behaviour has changed since this plugin was written."
                       << scan_end;
           } 
+
+          // Send signal to other processes to switch to higher min_logL value.
+          // MultiNest was sometimes getting stuck looking for live point candidates,
+          // increasing this above the MultiNext zero_LogL value should avoid that
+          // issue.
+          // We do this here because initial live point generation should be finished 
+          // once the dumper runs, and we want the original min_logL value while generating
+          // live points.
+          if (!dumper_runonce) 
+          {
+             dumper_runonce = true;
+             boundLogLike->switch_to_alternate_min_LogL();
+             std::cerr << "Multinest dumper first ran on process "<<boundLogLike->getRank()<<" at iteration "<<boundLogLike->getPtID()<<std::endl;
+          }
 
           // Get printers for each auxiliary stream
           //printer* stats_stream( boundPrinter.get_stream("stats") ); //FIXME see below

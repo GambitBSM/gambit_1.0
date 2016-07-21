@@ -34,7 +34,7 @@ namespace Gambit {
     // TH_Channel definitions
 
     /// Constructor
-    TH_Channel::TH_Channel(std::vector<str> finalStateIDs, Funk::Funk genRate)
+    TH_Channel::TH_Channel(std::vector<str> finalStateIDs, daFunk::Funk genRate)
       :  finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
       genRate(genRate)
     {
@@ -90,19 +90,19 @@ namespace Gambit {
     // TH_Process definitions
 
     /// Constructor for decay process
-    TH_Process::TH_Process(str particle1ID)
+    TH_Process::TH_Process(const str & particle1ID)
       : isAnnihilation (false), 
       particle1ID    (particle1ID), 
       particle2ID    (""),
-      genRateMisc    (Funk::zero())
+      genRateMisc    (daFunk::zero())
     {}
 
     /// Constructor for annihilation process
-    TH_Process::TH_Process(str particle1ID, str particle2ID)
+    TH_Process::TH_Process(const str & particle1ID, const str & particle2ID)
       : isAnnihilation (true),
       particle1ID(particle1ID),
       particle2ID(particle2ID),
-      genRateMisc(Funk::zero("v"))
+      genRateMisc(daFunk::zero("v"))
     {
       if (particle1ID.compare(particle2ID) > 0)
       {
@@ -112,7 +112,7 @@ namespace Gambit {
     }
 
     /// Compare initial states
-    bool TH_Process::isProcess(str p1, str p2) const
+    bool TH_Process::isProcess(const str & p1, const str & p2) const
     {
       sspair candidate_process(p1, p2);
       sspair this_process(this->particle1ID, this->particle2ID);

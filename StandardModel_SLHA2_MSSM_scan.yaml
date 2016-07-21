@@ -1,7 +1,4 @@
-# Defaults for StandardModel_SLHA2 parameters.
-# These are ALL FIXED
-# To vary, say, mTop, or just use different fixed values, you should create a
-# new version of this file.
+# Defaults for StandardModel_SLHA2 parameters in MSSM scans.
 
 ###
 # import this file into a Parameters node named:
@@ -23,12 +20,10 @@
 
 # SLHA1
 # All ranges on parameters are 3 sigma range from PDG 2014
-alphainv:  #1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
-           range: [127.898,127.982]
+alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar * #range: [127.898,127.982]
 alphaS  :  #1.18500000E-01 # alpha_s(mZ)^MSbar ^
            range: [0.1167, 0.1203]
-mBmB    :  #4.18000000E+00 # mb(mb)^MSbar &
-           range: [4.09, 4.27]
+mBmB    :  4.18000000E+00 # mb(mb)^MSbar & #range: [4.09, 4.27]
 mT      :  #1.73340000E+02 # mtop(pole) $
            range: [171.06,175.62] 
 GF      :  1.16637870E-05 # G_Fermi **

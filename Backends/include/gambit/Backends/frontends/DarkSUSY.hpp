@@ -43,7 +43,7 @@
 
 #include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/daFunk.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include <string>
 

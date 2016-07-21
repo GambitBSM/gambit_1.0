@@ -326,9 +326,6 @@ namespace Gambit
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = 0;
 
-      if (*Loop::iteration == FINALIZE)
-        fileCounter++;
-
       if (*Loop::iteration == BASE_INIT)
       {
         // Setup the Pythia documentation path
@@ -360,7 +357,7 @@ namespace Gambit
           pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
 
-      else if (*Loop::iteration == START_SUBPROCESS)
+      if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
         // variables for xsec veto
@@ -427,6 +424,9 @@ namespace Gambit
         if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
 
       }
+
+      if (*Loop::iteration == FINALIZE) fileCounter++;
+
     }
 
 

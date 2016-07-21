@@ -115,8 +115,42 @@ GreAT: |
   The Grenoble Analysis Toolkit (GreAT) is a flexible C++ framework for statistical analyses. In order to provide efficient handling and plotting of the data, GreAT is interfaced with the ROOT package developed at CERN. The GreAT package comes with a Markov Chain Monte Carlo (MCMC) algorithm for Bayesian parameter inference. The implemented Metropolis-Hastings algorithms use different proposal functions. In the current version of the GreAT interface implemented in GAMBIT, only the multivariate Gaussian distribution is used where the covariance matrix can be automatically reevaluated after each chain from all previous processed chains. To obtain a reliable estimate of the PDF, the chain analysis is based on the selection of a subset of points from the chains. Some steps at the beginning of the chain are discarded (burn-in length), in order to forget the random starting point. By construction, each step of the chain is correlated with the previous steps: sets of independent samples are obtained by thinning the chain (over the correlation length). The final results of the MCMC analysis are obtained by merely counting the number of samples within the related region of parameter space.
 
   GreAT inifile options:
-    nTrialLists:    The number of trial lists (Markov Chains)
-    nTrials:        The number of trials (steps in the parameter space per trial list)
+      nTrialLists:    The number of trial lists (Markov Chains)
+      nTrials:        The number of trials (steps in the parameter space per trial list)
 
   Auxillary output variables:
-    multiplicity:    Statistical weight (multiplicity) of each point
+      multiplicity:    Statistical weight (multiplicity) of each point
+    
+grid: |
+  Simple grid scanner.  Evaluation points along a user-defined grid.
+  
+  inifile options:
+      grid_pts:    The number of points along each dimension on the grid.  A vector is given with each element correponding to each dimension.
+      like:        Use the functors thats corresponds to the specified purpose.
+    
+square_grid: |
+  Simple grid scanner where each dimension of grid are identical.  Evaluation points along a user-defined grid.
+  
+  inifile options:
+      grid_pts:    The number of points along each dimension on the grid.
+      like:        Use the functors thats corresponds to the specified purpose.
+    
+random_scanner: |
+  Simple scanner that randomly chooses points.
+  
+  inifile options:
+      point_number(1000):  The number of points to be randomly selected.  Default is 1000.
+      like:                Use the functors thats corresponds to the specified purpose.
+    
+toy_scanner: |
+  #remove_newlines
+  Simple independent Metropolis-Hastings algorithm.  Points are choosed uniformly from the unit hypercube 
+  and is then accepted or rejected based on the Metropolis-Hastings acceptance probablity.
+  
+  inifile options:
+      point_number(1000):  The number of accepted points.  Default is 1000.
+      like:                Use the functors thats corresponds to the specified purpose.
+    
+  Auxillary output variables:
+      mult:     Multiplicity (weight) of each point.
+  

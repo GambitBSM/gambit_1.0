@@ -66,3 +66,5 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
+
+  debug: true

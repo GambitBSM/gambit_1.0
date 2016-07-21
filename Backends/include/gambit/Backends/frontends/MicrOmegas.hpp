@@ -11,7 +11,9 @@
 
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
+BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT, LocalHalo)
+// FIXME "LocalHalo" is just a workaround to allow initializing MO without MSSM
+// model
 
 BE_FUNCTION(assignVal, int, (char*,double),"assignVal","assignVal")
 BE_FUNCTION(vSigma, double, (double, double, int), "vSigma","vSigma")
