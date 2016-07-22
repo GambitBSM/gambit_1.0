@@ -76,6 +76,8 @@ ObsLikes:
     capability:   SL_LL
   - purpose:      Likelihood                                                                                       
     capability:   b2sll_LL
+  - purpose:      Likelihood     
+    capability:   b2sgamma_LL
 
   
 #########################
