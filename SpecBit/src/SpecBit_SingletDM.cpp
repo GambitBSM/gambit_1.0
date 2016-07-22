@@ -49,7 +49,7 @@
 #include "flexiblesusy/src/numerics2.hpp"
 #include "flexiblesusy/src/two_loop_corrections.hpp"
 // Switch for debug mode
-//#define SPECBIT_DEBUG
+#define SPECBIT_DEBUG
 
 namespace Gambit
 {
@@ -266,6 +266,7 @@ namespace Gambit
             // Deal with points where spectrum generator encountered a problem
       #ifdef SPECBIT_DEBUG
         std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+        std::cout<<"Warning? "<<problems.have_warning()<<std::endl;
       #endif
       if( problems.have_problem() )
       {

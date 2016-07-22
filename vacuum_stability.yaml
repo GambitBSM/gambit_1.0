@@ -20,7 +20,7 @@ Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
          #range: [160.071,160.071]
-         range: [170,173]
+         range: [173,173]
          #prior_type: flat
 
       # SLHA1
@@ -64,15 +64,14 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        #range: [100.098,100.098]
-        range: [225.487,225.487]
+        range: [130,130]
         #prior_type: flat
       QEWSB: 173
 
 
     SingletDM:
-      mS: 179.793
-      lambda_hS: 0.000214376 #0.30
+      mS: 0.1
+      lambda_hS: 0.14376 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -172,7 +171,7 @@ ObsLikes:
       purpose: LogLike
 
     - capability: check_perturb_min_lambda
-      purpose: Observable
+      purpose: LogLike
 
  #   - capability: expected_lifetime
  #     purpose: Observable
@@ -202,7 +201,7 @@ Rules:
       function: get_SingletDM_spectrum_pole
       options:
         check_perturb: true
-        check_high_scale: 1e5
+        check_high_scale: 200
         check_perturb_pts: 10
 
     - capability: Higgs_decay_rates

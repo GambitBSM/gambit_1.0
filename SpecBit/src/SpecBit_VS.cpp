@@ -40,7 +40,7 @@
 
 
 // Switch for debug mode
-//#define SPECBIT_DEBUG
+#define SPECBIT_DEBUG
 
 namespace Gambit
 {
@@ -324,6 +324,10 @@ namespace Gambit
       }
       bool perturbative=check_perturb_to_min_lambda(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale
       double perturb=float(!perturbative);
+      #ifdef SPECBIT_DEBUG
+      cout << "perturbativity checked up to " << LB << " result = " << perturbative << endl;
+      #endif
+      
       age_pair = triplet<double>(lifetime,LB,perturb); // output all three results as a triplet, perturb could be bool but all 3 need to be doubles for this type
      
     }
@@ -356,7 +360,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_check_perturb_min_lambda;
       using namespace Gambit;
       triplet<double> age = *myPipe::Dep::vacuum_stability;
-      result=age.lower*(1e-300); // returns lnlike, very small if pertub is 1, 0 otherwise
+      result=-age.lower*(1e100); // returns lnlike, very negative if pertub is 1, 0 otherwise
     }
 
     
