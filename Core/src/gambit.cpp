@@ -23,13 +23,9 @@ using namespace Gambit;
 using namespace LogTags;
 
 /// Cleanup function
-// void do_cleanup() { 
-//   if(signaldata().jumppoint_set)
-//   {
-//     Gambit::Scanner::Plugins::plugin_info.dump(); 
-//   }
-//   // No cleanup needed if jump point is not set, means the scan never began.
-// }
+void do_cleanup() { 
+    Gambit::Scanner::Plugins::plugin_info.dump(); // Also calls printer finalise() routine 
+}
 
 #ifdef WITH_MPI
 bool use_mpi_abort = true; // Set later via inifile value
@@ -155,6 +151,9 @@ int main(int argc, char* argv[])
 
         //Create the master scan manager 
         Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
+
+        // Set cleanup function to call during premature shutdown
+        signaldata().set_cleanup(&do_cleanup);
 
         //Do the scan!
         logger() << core << "Starting scan." << EOM;
