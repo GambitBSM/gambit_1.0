@@ -149,6 +149,7 @@ namespace Gambit
   {
     logger() << LogTags::core << "Entered Likelihood_Container::main" << EOM; // Debugging
     double lnlike = 0;
+    bool point_invalidated = false;
 
     // Check for signals from the scanner to switch to an alternate minimum log likelihood value. TODO: could let scanner plugin set the actual value?
     if(check_for_switch_to_alternate_min_LogL())
@@ -170,7 +171,6 @@ namespace Gambit
     {
 
       bool compute_aux = true;
-      bool point_invalidated = false;
 
       // Set the values of the parameter point in the PrimaryParameters functor, and log them to cout and/or the logs if desired.
       setParameters(in);
