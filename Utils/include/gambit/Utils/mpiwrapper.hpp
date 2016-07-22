@@ -370,6 +370,9 @@ namespace Gambit
             /// Inverse of the above. Everyone waits for master to pass this (but not for anyone else)
             void allWaitForMaster(int tag);
 
+            /// Everyone waits for master to pass this, and runs "func" periodically while waiting
+            void allWaitForMasterWithFunc(int tag, void (*func)())
+
             /// An implementation of Barrier that will fall through if synchronisation takes too long
             /// Could modify to take a function pointer to run while waiting.
             /// Supply MPI tag to identify each particular barrier.
