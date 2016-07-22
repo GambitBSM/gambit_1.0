@@ -74,6 +74,9 @@ namespace Gambit
     /// Non-rollcalled helper functions unknown to GAMBIT
     // **************************************************
 
+    #define FLAVBIT_DEBUG_LL true
+    #define FLAVBIT_DEBUG true
+
     template<class T>
     bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse) {
       using namespace boost::numeric::ublas;
@@ -1035,6 +1038,7 @@ namespace Gambit
       double q2min=1.1;
       double q2max=2.5;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      
       if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
     }
@@ -1290,10 +1294,10 @@ namespace Gambit
 
       // we assert if the exrimental size and the observables are differnt size
       assert(! ( M_exp.size1() != observables.size()  ));
-
+      cout<<"!@#!@"<<endl;
       Flav_KstarMuMu_obs obs_out_11_25= *(Dep::BRBKstarmumu_11_25);
       //SI_BRBKstarmumu_11_25(obs_out_11_25);
-
+      cout<<"???"<<endl;
       Flav_KstarMuMu_obs obs_out_25_40= *(Dep::BRBKstarmumu_25_40);
       //   SI_BRBKstarmumu_25_40(obs_out_25_40);
 
@@ -1508,6 +1512,8 @@ namespace Gambit
 
       red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
 
+
+      cout<<"Finish reading b->mumu"<<endl;
 
       red.create_global_corr();
       int flav=2;

@@ -111,18 +111,24 @@ namespace Gambit
     void operator >> (const YAML::Node& node, Correlation& c) {
       string tmp;
       // safety
+      //cout<<"READING CORRELATION"<<endl;
       tmp = node["name"].as<std::string>();
       if(tmp=="NONE") return;
       // reading correlation
+      //cout<<"Should not be here"<<endl;
       c.corr_name= node["name"].as<std::string>();
       c.corr_val = node["value"].as<double>();
+      //cout<<"let's see:"<<endl;
+      //cout<<c.corr_name<<endl;
+      //cout<<c.corr_val <<endl;
+
     }
     void operator >> (const YAML::Node& node, Measurement& v) {
       
       v.name=node["name"].as<std::string>();
       
       v.is_limit = node["islimit"].as<bool>();
-      
+
 
       if(v.is_limit== true)
 	{
@@ -137,17 +143,22 @@ namespace Gambit
       else
 	{
 	  v.value= node["value"].as<double>();
+	  //cout<<v.value<<endl;
 	  v.exp_stat_error = node["exp_stat_error"].as<double>();
+	  //cout<<v.exp_stat_error<<endl;
 	  v.exp_sys_error = node["exp_sys_error"].as<double>();
+	  //cout << v.exp_stat_error << endl;
 	  // v.exp_stat_error_plus=node["exp_stat_error_plus"].as<double>();
 	  // v.exp_sys_error_plus=node["exp_sys_error_plus"].as<double>();
 	  v.th_error=node["th_error"].as<double>();  
+	  //cout << v.th_error <<endl;
 	  // v.th_error_plus=node["th_error_plus"].as<double>();    
 	  //adding the errors with 
 	  v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
 	  //v.exp_error_minus=sqrt(v.exp_sys_error_minus*v.exp_sys_error_minus+v.exp_stat_error_minus*v.exp_stat_error_minus);
 	  v.limit=-1.;
 	  v.error_type=node["error_type"].as<std::string>();
+	  // cout<<v.error_type<<endl;
 	}
       v.source = node["source"].as<std::string>();
       // now the correlation
@@ -155,10 +166,13 @@ namespace Gambit
       for(unsigned i=0;i<correlations.size();++i) {
 	Correlation corr_tmp;
 	correlations[i] >> corr_tmp;
-	v.corr.push_back(corr_tmp);
-
+	//	cout<<"Correlation name: "<<corr_tmp.corr_name<<endl;
+	if(corr_tmp.corr_name !=""  ) v.corr.push_back(corr_tmp);
+	
 
       }// for loop inside correlation
+      //cout<<"Corrleation size: "<<v.corr[0].size()<<endl;
+
     }
 
 
@@ -264,10 +278,13 @@ namespace Gambit
 	}
       //  print_corr_matrix() ;
       // fill with correlations from cards
+
       for(int i=0; i<number_measurements; ++i)
 	{
+	  cout<<"Correlation size: "<< measurements[i].corr.size()<<endl; 
 	  for ( unsigned icorr=0; icorr< measurements[i].corr.size(); ++icorr)
 	    {
+	      cout<<"Searchign for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
 	      int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
 	      M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
 	      //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];
