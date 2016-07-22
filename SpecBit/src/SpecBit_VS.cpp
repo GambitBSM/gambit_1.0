@@ -40,7 +40,7 @@
 
 
 // Switch for debug mode
-#define SPECBIT_DEBUG
+//#define SPECBIT_DEBUG
 
 namespace Gambit
 {
