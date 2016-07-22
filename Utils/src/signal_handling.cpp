@@ -157,14 +157,14 @@ namespace Gambit
    {
      shutdownBegun = 1;
      emergency = emergnc;
-     if(ignore_signals_during_shutdown)
-     {
-        /// Redirect all future signals (except of course kill etc.) to the null handlers
-        signal(SIGTERM, sighandler_null);
-        signal(SIGINT,  sighandler_null);
-        signal(SIGUSR1, sighandler_null);
-        signal(SIGUSR2, sighandler_null);
-     }
+     // // if(ignore_signals_during_shutdown)
+     // {
+     //    /// Redirect all future signals (except of course kill etc.) to the null handlers
+     //    signal(SIGTERM, sighandler_null);
+     //    signal(SIGINT,  sighandler_null);
+     //    signal(SIGUSR1, sighandler_null);
+     //    signal(SIGUSR2, sighandler_null);
+     // }
    }
 
    /// Check if shutdown is in progress
@@ -198,9 +198,7 @@ namespace Gambit
 
    void SignalData::attempt_soft_shutdown()
    {
-     const int max_attempts=6; // 6 extra likelihood evaluations allowed before we fail 
-     const int maxtime_s = 1; //120; // ... or 120 seconds, whichever happens *last* (TODO; temporarilyset to 1 to speed up testing)
-     const std::chrono::seconds max_time(maxtime_s);
+     const int max_attempts=20; // Number of extra likelihood evaluations allowed for sync attempts before we declare failure 
 
      /// Start counting...
      static std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
@@ -209,7 +207,7 @@ namespace Gambit
      {
        /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
        /// so that it can get its own affairs in order.
-       logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, or for "<<maxtime_s<<" seconds, whichever takes longer, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
+       logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
      }  
      else
      {
@@ -240,7 +238,7 @@ namespace Gambit
         // 120 seconds to elapse, we just keep trying, or if 6
         // attempts take long than 120 seconds, then we wait
         // until the 6 attempts complete.
-        if (shutdown_attempts>=max_attempts and time_waited>=max_time) 
+        if (shutdown_attempts>=max_attempts) 
         {
           logger() << "Failed to synchronise for soft shutdown! Attempting cleanup anyway, but cannot guarantee safety of the scan output." << EOM;
           call_cleanup();
@@ -365,30 +363,31 @@ namespace Gambit
    /// Add a new loop time to internal array used to decide barrier timeout
    void SignalData::update_looptime(double newtime)
    {
-     #ifdef WITH_MPI
-     // We don't need these times unless MPI is active
-     if(rank>1)
-     {
-       looptimes[next] = newtime;
-       ++next;
-       if(next>=looptimes.size()) 
-       {
-         next=0;
-         listfull=true;
-       }
-       
-       // Compute average of known loop times
-       unsigned int N = next+1;
-       if(listfull) N = looptimes.size();
-       double sum = 0;
-       for(unsigned int i=0; i<N; ++i)
-       {
-         sum += looptimes[i];
-       }
-       timeout = sum/N;
-       if(timeout<1000) timeout=1000; // Set minimum timeout of 1s (to allow for possibly slow network speed during MPI tasks)
-     }
-     #endif
+     // Leave this as 1 second now that likelihood calculation is disabled during shutdown
+     // #ifdef WITH_MPI
+     // // We don't need these times unless MPI is active
+     // if(rank>1)
+     // {
+     //   looptimes[next] = newtime;
+     //   ++next;
+     //   if(next>=looptimes.size()) 
+     //   {
+     //     next=0;
+     //     listfull=true;
+     //   }
+     //   
+     //   // Compute average of known loop times
+     //   unsigned int N = next+1;
+     //   if(listfull) N = looptimes.size();
+     //   double sum = 0;
+     //   for(unsigned int i=0; i<N; ++i)
+     //   {
+     //     sum += looptimes[i];
+     //   }
+     //   timeout = sum/N;
+     //   if(timeout<1000) timeout=1000; // Set minimum timeout of 1s (to allow for possibly slow network speed during MPI tasks)
+     // }
+     // #endif
    }
 
    /// Absorb any extra shutdown messages that may be unreceived
@@ -756,26 +755,9 @@ namespace Gambit
    /// after which MPI synchronisation followed by clean shutdown is attempted.
    void sighandler_soft(int sig)
    {
-     // std::cerr << " Saw signal " << sig << std::endl; // debugging
-     // std::ostringstream msg;
-     // #ifdef WITH_MPI
-     // msg << "rank "<<signaldata().myrank()<<": ";
-     // #endif
-     // msg << "Calling sighandler_soft (detected signal "<<sig<<")" << std::endl;
-     // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
-     if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
-     if(signaldata().shutdown_begun())
-     {
-       #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().myrank()<<": ";
-       #endif
-       std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
-       sighandler_emergency(sig); // calls exit(sig)
-     }
      // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour, so no messages here.
-     //Scanner::Plugins::plugin_info.dump();
      signaldata().set_shutdown_begun();
-     signaldata().add_signal(sig);
+     signaldata().add_signal(sig); // I think this should be ok... but can delete it if there are any problems
    }
    
    void sighandler_hard(int sig)

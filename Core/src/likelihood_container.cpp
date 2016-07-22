@@ -150,180 +150,172 @@ namespace Gambit
     logger() << LogTags::core << "Entered Likelihood_Container::main" << EOM; // Debugging
     double lnlike = 0;
 
-    // Unblock system signals (these are blocked to prevent external scanner 
-    // codes from getting interrupted while they are performing sensitive
-    // tasks, like writing to disk; i.e. we do not trust them to have 
-    // protected themselves properly.
-    unblock_signals();    
+    // Check for signals from the scanner to switch to an alternate minimum log likelihood value. TODO: could let scanner plugin set the actual value?
+    if(check_for_switch_to_alternate_min_LogL())
+    {
+      active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
+    }
 
     // Check for signals to abort run
     signaldata().check_for_shutdown_signal();
     if(signaldata().shutdown_begun())
     {
-      // Once soft shutdown signal is received, we give the scanner code one chance to shut itself down (ending the Run() routine called in gambit.cpp). If it cannot do this then we will get control back next loop, and attempt to shut things down from the outside.
-      tell_scanner_early_shutdown_in_progress();
+      // Once soft shutdown signal is received, we give the scanner code one chance to shut itself down (ending the Run() routine called in gambit.cpp). If it cannot do this then we will get control back next loop, and attempt to shut things down from the outside. TODO: Allow scanners to set a flag to completely disable the gambit "intervention" in shutdown.
+      tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
+      lnlike = active_min_valid_lnlike;
+      point_invalidated = true;
+      logger() << "Shutdown in progess! Returning min_valid_lnlike to ScannerBit instead of computing likelihood." << EOM;
     }
-
-    // Check for signals to switch to an alternate minimum log likelihood value.
-    if(check_for_switch_to_alternate_min_LogL())
+    else // Do the normal likelihood calculation
     {
-       active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
-    }
 
-    bool compute_aux = true;
-    bool point_invalidated = false;
+      bool compute_aux = true;
+      bool point_invalidated = false;
 
-    // Set the values of the parameter point in the PrimaryParameters functor, and log them to cout and/or the logs if desired.
-    setParameters(in);
+      // Set the values of the parameter point in the PrimaryParameters functor, and log them to cout and/or the logs if desired.
+      setParameters(in);
 
-    // Logger debug output; things labelled 'LogTags::debug' only get logged if the logger::debug or master debug flags are true, not if only 'likelihood::debug' is true.
-    logger() << LogTags::core << LogTags::debug << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
+      // Logger debug output; things labelled 'LogTags::debug' only get logged if the logger::debug or master debug flags are true, not if only 'likelihood::debug' is true.
+      logger() << LogTags::core << LogTags::debug << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
 
-    // Begin timing of total likelihood evaluation
-    std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
+      // Begin timing of total likelihood evaluation
+      std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
   
-    // Compute time since the previous likelihood evaluation ended
-    std::chrono::duration<double> interloop_time = startL - previous_endL;
+      // Compute time since the previous likelihood evaluation ended
+      std::chrono::duration<double> interloop_time = startL - previous_endL;
 
-    // First work through the target functors, i.e. the ones contributing to the likelihood.
-    for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
-    {
-
-      // Log the likleihood being tried.
-      str likelihood_tag = "ikelihood contribution from " + dependencyResolver.get_functor(*it)->origin()
-                           + "::" + dependencyResolver.get_functor(*it)->name();
-      if (debug) logger() << LogTags::core << "Calculating l" << likelihood_tag << "." << EOM;
-
-      try
+      // First work through the target functors, i.e. the ones contributing to the likelihood.
+      for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
       {
-        // Set up debug output streams.
-        std::ostringstream debug_to_cout;
-        if (debug) debug_to_cout << "  L" << likelihood_tag << ": ";
 
-        // Calculate the likelihood component. The pointID is passed through to the printer call for each functor.
-        dependencyResolver.calcObsLike(*it,getPtID());
-
-        // Switch depending on whether the functor returns floats or doubles and a single likelihood or a vector of them.
-        str rtype = return_types[*it];
-        if (rtype == "double")
-        {
-          double result = dependencyResolver.getObsLike<double>(*it);
-          if (debug) debug_to_cout << result;
-          lnlike += result;
-        }
-        else if (rtype == "std::vector<double>")
-        {
-          std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
-          for (auto jt = result.begin(); jt != result.end(); ++jt)
-          {
-            if (debug) debug_to_cout << *jt << " ";
-            lnlike += *jt;
-          }
-        }
-        else if (rtype == "float")
-        {
-          float result = dependencyResolver.getObsLike<float>(*it);
-          if (debug) debug_to_cout << result;
-          lnlike += result;
-        }
-        else if (rtype == "std::vector<float>")
-        {
-          std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
-          for (auto jt = result.begin(); jt != result.end(); ++jt)
-          {
-            if (debug) debug_to_cout << *jt << " ";
-            lnlike += *jt;
-          }
-        }
-        else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");
-
-        // Print debug info
-        if (debug) cout << debug_to_cout.str() << endl;
-
-        // Don't just roll over if it's a NaN, kill the scan and force the developer to fix it.
-        if (Utils::isnan(lnlike))
-        {
-          core_error().raise(LOCAL_INFO, "L" + likelihood_tag + " is NaN!");
-        }
-
-        // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
-        if (lnlike <= active_min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
-
-        // Log completion of this likelihood.
-        if (debug) logger() << LogTags::core << "Computed l" << likelihood_tag << "." << EOM;
-      }
-
-      // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
-      catch(invalid_point_exception& e)
-      {
-        logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
-        logger().leaving_module();
-        lnlike = active_min_valid_lnlike;
-        compute_aux = false;
-        point_invalidated = true;
-        if (debug) cout << "Point invalid." << endl;
-        break;
-      }
-    }
-
-    // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
-    if (compute_aux)
-    {
-      if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
-
-      for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
-      {
-        // Log the observables being tried.
-        str aux_tag = "dditional observable from " + dependencyResolver.get_functor(*it)->origin()
+        // Log the likleihood being tried.
+        str likelihood_tag = "ikelihood contribution from " + dependencyResolver.get_functor(*it)->origin()
                              + "::" + dependencyResolver.get_functor(*it)->name();
-        if (debug) logger() << LogTags::core <<  "Calculating a" << aux_tag << "." << EOM;
-       
+        if (debug) logger() << LogTags::core << "Calculating l" << likelihood_tag << "." << EOM;
+
         try
         {
+          // Set up debug output streams.
+          std::ostringstream debug_to_cout;
+          if (debug) debug_to_cout << "  L" << likelihood_tag << ": ";
+
+          // Calculate the likelihood component. The pointID is passed through to the printer call for each functor.
           dependencyResolver.calcObsLike(*it,getPtID());
-          if (debug) logger() << LogTags::core << "Computed a" << aux_tag << "." << EOM;
+
+          // Switch depending on whether the functor returns floats or doubles and a single likelihood or a vector of them.
+          str rtype = return_types[*it];
+          if (rtype == "double")
+          {
+            double result = dependencyResolver.getObsLike<double>(*it);
+            if (debug) debug_to_cout << result;
+            lnlike += result;
+          }
+          else if (rtype == "std::vector<double>")
+          {
+            std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
+            for (auto jt = result.begin(); jt != result.end(); ++jt)
+            {
+              if (debug) debug_to_cout << *jt << " ";
+              lnlike += *jt;
+            }
+          }
+          else if (rtype == "float")
+          {
+            float result = dependencyResolver.getObsLike<float>(*it);
+            if (debug) debug_to_cout << result;
+            lnlike += result;
+          }
+          else if (rtype == "std::vector<float>")
+          {
+            std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
+            for (auto jt = result.begin(); jt != result.end(); ++jt)
+            {
+              if (debug) debug_to_cout << *jt << " ";
+              lnlike += *jt;
+            }
+          }
+          else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");
+
+          // Print debug info
+          if (debug) cout << debug_to_cout.str() << endl;
+
+          // Don't just roll over if it's a NaN, kill the scan and force the developer to fix it.
+          if (Utils::isnan(lnlike))
+          {
+            core_error().raise(LOCAL_INFO, "L" + likelihood_tag + " is NaN!");
+          }
+
+          // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
+          if (lnlike <= active_min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
+
+          // Log completion of this likelihood.
+          if (debug) logger() << LogTags::core << "Computed l" << likelihood_tag << "." << EOM;
         }
-        catch(Gambit::invalid_point_exception& e)
+
+        // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
+        catch(invalid_point_exception& e)
         {
-          logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
-                   << "::" << e.thrower()->name() << ": " << e.message() << EOM;
+          logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
+          logger().leaving_module();
+          lnlike = active_min_valid_lnlike;
+          compute_aux = false;
+          point_invalidated = true;
+          if (debug) cout << "Point invalid." << endl;
+          break;
         }
       }
-    }
 
-    // End timing of total likelihood evaluation
-    std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
+      // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
+      if (compute_aux)
+      {
+        if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
+
+        for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
+        {
+          // Log the observables being tried.
+          str aux_tag = "dditional observable from " + dependencyResolver.get_functor(*it)->origin()
+                               + "::" + dependencyResolver.get_functor(*it)->name();
+          if (debug) logger() << LogTags::core <<  "Calculating a" << aux_tag << "." << EOM;
+         
+          try
+          {
+            dependencyResolver.calcObsLike(*it,getPtID());
+            if (debug) logger() << LogTags::core << "Computed a" << aux_tag << "." << EOM;
+          }
+          catch(Gambit::invalid_point_exception& e)
+          {
+            logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
+                     << "::" << e.thrower()->name() << ": " << e.message() << EOM;
+          }
+        }
+      }
+
+      // End timing of total likelihood evaluation
+      std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
  
-    // Compute time since the previous likelihood evaluation ended
-    // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
-    std::chrono::duration<double> true_total_loop_time = endL - previous_endL;
+      // Compute time since the previous likelihood evaluation ended
+      // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
+      std::chrono::duration<double> true_total_loop_time = endL - previous_endL;
 
-    // Update stored timing information for use in next loop
-    previous_startL = startL;
-    previous_endL   = endL;
+      // Update stored timing information for use in next loop
+      previous_startL = startL;
+      previous_endL   = endL;
 
-    std::chrono::duration<double> runtimeL = endL - startL;
-    typedef std::chrono::milliseconds ms;
+      std::chrono::duration<double> runtimeL = endL - startL;
+      typedef std::chrono::milliseconds ms;
 
-    // Print timing data
-    if(dependencyResolver.printTiming())
-    {
-      int rank = printer.getRank();
-      printer.print(std::chrono::duration_cast<ms>(runtimeL).count(),            intralooptime_label,intraloopID,rank,getPtID());
-      printer.print(std::chrono::duration_cast<ms>(interloop_time).count(),      interlooptime_label,interloopID,rank,getPtID());
-      printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
+      // Print timing data
+      if(dependencyResolver.printTiming())
+      {
+        int rank = printer.getRank();
+        printer.print(std::chrono::duration_cast<ms>(runtimeL).count(),            intralooptime_label,intraloopID,rank,getPtID());
+        printer.print(std::chrono::duration_cast<ms>(interloop_time).count(),      interlooptime_label,interloopID,rank,getPtID());
+        printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
+      }
+
     }
-
-    // Inform signal handling system of latest loop time, so it can compute sensible timeout values for sync attempts
-    // But only do it if the point was valid, since invalid points can be evaluated much faster, and we need to wait
-    // long enough for valid points to finish computing.
-    signaldata().update_looptime(std::chrono::duration_cast<ms>(runtimeL).count()); // A running average will be computed based on these.  
-
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
-
-    /// Re-block signals 
-    block_signals();    
 
     if(point_invalidated) printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
 

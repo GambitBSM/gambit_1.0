@@ -23,13 +23,13 @@ using namespace Gambit;
 using namespace LogTags;
 
 /// Cleanup function
-void do_cleanup() { 
-  if(signaldata().jumppoint_set)
-  {
-    Gambit::Scanner::Plugins::plugin_info.dump(); 
-  }
-  // No cleanup needed if jump point is not set, means the scan never began.
-}
+// void do_cleanup() { 
+//   if(signaldata().jumppoint_set)
+//   {
+//     Gambit::Scanner::Plugins::plugin_info.dump(); 
+//   }
+//   // No cleanup needed if jump point is not set, means the scan never began.
+// }
 
 #ifdef WITH_MPI
 bool use_mpi_abort = true; // Set later via inifile value
@@ -47,20 +47,20 @@ int main(int argc, char* argv[])
 
   { // Scope to ensure that all MPI communicators get destructed before Finalize is called.
 
-    // Set default signal handling in case they are received before initialisation occurs properly.
-    // Will just do a hard shutdown in that case, since there should be no scan data to worry about.
-    signal(SIGTERM, sighandler_hard_quiet);
-    signal(SIGINT,  sighandler_hard_quiet);
-    signal(SIGUSR1, sighandler_hard_quiet);
-    signal(SIGUSR2, sighandler_hard_quiet);
+    // Set up signal handling function
+    // We attempt a clean shutdown on any of these signals
+    signal(SIGTERM, sighandler_soft);
+    signal(SIGINT,  sighandler_soft);
+    signal(SIGUSR1, sighandler_soft);
+    signal(SIGUSR2, sighandler_soft);
 
-    // Add these signals to the list of signals to be blocked by global 
-    // block/unblock functions (see Utils/signal_helpers.hpp)
-    sigemptyset(signal_mask());
-    sigaddset(signal_mask(), SIGTERM);
-    sigaddset(signal_mask(), SIGINT);
-    sigaddset(signal_mask(), SIGUSR1);
-    sigaddset(signal_mask(), SIGUSR2);
+    // // Add these signals to the list of signals to be blocked by global 
+    // // block/unblock functions (see Utils/signal_helpers.hpp)
+    // sigemptyset(signal_mask());
+    // sigaddset(signal_mask(), SIGTERM);
+    // sigaddset(signal_mask(), SIGINT);
+    // sigaddset(signal_mask(), SIGUSR1);
+    // sigaddset(signal_mask(), SIGUSR2);
  
     #ifdef WITH_MPI
       /// Create an MPI communicator group for use by error handlers
@@ -101,18 +101,6 @@ int main(int argc, char* argv[])
       // Read YAML file, which also initialises the logger. 
       IniParser::IniFile iniFile;
       iniFile.readFile(filename);
-
-      // Check if user wants to disable automatic triggering of emergency 
-      // shutdown on signals received while shutdown is already in progress
-      YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
-      signaldata().ignore_signals_during_shutdown = true;
-      if(keyvalnode["signal_handling"]) {
-         YAML::Node signal_options = keyvalnode["signal_handling"];
-         if(signal_options["ignore_signals_during_shutdown"]) {
-            signaldata().ignore_signals_during_shutdown = signal_options["ignore_signals_during_shutdown"].as<bool>();
-         }
-      } // else use default value (true)
-      logger() << "ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << EOM;
 
       // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
       #ifdef WITH_MPI
@@ -164,45 +152,6 @@ int main(int argc, char* argv[])
         scanner_node["Scanner"] = iniFile.getScannerNode();
         scanner_node["Parameters"] = iniFile.getParametersNode();
         scanner_node["Priors"] = iniFile.getPriorsNode();
-        
-        // Signal handing can be set to trigger a longjmp back to here upon receiving some signal
-        signaldata().havejumped = setjmp(signaldata().env);
-        if(signaldata().havejumped)
-        {
-            std::ostringstream msg;
-            #ifdef WITH_MPI
-            msg << "rank "<<rank<<": ";
-            #endif
-            // Signals should be blocked if possible while scanners are doing anything
-            // sensitive, like writing resume data, otherwise we may have just left
-            // that data in an unreadable state. See Utils/signal_helpers.hpp. 
-            // We could try blocking all signals while we are outside of this function,
-            // but we may not be able to block them for long enough.
-            // We probably also should not touch MPI again after executing the jump,
-            // since only God knows what state it was left in.
-            msg << "Performed an emergency shutdown via longjmp! Data handled by external scanner" << endl;
-            #ifdef WITH_MPI
-            msg << "        ";
-            #endif
-            msg << "codes may have been left in an inconsistent state.";
-            do_cleanup();
-            throw HardShutdownException(msg.str()); 
-        }
-
-        // Check for user requests for shutdown methods used during signal handling
-        // We do this after the rest of the initialisation, because we want to use
-        // the default signal handling during that period.
-        logger() << core << "Waiting for all processes to be ready in order to start scan." << EOM;
-        std::cerr        << "Waiting for all processes to be ready in order to start scan." << std::endl;
-        scanComm.Barrier();
-        block_signals(); // No more interruptions allowed until scan starts properly
-
-        logger() << core << "Setting up signal handling" << std::endl;
-        signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
-        set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
-        set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
-        set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
-        set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
 
         //Create the master scan manager 
         Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
@@ -228,7 +177,6 @@ int main(int argc, char* argv[])
            cout << "GAMBIT has finished successfully!" << endl;
            cout << endl;
         }
-        unblock_signals();    
       }
     
     }
