@@ -51,7 +51,7 @@ namespace Gambit
     errorComm          (comm), 
     #endif
     min_valid_lnlike    (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
-    alt_min_valid_lnlike(iniFile.getValueOrDef<double>(min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")),
+    alt_min_valid_lnlike(iniFile.getValueOrDef<double>(2*min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")), 
     active_min_valid_lnlike(min_valid_lnlike), // can be switched to the alternate value by the scanner
     intralooptime_label("Runtime(ms) intraloop"),
     interlooptime_label("Runtime(ms) interloop"),
@@ -155,7 +155,7 @@ namespace Gambit
     if(check_for_switch_to_alternate_min_LogL())
     {
       active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
-      std::cerr << "using alt_min_valid_lnlike ("<<alt_min_valid_lnlike<<") instead of original value ("<<min_valid_lnlike<<")" << std::endl;
+      //std::cerr << "using alt_min_valid_lnlike ("<<alt_min_valid_lnlike<<") instead of original value ("<<min_valid_lnlike<<")" << std::endl; // Debugging
     }
 
     // Check for signals to abort run

@@ -105,6 +105,7 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Logs/logger.hpp"
 
 // MPI bindings
@@ -154,6 +155,12 @@ namespace Gambit
 
       DSetData(int r) : rank(r) {} 
     };
+
+    // Helper function to check for GAMBIT shutdown messages due to errors in other processes
+    void check_for_error_messages()
+    {
+      signaldata().check_for_emergency_shutdown_signal();
+    }
 
     // Helper function for iterating through HDF5 file during verification stage
     // TODO: OBSOLETE
@@ -753,7 +760,8 @@ namespace Gambit
         {
 #ifdef WITH_MPI
           // Everyone wait until the master finishes pre-processing of existing files
-          myComm.allWaitForMaster(PPFILES_PASS);
+          // Calls 'check_for_error_messages' function while waiting, in case master fails to process the files.
+          myComm.allWaitForMasterWithFunc(PPFILES_PASS, check_for_error_messages);
 #endif
         }
 
@@ -809,8 +817,9 @@ namespace Gambit
         if(myRank==0)
         {
 #ifdef WITH_MPI
-          // Signal that file preprocessing is complete
-          myComm.allWaitForMaster(PPFILES_PASS);
+          // Everyone wait until the master finishes pre-processing of existing files
+          // Calls 'check_for_error_messages' function while waiting, in case master fails to process the files.
+          myComm.allWaitForMasterWithFunc(PPFILES_PASS, check_for_error_messages);
 #endif
         }
 

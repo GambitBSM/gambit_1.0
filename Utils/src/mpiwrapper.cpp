@@ -203,7 +203,7 @@ namespace Gambit
 
 
 
-      /// Tells master to wait until all other processes pass this function, with the specified MPI tag
+      /// Tells all processes to wait until master passes this point before proceeding, with the specified MPI tag
       void Comm::allWaitForMaster(int tag)
       {
          std::size_t mpiSize = Get_size(); 
@@ -213,7 +213,6 @@ namespace Gambit
             if(myRank==0)
             {
                // Send to everyone that we have passed the checkpoint
-               // Check whether other processes have caught up yet
                for(std::size_t dest=1; dest<mpiSize; dest++)
                {
                   //std::cerr<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<dest<<std::endl;
@@ -228,6 +227,52 @@ namespace Gambit
                //std::cerr<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<0<<std::endl;
                Recv(&recv_buffer, 1, 0 /*source*/, tag);
                //std::cerr<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<0<<std::endl;
+            }
+         }
+         //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
+      }
+
+      /// Tells all processes to wait until master passes this point before proceeding, with the specified MPI tag
+      /// Calls "func" periodically while waiting (can be used to e.g. check for error messages from other processes)
+      void Comm::allWaitForMasterWithFunc(int tag, void (*func)())
+      {
+         std::size_t mpiSize = Get_size(); 
+         std::size_t myRank  = Get_rank();
+         if(mpiSize>1)
+         {
+            if(myRank==0)
+            {
+               // Send to everyone that we have passed the checkpoint
+               for(std::size_t dest=1; dest<mpiSize; dest++)
+               {
+                  //std::cerr<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<dest<<std::endl;
+                  Isend(&null_send_buffer, 1, dest, tag, &req_null);
+               }
+            }
+            else
+            {
+               bool message_received = false;
+               struct timespec sleeptime;
+               sleeptime.tv_sec = 0;
+               sleeptime.tv_nsec = 10*1e6; // 10 millisecond wait time between loops should be reasonable
+
+               // Now, loop and wait for all other processes to send their own entering signals
+               while(not message_received)
+               {
+                  if( Iprobe(0 /*source*/, tag, &status) )
+                  {
+                    int recv_buffer = 0; // To receive the null message
+                    Recv(&recv_buffer, 1, 0 /*source*/, tag);
+                    message_received = true;
+                  }
+ 
+                  if(not message_received)
+                  {
+                    // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
+                    (*func)(); // Call the user-supplied function
+                    nanosleep(&sleeptime,NULL);
+                  }
+               }
             }
          }
          //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
