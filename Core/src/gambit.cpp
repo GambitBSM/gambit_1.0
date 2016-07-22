@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
         cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
       }
       #ifdef WITH_MPI
-      signaldata().broadcast_shutdown_signal(SignalData::EMERGENCY_SHUTDOWN);
+      signaldata().broadcast_shutdown_signal();
       signaldata().discard_excess_shutdown_messages();
       GMPI::FinalizeWithTimeout(use_mpi_abort);
       #endif     
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
       cout << "exceptions that inherit from std::exception.  Error string: " << endl;
       cout << e << endl;
       #ifdef WITH_MPI
-      signaldata().broadcast_shutdown_signal(SignalData::EMERGENCY_SHUTDOWN);
+      signaldata().broadcast_shutdown_signal();
       signaldata().discard_excess_shutdown_messages();
       GMPI::FinalizeWithTimeout(use_mpi_abort);
       #endif     

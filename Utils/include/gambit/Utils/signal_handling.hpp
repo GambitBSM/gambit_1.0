@@ -120,6 +120,10 @@ namespace Gambit
        /// Broadcast emergency shutdown command to all processes, or abort if set to do so
        /// (calls broadcast_shutdown_signal, just does extra things as well)
        void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
+
+       /// Broadcast signal to shutdown all processes
+       /// By default sends emergency shutdown code.
+       void broadcast_shutdown_signal(int shutdown_code=EMERGENCY_SHUTDOWN);
  
        /// Absorb any extra shutdown messages that may be unreceived (for cleanup before MPI_Finalize)
        void discard_excess_shutdown_messages();
@@ -172,11 +176,7 @@ namespace Gambit
        static const int SOFT_SHUTDOWN = 1;
        static const int EMERGENCY_SHUTDOWN = 2;
        static std::string shutdown_name(int shutdown_code);
- 
-       /// Broadcast signal to shutdown all processes
-       /// By default sends emergency shutdown code.
-       void broadcast_shutdown_signal(int shutdown_code=EMERGENCY_SHUTDOWN);
-       
+        
        /// Flag to check if shutdown message has already been broadcast
        bool shutdown_broadcast_done;
 
