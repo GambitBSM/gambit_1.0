@@ -450,7 +450,9 @@ namespace Gambit
               errmsg << "This most likely indicates a bug in the HDF5printer, but could indicate corruption of the datasets (possibly due to unsafe shutdown). Please report it.";
               printer_error().raise(LOCAL_INFO, errmsg.str());
             }
-            
+ 
+            std::cerr<<"rank "<<getRank()<<":    Entry (valid="<<pIDvalid_chunk[j]<<"): rank="<<rank_chunk[j]<<" , pointID="<<pID_chunk[j]<<std::endl;
+           
             // Continue only if entry is marked as "valid" and corresponds to our rank
             if(rankvalid_chunk[j] and rank_chunk[j]==getRank())
             {
