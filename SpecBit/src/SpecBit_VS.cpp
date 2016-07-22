@@ -40,7 +40,7 @@
 
 
 // Switch for debug mode
-//#define SPECBIT_DEBUG
+#define SPECBIT_DEBUG
 
 namespace Gambit
 {
@@ -72,6 +72,7 @@ namespace Gambit
     {
     runto = pow(10,step*float(i+1.0)); // scale to run spectrum to
     if (runto<100){runto=200.0;}// avoid running to low scales
+    
   
     SingletDM -> RunToScale(runto);
    
@@ -126,6 +127,7 @@ namespace Gambit
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
+    if (scale>1e21){scale=1e21;}// avoid running to high scales
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
                                                                 // into a non-perturbative scale and thus the spectrum is no longer reliable
     SingletDM -> RunToScale(scale);
@@ -155,7 +157,7 @@ namespace Gambit
       // three scales at which we choose to run the quartic coupling up to, and then use a Lagrange interpolating polynomial
       // to get an estimate for the location of the minimum, this is an efficient way to narrow down over a huge energy range
       double u_1=1;
-      double u_2=10;
+      double u_2=5;
       double u_3=12;
       double lambda_1,lambda_2,lambda_3;
       double lambda_min =0 , fu =0 , u = 0  ;
@@ -191,12 +193,16 @@ namespace Gambit
       lambda_2 = run_lambda(fullspectrum, pow(10,u_2));
       lambda_3 = run_lambda(fullspectrum, pow(10,u_3));
 
-      
+      cout << "lambda = " << lambda_1 << " " << lambda_2 << " " << lambda_3 << endl;
+      cout << "u = " << u_1 << " "  << u_2 << " " << u_3 << endl;
       double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
-      min_u=(min_u/( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2)))/2;
+      double denominator = ( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2));
+      cout << "denominator = " << denominator << endl;
+      min_u=0.5*(min_u/denominator);
       u_1=min_u-2/(pow(float(i),0.01)); // repeat this process twice, can adjust how close we go around min_u (the estimated minimum) each time
       u_2=min_u;
       u_3=min_u+2/(pow(float(i),0.01));
+      cout << "min_u = " << min_u << endl;
       }
       // run downhill minimization routine to find exact minimum
       double ax=pow(10,u_1);
