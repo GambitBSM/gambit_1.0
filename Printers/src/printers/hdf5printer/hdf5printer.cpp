@@ -361,10 +361,10 @@ namespace Gambit
        // Interfaces for the datasets
        // Make sure the types used here don't get out of sync with the types used to write the original datasets
        // We open the datasets in "resume" mode to access existing dataset, and make "const" to disable writing of new data. i.e. "Read-only" mode.
-       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "MPIrank", true); 
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "MPIrank_isvalid", true); 
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "pointID", true);
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "pointID_isvalid", true);
+       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "pointID", true);        
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "pointID_isvalid", true);
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "MPIrank", true); 
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "MPIrank_isvalid", true); 
 
        // Error check lengths. This should already have been done for all datasets in the group, but
        // we will double-check these four here.
