@@ -20,7 +20,7 @@ Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
          #range: [160.071,160.071]
-         range: [173,173]
+         range: [173.34,173.34]
          #prior_type: flat
 
       # SLHA1
@@ -64,14 +64,14 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [164.179,164.179]
+        range: [166.499,166.499]
         #prior_type: flat
       QEWSB: 173
 
 
     SingletDM:
-      mS: 61.9944
-      lambda_hS: 1.70219 #0.30
+      mS: 1901.14
+      lambda_hS: 0.0573671 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000

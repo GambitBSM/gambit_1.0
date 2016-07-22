@@ -193,16 +193,16 @@ namespace Gambit
       lambda_2 = run_lambda(fullspectrum, pow(10,u_2));
       lambda_3 = run_lambda(fullspectrum, pow(10,u_3));
 
-      cout << "lambda = " << lambda_1 << " " << lambda_2 << " " << lambda_3 << endl;
-      cout << "u = " << u_1 << " "  << u_2 << " " << u_3 << endl;
+      
+      
       double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
       double denominator = ( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2));
-      cout << "denominator = " << denominator << endl;
+      
       min_u=0.5*(min_u/denominator);
       u_1=min_u-2/(pow(float(i),0.01)); // repeat this process twice, can adjust how close we go around min_u (the estimated minimum) each time
       u_2=min_u;
       u_3=min_u+2/(pow(float(i),0.01));
-      cout << "min_u = " << min_u << endl;
+      
       }
       // run downhill minimization routine to find exact minimum
       double ax=pow(10,u_1);
