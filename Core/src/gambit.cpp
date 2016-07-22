@@ -235,6 +235,27 @@ int main(int argc, char* argv[])
      return EXIT_SUCCESS;
     }
 
+    /// Shut down due receipt of MPI emergency shutdown message
+    catch (const MPIShutdownException& e)
+    {
+      if (not logger().disabled())
+      {
+        std::ostringstream ss;
+        ss << e.what() << endl;
+        #ifdef WITH_MPI
+        ss << "rank "<<rank<<": ";
+        #endif
+        ss << "GAMBIT has shutdown due to an error on another process." << endl;
+        cout     << ss.str();    
+        logger() << ss.str() << EOM;
+        #ifdef WITH_MPI
+        signaldata().discard_excess_shutdown_messages();
+        GMPI::FinalizeWithTimeout(use_mpi_abort); // Do we need to move this outside the main scope to destruct all the MPI communicator objects first?
+        #endif     
+      }
+      return EXIT_FAILURE;
+    }
+
     catch (const std::exception& e)
     {
       if (not logger().disabled())
@@ -243,7 +264,9 @@ int main(int argc, char* argv[])
         cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
       }
       #ifdef WITH_MPI
-      signaldata().do_emergency_MPI_shutdown(use_mpi_abort);
+      signaldata().broadcast_shutdown_signal(SignalData::EMERGENCY_SHUTDOWN);
+      signaldata().discard_excess_shutdown_messages();
+      GMPI::FinalizeWithTimeout(use_mpi_abort);
       #endif     
       return EXIT_FAILURE;  
     }
@@ -258,7 +281,9 @@ int main(int argc, char* argv[])
       cout << "exceptions that inherit from std::exception.  Error string: " << endl;
       cout << e << endl;
       #ifdef WITH_MPI
-      signaldata().do_emergency_MPI_shutdown(use_mpi_abort);
+      signaldata().broadcast_shutdown_signal(SignalData::EMERGENCY_SHUTDOWN);
+      signaldata().discard_excess_shutdown_messages();
+      GMPI::FinalizeWithTimeout(use_mpi_abort);
       #endif     
       return EXIT_FAILURE;  
     }

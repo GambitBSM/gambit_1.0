@@ -509,12 +509,12 @@ namespace Gambit
      {
        logger() << LogTags::core << LogTags::info << "Broadcasting emergency shutdown signal to all processes" << EOM;
        broadcast_shutdown_signal(EMERGENCY_SHUTDOWN);
-       if(use_mpi_abort)      
-       {
-         // Another desperate attempt to kill all process, also not guaranteed to succeed
-         logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
-         signalComm->Abort();
-       }
+       //if(use_mpi_abort)      
+       //{
+       //  // Another desperate attempt to kill all process, also not guaranteed to succeed
+       //  logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
+       //  signalComm->Abort();
+       //}
        // debugging; delay shutdown of process to prevent OpenMPI from automatically killing other processes
        // struct timespec sleep_time;
        // sleep_time.tv_sec  = 1;

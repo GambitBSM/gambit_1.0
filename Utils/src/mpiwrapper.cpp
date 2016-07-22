@@ -254,7 +254,7 @@ namespace Gambit
                bool message_received = false;
                struct timespec sleeptime;
                sleeptime.tv_sec = 0;
-               sleeptime.tv_nsec = 10*1e6; // 10 millisecond wait time between loops should be reasonable
+               sleeptime.tv_nsec = 100*1e6; // 100 millisecond wait time between loops should be reasonable
                MPI_Status status;
 
                // Now, loop and wait for all other processes to send their own entering signals
@@ -711,6 +711,34 @@ namespace Gambit
           MPI_Finalize();
         }
       }
+
+      // Finalize MPI, also check for pending messages as these could cause MPI_Finalize() to hang,
+      // but call MPI_abort and exit if timeout is exceeded 
+      void FinalizeWithTimeout(bool use_mpi_abort)
+      {
+        if(not Is_finalized() and Is_initialized())
+        {
+          Comm COMM_WORLD;
+          std::chrono::seconds timeout(10); // TODO: Perhaps make longer 
+          if( COMM_WORLD.BarrierWithTimeout(timeout, 6666) ) // TODO: decide on tag in a safer way
+          {
+            // Doh timed out
+            if(use_mpi_abort)
+            { 
+              #ifdef MPI_DEBUG_OUTPUT
+              std::cerr << "rank " << COMM_WORLD.Get_rank() << ": FinalizeWithTimeout failed to sync for clean MPI shutdown, calling MPI_Abort..." << std::endl;
+              #endif
+              COMM_WORLD.Abort();
+            }
+          }
+          else
+          {
+            // Hurrah, we synced, now call the real finalize, it should succeed
+            MPI_Finalize();
+          }
+        }
+      }
+
    }
 }
 
