@@ -255,6 +255,7 @@ namespace Gambit
                struct timespec sleeptime;
                sleeptime.tv_sec = 0;
                sleeptime.tv_nsec = 10*1e6; // 10 millisecond wait time between loops should be reasonable
+               MPI_Status status;
 
                // Now, loop and wait for all other processes to send their own entering signals
                while(not message_received)

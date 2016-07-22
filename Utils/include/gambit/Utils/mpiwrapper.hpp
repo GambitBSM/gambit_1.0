@@ -371,7 +371,7 @@ namespace Gambit
             void allWaitForMaster(int tag);
 
             /// Everyone waits for master to pass this, and runs "func" periodically while waiting
-            void allWaitForMasterWithFunc(int tag, void (*func)())
+            void allWaitForMasterWithFunc(int tag, void (*func)());
 
             /// An implementation of Barrier that will fall through if synchronisation takes too long
             /// Could modify to take a function pointer to run while waiting.
