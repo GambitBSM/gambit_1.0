@@ -155,6 +155,7 @@ namespace Gambit
     if(check_for_switch_to_alternate_min_LogL())
     {
       active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
+      std::cerr << "using alt_min_valid_lnlike ("<<alt_min_valid_lnlike<<") instead of original value ("<<min_valid_lnlike<<")" << std::endl;
     }
 
     // Check for signals to abort run
