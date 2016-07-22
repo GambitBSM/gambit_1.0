@@ -394,13 +394,18 @@ namespace Gambit
        if(REMAINDER==0) { NCHUNKIT = NCHUNKS; }
        else             { NCHUNKIT = NCHUNKS+1; } // Need an extra iteration to deal with incomplete chunk
 
+       std::cerr<<"Begining iteration through existing HDF5 output for rank "<<getRank()<<", searching for previous highest pointID."<<std::endl;
+
        // Iterate through dataset in chunks
        for(std::size_t i=0; i<NCHUNKIT; ++i)
        {
           std::size_t offset = i*CHUNKLENGTH; 
           std::size_t length;
+
           if(i==NCHUNKS){ length = REMAINDER; }
           else          { length = CHUNKLENGTH; }
+
+          std::cerr<<"rank "<<getRank()<<": chunk "<<i<<": reading entries "<<offset<<" to "<<offset+length<<"."<<std::endl;
 
           const std::vector<unsigned long> pID_chunk = pointIDs.get_chunk(offset,length);
           const std::vector<int> pIDvalid_chunk  = pointIDs_isvalid.get_chunk(offset,length);
@@ -453,6 +458,7 @@ namespace Gambit
               if(pID_chunk[j] > highest_pointID)
               {
                 highest_pointID = pID_chunk[j];
+                std::cerr<<"rank "<<getRank()<<": new highest pointID found = "<<highest_pointID<<std::endl;
               }
             } 
             // else continue iteration
@@ -798,7 +804,7 @@ namespace Gambit
             std::chrono::duration<double> time_taken = end - start;
             highest = highest_PPID.pointID;
 
-            logger() << LogTags::info << "Extracted highest pointID reached rank "<<myRank<<" process during previous scan (it was "<<highest<<") from combined output. Operation took "<<std::chrono::duration_cast<std::chrono::seconds>(time_taken).count()<<" seconds." << EOM; 
+            logger() << LogTags::info << "Extracted highest pointID reached by rank "<<myRank<<" process during previous scan (it was "<<highest<<") from combined output. Operation took "<<std::chrono::duration_cast<std::chrono::seconds>(time_taken).count()<<" seconds." << EOM; 
 
             // Cleanup
             HDF5::closeGroup(group_id);
