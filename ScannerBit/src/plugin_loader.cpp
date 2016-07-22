@@ -534,7 +534,7 @@ namespace Gambit
                     }
                 }
                 
-                printer->finalise(true);
+                printer->finalise(true); //"true" flag for "abnormal" stop; i.e. run is not completely finished
                 #ifdef WITH_MPI 
                   std::cout << "rank " << getRank() <<": ";
                 #endif
