@@ -37,7 +37,7 @@ Scanner:
       plugin: MultiNest
       like:  LogLike
       nlive: 10000
-      updInt: 5000
+      updInt: 100
       tol: 1e-2
       mmodal: 0
       # write native MultiNest ascii output files?

@@ -46,7 +46,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 1000
+      NP: 100000
       #path: "diver_native"
       verbosity: 1
                     
@@ -75,6 +75,9 @@ Logger:
 KeyValues:
 
   default_output_path: "runs/spartan_diver_hdf5/"
+
+  signal_handling:
+    SIGINT : "soft_shutdown" #"emergency_shutdown"    # default: emergency_shutdown; using soft shutdown for testing
 
   rng: ranlux48
 

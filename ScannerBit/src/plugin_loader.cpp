@@ -562,7 +562,7 @@ namespace Gambit
               #ifdef WITH_MPI
               , scannerComm(NULL), MPIdata_is_init(false)
               #endif
-              , earlyShutdownInProgess(false) 
+              , earlyShutdownInProgress(false) 
             {}
 
             #ifdef WITH_MPI
