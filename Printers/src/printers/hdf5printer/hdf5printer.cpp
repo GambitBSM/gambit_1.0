@@ -394,7 +394,7 @@ namespace Gambit
        if(REMAINDER==0) { NCHUNKIT = NCHUNKS; }
        else             { NCHUNKIT = NCHUNKS+1; } // Need an extra iteration to deal with incomplete chunk
 
-       std::cerr<<"Begining iteration through existing HDF5 output for rank "<<getRank()<<", searching for previous highest pointID."<<std::endl;
+       logger()<<"Begining iteration through existing HDF5 output for rank "<<getRank()<<", searching for previous highest pointID."<<EOM;
 
        // Iterate through dataset in chunks
        for(std::size_t i=0; i<NCHUNKIT; ++i)
@@ -405,7 +405,7 @@ namespace Gambit
           if(i==NCHUNKS){ length = REMAINDER; }
           else          { length = CHUNKLENGTH; }
 
-          std::cerr<<"rank "<<getRank()<<": chunk "<<i<<": reading entries "<<offset<<" to "<<offset+length<<"."<<std::endl;
+          logger()<<"rank "<<getRank()<<": chunk "<<i<<": reading entries "<<offset<<" to "<<offset+length<<"."<<EOM;
 
           const std::vector<unsigned long> pID_chunk = pointIDs.get_chunk(offset,length);
           const std::vector<int> pIDvalid_chunk  = pointIDs_isvalid.get_chunk(offset,length);
@@ -451,7 +451,7 @@ namespace Gambit
               printer_error().raise(LOCAL_INFO, errmsg.str());
             }
  
-            std::cerr<<"rank "<<getRank()<<":    Entry (valid="<<pIDvalid_chunk[j]<<"): rank="<<rank_chunk[j]<<" , pointID="<<pID_chunk[j]<<std::endl;
+            //std::cerr<<"rank "<<getRank()<<":    Entry (valid="<<pIDvalid_chunk[j]<<"): rank="<<rank_chunk[j]<<" , pointID="<<pID_chunk[j]<<std::endl;
            
             // Continue only if entry is marked as "valid" and corresponds to our rank
             if(rankvalid_chunk[j] and rank_chunk[j]==getRank())
@@ -460,7 +460,7 @@ namespace Gambit
               if(pID_chunk[j] > highest_pointID)
               {
                 highest_pointID = pID_chunk[j];
-                std::cerr<<"rank "<<getRank()<<": new highest pointID found = "<<highest_pointID<<std::endl;
+                //std::cerr<<"rank "<<getRank()<<": new highest pointID found = "<<highest_pointID<<std::endl;
               }
             } 
             // else continue iteration
