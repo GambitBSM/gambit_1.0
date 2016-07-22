@@ -295,6 +295,15 @@ namespace Gambit
     private:
       std::string myWhat;
   };
+  /// Special exception raised when emergency shutdown triggered via MPI
+  class MPIShutdownException : public std::exception
+  {
+    public:
+      MPIShutdownException(const std::string& message);
+      virtual const char* what() const throw();
+    private:
+      std::string myWhat;
+  };
 
   /// Global instance of piped invalid point class.
   extern Piped_invalid_point piped_invalid_point;
