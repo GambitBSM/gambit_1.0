@@ -353,7 +353,7 @@ namespace Gambit
     // there will be still be matching old-process ranks for all of the new ranks.
     PPIDpair HDF5Printer::get_highest_PPID_from_HDF5(hid_t group_id)
     {
-       std::size_t highest_pointID = -1; // Highest ID found so far
+       std::size_t highest_pointID = 0; // Highest ID found so far
 
        // Chunking variables
        static const std::size_t CHUNKLENGTH = 1000; // Should be a reasonable value
