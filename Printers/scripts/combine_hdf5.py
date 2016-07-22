@@ -81,14 +81,14 @@ def check_for_duplicates(fout,group):
    error = False
    for ID,p,r in zip(ids,pid,rank):
       if(p==1 and r==0):
-         print "   Detected entry ({0},{1})".format(p,r)
+         print "   Spotted first entry ({0},{1})".format(r,p)
       Nmatches = np.sum(ID==ids)
       if Nmatches>1:
          print "   Error!", ID, "is duplicated {0} times!".format(Nmatches)
          error = True
          Match = np.sum((p==pid) & (r==rank))
          if Match>1:
-           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(p,r,Match)
+           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(r,p,Match)
       if error==True:
          raise ValueError("Duplicates detected in output dataset!")
 
@@ -248,6 +248,10 @@ for fname in fnames:
          if dset_length==None:
             dset_length=item.shape[0]        
          #Do the copy
+         if runchecks:
+           print "Checking {0}[{1}] for duplicate entries".format(fname,group)
+           check_for_duplicates(fin,group) 
+           print "No duplicates, proceeding with copy" 
          copy_dset(item,gout[itemname],nextempty)
    if(dset_length==None):
       print "No sync dsets found! Nothing copied!"
