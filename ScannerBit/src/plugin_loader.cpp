@@ -538,7 +538,7 @@ namespace Gambit
                 #ifdef WITH_MPI 
                   std::cout << "rank " << getRank() <<": ";
                 #endif
-                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
+                std::cout << "Gambit has written resume data to disk, preparing to stop!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()
