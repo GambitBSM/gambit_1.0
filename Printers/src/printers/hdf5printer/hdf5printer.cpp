@@ -159,7 +159,7 @@ namespace Gambit
     // Helper function to check for GAMBIT shutdown messages due to errors in other processes
     void check_for_error_messages()
     {
-      signaldata().check_for_emergency_shutdown_signal();
+      signaldata().check_for_shutdown_signal();
     }
 
     // Helper function for iterating through HDF5 file during verification stage

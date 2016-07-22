@@ -350,6 +350,10 @@ namespace Gambit
          }
          broadcast_shutdown_signal(shutdown_code);
        }
+       else if(emergency)
+       {
+         throw MPIShutdownException("Received emergency shutdown command via MPI! Terminating run."); 
+       }
        #endif
        // Go to emergency shutdown routine if needed
        check_for_emergency_shutdown_signal();
@@ -408,8 +412,7 @@ namespace Gambit
    }
    #endif
 
-   /// Only check for emergency shutdown signals (i.e. do not attempt synchronisation)
-   /// TODO: Need to clean this up to ensure that it isn't called except due to MPI message 
+   /// Only check for emergency shutdown signals (i.e. do not attempt synchronisation) 
    void SignalData::check_for_emergency_shutdown_signal()
    {
      logger() << "Checking if emergency shutdown is required" << EOM;
@@ -426,7 +429,7 @@ namespace Gambit
           }
        }
        call_cleanup();
-       throw MPIShutdownException("Emergency shutdown command received via MPI"); 
+       throw HardShutdownException("Emergency shutdown signal detected"); 
      }
    }
 
