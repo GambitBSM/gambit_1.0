@@ -164,7 +164,7 @@ namespace Gambit
     {
       // Once soft shutdown signal is received, we give the scanner code one chance to shut itself down (ending the Run() routine called in gambit.cpp). If it cannot do this then we will get control back next loop, and attempt to shut things down from the outside. TODO: Allow scanners to set a flag to completely disable the gambit "intervention" in shutdown.
       tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
-      lnlike = active_min_valid_lnlike;
+      lnlike = alt_min_valid_lnlike; // Always use this larger value to avoid scanner deadlocks
       point_invalidated = true;
       logger() << "Shutdown in progess! Returning min_valid_lnlike to ScannerBit instead of computing likelihood." << EOM;
     }
