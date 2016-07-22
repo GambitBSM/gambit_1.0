@@ -240,6 +240,11 @@ for fname in fnames:
    print "   {0}".format(outfname)
    fin = files[fname]
 
+   if runchecks:
+     print "Checking {0}[{1}] for duplicate entries".format(fname,group)
+     check_for_duplicates(fin,group) 
+     print "No duplicates, proceeding with copy" 
+
    dset_length=None
    for itemname in fin[group]: 
       item = fin[group][itemname]
@@ -248,10 +253,6 @@ for fname in fnames:
          if dset_length==None:
             dset_length=item.shape[0]        
          #Do the copy
-         if runchecks:
-           print "Checking {0}[{1}] for duplicate entries".format(fname,group)
-           check_for_duplicates(fin,group) 
-           print "No duplicates, proceeding with copy" 
          copy_dset(item,gout[itemname],nextempty)
    if(dset_length==None):
       print "No sync dsets found! Nothing copied!"
