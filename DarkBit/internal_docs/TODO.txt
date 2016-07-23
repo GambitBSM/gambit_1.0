@@ -24,11 +24,13 @@ Urgent (for production runs):
 Before internal paper review:
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
+- Update nuclear parameter best fit value discussion [JC] [Added by JC]
 - Update likelihood technical details in physics papers [all]
 - Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- <sigma v>_eff plots [JC]
 - Update cascade code discussions in paper to new treatment [CW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
@@ -58,12 +60,17 @@ After internal paper review started:
 - Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
+— Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
+- Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
 
 Before release:
 - Clean up header and src files from old mess [CW]
 - Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
+- MicrOmegas MSSM diskless initialization [JC] [Added by JC]
+— Upgrade MicrOmegas to most recent version [JC] [Added by JC]
+— Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
   open annihilation channels
 - Use singlet scalar spectrum object (which is not existing up to now)
