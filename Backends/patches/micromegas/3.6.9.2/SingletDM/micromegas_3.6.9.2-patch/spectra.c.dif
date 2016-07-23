@@ -1,8 +1,0 @@
-335c335
-< static int readSpectra(void)
----
-> int readSpectra(void)
-424c424
-< static void mInterp(double Nmass,  int  CHin,int  CHout, double*tab)
----
-> void mInterp(double Nmass,  int  CHin,int  CHout, double*tab)
