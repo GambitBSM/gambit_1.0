@@ -61,7 +61,6 @@ namespace Gambit
      : jumppoint_set(false)
      , havejumped(1) // set to zero after jump point set
      , cleanup_function_set(false)
-     , ignore_signals_during_shutdown(1) 
      , rank(-1)
      , MPIsize(1)
      , shutdownBegun(0)
@@ -169,7 +168,7 @@ namespace Gambit
 
    /// Check if shutdown is in progress
    bool SignalData::shutdown_begun() { return shutdownBegun; }
-   bool SignalData::emergency_shutdown_begun() { return shutdownBegun & emergency; }
+   //bool SignalData::emergency_shutdown_begun() { return shutdownBegun & emergency; }
 
    /// Attempt to synchronise all processes, but abort if it takes too long
    bool SignalData::all_processes_ready()
@@ -360,7 +359,7 @@ namespace Gambit
        // and then shut down.
        //attempt_soft_shutdown();
      }
-     return answer;
+     return shutdown_begun();
    }
 
    // OBSOLETE
@@ -669,76 +668,77 @@ namespace Gambit
 
    /// @{ Components of emergency signal handler
 
+   // OBSOLETE
    /// Calls cleanup and exits            
-   void sub_sighandler_emergency(int sig)
-   {
-     // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
-     if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
-     if(signaldata().shutdown_begun())
-     {
-       #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().myrank()<<": ";
-       #endif
-       std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
-       sighandler_hard(sig); // calls exit(sig)
-     }
-     signaldata().set_shutdown_begun(1);
-     signaldata().add_signal(sig);
+   // void sub_sighandler_emergency(int sig)
+   // {
+   //   // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
+   //   if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
+   //   if(signaldata().shutdown_begun())
+   //   {
+   //     #ifdef WITH_MPI
+   //     std::cerr << "rank "<<signaldata().myrank()<<": ";
+   //     #endif
+   //     std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
+   //     sighandler_hard(sig); // calls exit(sig)
+   //   }
+   //   signaldata().set_shutdown_begun(1);
+   //   signaldata().add_signal(sig);
 
-     // Was for debugging; however, I think that we have the following situation:
-     // OpenMP creates a team of worker threads when the first parallel block executes
-     // HOWEVER, it does not rejoin them; they just sit around idle until next called 
-     // upon to do work.
-     // When a signal is sent to the program, generally (in Linux) the root thread will get
-     // first crack at receiving the signal. However, if it cannot for some reason, then
-     // the other threads get a try (I have found this seems to happen when gambit is
-     // waiting at an MPI_Barrier; I think it is a busy wait, or signals are blocked or
-     // something by openMPI).
-     // Next, I theorize that omp_get_level() returns non-zero ALWAYS in the worker threads,
-     // even if they are idle. I cannot find documentation to confirm this, but I think
-     // this is my most plausible theory of what is going on. Anyway, in such cases, this
-     // if statement is triggered even when we are not inside an 'omp parallel' block.
-     // I think the cleanup also goes badly if it is triggered from one of the worker
-     // threads with the main thread still sitting at some MPI barrier. However, we
-     // may have no choice but to just attempt the shutdown anyway, and hope for the best
-     // This is another reason why SIGUSR1 or 2 should be sent, and SIGINT or SIGTERM
-     // left as absolute last resorts.
-     //
-     // This behaviour can be easily reproduced by running
-     //   OMP_NUM_THREADS=2 mpirun -n 2 terminator -x gdb --args ./gambit -f threadsafe_logger_test.yaml
-     // r             (both processes) 
-     // <CTRL-C>      (process A)
-     // signal SIGINT (process A)
-     // <CTRL-C>      (process B)
-     // signal SIGINT (process B)
-     //
-     // if(omp_get_level()!=0)
-     // {
-     //   std::cerr << signaldata().display_received_signals();
-     //   #ifdef WITH_MPI
-     //   std::cerr << "rank "<<signaldata().myrank()<<": ";
-     //   #endif
-     //   std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
-     //   std::cerr << "  variable dump: " << std::endl;
-     //   std::cerr << "  signaldata().shutdown_begun() = " << signaldata().shutdown_begun() << std::endl;
-     //   std::cerr << "  signaldata().ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << std::endl;
-     //   std::cerr << "  signaldata().inside_multithreaded_region() = " << signaldata().inside_multithreaded_region() << std::endl;
-     //   std::cerr << std::endl;
-     //   abort(); // trigger core dump
-     //   //exit(EXIT_FAILURE);
-     // }
-     signaldata().call_cleanup(); // Try to cleanup, though behaviour may be undefined.
-     std::ostringstream ss;
-     #ifdef WITH_MPI
-     ss << "rank "<<signaldata().myrank()<<": ";
-     #endif
-     ss << "Gambit has performed an emergency shutdown!" << std::endl;
-     ss << signaldata().display_received_signals();
-     ss << std::endl;
-     std::cerr << ss.str();
-     logger() << ss.str() << EOM;
-     exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
-   }
+   //   // Was for debugging; however, I think that we have the following situation:
+   //   // OpenMP creates a team of worker threads when the first parallel block executes
+   //   // HOWEVER, it does not rejoin them; they just sit around idle until next called 
+   //   // upon to do work.
+   //   // When a signal is sent to the program, generally (in Linux) the root thread will get
+   //   // first crack at receiving the signal. However, if it cannot for some reason, then
+   //   // the other threads get a try (I have found this seems to happen when gambit is
+   //   // waiting at an MPI_Barrier; I think it is a busy wait, or signals are blocked or
+   //   // something by openMPI).
+   //   // Next, I theorize that omp_get_level() returns non-zero ALWAYS in the worker threads,
+   //   // even if they are idle. I cannot find documentation to confirm this, but I think
+   //   // this is my most plausible theory of what is going on. Anyway, in such cases, this
+   //   // if statement is triggered even when we are not inside an 'omp parallel' block.
+   //   // I think the cleanup also goes badly if it is triggered from one of the worker
+   //   // threads with the main thread still sitting at some MPI barrier. However, we
+   //   // may have no choice but to just attempt the shutdown anyway, and hope for the best
+   //   // This is another reason why SIGUSR1 or 2 should be sent, and SIGINT or SIGTERM
+   //   // left as absolute last resorts.
+   //   //
+   //   // This behaviour can be easily reproduced by running
+   //   //   OMP_NUM_THREADS=2 mpirun -n 2 terminator -x gdb --args ./gambit -f threadsafe_logger_test.yaml
+   //   // r             (both processes) 
+   //   // <CTRL-C>      (process A)
+   //   // signal SIGINT (process A)
+   //   // <CTRL-C>      (process B)
+   //   // signal SIGINT (process B)
+   //   //
+   //   // if(omp_get_level()!=0)
+   //   // {
+   //   //   std::cerr << signaldata().display_received_signals();
+   //   //   #ifdef WITH_MPI
+   //   //   std::cerr << "rank "<<signaldata().myrank()<<": ";
+   //   //   #endif
+   //   //   std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
+   //   //   std::cerr << "  variable dump: " << std::endl;
+   //   //   std::cerr << "  signaldata().shutdown_begun() = " << signaldata().shutdown_begun() << std::endl;
+   //   //   std::cerr << "  signaldata().ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << std::endl;
+   //   //   std::cerr << "  signaldata().inside_multithreaded_region() = " << signaldata().inside_multithreaded_region() << std::endl;
+   //   //   std::cerr << std::endl;
+   //   //   abort(); // trigger core dump
+   //   //   //exit(EXIT_FAILURE);
+   //   // }
+   //   signaldata().call_cleanup(); // Try to cleanup, though behaviour may be undefined.
+   //   std::ostringstream ss;
+   //   #ifdef WITH_MPI
+   //   ss << "rank "<<signaldata().myrank()<<": ";
+   //   #endif
+   //   ss << "Gambit has performed an emergency shutdown!" << std::endl;
+   //   ss << signaldata().display_received_signals();
+   //   ss << std::endl;
+   //   std::cerr << ss.str();
+   //   logger() << ss.str() << EOM;
+   //   exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
+   // }
 
    /// Similar to the above, but does a longjmp to wherever has been set.
    /// For the Gambit likelihood container, this should just jump out of
@@ -748,53 +748,55 @@ namespace Gambit
    /// (unless something goes wrong). Whatever we were just doing will still
    /// be left in an inconsistent state, however.
 
+   // OBSOLETE
    /// Performs longjmp to code which performs cleanup and exits
-   void sub_sighandler_emergency_longjmp(int sig)
-   {
-     // We will avoid touching streams in this shutdown mode since technically it is undefined behaviour, so no messages here.
-     // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
-     if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
-     if(signaldata().shutdown_begun())
-     {
-       #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().myrank()<<": ";
-       #endif
-       std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown via longjmp, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
-       sighandler_hard(sig); // calls exit(sig)
-     }
-     signaldata().set_shutdown_begun(1);
-     signaldata().add_signal(sig);
-     if(signaldata().havejumped) 
-     {
-       std::ostringstream ss;
-       #ifdef WITH_MPI
-       ss << "rank "<<signaldata().myrank()<<": ";
-       #endif
-       ss << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! No jump point has been set, or jump has already occurred once! (Either is a bug; should not be able to reach this point if jump occurred already)" << std::endl;
-       ss << signaldata().display_received_signals();
-       std::cerr << ss.str();
-       logger() << ss.str() << EOM;
-       exit(EXIT_FAILURE);
-     }
-     // See sub_sighandler_emergency for why we should not do this check
-     //if(omp_get_level()!=0)
-     //{
-     //  std::cerr << signaldata().display_received_signals();
-     //  #ifdef WITH_MPI
-     //  std::cerr << "rank "<<signaldata().myrank()<<": ";
-     //  #endif
-     //  std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency_longjmp! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
-     //  std::cerr << "  variable dump: " << std::endl;
-     //  std::cerr << "  signaldata().shutdown_begun() = " << signaldata().shutdown_begun() << std::endl;
-     //  std::cerr << "  signaldata().ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << std::endl;
-     //  std::cerr << "  signaldata().inside_multithreaded_region() = " << signaldata().inside_multithreaded_region() << std::endl;
-     //  std::cerr << "  signaldata().havejumped = " << signaldata().havejumped << std::endl;
-     //  std::cerr << std::endl;
-     //  exit(EXIT_FAILURE);
-     //}
-     longjmp(signaldata().env, 1); // 'Removes' the jump point upon execution, to prevent it happening twice.
-   }
-  
+   // void sub_sighandler_emergency_longjmp(int sig)
+   // {
+   //   // We will avoid touching streams in this shutdown mode since technically it is undefined behaviour, so no messages here.
+   //   // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
+   //   if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
+   //   if(signaldata().shutdown_begun())
+   //   {
+   //     #ifdef WITH_MPI
+   //     std::cerr << "rank "<<signaldata().myrank()<<": ";
+   //     #endif
+   //     std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown via longjmp, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
+   //     sighandler_hard(sig); // calls exit(sig)
+   //   }
+   //   signaldata().set_shutdown_begun(1);
+   //   signaldata().add_signal(sig);
+   //   if(signaldata().havejumped) 
+   //   {
+   //     std::ostringstream ss;
+   //     #ifdef WITH_MPI
+   //     ss << "rank "<<signaldata().myrank()<<": ";
+   //     #endif
+   //     ss << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! No jump point has been set, or jump has already occurred once! (Either is a bug; should not be able to reach this point if jump occurred already)" << std::endl;
+   //     ss << signaldata().display_received_signals();
+   //     std::cerr << ss.str();
+   //     logger() << ss.str() << EOM;
+   //     exit(EXIT_FAILURE);
+   //   }
+   //   // See sub_sighandler_emergency for why we should not do this check
+   //   //if(omp_get_level()!=0)
+   //   //{
+   //   //  std::cerr << signaldata().display_received_signals();
+   //   //  #ifdef WITH_MPI
+   //   //  std::cerr << "rank "<<signaldata().myrank()<<": ";
+   //   //  #endif
+   //   //  std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency_longjmp! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
+   //   //  std::cerr << "  variable dump: " << std::endl;
+   //   //  std::cerr << "  signaldata().shutdown_begun() = " << signaldata().shutdown_begun() << std::endl;
+   //   //  std::cerr << "  signaldata().ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << std::endl;
+   //   //  std::cerr << "  signaldata().inside_multithreaded_region() = " << signaldata().inside_multithreaded_region() << std::endl;
+   //   //  std::cerr << "  signaldata().havejumped = " << signaldata().havejumped << std::endl;
+   //   //  std::cerr << std::endl;
+   //   //  exit(EXIT_FAILURE);
+   //   //}
+   //   longjmp(signaldata().env, 1); // 'Removes' the jump point upon execution, to prevent it happening twice.
+   // }
+ 
+   // OBSOLETE 
    /// Sets the "shutdown_begun" flag, plus an "emergency" flag, which tells
    /// the running code not to attempt synchronisation, but instead to just
    /// shut down ASAP. 
@@ -802,22 +804,22 @@ namespace Gambit
    /// is triggered from an arbitrary place then it can cause MPI deadlocks.
    /// Gambit will set a flag when entering and leaving such blocks which
    /// we use to control which emergency handler is called.
-   void sub_sighandler_emergency_omp(int sig)
-   {
-     // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
-     if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
-     if(signaldata().shutdown_begun())
-     {
-       #ifdef WITH_MPI
-       std::cerr << "rank "<<signaldata().myrank()<<": ";
-       #endif
-       std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown (note: it was detected that we are inside an omp block), but shutdown is already in progress! Initiating hard shutdown." << std::endl;
-       sighandler_hard(sig); // calls exit(sig)
-     }
-     // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour, so no messages here.
-     signaldata().set_shutdown_begun(1); // argument indicates "emergency" mode
-     signaldata().add_signal(sig);
-   }
+   //void sub_sighandler_emergency_omp(int sig)
+   //{
+   //  // In case signal redirection to null is too slow to kick in (i.e. race condition) then try to "manually" ignore the signal
+   //  if(signaldata().shutdown_begun() and signaldata().ignore_signals_during_shutdown) return; 
+   //  if(signaldata().shutdown_begun())
+   //  {
+   //    #ifdef WITH_MPI
+   //    std::cerr << "rank "<<signaldata().myrank()<<": ";
+   //    #endif
+   //    std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown (note: it was detected that we are inside an omp block), but shutdown is already in progress! Initiating hard shutdown." << std::endl;
+   //    sighandler_hard(sig); // calls exit(sig)
+   //  }
+   //  // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour, so no messages here.
+   //  signaldata().set_shutdown_begun(1); // argument indicates "emergency" mode
+   //  signaldata().add_signal(sig);
+   //}
    /// @} 
 
    /// The functions above are alternative signal handlers that are called

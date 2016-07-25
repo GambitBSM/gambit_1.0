@@ -79,8 +79,15 @@ namespace Gambit
        /// Check if (any kind of) shutdown is in progress
        bool shutdown_begun();
 
+       /// Check for signals that early shutdown is required
+       /// If an MPI message telling us to perform an emergency shutdown is received
+       /// (which should only happen in the case of an error on some other process) then
+       /// a shutdown exception is raised. Otherwise, we just return a bool indicating
+       /// the shutdown status
+       bool check_if_shutdown_begun();
+
        /// Check if emergency shutdown is in progress 
-       bool emergency_shutdown_begun();
+       //bool emergency_shutdown_begun();
 
        /// Add signal to record
        void add_signal(int sig);
@@ -91,14 +98,14 @@ namespace Gambit
        /// Check if shutdown is in progress and raise appropriate termination 
        /// exception if so.
        /// (to be called by Gambit once it is safe to trigger termination)
-       void check_for_shutdown_signal();
+       //void check_for_shutdown_signal();
 
        /// Only check for emergency shutdown signals (i.e. do not attempt synchronisation) 
-       void check_for_emergency_shutdown_signal();
+       //void check_for_emergency_shutdown_signal();
 
        // Disable shutdown signals after the first one
        // Override via inifile value
-       volatile sig_atomic_t ignore_signals_during_shutdown; 
+       //volatile sig_atomic_t ignore_signals_during_shutdown; 
 
        /// Switch to threadsafe signal handling mode
        void entering_multithreaded_region();
@@ -119,7 +126,7 @@ namespace Gambit
  
        /// Broadcast emergency shutdown command to all processes, or abort if set to do so
        /// (calls broadcast_shutdown_signal, just does extra things as well)
-       void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
+       //void do_emergency_MPI_shutdown(bool use_mpi_abort=true);
 
        /// Broadcast signal to shutdown all processes
        /// By default sends emergency shutdown code.
