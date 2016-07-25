@@ -830,30 +830,30 @@ namespace Gambit
    /// Performs longjmp to code which performs cleanup and exits
    /// OR (inside omp block)
    /// Sets a flag to be checked upon leaving the omp block, to trigger shutdown
-   void sighandler_emergency_longjmp(int sig)
-   {
-      //std::cerr << " Saw signal " << sig << std::endl; // debugging
-      if(signaldata().inside_multithreaded_region()) {
-         sub_sighandler_emergency_omp(sig);
-      } else if (signaldata().jumppoint_set) {
-         sub_sighandler_emergency_longjmp(sig);
-      } else { // Signal encountered before jump point set; use non-jump emergency shutdown
-         sub_sighandler_emergency(sig);
-      }
-   }
+   // void sighandler_emergency_longjmp(int sig)
+   // {
+   //    //std::cerr << " Saw signal " << sig << std::endl; // debugging
+   //    if(signaldata().inside_multithreaded_region()) {
+   //       sub_sighandler_emergency_omp(sig);
+   //    } else if (signaldata().jumppoint_set) {
+   //       sub_sighandler_emergency_longjmp(sig);
+   //    } else { // Signal encountered before jump point set; use non-jump emergency shutdown
+   //       sub_sighandler_emergency(sig);
+   //    }
+   // }
 
-   /// Calls cleanup and exits            
-   /// OR (inside omp block)
-   /// Sets a flag to be checked upon leaving the omp block, to trigger shutdown
-   void sighandler_emergency(int sig)
-   {
-      //std::cerr << " Saw signal " << sig << std::endl; // debugging
-      if(signaldata().inside_multithreaded_region()) {
-         sub_sighandler_emergency_omp(sig);
-      } else {
-         sub_sighandler_emergency(sig);
-      }
-   }
+   // /// Calls cleanup and exits            
+   // /// OR (inside omp block)
+   // /// Sets a flag to be checked upon leaving the omp block, to trigger shutdown
+   // void sighandler_emergency(int sig)
+   // {
+   //    //std::cerr << " Saw signal " << sig << std::endl; // debugging
+   //    if(signaldata().inside_multithreaded_region()) {
+   //       sub_sighandler_emergency_omp(sig);
+   //    } else {
+   //       sub_sighandler_emergency(sig);
+   //    }
+   // }
 
    /// Sets a "shutdown_begun" flag, which is checked each likelihood loop, 
    /// after which MPI synchronisation followed by clean shutdown is attempted.
@@ -864,31 +864,32 @@ namespace Gambit
      signaldata().add_signal(sig); // I think this should be ok... but can delete it if there are any problems
    }
    
-   void sighandler_hard(int sig)
-   {
-     // std::cerr << " Saw signal " << sig << std::endl; // debugging
-     signaldata().set_shutdown_begun();
-     //Scanner::Plugins::plugin_info.dump();
-     #ifdef WITH_MPI
-     std::cerr << "rank "<<signaldata().myrank()<<": ";
-     #endif
-     std::cerr << "Gambit has performed a hard shutdown! Data loss is likely to have occurred." << std::endl;
-     signaldata().add_signal(sig);
-     std::cerr << signaldata().display_received_signals();
-     exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
-   }
+   // void sighandler_hard(int sig)
+   // {
+   //   // std::cerr << " Saw signal " << sig << std::endl; // debugging
+   //   signaldata().set_shutdown_begun();
+   //   //Scanner::Plugins::plugin_info.dump();
+   //   #ifdef WITH_MPI
+   //   std::cerr << "rank "<<signaldata().myrank()<<": ";
+   //   #endif
+   //   std::cerr << "Gambit has performed a hard shutdown! Data loss is likely to have occurred." << std::endl;
+   //   signaldata().add_signal(sig);
+   //   std::cerr << signaldata().display_received_signals();
+   //   exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
+   // }
  
-   void sighandler_hard_quiet(int sig)
-   {
-     signaldata().add_signal(sig);
-     std::cerr << signaldata().display_received_signals();
-     exit(sig);
-   }
+   // void sighandler_hard_quiet(int sig)
+   // {
+   //   signaldata().add_signal(sig);
+   //   std::cerr << signaldata().display_received_signals();
+   //   exit(sig);
+   // }
   
-   void sighandler_null(int sig) {signaldata().add_signal(sig);}
+   // void sighandler_null(int sig) {signaldata().add_signal(sig);}
    
    /// @}
 
+   /// TODO: Mostly obsolete
    /// Choose signal handler for a given signal via yaml file option
    void set_signal_handler(const YAML::Node& keyvalnode, const int sig, const std::string& def_mode)
    {
@@ -904,11 +905,12 @@ namespace Gambit
           shutdown_mode = def_mode;
        }
        logger()<< "Setting action on "<<signal_name(sig)<<" to '"<<shutdown_mode<<"'"<<EOM;
-       if      (shutdown_mode=="hard_shutdown"){      signal(sig, sighandler_hard);      }
-       else if (shutdown_mode=="emergency_shutdown"){ signal(sig, sighandler_emergency); }
-       else if (shutdown_mode=="emergency_shutdown_longjmp"){ signal(sig, sighandler_emergency_longjmp); }
-       else if (shutdown_mode=="soft_shutdown"){      signal(sig, sighandler_soft);      }
-       else if (shutdown_mode=="null"){               signal(sig, sighandler_null);      }
+       // if      (shutdown_mode=="hard_shutdown"){      signal(sig, sighandler_hard);      }
+       // else if (shutdown_mode=="emergency_shutdown"){ signal(sig, sighandler_emergency); }
+       // else if (shutdown_mode=="emergency_shutdown_longjmp"){ signal(sig, sighandler_emergency_longjmp); }
+       //else 
+       if (shutdown_mode=="soft_shutdown"){      signal(sig, sighandler_soft);      }
+       //else if (shutdown_mode=="null"){               signal(sig, sighandler_null);      }
        else {
            std::ostringstream msg;
            msg << "Invalid shutdown mode requested for signal "<<signal_name(sig)<<" ("<<sig<<")"<<" (via YAML file option '"<<signal_name(sig)<<"' in KeyValue section under 'signal_handling'). Value received was '"<<shutdown_mode<<"'. Valid shutdown modes are:" <<std::endl;
