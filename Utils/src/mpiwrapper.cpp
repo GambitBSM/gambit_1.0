@@ -299,6 +299,7 @@ namespace Gambit
 
             // Setup timeout interval and sleep time             
             unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
+            std::chrono::time_point<std::chrono::system_clock> truestart = std::chrono::system_clock::now();
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
             struct timespec sleeptime;
@@ -318,12 +319,13 @@ namespace Gambit
                      {
                         // Ok the source has now reached this barrier.
                         entered[source] = true;
-                        LOGGER << "rank " << myRank <<": Process "<<source<<" has entered BarrierWithTimout (with tag "<<tag<<")"<<EOM;
+                        LOGGER << "rank " << myRank <<": Process "<<source<<" has entered BarrierWithTimeout (with tag "<<tag<<"). Resetting timeout."<<EOM;
                         //Recv(&recv_buffer, 1, source, tag);
                         // Clear out any other barrier entry messages that this process may have sent in previous loops
                         // (for example if it has already timed out waiting for us in this barrier for several attempts)
                         int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
                         Recv_all(&recv_buffer, 1, source, tag, max_loops);
+                        start = std::chrono::system_clock::now()
                      } 
                   }
                }
@@ -337,10 +339,12 @@ namespace Gambit
                // Check if timeout interval has been exceeded
                std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                std::chrono::duration<double> time_waited = current - start;
+               std::chrono::duration<double> true_time_waited = current - truestart;
                double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
+               double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
 
                double fraction = time_waited_d/total_timeout; 
-               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed)"<< EOM;
+               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
                
                if(time_waited >= timeout) timedout = true;
             }
@@ -358,16 +362,19 @@ namespace Gambit
          } 
          else
          {
+            // Do a barrier to sync the processes
+            //LOGGER << "rank " << myRank << ": Entering final sync Barrier in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
+            //Barrier(); // For some reason this did not work as expected... some processed stopped by it and others were not? One process even exited, without the others! Wtf. 
+            LOGGER << "rank " << myRank << ": Synchronisation succeeded in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
+         }
+
+         if(mpiSize>1)
+         {
             int recv_buffer = 0; // To receive the null messages
-            // If we succeeded, make sure to clean out any remaining Barrier entry messages
+            // Clean out any remaining Barrier entry messages before we try to sync again next loop
             int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
             Recv_all(&recv_buffer, 1, MPI_ANY_SOURCE, tag, max_loops);
-
-            // Do a barrier to sync the processes
-            LOGGER << "rank " << myRank << ": Entering final sync Barrier in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
-            Barrier();
-            LOGGER << "rank " << myRank << ": Synchronisation succeeded in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
-         }  
+         }
          return timedout;
       }
 
