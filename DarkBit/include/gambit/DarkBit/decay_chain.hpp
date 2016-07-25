@@ -162,11 +162,11 @@ namespace Gambit
                     // Constructor
                     DecayTableEntry(string pID, double m, bool stable) :
                         m(m), stable(stable), enabledWidth(0),
-                        invisibleWidth(0), totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(pID), randInit(false){}
+                        totalWidth(0), invisibleWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(pID), randInit(false){}
                     // Dummy constructor (for the DecayTable map)
                     DecayTableEntry() :
                         m(0), stable(false), enabledWidth(0),
-                        invisibleWidth(0), totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(""),  randInit(false){}
+                        totalWidth(0), invisibleWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(""),  randInit(false){}
                     // Pick a random decay channel
                     bool randomDecay(const TH_Channel* &decay) const;
                     // Update decay widths and if necessary Monte Carlo table
