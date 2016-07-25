@@ -138,7 +138,10 @@ namespace Gambit
 
        /// Add a new loop time to internal array used to decide barrier timeout
        void update_looptime(double newtime);
-   
+ 
+       /// Perform soft shutdown if processes can be synchronised
+       void attempt_soft_shutdown();
+  
      private:
        int rank; 
        int MPIsize; 
@@ -168,10 +171,6 @@ namespace Gambit
 
        /// Attempt to synchronise all processes, but abort if it takes too long
        bool all_processes_ready();
-
-       /// Perform soft shutdown if processes can be synchronised, else do
-       /// hard shutdown.
-       void attempt_soft_shutdown();
 
        /// Extra data needed in MPI mode
        #ifdef WITH_MPI
