@@ -56,7 +56,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     // Do not allow the external likelihood calculator to shut down the scan.
     // Diver will assume responsibility for this process (triggered externally by
     // the 'plugin_info.early_shutdown_in_progress()' function).
-    data.likelihood_function->disable_external_shutdown();
+    //data.likelihood_function->disable_external_shutdown(); // Actually we can't do this after all since Diver does a "hard" quit instead of returning from the "run" subroutine.
   }
  
   int plugin_main (void)
