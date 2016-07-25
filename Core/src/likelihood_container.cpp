@@ -162,11 +162,8 @@ namespace Gambit
     //signaldata().check_for_shutdown_signal();
     if(signaldata().check_if_shutdown_begun())
     {
-      if(scanner_can_quit())
-      {
-        tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
-      }
-      else
+      tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
+      if(not scanner_can_quit())
       {
         // If the scanner does not have a built-in mechanism for halting the scan early, then we will assume
         // responsiblity for the process and attempt to shut the scan down from our side.
