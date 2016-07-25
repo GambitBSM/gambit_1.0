@@ -7,20 +7,11 @@ DarkBit
 
 Urgent (for production runs):
 - Update LUX constraints [PS/FK?]
-- Fix gsl_integration integration problems [CW]
-  - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
-  - Apparently related to integration over noisy FCMC results, when e.g.
-    boosting h0_1 spectra
-  - Problem can be reduced by increasing the FCMC sample size
-  - Unclear why it does not appear in CMSSM or MSSM-7 scans
-  - Possible solution options:
-    - Write simple trapz integration routine; not accurate/very noisy but
-      stable -- could be used as fallback if gsl fails
-    - Extend daFunk.hpp to integrate internaly over lists (lots of work)
-    - Replace spectrum PDFs by CDFs (might be not enough in all cases)
 - Merge DarkBit back into master and inform Martin [CW]
+- Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
 
 Before internal paper review:
+- Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
 - Add discussion about additional SimYieldTable extrapolation switch [SW]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
@@ -93,6 +84,17 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Fix gsl_integration integration problems [CW]
+  - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
+  - Apparently related to integration over noisy FCMC results, when e.g.
+    boosting h0_1 spectra
+  - Problem can be reduced by increasing the FCMC sample size
+  - Unclear why it does not appear in CMSSM or MSSM-7 scans
+  - Possible solution options:
+    - Write simple trapz integration routine; not accurate/very noisy but
+      stable -- could be used as fallback if gsl fails
+    - Extend daFunk.hpp to integrate internaly over lists (lots of work)
+    - Replace spectrum PDFs by CDFs (might be not enough in all cases)
 - Confirm valid energy ranges in SimYieldTables_DarkSUSY - mail from SW 2016-07-15 [TB, JE, SW]
 - Check again boost gsl integration for stability (SingletDM_test...) [CW/JC]
 - Add warning to FCMC about missing final states (e.g. h0_1) [CW/JC]
