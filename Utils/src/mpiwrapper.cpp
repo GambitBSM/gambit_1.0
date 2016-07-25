@@ -320,12 +320,12 @@ namespace Gambit
                         // Ok the source has now reached this barrier.
                         entered[source] = true;
                         LOGGER << "rank " << myRank <<": Process "<<source<<" has entered BarrierWithTimeout (with tag "<<tag<<"). Resetting timeout."<<EOM;
+                        start = std::chrono::system_clock::now();
                         //Recv(&recv_buffer, 1, source, tag);
                         // Clear out any other barrier entry messages that this process may have sent in previous loops
                         // (for example if it has already timed out waiting for us in this barrier for several attempts)
                         int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
                         Recv_all(&recv_buffer, 1, source, tag, max_loops);
-                        start = std::chrono::system_clock::now()
                      } 
                   }
                }
