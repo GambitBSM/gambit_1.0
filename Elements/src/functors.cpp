@@ -1519,57 +1519,49 @@ namespace Gambit
     /// execution of this functor.
     void module_functor<void>::calculate()
     {
-      if(not emergency_shutdown_begun()) // If emergency shutdown signal has been received, skip everything (does nothing in standalone compile units)
+      if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
       {
-        if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
-        {
-          std::ostringstream ss;
-          ss << "Sorry, the function " << origin() << "::" << name()
-           << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
-           << endl << "Missing backends: ";
-          for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
-          backend_error().raise(LOCAL_INFO, ss.str());
-        }
-        else if (myStatus == -4)
-        {
-          std::ostringstream ss;
-          ss << "Sorry, the backend initialisation function " << name()
-          << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";                 
-          backend_error().raise(LOCAL_INFO, ss.str());    
-        }
-        boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
-        int thread_num = omp_get_thread_num();
-        fill_activeModelFlags();                     // If activeModels hasn't been populated yet, make sure it is.
-        init_memory();                               // Init memory if this is the first run through.
-        if (needs_recalculating[thread_num])
-        {
-          entering_multithreaded_region();
-
-          logger().entering_module(myLogTag);
-          this->startTiming(thread_num);
-          try
-          {
-            this->myFunction();
-          }
-          catch (invalid_point_exception& e)
-          {
-            if (not point_exception_raised) acknowledgeInvalidation(e);
-            if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
-            {
-              this->finishTiming(thread_num);
-              leaving_multithreaded_region();
-              throw(e);
-            } 
-          }
-          this->finishTiming(thread_num);
-          logger().leaving_module();         
-          leaving_multithreaded_region();
-        }
-        check_for_shutdown_signal();
+        std::ostringstream ss;
+        ss << "Sorry, the function " << origin() << "::" << name()
+         << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
+         << endl << "Missing backends: ";
+        for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
+        backend_error().raise(LOCAL_INFO, ss.str());
       }
-      else
+      else if (myStatus == -4)
       {
-        logger() << "Shutdown in progress! Skipping evaluation of functor " << myName << EOM;
+        std::ostringstream ss;
+        ss << "Sorry, the backend initialisation function " << name()
+        << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";                 
+        backend_error().raise(LOCAL_INFO, ss.str());    
+      }
+      boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
+      int thread_num = omp_get_thread_num();
+      fill_activeModelFlags();                     // If activeModels hasn't been populated yet, make sure it is.
+      init_memory();                               // Init memory if this is the first run through.
+      if (needs_recalculating[thread_num])
+      {
+        entering_multithreaded_region();
+
+        logger().entering_module(myLogTag);
+        this->startTiming(thread_num);
+        try
+        {
+          this->myFunction();
+        }
+        catch (invalid_point_exception& e)
+        {
+          if (not point_exception_raised) acknowledgeInvalidation(e);
+          if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
+          {
+            this->finishTiming(thread_num);
+            leaving_multithreaded_region();
+            throw(e);
+          } 
+        }
+        this->finishTiming(thread_num);
+        logger().leaving_module();         
+        leaving_multithreaded_region();
       }
     }
 
