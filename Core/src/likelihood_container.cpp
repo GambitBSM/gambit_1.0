@@ -159,12 +159,20 @@ namespace Gambit
     }
 
     // Check for signals to abort run
-    signaldata().check_for_shutdown_signal();
-    if(signaldata().shutdown_begun())
+    //signaldata().check_for_shutdown_signal();
+    if(signaldata().check_if_shutdown_begun())
     {
-      // Once soft shutdown signal is received, we give the scanner code one chance to shut itself down (ending the Run() routine called in gambit.cpp). If it cannot do this then we will get control back next loop, and attempt to shut things down from the outside. TODO: Allow scanners to set a flag to completely disable the gambit "intervention" in shutdown.
-      tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
-      lnlike = alt_min_valid_lnlike; // Always use this larger value to avoid scanner deadlocks
+      if(scanner_can_quit())
+      {
+        tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
+      }
+      else
+      {
+        // If the scanner does not have a built-in mechanism for halting the scan early, then we will assume
+        // responsiblity for the process and attempt to shut the scan down from our side.
+        signaldata().attempt_soft_shutdown();
+      }
+      lnlike = alt_min_valid_lnlike; // Always use this larger value to avoid scanner deadlocks (e.g. MultiNest refuses to progress without a likelihood above its minimum threshold)
       point_invalidated = true;
       logger() << "Shutdown in progess! Returning min_valid_lnlike to ScannerBit instead of computing likelihood." << EOM;
     }

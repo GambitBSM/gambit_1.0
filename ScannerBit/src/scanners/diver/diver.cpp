@@ -52,11 +52,11 @@ scanner_plugin(Diver, version(1, 0, 0))
     data.likelihood_function = get_purpose(get_inifile_value<std::string>("like"));
     // Retrieve the external printer
     data.printer = &(get_printer());
-    // Initialise the print stream
-    // Ben: there appears to be no need to do this unless you really want to for some reason.
-    // You can just sent your extra data straight to the primary printer when you are adding
-    // it at the same time the likelihood is evaluated, don't need to create an auxilliary one.
-    //data.printer->new_stream("txt",get_inifile_node("aux_printer_txt_options"));
+
+    // Do not allow the external likelihood calculator to shut down the scan.
+    // Diver will assume responsibility for this process (triggered externally by
+    // the 'plugin_info.early_shutdown_in_progress()' function).
+    data.likelihood_function->disable_external_shutdown();
   }
  
   int plugin_main (void)
