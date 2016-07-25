@@ -48,7 +48,6 @@ namespace Gambit {
      *
      */
 
-#define DARKBIT_DEBUG
     void GA_missingFinalStates(std::vector<std::string> &result)
     {
       using namespace Pipes::GA_missingFinalStates;
@@ -279,7 +278,7 @@ namespace Gambit {
           }
           else added = false;
 
-//#ifdef DARKBIT_DEBUG
+#ifdef DARKBIT_DEBUG
             std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
             //std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
             daFunk::Funk chnSpec = (daFunk::zero("v", "E")
@@ -296,7 +295,7 @@ namespace Gambit {
             for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
               std::cout << *it2 << ", ";
             std::cout << "]\n";
-//#endif
+#endif
           if (!added)
           {
             DarkBit_warning().raise(LOCAL_INFO, 
