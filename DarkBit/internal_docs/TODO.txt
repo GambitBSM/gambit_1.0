@@ -21,6 +21,7 @@ Before internal paper review:
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Check accuracy of fallback gsl_integration [CW]
 - <sigma v>_eff plots [JC]
 - Update cascade code discussions in paper to new treatment [CW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
