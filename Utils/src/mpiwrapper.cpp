@@ -226,8 +226,8 @@ namespace Gambit
          //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
 
-      static const int BARRIER_ENTERED = 1; // Storage for barrier entry send message
-      static const int BARRIER_LEFT = 0;  // Storage for barrier exit send message
+      int BARRIER_ENTERED = 1; // Storage for barrier entry send message. Don't change this! (can't make it const due to signature of MPI functions)
+      int BARRIER_LEFT = 0;  // Storage for barrier exit send message.  "          "           "
 
       bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag)
       {
@@ -297,29 +297,29 @@ namespace Gambit
                   } 
                }
 
+               // While waiting, could do work here.
+                
+               LOGGER << "rank " << myRank <<": sleeping... (total timeout = "<<total_timeout<<"ms; sleeptime = "<<sleeptime.tv_nsec*1e-6<<"ms)"<< EOM;
+               // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
+               nanosleep(&sleeptime,NULL);
+
+               // Check if timeout interval has been exceeded
+               std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+               std::chrono::duration<double> time_waited = current - start;
+               std::chrono::duration<double> true_time_waited = current - truestart;
+               double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
+               double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
+
+               double fraction = time_waited_d/total_timeout; 
+               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
+               
                if(not timedout)
                {
-                 // While waiting, could do work here.
-                  
-                 LOGGER << "rank " << myRank <<": sleeping... (total timeout = "<<total_timeout<<"ms; sleeptime = "<<sleeptime.tv_nsec*1e-6<<"ms)"<< EOM;
-                 // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
-                 nanosleep(&sleeptime,NULL);
-
-                 // Check if timeout interval has been exceeded
-                 std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
-                 std::chrono::duration<double> time_waited = current - start;
-                 std::chrono::duration<double> true_time_waited = current - truestart;
-                 double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
-                 double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
-
-                 double fraction = time_waited_d/total_timeout; 
-                 LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
-                 
                  if(time_waited >= timeout) timedout = true;
                }
                else
                {
-                 LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms. But 'timedout' flag has been manually set, so we will abandon the barrier."<< EOM;
+                 LOGGER << "rank " << myRank <<":'timedout' flag has been manually set, so we will abandon the barrier."<< EOM;
                }
             }
          }
