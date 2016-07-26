@@ -18,7 +18,8 @@
 
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
-      mT: 173.34
+      mT: 1.73340000E+02
+      #prior_type: flat
 
       # SLHA1
       alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
@@ -61,8 +62,8 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [120,300]
-        #prior_type: flat
+        range: [100,1000]
+        prior_type: log
       QEWSB: 173
 
 
@@ -105,7 +106,7 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: de
+  use_scanner: multinest
 
 # Scanners
 
@@ -114,7 +115,8 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 1000
+      NP: 10000
+      convthresh: 0.001
       verbosity: 1
 
     random:
@@ -140,8 +142,8 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 2000
-      tol: 0.1
+      nlive: 20000
+      tol: 0.001
 
     twalk:
       plugin: twalk
@@ -177,7 +179,7 @@ ObsLikes:
       purpose: LogLike
 
     - capability: check_perturb_min_lambda
-      purpose: Observable
+      purpose: LogLike
 
  #   - capability: check_perturb
  #     purpose: Observable
@@ -207,10 +209,6 @@ Rules:
     - capability: SingletDM_spectrum
       type: const Spectrum*
       function: get_SingletDM_spectrum_pole
-      #options:
-      #  check_perturb: true
-      #  check_high_scale: 1e5
-      #  check_perturb_pts: 10
 
     - capability: Higgs_decay_rates
       function: SingletDM_Higgs_decays
@@ -251,7 +249,6 @@ KeyValues:
 
   # Some example keys and subkeys
   my_key: 123
-  debug: true
   another_key:
     subkey3:
       subsubkey1: value2
@@ -277,5 +274,5 @@ KeyValues:
 
   enable_testing: false
 
-  default_output_path: "runs/vacuum_stability_scan/"
+  default_output_path: "/net/scratch/people/plgjamesmckay/runs/vacuum_stability_scan4/"
 
