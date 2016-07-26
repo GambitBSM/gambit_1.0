@@ -54,10 +54,10 @@ After internal paper review started:
 - Move micromegas installation routines into the cmake system [PS]
 - Check that masses given to DD calc are always positive (Chris mail from 28
   May) [JC/PS/JE]
-- Start adding descriptions to the capability database [CW, PS, JE, TB, JC]
-- Mention all options in the darkbit paper [CW, PS, JE, TB, JC]
+- Start adding descriptions to the capability database [CW, PS, JE, JC]
+- Mention all options in the darkbit paper [CW, PS, JE, JC]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
-- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, TB, JC]
+- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 
 Before release:
