@@ -252,6 +252,8 @@ Rules:
 
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
+    options:
+      allow_yield_extrapolation: true
 
   - capability: SingletDM_spectrum
     function: get_SingletDM_spectrum

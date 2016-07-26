@@ -50,11 +50,11 @@ namespace Gambit {
       (*BEreq::ddcom).ftp(11) = fG;
       (*BEreq::ddcom).ftp(12) = fG;
 
-      logger() << "DarkSUSY proton hadronic matrix elements set to:" << endl;
-      logger() << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
-      logger() << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
-      logger() << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
-      logger() << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " <<
+      logger() << LogTags::debug << "DarkSUSY proton hadronic matrix elements set to:" << endl;
+      logger() << LogTags::debug << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
+      logger() << LogTags::debug << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
+      logger() << LogTags::debug << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
+      logger() << LogTags::debug << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " <<
         (*BEreq::ddcom).ftp(9) << endl;
 
       // Set neutron hadronic matrix elements
@@ -67,21 +67,21 @@ namespace Gambit {
       (*BEreq::ddcom).ftn(11) = fG;
       (*BEreq::ddcom).ftn(12) = fG;
 
-      logger() << "DarkSUSY neutron hadronic matrix elements set to:" << endl;
-      logger() << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
-      logger() << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
-      logger() << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
-      logger() << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " <<
+      logger() << LogTags::debug << "DarkSUSY neutron hadronic matrix elements set to:" << endl;
+      logger() << LogTags::debug << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
+      logger() << LogTags::debug << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
+      logger() << LogTags::debug << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
+      logger() << LogTags::debug << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " <<
         (*BEreq::ddcom).ftn(9) << endl;
 
       // Set deltaq
       (*BEreq::ddcom).delu = *Param["deltau"];
       (*BEreq::ddcom).deld = *Param["deltad"];
       (*BEreq::ddcom).dels = *Param["deltas"];
-      logger() << "DarkSUSY delta q set to:" << endl;
-      logger() << "delu = delta u = " << (*BEreq::ddcom).delu;
-      logger() << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
-      logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
+      logger() << LogTags::debug << "DarkSUSY delta q set to:" << endl;
+      logger() << LogTags::debug << "delu = delta u = " << (*BEreq::ddcom).delu;
+      logger() << LogTags::debug << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
+      logger() << LogTags::debug << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
 
       if (*Dep::DarkSUSY_PointInit) {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
@@ -94,11 +94,11 @@ namespace Gambit {
         result.gns *= factor;
         result.gpa *= factor;
         result.gna *= factor;
-        logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
-        logger() << " gps = " << result.gps << std::endl;
-        logger() << " gns = " << result.gns << std::endl;
-        logger() << " gpa = " << result.gpa << std::endl;
-        logger() << " gna = " << result.gna << std::endl;
+        logger() << LogTags::debug << "DarkSUSY dsddgpgn gives:" << std::endl;
+        logger() << LogTags::debug << " gps = " << result.gps << std::endl;
+        logger() << LogTags::debug << " gns = " << result.gns << std::endl;
+        logger() << LogTags::debug << " gpa = " << result.gpa << std::endl;
+        logger() << LogTags::debug << " gna = " << result.gna << std::endl;
       } else {
         // Set couplings to zero if DarkSUSY point initialization
         // was not successful
@@ -120,20 +120,20 @@ namespace Gambit {
       (*BEreq::MOcommon).par[3] = *Param["fpu"];
       (*BEreq::MOcommon).par[4] = *Param["fps"];
 
-      logger() << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
-      logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
-      logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
-      logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+      logger() << LogTags::debug << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
+      logger() << LogTags::debug << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
+      logger() << LogTags::debug << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
+      logger() << LogTags::debug << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
 
       // Set neutron hadronic matrix elements.
       (*BEreq::MOcommon).par[11] = *Param["fnd"];
       (*BEreq::MOcommon).par[12] = *Param["fnu"];
       (*BEreq::MOcommon).par[13] = *Param["fns"];
 
-      logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
-      logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
-      logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
-      logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
+      logger() << LogTags::debug << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
+      logger() << LogTags::debug << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
+      logger() << LogTags::debug << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
+      logger() << LogTags::debug << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
 
       //Set delta q.
       (*BEreq::MOcommon).par[5] = *Param["deltad"];
@@ -144,12 +144,12 @@ namespace Gambit {
       (*BEreq::MOcommon).par[15] = *Param["deltad"];
       (*BEreq::MOcommon).par[16] = *Param["deltas"];
 
-      logger() << "micrOMEGAs delta q set to:" << endl;
-      logger() << "pVectorFFPd = pVectorFFNu = delta d = "
+      logger() << LogTags::debug << "micrOMEGAs delta q set to:" << endl;
+      logger() << LogTags::debug << "pVectorFFPd = pVectorFFNu = delta d = "
         << (*BEreq::MOcommon).par[5] << endl;
-      logger() << "pVectorFFPu = pVectorFFPd = delta u = "
+      logger() << LogTags::debug << "pVectorFFPu = pVectorFFPd = delta u = "
         << (*BEreq::MOcommon).par[6] << endl;
-      logger() << "pVectorFFPs = pVectorFFNs = delta s = "
+      logger() << LogTags::debug << "pVectorFFPs = pVectorFFNs = delta s = "
         << (*BEreq::MOcommon).par[7] << endl;
 
       double p1[2], p2[2], p3[2], p4[2];
@@ -166,11 +166,11 @@ namespace Gambit {
       result.gns = p3[0]*2;
       result.gna = p4[0]*2;
 
-      logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
-      logger() << " gps: " << result.gps << endl;
-      logger() << " gns: " << result.gns << endl;
-      logger() << " gpa: " << result.gpa << endl;
-      logger() << " gna: " << result.gna << endl;
+      logger() << LogTags::debug << "micrOMEGAs nucleonAmplitudes gives:" << endl;
+      logger() << LogTags::debug << " gps: " << result.gps << endl;
+      logger() << LogTags::debug << " gns: " << result.gns << endl;
+      logger() << LogTags::debug << " gpa: " << result.gpa << endl;
+      logger() << LogTags::debug << " gna: " << result.gna << endl;
     }
 
     /// Simple calculator of the spin-independent WIMP-proton cross-section
