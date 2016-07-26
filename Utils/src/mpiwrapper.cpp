@@ -150,59 +150,6 @@ namespace Gambit
          //std::cerr<<"rank "<<myRank<<": Passed masterWaitForAll with tag "<<tag<<std::endl;
       }
 
-      /// Version of the above that loops over non-blocking commands. Could modify to do work
-      /// in the loop while waiting for the signal.
-      // void Comm::masterWaitForAll(int tag)
-      // {
-      //    std::size_t mpiSize = Get_size(); 
-      //    std::size_t myRank  = Get_rank();
-      //    if(mpiSize>1)
-      //    {
-      //       if(myRank==0)
-      //       {
-      //          MPI_Status status;
-      //          int recv_buffer = 0; // To receive the null message
-      //          std::vector<bool> passed(mpiSize); // should init to "false"
-      //          passed[0] = true; // Set rank zero entry to 'true' so we don't wait for ourselves.
-
-      //          // sleep setup
-      //          struct timespec sleep_time;
-      //          sleep_time.tv_sec  = 0.1 ; // 1/10th of second 
-      //          sleep_time.tv_nsec = 0; // plus no nanoseconds
-
-      //          while( std::find(passed.begin(), passed.end(), false) != passed.end() ) // Pass when 'false' cannot be found
-      //          {
-      //             // Check whether other processes have caught up yet
-      //             for(std::size_t source=1;source<mpiSize;source++)
-      //             {
-      //                //std::cerr<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
-      //                if(not passed[source])
-      //                {
-      //                   if( Iprobe(source, tag, &status) )
-      //                   {
-      //                      // Ok the source has now reached this function.
-      //                      passed[source] = true;
-      //                      Recv(&recv_buffer, 1, source, tag);
-      //                   } 
-      //                }
-      //             }
-
-      //             // While waiting, could do work here.
-  
-      //             // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
-      //             nanosleep(&sleep_time,NULL);
-      //         }
-      //       }
-      //       else
-      //       {
-      //          // Other processes simply signal that they have passed this point.
-      //          Isend(&null_send_buffer, 1, 0 /*master*/, tag, &req_null);
-      //       }
-      //    }
-      // }
-
-
-
       /// Tells all processes to wait until master passes this point before proceeding, with the specified MPI tag
       void Comm::allWaitForMaster(int tag)
       {
@@ -555,15 +502,6 @@ namespace Gambit
                  }
                }
             }
-
-            /// Clear out any remaining MPI messages related to this barrier that we might have missed.
-            //int max_loops = 2*Get_size();
-
-            //int null_recv_buffer = 0;
-            //receive_all_with_tag(&null_recv_buffer, 1, MPI_ANY_SOURCE, tag_entered, max_loops, errorlog);
-
-            //unsigned long null_buf_timeleft;
-            //receive_all_with_tag(&null_buf_timeleft, 1, MPI_ANY_SOURCE, tag_timeleft, max_loops, errorlog);
 
          }
 

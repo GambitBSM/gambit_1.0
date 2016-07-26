@@ -159,10 +159,10 @@ namespace Gambit
     }
 
     // Check for signals to abort run
-    //signaldata().check_for_shutdown_signal();
     if(signaldata().check_if_shutdown_begun())
     {
       tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
+      logger() << "Informed scanner that early shutdown is in progress and it should secure all its output files if possible." << EOM;
       if(not scanner_can_quit())
       {
         // If the scanner does not have a built-in mechanism for halting the scan early, then we will assume
@@ -170,7 +170,7 @@ namespace Gambit
         signaldata().attempt_soft_shutdown();
       }
       lnlike = alt_min_valid_lnlike; // Always use this larger value to avoid scanner deadlocks (e.g. MultiNest refuses to progress without a likelihood above its minimum threshold)
-      point_invalidated = true;
+      point_invalidated = true; // Will prevent this likelihood value from being flagged as 'valid' by the printer
       logger() << "Shutdown in progess! Returning min_valid_lnlike to ScannerBit instead of computing likelihood." << EOM;
     }
     else // Do the normal likelihood calculation

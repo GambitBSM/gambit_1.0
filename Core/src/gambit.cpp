@@ -209,7 +209,8 @@ int main(int argc, char* argv[])
 
     /// Special catch block for hard shutdown
     /// No MPI_Finalise called, nor MPI_Abort. Should only be triggered when all
-    /// processes are supposed to be trying to shut themselves down quickly.
+    /// processes are supposed to be trying to shut themselves down quickly, for
+    /// example if synchronising for soft shutdown fails.
     catch (const HardShutdownException& e)
     {
       if (not logger().disabled())
@@ -224,14 +225,7 @@ int main(int argc, char* argv[])
         cout     << ss.str();    
         logger() << ss.str() << EOM;
       }
-      // This will attempt to broadcast a shutdown signal to all processes, I think there is no harm in attempting this...
-      // TODO: Ahh wait can't do this, or else it might try to abort and kill the other processes before they can do their
-      // emergency shutdown. Need to make a function that just broadcasts the signal, and definitely does not try to
-      // Abort.
-      //#ifdef WITH_MPI
-      //do_emergency_MPI_shutdown(errorComm);
-      //#endif     
-     return EXIT_SUCCESS;
+      return EXIT_SUCCESS;
     }
 
     /// Shut down due receipt of MPI emergency shutdown message
