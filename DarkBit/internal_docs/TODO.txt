@@ -9,6 +9,9 @@ Urgent (for production runs):
 - Update LUX constraints [PS/FK?]
 - Merge DarkBit back into master and inform Martin [CW]
 - Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
+- Check whether IB routines are OK after commenting in warnings again in
+  patches [JC/CW]
+  (if not check out mail from Torsten 26-07 for solutions)
 
 Before internal paper review:
 - Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
