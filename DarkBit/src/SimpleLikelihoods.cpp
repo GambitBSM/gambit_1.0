@@ -131,7 +131,7 @@ namespace Gambit {
 
       result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << "GamLike dSph likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike dSph likelihood is lnL = " << result << std::endl;
     }
 
     void lnL_HESSGC_gamLike(double &result)
@@ -155,7 +155,7 @@ namespace Gambit {
 
       result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << "GamLike HESS GC likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike HESS GC likelihood is lnL = " << result << std::endl;
     }
 
     void lnL_CTAGC_gamLike(double &result)
@@ -173,7 +173,7 @@ namespace Gambit {
 
       result = BEreq::lnL(5, x, y);
 
-      logger() << "GamLike CTA GC likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike CTA GC likelihood is lnL = " << result << std::endl;
     }
 
     /*! \brief Fermi LAT galactic center likelihoods, using gamLike backend.
@@ -200,7 +200,7 @@ namespace Gambit {
 
       result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << "GamLike Fermi GC likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike Fermi GC likelihood is lnL = " << result << std::endl;
     }
 
     /// \brief Likelihood for cosmological relic density constraints.
@@ -218,7 +218,7 @@ namespace Gambit {
       // FIXME: Add getValue documentation
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
       result = Stats::gaussian_loglikelihood(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr);
-      logger() << "lnL_oh2_Simple yields " << result << std::endl;
+      logger() << LogTags::debug << "lnL_oh2_Simple yields " << result << std::endl;
     }
 
     /// \brief Likelihood for cosmological relic density constraints, implemented as an upper limit only
@@ -238,7 +238,7 @@ namespace Gambit {
       result = Stats::detection_as_upper_limit(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr,
       // FIXME: Add getValue documentation
                                                runOptions->getValueOrDef<str>("simple", "limit_method"));
-      logger() << "lnL_oh2_upperlimit yields " << result << std::endl;
+      logger() << LogTags::debug << "lnL_oh2_upperlimit yields " << result << std::endl;
     }
 
 
@@ -265,7 +265,7 @@ namespace Gambit {
 
         result = Stats::gaussian_loglikelihood(sigmas, sigmas_obs, 0, sigmas_obserr)
             + Stats::gaussian_loglikelihood(sigmal, sigmal_obs, 0, sigmal_obserr);
-        logger() << "lnL for SI nuclear parameters is " << result << EOM;
+        logger() << LogTags::debug << "lnL for SI nuclear parameters is " << result << EOM;
     }
 
     /// \brief Likelihoods for spin dependent nuclear parameters. Follows treatment
@@ -320,7 +320,7 @@ namespace Gambit {
 
         result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0.,
                 rho0_obserr);
-        logger() << "lnL_rho0 yields " << result << EOM;
+        logger() << LogTags::debug << "lnL_rho0 yields " << result << EOM;
     }
 
     void lnL_vrot_gaussian(double &result)
@@ -332,7 +332,7 @@ namespace Gambit {
       // FIXME: Add getValue documentation
       double vrot_obserr  = runOptions->getValueOrDef<double>(20, "vrot_obserr");
       result = Stats::gaussian_loglikelihood(vrot, vrot_obs, 0., vrot_obserr);
-      logger() << "lnL_vrot yields " << result << EOM;
+      logger() << LogTags::debug << "lnL_vrot yields " << result << EOM;
     }
 
     void lnL_v0_gaussian(double &result)
@@ -344,7 +344,7 @@ namespace Gambit {
       // FIXME: Add getValue documentation
       double v0_obserr  = runOptions->getValueOrDef<double>(20, "v0_obserr");
       result = Stats::gaussian_loglikelihood(v0, v0_obs, 0., v0_obserr);
-      logger() << "lnL_v0 yields " << result << EOM;
+      logger() << LogTags::debug << "lnL_v0 yields " << result << EOM;
     }
 
     void lnL_vesc_gaussian(double &result)
@@ -356,7 +356,7 @@ namespace Gambit {
       // FIXME: Add getValue documentation
       double vesc_obserr  = runOptions->getValueOrDef<double>(35, "vesc_obserr");
       result = Stats::gaussian_loglikelihood(vesc, vesc_obs, 0., vesc_obserr);
-      logger() << "lnL_vesc yields " << result << EOM;
+      logger() << LogTags::debug << "lnL_vesc yields " << result << EOM;
     }
 
     /// \brief Helper function to dump gamma-ray spectra.

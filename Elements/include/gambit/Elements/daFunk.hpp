@@ -1552,6 +1552,8 @@ namespace daFunk
             { this->limit = limit; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
             shared_ptr<FunkIntegrate_gsl1d> set_singularity_factor(double f)
             { this->singl_factor = f; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
+            shared_ptr<FunkIntegrate_gsl1d> set_use_log_fallback(bool flag)
+            { this->use_log_fallback = flag; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
 
             double value(const std::vector<double> & data, size_t bindID)
             {
@@ -1597,8 +1599,27 @@ namespace daFunk
                         }
                         result = s;
                     }
+                    if (status and this->use_log_fallback)
+                    {
+                        // The last resort: A cheap integration on log grid, linear interpolation
+                        const double N = 100;
+                        std::vector<double> Xgrid = 
+                            logspace(std::log10(x0), std::log10(x1), N);
+                        double sum = 0, y0, y1, dx;
+                        local_data[index[bindID]] = Xgrid[0];
+                        y0 = functions[0]->value(local_data, bindID);
+                        for (size_t i = 0; i<N-1; i++)
+                        {
+                            local_data[index[bindID]] = Xgrid[i+1];
+                            y1 = functions[0]->value(local_data, bindID);
+                            dx = Xgrid[i+1]-Xgrid[i];
+                            sum += dx*(y0+y1)/2;
+                            y0 = y1;
+                        }
+                        result = sum;
+                    }
                     // FIXME: Implement flags to optionally throw an error
-                    if (status)
+                    if (status and not this->use_log_fallback)
                     {
                         std::cerr << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
                         std::cerr << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
@@ -1634,6 +1655,7 @@ namespace daFunk
                 limit = 100;
                 epsrel = 1e-2;
                 epsabs = 1e-2;
+                use_log_fallback = false;
                 singl_factor = 4;
             }
 
@@ -1658,6 +1680,7 @@ namespace daFunk
             std::vector<size_t> index;
             double epsrel;
             double epsabs;
+            bool use_log_fallback;
 
             double singl_factor;
     };

@@ -7,28 +7,22 @@ DarkBit
 
 Urgent (for production runs):
 - Update LUX constraints [PS/FK?]
-- Fix gsl_integration integration problems [CW]
-  - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
-  - Apparently related to integration over noisy FCMC results, when e.g.
-    boosting h0_1 spectra
-  - Problem can be reduced by increasing the FCMC sample size
-  - Unclear why it does not appear in CMSSM or MSSM-7 scans
-  - Possible solution options:
-    - Write simple trapz integration routine; not accurate/very noisy but
-      stable -- could be used as fallback if gsl fails
-    - Extend daFunk.hpp to integrate internaly over lists (lots of work)
-    - Replace spectrum PDFs by CDFs (might be not enough in all cases)
-- Confirm valid energy ranges in SimYieldTables_DarkSUSY - mail from SW 2016-07-15 [TB, JE, SW]
 - Merge DarkBit back into master and inform Martin [CW]
+- Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
 
 Before internal paper review:
+- Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
+- Add discussion about additional SimYieldTable extrapolation switch [SW]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
+- Update nuclear parameter best fit value discussion [JC] [Added by JC]
 - Update likelihood technical details in physics papers [all]
 - Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Check accuracy of fallback gsl_integration [CW]
+- <sigma v>_eff plots [JC]
 - Update cascade code discussions in paper to new treatment [CW]
 - Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
@@ -59,12 +53,14 @@ After internal paper review started:
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
+- Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
 
 Before release:
 - Clean up header and src files from old mess [CW]
 - Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
+- MicrOmegas MSSM diskless initialization [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
 — Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
@@ -89,6 +85,18 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Fix gsl_integration integration problems [CW]
+  - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
+  - Apparently related to integration over noisy FCMC results, when e.g.
+    boosting h0_1 spectra
+  - Problem can be reduced by increasing the FCMC sample size
+  - Unclear why it does not appear in CMSSM or MSSM-7 scans
+  - Possible solution options:
+    - Write simple trapz integration routine; not accurate/very noisy but
+      stable -- could be used as fallback if gsl fails
+    - Extend daFunk.hpp to integrate internaly over lists (lots of work)
+    - Replace spectrum PDFs by CDFs (might be not enough in all cases)
+- Confirm valid energy ranges in SimYieldTables_DarkSUSY - mail from SW 2016-07-15 [TB, JE, SW]
 - Check again boost gsl integration for stability (SingletDM_test...) [CW/JC]
 - Add warning to FCMC about missing final states (e.g. h0_1) [CW/JC]
 - Get correct validation plots for MSSM spectra (DarkBit_standalone_MSSM,

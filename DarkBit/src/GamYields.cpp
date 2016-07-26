@@ -48,7 +48,6 @@ namespace Gambit {
      *
      */
 
-#define DARKBIT_DEBUG
     void GA_missingFinalStates(std::vector<std::string> &result)
     {
       using namespace Pipes::GA_missingFinalStates;
@@ -156,7 +155,7 @@ namespace Gambit {
       daFunk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       daFunk::Funk integrand = dNdE/(2*halfBox_int);
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
-        ->set_epsabs(0)->set_limit(100)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
+        ->set_epsabs(0)->set_limit(100)->set_epsrel(1e-3)->set_use_log_fallback(true)->set("Ep", daFunk::var("E"));
       //
       // TODO: Check whether to use numerically more stable integration over lnE instead
       // Note: this causes problems in the WIMP example (3) as the singularity is dropped
@@ -279,7 +278,7 @@ namespace Gambit {
           }
           else added = false;
 
-//#ifdef DARKBIT_DEBUG
+#ifdef DARKBIT_DEBUG
             std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
             //std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
             daFunk::Funk chnSpec = (daFunk::zero("v", "E")
@@ -296,7 +295,7 @@ namespace Gambit {
             for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
               std::cout << *it2 << ", ";
             std::cout << "]\n";
-//#endif
+#endif
           if (!added)
           {
             DarkBit_warning().raise(LOCAL_INFO, 
