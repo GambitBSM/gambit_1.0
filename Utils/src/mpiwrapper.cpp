@@ -226,6 +226,9 @@ namespace Gambit
          //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
 
+      static const int BARRIER_ENTERED = 1; // Storage for barrier entry send message
+      static const int BARRIER_LEFT = 0;  // Storage for barrier exit send message
+
       bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag)
       {
          std::size_t mpiSize = Get_size(); 
@@ -242,7 +245,7 @@ namespace Gambit
             MPI_Status status;
 
             // First, tell all other processes that we have entered the barrier.
-            IsendToAll(&null_send_buffer, 1, tag, &req_null);
+            IsendToAll(&BARRIER_ENTERED, 1, tag, &req_null);
 
             // Setup timeout interval and sleep time             
             unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
@@ -260,52 +263,78 @@ namespace Gambit
                for(std::size_t source=0;source<mpiSize;source++)
                {
                   //std::cerr<<"rank "<<myRank<<": has process "<<source<<" entered BarrierWithTimeout? "<<entered[source]<<std::endl;
-                  if(not entered[source])
+                  if( Iprobe(source, tag, &status) )
                   {
-                     if( Iprobe(source, tag, &status) )
+                     start = std::chrono::system_clock::now();
+                     // Clear out any other barrier entry messages that this process may have sent in previous loops
+                     // (for example if it has already timed out waiting for us in this barrier for several attempts)
+                     int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
+                     Recv_all(&recv_buffer, 1, source, tag, max_loops);
+                     // The last message will indicate whether the sender process is waiting in their barrier, or has left it already 
+                     if(recv_buffer==BARRIER_ENTERED)
                      {
-                        // Ok the source has now reached this barrier.
-                        entered[source] = true;
-                        LOGGER << "rank " << myRank <<": Process "<<source<<" has entered BarrierWithTimeout (with tag "<<tag<<"). Resetting timeout."<<EOM;
-                        start = std::chrono::system_clock::now();
-                        //Recv(&recv_buffer, 1, source, tag);
-                        // Clear out any other barrier entry messages that this process may have sent in previous loops
-                        // (for example if it has already timed out waiting for us in this barrier for several attempts)
-                        int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
-                        Recv_all(&recv_buffer, 1, source, tag, max_loops);
-                     } 
-                  }
+                       // Ok the source is (probably) waiting at this barrier (modulo message delays)
+                       entered[source] = true;
+                       LOGGER << "rank " << myRank <<": Process "<<source<<" has entered BarrierWithTimeout (with tag "<<tag<<"). Resetting timeout."<<EOM;
+                     }
+                     else if(recv_buffer==BARRIER_LEFT)
+                     {
+                       if(not entered[source])
+                       {
+                         LOGGER << "rank " << myRank <<": Last message from process "<<source<<" indicates that it has LEFT BarrierWithTimeout (with tag "<<tag<<"). We did not see it enter this barrier. We will continue waiting in the hope that it will re-enter the barrier soon."<<EOM;                         
+                       } 
+                       else 
+                       {
+                          LOGGER << "rank " << myRank <<": Process "<<source<<" has LEFT BarrierWithTimeout (with tag "<<tag<<"). We will therefore abandon the barrier as well."<<EOM;                                 timedout = true;
+                       }
+                     }
+                     else
+                     {
+                       std::ostringstream errmsg;
+                       errmsg << "Error in BarrierWithTimeout! Unrecognised barrier entry/exit message received from process "<<source<<" (value was "<<recv_buffer<<")."; 
+                       utils_error().raise(LOCAL_INFO, errmsg.str());
+                     }
+                  } 
                }
 
-               // While waiting, could do work here.
- 
-               LOGGER << "rank " << myRank <<": sleeping... (total timeout = "<<total_timeout<<"ms; sleeptime = "<<sleeptime.tv_nsec*1e-6<<"ms)"<< EOM;
-               // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
-               nanosleep(&sleeptime,NULL);
+               if(not timedout)
+               {
+                 // While waiting, could do work here.
+                  
+                 LOGGER << "rank " << myRank <<": sleeping... (total timeout = "<<total_timeout<<"ms; sleeptime = "<<sleeptime.tv_nsec*1e-6<<"ms)"<< EOM;
+                 // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
+                 nanosleep(&sleeptime,NULL);
 
-               // Check if timeout interval has been exceeded
-               std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
-               std::chrono::duration<double> time_waited = current - start;
-               std::chrono::duration<double> true_time_waited = current - truestart;
-               double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
-               double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
+                 // Check if timeout interval has been exceeded
+                 std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+                 std::chrono::duration<double> time_waited = current - start;
+                 std::chrono::duration<double> true_time_waited = current - truestart;
+                 double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
+                 double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
 
-               double fraction = time_waited_d/total_timeout; 
-               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
-               
-               if(time_waited >= timeout) timedout = true;
+                 double fraction = time_waited_d/total_timeout; 
+                 LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
+                 
+                 if(time_waited >= timeout) timedout = true;
+               }
+               else
+               {
+                 LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms. But 'timedout' flag has been manually set, so we will abandon the barrier."<< EOM;
+               }
             }
          }
 
          // if we timed out, spit out some errors
          if(timedout)
          {
-            LOGGER << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): " << EOM;
+            LOGGER << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): ";
             for(std::size_t source=0;source<mpiSize;source++)
             {
                if(not entered[source]) LOGGER << source << ", ";
             }
             LOGGER << EOM;
+            // Tell all other processes that we are leaving the barrier.
+            IsendToAll(&BARRIER_LEFT, 1, tag, &req_null);
          } 
          else
          {
@@ -351,7 +380,7 @@ namespace Gambit
             IsendToAll(&null_send_buffer, 1, tag_entered, &req_null);
 
             // Setup timeout interval and sleep time             
-            unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
+            unsigned int Nchecks = 10; // Check for messages 10 times evenly spaced over the timeout interval
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
             struct timespec sleeptime;
