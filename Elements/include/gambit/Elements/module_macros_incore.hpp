@@ -44,9 +44,6 @@
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Nov
 ///
-///  \author Tomas Gonzalo
-///          (t.e.gonzalo@fys.uio.no)
-///  \date 2016 June
 ///
 ///  *********************************************
 
@@ -990,32 +987,6 @@
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(COMBO))))));     \
       }                                                                        \
                                                                                \
-    }                                                                          \
-  }                                                                            \
-
-/// Redirection of DISABLE_MODEL_RELATIONSHIP when invoked from within the Core
-#define CORE_DISABLE_MODEL_RELATIONSHIP(MODULE,FUNCTION,MODEL1,MODEL2)         \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-    namespace MODULE                                                           \
-    {                                                                          \
-      /* Set up the command to be called at runtime to register the            \
-      the relationaship disabled with the functor */                           \
-      void CAT_6(rt_register_disable_model_relationship_,FUNCTION,_,MODEL1,    \
-       _,MODEL2)()                                                             \
-      {                                                                        \
-        Functown::FUNCTION.setDisabledModelRelationship(STRINGIFY(MODEL1),     \
-          STRINGIFY(MODEL2));                                                  \
-      }                                                                        \
-                                                                               \
-      /* Create the initialisation object*/                                    \
-      namespace Ini                                                            \
-      {                                                                        \
-       ini_code CAT_5(MODEL1,_,MODEL2,_relationship_disabled_for_,FUNCTION)    \
-        (&CAT_6(rt_register_disable_model_relationship_,FUNCTION,_,MODEL1,     \
-        _,MODEL2));                                                            \
-      }                                                                        \
     }                                                                          \
   }                                                                            \
 

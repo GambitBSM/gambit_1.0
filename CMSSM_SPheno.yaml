@@ -81,10 +81,10 @@ Priors:
 
 Printer:
 
-  printer: hdf5
+  printer: ascii
 
   options:
-    output_file: "CMSSM.hdf5"
+    output_file: "CMSSM_SPheno"
     group: "/CMSSM"
 
 Scanner:
@@ -321,22 +321,11 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_CMSSM_spectrum
+    function: get_CMSSM_spectrum_SPheno
     options:
-      # Set to match benchmark point specified in
-      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
-      max_iterations:        0
-      calculate_sm_masses:   false
-      pole_mass_loop_order:  2
-      ewsb_loop_order:       2
-      beta_loop_order:       2
-      threshold_corrections_loop_order: 1
-      use_higgs_2loop_at_as: true
-      use_higgs_2loop_ab_as: true
-      use_higgs_2loop_at_at: true
-      use_higgs_2loop_atau_atau: true
-      invalid_point_fatal: false
+      SPA_conventions: true
+      delta_mass:      1.0e-4
+      n_run:           40 
 
   # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
   # Here is the current clunky way to do this:

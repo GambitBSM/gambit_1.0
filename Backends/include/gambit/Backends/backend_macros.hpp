@@ -29,10 +29,6 @@
 ///  \date 2014 Jan, Mar
 ///  \date 2015 Jan, Feb
 ///
-///  \author Tomas Gonzalo
-///          (t.e.gonzalo@fys.uio.no)
-///  \date 2016 June
-///
 ///  *********************************************
 
 #ifndef __BACKEND_MACROS_HPP__
@@ -103,11 +99,6 @@ CORE_ALLOWED_MODEL(BackendIniBit,CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),   \
 #define SET_ALLOWED_MODELS(NAME, MODELS)                                    \
 int CAT(allowed_models_set_,NAME) =                                         \
  set_allowed_models(Functown::NAME, allowed_models, STRINGIFY(MODELS));
-
-/// Macro for disabling model relationships
-#define BE_DISABLE_MODEL_RELATIONSHIP(MODEL1,MODEL2)                        \
- CORE_DISABLE_MODEL_RELATIONSHIP(BackendIniBit,                              \
- CAT_4(BACKENDNAME,_,SAFE_VERSION,_init), MODEL1, MODEL2)                   \
 
 /// Make the inUse pipe for a given backend functor.                        
 #define MAKE_INUSE_POINTER(NAME)                                            \

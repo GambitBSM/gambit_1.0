@@ -24,9 +24,6 @@ LOAD_LIBRARY
 // Allow for CMSSM, MSSM63atMGUT and MSSM63atQ
 BE_ALLOW_MODELS(CMSSM,MSSM63atMGUT,MSSM63atQ)
 
-// Disable the relationships between CMSSM and MSSM63atMGUT with MSSM63atQ
-//BE_DISABLE_MODEL_RELATIONSHIPS(MSSM63atQ, CMSSM, MSSM63atMGUT)
-
 // Functions
 BE_FUNCTION(Set_All_Parameters_0, void, (), "__model_data_MOD_set_all_parameters_0", "SPheno_MSSMspectrum")
 BE_FUNCTION(Initialize_MSSM, void, (Flogical&, // GenerationMixing

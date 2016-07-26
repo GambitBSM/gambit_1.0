@@ -32,9 +32,6 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Apr
 ///
-///  \author Tomas Gonzalo
-///          (t.e.gonzalo@fys.uio.no)
-///  \date 2016 June
 ///
 ///  *********************************************
 
@@ -240,26 +237,6 @@
                                                                                \
   }                                                                            \
 
-/// Redirection of DISABLE_MODEL_RELATIONSHIP when invoked from within a module
-#define MODULE_DISABLE_MODEL_RELATIONSHIP(MODULE,FUNCTION,MODEL1,MODEL2)       \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-    namespace MODULE                                                           \
-    {                                                                          \
-      namespace Pipes                                                          \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace Dep                                                        \
-          {                                                                    \
-            /*extern disabled_bucket CAT_4(MODEL1,_,MODEL2,_disabled)*/        \
-          }                                                                    \
-        }                                                                      \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-  
   
 
 /// Redirection of BACKEND_GROUP(GROUP) when invoked from within a module.
