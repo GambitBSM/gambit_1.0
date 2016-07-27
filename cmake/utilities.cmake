@@ -141,6 +141,7 @@ macro(add_extra_targets package dir dl target)
   add_external_clean(${package} ${dir} ${dl} ${target})
   set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
   add_dependencies(clean-backends clean-${package})
+  add_dependencies(nuke-backends nuke-${package})
 endmacro()
 
 # Macro to add all additional targets for a new chained backend
@@ -157,6 +158,7 @@ macro(add_extra_targets_scanner package dir dl target)
   add_external_clean(${package} ${dir} ${dl} ${target})
   set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
   add_dependencies(clean-scanners clean-${package})
+  add_dependencies(nuke-scanners nuke-${package})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
