@@ -7,9 +7,9 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de) 
+///          (torsten.bringmann@desy.de)
 ///  \date 2013 Jun -- 2016 May
 ///
 ///  \author Christoph Weniger
@@ -34,7 +34,7 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    /*! \brief Collects spectrum information about coannihilating particles, 
+    /*! \brief Collects spectrum information about coannihilating particles,
      *         resonances and threshold energies -- so far directly from DarkSUSY.
      */
     void RD_spectrum_SUSY(RD_spectrum_type &result)
@@ -48,17 +48,17 @@ namespace Gambit {
       result.resonances.clear();
       result.threshold_energy.clear();
 
-      /// Option CoannCharginosNeutralinos<bool>: Specify whether charginos and 
+      /// Option CoannCharginosNeutralinos<bool>: Specify whether charginos and
       /// neutralinos are included in coannihilations (default: true)
       bool CoannCharginosNeutralinos = runOptions->getValueOrDef<bool>(true,
           "CoannCharginosNeutralinos");
-          
-      /// Option CoannSfermions<bool>: Specify whether sfermions are included in 
+
+      /// Option CoannSfermions<bool>: Specify whether sfermions are included in
       /// coannihilations (default: true)
       bool CoannSfermions = runOptions->getValueOrDef<bool>(true,
           "CoannSfermions");
-          
-      /// Option CoannMaxMass<double>: Maximal sparticle mass to be included in 
+
+      /// Option CoannMaxMass<double>: Maximal sparticle mass to be included in
       /// coannihilations, in units of DM mass (default: 1.6)
       double CoannMaxMass = runOptions->getValueOrDef<double>(1.6,
           "CoannMaxMass");
@@ -71,17 +71,17 @@ namespace Gambit {
 
       // first add neutralino=WIMP=least massive 'coannihilating particle'
       result.coannihilatingParticles.push_back(
-          RD_coannihilating_particle(DSpart->kn(1), 
+          RD_coannihilating_particle(DSpart->kn(1),
           myintdof->kdof(DSpart->kn(1)),mymspctm->mass(DSpart->kn(1))));
 
 #ifdef DARKBIT_DEBUG
       std::cout << "WIMP : "<< DSpart->kn(1) << " " <<
-          myintdof->kdof(DSpart->kn(1)) << " " << mymspctm->mass(DSpart->kn(1)) 
+          myintdof->kdof(DSpart->kn(1)) << " " << mymspctm->mass(DSpart->kn(1))
           << std::endl;
 #endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
-      // and instead depend on the process catalog! The use of any 
+      // and instead depend on the process catalog! The use of any
       // DarkSUSY conventions need thus be moved to RD_annrate_DSprep_func
 
 
@@ -109,7 +109,7 @@ namespace Gambit {
 
       // only keep sparticles that are not too heavy
       for (size_t i=0; i<colist.size(); i++)
-        if (mymspctm->mass(colist[i])/mymspctm->mass(DSpart->kn(1)) 
+        if (mymspctm->mass(colist[i])/mymspctm->mass(DSpart->kn(1))
             < CoannMaxMass)
           result.coannihilatingParticles.push_back(
               RD_coannihilating_particle(colist[i], myintdof->kdof(colist[i]),
@@ -126,19 +126,19 @@ namespace Gambit {
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
       // the last 2 resonances in the list can only appear for coannihilations
       if (result.coannihilatingParticles.size() == 1)
-        resmax -= 2;    
+        resmax -= 2;
 
       for (int i=0; i<resmax; i++)
       {
-        if (mymspctm->mass(reslist[i])/result.coannihilatingParticles[0].mass 
+        if (mymspctm->mass(reslist[i])/result.coannihilatingParticles[0].mass
             > 2.)
         {
-        
+
           // FIXME: This is no longer needed here.  Remove.
           if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
-                TH_Resonance(mymspctm->mass(reslist[i]), 0.1)); 
+                TH_Resonance(mymspctm->mass(reslist[i]), 0.1));
           else
             result.resonances.push_back(
                 TH_Resonance(
@@ -161,8 +161,8 @@ namespace Gambit {
     } // function RD_spectrum_SUSY
 
 
-   /*! \brief Collects information about resonances and threshold energies 
-     *        directly from the ProcessCatalog 
+   /*! \brief Collects information about resonances and threshold energies
+     *        directly from the ProcessCatalog
      *        [NB: this assumes no coannihilating particles!]
      */
     void RD_spectrum_from_ProcessCatalog(RD_spectrum_type &result)
@@ -171,14 +171,14 @@ namespace Gambit {
 
       // retrieve annihilation processes and DM properties
       std::string DMid= *Dep::DarkMatter_ID;
-      TH_Process annihilation = 
+      TH_Process annihilation =
               (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-      TH_ParticleProperty DMproperty = 
+      TH_ParticleProperty DMproperty =
               (*Dep::TH_ProcessCatalog).getParticleProperty(DMid);
 
       // get thresholds & resonances from process catalog
-      result.resonances = annihilation.thresholdResonances.resonances;
-      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
+      result.resonances = annihilation.resonances_thresholds.resonances;
+      result.threshold_energy = annihilation.resonances_thresholds.threshold_energy;
 
       result.coannihilatingParticles.clear();
       // add WIMP=least massive 'coannihilating particle'
@@ -187,13 +187,13 @@ namespace Gambit {
           RD_coannihilating_particle(100,1+DMproperty.spin2,DMproperty.mass));
       // FIXME: coannihilation thresholds have to be added once they are included
       // in the process catalog
-      
+
 #ifdef DARKBIT_DEBUG
       std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
       std::cout << "Test : " << BEreq::particle_code("d_3")
       << " " << BEreq::particle_code("u_3") << std::endl;
 #endif
-      
+
 
     } // function RD_spectrum_from_ProcessCatalog
 
@@ -207,7 +207,7 @@ namespace Gambit {
       result = *Dep::RD_spectrum;
 
       // NB: coannihilatingParticles does not necessarily have to be ordered,
-      // but it is assumed that coannihilatingParticles[0] is the DM particle 
+      // but it is assumed that coannihilatingParticles[0] is the DM particle
       RD_coannihilating_particle tmp_co;
       if (result.coannihilatingParticles.size() > 1)
         for (std::size_t i=0; i<result.coannihilatingParticles.size()-1; i++)
@@ -261,7 +261,7 @@ namespace Gambit {
             }
           }
         }
-      }            
+      }
     } // function RD_spectrum_ordered_func
 
 
@@ -358,13 +358,13 @@ namespace Gambit {
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
             it != annProc.channelList.end(); ++it)
         {
-          Weff = Weff + 
+          Weff = Weff +
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
         // Add genRateMisc to Weff
         Weff = Weff + annProc.genRateMisc->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         if ( Weff->getNArgs() != 1 )
-          DarkBit_error().raise(LOCAL_INFO, 
+          DarkBit_error().raise(LOCAL_INFO,
               "RD_eff_annrate_from_ProcessCatalog: Wrong number of arguments.\n"
               "The probable cause are three-body final states, which are not supported for this function."
               );
@@ -396,12 +396,12 @@ namespace Gambit {
 #endif
 
 
-      // HERE STARTS A GIANT IF STATEMENT WHICH 
+      // HERE STARTS A GIANT IF STATEMENT WHICH
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
       if (1==1) {
         // What follows below is the standard accurate calculation of oh2 in DS
         // either in fast = 0 (<1%)  or fast = 1 (default) mode
-        
+
         // FIXME: keep track of error flags in oh2_general
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
@@ -445,12 +445,12 @@ namespace Gambit {
 
 
         // write mass and dof of DM & coannihilating particle to DS common blocks
-        DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev); 
+        DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev);
 
         myrdmgev->nco=myRDspec.coannihilatingParticles.size();
         for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
           myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
-          myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom; 
+          myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom;
           myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index;   // FIXME: Discuss!!!
 #ifdef DARKBIT_RD_DEBUG
           std::cout << "kcoann, mco, mdof: " << myrdmgev->kcoann(i) << "  " << myrdmgev->mco(i) << "  " << myrdmgev->mdof(i) << std::endl;
@@ -504,7 +504,7 @@ namespace Gambit {
         // follow wide res treatment for heavy Higgs adopted in DS
         double widthheavyHiggs=
                (*BEreq::widths).width(BEreq::particle_code("h0_2"));
-        if (widthheavyHiggs<0.1) 
+        if (widthheavyHiggs<0.1)
           (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
 #ifdef DARKBIT_DEBUG
@@ -519,16 +519,16 @@ namespace Gambit {
         std::chrono::time_point<std::chrono::system_clock> start, end;
 #endif
 
-        
+
         // FIXME: Remove?
 //            const Spectrum* mySpec = *Dep::MSSM_spectrum;
 //            SLHAstruct mySLHA = mySpec->getSLHAea();
 //            std::ofstream ofs("RelicDensity_debug.slha");
 //            ofs << mySLHA;
 //            ofs.close();
-        
+
 //        std::cout << "SLHA written to file" << std::endl;
-        
+
 #ifdef DARKBIT_RD_DEBUG
         start = std::chrono::system_clock::now();
 #endif
@@ -569,7 +569,7 @@ namespace Gambit {
         piped_invalid_point.check();
 
         // determine integration limit
-        BEreq::dsrdthlim();                                 
+        BEreq::dsrdthlim();
 
         // now solve Boltzmann eqn using tabulated rate
         double xend, yend, xf; int nfcn;
@@ -585,11 +585,11 @@ namespace Gambit {
 
         //capture NAN result and map it to zero RD
         if (yend!=yend){
-          logger() << 
-            "WARNING: DS returned NAN for relic density. Setting to zero..." 
+          logger() <<
+            "WARNING: DS returned NAN for relic density. Setting to zero..."
             << std::endl;
           yend=0;
-        }  
+        }
 
         result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 
@@ -606,7 +606,7 @@ namespace Gambit {
 #ifdef DARKBIT_RD_DEBUG
       if (tbtest==1) {exit(1);}
 #endif
-      
+
 
     } // function RD_oh2_general
 

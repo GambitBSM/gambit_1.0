@@ -110,7 +110,6 @@ int main(int argc, char* argv[])
     LocalHalo_primary_parameters->setValue("vrot", 235.);
     LocalHalo_primary_parameters->setValue("v0", 235.);
     LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
 
     // Initialize nuclear_params_fnq model
     ModelParameters* nuclear_params_fnq = Models::nuclear_params_fnq::Functown::primary_parameters.getcontentsPtr();
@@ -185,7 +184,7 @@ int main(int argc, char* argv[])
     // Relic density calculation with DarkSUSY (the sloppy version)
     RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
     RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-    RD_oh2_DarkSUSY.setOption<int>("fast", 0);  // 0: normal; 1: fast; 2: dirty
+    RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
     RD_oh2_DarkSUSY.reset_and_calculate();
     // FIXME: Use "general" version instead
 
@@ -315,8 +314,13 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
     cascadeMC_DecayTable.reset_and_calculate();
 
+    // cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 100000);
+    // cascadeMC_Histograms.setOption<double>("cMC_endCheckFrequency", 25);
+    // cascadeMC_Histograms.setOption<double>("cMC_gammaRelError", .05);
+    // cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
+    // cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
+
     // Set up MC loop manager for cascade MC
-    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1000);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
     cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);

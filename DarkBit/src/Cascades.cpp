@@ -1,21 +1,21 @@
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
-///   
+///
 ///  GAMBIT side of Cascade decay codes.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct
-///  
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -40,9 +40,9 @@ namespace Gambit {
     {
       list.clear();
       list.push_back("gamma");
-      using namespace Pipes::cascadeMC_FinalStates;  
+      using namespace Pipes::cascadeMC_FinalStates;
       /// Option cMC_finalStates<std::vector<std::string>>: List of final states to simulate (default is ["gamma"])
-      list = runOptions->getValueOrDef<std::vector<std::string>>(list, "cMC_finalStates");       
+      list = runOptions->getValueOrDef<std::vector<std::string>>(list, "cMC_finalStates");
 #ifdef DARKBIT_DEBUG
       std::cout << "Final states to generate: " << list.size() << std::endl;
       for(size_t i=0; i < list.size(); i++)
@@ -50,20 +50,17 @@ namespace Gambit {
         std::cout << "  " << list[i] << std::endl;
       }
 #endif
-    }     
+    }
 
     // Function setting up the decay table used in decay chains
     void cascadeMC_DecayTable(DarkBit::DecayChain::DecayTable &table)
     {
       using namespace DecayChain;
-      using namespace Pipes::cascadeMC_DecayTable;     
+      using namespace Pipes::cascadeMC_DecayTable;
       std::set<std::string> disabled;
-      // Force quarks and gluons to be stable in cascade context.
-      // These spectra should be handled using SimYields.
-// FIXME: Decide what to do with quark final states
-//      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
-//        disabled = daFunk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
-//            "cbar", "s", "sbar", "t", "tbar", "b", "bbar", "g");
+      // Note: One could add to "disabled" particles decays in that are in the
+      // process catalog but should for some reason not propagate to the FCMC
+      // DecayTable.
       try
       {
         table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable, disabled);
@@ -80,19 +77,19 @@ namespace Gambit {
     // Loop manager for cascade decays
     void cascadeMC_LoopManager()
     {
-      using namespace Pipes::cascadeMC_LoopManager;     
+      using namespace Pipes::cascadeMC_LoopManager;
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
       int cMC_minEvents = 2;  // runOptions->getValueOrDef<int>(2, "cMC_minEvents");
       // Get YAML options
-      /// Option cMC_maxEvents<int>: Maximum number of cascade MC runs (default 10000)
-      int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
+      /// Option cMC_maxEvents<int>: Maximum number of cascade MC runs (default 20000)
+      int cMC_maxEvents = runOptions->getValueOrDef<int>(20000, "cMC_maxEvents");
 
 
       // Initialization run
       Loop::executeIteration(MC_INIT);
 
       // Check whether there is anything to do
-      if ( chainList.size() == 0 ) 
+      if ( chainList.size() == 0 )
       {
         return;
       }
@@ -118,7 +115,7 @@ namespace Gambit {
             }
             Loop::executeIteration(it);
             #pragma omp critical (cascadeMC_Counter)
-              if((*Loop::done and ((counter >= cMC_minEvents) or piped_errors.inquire())) 
+              if((*Loop::done and ((counter >= cMC_minEvents) or piped_errors.inquire()))
                 or (counter >= cMC_maxEvents)) finished=true;
           }
         }
@@ -134,7 +131,7 @@ namespace Gambit {
     void cascadeMC_InitialState(std::string &pID)
     {
       using namespace DecayChain;
-      using namespace Pipes::cascadeMC_InitialState;  
+      using namespace Pipes::cascadeMC_InitialState;
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
       static int iteration;
       switch(*Loop::iteration)
@@ -150,16 +147,16 @@ namespace Gambit {
       }
       if(int(chainList.size()) <= iteration)
       {
-        Loop::wrapup(); 
-        piped_errors.request(LOCAL_INFO, 
+        Loop::wrapup();
+        piped_errors.request(LOCAL_INFO,
             "Desync between cascadeMC_LoopManager and cascadeMC_InitialState");
       }
       else
         pID = chainList[iteration];
 #ifdef DARKBIT_DEBUG
-         std::cout << "cascadeMC_InitialState" << std::endl;            
+         std::cout << "cascadeMC_InitialState" << std::endl;
          std::cout << "  Iteration: " << *Loop::iteration << std::endl;
-         std::cout << "  Number of states to simulate: " 
+         std::cout << "  Number of states to simulate: "
            << chainList.size() << std::endl;
          std::cout << "  Current state: " << pID << std::endl;
 #endif
@@ -168,7 +165,7 @@ namespace Gambit {
     // Event counter for cascade decays
     void cascadeMC_EventCount(std::map<std::string, int> &counts)
     {
-      using namespace Pipes::cascadeMC_EventCount;     
+      using namespace Pipes::cascadeMC_EventCount;
       static std::map<std::string, int> counters;
       switch(*Loop::iteration)
       {
@@ -177,24 +174,24 @@ namespace Gambit {
           break;
         case MC_NEXT_STATE:
           counters[*Dep::cascadeMC_InitialState] = 0;
-          break;    
+          break;
         case MC_FINALIZE:
-          // For performance, only return the actual result once finished    
+          // For performance, only return the actual result once finished
           counts=counters;
           break;
-        default:          
+        default:
 #pragma omp atomic
           counters[*Dep::cascadeMC_InitialState]++;
       }
-    }    
+    }
 
     // Function for generating decay chains
     void cascadeMC_GenerateChain(
         DarkBit::DecayChain::ChainContainer &chain)
     {
       using namespace DecayChain;
-      using namespace Pipes::cascadeMC_GenerateChain;    
-      static int    cMC_maxChainLength; 
+      using namespace Pipes::cascadeMC_GenerateChain;
+      static int    cMC_maxChainLength;
       static double cMC_Emin;
       switch(*Loop::iteration)
       {
@@ -202,7 +199,7 @@ namespace Gambit {
           /// Option cMC_maxChainLength<int>: Maximum chain length, -1 is infinite (default -1)
           cMC_maxChainLength = runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
           /// Option cMC_Emin<double>: Cutoff energy for cascade particles (default 0)
-          cMC_Emin = runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
+          cMC_Emin = runOptions->getValueOrDef<double> (-1, "cMC_Emin");
           return;
         case MC_NEXT_STATE:
         case MC_FINALIZE:
@@ -212,30 +209,32 @@ namespace Gambit {
       try
       {
         chn.reset(new ChainParticle( vec3(0), &(*Dep::cascadeMC_DecayTable),
-                                     *Dep::cascadeMC_InitialState) ); 
-        chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
+                                     *Dep::cascadeMC_InitialState) );
+        chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin);
       }
       catch(Piped_exceptions::description err)
       {
-        Loop::wrapup(); 
-        piped_errors.request(err); 
+        Loop::wrapup();
+        piped_errors.request(err);
       }
       chain=ChainContainer(chn);
     }
 
-    // Function for sampling SimYieldTables (tabulated spectra). 
+    // Function for sampling SimYieldTables (tabulated spectra).
     // This is a convenience function used in cascadeMC_Histograms, and does
     // not have an associated capability.
-    void cascadeMC_sampleSimYield( const SimYieldTable &table, 
-        const DarkBit::DecayChain::ChainParticle* endpoint, 
-        std::string finalState, 
-        const TH_ProcessCatalog &catalog, 
-        std::map<std::string, std::map<std::string, SimpleHist> > &histList, 
-        std::string initialState, 
-        double weight, int cMC_minSpecSamples, int cMC_maxSpecSamples
-//        double cMC_specValidThreshold
+    void cascadeMC_sampleSimYield( const SimYieldTable &table,
+        const DarkBit::DecayChain::ChainParticle* endpoint,
+        std::string finalState,
+        const TH_ProcessCatalog &catalog,
+        std::map<std::string, std::map<std::string, SimpleHist> > &histList,
+        std::string initialState,
+        double weight, int cMC_numSpecSamples
         )
     {
+#ifdef DARKBIT_DEBUG
+      std::cout << "SampleSimYield" << std::endl;
+#endif
       std::string p1,p2;
       double gamma,beta;
       double M;
@@ -248,12 +247,12 @@ namespace Gambit {
           const DarkBit::DecayChain::ChainParticle* parent = endpoint->getParent();
           if(parent == NULL)
           {
-            endpoint->getBoost(gamma,beta);   
+            endpoint->getBoost(gamma,beta);
             M = endpoint->m;
           }
           else
           {
-            parent->getBoost(gamma,beta);  
+            parent->getBoost(gamma,beta);
             M = endpoint->E_parentFrame();
           }
           break;
@@ -261,9 +260,9 @@ namespace Gambit {
         case 2:
         {
           p1=(*endpoint)[0]->getpID();
-          p2=(*endpoint)[1]->getpID();   
-          endpoint->getBoost(gamma,beta);  
-          M = endpoint->m; 
+          p2=(*endpoint)[1]->getpID();
+          endpoint->getBoost(gamma,beta);
+          M = endpoint->m;
           break;
         }
         default:
@@ -273,8 +272,8 @@ namespace Gambit {
       }
       const SimYieldChannel &chn = table.getChannel(p1 , p2, finalState);
       // Get Lorentz boost information
-  
-      const double gammaBeta = gamma*beta;              
+
+      const double gammaBeta = gamma*beta;
       // Mass of final state squared
       const double m = catalog.getParticleProperty(finalState).mass;
       const double msq = m*m;
@@ -287,36 +286,33 @@ namespace Gambit {
       // assumed and used here to add box contributions rather than points to
       // the histograms.  Limits are chosen such that we only sample energies
       // that can contribute to histogram bins.
-      const double Ecmin = std::max( gamma*histEmin 
+      const double Ecmin = std::max( gamma*histEmin
           - gammaBeta*sqrt(histEmin*histEmin-msq) , 0*chn.Ecm_min );  // CW: chn.Ecm_min refers to initial not final energies
-      const double Ecmax = std::min(std::min( 
+      const double Ecmax = std::min(std::min(
             // Highest energy that can contribute to the histogram
             gamma*histEmax + gammaBeta*sqrt(histEmax*histEmax-msq),
             // Highest energy in SimYieldChannel
             chn.Ecm_max ),
             // Estimate for highest kinematically allowed CoM energy
           0.5*(M*M + msq)/M );
-      if(Ecmin>=Ecmax) return;    
-      // FIXME: Double-check that sampling is done correctly
+      if(Ecmin>=Ecmax) return;
       const double logmin = log(Ecmin);
-      const double logmax = log(Ecmax);                  
-      const double dlogE=logmax-logmin;       
+      const double logmax = log(Ecmax);
+      const double dlogE=logmax-logmin;
 
 #ifdef DARKBIT_DEBUG
-        std::cout << M << std::endl;
-        std::cout << endpoint->E_Lab() << std::endl;
-        std::cout << endpoint->p_Lab() << std::endl;
-        std::cout << "Lorentz factors gamma, beta: " << gamma << ", " 
+        std::cout << "M = " << M << std::endl;
+        std::cout << "E_lab = " << endpoint->E_Lab() << std::endl;
+        std::cout << "p_lab = " << endpoint->p_Lab() << std::endl;
+        std::cout << "Lorentz factors gamma, beta: " << gamma << ", "
           << beta << std::endl;
         std::cout << "Initial state: " << initialState << std::endl;
         std::cout << "Channel: " << p1 << " " << p2 << std::endl;
         std::cout << "Final particles: " << finalState << std::endl;
         std::cout << "Event weight: "    << weight << std::endl;
-//        std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold 
-//          << std::endl;
-        std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax 
+        std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax
           << std::endl;
-        std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max 
+        std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max
           << std::endl;
         std::cout << "Ecmin/max: " << Ecmin << " " << Ecmax << std::endl;
         std::cout << "Final state mass^2: " << msq << std::endl;
@@ -324,35 +320,26 @@ namespace Gambit {
 
       double specSum=0;
       int Nsampl=0;
-      int samplCounter = 0;
-      SimpleHist spectrum(histList[initialState][finalState].binLower);        
-      // Dynamic sampling of tabulated spectrum.  specSum/Nsampl gives an
-      // estimate for how many particles our sampling so far corresponds to.
-      // To reduce noise, keep sampling until Nsampl>=specSum/Nsampl or
-      // maxSamples is reached.
-      while(((Nsampl<cMC_minSpecSamples) 
-            or (Nsampl*Nsampl<specSum)) and (samplCounter<cMC_maxSpecSamples))
+      SimpleHist spectrum(histList[initialState][finalState].binLower);
+      while(Nsampl<cMC_numSpecSamples)
       {
-        // FIXME: Make sure that the Nsampl < sqrt(specSum) criterion makes sense
-        samplCounter++;
         // Draw an energy in the CoM frame of the endpoint. Logarithmic
         // sampling.
         double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
         double dN_dE = chn.dNdE_bound->eval(E_CoM, M);
 
-//        // Only accept point if dN_dE is above threshold value
-//        if(dN_dE > cMC_specValidThreshold)
-//        {
-          double weight2 = E_CoM*dlogE*dN_dE;
-          specSum += weight2;
-          weight2 *= weight;
-          double tmp1 = gamma*E_CoM;
-          double tmp2 = gammaBeta*sqrt(E_CoM*E_CoM-msq);
-          // Add box spectrum to histogram
-          spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
-          Nsampl++;
-//        }
+        double weight2 = E_CoM*dlogE*dN_dE;
+        specSum += weight2;
+        weight2 *= weight;
+        double tmp1 = gamma*E_CoM;
+        double tmp2 = gammaBeta*sqrt(E_CoM*E_CoM-msq);
+        // Add box spectrum to histogram
+        spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
+        Nsampl++;
       }
+#ifdef DARKBIT_DEBUG
+      std::cout << "Number of samples = " << Nsampl << std::endl;
+#endif
       if(Nsampl>0)
       {
         spectrum.multiply(1.0/Nsampl);
@@ -365,19 +352,17 @@ namespace Gambit {
 
     // Function responsible for histogramming, and evaluating end conditions
     // for event loop
-    void cascadeMC_Histograms(std::map<std::string, std::map<std::string, 
+    void cascadeMC_Histograms(std::map<std::string, std::map<std::string,
         SimpleHist> > &result)
     {
       using namespace DecayChain;
-      using namespace Pipes::cascadeMC_Histograms; 
+      using namespace Pipes::cascadeMC_Histograms;
 
       // YAML options
-      static int    cMC_minSpecSamples;
-      static int    cMC_maxSpecSamples;
-//      static double cMC_specValidThreshold;
-//      static int    cMC_endCheckFrequency; 
-//      static double cMC_gammaBGPower;
-//      static double cMC_gammaRelError;      
+      static int    cMC_numSpecSamples;
+      static int    cMC_endCheckFrequency;
+      static double cMC_gammaBGPower;
+      static double cMC_gammaRelError;
       static int    cMC_NhistBins;
       static double cMC_binLow;
       static double cMC_binHigh;
@@ -388,37 +373,33 @@ namespace Gambit {
       {
         case MC_INIT:
           // Initialization
-          /// Option cMC_minSpecSamples<int>: FIXME (default 5)
-          cMC_minSpecSamples = runOptions->getValueOrDef<int>   (5, "cMC_minSpecSamples");    
-          /// Option cMC_maxSpecSamples<int>: FIXME (default 25)
-          cMC_maxSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_maxSpecSamples"); 
-//          /// Option cMC_specValidThreshold<double>: FIXME (default 0.)
-//          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
-//          cMC_endCheckFrequency  = 
-//            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
-//          cMC_gammaBGPower       = 
-//            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
-//          cMC_gammaRelError      = 
-//            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
+          /// Option cMC_numSpecSamples<int>: (default 10)
+          cMC_numSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_numSpecSamples");
+          cMC_endCheckFrequency  =
+            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
+          cMC_gammaBGPower       =
+            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
+          cMC_gammaRelError      =
+            runOptions->getValueOrDef<double>(0.05,   "cMC_gammaRelError");
 
           // Note: use same binning for all particle species
-          /// Option cMC_NhistBins<int>: Number of histogram bins (default 70)
-          cMC_NhistBins = runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
+          /// Option cMC_NhistBins<int>: Number of histogram bins (default 350)
+          cMC_NhistBins = runOptions->getValueOrDef<int>   (350,     "cMC_NhistBins");
           /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
-          cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
+          cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");
           /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
-          cMC_binHigh = runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
+          cMC_binHigh = runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");
           histList.clear();
           return;
         case MC_NEXT_STATE:
           // Initialize histograms
-          for(std::vector<std::string>::const_iterator it = 
+          for(std::vector<std::string>::const_iterator it =
               Dep::cascadeMC_FinalStates->begin();
               it!=Dep::cascadeMC_FinalStates->end(); ++it)
           {
 #ifdef DARKBIT_DEBUG
             std::cout << "Defining new histList entry!!!" << std::endl;
-            std::cout << "for: " << *Dep::cascadeMC_InitialState 
+            std::cout << "for: " << *Dep::cascadeMC_InitialState
               << " " << *it << std::endl;
 #endif
             histList[*Dep::cascadeMC_InitialState][*it]=
@@ -436,8 +417,8 @@ namespace Gambit {
       (*Dep::cascadeMC_ChainEvent).chain->
         collectEndpointStates(endpoints, false);
       // Iterate over final states of interest
-      for(std::vector<std::string>::const_iterator pit = 
-          Dep::cascadeMC_FinalStates->begin(); 
+      for(std::vector<std::string>::const_iterator pit =
+          Dep::cascadeMC_FinalStates->begin();
           pit!=Dep::cascadeMC_FinalStates->end(); ++pit)
       {
         // Iterate over all endpoint states of the decay chain. These can
@@ -449,17 +430,18 @@ namespace Gambit {
             it != endpoints.end(); it++)
         {
 #ifdef DARKBIT_DEBUG
-          std::cout << "  working on endpoint:" << (*it)->getpID() << std::endl;
+          std::cout << "  working on endpoint: " << (*it)->getpID() << std::endl;
           (*it)->printChain();
 #endif
 
           // Weighting factor (correction for mismatch between decay width
           // of available decay channels and total decay width)
-          double weight;        
-          // Analyze single particle endpoints            
+          double weight;
+          // Analyze single particle endpoints
+          bool ignored = true;
           if((*it)->getnChildren() ==0)
           {
-            weight = (*it)->getWeight();     
+            weight = (*it)->getWeight();
             // Check if the final state itself is the particle we are looking
             // for.
             if((*it)->getpID()==*pit)
@@ -467,35 +449,35 @@ namespace Gambit {
               double E = (*it)->E_Lab();
 #pragma omp critical (cascadeMC_histList)
               histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
+              ignored = false;
             }
             // Check if tabulated spectra exist for this final state
             else if((*Dep::SimYieldTable).hasChannel( (*it)->getpID(), *pit ))
             {
               cascadeMC_sampleSimYield(
                   *Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog,
-                  histList, *Dep::cascadeMC_InitialState, weight, 
-                  cMC_minSpecSamples, cMC_maxSpecSamples
-//                  cMC_specValidThreshold
+                  histList, *Dep::cascadeMC_InitialState, weight,
+                  cMC_numSpecSamples
                   );
               // Check if an error was raised
+              ignored = false;
               if(piped_errors.inquire())
               {
                 Loop::wrapup();
                 return;
               }
             }
-            // FIXME: Issue warning if nothing is added to spectrum
           }
           // Analyze multiparticle endpoints (the endpoint particle is here the
           // parent of final state particles).
           else
           {
-            weight = (*(*it))[0]->getWeight();     
+            weight = (*(*it))[0]->getWeight();
             bool hasTabulated = false;
             if((*it)->getnChildren() == 2)
             {
 #ifdef DARKBIT_DEBUG
-              std::cout << "  check whether two-body final state is tabulated: " 
+              std::cout << "  check whether two-body final state is tabulated: "
                 << (*(*it))[0]->getpID() << " " << (*(*it))[1]->getpID() <<
                 std::endl;
 #endif
@@ -503,19 +485,19 @@ namespace Gambit {
               if((*Dep::SimYieldTable).hasChannel(
                     (*(*it))[0]->getpID() , (*(*it))[1]->getpID(), *pit ))
               {
-                hasTabulated = true;                          
+                hasTabulated = true;
                 cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit,
                     *Dep::TH_ProcessCatalog, histList,
-                    *Dep::cascadeMC_InitialState, weight, 
-                    cMC_minSpecSamples, cMC_maxSpecSamples
-//                    cMC_specValidThreshold
+                    *Dep::cascadeMC_InitialState, weight,
+                    cMC_numSpecSamples
                     );
                 // Check if an error was raised
+                ignored = false;
                 if(piped_errors.inquire())
                 {
                   Loop::wrapup();
                   return;
-                }   
+                }
               }
             }
             if(!hasTabulated)
@@ -531,6 +513,7 @@ namespace Gambit {
 #pragma omp critical (cascadeMC_histList)
                   histList[
                     *Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
+                  ignored = false;
                 }
                 // Check if tabulated spectra exist for this final state
                 else if((*Dep::SimYieldTable).hasChannel( child->getpID(),
@@ -538,33 +521,34 @@ namespace Gambit {
                 {
                   cascadeMC_sampleSimYield(*Dep::SimYieldTable, child, *pit,
                       *Dep::TH_ProcessCatalog, histList,
-                      *Dep::cascadeMC_InitialState, weight, 
-                      cMC_minSpecSamples, cMC_maxSpecSamples
-//                      cMC_specValidThreshold
+                      *Dep::cascadeMC_InitialState, weight,
+                      cMC_numSpecSamples
                       );
                   // Check if an error was raised
+                  ignored = false;
                   if(piped_errors.inquire())
                   {
                     Loop::wrapup();
                     return;
-                  }                      
+                  }
                 }
               }
             }
-            // FIXME: Issue warning if nothing is added to spectrum
-          }  
+          }
+          if (ignored)
+          {
+            DarkBit_warning().raise(LOCAL_INFO, 
+                "WARNING FCMC: Missing complete decay information for " 
+                + (*it)->getpID() + ". This state is ignored.");
+          }
         }
       }
-      // Note: Spectrum-dependent convergence checks are commented out for the
-      // moment.  A fixed-number-of-runs scheme seems to work as well and is
-      // less dependent on user input.
-      /*
       // Check if finished every cMC_endCheckFrequency events
       if((*Loop::iteration % cMC_endCheckFrequency) == 0)
-      {   
+      {
         enum status{untouched,unfinished,finished};
         status cond = untouched;
-        for(std::vector<std::string>::const_iterator it = 
+        for(std::vector<std::string>::const_iterator it =
             Dep::cascadeMC_FinalStates->begin();
             it != Dep::cascadeMC_FinalStates->end(); ++it)
         {
@@ -574,6 +558,11 @@ namespace Gambit {
             SimpleHist hist;
 #pragma omp critical (cascadeMC_histList)
             hist = histList[*Dep::cascadeMC_InitialState][*it];
+#ifdef DARKBIT_DEBUG
+            std::cout << "Checking whether convergence is reached" << std::endl;
+            for ( int i = 0; i < hist.nBins; i++ )
+              std::cout << "Estimated error at " << hist.binCenter(i) << " GeV : " << hist.getRelError(i) << std::endl;
+#endif
             double sbRatioMax=-1.0;
             int maxBin=0;
             for(int i=0; i<hist.nBins; i++)
@@ -587,6 +576,11 @@ namespace Gambit {
                 maxBin=i;
               }
             }
+#ifdef DARKBIT_DEBUG
+            std::cout << "Estimated maxBin: " << maxBin << std::endl;
+            std::cout << "Energy at maxBin: " << hist.binCenter(maxBin) << std::endl;
+            std::cout << "Estimated error at maxBin: " << hist.getRelError(maxBin) << std::endl;
+#endif
             // Check if end condition is fulfilled. If not, set cond to
             // unfinished.
             if(hist.getRelError(maxBin) > cMC_gammaRelError) cond = unfinished;
@@ -599,10 +593,13 @@ namespace Gambit {
         // Break Monte Carlo loop if all end conditions are fulfilled.
         if(cond==finished)
         {
+#ifdef DARKBIT_DEBUG
+          std::cout << "!! wrapping up !!" << std::endl;
+          std::cout << "Perfomed iterations: " << *Loop::iteration << std::endl;
+#endif
           Loop::wrapup();
         }
       }
-      */
     }
 
     // Convenience function for getting a daFunk::Funk object of a given spectrum.
@@ -610,9 +607,9 @@ namespace Gambit {
     // Function retrieving specific spectra (like cascadeMC_gammaSpectra)
     // should call this function.
     void cascadeMC_fetchSpectra(std::map<std::string, daFunk::Funk> &spectra,
-        std::string finalState, 
+        std::string finalState,
         const std::vector<std::string> &ini,
-        const std::vector<std::string> &fin, 
+        const std::vector<std::string> &fin,
         const std::map<std::string, std::map<std::string,SimpleHist> > &h,
         const std::map<std::string,int> &eventCounts)
     {
@@ -643,11 +640,11 @@ namespace Gambit {
           {
             *it2 /= eventCounts.at(*it);
 #ifdef DARKBIT_DEBUG
-            std::cout << E[i] << " " << *it2 << std::endl;    
+            std::cout << E[i] << " " << *it2 << std::endl;
 #endif
-            i++;                                       
+            i++;
           }
-          // FIXME: Default values provide 1-2% accuracy for singular integrals
+          // Default values provide 1-2% accuracy for singular integrals
           // Make this optional.
           spectra[*it] = daFunk::Funk(new daFunk::FunkInterp("E", E, dN_dE, "lin"));
 
@@ -697,21 +694,21 @@ namespace Gambit {
     void cascadeMC_PrintResult(bool &dummy)
     {
       dummy=true;
-      using namespace Pipes::cascadeMC_PrintResult; 
-      logger() << "************************" << std::endl;     
-      logger() << "Cascade decay results:" << std::endl;  
-      logger() << "------------------------" << std::endl;     
+      using namespace Pipes::cascadeMC_PrintResult;
+      logger() << "************************" << std::endl;
+      logger() << "Cascade decay results:" << std::endl;
+      logger() << "------------------------" << std::endl;
       std::map<std::string, std::map<std::string,SimpleHist> >
         cascadeMC_HistList = *Dep::cascadeMC_Histograms;
 
-      for(std::map<std::string, std::map<std::string,SimpleHist> >::iterator 
+      for(std::map<std::string, std::map<std::string,SimpleHist> >::iterator
           it = cascadeMC_HistList.begin();
           it != cascadeMC_HistList.end(); ++it )
       {
         logger() << "Initial state: " << (it->first) << ":" << std::endl;
         int nEvents = (*Dep::cascadeMC_EventCount).at(it->first);
         logger() << "Number of events: " << nEvents << std::endl;
-        for(std::map<std::string,SimpleHist>::iterator 
+        for(std::map<std::string,SimpleHist>::iterator
             it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
         {
           logger() << (it2->first) << ": ";
@@ -723,12 +720,12 @@ namespace Gambit {
           }
           logger() << std::endl;
         }
-        logger() << "------------------------" << std::endl;    
+        logger() << "------------------------" << std::endl;
       }
       logger() << "************************" << std::endl;
     }
     */
-  } 
+  }
 }
 
 #undef DARKBIT_DEBUG
