@@ -2,17 +2,17 @@
 //   *********************************************
 ///  \file
 ///
-///  Type definition header for DarkBit SimpleHist 
+///  Type definition header for DarkBit SimpleHist
 ///  types.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Lars A. Dal  
+///
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Feb
-///  
+///
 ///  *********************************************
 
 
@@ -38,7 +38,7 @@ namespace Gambit
     {
 
         // Functions
-        
+
         SimpleHist(){}
 
         SimpleHist(int nBins, double Emin, double Emax, bool logscale);
@@ -70,7 +70,7 @@ namespace Gambit
         void divideByBinSize();
 
         /// Multiply all bin contents by x
-        void multiply(double x);     
+        void multiply(double x);
 
         /// Find bin index for given value
         int findIndex(double val) const;
@@ -92,7 +92,7 @@ namespace Gambit
         std::vector<double> binLower;
         std::vector<double> binVals;
         /// Sum of the squares of all weights
-        std::vector<double> wtSq; 
+        std::vector<double> wtSq;
         int nBins;
     };
 

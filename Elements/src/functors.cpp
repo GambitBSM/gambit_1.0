@@ -1408,7 +1408,6 @@ namespace Gambit
     /// Construct the list of known models only if it doesn't yet exist
     void module_functor_common::fill_activeModelFlags()
     {
-      // Construct the list of known models only if it doesn't yet exist
       if (activeModelFlags.empty())
       {
         // First get all the explicitly allowed models.

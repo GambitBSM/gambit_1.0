@@ -99,11 +99,9 @@ set(great_lib "libgreat")
 set(great_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/GreAT/${great_ver}")
 ExternalProject_Add(great
   GIT_REPOSITORY https://gitlab.in2p3.fr/derome/GreAT.git
-  DOWNLOAD_DIR ${scanner_download}
   SOURCE_DIR ${great_dir}
-  BINARY_DIR ${great_dir}/build
   CMAKE_COMMAND ${CMAKE_COMMAND} ..
-  CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+  CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
   INSTALL_COMMAND ""
 )

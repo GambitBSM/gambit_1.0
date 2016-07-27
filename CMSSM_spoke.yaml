@@ -31,15 +31,13 @@ Parameters:
       fixed_value: 235 # km/s
     vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
 
-  GalacticHalo_gNFW:
-    rhos: .4
-    rs: 8.
-    alpha: 1
-    beta: 3
-    gamma: 1
+#  GalacticHalo_gNFW:
+#    rhos: .4
+#    rs: 8.
+#    alpha: 1
+#    beta: 3
+#    gamma: 1
      
 Priors:
 
@@ -120,6 +118,11 @@ Rules:
       fast: 1
       omtype: 1
       Beps: 1e-5
+  
+  - capability: DarkSUSY_PointInit
+    function: DarkSUSY_PointInit_MSSM
+    options:
+      use_dsSLHAread: False
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs

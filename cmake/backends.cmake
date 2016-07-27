@@ -181,37 +181,74 @@ add_extra_targets(gamlike ${gamlike_dir} null clean)
 add_dependencies(backends-nonfree gamlike)
 
 
-# MicrOmegas for MSSM
-set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/MSSM")
-set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/MSSM")
-set(micromegas_dl "micromegas_3.6.9.2.tgz")
+# MicrOmegas base (for all models)
+set(micromegas_version "3.6.9.2")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${micromegas_version}")
+set(micromegas_patch "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/patch_micromegas_${micromegas_version}")
+set(micromegas_dl "micromegas_${micromegas_version}.tgz")
 ExternalProject_Add(micromegas
-  DOWNLOAD_COMMAND ""
+  URL https://lapth.cnrs.fr/micromegas/downloadarea/code/${micromegas_dl}
+  URL_MD5 72807f6d0ef80737554d8702b6b212c1
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${micromegas_dir}
+  PATCH_COMMAND patch -p1 < ${micromegas_patch}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND cd ${micromegas_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
+  BUILD_COMMAND make flags
+        COMMAND sed ${dashi} -e "s|FC =.*|FC = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CC =.*|CC = ${CMAKE_C_COMPILER}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CXX =.*|CXX = ${CMAKE_CXX_COMPILER}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|FFLAGS =.*|FFLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CFLAGS =.*|CFLAGS = ${CMAKE_C_FLAGS}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|CXXFLAGS =.*|CXXFLAGS = ${CMAKE_CXX_FLAGS}|" <SOURCE_DIR>/CalcHEP_src/FlagsForMake
+        COMMAND sed ${dashi} -e "s|FC=.*|FC=\"${CMAKE_Fortran_COMPILER}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CC=.*|CC=\"${CMAKE_C_COMPILER}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CXX=.*|CXX=\"${CMAKE_CXX_COMPILER}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|FFLAGS=.*|FFLAGS=\"${CMAKE_Fortran_FLAGS}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CFLAGS=.*|CFLAGS=\"${CMAKE_C_FLAGS}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|CXXFLAGS=.*|CXXFLAGS=\"${CMAKE_CXX_FLAGS}\"|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND sed ${dashi} -e "s|lFort=.*|lFort=|" <SOURCE_DIR>/CalcHEP_src/FlagsForSh
+        COMMAND make
   INSTALL_COMMAND ""
 )
 add_extra_targets(micromegas ${micromegas_dir} ${backend_download}/${micromegas_dl} clean)
 add_dependencies(backends micromegas)
 
-
-# MicrOmegas for SingletDM
-set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/SingletDM")
-set(micromegasSingletDM_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/SingletDM")
-set(micromegasSingletDM_dl "micromegas_3.6.9.2.tgz")
-ExternalProject_Add(micromegasSingletDM
+# MicrOmegas for MSSM
+set(micromegas_model "MSSM")
+set(micromegas_version "3.6.9.2")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${micromegas_version}")
+set(micromegas_patch "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/patch_micromegas_${micromegas_version}_${micromegas_model}")
+ExternalProject_Add(micromegas_${micromegas_model}
   DOWNLOAD_COMMAND ""
-  SOURCE_DIR ${micromegasSingletDM_dir}
+  SOURCE_DIR ${micromegas_dir}
+  PATCH_COMMAND patch -p1 < ${micromegas_patch}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND cd ${micromegasSingletDM_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
+  BUILD_COMMAND cd ${micromegas_model} && make sharedlib main=main.c
   INSTALL_COMMAND ""
 )
-add_extra_targets(micromegasSingletDM ${micromegasSingletDM_dir} ${backend_download}/${micromegasSingletDM_dl} clean)
-add_dependencies(backends micromegasSingletDM)
+add_chained_extra_targets(micromegas_${micromegas_model} ${micromegas_dir}/${micromegas_model} clean micromegas)
+add_dependencies(micromegas_${micromegas_model} micromegas)
+add_dependencies(backends micromegas_${micromegas_model})
 
+# MicrOmegas for SingletDM
+set(micromegas_model "SingletDM")
+set(micromegas_version "3.6.9.2")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${micromegas_version}")
+set(micromegas_patch "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/patch_micromegas_${micromegas_version}_${micromegas_model}")
+ExternalProject_Add(micromegas_${micromegas_model}
+  DOWNLOAD_COMMAND ""
+  SOURCE_DIR ${micromegas_dir}
+  PATCH_COMMAND ./newProject ${micromegas_model} && patch -p1 < ${micromegas_patch}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND cd ${micromegas_model} && make sharedlib main=main.c
+  INSTALL_COMMAND ""
+)
+add_chained_extra_targets(micromegas_${micromegas_model} ${micromegas_dir}/${micromegas_model} clean micromegas)
+add_dependencies(micromegas_${micromegas_model} micromegas)
+add_dependencies(backends micromegas_${micromegas_model})
 
 # Pythia
 option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimization on/off" ON)

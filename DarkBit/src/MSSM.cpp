@@ -7,9 +7,9 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de) 
+///          (torsten.bringmann@desy.de)
 ///  \date 2013 Jun
 ///  \date 2014 Mar - 2015 May
 ///
@@ -39,13 +39,13 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    /*! \brief Fully initialize DarkSUSY to the current model point.  
+    /*! \brief Fully initialize DarkSUSY to the current model point.
      *
      * Only selected MSSM parameter spaces are implemented.  Returns bool
      * indicating if point initialization was successful, which is essentially
      * always true for models that satisfy the dependency resolver.
      *
-     * Supported models: CMSSM, MSSM30atQ
+     * Supported models: MSSM63atQ
      */
     void DarkSUSY_PointInit_MSSM(bool &result)
     {
@@ -85,8 +85,8 @@ namespace Gambit {
         double am0    = *Param["M0"];     // m0
         double amhf   = *Param["M12"];    // m_1/2
         double aa0    = *Param["A0"];     // A0
-        double asgnmu = *Param["signmu"];  // sign(mu)
-        double atanbe = *Param["tanb"];   // tan(beta)
+        double asgnmu = *Param["SignMu"];  // sign(mu)
+        double atanbe = *Param["TanBeta"];   // tan(beta)
         logger() << "Initializing DarkSUSY via dsgive_model_isasugra:"
           << std::endl;
         logger() << "  m0        =" << am0    << std::endl;
@@ -119,8 +119,8 @@ namespace Gambit {
         }
       }
 
-      // use SLHA format for initialization of MSSM30atQ or CMSSM
-      else if (ModelInUse("MSSM30atQ") or ModelInUse("CMSSM"))
+      // use SLHA format for initialization
+      else if (ModelInUse("MSSM63atQ") || ModelInUse("CMSSM"))
       {
         // Retrieve SLHAea object from spectrum object 
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
@@ -160,7 +160,6 @@ namespace Gambit {
           logger() << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
-          // FIXME: Check whether DS initialized correctly
           result = true;
         }
         // Do pure diskless SLHA initialisation, including (s)particle widths from GAMBIT.
@@ -194,7 +193,7 @@ namespace Gambit {
         void(*setMassesForIB)(bool), int IBch, double Eg, double
         E1, double M_DM, double m_1, double m_2)
     {
-      double E2 = 2*M_DM - Eg - E1;  
+      double E2 = 2*M_DM - Eg - E1;
       double p12 = E1*E1-m_1*m_1;
       double p22 = E2*E2-m_2*m_2;
       double p22min = Eg*Eg+p12-2*Eg*sqrt(p12);
@@ -211,14 +210,14 @@ namespace Gambit {
       // apply to the v->0 limit)
 
       setMassesForIB(true);
-      double result = IBfunc(IBch,x,y);          
+      double result = IBfunc(IBch,x,y);
       setMassesForIB(false);
 
 #ifdef DARKBIT_DEBUG
       std::cout << "  x, y = " << x << ", " << y << std::endl;
-      std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", " 
+      std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", "
            << E2 << std::endl;
-      std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " 
+      std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", "
            << m_2 << std::endl;
       std::cout << "  IBfunc = " << result << std::endl;
 #endif
@@ -236,7 +235,7 @@ namespace Gambit {
       using namespace Pipes::TH_ProcessCatalog_MSSM;
       using std::vector;
       using std::string;
-      
+
       std::string DMid = *Dep::DarkMatter_ID;
       if ( DMid != "~chi0_1" )
       {
@@ -245,19 +244,19 @@ namespace Gambit {
       }
 
       // Instantiate new empty ProcessCatalog
-      TH_ProcessCatalog catalog;      
+      TH_ProcessCatalog catalog;
 
 
       ///////////////////////////
       // Import particle masses
       ///////////////////////////
-      
+
       // Import based on Spectrum objects
       const Spectrum& matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum& spec = matched_spectra.get_HE();
       const SubSpectrum& SM   = matched_spectra.get_LE();
       const SMInputs& SMI  = matched_spectra.get_SMInputs();  
-      
+
       // Get SM masses
 #define getSMmass(Name, spinX2)                                               \
         catalog.particleProperties.insert(                                    \
@@ -271,20 +270,20 @@ namespace Gambit {
       getSMmass("e+_3",     1)
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
-      getSMmass("W-",     2)      
-      getSMmass("g",      2)   
-      getSMmass("gamma",  2)   
+      getSMmass("W-",     2)
+      getSMmass("g",      2)
+      getSMmass("gamma",  2)
       getSMmass("d_3",      1)
       getSMmass("dbar_3",   1)
       getSMmass("u_3",      1)
-      getSMmass("ubar_3",   1)          
+      getSMmass("ubar_3",   1)
 #undef getSMmass
 
       // Pole masses not available for the light quarks.
 #define addParticle(Name, Mass, spinX2)                                       \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
-        Name , TH_ParticleProperty(Mass, spinX2)));                           
+        Name , TH_ParticleProperty(Mass, spinX2)));
       addParticle("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
       addParticle("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
       addParticle("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
@@ -299,16 +298,16 @@ namespace Gambit {
       addParticle("nu_mu",    0.0,     1)
       addParticle("nubar_mu", 0.0,     1)
       addParticle("nu_tau",   0.0,     1)
-      addParticle("nubar_tau",0.0,     1)   
+      addParticle("nubar_tau",0.0,     1)
 
       addParticle("pi0",   meson_masses.pi0,       0)
       addParticle("pi+",   meson_masses.pi_plus,   0)
       addParticle("pi-",   meson_masses.pi_minus,  0)
       addParticle("eta",   meson_masses.eta,       0)
-      addParticle("rho0",  meson_masses.rho0,      1)        
-      addParticle("rho+",  meson_masses.rho_plus,  1)       
-      addParticle("rho-",  meson_masses.rho_minus, 1)             
-      addParticle("omega", meson_masses.omega,     1)         
+      addParticle("rho0",  meson_masses.rho0,      1)
+      addParticle("rho+",  meson_masses.rho_plus,  1)
+      addParticle("rho-",  meson_masses.rho_minus, 1)
+      addParticle("omega", meson_masses.omega,     1)
 #undef addParticle
 
       // Get MSSM masses
@@ -320,54 +319,54 @@ namespace Gambit {
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)
       getMSSMmass("h0_2"   , 0)
-      getMSSMmass("A0"     , 0)      
-      getMSSMmass("~chi0_1", 1) 
-      getMSSMmass("~d_1", 0) 
-      getMSSMmass("~dbar_1", 0) 
-      getMSSMmass("~u_1", 0) 
-      getMSSMmass("~ubar_1", 0) 
-      getMSSMmass("~d_2", 0) 
-      getMSSMmass("~dbar_2", 0) 
-      getMSSMmass("~u_2", 0) 
-      getMSSMmass("~ubar_2", 0) 
-      getMSSMmass("~d_3", 0) 
-      getMSSMmass("~dbar_3", 0) 
-      getMSSMmass("~u_3", 0) 
-      getMSSMmass("~ubar_3", 0) 
-      getMSSMmass("~d_4", 0) 
-      getMSSMmass("~dbar_4", 0) 
-      getMSSMmass("~u_4", 0) 
-      getMSSMmass("~ubar_4", 0) 
-      getMSSMmass("~d_5", 0) 
-      getMSSMmass("~dbar_5", 0) 
-      getMSSMmass("~u_5", 0) 
-      getMSSMmass("~ubar_5", 0) 
-      getMSSMmass("~d_6", 0) 
-      getMSSMmass("~dbar_6", 0) 
-      getMSSMmass("~u_6", 0) 
-      getMSSMmass("~ubar_6", 0) 
-//      getMSSMmass("~e_1", 0) 
-//      getMSSMmass("~ebar_1", 0) 
-//      getMSSMmass("~e-_1", 0) 
-      getMSSMmass("~e+_1", 0) 
-      getMSSMmass("~e-_1", 0) 
-      getMSSMmass("~e+_2", 0) 
-      getMSSMmass("~e-_2", 0) 
-      getMSSMmass("~e+_3", 0) 
-      getMSSMmass("~e-_3", 0) 
-      getMSSMmass("~e+_4", 0) 
-      getMSSMmass("~e-_4", 0) 
-      getMSSMmass("~e+_5", 0) 
-      getMSSMmass("~e-_5", 0) 
-      getMSSMmass("~e+_6", 0) 
-      getMSSMmass("~e-_6", 0) 
-      getMSSMmass("~nu_1", 0) 
-      getMSSMmass("~nubar_1", 0) 
-      getMSSMmass("~nu_2", 0) 
-      getMSSMmass("~nubar_2", 0) 
-      getMSSMmass("~nu_3", 0) 
-      getMSSMmass("~nubar_3", 0) 
-      
+      getMSSMmass("A0"     , 0)
+      getMSSMmass("~chi0_1", 1)
+      getMSSMmass("~d_1", 0)
+      getMSSMmass("~dbar_1", 0)
+      getMSSMmass("~u_1", 0)
+      getMSSMmass("~ubar_1", 0)
+      getMSSMmass("~d_2", 0)
+      getMSSMmass("~dbar_2", 0)
+      getMSSMmass("~u_2", 0)
+      getMSSMmass("~ubar_2", 0)
+      getMSSMmass("~d_3", 0)
+      getMSSMmass("~dbar_3", 0)
+      getMSSMmass("~u_3", 0)
+      getMSSMmass("~ubar_3", 0)
+      getMSSMmass("~d_4", 0)
+      getMSSMmass("~dbar_4", 0)
+      getMSSMmass("~u_4", 0)
+      getMSSMmass("~ubar_4", 0)
+      getMSSMmass("~d_5", 0)
+      getMSSMmass("~dbar_5", 0)
+      getMSSMmass("~u_5", 0)
+      getMSSMmass("~ubar_5", 0)
+      getMSSMmass("~d_6", 0)
+      getMSSMmass("~dbar_6", 0)
+      getMSSMmass("~u_6", 0)
+      getMSSMmass("~ubar_6", 0)
+//      getMSSMmass("~e_1", 0)
+//      getMSSMmass("~ebar_1", 0)
+//      getMSSMmass("~e-_1", 0)
+      getMSSMmass("~e+_1", 0)
+      getMSSMmass("~e-_1", 0)
+      getMSSMmass("~e+_2", 0)
+      getMSSMmass("~e-_2", 0)
+      getMSSMmass("~e+_3", 0)
+      getMSSMmass("~e-_3", 0)
+      getMSSMmass("~e+_4", 0)
+      getMSSMmass("~e-_4", 0)
+      getMSSMmass("~e+_5", 0)
+      getMSSMmass("~e-_5", 0)
+      getMSSMmass("~e+_6", 0)
+      getMSSMmass("~e-_6", 0)
+      getMSSMmass("~nu_1", 0)
+      getMSSMmass("~nubar_1", 0)
+      getMSSMmass("~nu_2", 0)
+      getMSSMmass("~nubar_2", 0)
+      getMSSMmass("~nu_3", 0)
+      getMSSMmass("~nubar_3", 0)
+
 #undef getMSSMmass
 
 
@@ -378,11 +377,11 @@ namespace Gambit {
       // Set of possible final state particles. Used to determine which decays to import.
       std::set<string> annFinalStates;
 
-      // Declare DM annihilation process                   
-      TH_Process process(DMid, DMid);      
+      // Declare DM annihilation process
+      TH_Process process(DMid, DMid);
       double M_DM = catalog.getParticleProperty(DMid).mass;
       // Helper variables
-      int index; 
+      int index;
       double m_1, m_2, sv;
 
       // Macro for setting up 2-body annihilations (chi chi -> X X) from results in DS
@@ -422,7 +421,7 @@ namespace Gambit {
       SETUP_DS_PROCESS(H2Z0,      9 , h0_1,   Z0,     1   )
       SETUP_DS_PROCESS(H3Z0,      10, A0,     Z0,     1   )
       // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-      SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  
+      SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )
       SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )
       SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
       SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
@@ -462,7 +461,6 @@ namespace Gambit {
       if(m_1 + m_2 < 2*M_DM)                                                 \
       {                                                                      \
         index = SV_IDX;                                                      \
-        /* FIXME: Double-check that import works correctly */                \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
         daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
             STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
@@ -478,7 +476,7 @@ namespace Gambit {
         process.channelList.push_back(CAT(channel_,NAME));                   \
         annFinalStates.insert(str_flav_to_mass(STRINGIFY(P1)));                                \
         annFinalStates.insert(str_flav_to_mass(STRINGIFY(P2)));                                \
-      }                                        
+      }
 
       /// Option ignore_three_body<bool>: Ignore three-body final states (default false)
       if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
@@ -486,38 +484,38 @@ namespace Gambit {
         // Set DarkSUSY DM mass parameter used in 3-body decays
         BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty(DMid).mass;
 
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     
-            (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
-        // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     
-            (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,
+            (BEreq::dsIBwwdxdy.pointer()),  13, 1   )
         // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     
-            (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     
-            (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,
+            (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )
+        // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,
+            (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,
+            (BEreq::dsIBhhdxdy.pointer()),  0,  1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,
             (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,
             (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,
             (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,
             (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   
-            (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,
+            (BEreq::dsIBffdxdy.pointer()) , 21, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,
             (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,
             (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,
             (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,
             (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
       }
 #undef SETUP_DS_PROCESS_GAMMA3BODY
 
-      
+
       /////////////////////////////
       // Import Decay information
       /////////////////////////////
@@ -532,23 +530,24 @@ namespace Gambit {
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
-      auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3");
+      // Exclude also ttbar final states
+      auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "u_3", "ubar_3", "e+_2", "e-_2", "e+_3", "e-_3");
 
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
-      if(annFinalStates.count("H+") == 1) 
+      if(annFinalStates.count("H+") == 1)
         ImportDecays("H+", catalog, importedDecays, tbl, minBranching, excludeDecays);
-      if(annFinalStates.count("H-") == 1) 
+      if(annFinalStates.count("H-") == 1)
         ImportDecays("H-", catalog, importedDecays, tbl, minBranching, excludeDecays);
-      if(annFinalStates.count("h0_1") == 1) 
+      if(annFinalStates.count("h0_1") == 1)
         ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching, excludeDecays);
-      if(annFinalStates.count("h0_2") == 1) 
+      if(annFinalStates.count("h0_2") == 1)
         ImportDecays("h0_2", catalog, importedDecays, tbl, minBranching, excludeDecays);
-      if(annFinalStates.count("A0") == 1) 
+      if(annFinalStates.count("A0") == 1)
         ImportDecays("A0", catalog, importedDecays, tbl, minBranching, excludeDecays);
 
       // Add process to provess list
-      catalog.processList.push_back(process);                
+      catalog.processList.push_back(process);
 
       // Validate
       catalog.validate();
