@@ -154,8 +154,8 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    - purpose:    LogLike
-      capability: LHC_Combined_LogLike
+    #- purpose:    LogLike
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
@@ -489,4 +489,4 @@ KeyValues:
 
   default_output_path: "runs/CMSSM/"
 
-  debug: true
+  #debug: true

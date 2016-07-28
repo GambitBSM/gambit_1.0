@@ -40,6 +40,8 @@
 #include <unistd.h> // I think this should work on osx as well...
 #include <string>
 
+#include "gambit/Utils/mpiwrapper.hpp"
+
 #include "gambit/Utils/file_lock.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
@@ -108,6 +110,9 @@ namespace Gambit
         // Attempt to gain the lock. If the lock cannot be obtained, will block until it can.
         // This operation is atomic and so should be safe.
         int return_code = lockf(fd, F_LOCK, 0);
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+        cout << "Got lock " << my_lock_fname << " in rank " << rank << endl;
 
         if(return_code!=0)
         {
@@ -133,6 +138,9 @@ namespace Gambit
           else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
 
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+        cout << "Releasing lock " << my_lock_fname << " in rank " << rank << endl;
         /// Release the lock
         int return_code = lockf(fd, F_ULOCK, 0);
 
@@ -144,7 +152,7 @@ namespace Gambit
           if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
           else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
-        have_lock = false; 
+        have_lock = false;
       }
 
       /// @} 
