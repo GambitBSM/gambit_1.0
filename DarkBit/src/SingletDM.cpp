@@ -7,12 +7,12 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Christoph Weniger  
+///
+///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date Oct 2014, Apr 2015
 ///
-///  \author Torsten Bringmann 
+///  \author Torsten Bringmann
 ///  \date May 2015
 ///
 ///  \author Pat Scott
@@ -30,7 +30,7 @@
 
 namespace Gambit
 {
-  
+
   namespace DarkBit
   {
 
@@ -44,7 +44,7 @@ namespace Gambit
             double vev,
             double alpha_strong)
         : v0 (vev),
-          alpha_s (alpha_strong)   
+          alpha_s (alpha_strong)
         {
           mh   = catalog->getParticleProperty("h0_1").mass;
           mb   = catalog->getParticleProperty("d_3").mass;
@@ -84,7 +84,7 @@ namespace Gambit
           }
 
           if ( channel == "hh" )
-          { 
+          {
             if ( sqrt_s > mh*2 )
             {
               double GeV2tocm3s1 = gev2cm2*s2cm;
@@ -152,7 +152,7 @@ namespace Gambit
           double s = 4*mass*mass/(1-v*v/4);
           double vf = sqrt(1-4*pow(mf,2)/s);
           double Xf = 1;
-          if ( is_quark ) Xf = 3 * 
+          if ( is_quark ) Xf = 3 *
             (1+(3/2*log(pow(mf,2)/s)+9/4)*4*alpha_s/3/M_PI);
           double GeV2tocm3s1 = gev2cm2*s2cm;
           return pow(lambda,2)*
@@ -165,7 +165,7 @@ namespace Gambit
           double s = 4*mass*mass/(1-v*v/4);  // v is relative velocity
           double vh = sqrt(1-4*mh*mh/s);  // vh and vs are lab velocities
           // Hardcoded lower velocity avoids nan results
-          double vs = std::max(v/2, 1e-6);  
+          double vs = std::max(v/2, 1e-6);
           double tp = pow(mass,2)+pow(mh,2)-0.5*s*(1-vs*vh);
           double tm = pow(mass,2)+pow(mh,2)-0.5*s*(1+vs*vh);
 
@@ -222,7 +222,7 @@ namespace Gambit
       // Higgs branching ratios and total width Gamma [GeV], as function of
       // mass [GeV] (90 - 150 GeV)
       ASCIItableReader table(filename);
-      std::vector<std::string> colnames = 
+      std::vector<std::string> colnames =
         initVector<std::string>("mass", "bb", "tautau", "mumu",
             "ss", "cc", "tt", "gg", "gammagamma", "Zgamma",
             "WW", "ZZ", "Gamma");
@@ -244,7 +244,7 @@ namespace Gambit
       using std::string;
 
       // Initialize Higgs decay tables (static, hence only once)
-      static std::map<string, daFunk::Funk> f_vs_mass = 
+      static std::map<string, daFunk::Funk> f_vs_mass =
         get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
 
       // Initialize empty catalog and main annihilation process
@@ -255,14 +255,14 @@ namespace Gambit
       ///////////////////////////////////////
       // Import particle masses and couplings
       ///////////////////////////////////////
-      
+
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));    
       #define addParticle(Name, Mass, spinX2)                                   \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(Mass, spinX2)));    
+       (Name , TH_ParticleProperty(Mass, spinX2)));
 
       // Import Spectrum objects
       const Spectrum& spec = *Dep::SingletDM_spectrum;
@@ -283,15 +283,15 @@ namespace Gambit
       getSMmass("e+_3",     1)
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
-      getSMmass("W-",     2)      
-      getSMmass("g",      2)   
-      getSMmass("gamma",  2)   
+      getSMmass("W-",     2)
+      getSMmass("g",      2)
+      getSMmass("gamma",  2)
       getSMmass("u_3",      1)
       getSMmass("ubar_3",   1)
       getSMmass("d_3",      1)
       getSMmass("dbar_3",   1)
 
-      // Pole masses not available for the light quarks.    
+      // Pole masses not available for the light quarks.
       addParticle("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
       addParticle("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
       addParticle("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
@@ -309,7 +309,7 @@ namespace Gambit
       addParticle("nu_mu",    0.0, 1)
       addParticle("nubar_mu", 0.0, 1)
       addParticle("nu_tau",   0.0, 1)
-      addParticle("nubar_tau",0.0, 1)      
+      addParticle("nubar_tau",0.0, 1)
 
       // Higgs-sector masses
       double mS = spec.get(Par::Pole_Mass,"S");
@@ -320,10 +320,10 @@ namespace Gambit
       addParticle("pi+",   meson_masses.pi_plus,   0)
       addParticle("pi-",   meson_masses.pi_minus,  0)
       addParticle("eta",   meson_masses.eta,       0)
-      addParticle("rho0",  meson_masses.rho0,      1)        
-      addParticle("rho+",  meson_masses.rho_plus,  1)       
-      addParticle("rho-",  meson_masses.rho_minus, 1)             
-      addParticle("omega", meson_masses.omega,     1)         
+      addParticle("rho0",  meson_masses.rho0,      1)
+      addParticle("rho+",  meson_masses.rho_plus,  1)
+      addParticle("rho-",  meson_masses.rho_minus, 1)
+      addParticle("omega", meson_masses.omega,     1)
 
       // Get rid of convenience macros
       #undef getSMmass
@@ -336,7 +336,7 @@ namespace Gambit
 
       // Import decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
-      
+
       // Save Higgs width for later
       double gammaH = tbl->at("h0_1").width_in_GeV;
 
@@ -344,9 +344,7 @@ namespace Gambit
       std::set<string> importedDecays;
 
       // Minimum branching ratio to include
-      double minBranching = 
-      // FIXME: Add getValue documentation
-        runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
+      double minBranching = 0;
 
       // Import relevant decays (only Higgs and subsequent decays)
       using DarkBit_utils::ImportDecays;
@@ -360,21 +358,20 @@ namespace Gambit
       // list.
       // (remark: the lowest threshold is here = 2*mS, whereas in DS-internal
       // conventions, this lowest threshold is not listed)
-      process_ann.thresholdResonances.threshold_energy.push_back(2*mS); 
-      auto channel = 
+      process_ann.resonances_thresholds.threshold_energy.push_back(2*mS);
+      auto channel =
         daFunk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
-      auto p1 = 
+      auto p1 =
         daFunk::vec<string>("d_3",   "W+", "u_2",   "e+_3", "Z0", "u_3",   "h0_1");
-      auto p2 = 
+      auto p2 =
         daFunk::vec<string>("dbar_3","W-", "ubar_2","e-_3", "Z0", "ubar_3","h0_1");
       {
         for ( unsigned int i = 0; i < channel.size(); i++ )
         {
-          double mtot_final = 
+          double mtot_final =
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
           // Include final states that are open for T~m/20
-          // FIXME: Is threshold sufficient?
           if ( mS*2 > mtot_final*0.5 )
           {
             daFunk::Funk kinematicFunction = daFunk::funcM(singletDM,
@@ -386,18 +383,18 @@ namespace Gambit
           }
           if ( mS*2 > mtot_final )
           {
-            process_ann.thresholdResonances.threshold_energy.
+            process_ann.resonances_thresholds.threshold_energy.
               push_back(mtot_final);
           }
         }
       }
 
       // Populate resonance list
-      if ( mH >= mS*2 ) process_ann.thresholdResonances.resonances.
+      if ( mH >= mS*2 ) process_ann.resonances_thresholds.resonances.
           push_back(TH_Resonance(mH, gammaH));
 
       catalog.processList.push_back(process_ann);
-      
+
       // Validate
       catalog.validate();
 

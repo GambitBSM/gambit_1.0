@@ -584,7 +584,7 @@ namespace Gambit
         result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error)
             + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error)
             + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error);
-        logger() << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
+        logger() << LogTags::debug << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
     }
 
     /// alpha^{-1}(mZ)^MSbar likelihood

@@ -36,7 +36,6 @@ namespace Gambit
     };
 
     /// Function to be minimised by GreAT
-    //double objective(double params[], const int param_dim, int &fcall, bool &quit, const bool validvector, void*& context);
     double LogLikelihoodFunction(TGreatPoint& point);
   }
 }

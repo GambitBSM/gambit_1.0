@@ -36,6 +36,7 @@ namespace Gambit
       double errsq = theoryerr*theoryerr + obserr*obserr;
       return - 0.5*pow(theory-obs,2)/errsq;
       // Naive normalisation for constant errsq: +log(theory/sqrt(errsq*2*pi))
+      // TODO: If theoryerr varies across the parameter space then we *must* have the normalisation factor, because it affects the shape of the likelihood function. Probably should insist on always having the dimensionful normalisation factors. Need to be careful with these normalisations.
       // Proper application for the AIC would require taking into account that errsq varies with theory value.
     }
 

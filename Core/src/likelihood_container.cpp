@@ -319,8 +319,29 @@ namespace Gambit
         printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
       }
 
+      // Ben: TODO: This appeared during a recent merge: is it correct? Isn't it done already above? Or was the above version supposed to be deleted?
+      //for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
+      //{
+      //  // Log the observables being tried.
+      //  str aux_tag = "dditional observable from " + dependencyResolver.get_functor(*it)->origin()
+      //                       + "::" + dependencyResolver.get_functor(*it)->name();
+      //  if (debug) logger() << LogTags::core <<  "Calculating a" << aux_tag << "." << EOM;
+      // 
+      //  try
+      //  {
+      //    dependencyResolver.calcObsLike(*it,getPtID());
+      //    if (debug) logger() << LogTags::core << "Computed a" << aux_tag << "." << EOM;
+      //  }
+      //  catch(Gambit::invalid_point_exception& e)
+      //  {
+      //    if (debug) logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
+      //             << "::" << e.thrower()->name() << ": " << e.message() << EOM;
+      //  }
+      //}
+
     }
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
+    logger() << "Total lnL: " << lnlike << EOM;
     dependencyResolver.resetAll();
 
     if(point_invalidated) printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.

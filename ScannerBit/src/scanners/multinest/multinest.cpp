@@ -279,6 +279,8 @@ namespace Gambit {
       /// physLive[1][nlive * (nPar + 1)]                      = 2D array containing the last set of live points 
       ///                                                        (physical parameters plus derived parameters) along 
       ///                                                        with their loglikelihood values
+      /// TODO: Multinest uses the likelihood of the lowest live point as the "threshold" for iterating, i.e. it throws out the live point if it finds a better one. So we can use this number to update the GAMBIT 'cutoff' threshold when evaluating the likelihood function.
+
       /// posterior[1][nSamples * (nPar + 2)]                  = posterior distribution containing nSamples points. 
       ///                                                        Each sample has nPar parameters (physical + derived)
       ///                                                        along with the their loglike value & posterior probability

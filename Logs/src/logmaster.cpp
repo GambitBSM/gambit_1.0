@@ -608,7 +608,6 @@ namespace Gambit
        current_backend[omp_get_thread_num()] = i;
        *this<<"Setting current_backend="<<i;
        *this<<logs<<debug<<EOM;
-       // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
     void LogMaster::leaving_backend()
     { 
@@ -619,7 +618,6 @@ namespace Gambit
        current_backend[omp_get_thread_num()] = -1;
        *this<<"Restoring current_backend="<<-1;
        *this<<logs<<debug<<EOM;
-       // TODO: Restore std::out and std::err to normal
     }
 
     /// Handle LogTag input

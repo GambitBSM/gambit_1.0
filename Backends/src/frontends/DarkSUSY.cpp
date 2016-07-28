@@ -612,10 +612,12 @@ BE_NAMESPACE
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     }
 
+    // FIXME: Commenting out these lines might help to fix the DD coupling
+    // problems (CW 2016-07-09)
     // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
-    mssmiuseful->kln = DSpart->kn(1);
+    mssmiuseful->kln = 1;
     dsvertx();
 
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
