@@ -187,7 +187,7 @@ set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${microm
 set(micromegas_patch "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/patch_micromegas_${micromegas_version}")
 set(micromegas_dl "micromegas_${micromegas_version}.tgz")
 ExternalProject_Add(micromegas
-  URL https://lapth.cnrs.fr/micromegas/downloadarea/code/${micromegas_dl}
+  URL http://lapth.cnrs.fr/micromegas/downloadarea/code/${micromegas_dl}
   URL_MD5 72807f6d0ef80737554d8702b6b212c1
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${micromegas_dir}
@@ -361,16 +361,16 @@ set(nulike_ver "1.0.3")
 set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
-set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
-set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
+set(nulike_patch "${PROJECT_SOURCE_DIR}/Backends/patches/nulike/${nulike_ver}")
 ExternalProject_Add(nulike
   URL ${nulike_location}
   URL_MD5 2e77fe4b18891e4838f8af8d861c341b
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
+  PATCH_COMMAND patch -p1 < ${nulike_patch}/patch_nulike_1.0.3.dif
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} MODULE=${FMODULE}
   INSTALL_COMMAND ""
 )
 add_extra_targets(nulike ${nulike_dir} null distclean)
@@ -381,7 +381,6 @@ add_dependencies(backends nulike)
 set(susyhit_ver "1\\.5")
 set(susyhit_lib "libsusyhit")
 set(susyhit_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SUSY-HIT/1.5")
-set(susyhit_short_dir "./Backends/installed/SUSY-HIT/1.5")
 set(susyhit_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SUSY-HIT/1.5")
 set(susyhit_dl "susyhit.tar.gz")
 ExternalProject_Add(susyhit
