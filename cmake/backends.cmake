@@ -184,7 +184,7 @@ set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/${microm
 set(micromegas_patch "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/${micromegas_version}/patch_micromegas_${micromegas_version}")
 set(micromegas_dl "micromegas_${micromegas_version}.tgz")
 ExternalProject_Add(micromegas
-  URL https://lapth.cnrs.fr/micromegas/downloadarea/code/${micromegas_dl}
+  URL http://lapth.cnrs.fr/micromegas/downloadarea/code/${micromegas_dl}
   URL_MD5 72807f6d0ef80737554d8702b6b212c1
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${micromegas_dir}
