@@ -40,6 +40,7 @@
 #include <unistd.h> // I think this should work on osx as well...
 #include <string>
 
+#include <sys/time.h>
 #include "gambit/Utils/mpiwrapper.hpp"
 
 #include "gambit/Utils/file_lock.hpp"
@@ -107,12 +108,15 @@ namespace Gambit
           else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
 
+        int rank;
+        struct timeval tv;
+        struct timezone tz;
+        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
         // Attempt to gain the lock. If the lock cannot be obtained, will block until it can.
         // This operation is atomic and so should be safe.
         int return_code = lockf(fd, F_LOCK, 0);
-        int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-        cout << "Got lock " << my_lock_fname << " in rank " << rank << endl;
+        gettimeofday(&tv, &tz);      
+        cout << "[" << tv.tv_sec << "." << tv.tv_usec << "] Got lock " << my_lock_fname << " in rank " << rank << endl;
 
         if(return_code!=0)
         {
@@ -140,7 +144,10 @@ namespace Gambit
 
         int rank;
         MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-        cout << "Releasing lock " << my_lock_fname << " in rank " << rank << endl;
+        struct timeval tv;
+        struct timezone tz;
+        gettimeofday(&tv, &tz);      
+        cout << "[" << tv.tv_sec << "." << tv.tv_usec << "] Releasing lock " << my_lock_fname << " in rank " << rank << endl;
         /// Release the lock
         int return_code = lockf(fd, F_ULOCK, 0);
 
