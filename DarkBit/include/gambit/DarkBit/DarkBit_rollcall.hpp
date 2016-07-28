@@ -66,9 +66,6 @@ START_MODULE
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum) 
       DEPENDENCY(decay_rates, DecayTable) 
-      ALLOW_MODELS(CMSSM,MSSM30atQ)
-      DEPENDENCY(MSSM_spectrum, const Spectrum*)
-      DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -161,11 +158,7 @@ START_MODULE
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
 #ifdef DARKBIT_RD_DEBUG
-<<<<<<< HEAD
       DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum) 
-=======
-      DEPENDENCY(MSSM_spectrum, const Spectrum*)
->>>>>>> master
 #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
@@ -370,11 +363,7 @@ START_MODULE
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-<<<<<<< HEAD
       DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)      
-=======
-      DEPENDENCY(MSSM_spectrum, const Spectrum*)
->>>>>>> master
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)
@@ -391,13 +380,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-<<<<<<< HEAD
       DEPENDENCY(decay_rates,DecayTable)      
       DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
-=======
-      DEPENDENCY(decay_rates,DecayTable)
-      DEPENDENCY(SingletDM_spectrum, const Spectrum*)
->>>>>>> master
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -987,7 +971,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM
     START_FUNCTION(std::string)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 
