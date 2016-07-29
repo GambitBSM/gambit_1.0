@@ -34,30 +34,12 @@ import datetime
 import sys
 import getopt
 
-execfile("./cmake/scripts/update_cmakelists.py")
+execfile("./Utils/scripts/harvesting_tools.py")
 
 scan_config = "./config/scanner_locations.yaml"
 test_config = "./config/objective_locations.yaml"
 
-# Remove C/C++ comments from 'text' (From http://stackoverflow.com/questions/241327/python-snippet-to-remove-c-and-c-comments)
-def comment_remover(text):
-    def replacer(match):
-        s = match.group(0)
-        if s.startswith('/'):
-            return ""
-        else:
-            return s
-    pattern = re.compile(
-        r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
-        re.DOTALL | re.MULTILINE
-    )
-    return re.sub(pattern, replacer, text[:])
-
-# No empties from re.split
-def neatsplit(regex,string):
-    return [x for x in re.split(regex,string) if x != '']
-
-# Actual updater program
+# Updater program
 def main(argv):
 
     exclude_plugins=set([])
@@ -69,9 +51,9 @@ def main(argv):
     verbose = False
     try:
         build_dir = argv[0]
-        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-scanners="])
+        opts, args = getopt.getopt(argv[1:],"vx:",["verbose","exclude-scanners="])
     except getopt.GetoptError:
-        print 'Usage: locate_scanners.py build_dir [flags]'
+        print 'Usage: scanner+_harvester.py build_dir [flags]'
         print ' flags:'
         print '        -v                       : More verbose output'
         print '        -x scanner1,scanner2,... : Exclude scanner1, scanner2, etc.'
@@ -79,7 +61,7 @@ def main(argv):
     for opt, arg in opts:
         if opt in ('-v','--verbose'):
             verbose = True
-            print 'locate_scanners.py: verbose=True'
+            print 'scanner+_harvester.py: verbose=True'
         elif opt in ('-x','--exclude-plugins','--exclude-plugin'):
             exclude_plugins.update(neatsplit(",",arg))
 
@@ -182,13 +164,13 @@ def main(argv):
 
         for directory in sorted(directories):
             scanbit_plugins[plug_type[i]][directory] = []
+            exclude_list = []
+            cmakelist_txt_out_tmp = ""
             # Find all source files in the ScannerBit scanner and test_function plugin directories
             sources = [ root + "/" + f for root,dirs,files in os.walk(src_paths[i] + "/" + directory) for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
             headers = []
             if os.path.exists(inc_paths[i] + "/" + directory):
                  headers = [ root + "/" + f for root,dirs,files in os.walk(inc_paths[i] + "/" + directory) for f in files if f.endswith(".hpp") or f.endswith(".h") ]
-
-            cmakelist_txt_out = cmakelist_txt_out+"set( " + plug_type[i] + "_plugin_sources_" + directory + "\n"
 
             # Work through the source files to find all plugins that need external linkage
             for source in sorted(sources):
@@ -308,18 +290,26 @@ def main(argv):
                                     scanbit_cxx_flags[plug_type[i]][directory] = []
                                 scanbit_cxx_flags[plug_type[i]][directory] += flags
 
-            ## begin adding plugin files to CMakeLists.txt ##
-                cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
+                # Add plugin source files to CMakeLists.txt.  Only add those for non-excluded plugins.
+                if(last_plugin_file[3] == "excluded"):
+                    exclude_list += [last_plugin_file[0]+" "+".".join([y for y in last_plugin_file[2] if y != ""])]
+                else:
+                    cmakelist_txt_out_tmp += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
 
-            cmakelist_txt_out += ")\n\n"
+            # Add entries for this plugin only if there are non-excluded sources found.
+            if (cmakelist_txt_out_tmp != ""):
+              # First do the sources
+              cmakelist_txt_out = cmakelist_txt_out+"set( " + plug_type[i] + "_plugin_sources_" + directory + "\n" + cmakelist_txt_out_tmp + ")\n\n"
+              # Now do the headers
+              cmakelist_txt_out += "set( " + plug_type[i] + "_plugin_headers_" + directory + "\n"
+              for header in sorted(headers):
+                  cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
+              cmakelist_txt_out += ")\n\n"
+            # Otherwise notify that the plugin is ditched.
+            else:
+              for x in exclude_list:
+                cmakelist_txt_out += "message(\"${BoldCyan} X Excluding " + x + " from ScannerBit configuration.${ColourReset}\")\n\n"
 
-            cmakelist_txt_out += "set( " + plug_type[i] + "_plugin_headers_" + directory + "\n"
-
-            for header in sorted(headers):
-                cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
-
-            cmakelist_txt_out += ")\n\n"
-            ## end adding plugin files to CMakeLists.txt ##
 
     for config_file, plugin_type in itertools.izip(config_files, plug_type):
         # Create the locations yaml files from the example if needed
@@ -488,7 +478,7 @@ def main(argv):
 ///  Priors rollcall file for ScannerBit.         \n\
 ///                                               \n\
 ///  This file has been automatically generated by\n\
-///  locate_scanners.py.  Please do not modify.   \n\
+///  scanner+_harvester.py.  Please do not modify.\n\
 ///                                               \n\
 ///***********************************************\n\
 ///                                               \n\
@@ -517,7 +507,7 @@ def main(argv):
 #  Cmake CMakeLists.txt file for ScannerBit.     \n\
 #                                                \n\
 #  This file has been automatically generated by \n\
-#  locate_scanners.py.  Please do not modify.    \n\
+#  scanner+_harvester.py.  Please do not modify. \n\
 #                                                \n\
 #************************************************\n\
 #                                                \n\
@@ -593,7 +583,6 @@ endif()                                          \n\n"
         for directory in sorted(directories):
 
             towrite += "#################### lib" + plug_type[i] + "_" + directory + ".so ####################\n\n"
-            towrite += "set (" + plug_type[i] + "_ok_flag_" + directory + " \"\")\n\n"
             
             towrite += "set (" + plug_type[i] + "_compile_flags_" + directory + " \"${PLUGIN_COMPILE_FLAGS}"
             if scanbit_cxx_flags.has_key(plug_type[i]):
@@ -603,10 +592,12 @@ endif()                                          \n\n"
             towrite += "\")\n\n"
 
             for plug in scanbit_plugins[plug_type[i]][directory]:
+                nothing_excluded = True
                 if plug[3] == "excluded":
-                    towrite += "set (" + plug_type[i] + "_ok_flag_" + directory + "\"    user: " + plug[4] + "\\n\")\n"
-
-            towrite += "\n"
+                    nothing_excluded = False
+                    towrite += "set (" + plug_type[i] + "_ok_flag_" + directory + " \"    user: " + plug[4] + "\\n\")\n\n"
+            if (nothing_excluded):
+                towrite += "set (" + plug_type[i] + "_ok_flag_" + directory + " \"\")\n\n"
 
             towrite += "set (" + plug_type[i] + "_plugin_libraries_" + directory + "\n"
             if scanbit_libs.has_key(plug_type[i]):
@@ -808,7 +799,7 @@ endif()                                          \n\n"
 #  Scanner required arguments for GAMBIT.        \n\
 #                                                \n\
 #  This file has been automatically generated by \n\
-#  locate_scanners.py.  Please do not modify.    \n\
+#  scanner+_harvester.py.  Please do not modify. \n\
 #                                                \n\
 #************************************************\n\
 #                                                \n\
@@ -852,7 +843,7 @@ endif()                                          \n\n"
 #  Scanner flags for GAMBIT.                     \n\
 #                                                \n\
 #  This file has been automatically generated by \n\
-#  locate_scanners.py.  Please do not modify.    \n\
+#  scanner+_harvester.py.  Please do not modify. \n\
 #                                                \n\
 #************************************************\n\
 #                                                \n\
@@ -892,7 +883,7 @@ endif()                                          \n\n"
 #  Cmake linking and rpath commands for GAMBIT.  \n\
 #                                                \n\
 #  This file has been automatically generated by \n\
-#  locate_scanners.py.  Please do not modify.    \n\
+#  scanner+_harvester.py.  Please do not modify. \n\
 #                                                \n\
 #************************************************\n\
 #                                                \n\

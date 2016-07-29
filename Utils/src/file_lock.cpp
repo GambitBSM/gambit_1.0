@@ -40,14 +40,19 @@
 #include <unistd.h> // I think this should work on osx as well...
 #include <string>
 
-#include <sys/time.h>
-#include "gambit/Utils/mpiwrapper.hpp"
-
 #include "gambit/Utils/file_lock.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/local_info.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+
+#define FILE_LOCK_DEBUG
+
+#ifdef FILE_LOCK_DEBUG
+  #include <sys/time.h>
+  #include "gambit/Utils/mpiwrapper.hpp"
+#endif
+
 
 namespace Gambit 
 {
@@ -108,15 +113,19 @@ namespace Gambit
           else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
 
-        int rank;
-        struct timeval tv;
-        struct timezone tz;
-        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+        #ifdef FILE_LOCK_DEBUG
+          int rank;
+          struct timeval tv;
+          struct timezone tz;
+          MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+        #endif
         // Attempt to gain the lock. If the lock cannot be obtained, will block until it can.
         // This operation is atomic and so should be safe.
         int return_code = lockf(fd, F_LOCK, 0);
-        gettimeofday(&tv, &tz);      
-        cout << "[" << tv.tv_sec << "." << tv.tv_usec << "] Got lock " << my_lock_fname << " in rank " << rank << endl;
+        #ifdef FILE_LOCK_DEBUG
+          gettimeofday(&tv, &tz);      
+          cout << "[" << tv.tv_sec << "." << tv.tv_usec << "] Got lock " << my_lock_fname << " in rank " << rank << endl;
+        #endif
 
         if(return_code!=0)
         {
@@ -142,12 +151,14 @@ namespace Gambit
           else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
 
-        int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-        struct timeval tv;
-        struct timezone tz;
-        gettimeofday(&tv, &tz);      
-        cout << "[" << tv.tv_sec << "." << tv.tv_usec << "] Releasing lock " << my_lock_fname << " in rank " << rank << endl;
+        #ifdef FILE_LOCK_DEBUG
+          int rank;
+          MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+          struct timeval tv;
+          struct timezone tz;
+          gettimeofday(&tv, &tz);      
+          cout << "[" << tv.tv_sec << "." << tv.tv_usec << "] Releasing lock " << my_lock_fname << " in rank " << rank << endl;
+        #endif
         /// Release the lock
         int return_code = lockf(fd, F_ULOCK, 0);
 

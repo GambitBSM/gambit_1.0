@@ -109,13 +109,14 @@ if(LAPACK_STATIC OR (NOT LAPACK_LINKLIBS AND NOT LAPACK_FOUND))
   message("${BoldRed}   LAPACK shared library not found. Excluding FlexibleSUSY and MultiNest from GAMBIT configuration. ${ColourReset}")
 endif()
 
-# Check for ROOT.
+# Check for ROOT.  Always look, in case the wise user has uninstalled it since last cmaking.
+unset(ROOT_CONFIG_EXECUTABLE CACHE)
 find_package(ROOT)
 if (NOT ROOT_FOUND OR ROOT_VERSION VERSION_GREATER 6)
   # Excluding Delphes and GreAT from GAMBIT
   if (NOT ROOT_FOUND)
     message("${BoldRed}   No ROOT installation found. Excluding Delphes and GreAT from GAMBIT configuration. ${ColourReset}")
-    set (itch "${itch}" "Delphes" "great")
+    set (itch "${itch}" "Delphes" "GreAT")
   else()
     message("${BoldRed}   Unsupported ROOT version found: ${ROOT_VERSION}. Delphes needs ROOT 5. Excluding Delphes from GAMBIT configuration. ${ColourReset}")
     set (itch "${itch}" "Delphes")
