@@ -38,7 +38,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
                                 $<TARGET_OBJECTS:Core>
                                 $<TARGET_OBJECTS:Printers>
   )
-  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 0)
+  set_target_properties(gambit PROPERTIES EXCLUDE_FROM_ALL 0)
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit flexiblesusy)
   endif()

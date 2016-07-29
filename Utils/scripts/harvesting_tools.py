@@ -498,7 +498,6 @@ def retrieve_generic_headers(verbose,starting_dir,kind,excludes,exclude_list=[])
             exclude = False
             for x in excludes:
                 if name.startswith(x): exclude = True
-                print name
             if kind == "BOSSed type" and not name.startswith("loaded_types"): exclude = True
             if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))

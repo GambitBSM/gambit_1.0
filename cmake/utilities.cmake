@@ -252,7 +252,6 @@ function(add_gambit_executable executablename LIBRARIES)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
 
   add_executable(${executablename} ${ARG_SOURCES} ${ARG_HEADERS})
-
   set_target_properties(${executablename} PROPERTIES EXCLUDE_FROM_ALL 1)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
