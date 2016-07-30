@@ -47,6 +47,11 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   endif()
 endif()
 
+
+
+
+##########  Standalones #############
+
 # Add the ExampleBit_A_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;"))
   if (NOT EXCLUDE_FLEXIBLESUSY)
@@ -158,3 +163,12 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";Dark
     add_dependencies(DarkBit_standalone_WIMP delphes)
   endif()
 endif()
+
+# Add a target that collects all standalones
+add_custom_target(standalones DEPENDS ExampleBit_A_standalone
+                                      ColliderBit_standalone
+                                      ScannerBit_standalone
+                                      DarkBit_standalone_MSSM
+                                      DarkBit_standalone_SingletDM
+                                      DarkBit_standalone_WIMP
+                                      )

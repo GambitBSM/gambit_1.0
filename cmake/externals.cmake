@@ -60,6 +60,62 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(FMODULE "J")
 endif()
 
+# Arrange make backends command (will be filled in from backends.cmake)
+add_custom_target(backends)
+
+# Arrange make scanners command (will be filled in from scanners.cmake)
+add_custom_target(scanners)
+
+# Macro to clear the build stamp manually for an external project
+macro(enable_auto_rebuild package)
+  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
+  add_custom_target(check-rebuild-${package} ${CMAKE_COMMAND} -E remove -f ${rmstring})
+  add_dependencies(${package} check-rebuild-${package})
+endmacro()
+
+# Macro to add all additional targets for a new backend or scanner
+macro(add_extra_targets type package dir dl target)
+  enable_auto_rebuild(${package})
+  string(REGEX REPLACE ".*/" "${${type}_download}/" short_dl "${dl}")
+  add_external_clean(${package} ${dir} ${short_dl} ${target})
+  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
+  add_dependencies(clean-${type}s clean-${package})
+  add_dependencies(nuke-${type}s nuke-${package})
+endmacro()
+
+# Macro to add all additional targets for a new backend or scanner
+macro(add_extra_targets2 type package ver dir dl target)
+  if (${type} STREQUAL "backend model")
+    set(pname "${package}_${model}_${ver}")
+    add_dependencies(${pname} ${package}_${ver})
+    add_chained_external_clean(${pname} ${dir} ${target} ${package}_${ver})
+    add_dependencies(clean-backends clean-${pname})
+  else() 
+    set(pname "${package}_${ver}") 
+    string(REGEX REPLACE ".*/" "${${type}_download}/" short_dl "${dl}")
+    add_external_clean(${package}_${ver} ${dir} ${short_dl} ${target})
+    add_dependencies(clean-${type}s clean-${pname})
+    add_dependencies(nuke-${type}s nuke-${pname})
+  endif()
+  enable_auto_rebuild(${pname})
+  set_target_properties(${pname} PROPERTIES EXCLUDE_FROM_ALL 1)
+endmacro()
+
+# Function to set up a new target with a generic name of a backend/scanner and associate it with the default version
+function(set_as_default_version type name default)
+  add_custom_target(${name})
+  add_dependencies(${name} ${name}_${default})
+  add_custom_target(clean-${name})
+  add_dependencies(clean-${name} clean-${name}_${default}) 
+  if (${type} STREQUAL "backend model")
+    set(type "backend")
+  else()
+    add_custom_target(nuke-${name})
+    add_dependencies(nuke-${name} nuke-${name}_${default}) 
+  endif()
+  add_dependencies(${type}s ${name})
+endfunction()
+
 include(cmake/scanners.cmake)
 include(cmake/backends.cmake)
 
