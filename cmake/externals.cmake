@@ -45,6 +45,10 @@ endif()
 set(backend_download "${PROJECT_SOURCE_DIR}/Backends/downloaded")
 set(scanner_download "${PROJECT_SOURCE_DIR}/ScannerBit/downloaded")
 
+# Safer download function than what is in cmake (avoid buggy libcurl vs https issue)
+set(DL_BACKEND "${PROJECT_SOURCE_DIR}/cmake/scripts/safe_dl.sh" "${backend_download}" "${CMAKE_COMMAND}")
+set(DL_SCANNER "${PROJECT_SOURCE_DIR}/cmake/scripts/safe_dl.sh" "${scanner_download}" "${CMAKE_COMMAND}")
+
 # Define the newline strings to use for OSX-safe substitution.
 set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")

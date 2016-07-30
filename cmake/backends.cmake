@@ -86,9 +86,10 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE_DIR>/lib/libdarksusy.a <SOURCE_DIR>/lib/libisajet.a ${_ld_suffix})
 ExternalProject_Add(darksusy_5_1_1
-  URL http://www.fysik.su.se/~edsjo/darksusy/tars/${darksusy_dl}
+  #URL http://www.fysik.su.se/~edsjo/darksusy/tars/${darksusy_dl}
   URL_MD5 ebeb0e1cfb4d834858e120190e423f62
   DOWNLOAD_DIR ${backend_download}
+  DOWNLOAD_COMMAND ${SAFE_DOWNLOADER} http://www.fysik.su.se/~edsjo/darksusy/tars/${darksusy_dl} . #${backend_download} 
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
@@ -355,14 +356,13 @@ add_extra_targets(pythiaEM ${pythiaEM_dir} ${backend_download}/${pythia_dl} dist
 
 # Nulike
 set(nulike_ver "1.0.3")
-set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
+set(nulike_dl "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
+set(nulike_md5 "2e77fe4b18891e4838f8af8d861c341b")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
 set(nulike_patch "${PROJECT_SOURCE_DIR}/Backends/patches/nulike/${nulike_ver}")
 ExternalProject_Add(nulike
-  URL ${nulike_location}
-  URL_MD5 2e77fe4b18891e4838f8af8d861c341b
-  DOWNLOAD_DIR ${backend_download}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${nulike_dl} ${nulike_md5} ${nulike_dir}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -p1 < ${nulike_patch}/patch_nulike_1.0.3.dif
@@ -370,20 +370,19 @@ ExternalProject_Add(nulike
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} MODULE=${FMODULE}
   INSTALL_COMMAND ""
 )
-add_extra_targets(nulike ${nulike_dir} null distclean)
+add_extra_targets(nulike ${nulike_dir} null distclean)  #FIXME not null
 add_dependencies(backends nulike)
 
 
 # SUSY-HIT
-set(susyhit_ver "1\\.5")
+set(susyhit_ver "1.5")
 set(susyhit_lib "libsusyhit")
-set(susyhit_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SUSY-HIT/1.5")
-set(susyhit_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SUSY-HIT/1.5")
-set(susyhit_dl "susyhit.tar.gz")
+set(susyhit_dl "http://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz")
+set(susyhit_md5 "493c7ba3a07e192918d3412875fb386a")
+set(susyhit_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SUSY-HIT/${susyhit_ver}")
+set(susyhit_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SUSY-HIT/${susyhit_ver}")
 ExternalProject_Add(susyhit
-  URL http://www.itp.kit.edu/~maggie/SUSY-HIT/${susyhit_dl}
-  URL_MD5 493c7ba3a07e192918d3412875fb386a
-  DOWNLOAD_DIR ${backend_download}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${susyhit_dl} ${susyhit_md5} ${susyhit_dir}
   SOURCE_DIR ${susyhit_dir}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -p1 < ${susyhit_patch}/patch_SUSYHIT_1_5.dif
@@ -391,7 +390,7 @@ ExternalProject_Add(susyhit
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
   INSTALL_COMMAND ""
 )
-add_extra_targets(susyhit ${susyhit_dir} ${backend_download}/${susyhit_dl} clean)
+add_extra_targets(susyhit ${susyhit_dir} ${backend_download}/susyhit.tar.gz clean) #fixme extract tarball name internally
 add_dependencies(backends susyhit)
 
 
