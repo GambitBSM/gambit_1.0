@@ -46,7 +46,7 @@
 #include "gambit/Utils/local_info.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
-#define FILE_LOCK_DEBUG
+//#define FILE_LOCK_DEBUG
 
 #ifdef FILE_LOCK_DEBUG
   #include <sys/time.h>
