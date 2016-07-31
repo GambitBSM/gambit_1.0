@@ -236,16 +236,22 @@ DD_couplings: |
    Provides WIMP mass and couplings to nucleons.
 
 mwimp: |
-   DM mass in GeV
+   DM mass in GeV.
 
 sigmav: |
-   Thermally averaged annihilation cross section <sv>, for v=0.
+   Thermally averaged annihilation cross section <sigma v>, for v=0, in cm^3 s^-1.
 
-sigma_SI_N: |
-   Spin-independent WIMP-Nucleon cross section.
+sigma_SI_p: |
+   Spin-independent WIMP-proton cross section, in cm^2.
 
-sigma_SD_N: |
-   Spin-dependent WIMP-Nucleon cross section.
+sigma_SD_p: |
+   Spin-dependent WIMP-proton cross section, in cm^2.
+
+sigma_SI_n: |
+   Spin-independent WIMP-neutron cross section, in cm^2.
+
+sigma_SD_n: |
+   Spin-dependent WIMP-neutron cross section, in cm^2.
 
 DarkMatter_ID: |
    Contains string ID to identify dark matter particle.
@@ -457,6 +463,9 @@ capture_rate_Sun: |
 equilibration_time_Sun: |
    Timescale on which capture and annihilation of dark matter in the Sun equilibrate (s).
 
+annihilation_rate_Sun: |
+   Annihilation rate of dark matter in the Sun (s^-1).
+
 nuyield_ptr: |
    A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
 
@@ -548,7 +557,7 @@ IC79_loglike: |
    The full 79-string IceCube log-likelihood.
 
 IceCube_likelihood: |
-   The complete IceCube log-likelihood.
+   The complete IceCube log-likelihood, including 22-string and 79-string data.
 
 DarkSUSY_PointInit: |
    DESCRIPTION MISSING
