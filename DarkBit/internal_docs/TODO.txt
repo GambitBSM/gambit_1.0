@@ -43,15 +43,10 @@ After internal paper review started:
 - Concepts/cosmetics
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
   - Check content of SloopyDarkBit.cpp [CW]
-  - gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
-    indicating a bug? [PS?]
-- Move micromegas installation routines into the cmake system [PS]
-- Check that masses given to DD calc are always positive (Chris mail from 28
-  May) [JC/PS/JE]
-- Start adding descriptions to the capability database [CW, PS, JE, JC]
-- Mention all options in the darkbit paper [CW, PS, JE, JC]
+- Start adding descriptions to the capability database [CW, JE, JC]
+- Mention all options in the darkbit paper [CW, JE, JC]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
-- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [PS, JE, JC]
+- Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
 
@@ -85,6 +80,12 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
+  indicating a bug? [PS -- checked, works fine now.]
+- Move micromegas installation routines into the cmake system [PS]
+- Check that masses given to DD calc are always positive (Chris mail from 28
+  May) [PS -- all fine; process catalog takes std::abs of spectrum masses.
+  Also did a check run and added an explicit check in function in DarkBit returning mwimp.] 
 - Fix gsl_integration integration problems [CW]
   - Happens for SingletDM scans and when evaluating MSSM standalone SLHAs
   - Apparently related to integration over noisy FCMC results, when e.g.
