@@ -41,8 +41,10 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -51,9 +53,11 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    void mwimp_generic(double &result) {
+    void mwimp_generic(double &result)
+    {
       using namespace Pipes::mwimp_generic;
       result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
+      if (result < 0.0) DarkBit_error().raise(LOCAL_INFO, "Negative WIMP mass detected.");
     }
 
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
