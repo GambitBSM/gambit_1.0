@@ -57,7 +57,7 @@ namespace Gambit {
       if (runOptions->hasKey("debug_SLHA_filenames"))
       {
         static unsigned int counter = 0;
-        logger() <<
+        logger() << LogTags::debug <<
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
         std::vector<str> filenames =
@@ -127,7 +127,7 @@ namespace Gambit {
         SLHAstruct mySLHA = mySpec->getSLHAea();
 
         // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
-      /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
+        /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
           int rank = 0;
@@ -157,7 +157,7 @@ namespace Gambit {
           int len = fstr.size();
           int flag = 15;
           const char * filename = fstr.c_str();
-          logger() << "Initializing DarkSUSY via SLHA." << std::endl;
+          logger() << LogTags::debug << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
           result = true;
@@ -167,7 +167,7 @@ namespace Gambit {
         {
           if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
-            logger() << "Using JE's DarkSUSY BE initialization." << std::endl;
+            logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << std::endl;
             BEreq::dsprep();
             result = true;
           }
