@@ -69,7 +69,7 @@ namespace Gambit
 	double f_B,f_Bs,f_Ds,f_D,fK_fpi,f_K;
 	double f_Kstar_par,f_Kstar_perp;
 	double f_phi_perp,f_phi_par,a1phi_perp,a2phi_perp,a1phi_par,a2phi_par;
-	double m_B,m_Bs,m_Bd,m_pi,m_Ds,m_K0,m_K,m_Kstar0,m_Kstar,m_D0,m_D,m_phi;
+        double m_B,m_Bs,m_Bd,m_pi,m_Ds,m_K0,m_K,m_Kstar0,m_Kstar,m_D0,m_D,m_Dstar0,m_Dstar,m_phi;
 	double life_pi,life_K,life_B,life_Bs,life_Bd,life_D,life_Ds;
 	double a1par,a2par,a1perp,a2perp,a1K,a2K;
 	double zeta3A,zeta3V,wA10,deltatp,deltatm,deltatp_phi,deltatm_phi;

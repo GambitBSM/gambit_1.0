@@ -68,6 +68,10 @@ BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct param
 BE_FUNCTION(Bdll, double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double), "Bdll", "Bdll")
 
 
+BE_FUNCTION(BRBDlnu, double, (int, int, double,  double, double*, struct parameters*), "BRBDlnu", "BRBDlnu")
+BE_FUNCTION(BRBDstarlnu, double, (int, int, double,  double, double*, struct parameters*), "BRBDstarlnu", "BRBDstarlnu")
+
+
 // Convenience functions:
 
 BE_CONV_FUNCTION(SI_BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "SI_BRBKstarmumu_CONV")    

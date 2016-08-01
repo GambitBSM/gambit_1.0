@@ -111,7 +111,7 @@ set(superiso_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.6")
 set(superiso_dl "superiso_v3.6.tgz")
 ExternalProject_Add(superiso
   URL http://superiso.in2p3.fr/download/${superiso_dl}
-  URL_MD5  b71ed68c6e9773541969fc32911f7383 
+  URL_MD5  0a5735490046c5f63b3e82c4f7efa3b6 
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${superiso_dir}
   BUILD_IN_SOURCE 1
