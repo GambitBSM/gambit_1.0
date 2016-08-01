@@ -493,4 +493,4 @@ KeyValues:
 
   default_output_path: "runs/CMSSM/"
 
-  #debug: true
+  debug: true
