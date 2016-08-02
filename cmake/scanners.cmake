@@ -52,7 +52,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FF=${CMAKE_Fortran_COMPILER} MODULE=${FMODULE} FOPT=${diverFFLAGS} SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
   INSTALL_COMMAND "" 
 )
-add_extra_targets2("scanner" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("scanner" ${name} ${ver})
 
 
@@ -91,7 +91,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${dir}/
   INSTALL_COMMAND "" 
 )
-add_extra_targets2("scanner" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("scanner" ${name} ${ver})
 
 
@@ -109,7 +109,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
   INSTALL_COMMAND ""
 )
-add_extra_targets2("scanner" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
 if (ROOT_FOUND)
   set_as_default_version("scanner" ${name} ${ver})
 endif()

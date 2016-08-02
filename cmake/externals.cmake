@@ -74,17 +74,7 @@ macro(enable_auto_rebuild package)
 endmacro()
 
 # Macro to add all additional targets for a new backend or scanner
-macro(add_extra_targets type package dir dl target)
-  enable_auto_rebuild(${package})
-  string(REGEX REPLACE ".*/" "${${type}_download}/" short_dl "${dl}")
-  add_external_clean(${package} ${dir} ${short_dl} ${target})
-  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
-  add_dependencies(clean-${type}s clean-${package})
-  add_dependencies(nuke-${type}s nuke-${package})
-endmacro()
-
-# Macro to add all additional targets for a new backend or scanner
-macro(add_extra_targets2 type package ver dir dl target)
+macro(add_extra_targets type package ver dir dl target)
   if (${type} STREQUAL "backend model")
     set(pname "${package}_${model}_${ver}")
     add_dependencies(${pname} ${package}_${ver})

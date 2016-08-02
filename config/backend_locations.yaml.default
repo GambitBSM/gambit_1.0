@@ -51,10 +51,10 @@ gamLike:
 gm2calc:
   1.2.0:       ./Backends/installed/gm2calc/1.2.0/src/libgm2calc.so
 
-MicrOmegas:
+MicrOmegas_MSSM:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/MSSM/libmicromegas.so
 
-MicrOmegasSingletDM:
+MicrOmegas_SingletDM:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/SingletDM/libmicromegas.so
 
 nulike:

@@ -187,7 +187,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      BACKEND_REQ(oh2, (MicrOmegas, MicrOmegasSingletDM), double, (double*,int,double))
+      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegasSingletDM), double, (double*,int,double))
       ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -520,7 +520,7 @@ START_MODULE
       MODEL_GROUP(group1, (nuclear_params_fnq))
       MODEL_GROUP(group2, (MSSM63atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
-      BACKEND_OPTION((MicrOmegas),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_MSSM),(gimmemicro))
       BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
       FORCE_SAME_BACKEND(gimmemicro)
     #undef FUNCTION

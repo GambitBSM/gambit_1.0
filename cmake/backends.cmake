@@ -58,7 +58,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} dslib_shared install_tables
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 # DarkSUSY
@@ -94,7 +94,7 @@ ExternalProject_Add(${name}_${ver}
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet} || true
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 
 
 # SuperIso
@@ -118,7 +118,7 @@ ExternalProject_Add(${name}_${ver}
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -141,7 +141,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} DDCALC_DIR=${dir} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -177,7 +177,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS} GAMLIKE_DATA_PATH=${dir}/data
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -211,7 +211,7 @@ ExternalProject_Add(${name}_${ver}
         COMMAND make
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 # MicrOmegas MSSM model
@@ -226,7 +226,7 @@ ExternalProject_Add(${name}_${model}_${ver}
   BUILD_COMMAND cd ${model} && make sharedlib main=main.c
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
+add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
 set_as_default_version("backend model" ${name}_${model} ${ver})
 
 # MicrOmegas SingletDM model
@@ -241,7 +241,7 @@ ExternalProject_Add(${name}_${model}_${ver}
   BUILD_COMMAND cd ${model} && make sharedlib main=main.c
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
+add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
 set_as_default_version("backend model" ${name}_${model} ${ver})
 
 
@@ -303,7 +303,7 @@ ExternalProject_Add_Step(${name}_${ver} apply_hacks
   DEPENDERS patch
 )
 BOSS_backend(${name} ${ver})
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} distclean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 set_as_default_version("backend" ${name} ${ver})
 
 # Pythia external model (EM)
@@ -351,7 +351,7 @@ ExternalProject_Add_Step(${name}_${ver} apply_hacks
   DEPENDERS patch
 )
 BOSS_backend(${name} ${ver})
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} distclean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 
 
 # Nulike
@@ -371,7 +371,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FF=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} MODULE=${FMODULE}
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} distclean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -392,7 +392,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -419,7 +419,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/${lib}.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
@@ -445,7 +445,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/${lib}.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 
 
 # HiggsBounds tables
@@ -462,7 +462,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -490,7 +490,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/${lib}.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -523,7 +523,7 @@ ExternalProject_Add(${name}_${ver}
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 
@@ -552,5 +552,5 @@ ExternalProject_Add(${name}_${ver}
   INSTALL_COMMAND ""
 )
 BOSS_backend(${name} ${ver})
-add_extra_targets2("backend" ${name} ${ver} ${dir} ${dl} clean)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
