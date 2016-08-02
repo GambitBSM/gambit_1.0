@@ -280,7 +280,7 @@ namespace Gambit
         SimYieldChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
             dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max)
         {
-//#ifdef DARBIT_DEBUG
+//#ifdef DARKBIT_DEBUG
             std::ostringstream msg;
             msg << "SimYieldChannel for " << p1 << " " << p2 << " final state(s): Requested center-of-mass energy out of range (";
             msg << Ecm_min << "-" << Ecm_max << " GeV).";
