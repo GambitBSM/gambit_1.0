@@ -1476,11 +1476,8 @@ namespace Gambit
       red.debug_mode(flav_debug);
 
       if(flav_debug) cout<<"Initiated Flav reader"<<endl;
-      // FIXME why is this called twice?
       red.read_yaml_mesurement("flav_data.yaml", "BR_Bs2mumu");
-
       red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
-
       if (flav_debug) cout<<"Finish reading b->mumu"<<endl;
 
       red.create_global_corr();
