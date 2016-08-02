@@ -18,6 +18,7 @@
 ///  \author Marcin Chrzaszcz
 ///  \data 2015 May
 ///  \data 2016 July
+///  \data 2016 August
 ///
 ///
 ///  *********************************************
