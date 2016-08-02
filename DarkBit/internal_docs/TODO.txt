@@ -9,13 +9,17 @@ Urgent (for production runs):
 - Update LUX constraints [PS/FK?]
 - Merge DarkBit back into master and inform Martin [CW]
 - Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
-- Check whether IB routines are OK after commenting in warnings again in
-  patches [JC/CW]
-  (if not check out mail from Torsten 26-07 for solutions)
+- IB routines issues
+  - check whether warnings disappear after setting quark masses in DS correctly [JC/JE]
+    (if not check out mail from Torsten 26-07 for solutions)
+- Relic densiy routines
+  - Check whether top-width is set correctly [JE]
+  - Investigate [all]
+- Confirm that SimYieldTable extrapolation switch is working correctly (Mail
+  Anders 29-07-16) [JC]
 
 Before internal paper review:
 - Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
-- Add discussion about additional SimYieldTable extrapolation switch [SW]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
 - Update nuclear parameter best fit value discussion [JC] [Added by JC]
@@ -24,6 +28,8 @@ Before internal paper review:
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
+  exception (Mail Anders 29-07-16) [CW]
 - Check accuracy of fallback gsl_integration [CW]
 - <sigma v>_eff plots [JC]
 - Update cascade code discussions in paper to new treatment [CW]
@@ -83,6 +89,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Add discussion about additional SimYieldTable extrapolation switch [SW]
 - gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
   indicating a bug? [PS -- checked, works fine now.]
 - Move micromegas installation routines into the cmake system [PS]
