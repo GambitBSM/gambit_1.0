@@ -646,6 +646,8 @@ START_FUNCTION(double)
           DEPENDENCY(Dmunu, double )
           DEPENDENCY(Debug_Cap, bool)
           DEPENDENCY(Debug_Cap_LL, bool)
+          BACKEND_REQ(BRBDlnu, (libsuperiso),  double, (int, int, double,  double, double*, struct parameters*) )  
+          BACKEND_REQ(BRBDstarlnu, (libsuperiso),  double, (int, int, double,  double, double*, struct parameters*) ) 
     #undef FUNCTION
   #undef CAPABILITY
 

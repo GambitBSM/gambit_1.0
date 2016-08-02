@@ -47,7 +47,7 @@
 #include "gambit/FlavBit/flav_obs.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
-#include "gambit/Utils/statistics.hpp"  
+#include "gambit/Utils/statistics.hpp"
 
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -509,7 +509,7 @@ namespace Gambit
 
     //int flav=2;
     result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    
+
       }
 
       if(*Dep::Debug_Cap)      printf("BR(Bs->mumu)=%.3e\n",result);
@@ -635,7 +635,7 @@ namespace Gambit
 
       if(param.model<0) result=0.;
       else result = BEreq::Btaunu(&param);
-      
+
       if(*Dep::Debug_Cap) printf("BR(B->tau nu)=%.3e\n",result);
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Btaunu"<<endl;
 
@@ -1039,7 +1039,7 @@ namespace Gambit
       double q2min=1.1;
       double q2max=2.5;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
-      
+
       if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
     }
@@ -1290,7 +1290,7 @@ namespace Gambit
       //cov matirces
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
-  
+
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
       // we assert if the exrimental size and the observables are differnt size
@@ -1376,10 +1376,10 @@ namespace Gambit
 
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp=M_cov;
-  
+
       measurement_assym.value_th=M_th;
       measurement_assym.cov_th=M_cov_th;
-  
+
 
       int n_experiments=M_cov_th.size1();
       vector<double> diff;
@@ -1426,11 +1426,11 @@ namespace Gambit
 
 
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
-     
+
 
 
       InvertMatrix(cov, cov_inv);
-     
+
 
       double Chi2=0;
 
@@ -1462,32 +1462,32 @@ namespace Gambit
     {
       using namespace Pipes::b2sgamma_likelihood;
       if(*Dep::Debug_Cap)  cout<<"Starting b2sgamma_measurements"<<endl;
-      
+
       struct parameters param = *Dep::SuperIso_modelinfo;
-      
-      double E_cut=1.6; 
+
+      double E_cut=1.6;
       double theory_prediction=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
 
-      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");          
-      red.debug_mode(*Dep::Debug_Cap);                       
-                                                       
-      if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;  
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(*Dep::Debug_Cap);
+
+      if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;
       red.read_yaml_mesurement("flav_data.yaml", "BR_b2sgamma");
-      
+
       red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
-      
+
 
       double exp_meas=M_exp(0,0);
 
       double exp_b2sgamma_err=M_cov(0,0);
       double theory_b2sgamma_err=th_err(0,0)*theory_prediction;
-      
-      
+
+
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err);
-      
+
     }
 
     // *************************************************
@@ -1520,7 +1520,7 @@ namespace Gambit
       int flav=2;
 
       boost::numeric::ublas::matrix<double> th_err = red.get_th_err();
-      
+
       //double theory_bs2mumu=*(Dep::Bsmumu_untag);
       double theory_bs2mumu=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
       //SI_Bsmumu_untag(theory_bs2mumu);
@@ -1550,11 +1550,11 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
-      
-      
+
+
       measurement_assym.LL_name="b2ll_likelihood";
-      
-      
+
+
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp=M_cov;
 
@@ -1593,11 +1593,11 @@ namespace Gambit
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
 
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
-      
+
 
       // adding theory and experimenta covariance
       cov+=measurement_assym.cov_th;
-      
+
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
@@ -1618,7 +1618,7 @@ namespace Gambit
           {
 
 	    Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-            
+
           }
 
       }
@@ -1643,64 +1643,117 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SL_measurements"<<endl;
 
-      int n_experiments=5;
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      int n_experiments=8;
       // experimental measurement
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
       red.debug_mode(*Dep::Debug_Cap);
 
       if(*Dep::Debug_Cap)   cout<<"inited falv reader"<<endl;
+      // B-> tau nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_Btaunu");
-
-      //#########################################################
+      // B-> D tau nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_BDtaunu");
-      
-      //#########################################################
+      // B-> D* tau nu
+      red.read_yaml_mesurement("flav_data.yaml", "BR_BDstartaunu");
+      // B-> D mu nu
+      red.read_yaml_mesurement("flav_data.yaml", "BR_BDmunu");
+      // B-> D* mu nu
+      red.read_yaml_mesurement("flav_data.yaml", "BR_BDstarmunu");
+      // Ds-> tau nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_Dstaunu");
-      
-      //#########################################################
+      // Ds -> mu nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_Dsmunu");
-      
-      //#########################################################
+      // D -> mu nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_Dmunu");
-      
+
+
       red.create_global_corr();
 
-      
+      // B-> tau nu SI
       double theory_Btaunu=*(Dep::Btaunu);
-
-      double theory_BDtaunu=*(Dep::BDtaunu);
-
-      // double theory_BDtaunu_BDenu=*(Dep::RD);
-
-      // double theory_Kmunu_pimunu=*(Dep::Kmunu_pimunu);
-
+      // Ds-> tau nu
       double theory_Dstaunu=*(Dep::Dstaunu);
-
+      // Ds -> mu nu
       double theory_Dsmunu=*(Dep::Dsmunu);
-
+      // D -> mu nu
       double theory_Dmunu=*(Dep::Dmunu);
 
+      // the R(D) is calculated assuming isosping symmetry
+      //####################################################################
+      // B-> D tau nu
+      double q2_min_tau_D  = 3.16; // 1.776**2
+      double q2_max_tau_D  = 11.6;   // (5.28-1.869)**2
+      int gen_tau_D        = 3;
+      int charge_tau_D     = 0;// D* is the charged version
+      double obs_tau_D[3];
+      double theory_BDtaunu = BEreq::BRBDlnu(byVal(gen_tau_D),  byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), obs_tau_D, &param);
+      //old code:
+      double theory_BDtaunu_old=*(Dep::BDtaunu);
+      cout<<"Old: "<<theory_BDtaunu_old<<" New: "<<theory_BDtaunu<<endl;
+
+      // B-> D* tau nu
+      double q2_min_tau_Dstar = 3.16; // 1.776**2
+      double q2_max_tau_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
+      int gen_tau_Dstar        =3;
+      int charge_tau_Dstar     =1;// D* is the charged version
+      double obs_tau_Dstar[3];
+      double theory_BDstartaunu = BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), obs_tau_Dstar, &param);
+
+      // B-> D mu nu
+      double q2_min_mu_D=  0.012; // 0.105*0.105
+      double q2_max_mu_D=  10.67;   //
+      int gen_mu_D        =2;
+      int charge_mu_D     =0;// D* is the charged version
+      double obs_mu_D[3];
+      double theory_BDmunu = BEreq::BRBDlnu(byVal(gen_mu_D),  byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), obs_mu_D, &param);
+
+      // B-> D* mu nu
+      double q2_min_mu_Dstar = 0.012; // 0.105*0.105
+      double q2_max_mu_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
+      int gen_mu_Dstar        =2;
+      int charge_mu_Dstar     =1;// D* is the charged version
+      double obs_mu_Dstar[3];
+      double theory_BDstarmunu = BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
+
+
+
+
+
+
+
+
+
+
       // theory results;
-      boost::numeric::ublas::matrix<double> th_err=red.get_th_err();  
+      boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
 
       boost::numeric::ublas::matrix<double> M_th(n_experiments,1);
       M_th(0,0)=theory_Btaunu;
       M_th(1,0)=theory_BDtaunu;
-      M_th(2,0)=theory_Dstaunu;
-      M_th(3,0)=theory_Dsmunu;
-      M_th(4,0)=theory_Dmunu;
+      M_th(2,0)=theory_BDstartaunu;
+      M_th(3,0)=theory_BDmunu;
+      M_th(4,0)=theory_BDstarmunu; 
+      M_th(5,0)=theory_Dstaunu;
+      M_th(6,0)=theory_Dsmunu;
+      M_th(7,0)=theory_Dmunu;
 
       // hardoceded errors :( move it to include later
 
-      
+
 
       double theory_Btaunu_error=th_err(0,0);
       double theory_BDtaunu_error=th_err(1,0);
-      double theory_Dstaunu_error=th_err(2,0);
-      double theory_Dsmunu_error=th_err(3,0);
-      double theory_Dmunu_error=th_err(4,0);
-
+      double theory_BDstartaunu_error=th_err(2,0);
+      double theory_BDmunu_error=th_err(3,0);
+      double theory_BDstarmunu_error=th_err(4,0);
+      
+      double theory_Dstaunu_error=th_err(5,0);
+      double theory_Dsmunu_error=th_err(6,0);
+      double theory_Dmunu_error=th_err(7,0);
+      
 
       // theory cov:
 
@@ -1715,9 +1768,12 @@ namespace Gambit
 
       M_cov_th(0,0)=theory_Btaunu_error*theory_Btaunu_error;
       M_cov_th(1,1)=theory_BDtaunu_error*theory_BDtaunu_error;
-      M_cov_th(2,2)=theory_Dstaunu_error*theory_Dstaunu_error;
-      M_cov_th(3,3)=theory_Dsmunu_error*theory_Dsmunu_error;
-      M_cov_th(4,4)=theory_Dmunu_error*theory_Dmunu_error;
+      M_cov_th(2,2)=theory_BDstartaunu_error*theory_BDstartaunu_error;  
+      M_cov_th(3,3)=theory_BDmunu_error*theory_BDmunu_error;         
+      M_cov_th(4,4)=theory_BDstarmunu_error*theory_BDstarmunu_error; 
+      M_cov_th(5,5)=theory_Dstaunu_error*theory_Dstaunu_error;
+      M_cov_th(6,6)=theory_Dsmunu_error*theory_Dsmunu_error;
+      M_cov_th(7,7)=theory_Dmunu_error*theory_Dmunu_error;
 
       // theory error done
 
@@ -1782,19 +1838,19 @@ namespace Gambit
 
 
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
-     
+
 
       InvertMatrix(cov, cov_inv);
-     
+
 
       double Chi2=0;
       for(int i=0; i < measurement_assym.dim; ++i)
       {
         for(int j=0; j<measurement_assym.dim; ++j)
           {
-	    
+
 	    Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-            
+
 
           }
       }
