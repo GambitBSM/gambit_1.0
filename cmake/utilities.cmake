@@ -116,10 +116,10 @@ macro(add_chained_external_clean package dir target dependee)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
-  add_custom_target(dependeenuke-${package} DEPENDS clean-${package}
+  add_custom_target(chained-nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt || true)
   add_dependencies(clean-${dependee} clean-${package}) 
-  add_dependencies(nuke-${dependee} dependeenuke-${package}) 
+  add_dependencies(nuke-${dependee} chained-nuke-${package}) 
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
