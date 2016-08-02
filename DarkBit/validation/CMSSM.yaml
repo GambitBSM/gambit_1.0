@@ -1,54 +1,51 @@
 Parameters:
 
-  LocalHalo:
-    rho0: 0.4
-    v0: 235
-    vearth: 29.78
-    vesc: 550
-    vrot: 235
-  MSSM7atQ:
-    Ad_3: 285.144
-    Au_3: 1708.73
-    M2: 151.788
-    Qin: 1000
-    SignMu: 1
-    TanBeta: 30.0419
-    mHd2: 3.22725e+06
-    mHu2: 38494.5
-    mf2: 426177
-  StandardModel_SLHA2:
-    CKM_A: 0.814
-    CKM_etabar: 0.353
-    CKM_lambda: 0.22537
-    CKM_rhobar: 0.117
-    GF: 1.16638e-05
-    alpha1: 0
-    alpha2: 0
-    alphaS: 0.11884
-    alphainv: 127.944
-    delta13: 0
-    mBmB: 4.18393
-    mCmC: 1.275
-    mD: 0.0048
-    mE: 0.000510999
-    mMu: 0.105658
-    mNu1: 0
-    mNu2: 0
-    mNu3: 0
-    mS: 0.095
-    mT: 173.994
-    mTau: 1.77682
-    mU: 0.0023
-    mZ: 91.1876
-    theta12: 0.58376
-    theta13: 0.15495
-    theta23: 0.76958
+  #SM nuisance parameters.
+  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+
+# FIXME TODO: Where do default values come from?
+  #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    deltad: -0.427
-    deltas: -0.085
-    deltau: 0.842
-    sigmal: 72.2826
-    sigmas: 47.5613
+    sigmas:
+      range:  [19, 67] 
+    sigmal:
+      range:  [31, 85]
+    deltau:
+      fixed_value:  0.842
+    deltad:
+      fixed_value: -0.427
+    deltas:
+      fixed_value: -0.085
+
+  CMSSM:
+    M0:
+      range: [50, 1e4]
+      prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      range: [-1e4, 1e4]
+      flat_start: -1e2
+      flat_end: 1e2
+      prior_type: double_log_flat_join
+    TanBeta:
+      range: [3.0, 70]
+      prior_type: flat
+    SignMu: 1
+
+# FIXME  Fine
+  LocalHalo:
+    rho0: # Local dark matter density
+      #fixed_value: .4 # GeV/cm^3
+      range: [.2, .8]
+      prior_type: flat
+    vrot: # Local disk rotation speed
+      fixed_value: 235 # km/s
+    v0: # Maxwellian most-probable speed
+      fixed_value: 235 # km/s
+    vesc: # Local galactic escape speed
+      fixed_value: 550 # km/s
 
 Priors:
 
@@ -59,9 +56,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "MSSM7.hdf5"
-    group: "/MSSM7"
-    delete_file_on_restart: true
+    output_file: "CMSSM.hdf5"
+    group: "/CMSSM"
 
 Scanner:
 
@@ -73,21 +69,42 @@ Scanner:
       like:  LogLike
       nlive: 4000
       tol: 0.5
+      updInt: 1
+
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 7200
+      convthresh: 1e-3
+      verbosity: 1
 
 ObsLikes:
 
+# FIXME OK
     - capability: lnL_oh2
       purpose:    LogLike
 
+# FIXME TODO: Check that PASS8 dwarf limits from standalone reproduce correct results
     - capability: lnL_FermiLATdwarfs
       purpose:    LogLike
 
+# FIXME OK
     - capability: XENON100_2012_LogLikelihood
       purpose:    LogLike
 
+# FIXME OK
     - capability: LUX_2013_LogLikelihood
       purpose:    LogLike
 
+# FIXME OK
+    - capability: SuperCDMS_2014_LogLikelihood
+      purpose:    LogLike
+
+# FIXME OK
+    - capability: SIMPLE_2014_LogLikelihood
+      purpose:    LogLike
+
+# FIXME OK
     - capability: IC79_loglike
       purpose:    LogLike
 
@@ -112,24 +129,33 @@ ObsLikes:
     - capability: lnL_deltarho
       purpose:    LogLike
 
+    - capability:  lnL_gm2
+      purpose:     LogLike
+
     # Charm quark and light quark mass ratio likelihoods
+# FIXME TODO: Check whether we are actually scanning those
     - capability: lnL_light_quark_masses
       purpose:    LogLike
 
     # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+# FIXME OK
     - capability: lnL_SI_nuclear_parameters
       purpose:    LogLike
 
     # DM Local Halo likelihoods
+# FIXME  OK
     - capability: lnL_rho0
       purpose: LogLike
 
+# FIXME  OK
     - capability: lnL_vrot
       purpose: LogLike
 
+# FIXME  OK
     - capability: lnL_v0
       purpose: LogLike
 
+# FIXME  OK
     - capability: lnL_vesc
       purpose: LogLike
 
@@ -143,8 +169,7 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    # ColliderBit likelihoods
-    - purpose:    Likelihood
+    - purpose:    LogLike
       capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
@@ -200,24 +225,31 @@ ObsLikes:
 
 
     # Other observables
+# FIXME ok
     - purpose:    Observable
       capability: RD_oh2
 
+# FIXME ok
     - purpose:    Observable
       capability: mwimp
 
+# FIXME ok
     - purpose:    Observable
       capability: sigmav
 
+# FIXME ok
     - purpose:    Observable
       capability: sigma_SI_p
 
+# FIXME ok
     - purpose:    Observable
       capability: sigma_SI_n
 
+# FIXME ok
     - purpose:    Observable
       capability: sigma_SD_p
 
+# FIXME ok
     - purpose:    Observable
       capability: sigma_SD_n
 
@@ -238,35 +270,45 @@ Rules:
   #- options:
   #    drop_SLHA_file: true
 
+  # Choose to use gm2calc for g-2
+  - capability: muon_gm2
+    function: GM2C_SUSY
+
   # Choose to implement the relic density likelihood as an upper bound, not a detection
+# FIXME OK
   - capability: lnL_oh2
     function: lnL_oh2_upperlimit
 
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
+# FIXME OK
   - capability: RD_fraction
     function: RD_fraction_from_oh2
     options:
       mode: leq_one
 
   # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
+# FIXME TODO: Fast oh2?
   - capability: RD_oh2
     #function: RD_oh2_general
     #function: RD_oh2_DarkSUSY
     function: RD_oh2_MicrOmegas
     options:
       fast: 1
-      omtype: 1
       Beps: 1e-5
+      omtype: 1
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
+# FIXME OK
   - capability: lnL_FermiLATdwarfs
     function:  lnL_FermiLATdwarfs_gamLike
 
   # Choose to use DarkSUSY yield tables for indirect detection
+# FIXME TODO: Test impact of MicrOmegas yield tables
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
 
   # Use DarkSUSY or MicrOmegas for calculating direct detection couplings
+# FIXME TODO: Test whether both give correct result (diskless)
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY
     function: DD_couplings_MicrOmegas
@@ -277,8 +319,10 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -336,34 +380,39 @@ Rules:
     function: FH_t_decays
 
   # Nuclear Parameter Likelihoods (All values in MeV)
+# FIXME Where do errors come from?
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_obs: 43.
+      sigmas_obserr: 8.
+      sigmal_obs: 58.
+      sigmal_obserr: 9.
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
+# FIXME TODO: Where do numbers come from?
   - capability: lnL_rho0  # Local dark matter density
     function: lnL_rho0_lognormal
     options:
       rho0_obs: 0.4 # GeV/cm^3
       rho0_obserr: .15 # GeV/cm^3
 
+# FIXME ok
   - capability: lnL_vrot  # Local disk rotation speed
     function: lnL_vrot_gaussian
     options:
       vrot_obs: 235 # km/s
       vrot_obserr: 20 # km/s
 
+# FIXME ok
   - capability: lnL_v0   # Maxwellian most-probable speed
     function: lnL_v0_gaussian
     options:
       v0_obs: 235 # km/s
       v0_obserr: 20 # km/s
 
+# FIXME ok
   - capability: lnL_vesc # Local galactic escape speed
     function: lnL_vesc_gaussian
     options:
@@ -371,6 +420,7 @@ Rules:
       vesc_obserr: 35 # km/s
 
   # PrecisionBit
+# FIXME TODO: Where are references coming from?
   - capability: lnL_light_quark_masses
     options:
       # m_u/m_d
@@ -385,14 +435,14 @@ Rules:
 
   # ColliderBit
   - capability: SimpleSmearingSim
-    type: "Gambit::ColliderBit::BuckFastSmearATLAS"
+    type: "ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
       partonOnly: false
       antiktR: 0.4
 
   - capability: SimpleSmearingSim
-    type: "Gambit::ColliderBit::BuckFastSmearCMS"
+    type: "ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
       partonOnly: false
@@ -415,7 +465,6 @@ Rules:
       useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
-
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -441,12 +490,12 @@ Rules:
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
                              "SUSY:all = on",
-                             "TauDecays:mode = 0"]
+                             "TauDecays:mode = 0",
+                             "TimeShower:pTmin = 20"]
 
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
 
 Logger:
 
@@ -467,7 +516,9 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e4
-    debug: true
+    model_invalid_for_lnlike_below: -1e6
+    model_invalid_for_lnlike_below_alt: -1e5
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM/"
+
+  debug: true

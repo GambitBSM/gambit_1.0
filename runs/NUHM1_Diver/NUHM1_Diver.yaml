@@ -47,8 +47,6 @@ Parameters:
       fixed_value: 235 # km/s
     vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
 
 Priors:
 
@@ -268,9 +266,9 @@ Rules:
 
   # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
   - capability: RD_oh2
-    function: RD_oh2_general
+    #function: RD_oh2_general
     #function: RD_oh2_DarkSUSY
-    #function: RD_oh2_MicrOmegas
+    function: RD_oh2_MicrOmegas
     options:
       fast: 1
       omtype: 1
@@ -280,9 +278,10 @@ Rules:
   - capability: lnL_FermiLATdwarfs
     function:  lnL_FermiLATdwarfs_gamLike
 
-  # Choose to use DarkSUSY yield tables for indirect detection
+  # Choose to use DarkSUSY or MicrOmegas yield tables for indirect detection
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
+    #function: SimYieldTable_MicrOmegas
 
   # Use DarkSUSY or MicrOmegas for calculating direct detection couplings
   - capability: DD_couplings
@@ -359,10 +358,10 @@ Rules:
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_obs: 43.
+      sigmas_obserr: 8.
+      sigmal_obs: 58.
+      sigmal_obserr: 9.
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)

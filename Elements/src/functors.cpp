@@ -530,16 +530,28 @@ namespace Gambit
     }
 
     /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+    /// Preferentially returns the 'least removed' parent or friend, i.e. less steps back in the model lineage.
     str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::set<sspair> > karta)
     {
+      std::vector<str> candidates;
       for (std::map< str, std::set<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->downstream_of(model, it->first)) return it->first;
+          if (myClaw->downstream_of(model, it->first)) candidates.push_back(it->first);
         }
       }
-      return "";
+      // If found no candidates, return the empty string.
+      if (candidates.empty()) return "";
+      // If found just one, return it with no further questions.
+      if (candidates.size() == 1) return candidates[0];
+      // If found more than one, choose the one closest to the model passed in. 
+      str result = candidates.front();
+      for (std::vector<str>::iterator it = candidates.begin()+1; it != candidates.end(); ++it)
+      {
+        if (myClaw->downstream_of(*it, result)) result = *it;
+      }
+      return result;
     }
 
     /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
@@ -1404,9 +1416,34 @@ namespace Gambit
       // Now activate the flags for the models that are being used.
       for (auto it = activeModelFlags.begin(); it != activeModelFlags.end(); ++it)
       {
-        if (myClaw->model_exists(it->first))
+        str activation_candidate = it->first;
+        if (myClaw->model_exists(activation_candidate))
         {
-          if (myClaw->downstream_of(model, it->first)) it->second = true;
+          if (myClaw->downstream_of(model, activation_candidate))
+          {
+            // Found an activation candidate that the model being scanned can be cast to.
+            // Assume for now that the candidate will indeed be activated. 
+            it->second = true;
+            // Compare with models that have already been activated, to avoid activating multiple models of the same lineage.
+            for (auto jt = activeModelFlags.begin(); jt != activeModelFlags.end(); ++jt)
+            {
+              str active_model = jt->first;
+              if (activation_candidate != active_model and myClaw->model_exists(active_model) and jt->second)
+              {
+                // If the already active model can be upcast to the activation candidate, abort the activiation of the candidate.
+                if (myClaw->downstream_of(active_model, activation_candidate)) it->second = false;
+                // If the candidate can be upcast to the already active model, activate the candidate instead of the already active model.
+                if (myClaw->downstream_of(activation_candidate, active_model)) jt->second = false;
+                if (verbose)
+                {
+                  cout << "model: " << model << " " << "model to be activated: " << activation_candidate << "(" << it->second << ") active model: " << active_model << "(" << jt->second << ")" << endl;
+                  cout << "active model lives below:" << myClaw->downstream_of(active_model, activation_candidate) << endl;
+                  cout << "activation candidate lives below:" << myClaw->downstream_of(activation_candidate, active_model) << endl;
+                }
+              }
+            }
+            if (verbose) cout << "Activate candidate " << activation_candidate << "?" << it->second << endl;
+          }
         }
       }
 

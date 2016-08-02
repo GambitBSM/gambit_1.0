@@ -2,17 +2,17 @@
 //   *********************************************
 ///  \file
 ///
-///  Implementation file for DarkBit SimpleHist 
+///  Implementation file for DarkBit SimpleHist
 ///  types.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Lars A. Dal  
+///
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Feb
-///  
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -49,10 +49,10 @@ namespace Gambit {
         double dE = (Emax-Emin)/nBins;
         for(int i=0; i<nBins; i++)
         {
-          double binL = Emin+i*dE; 
+          double binL = Emin+i*dE;
           binLower.push_back(binL);
           binVals.push_back(0.0);
-          wtSq.push_back(0.0);                
+          wtSq.push_back(0.0);
         }
         binLower.push_back(Emin+nBins*dE);
       }
@@ -86,15 +86,15 @@ namespace Gambit {
       int imin = findIndex(Emin);
       int imax = findIndex(Emax);
       double dE = Emax-Emin;
-      double norm = weight/dE;       
-      if(imax<0 or imin>=nBins) 
+      double norm = weight/dE;
+      if(imax<0 or imin>=nBins)
       {
         // Do nothing
       }
       else if(imin==imax)
       {
         addToBin(imin,weight);
-      }            
+      }
       else if(imin<0 and imax==0)
       {
         addToBin(0,(Emax-binLower[0])*norm);
@@ -105,7 +105,7 @@ namespace Gambit {
       }
       else
       {
-        double binSize_low,binSize_high;         
+        double binSize_low,binSize_high;
         // Calculate part of lower bin covered by box
         if(imin>=0)
           binSize_low = binLower[imin+1]-Emin;
@@ -115,7 +115,7 @@ namespace Gambit {
           binSize_low=binSize(imin);
         }
         // Calculate part of upper bin covered by box
-        if(imax<nBins) 
+        if(imax<nBins)
           binSize_high = Emax-binLower[imax];
         else
         {
@@ -125,7 +125,7 @@ namespace Gambit {
         // Add contribution to lower bin
         addToBin(imin,binSize_low*norm);
         // Add contribution to upper bin
-        addToBin(imax,binSize_high*norm);                    
+        addToBin(imax,binSize_high*norm);
         // Add contributions to remaining bins
         for(int i=imin+1;i<imax;i++)
         {
@@ -136,7 +136,7 @@ namespace Gambit {
 
     void SimpleHist::addHistAsWeights_sameBin(SimpleHist &in)
     {
-      // Check that the number of bins is equal to avoid segfaults. 
+      // Check that the number of bins is equal to avoid segfaults.
       // It is up to the user to make sure the actual binning is identical.
       if(in.nBins != nBins)
       {
@@ -175,21 +175,21 @@ namespace Gambit {
       {
         binVals[i]*=x;
         wtSq[i]   *=x*x;
-      } 
-    }       
+      }
+    }
 
     int SimpleHist::findIndex(double val) const
     {
       if(val < binLower[0]) return -1;
-      std::vector<double>::const_iterator pos = 
-        upper_bound(binLower.begin(),binLower.end(),val);   
-      return pos - binLower.begin() -1;       
+      std::vector<double>::const_iterator pos =
+        upper_bound(binLower.begin(),binLower.end(),val);
+      return pos - binLower.begin() -1;
     }
 
     double SimpleHist::binSize(int bin) const
     {
       return binLower[bin+1]-binLower[bin];
-    }  
+    }
 
     double SimpleHist::binCenter(int bin) const
     {

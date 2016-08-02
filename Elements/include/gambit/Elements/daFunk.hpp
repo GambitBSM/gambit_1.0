@@ -1,26 +1,26 @@
 /*
- * _______                                                            
- * \  ___ `'.                                 _..._        .          
- *  ' |--.\  \                _.._          .'     '.    .'|          
- *  | |    \  '             .' .._|        .   .-.   . .'  |          
- *  | |     |  '    __      | '            |  '   '  |<    |          
- *  | |     |  | .:--.'.  __| |__  _    _  |  |   |  | |   | ____     
- *  | |     ' .'/ |   \ ||__   __|| '  / | |  |   |  | |   | \ .'     
- *  | |___.' /' `" __ | |   | |  .' | .' | |  |   |  | |   |/  .      
- * /_______.'/   .'.''| |   | |  /  | /  | |  |   |  | |    /\  \     
- * \_______|/   / /   | |_  | | |   `'.  | |  |   |  | |   |  \  \    
- *              \ \._,\ '/  | | '   .'|  '/|  |   |  | '    \  \  \   
- *               `--'  `"   |_|  `-'  `--' '--'   '--''------'  '---' 
+ * _______
+ * \  ___ `'.                                 _..._        .
+ *  ' |--.\  \                _.._          .'     '.    .'|
+ *  | |    \  '             .' .._|        .   .-.   . .'  |
+ *  | |     |  '    __      | '            |  '   '  |<    |
+ *  | |     |  | .:--.'.  __| |__  _    _  |  |   |  | |   | ____
+ *  | |     ' .'/ |   \ ||__   __|| '  / | |  |   |  | |   | \ .'
+ *  | |___.' /' `" __ | |   | |  .' | .' | |  |   |  | |   |/  .
+ * /_______.'/   .'.''| |   | |  /  | /  | |  |   |  | |    /\  \
+ * \_______|/   / /   | |_  | | |   `'.  | |  |   |  | |   |  \  \
+ *              \ \._,\ '/  | | '   .'|  '/|  |   |  | '    \  \  \
+ *               `--'  `"   |_|  `-'  `--' '--'   '--''------'  '---'
  *
  *                         daFunk - dynamisch allokierbare Funktionen
- *                                    
+ *
  *  v0.1 Dec 2014
  *  v0.2 Mar 2015 - Completely rewritten internal structure
  *  v0.3 May 2016 - Extensions
  *
  *  Christoph Weniger, created Dec 2014, edited until May 2016
  *  <c.weniger@uva.nl>
- *  
+ *
  *  with contributions related to thread-safety from
  *  Lars A. Dal, Apr, Jun 2015
  *  <l.a.dal@fys.uio.no>
@@ -28,19 +28,19 @@
  *
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2016 Christoph Weniger
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
  * of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -52,7 +52,7 @@
 
 #ifndef __DAFUNK_HPP__
 #define __DAFUNK_HPP__
-                                            
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -111,7 +111,7 @@ namespace daFunk
     class FunkIntegrate_gsl1d;
 
     typedef shared_ptr<FunkBase> Funk;
-    typedef shared_ptr<FunkBound> BoundFunk;    
+    typedef shared_ptr<FunkBound> BoundFunk;
     typedef std::vector<std::string> ArgsType;
     typedef std::map<std::string, std::vector<std::pair<Funk, Funk>>> Singularities;
 
@@ -316,7 +316,7 @@ namespace daFunk
             Funk help();
             template <typename... Args> bool assert_args(Args... args);
 
-            // Return value & standard resolve 
+            // Return value & standard resolve
             virtual double value(const std::vector<double> &, size_t bindID) = 0;
 
             // datamap maps the required function arguments onto the specific
@@ -411,7 +411,7 @@ namespace daFunk
             template <typename... Args>
             friend shared_ptr<FunkBound> FunkBase::bind(Args... argss);
             // Function for generating unique bindIDs.
-            // IDs are sequential, starting from 0.            
+            // IDs are sequential, starting from 0.
             static void bindID_manager(size_t &bindID, bool bind)
             {
               static size_t n_idx = 0;
@@ -427,7 +427,7 @@ namespace daFunk
                     }
                     else
                     {
-                        bindID = free.back(); 
+                        bindID = free.back();
                         free.pop_back();
                     }
                 }
@@ -456,7 +456,7 @@ namespace daFunk
                     if ( size == 1 ) size = it->size();
                     if ( size != it->size() )
                     {
-                        std::cout << "daFunk::FunkBase WARNING: Inconsistent vector lengths." << std::endl;
+                        std::cerr << "daFunk::FunkBase WARNING: Inconsistent vector lengths." << std::endl;
                         return vec<double>();
                     }
                 }
@@ -563,7 +563,7 @@ namespace daFunk
             }
 
             double value(const std::vector<double> & args, size_t bindID)
-            { 
+            {
                 (void)args;
                 (void)bindID;
                 assert ( 0 == 1 );  // This function should never be called
@@ -643,11 +643,11 @@ namespace daFunk
                 }
                 if ( argmap.find(my_arg) == argmap.end() )
                 {
-                    if(datamap.find(my_arg) == datamap.end())  
+                    if(datamap.find(my_arg) == datamap.end())
                     {
                         my_index[bindID] = datalen;
-                        argmap[my_arg]   = datalen;     
-                        ++datalen; 
+                        argmap[my_arg]   = datalen;
+                        ++datalen;
                     }
                     else
                     {
@@ -661,7 +661,7 @@ namespace daFunk
                 datamap[my_arg]  = my_index[bindID];  // add or overwrite entry in datamap
                 functions[0]->resolve(datamap, datalen, bindID, argmap);  // resolve f
             }
-            
+
             double value(const std::vector<double> & data, size_t bindID)
             {
                 std::vector<double> data2(data);
@@ -707,7 +707,7 @@ namespace daFunk
                 double result;
                 size_t i = 0;
                 #pragma omp critical (FunkFunc_setInput)
-                {                 
+                {
                     for ( auto f = functions.begin(); f != functions.end(); ++f, ++i)
                     {
                         *map[i] = (*f)->value(data, bindID);
@@ -739,7 +739,7 @@ namespace daFunk
             std::vector<double*> map;
             double (*ptr)(funcargs...);
 
-            // Digest input parameters 
+            // Digest input parameters
             // (forwarding everything except daFunk::Funk types, which is mapped onto
             // funktion parameters)
             template<typename T, typename... Args>
@@ -793,7 +793,7 @@ namespace daFunk
 
             double value(const std::vector<double> & data, size_t bindID)
             {
-                std::tuple<typename std::remove_reference<funcargs>::type...> my_input;                
+                std::tuple<typename std::remove_reference<funcargs>::type...> my_input;
                 double result;
                 size_t i = 0;
                 #pragma omp critical(FunkFuncM_value)
@@ -814,7 +814,7 @@ namespace daFunk
                     {
                         result = ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type(), my_input);
                     }
-                }        
+                }
                 return result;
             }
 
@@ -831,7 +831,7 @@ namespace daFunk
             shared_ptr<O> shared_obj;
             O* obj;
 
-            // Digest input parameters 
+            // Digest input parameters
             // (forwarding everything except daFunk::Funk types, which is mapped onto
             // funktion parameters)
             template<typename T, typename... Args>
@@ -886,7 +886,7 @@ namespace daFunk
                 arguments = vec(arg);
                 this->set_singularity("v", pos, width);
             }
-            
+
             double value(const std::vector<double> & data, size_t bindID)
             {
                 double x = data[indices[bindID][0]];
@@ -909,7 +909,7 @@ namespace daFunk
             {
                 arguments = vec(arg);
             }
-            
+
             double value(const std::vector<double> & data, size_t bindID)
             {
                 return data[indices[bindID][0]];
@@ -921,10 +921,10 @@ namespace daFunk
     //
     // Definition of FunkBase member functions
     //
- 
+
     inline Funk FunkBase::set_singularity(std::string arg, Funk pos, Funk width)
-    { 
-        singularities[arg].push_back(std::pair<Funk, Funk>(pos, width)); 
+    {
+        singularities[arg].push_back(std::pair<Funk, Funk>(pos, width));
         return shared_from_this();
     };
     inline Funk FunkBase::set_singularity(std::string arg, double pos, Funk width)
@@ -1011,13 +1011,13 @@ namespace daFunk
         return f->set(args...);
     }
 
-    template <typename... Args> inline Funk FunkBase::set(std::string arg, std::string arg1, Args... args) 
+    template <typename... Args> inline Funk FunkBase::set(std::string arg, std::string arg1, Args... args)
         { return shared_from_this()->set(arg, var(arg1))->set(args...); }
 
-    template <typename... Args> inline Funk FunkBase::set(std::string arg, double x, Args... args) 
+    template <typename... Args> inline Funk FunkBase::set(std::string arg, double x, Args... args)
         { return shared_from_this()->set(arg, cnst(x))->set(args...); }
 
-    template <> inline Funk FunkBase::set() 
+    template <> inline Funk FunkBase::set()
         { return shared_from_this(); }
 
     template <typename... Args> inline shared_ptr<FunkBound> FunkBase::bind(Args... argss)
@@ -1133,9 +1133,9 @@ namespace daFunk
     //
 
     // Unary minus sign
-    class FunkMath_umin: public FunkBase                                                           
-    {                                                                                                     
-        public:                                                                                           
+    class FunkMath_umin: public FunkBase
+    {
+        public:
             FunkMath_umin(Funk f)
             {
                 functions = vec(f);
@@ -1143,10 +1143,10 @@ namespace daFunk
                 arguments = f->getArgs();
             }
             double value(const std::vector<double> & data, size_t bindID)
-            {                                                                                             
-                return -(functions[0]->value(data, bindID));                                                            
-            }                                                                                            
-    };                                                                                                    
+            {
+                return -(functions[0]->value(data, bindID));
+            }
+    };
     inline Funk operator - (Funk f) { return Funk(new FunkMath_umin(f)); }
 
     // Unary operations
@@ -1461,15 +1461,15 @@ namespace daFunk
             {
                 setup(f0, arg, f1, f2);
             }
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, Funk f) 
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, Funk f)
             {
                 setup(f0, arg, cnst(x), f);
             }
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, double y) 
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, double y)
             {
                 setup(f0, arg, cnst(x), cnst(y));
             }
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, double x) 
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, double x)
             {
                 setup(f0, arg, f, cnst(x));
             }
@@ -1498,7 +1498,7 @@ namespace daFunk
             {
                 functions[1]->resolve(datamap, datalen, bindID, argmap);  // Resolve boundary 0
                 functions[2]->resolve(datamap, datalen, bindID, argmap);  // Resolve boundary 1
-                
+
                 // Set indices
                 if(index.size() <= bindID)
                 {
@@ -1515,11 +1515,11 @@ namespace daFunk
                 }
                 if ( argmap.find(arg) == argmap.end() )
                 {
-                    if(datamap.find(arg) == datamap.end())  
+                    if(datamap.find(arg) == datamap.end())
                     {
                         index[bindID] = datalen;
-                        argmap[arg]   = datalen;     
-                        ++datalen; 
+                        argmap[arg]   = datalen;
+                        ++datalen;
                     }
                     else
                     {
@@ -1544,14 +1544,16 @@ namespace daFunk
                 gsl_integration_workspace_free(gsl_workspace);
             }
 
-            shared_ptr<FunkIntegrate_gsl1d> set_epsrel(double epsrel) 
+            shared_ptr<FunkIntegrate_gsl1d> set_epsrel(double epsrel)
             { this->epsrel = epsrel; return static_pointer_cast<FunkIntegrate_gsl1d>(this->FunkIntegrate_gsl1d::shared_from_this()); }
-            shared_ptr<FunkIntegrate_gsl1d> set_epsabs(double epsabs) 
+            shared_ptr<FunkIntegrate_gsl1d> set_epsabs(double epsabs)
             { this->epsabs = epsabs; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
-            shared_ptr<FunkIntegrate_gsl1d> set_limit(size_t limit) 
+            shared_ptr<FunkIntegrate_gsl1d> set_limit(size_t limit)
             { this->limit = limit; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
-            shared_ptr<FunkIntegrate_gsl1d> set_singularity_factor(double f) 
+            shared_ptr<FunkIntegrate_gsl1d> set_singularity_factor(double f)
             { this->singl_factor = f; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
+            shared_ptr<FunkIntegrate_gsl1d> set_use_log_fallback(bool flag)
+            { this->use_log_fallback = flag; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
 
             double value(const std::vector<double> & data, size_t bindID)
             {
@@ -1597,22 +1599,43 @@ namespace daFunk
                         }
                         result = s;
                     }
-                    // FIXME: Implement flags to optionally throw an error
-                    if (status)
+                    if (status and this->use_log_fallback)
                     {
-                        std::cout << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
-                        std::cout << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
-                        std::cout << "Details about the integrand:" << std::endl;
+                        // The last resort: A cheap integration on log grid, linear interpolation
+                        const double N = 100;
+                        std::vector<double> Xgrid = 
+                            logspace(std::log10(x0), std::log10(x1), N);
+                        double sum = 0, y0, y1, dx;
+                        local_data[index[bindID]] = Xgrid[0];
+                        y0 = functions[0]->value(local_data, bindID);
+                        for (size_t i = 0; i<N-1; i++)
+                        {
+                            local_data[index[bindID]] = Xgrid[i+1];
+                            y1 = functions[0]->value(local_data, bindID);
+                            dx = Xgrid[i+1]-Xgrid[i];
+                            sum += dx*(y0+y1)/2;
+                            y0 = y1;
+                        }
+                        result = sum;
+                    }
+                    // FIXME: Implement flags to optionally throw an error
+                    if (status and not this->use_log_fallback)
+                    {
+                        std::cerr << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
+                        std::cerr << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
+                        std::cerr << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
+                        std::cerr << "Details about the integrand:" << std::endl;
                         functions[0]->help();
-                        std::cout << "Dumping integrand:" << std::endl;
-                        for ( double x = x0; x <= x1; x = (x0>0) ? x*1.01 : x+(x1-x0)/1000)
-                            std::cout << "  " << x << " " << invoke(x, this) << std::endl;
+//                        std::cout << "Dumping integrand:" << std::endl;
+//                        for ( double x = x0; x <= x1; x = (x0>0) ? x*1.01 : x+(x1-x0)/1000)
+//                            std::cerr << "  " << x << " " << invoke(x, this) << std::endl;
+                        std::cerr << "Returning zero." << std::endl;
                         result = 0.;
                     }
                 }
                 return result;
             }
-            
+
         private:
             void setup(Funk f0, std::string arg, Funk f1, Funk f2)
             {
@@ -1632,6 +1655,7 @@ namespace daFunk
                 limit = 100;
                 epsrel = 1e-2;
                 epsabs = 1e-2;
+                use_log_fallback = false;
                 singl_factor = 4;
             }
 
@@ -1656,6 +1680,7 @@ namespace daFunk
             std::vector<size_t> index;
             double epsrel;
             double epsabs;
+            bool use_log_fallback;
 
             double singl_factor;
     };
