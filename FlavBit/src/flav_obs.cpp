@@ -282,10 +282,14 @@ namespace Gambit
 
       for(int i=0; i<number_measurements; ++i)
 	{
-	  cout<<"Correlation size: "<< measurements[i].corr.size()<<endl; 
+    #ifdef FLAVBIT_DEBUG
+  	  cout<<"Correlation size: "<< measurements[i].corr.size()<<endl;
+    #endif
 	  for ( unsigned icorr=0; icorr< measurements[i].corr.size(); ++icorr)
 	    {
-	      cout<<"Searchign for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
+        #ifdef FLAVBIT_DEBUG
+  	      cout<<"Searching for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
+        #endif
 	      int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
 	      M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
 	      //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];

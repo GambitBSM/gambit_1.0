@@ -56,7 +56,8 @@
 #include <boost/numeric/ublas/io.hpp>
 
 //#define FLAVBIT_DEBUG
-#define FLAVBIT_DEBUG_PRINT_LL
+//#define FLAVBIT_DEBUG_LL
+
 #define Nobs_BKll 2
 #define Nobs_BKsll 30
 #define Nobs_Bsphill 6
@@ -75,11 +76,24 @@ namespace Gambit
     /// Non-rollcalled helper functions unknown to GAMBIT
     // **************************************************
 
-    #define FLAVBIT_DEBUG_LL true
-    #define FLAVBIT_DEBUG true
+    const bool flav_debug =
+    #ifdef FLAVBIT_DEBUG
+      true;
+    #else
+      false;
+    #endif
+
+    const bool flav_debug_LL =
+    #ifdef FLAVBIT_DEBUG_LL
+      true;
+    #else
+      false;
+    #endif
+    
 
     template<class T>
-    bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse) {
+    bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse)
+    {
       using namespace boost::numeric::ublas;
       typedef permutation_matrix<std::size_t> pmatrix;
       // create a working copy of the input
@@ -115,7 +129,6 @@ namespace Gambit
       SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
-
 
       BEreq::Init_param(&result);
 
@@ -450,7 +463,7 @@ namespace Gambit
              if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
 
       BEreq::slha_adjust(&result);
-      if(*Dep::Debug_Cap) cout<<"Finished SI_fill"<<endl;
+      if(flav_debug) cout<<"Finished SI_fill"<<endl;
     }
 
     // *************************************************
@@ -460,28 +473,29 @@ namespace Gambit
     void SI_bsgamma(double &result)
     {
       using namespace Pipes::SI_bsgamma;
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_bsgamma"<<endl;
+      if(flav_debug)  cout<<"Starting SI_bsgamma"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b_1S/2.;
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-    std::complex<double> CQpb[3];
+        double mu_W=2.*param.mass_W;
+        double mu_b=param.mass_b_1S/2.;
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+        std::complex<double> CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),&param);
+      }
 
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),&param);
+      if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
+
     }
-
-      if(*Dep::Debug_Cap)  printf("BR(b->s gamma)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_bsgamma"<<endl;
-
-    }
+    
     // *************************************************
     /// Calculating Br in Bs->mumu decays
     // *************************************************
@@ -490,30 +504,29 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bsmumu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Bsmumu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Bsmumu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b;
-    double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-
-    //int flav=2;
-    result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-
+        double mu_W=2.*param.mass_W;
+        double mu_b=param.mass_b;
+        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+          std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+    
+        //int flav=2;
+        result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
       }
 
-      if(*Dep::Debug_Cap)      printf("BR(Bs->mumu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsmumu"<<endl;
+      if(flav_debug)      printf("BR(Bs->mumu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bsmumu"<<endl;
 
     }
 
@@ -525,28 +538,28 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bsmumu_untag;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Bsmumu_untag"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b;
-    double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+        double mu_W=2.*param.mass_W;
+        double mu_b=param.mass_b;
+        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+    
+        result = BEreq::Bsmumu_untag(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-
-    result = BEreq::Bsmumu_untag(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
-
-      if(*Dep::Debug_Cap) printf("BR(Bs->mumu)_untag=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsmumu_untag"<<endl;
+      if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
 
 
     }
@@ -559,29 +572,28 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bsee_untag;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Bsee_untag"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Bsee_untag"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b;
-    double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+        double mu_W=2.*param.mass_W;
+        double mu_b=param.mass_b;
+        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(1,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(1,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(1,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+    
+        result = BEreq::Bsll_untag(1,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    BEreq::CW_calculator(1,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(1,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(1,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-
-    result = BEreq::Bsll_untag(1,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
-
-      if(*Dep::Debug_Cap) printf("BR(Bs->ee)_untag=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsee_untag"<<endl;
-
+      if(flav_debug) printf("BR(Bs->ee)_untag=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bsee_untag"<<endl;
 
     }
 
@@ -593,32 +605,30 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bdmumu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Bdmumu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Bdmumu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b;
-    double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
-      std::complex<double> CQ0b[3],CQ1b[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-
-    int flav=2;
-    //result = BEreq::Bdmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
-    result = BEreq::Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+        double mu_W=2.*param.mass_W;
+        double mu_b=param.mass_b;
+        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+        std::complex<double> CQ0b[3],CQ1b[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+    
+        int flav=2;
+        //result = BEreq::Bdmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+        result = BEreq::Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
       }
 
-      if(*Dep::Debug_Cap) printf("BR(Bd->mumu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bdmumu"<<endl;
+      if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bdmumu"<<endl;
     }
-
-
 
 
     // *************************************************
@@ -629,15 +639,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_Btaunu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Btaunu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Btaunu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Btaunu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(B->tau nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Btaunu"<<endl;
+      if(flav_debug) printf("BR(B->tau nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Btaunu"<<endl;
 
     }
 
@@ -650,15 +660,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_BDtaunu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BDtaunu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BDtaunu"<<endl;
 
        struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(B->D tau nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BDtaunu"<<endl;
+      if(flav_debug) printf("BR(B->D tau nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BDtaunu"<<endl;
 
     }
 
@@ -670,15 +680,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_RD;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BDtaunu_BDenu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BDtaunu_BDenu"<<endl;
 
        struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu_BDenu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BDtaunu_BDenu"<<endl;
+      if(flav_debug) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BDtaunu_BDenu"<<endl;
 
     }
 
@@ -690,15 +700,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_Kmunu_pimunu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Kmunu_pimunu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Kmunu_pimunu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Kmunu_pimunu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(K->mu nu)/BR(pi->mu nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Kmunu_pimunu"<<endl;
+      if(flav_debug) printf("BR(K->mu nu)/BR(pi->mu nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Kmunu_pimunu"<<endl;
     }
 
     // *************************************************
@@ -707,15 +717,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_Rmu23;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Rmu23"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Rmu23"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Rmu23(&param);
 
-      if(*Dep::Debug_Cap) printf("Rmu23=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Rmu23"<<endl;
+      if(flav_debug) printf("Rmu23=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Rmu23"<<endl;
 
     }
 
@@ -727,15 +737,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_Dstaunu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Dstaunu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Dstaunu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dstaunu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(Ds->tau nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dstaunu"<<endl;
+      if(flav_debug) printf("BR(Ds->tau nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Dstaunu"<<endl;
 
     }
 
@@ -747,15 +757,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_Dsmunu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Dsmunu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Dsmunu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dsmunu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(Ds->mu nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dsmunu"<<endl;
+      if(flav_debug) printf("BR(Ds->mu nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Dsmunu"<<endl;
     }
 
     // *************************************************
@@ -766,15 +776,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_Dmunu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_Dmunu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Dmunu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dmunu(&param);
 
-      if(*Dep::Debug_Cap) printf("BR(D->mu nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dmunu"<<endl;
+      if(flav_debug) printf("BR(D->mu nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Dmunu"<<endl;
     }
 
 
@@ -784,32 +794,31 @@ namespace Gambit
     {
       using namespace Pipes::SI_delta0;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_delta0"<<endl;
+      if(flav_debug)  cout<<"Starting SI_delta0"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b_1S/2.;
+        double mu_W=2.*param.mass_W;
+        double mu_b=param.mass_b_1S/2.;
+    
+        double lambda_h=0.5;
+        double mu_spec=sqrt(lambda_h*param.mass_b);   
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
+        std::complex<double> CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
+        BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),byVal(Cpb),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
+      }
 
-    double lambda_h=0.5;
-    double mu_spec=sqrt(lambda_h*param.mass_b);
-
-
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
-    std::complex<double> CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
-    BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),byVal(Cpb),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
-    }
-
-      if(*Dep::Debug_Cap) printf("Delta0(B->K* gamma)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_delta0"<<endl;
+      if(flav_debug) printf("Delta0(B->K* gamma)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_delta0"<<endl;
     }
 
      // *************************************************
@@ -818,28 +827,28 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBXsmumu_lowq2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXsmumu_lowq2"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBXsmumu_lowq2"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
-
-      if(*Dep::Debug_Cap) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
+      if(flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
     }
 
      // *************************************************
@@ -848,58 +857,58 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBXsmumu_highq2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXsmumu_highq2"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBXsmumu_highq2"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+          std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      if(flav_debug) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
     }
 
-      if(*Dep::Debug_Cap) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
-    }
-
-     // *************************************************
+    // *************************************************
 
     void SI_A_BXsmumu_lowq2(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_lowq2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_lowq2"<<endl;
+      if(flav_debug)  cout<<"Starting SI_A_BXsmumu_lowq2"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+          std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::A_BXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::A_BXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
-
-      if(*Dep::Debug_Cap) printf("AFB(B->Xs mu mu)_lowq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_A_BXsmumu_lowq2"<<endl;
+      if(flav_debug) printf("AFB(B->Xs mu mu)_lowq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_A_BXsmumu_lowq2"<<endl;
 
     }
 
@@ -909,28 +918,28 @@ namespace Gambit
     {
       using namespace Pipes::SI_A_BXsmumu_highq2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_highq2"<<endl;
+      if(flav_debug)  cout<<"Starting SI_A_BXsmumu_highq2"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::A_BXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::A_BXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
-
-      if(*Dep::Debug_Cap) printf("AFB(B->Xs mu mu)_highq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_A_BXsmumu_highq2"<<endl;
+      if(flav_debug) printf("AFB(B->Xs mu mu)_highq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_A_BXsmumu_highq2"<<endl;
     }
 
      // *************************************************
@@ -939,88 +948,88 @@ namespace Gambit
     {
       using namespace Pipes::SI_A_BXsmumu_zero;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_zero"<<endl;
+      if(flav_debug)  cout<<"Starting SI_A_BXsmumu_zero"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+          std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::A_BXsll_zero(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::A_BXsll_zero(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      if(flav_debug) printf("AFB(B->Xs mu mu)_zero=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_A_BXsmumu_zero"<<endl;
     }
 
-      if(*Dep::Debug_Cap) printf("AFB(B->Xs mu mu)_zero=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_A_BXsmumu_zero"<<endl;
-    }
-
-     // *************************************************
+    // *************************************************
 
     void SI_BRBXstautau_highq2(double &result)
     {
       using namespace Pipes::SI_BRBXstautau_highq2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXstautau_highq2"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBXstautau_highq2"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::BRBXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::BRBXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      if(flav_debug) printf("BR(B->Xs tau tau)_highq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BRBXstautau_highq2"<<endl;
     }
 
-      if(*Dep::Debug_Cap) printf("BR(B->Xs tau tau)_highq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXstautau_highq2"<<endl;
-    }
-
-     // *************************************************
+    // *************************************************
 
     void SI_A_BXstautau_highq2(double &result)
     {
       using namespace Pipes::SI_A_BXstautau_highq2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXstautau_highq2"<<endl;
+      if(flav_debug)  cout<<"Starting SI_A_BXstautau_highq2"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
       else
       {
-    double mu_W=120.;
-    double mu_b=5.;
+        double mu_W=120.;
+        double mu_b=5.;
+    
+        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+          std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+    
+        BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+        BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+        BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::A_BXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
 
-    double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-    BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result = BEreq::A_BXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    }
-
-      if(*Dep::Debug_Cap) printf("AFB(B->Xs tau tau)_highq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_A_BXstautau_highq2"<<endl;
+      if(flav_debug) printf("AFB(B->Xs tau tau)_highq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_A_BXstautau_highq2"<<endl;
     }
 
     // *************************************************
@@ -1032,7 +1041,7 @@ namespace Gambit
 
       using namespace Pipes::SI_BRBKstarmumu_11_25;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1040,7 +1049,7 @@ namespace Gambit
       double q2max=2.5;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
     }
     // *************************************************
@@ -1051,7 +1060,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1059,7 +1068,7 @@ namespace Gambit
       double q2max=4.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
 
     // *************************************************
@@ -1070,16 +1079,15 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
-
 
       double q2min=4.0;
       double q2max=6.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
 
     }
 
@@ -1091,15 +1099,14 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_60_80"<<endl;
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_60_80"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
-
 
       double q2min=6.0;
       double q2max=8.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
     }
 
     // *************************************************
@@ -1110,7 +1117,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17;
 
-      if(*Dep::Debug_Cap) cout<<"Starting SI_BRBKstarmumu_15_17 "<<endl;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 "<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1118,7 +1125,7 @@ namespace Gambit
       double q2max=17.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
-      if(*Dep::Debug_Cap) cout<<"Finished SI_BRBKstarmumu_15_17 "<<endl;
+      if(flav_debug) cout<<"Finished SI_BRBKstarmumu_15_17 "<<endl;
 
     }
 
@@ -1130,7 +1137,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19;
 
-      if(*Dep::Debug_Cap) cout<<"Starting SI_BRBKstarmumu_17_19 "<<endl;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 "<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1139,7 +1146,7 @@ namespace Gambit
       double q2max=19.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
-      if(*Dep::Debug_Cap) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
+      if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
 
     }
 
@@ -1153,7 +1160,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_AI_BKstarmumu;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1170,8 +1177,8 @@ namespace Gambit
     result = BEreq::AI_BKstarmumu(1.,6.,byVal(C0b),byVal(C1b),byVal(C2b),&param,byVal(mu_b));
     }
 
-      if(*Dep::Debug_Cap) printf("A_I(B->K* mu mu)_lowq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_AI_BKstarmumu"<<endl;
+      if(flav_debug) printf("A_I(B->K* mu mu)_lowq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_AI_BKstarmumu"<<endl;
 
     }
 
@@ -1181,7 +1188,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_AI_BKstarmumu_zero;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu_zero"<<endl;
+      if(flav_debug)  cout<<"Starting SI_AI_BKstarmumu_zero"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1198,8 +1205,8 @@ namespace Gambit
     result = BEreq::AI_BKstarmumu_zero(byVal(C0b),byVal(C1b),byVal(C2b),&param,byVal(mu_b));
     }
 
-      if(*Dep::Debug_Cap) printf("A_I(B->K* mu mu)_zero=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_AI_BKstarmumu_zero"<<endl;
+      if(flav_debug) printf("A_I(B->K* mu mu)_zero=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_AI_BKstarmumu_zero"<<endl;
 
     }
 
@@ -1209,7 +1216,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_FlavorObs;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting FH_FlavorObs"<<endl;
+      if(flav_debug)  cout<<"Starting FH_FlavorObs"<<endl;
 
       fh_real bsgMSSM;     // B -> Xs gamma in MSSM
       fh_real bsgSM;       // B -> Xs gamma in SM
@@ -1232,44 +1239,23 @@ namespace Gambit
       FlavorObs.Bsmumu_SM = bsmumuSM;
 
       result = FlavorObs;
-      if(*Dep::Debug_Cap) cout<<"Finished FH_FlavorObs"<<endl;
+      if(flav_debug) cout<<"Finished FH_FlavorObs"<<endl;
     }
 
-    // *************************************************
-    /// Debugging function, change to false to get ride of couts
-    // *************************************************
-
-    void Debug(bool &deb)
-    {
-      #ifdef FLAVBIT_DEBUG
-        deb=true;
-      #else
-        deb=false;
-      #endif
-    }
-    void Debug_LL(bool &deb)
-    {
-      #ifdef FLAVBIT_DEBUG_LL
-        deb=true;
-      #else
-        deb=false;
-      #endif
-    }
 
     // *************************************************
     /// reading measurements for b->sll
     // *************************************************
 
-
     void b2sll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2sll_measurements;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting b2sll_measurements function"<<endl;
+      if(flav_debug)  cout<<"Starting b2sll_measurements function"<<endl;
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-      red.debug_mode(*Dep::Debug_Cap);
-      if(*Dep::Debug_Cap)  cout<<"init Flav Reader the B2sll "<<endl;
+      red.debug_mode(flav_debug);
+      if(flav_debug)  cout<<"init Flav Reader the B2sll "<<endl;
       vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
       vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
       vector<string> observables;
@@ -1373,13 +1359,11 @@ namespace Gambit
 
       measurement_assym.LL_name="b2ll_likelihood";
 
-
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp=M_cov;
 
       measurement_assym.value_th=M_th;
       measurement_assym.cov_th=M_cov_th;
-
 
       int n_experiments=M_cov_th.size1();
       vector<double> diff;
@@ -1391,8 +1375,7 @@ namespace Gambit
       measurement_assym.diff=diff;
       measurement_assym.dim=n_experiments;
 
-
-      if(*Dep::Debug_Cap)  cout<<"Finished b2sll_measurements function"<<endl;
+      if(flav_debug)  cout<<"Finished b2sll_measurements function"<<endl;
     }
 
     // *************************************************
@@ -1404,10 +1387,9 @@ namespace Gambit
     {
       using namespace Pipes::b2sll_likelihood;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting b2sll_likelihood"<<endl;
+      if(flav_debug)  cout<<"Starting b2sll_likelihood"<<endl;
       result=0.;
-      if(*Dep::Debug_Cap_LL) cout<<"Likelihood before b2sll_likelihood  : "<< result<<endl;
-
+      if(flav_debug_LL) cout<<"Likelihood before b2sll_likelihood  : "<< result<<endl;
 
       Flav_measurement_assym measurement_assym;//=*(Dep::b2sll_M);
       b2sll_measurements(measurement_assym);
@@ -1415,22 +1397,15 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
-
       // adding theory and experimenta covariance
       cov+=measurement_assym.cov_th;
-
 
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
 
-
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
-
-
-
       InvertMatrix(cov, cov_inv);
-
 
       double Chi2=0;
 
@@ -1438,20 +1413,15 @@ namespace Gambit
       {
         for(int j=0; j<measurement_assym.dim; ++j)
           {
-
             Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-
-
           }
-
       }
 
       Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished b2sll_likelihood"<<endl;
-      if(*Dep::Debug_Cap_LL) cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
-
+      if(flav_debug)  cout<<"Finished b2sll_likelihood"<<endl;
+      if(flav_debug_LL) cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
 
     }
 
@@ -1461,7 +1431,7 @@ namespace Gambit
     void b2sgamma_likelihood(double &result)
     {
       using namespace Pipes::b2sgamma_likelihood;
-      if(*Dep::Debug_Cap)  cout<<"Starting b2sgamma_measurements"<<endl;
+      if(flav_debug)  cout<<"Starting b2sgamma_measurements"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1469,9 +1439,9 @@ namespace Gambit
       double theory_prediction=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-      red.debug_mode(*Dep::Debug_Cap);
+      red.debug_mode(flav_debug);
 
-      if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;
+      if(flav_debug) cout<<"Inited Flav reader"<<endl;
       red.read_yaml_mesurement("flav_data.yaml", "BR_b2sgamma");
 
       red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
@@ -1479,12 +1449,10 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
 
-
       double exp_meas=M_exp(0,0);
 
       double exp_b2sgamma_err=M_cov(0,0);
       double theory_b2sgamma_err=th_err(0,0)*theory_prediction;
-
 
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err);
 
@@ -1497,24 +1465,23 @@ namespace Gambit
     {
       using namespace Pipes::b2ll_measurements;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting b2ll_measurements"<<endl;
+      if(flav_debug)  cout<<"Starting b2ll_measurements"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
-
 
       // experimental measurement
       //Bsmumu
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-      red.debug_mode(*Dep::Debug_Cap);
+      red.debug_mode(flav_debug);
 
-      if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;
+      if(flav_debug) cout<<"Initiated Flav reader"<<endl;
+      // FIXME why is this called twice?
       red.read_yaml_mesurement("flav_data.yaml", "BR_Bs2mumu");
 
       red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
 
-
-      cout<<"Finish reading b->mumu"<<endl;
+      if (flav_debug) cout<<"Finish reading b->mumu"<<endl;
 
       red.create_global_corr();
       int flav=2;
@@ -1526,7 +1493,6 @@ namespace Gambit
       //SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=BEreq::SI_Bdll_CONV(&param, byVal(flav));
       //SI_Bdmumu(theory_bd2mumu);
-
 
       // Naliza doesn't provide the errors, need to take them from paper
       double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
@@ -1545,22 +1511,18 @@ namespace Gambit
       M_th(0,0)=theory_bs2mumu;
       M_th(1,0)=theory_bd2mumu;
 
-
       // #########################
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
-
       measurement_assym.LL_name="b2ll_likelihood";
-
 
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp=M_cov;
 
       measurement_assym.value_th=M_th;
       measurement_assym.cov_th=M_cov_th;
-
 
       vector<double> diff;
 
@@ -1571,8 +1533,7 @@ namespace Gambit
       measurement_assym.diff=diff;
       measurement_assym.dim=2;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished b2ll_measurements"<<endl;
-
+      if(flav_debug)  cout<<"Finished b2ll_measurements"<<endl;
 
     }
 
@@ -1585,15 +1546,13 @@ namespace Gambit
     {
       using namespace Pipes::b2ll_likelihood;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting b2ll_likelihood"<<endl;
+      if(flav_debug)  cout<<"Starting b2ll_likelihood"<<endl;
       result=0.;
-      if(*Dep::Debug_Cap_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
-
+      if(flav_debug_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
 
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
 
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
-
 
       // adding theory and experimenta covariance
       cov+=measurement_assym.cov_th;
@@ -1603,11 +1562,7 @@ namespace Gambit
       diff=measurement_assym.diff;
 
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
-
-
-
       InvertMatrix(cov, cov_inv);
-
 
       // calculating the chi2
       double Chi2=0;
@@ -1615,21 +1570,16 @@ namespace Gambit
       for(int i=0; i < measurement_assym.dim; ++i)
       {
         for(int j=0; j<measurement_assym.dim; ++j)
-          {
-
-	    Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-
-          }
-
+        {
+          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+        }
       }
 
       Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished b2ll_likelihood"<<endl;
-      if(*Dep::Debug_Cap_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
-
-
+      if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
+      if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
 
@@ -1641,7 +1591,7 @@ namespace Gambit
     {
       using namespace Pipes::SL_measurements;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SL_measurements"<<endl;
+      if(flav_debug)  cout<<"Starting SL_measurements"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -1649,9 +1599,9 @@ namespace Gambit
       // experimental measurement
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-      red.debug_mode(*Dep::Debug_Cap);
+      red.debug_mode(flav_debug);
 
-      if(*Dep::Debug_Cap)   cout<<"inited falv reader"<<endl;
+      if(flav_debug)   cout<<"inited falv reader"<<endl;
       // B-> tau nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_Btaunu");
       // B-> D tau nu
@@ -1668,7 +1618,6 @@ namespace Gambit
       red.read_yaml_mesurement("flav_data.yaml", "BR_Dsmunu");
       // D -> mu nu
       red.read_yaml_mesurement("flav_data.yaml", "BR_Dmunu");
-
 
       red.create_global_corr();
 
@@ -1690,9 +1639,6 @@ namespace Gambit
       int charge_tau_D     = 0;// D* is the charged version
       double obs_tau_D[3];
       double theory_BDtaunu = BEreq::BRBDlnu(byVal(gen_tau_D),  byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), obs_tau_D, &param);
-      //old code:
-      double theory_BDtaunu_old=*(Dep::BDtaunu);
-      cout<<"Old: "<<theory_BDtaunu_old<<" New: "<<theory_BDtaunu<<endl;
 
       // B-> D* tau nu
       double q2_min_tau_Dstar = 3.16; // 1.776**2
@@ -1718,15 +1664,6 @@ namespace Gambit
       double obs_mu_Dstar[3];
       double theory_BDstarmunu = BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
 
-
-
-
-
-
-
-
-
-
       // theory results;
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
 
@@ -1741,7 +1678,6 @@ namespace Gambit
       M_th(7,0)=theory_Dmunu;
 
       // hardoceded errors :( move it to include later
-
 
 
       double theory_Btaunu_error=th_err(0,0);
@@ -1779,9 +1715,7 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
 
-
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
-
 
       //#######################################################################
       measurement_assym.LL_name="SL_likelihood";
@@ -1792,10 +1726,7 @@ namespace Gambit
       measurement_assym.value_th=M_th;
       measurement_assym.cov_th=M_cov_th;
 
-
-
       vector<double> diff;
-
 
       for(int i=0;i<n_experiments;++i)
       {
@@ -1804,7 +1735,7 @@ namespace Gambit
       measurement_assym.diff=diff;
       measurement_assym.dim=n_experiments;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished SL_measurements"<<endl;
+      if(flav_debug)  cout<<"Finished SL_measurements"<<endl;
 
     }
 
@@ -1814,14 +1745,12 @@ namespace Gambit
 
     void SL_likelihood(double &result)
     {
-
       using namespace Pipes::SL_likelihood;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SL_likelihood"<<endl;
+      if(flav_debug)  cout<<"Starting SL_likelihood"<<endl;
 
       result=0.;
-      if(*Dep::Debug_Cap_LL) cout<<"Likelihood before SL_likelihood  : "<< result<<endl;
-
+      if(flav_debug_LL) cout<<"Likelihood before SL_likelihood  : "<< result<<endl;
 
       Flav_measurement_assym measurement_assym = *Dep::SL_M;
       //SL_measurements(measurement_assym);
@@ -1831,37 +1760,28 @@ namespace Gambit
       // adding theory and experimenta covariance
       cov+=measurement_assym.cov_th;
 
-
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
 
-
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
-
-
       InvertMatrix(cov, cov_inv);
-
 
       double Chi2=0;
       for(int i=0; i < measurement_assym.dim; ++i)
       {
         for(int j=0; j<measurement_assym.dim; ++j)
-          {
-
-	    Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-
-
-          }
+        {
+          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+        }
       }
 
       Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished SL_likelihood"<<endl;
+      if(flav_debug)  cout<<"Finished SL_likelihood"<<endl;
 
-      if(*Dep::Debug_Cap_LL) cout<<"Likelihood result SL_likelihood  : "<< result<<endl;
-
+      if(flav_debug_LL) cout<<"Likelihood result SL_likelihood  : "<< result<<endl;
 
     }
 
