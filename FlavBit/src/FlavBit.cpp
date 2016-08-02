@@ -1295,10 +1295,10 @@ namespace Gambit
 
       // we assert if the exrimental size and the observables are differnt size
       assert(! ( M_exp.size1() != observables.size()  ));
-      cout<<"!@#!@"<<endl;
+      
       Flav_KstarMuMu_obs obs_out_11_25= *(Dep::BRBKstarmumu_11_25);
       //SI_BRBKstarmumu_11_25(obs_out_11_25);
-      cout<<"???"<<endl;
+      
       Flav_KstarMuMu_obs obs_out_25_40= *(Dep::BRBKstarmumu_25_40);
       //   SI_BRBKstarmumu_25_40(obs_out_25_40);
 
