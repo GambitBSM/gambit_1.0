@@ -81,7 +81,8 @@ namespace Gambit {
 #endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
-      // and instead depend on the process catalog! The use of any
+      // (i.e. SUSY particle conventions should follow GAMBUT, not DS etc)! 
+      // The use of any
       // DarkSUSY conventions need thus be moved to RD_annrate_DSprep_func
 
 
@@ -134,7 +135,11 @@ namespace Gambit {
             > 2.)
         {
 
-          // FIXME: This is no longer needed here.  Remove.
+/////////////////////////////
+/////////////////////////////
+// JONATHAN FIXME : please comment out everything and check whether this induces more 
+//           "dgdap ..." errros. Comment out from here
+          // DS-specific treatment of narrow Higgs width: is no longer needed here.
           if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
@@ -145,6 +150,10 @@ namespace Gambit {
                   mymspctm->mass(reslist[i]), mywidths->width(reslist[i])));
         }
       }
+// to here
+/////////////////////////////
+/////////////////////////////
+
 
       // determine thresholds; lowest threshold = 2*WIMP rest mass  (unlike DS
       // convention!)
@@ -276,8 +285,8 @@ namespace Gambit {
       // RDspectrum.
       RD_spectrum_type specres = *Dep::RD_spectrum;
 
-      // FIXME: Here goes a translation GAMBIT particle identifiers
-      // -> DS particle codes
+      // FIXME: Here goes a translation of GAMBIT particle identifiers
+      // -> DS particle codes (once RD_spectrum_SUSY is backend independent)
 
       //write info about coannihilating particles to DS common blocks
       //[this is essentially the model-dependent part of dsrdstart]
@@ -325,9 +334,7 @@ namespace Gambit {
       }
       // similar for other BEs...
 
-      // TB : why testing this only for peff= 0.1 ? Just commenting this out
-      // is not the solution ;)
-      // FIXME: !!!
+      // FIXME: test for m_WIMP/100 instead and then comment in!
 //      double peff = 0.1;
 //      if ( Utils::isnan((*result)(peff)) )
 //      {
@@ -400,9 +407,7 @@ namespace Gambit {
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
       if (1==1) {
         // What follows below is the standard accurate calculation of oh2 in DS
-        // either in fast = 0 (<1%)  or fast = 1 (default) mode
-
-        // FIXME: keep track of error flags in oh2_general
+        // either in fast = 0 (slower, accuracy <1%)  or fast = 1 (faster, default) mode
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
@@ -451,7 +456,7 @@ namespace Gambit {
         for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
           myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
           myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom;
-          myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index;   // FIXME: Discuss!!!
+          myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index;
 #ifdef DARKBIT_RD_DEBUG
           std::cout << "kcoann, mco, mdof: " << myrdmgev->kcoann(i) << "  " << myrdmgev->mco(i) << "  " << myrdmgev->mdof(i) << std::endl;
 #endif
@@ -520,7 +525,6 @@ namespace Gambit {
 #endif
 
 
-        // FIXME: Remove?
 //            const Spectrum* mySpec = *Dep::MSSM_spectrum;
 //            SLHAstruct mySLHA = mySpec->getSLHAea();
 //            std::ofstream ofs("RelicDensity_debug.slha");
