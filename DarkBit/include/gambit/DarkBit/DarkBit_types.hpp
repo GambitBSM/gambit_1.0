@@ -44,6 +44,10 @@
 ///          (jcornell@ucsc.edu)
 ///  \date 2014
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 
@@ -113,6 +117,19 @@ namespace Gambit
       std::vector<TH_Resonance> resonances;
       std::vector<double> threshold_energy;
     };
+
+
+
+    //////////////////////////////////////////////
+    // Halo model data structures
+    //////////////////////////////////////////////
+
+    // structure describing the local properties of a maxwellian halo
+    struct LocalMaxwellianHalo
+    {
+      double rho0, v0, vesc, vrot;
+    };
+
 
 
     //////////////////////////////////////////////
