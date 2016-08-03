@@ -14,7 +14,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/MicrOmegas.hpp"
+#include "gambit/Backends/frontends/MicrOmegas_MSSM.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/threadsafe_rng.hpp"
@@ -55,7 +55,7 @@ BE_INI_FUNCTION
     }
 #endif
 
-    if (ModelInUse("MSSM30atQ") or ModelInUse("MSSM30atMGUT"))
+    if (ModelInUse("MSSM63atQ"))
     {
         // Write out a SLHA file with a random file name;
         filename = "DarkBit" + std::to_string(Random::draw()) + std::to_string(Random::draw()) + "_" + std::to_string(rank) + ".slha";

@@ -21,6 +21,7 @@
 #************************************************
 
 # Add the module standalones
+add_custom_target(standalones)
 include(cmake/standalones.cmake)
 
 # Add the main GAMBIT executable
@@ -38,6 +39,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
                                 $<TARGET_OBJECTS:Core>
                                 $<TARGET_OBJECTS:Printers>
   )
+  set_target_properties(gambit PROPERTIES EXCLUDE_FROM_ALL 0)
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit flexiblesusy)
   endif()
@@ -74,4 +76,5 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
     # Make sure the printers compile OK if the rest of GAMBIT is missing
     add_definitions(-DSTANDALONE=1)
   endif()
+  add_dependencies(standalones ScannerBit_standalone)
 endif()

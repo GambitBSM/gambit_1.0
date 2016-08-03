@@ -93,6 +93,14 @@ foreach(module yaml os re datetime sys getopt shutil itertools)
   find_python_module(${module} REQUIRED)
 endforeach()
 
+# Check for axel
+find_program(axel_FOUND axel)
+if(axel_FOUND)
+  message("${BoldYellow}   Found axel.${ColourReset} Backend and scanner downloads will be as fast as possible.")
+else()
+  message("${Red}   Axel utility not found.  Backend downloads would be faster if you installed axel.${ColourReset}")
+endif()
+
 # Do OSX checks
 include(cmake/MacOSX.cmake)
 

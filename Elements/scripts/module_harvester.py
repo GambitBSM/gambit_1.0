@@ -182,11 +182,11 @@ def main(argv):
                 # Check for calls to module functor creation macros, and harvest the types used.
                 addiffunctormacro(continued_line,module,modules,returned_types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,equiv_ns,verbose=verbose)
                 continued_line = ""
-        
+
     print "Found types for module functions:"
     for t in types:
         print ' ',t
-    
+
     # Search through rollcall and frontend headers and look for macro calls that create backend_functors or safe pointers to them 
     be_types=set()
     type_packs=set() 

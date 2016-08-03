@@ -41,6 +41,31 @@ namespace Gambit
       std::map<str,std::vector<str> > type_to_vec_of_mass_es = init_type_to_vec_of_mass_es();
       std::map<str,std::vector<str> > type_to_vec_of_gauge_es = init_type_to_vec_of_gauge_es();
 
+      /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
+      void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object)
+      {
+        slha.push_front("# depend on which calculator you intend this object or file to be used with.");
+        slha.push_front("# Note that block MODSEL is not automatically emitted, as its contents");
+        slha.push_front("# This SLHA(ea) object was created from a GAMBIT "+object+" object.");
+      }
+
+      /// Simple helper function for for adding missing SLHA1 2x2 family mixing matrices to an SLHAea object.
+      void attempt_to_add_SLHA1_mixing(const str& block, SLHAstruct& slha, const str& type,
+                                       const SubSpectrum& spec, double tol, str& s1, str& s2, bool pterror)
+      {
+        if (slha.find(block) == slha.end())
+        {
+          std::vector<double> matmix = slhahelp::family_state_mix_matrix(type, 3, s1, s2, spec, tol, LOCAL_INFO, pterror);
+          SLHAea_add_matrix(slha, block, matmix, 2, 2);
+        }
+        else
+        {
+          s1 = slhahelp::mass_es_closest_to_family(s1, spec, tol, LOCAL_INFO, pterror);
+          s2 = slhahelp::mass_es_closest_to_family(s2, spec, tol, LOCAL_INFO, pterror);
+        }
+      }
+
+
       // FIXME: these two should be switched over to members of the sectrum object itself
       /// This will simplify things.
       std::vector<double> get_Pole_Mixing_col(str type, 

@@ -3376,13 +3376,16 @@ namespace Gambit
       result.BR_Hpjcb[0] = 0.;
       result.BR_Hptaunu[0] = 0.;
       result.Mh[0] = spec.get(Par::Pole_Mass,25,0);
-      try
+      result.Mh[0] = spec.get(Par::Pole_Mass,25,0);
+      bool has_high_err = spec.has(Par::Pole_Mass_1srd_high, 25, 0);
+      bool has_low_err = spec.has(Par::Pole_Mass_1srd_low, 25, 0);
+      if (has_high_err and has_low_err) 
       {
         double upper = spec.get(Par::Pole_Mass_1srd_high, 25, 0);
         double lower = spec.get(Par::Pole_Mass_1srd_low, 25, 0);
         result.deltaMh[0] = std::max(upper,lower);
       }
-      catch(Gambit::exception)
+      else
       {
         result.deltaMh[0] = 0.;
       }

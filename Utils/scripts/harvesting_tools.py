@@ -453,7 +453,7 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
             prefix = re.sub("_rollcall\.h.*", "", name)
             if ( (name.lower().endswith("_rollcall.hpp") or
                   name.lower().endswith("_rollcall.h")   or
-                  name.lower().endswith("_rollcall.hh")     ) and name.lower().find("bit") != -1 ):
+                  name.lower().endswith("_rollcall.hh")     ) and name.lower().find("bit") != -1 and root.endswith(prefix) ):
                 exclude = False
                 for x in excludes:
                     if name.startswith(x): exclude = True
@@ -494,7 +494,7 @@ def get_all_files_with_ext(verbose,starting_dir,ext_set,kind):
     return results
 
 #Search a directory for headers that are not excluded.
-def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
+def retrieve_generic_headers(verbose,starting_dir,kind,excludes,exclude_list=[]):
     headers=[]
     for root,dirs,files in os.walk(starting_dir):
         for name in files:
