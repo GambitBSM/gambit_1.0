@@ -26,8 +26,6 @@ ObsLikes:
   - purpose:      Observable
     capability:   bsgamma
   - purpose:      Observable
-    capability:   Bsmumu
-  - purpose:      Observable
     capability:   Bsmumu_untag
   - purpose:      Observable
     capability:   Bdmumu
@@ -36,6 +34,12 @@ ObsLikes:
   - purpose:      Observable
     capability:   BDtaunu
   - purpose:      Observable
+    capability:   BDstartaunu    
+  - purpose:      Observable   
+    capability:   BDmunu      
+  - purpose:      Observable   
+    capability:   BDstarmunu  
+  - purpose:      Observable   
     capability:   RD
   - purpose:      Observable
     capability:   Kmunu_pimunu

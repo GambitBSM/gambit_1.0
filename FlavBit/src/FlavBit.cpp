@@ -89,7 +89,7 @@ namespace Gambit
     #else
       false;
     #endif
-    
+
 
     template<class T>
     bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse)
@@ -478,55 +478,12 @@ namespace Gambit
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0) result=0.;
-      else
-      {
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b_1S/2.;
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQpb[3];
-    
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),&param);
-      }
+      double E_cut=1.6;
+      result=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
+
 
       if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
-
-    }
-    
-    // *************************************************
-    /// Calculating Br in Bs->mumu decays
-    // *************************************************
-
-    void SI_Bsmumu(double &result)
-    {
-      using namespace Pipes::SI_Bsmumu;
-
-      if(flav_debug)  cout<<"Starting SI_Bsmumu"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if(param.model<0) result=0.;
-      else
-      {
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b;
-        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-          std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    
-        //int flav=2;
-        result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-      }
-
-      if(flav_debug)      printf("BR(Bs->mumu)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bsmumu"<<endl;
 
     }
 
@@ -541,22 +498,13 @@ namespace Gambit
       if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
+      int flav=2;
 
       if(param.model<0) result=0.;
       else
-      {
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b;
-        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    
-        result = BEreq::Bsmumu_untag(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-      }
+	{
+	  result=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
+	}
 
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
@@ -575,22 +523,13 @@ namespace Gambit
       if(flav_debug)  cout<<"Starting SI_Bsee_untag"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
+      int flav=1;
 
       if(param.model<0) result=0.;
       else
-      {
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b;
-        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
-        BEreq::CW_calculator(1,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(1,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(1,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    
-        result = BEreq::Bsll_untag(1,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-      }
+	{
+	  result=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
+	}
 
       if(flav_debug) printf("BR(Bs->ee)_untag=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bsee_untag"<<endl;
@@ -609,22 +548,12 @@ namespace Gambit
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
+      int flav=2;
       if(param.model<0) result=0.;
       else
-      {
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b;
-        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
-        std::complex<double> CQ0b[3],CQ1b[3];
-    
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    
-        int flav=2;
-        //result = BEreq::Bdmumu(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
-        result = BEreq::Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
-      }
+	{
+	  result=BEreq::SI_Bdll_CONV(&param, byVal(flav));
+	}
 
       if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bdmumu"<<endl;
@@ -651,26 +580,6 @@ namespace Gambit
 
     }
 
-
-    // *************************************************
-    /// Calculating Br in B->D tau nu_tau decays
-    // *************************************************
-
-    void SI_BDtaunu(double &result)
-    {
-      using namespace Pipes::SI_BDtaunu;
-
-      if(flav_debug)  cout<<"Starting SI_BDtaunu"<<endl;
-
-       struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if(param.model<0) result=0.;
-      else result = BEreq::BDtaunu(&param);
-
-      if(flav_debug) printf("BR(B->D tau nu)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_BDtaunu"<<endl;
-
-    }
 
     // *************************************************
     /// Calculating  B->tau nu_tau / B-> D e nu_e decays
@@ -786,6 +695,113 @@ namespace Gambit
       if(flav_debug) printf("BR(D->mu nu)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Dmunu"<<endl;
     }
+    // *************************************************
+    /// Calculating Br B -> D tau nu
+    // *************************************************
+
+    void SI_BDtaunu(double &result)
+    {
+      using namespace Pipes::SI_BDtaunu;
+
+      if(flav_debug)  cout<<"Starting SI_BDtaunu"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      if(param.model<0) result=0.;
+      else
+	{
+	  double q2_min_tau_D  = 3.16; // 1.776**2
+	  double q2_max_tau_D  = 11.6;   // (5.28-1.869)**2
+	  int gen_tau_D        = 3;
+	  int charge_tau_D     = 0;// D* is the charged version
+	  double obs_tau_D[3];
+	  //double theory_BDtaunu = BEreq::BRBDlnu(byVal(gen_tau_D),  byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), obs_tau_D, &param);
+	  result=BEreq::BRBDlnu(byVal(gen_tau_D),  byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), obs_tau_D, &param);
+	}
+
+
+      if(flav_debug) printf("BR(B-> D tau nu )=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BDtaunu"<<endl;
+    }
+    // *************************************************
+    /// Calculating Br B -> D tau nu
+    // *************************************************
+
+    void SI_BDmunu(double &result)
+    {
+      using namespace Pipes::SI_BDmunu;
+
+      if(flav_debug)  cout<<"Starting SI_BDmunu"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      if(param.model<0) result=0.;
+      else
+	{
+	  double q2_min_mu_D=  0.012; // 0.105*0.105
+	  double q2_max_mu_D=  11.6;   // (5.28-1.869)**2
+	  int gen_mu_D        =2;
+	  int charge_mu_D     =0;// D* is the charged version
+	  double obs_mu_D[3];
+	  //double theory_BDmunu = BEreq::BRBDlnu(byVal(gen_mu_D),  byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), obs_mu_D, &param);
+	  result= BEreq::BRBDlnu(byVal(gen_mu_D),  byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), obs_mu_D, &param);
+	}
+
+
+      if(flav_debug) printf("BR(B->D mu nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BDmunu"<<endl;
+    }
+
+
+    void SI_BDstartaunu(double &result)
+    {
+      using namespace Pipes::SI_BDstartaunu;
+
+      if(flav_debug)  cout<<"Starting SI_BDstartaunu"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      if(param.model<0) result=0.;
+      else
+	{
+
+	  double q2_min_tau_Dstar = 3.16; // 1.776**2
+	  double q2_max_tau_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
+	  int gen_tau_Dstar        =3;
+	  int charge_tau_Dstar     =1;// D* is the charged version
+	  double obs_tau_Dstar[3];
+	  //double theory_BDstartaunu = BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), obs_tau_Dstar, &param);
+	  result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), obs_tau_Dstar, &param);
+	}
+
+      if(flav_debug) printf("BR(B->Dstar tau nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BDstartaunu"<<endl;
+    }
+
+    void SI_BDstarmunu(double &result)
+    {
+      using namespace Pipes::SI_BDstarmunu;
+
+      if(flav_debug)  cout<<"Starting SI_BDstarmunu"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      if(param.model<0) result=0.;
+      else
+	{
+	  double q2_min_mu_Dstar = 0.012; // 0.105*0.105
+	  double q2_max_mu_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
+	  int gen_mu_Dstar        =2;
+	  int charge_mu_Dstar     =1;// D* is the charged version
+	  double obs_mu_Dstar[3];
+	  //double theory_BDstarmunu = BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
+	  result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
+	}
+
+      if(flav_debug) printf("BR(B->Dstar mu nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BDstarmunu"<<endl;
+    }
+
 
 
     // *************************************************
@@ -803,13 +819,13 @@ namespace Gambit
       {
         double mu_W=2.*param.mass_W;
         double mu_b=param.mass_b_1S/2.;
-    
+
         double lambda_h=0.5;
-        double mu_spec=sqrt(lambda_h*param.mass_b);   
-    
+        double mu_spec=sqrt(lambda_h*param.mass_b);
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
         std::complex<double> CQpb[3];
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
         BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
@@ -836,10 +852,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
         std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -866,10 +882,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
           std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -896,10 +912,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
           std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -927,10 +943,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
         std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -957,10 +973,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
           std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -987,10 +1003,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
         std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -1017,10 +1033,10 @@ namespace Gambit
       {
         double mu_W=120.;
         double mu_b=5.;
-    
+
         double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
           std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    
+
         BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
@@ -1281,10 +1297,10 @@ namespace Gambit
 
       // we assert if the exrimental size and the observables are differnt size
       assert(! ( M_exp.size1() != observables.size()  ));
-      
+
       Flav_KstarMuMu_obs obs_out_11_25= *(Dep::BRBKstarmumu_11_25);
       //SI_BRBKstarmumu_11_25(obs_out_11_25);
-      
+
       Flav_KstarMuMu_obs obs_out_25_40= *(Dep::BRBKstarmumu_25_40);
       //   SI_BRBKstarmumu_25_40(obs_out_25_40);
 
@@ -1435,8 +1451,10 @@ namespace Gambit
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
-      double E_cut=1.6;
-      double theory_prediction=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
+      //double E_cut=1.6;
+      //double theory_prediction=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
+      double theory_prediction= *(Dep::bsgamma);
+
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
       red.debug_mode(flav_debug);
@@ -1488,11 +1506,12 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> th_err = red.get_th_err();
 
-      //double theory_bs2mumu=*(Dep::Bsmumu_untag);
-      double theory_bs2mumu=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
+      double theory_bs2mumu=*(Dep::Bsmumu_untag);
+      //double theory_bs2mumu=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
+
       //SI_Bsmumu_untag(theory_bs2mumu);
-      double theory_bd2mumu=BEreq::SI_Bdll_CONV(&param, byVal(flav));
-      //SI_Bdmumu(theory_bd2mumu);
+      //double theory_bd2mumu=BEreq::SI_Bdll_CONV(&param, byVal(flav));
+      double theory_bd2mumu=*(Dep::Bdmumu);
 
       // Naliza doesn't provide the errors, need to take them from paper
       double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
@@ -1621,6 +1640,8 @@ namespace Gambit
 
       red.create_global_corr();
 
+      // the R(D) is calculated assuming isosping symmetry
+
       // B-> tau nu SI
       double theory_Btaunu=*(Dep::Btaunu);
       // Ds-> tau nu
@@ -1629,8 +1650,16 @@ namespace Gambit
       double theory_Dsmunu=*(Dep::Dsmunu);
       // D -> mu nu
       double theory_Dmunu=*(Dep::Dmunu);
+      // B-> D tau nu
+      double theory_BDtaunu=*(Dep::BDtaunu);
+      // B-> D* tau nu 
+      double theory_BDstartaunu=*(Dep::BDstartaunu); 
+      // B-> D mu nu
+      double theory_BDmunu=*(Dep::BDmunu);
+      // B-> D* mu nu
+      double theory_BDstarmunu=*(Dep::BDstarmunu);
 
-      // the R(D) is calculated assuming isosping symmetry
+      /*
       //####################################################################
       // B-> D tau nu
       double q2_min_tau_D  = 3.16; // 1.776**2
@@ -1663,6 +1692,7 @@ namespace Gambit
       int charge_mu_Dstar     =1;// D* is the charged version
       double obs_mu_Dstar[3];
       double theory_BDstarmunu = BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
+      */
 
       // theory results;
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
@@ -1672,7 +1702,7 @@ namespace Gambit
       M_th(1,0)=theory_BDtaunu;
       M_th(2,0)=theory_BDstartaunu;
       M_th(3,0)=theory_BDmunu;
-      M_th(4,0)=theory_BDstarmunu; 
+      M_th(4,0)=theory_BDstarmunu;
       M_th(5,0)=theory_Dstaunu;
       M_th(6,0)=theory_Dsmunu;
       M_th(7,0)=theory_Dmunu;
@@ -1685,11 +1715,11 @@ namespace Gambit
       double theory_BDstartaunu_error=th_err(2,0);
       double theory_BDmunu_error=th_err(3,0);
       double theory_BDstarmunu_error=th_err(4,0);
-      
+
       double theory_Dstaunu_error=th_err(5,0);
       double theory_Dsmunu_error=th_err(6,0);
       double theory_Dmunu_error=th_err(7,0);
-      
+
 
       // theory cov:
 
@@ -1704,9 +1734,9 @@ namespace Gambit
 
       M_cov_th(0,0)=theory_Btaunu_error*theory_Btaunu_error;
       M_cov_th(1,1)=theory_BDtaunu_error*theory_BDtaunu_error;
-      M_cov_th(2,2)=theory_BDstartaunu_error*theory_BDstartaunu_error;  
-      M_cov_th(3,3)=theory_BDmunu_error*theory_BDmunu_error;         
-      M_cov_th(4,4)=theory_BDstarmunu_error*theory_BDstarmunu_error; 
+      M_cov_th(2,2)=theory_BDstartaunu_error*theory_BDstartaunu_error;
+      M_cov_th(3,3)=theory_BDmunu_error*theory_BDmunu_error;
+      M_cov_th(4,4)=theory_BDstarmunu_error*theory_BDstarmunu_error;
       M_cov_th(5,5)=theory_Dstaunu_error*theory_Dstaunu_error;
       M_cov_th(6,6)=theory_Dsmunu_error*theory_Dsmunu_error;
       M_cov_th(7,7)=theory_Dmunu_error*theory_Dmunu_error;
