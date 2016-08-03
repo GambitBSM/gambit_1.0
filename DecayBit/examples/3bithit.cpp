@@ -550,14 +550,10 @@ int main()
       neutralino_4_decays.reset_and_calculate(); 
       all_decays.reset_and_calculate();
 
-    cout << "to here OK" << endl;
-
       // Now the other EWPO.
       FH_precision_sinW2.reset_and_calculate();
       FH_precision_deltarho.reset_and_calculate();
       GM2C_SUSY.reset_and_calculate();
-    cout << "to here OK" << endl;
-
       
       // Dump the final results to an SLHA file.
       SLHAstruct slha = make_MSSM_precision_spectrum(0).getSLHAea();
