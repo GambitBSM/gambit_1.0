@@ -316,21 +316,21 @@ namespace Gambit
    /// the LE subspectrum (if possible), followed by the HE subspectrum (if possible). Any duplicate
    /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
    /// over SMINPUTS.
-   SLHAstruct Spectrum::getSLHAea() const 
+   SLHAstruct Spectrum::getSLHAea(bool include_SLHA1_blocks) const 
    {
      SLHAstruct slha(SMINPUTS.getSLHAea());    
      LE->add_to_SLHAea(slha);
-     HE->add_to_SLHAea(slha);
+     HE->add_to_SLHAea(slha,include_SLHA1_blocks);
      return slha;
    }
 
    /// Output spectrum contents as an SLHA file, using getSLHAea.
-   void Spectrum::getSLHA(str filename) const
+   void Spectrum::getSLHA(const str& filename, bool include_SLHA1_blocks) const
    {
     Utils::FileLock mylock(filename);
     mylock.get_lock();
     std::ofstream ofs(filename);
-    ofs << getSLHAea();
+    ofs << getSLHAea(include_SLHA1_blocks);
     ofs.close();
     mylock.release_lock();
    }

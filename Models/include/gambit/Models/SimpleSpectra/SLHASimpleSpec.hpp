@@ -40,10 +40,10 @@ namespace Gambit
            /// @}
 
            /// Get reference to internal SLHAea object
-           const SLHAea::Coll& getSLHAea() const;
+           const SLHAea::Coll& getSLHAea(bool = false) const;
 
            /// Add spectrum information to an SLHAea object
-           void add_to_SLHAea(SLHAea::Coll&) const;
+           void add_to_SLHAea(SLHAea::Coll&, bool = false) const;
 
            /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
            const std::map<int, int>& PDG_translator() const;
@@ -100,10 +100,12 @@ namespace Gambit
                /// is true in constructor.
                const SLHAea::Coll& data(slhawrap.getSLHAea());
                double scale;
-               try {
+               try
+               {
                  scale = SLHAea::to<double>(data.at("GAUGE").find_block_def()->at(3));
                }
-               catch (const std::out_of_range& e) {
+               catch (const std::out_of_range& e)
+               {
                  std::ostringstream errmsg;
                  errmsg << "Could not find block \"GAUGE\" in SLHAea object. Received out_of_range error with message: " << e.what();
                  utils_error().raise(LOCAL_INFO,errmsg.str());    

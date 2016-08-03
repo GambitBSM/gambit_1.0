@@ -462,7 +462,7 @@ namespace Gambit
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result->getSLHA(filename);
+        result->getSLHA(filename,true);
       }
 
     }
@@ -480,9 +480,9 @@ namespace Gambit
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
       if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
       {
-        // Spit out the full spectrum as an SLHA file.
+        // Spit out the full spectrum as an SLHA file, including legacy SLHA1 blocks.
         str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result->getSLHA(filename);
+        result->getSLHA(filename,true);
       }
     }
 

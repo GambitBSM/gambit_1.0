@@ -27,6 +27,7 @@
 #include <string>
 
 #include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
 
 namespace Gambit
@@ -34,12 +35,12 @@ namespace Gambit
    /// @{ SubSpectrum member function definitions
 
    /// Dump out spectrum information to an SLHA file (if possible)
-   void SubSpectrum::getSLHA(const str& filename) const
+   void SubSpectrum::getSLHA(const str& filename, bool include_SLHA1_blocks) const
    {
      std::ofstream ofs(filename);
      if (ofs)
      {
-       ofs << getSLHAea();
+       ofs << getSLHAea(include_SLHA1_blocks);
      }
      else
      {
@@ -50,11 +51,11 @@ namespace Gambit
    }
 
    /// Get spectrum information in SLHAea format (if possible)
-   SLHAstruct SubSpectrum::getSLHAea() const
+   SLHAstruct SubSpectrum::getSLHAea(bool include_SLHA1_blocks) const
    {
      SLHAstruct slha;
-     this->add_to_SLHAea(slha);
-     add_MODSEL_disclaimer(slha, "spectrum");
+     this->add_to_SLHAea(slha,include_SLHA1_blocks);
+     slhahelp::add_MODSEL_disclaimer(slha, "spectrum");
      return slha;
    }
 

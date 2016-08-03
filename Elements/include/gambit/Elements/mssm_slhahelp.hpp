@@ -54,7 +54,14 @@ namespace Gambit
 
    namespace slhahelp
    {
-   
+
+      /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
+      void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object);
+    
+      /// Simple helper function for adding missing SLHA1 2x2 family mixing matrices to an SLHAea object.
+      void attempt_to_add_SLHA1_mixing(const str& block, SLHAstruct& slha, const str& type,
+                                       const SubSpectrum* spec, double tol, str& s1, str& s2, bool pterror);
+
       /// ***************** Gauge <-> Mass Eigenstate Helpers ****************
       /// @{
    

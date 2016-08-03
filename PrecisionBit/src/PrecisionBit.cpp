@@ -487,7 +487,7 @@ namespace Gambit
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        result->getSLHA(filename);
+        result->getSLHA(filename,true);
       }
 
     }

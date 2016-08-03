@@ -25,21 +25,6 @@
 BE_NAMESPACE
 {
 
-  /// Simple helper function for initialisation function, for adding missing SLHA1 2x2 family mixing matrices.
-  void attempt_to_add(const str& block, SLHAstruct& slha, const str& type, const SubSpectrum* spec, double tol, str& s1, str& s2, bool pterror)
-  {
-    if (slha.find(block) == slha.end())
-    {
-      std::vector<double> matmix = slhahelp::family_state_mix_matrix(type, 3, s1, s2, spec, tol, LOCAL_INFO, pterror);
-      SLHAea_add_matrix(slha, block, matmix, 2, 2);
-    }
-    else
-    {
-      s1 = slhahelp::mass_es_closest_to_family(s1, spec, tol, LOCAL_INFO, pterror);
-      s2 = slhahelp::mass_es_closest_to_family(s2, spec, tol, LOCAL_INFO, pterror);
-    }
-  }
-
   /// Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
   /// @{
   void optional_block(const str& name, SLHAea::Block& block, const SLHAstruct& slha)
@@ -407,9 +392,9 @@ BE_INI_FUNCTION
 
     // Add the STOPMIX, SBOTMIX and STAUMIX blocks to the SLHAea object if they aren't present already.
     str stop1 = "~t_1", stop2 = "~t_2", sbottom1 = "~b_1", sbottom2 = "~b_2", stau1 = "~tau_1", stau2 = "~tau_2";
-    attempt_to_add("STOPMIX", slha, "~u", mssm, ftol, stop1, stop2, fpterror);
-    attempt_to_add("SBOTMIX", slha, "~d", mssm, ftol, sbottom1, sbottom2, fpterror);
-    attempt_to_add("STAUMIX", slha, "~e-", mssm, ftol, stau1, stau2, fpterror);
+    slhahelp::attempt_to_add_SLHA1_mixing("STOPMIX", slha, "~u", mssm, ftol, stop1, stop2, fpterror);
+    slhahelp::attempt_to_add_SLHA1_mixing("SBOTMIX", slha, "~d", mssm, ftol, sbottom1, sbottom2, fpterror);
+    slhahelp::attempt_to_add_SLHA1_mixing("STAUMIX", slha, "~e-", mssm, ftol, stau1, stau2, fpterror);
 
     // Set out the PDG codes of the mass eigenstates best corresponding to the
     // gauge eigenstates for which SUSY-HIT wants masses from the SLHA MASS block.
