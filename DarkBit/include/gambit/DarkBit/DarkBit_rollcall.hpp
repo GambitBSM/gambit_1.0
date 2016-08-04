@@ -42,6 +42,10 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar, Aug
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -975,11 +979,29 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // --- Functions related to the local and global properties of the DM halo ---
+
   #define CAPABILITY GalacticHalo
   START_CAPABILITY
-    #define FUNCTION GalacticHalo
+    #define FUNCTION GalacticHalo_gNFW
+    START_FUNCTION(daFunk::Funk)
+    ALLOW_MODEL(Halo_gNFW)
+    #undef FUNCTION
+    #define FUNCTION GalacticHalo_Einasto
+    START_FUNCTION(daFunk::Funk)
+    ALLOW_MODEL(Halo_Einasto)
+    #undef FUNCTION
+    #define FUNCTION GalacticHalo // old function, should be deleted
     START_FUNCTION(daFunk::Funk)
     ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY LocalHalo
+  START_CAPABILITY
+    #define FUNCTION ExtractLocalMaxwellianHalo
+    START_FUNCTION(LocalMaxwellianHalo)
+    ALLOW_MODELS(Halo_gNFW, Halo_Einasto)
     #undef FUNCTION
   #undef CAPABILITY
 #undef MODULE

@@ -26,7 +26,8 @@
         double rho0 = myparams["rho0"];
         double rs = myparams["rs"];
         double r_sun = myparams["r_sun"];
-        double rhos = 0.0;  /// CHANGE THIS HERE BY THE ACTUAL rhos TRANSLATION
+        double alpha = myparams["alpha"];
+        double rhos = rho0*exp((2.0/alpha)*(pow(r_sun/rs, alpha)-1));
         parentparams.setValues(myparams, true);
         parentparams.setValue("rhos", rhos);
     }
@@ -40,7 +41,8 @@
         double rhos = myparams["rhos"];
         double rs = myparams["rs"];
         double r_sun = myparams["r_sun"];
-        double rho0 = 0.0;  /// CHANGE THIS HERE BY THE ACTUAL rho0 TRANSLATION
+        double alpha = myparams["alpha"];
+        double rho0 = rhos*exp((-2.0/alpha)*(pow(r_sun/rs, alpha)-1));
         parentparams.setValues(myparams, true);
         parentparams.setValue("rho0", rho0);
     }

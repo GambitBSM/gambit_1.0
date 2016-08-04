@@ -35,6 +35,10 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -82,6 +86,55 @@ namespace Gambit
       // Add invisible contributions
       result += annProc.genRateMisc->bind("v")->eval(0.);
     }
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    //
+    //        Extraction of local and global dark matter halo properties
+    //
+    //////////////////////////////////////////////////////////////////////////
+
+
+    // Dark matter halo profiles
+    double profile_gNFW(double rhos, double rs, double alpha, double beta, double gamma, double r)
+    { return pow(2, (beta-gamma)/alpha)*rhos/pow(r/rs, gamma)/pow(1+pow(r/rs, alpha), (beta-gamma)/alpha); }
+    double profile_Einasto(double rhos, double rs, double alpha, double r)
+    { return rhos*exp((-2.0/alpha)*(pow(r/rs, alpha)-1)); }
+
+    void GalacticHalo_gNFW(daFunk::Funk &result)
+    {
+      using namespace Pipes::GalacticHalo_gNFW;
+      double rhos  = *Param["rhos"];
+      double rs    = *Param["rs"];
+      double alpha = *Param["alpha"];
+      double beta  = *Param["beta"];
+      double gamma = *Param["gamma"];
+      result = daFunk::func(profile_gNFW, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
+    }
+
+    void GalacticHalo_Einasto(daFunk::Funk &result)
+    {
+      using namespace Pipes::GalacticHalo_Einasto;
+      double rhos  = *Param["rhos"];
+      double rs    = *Param["rs"];
+      double alpha = *Param["alpha"];
+      result = daFunk::func(profile_Einasto, rhos, rs, alpha, daFunk::var("r"));
+    }
+
+    void ExtractLocalMaxwellianHalo(LocalMaxwellianHalo &result)
+    {
+      using namespace Pipes::ExtractLocalMaxwellianHalo;
+      double rho0  = *Param["rho0"];
+      double v0  = *Param["v0"];
+      double vesc  = *Param["vesc"];
+      double vrot  = *Param["vrot"];
+      result.rho0 = rho0;
+      result.v0 = v0;
+      result.vesc = vesc;
+      result.vrot = vrot;
+    }
+
 
 
     //////////////////////////////////////////////////////////////////////////

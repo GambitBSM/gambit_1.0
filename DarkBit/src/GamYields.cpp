@@ -710,10 +710,11 @@ namespace Gambit {
       }
     }
 
+    // --- DELETE THESE FUNCTIONS
     // Dark matter halo profiles
-    double profile_Einasto(double rhos, double rs, double alpha, double r)
+    double profile_Einasto_OLD(double rhos, double rs, double alpha, double r)
     { return rhos*exp(-1/alpha*(pow(r/rs, alpha)-1)); }
-    double profile_gNFW(double rhos, double rs, double alpha, double beta, double gamma, double r)
+    double profile_gNFW_OLD(double rhos, double rs, double alpha, double beta, double gamma, double r)
     { return pow(2, (beta-gamma)/alpha)*rhos/pow(r/rs, gamma)/pow(1+pow(r/rs, alpha), (beta-gamma)/alpha); }
 
     /*! \brief Generates dark matter halo for Milky Way
@@ -728,7 +729,7 @@ namespace Gambit {
         double rhos  = *Param["rhos"];
         double rs    = *Param["rs"];
         double alpha = *Param["alpha"];
-        daFunk::Funk profile = daFunk::func(profile_Einasto, rhos, rs, alpha, daFunk::var("r"));
+        daFunk::Funk profile = daFunk::func(profile_Einasto_OLD, rhos, rs, alpha, daFunk::var("r"));
       }
       if (ModelInUse("GalacticHalo_gNFW"))
       {
@@ -737,7 +738,7 @@ namespace Gambit {
         double alpha = *Param["alpha"];
         double beta  = *Param["beta"];
         double gamma = *Param["gamma"];
-        daFunk::Funk profile = daFunk::func(profile_gNFW, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
+        daFunk::Funk profile = daFunk::func(profile_gNFW_OLD, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
       }
     }
   }
