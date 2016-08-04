@@ -65,7 +65,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
-      DEPENDENCY(decay_rates, DecayTable
+      DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
