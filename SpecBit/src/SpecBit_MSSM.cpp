@@ -403,9 +403,6 @@ namespace Gambit
              mchi0 < msqd;
     }
 
-
-    
-    
     /// @} End module convenience functions
 
 
@@ -444,10 +441,13 @@ namespace Gambit
       std::cout << "cb = "  << cb << std::endl;
       std::cout << "sb = "  << sb << std::endl;
       //cos (beta - alpha)
-      double camb = cb * ca + sb * sa;
-      double samb = sb * ca - cb * ca;
+      double cbma = cb * ca + sb * sa;
+      double sbma = sb * ca - cb * ca;
+
+      std::cout << "cbma = "  << cbma << std::endl;
+      std::cout << "sbma = "  << sbma << std::endl;
       
-      if(camb > samb)
+      if(sbma > cbma)
     	{
     	  result = 25;
     	}
@@ -457,9 +457,7 @@ namespace Gambit
     	}
       
       return;
-    }
-    
-    
+    }    
     
     void get_CMSSM_spectrum (const Spectrum* &result)
     {
@@ -496,10 +494,6 @@ namespace Gambit
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
-      int pdg = -66.6;
-      most_SMlike_Higgs(pdg);
-      std::cout << "pdg = " << pdg << std::endl;
-      
       // Only allow neutralino LSPs.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
