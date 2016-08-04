@@ -25,8 +25,10 @@
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
+
 namespace Gambit {
   namespace DarkBit {
+
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -199,8 +201,8 @@ namespace Gambit {
 
 #ifdef DARKBIT_DEBUG
       std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
-      std::cout << "Test : " << BEreq::particle_code("d_3")
-      << " " << BEreq::particle_code("u_3") << std::endl;
+//      std::cout << "Test : " << BEreq::particle_code("d_3")
+//      << " " << BEreq::particle_code("u_3") << std::endl;
 #endif
 
 
@@ -314,7 +316,18 @@ namespace Gambit {
             myrdmgev.kcoann(j)=itmp;
           }
         }
+#ifdef DARKBIT_RD_DEBUG
+      std::cout << "co : "<< myrdmgev.kcoann(i) << " " <<
+          myrdmgev.mco(i) << " " << myrdmgev.mdof(i)
+          << std::endl;
+#endif
       }
+#ifdef DARKBIT_RD_DEBUG
+      std::cout << "co : "<< myrdmgev.kcoann(myrdmgev.nco) << " " <<
+          myrdmgev.mco(myrdmgev.nco) << " " << myrdmgev.mdof(myrdmgev.nco)
+          << std::endl;
+#endif
+
       *BEreq::rdmgev = myrdmgev;
 
       result=1; // everything OK
@@ -512,10 +525,10 @@ namespace Gambit {
         if (widthheavyHiggs<0.1)
           (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
-#ifdef DARKBIT_DEBUG
+#ifdef DARKBIT_RD_DEBUG
         // Dump Weff info on screen
         std::cout << "xstart = " << xstart << std::endl;
-        for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
+        for ( double peff = mwimp/1000;  peff < mwimp; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
 #endif
 
@@ -559,12 +572,13 @@ namespace Gambit {
         if ( runtime > 30. )
         {
           std::cout << "Duration [ms]: " << runtime << std::endl;
-          const Spectrum* mySpec = *Dep::MSSM_spectrum;
-          SLHAstruct mySLHA = mySpec->getSLHAea();
-          std::ofstream ofs("RelicDensity_debug.slha");
-          ofs << mySLHA;
-          ofs.close();
-          tbtest=1;
+// FIXME: This does not compile!
+//          const Spectrum* mySpec = *Dep::MSSM_spectrum;
+//          SLHAstruct mySLHA = mySpec->getSLHAea();
+//          std::ofstream ofs("RelicDensity_debug.slha");
+//          ofs << mySLHA;
+//          ofs.close();
+//          tbtest=1;
 //            exit(1);  // And stop
         }
 #endif
