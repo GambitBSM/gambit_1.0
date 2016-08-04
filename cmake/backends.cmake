@@ -99,10 +99,10 @@ add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 
 # SuperIso
 set(name "superiso")
-set(ver "3.4")
+set(ver "3.6")
 set(lib "libsuperiso")
 set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")
-set(md5 "ae4ecc45e7f608d9faf91ba8e5780053")
+set(md5 "0a5735490046c5f63b3e82c4f7efa3b6")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}

@@ -135,6 +135,9 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
+    - purpose:    LogLike 
+      capability: b2sgamma_LL
+
     # Precision physics likelihoods
     - capability: lnL_W_mass
       purpose:    LogLike
