@@ -4,16 +4,16 @@ Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
   CMSSM:
-    M0:
-      fixed_value: 100
+    A0: 
+      fixed_value: 3150.25
+    M0: 
+      fixed_value: 1591.48
     M12:
-      fixed_value: 100
-    A0:
-      fixed_value: 100
-    SignMu:
+      fixed_value: 301.79
+    SignMu: 
       fixed_value: 1
-    TanBeta:
-      fixed_value: 3
+    TanBeta: 
+      fixed_value: 23.3845
   
 Priors:
 

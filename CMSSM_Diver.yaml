@@ -55,7 +55,7 @@ Printer:
 
   options:
     output_file: "CMSSM.hdf5"
-    group: "/CMSSM"
+    group: "/CMSSM_Diver"
     delete_file_on_restart: true
 
 Scanner:
@@ -72,8 +72,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-     # NP: 7200
-      NP: 100
+      NP: 10
       convthresh: 1e-3
       verbosity: 1
 

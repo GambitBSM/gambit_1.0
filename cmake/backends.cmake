@@ -534,7 +534,7 @@ ExternalProject_Add(spheno
   DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -bp0 --ignore-whitespace < ${spheno_patch}/patch_SPheno_3_3_8.dif
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${spheno_lib}  
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} $F90=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} ${spheno_lib}  
   INSTALL_COMMAND ""
 )
 add_extra_targets(spheno ${spheno_dir} ${backend_download}/${spheno_dl} clean)

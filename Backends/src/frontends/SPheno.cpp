@@ -230,7 +230,6 @@ BE_NAMESPACE
     SLHAstruct slha;
 
     Freal8 Q = sqrt(GetRenormalizationScale());
-    Farray_Freal8_1_3 Yu, Yd, Yl;
 
     // Spectrum generator information
     SLHAea_add_block(slha, "SPINFO");
@@ -265,41 +264,6 @@ BE_NAMESPACE
       slha["MINPAR"][""] << 4 << *input_Param.at("SignMu") << "# cos(phase_mu)";
       if(input_Param.find("A0") != input_Param.end())
         slha["MINPAR"][""] << 5 << *input_Param.at("A0") << "# A0";
-
-      SLHAea_add_block(slha, "GAUGE", *m_GUT);
-      slha["GAUGE"][""] << 1 << (*gauge_0)(1) << "# g'(M_GUT)^DRbar";
-      slha["GAUGE"][""] << 2 << (*gauge_0)(2) << "# g(M_GUT)^DRbar";
-      slha["GAUGE"][""] << 3 << (*gauge_0)(3) << "# g3(M_GUT)^DRbar";
-
-      if(*GenerationMixing)
-      {
-        // TODO: GenerationMixing
-      }
-      else
-      {
-        for(int i=1; i<=3; i++)
-        {
-          Yu(i) = (*Y_u_0)(i,i).re;
-          Yd(i) = (*Y_d_0)(i,i).re;
-          Yl(i) = (*Y_l_0)(i,i).re;
-        }
-      }
-
-      SLHAea_add_block(slha, "Yu", *m_GUT);
-      slha["Yu"][""] << 1 << 1 << Yu(1) << "# Y_u(M_GUT)^DRbar";
-      slha["Yu"][""] << 2 << 2 << Yu(2) << "# Y_c(M_GUT)^DRbar";
-      slha["Yu"][""] << 3 << 3 << Yu(3) << "# Y_t(M_GUT)^DRbar";
-
-      SLHAea_add_block(slha, "Yd", *m_GUT);
-      slha["Yd"][""] << 1 << 1 << Yd(1) << "# Y_d(M_GUT)^DRbar";
-      slha["Yd"][""] << 2 << 2 << Yd(2) << "# Y_s(M_GUT)^DRbar";
-      slha["Yd"][""] << 3 << 3 << Yd(3) << "# Y_b(M_GUT)^DRbar";
-
-      SLHAea_add_block(slha, "Ye", *m_GUT);
-      slha["Ye"][""] << 1 << 1 << Yl(1) << "# Y_e(M_GUT)^DRbar";
-      slha["Ye"][""] << 2 << 2 << Yl(2) << "# Y_mu(M_GUT)^DRbar";
-      slha["Ye"][""] << 3 << 3 << Yl(3) << "# Y_tau(M_GUT)^DRbar";
-
 
     }
 
@@ -354,8 +318,9 @@ BE_NAMESPACE
         slha["EXTPAR"][""] << 48 << sqrt(*input_Param.at("md2_22")) << "# M_(D,22)";
       if(input_Param.find("md2_33") != input_Param.end())
         slha["EXTPAR"][""] << 49 << sqrt(*input_Param.at("md2_33")) << "# M_(D,33)";
-    }
 
+    }
+        
     // parameters + masses for SPheno.spc
     SLHAea_add_block(slha, "SMINPUTS");
     slha["SMINPUTS"][""] << 1 << 1.0 / Alpha_MSbar(*mZ, *mW) << "# alpha_em^-1(MZ)^MSbar";
@@ -375,40 +340,50 @@ BE_NAMESPACE
     slha["SMINPUTS"][""] << 23 << (*mf_d)(2) << "# m_s(2 GeV), MSbar";
     slha["SMINPUTS"][""] << 24 << (*mf_u)(2) << "# m_c(m_c), MSbar";
 
-    Farray_Fcomplex16_1_3_1_3 Al_pmns, Ad_sckm, Au_sckm;
-    Farray_Fcomplex16_1_3_1_3 M2D_sckm, M2U_sckm, M2Q_sckm, M2E_pmns, M2L_pmns;
-    Farray_Fcomplex16_1_6_1_6 RUsq_ckm, RDsq_ckm, RSl_pmns;
-    Farray_Fcomplex16_1_3_1_3 RSn_pmns;
+    SLHAea_add_block(slha, "MSL2");
+    SLHAea_add_block(slha, "MSE2");
+    SLHAea_add_block(slha, "MSQ2");
+    SLHAea_add_block(slha, "MSU2");
+    SLHAea_add_block(slha, "MSD2");
 
-    if(*GenerationMixing)
-    {
-      // TODO: GenerationMixing
-    }
-    else
-    {
-      for(int i=1; i<=3; i++)
+    for(int i=1; i<=3; i++)
+      for(int j=1; j<=3; j++)
       {
-        Yu(i) = (*Y_u)(i,i).re;
-        Yd(i) = (*Y_d)(i,i).re;
-        Yl(i) = (*Y_l)(i,i).re;
+        slha["MSL2"][""] << i << j << (*M2_L_0)(i,j).re << "# M_(L," << i << j << ")";
+        slha["MSE2"][""] << i << j << (*M2_E_0)(i,j).re << "# M_(E," << i << j << ")";
+        slha["MSQ2"][""] << i << j << (*M2_Q_0)(i,j).re << "# M_(Q," << i << j << ")";
+        slha["MSU2"][""] << i << j << (*M2_U_0)(i,j).re << "# M_(U," << i << j << ")";
+        slha["MSD2"][""] << i << j << (*M2_D_0)(i,j).re << "# M_(D," << i << j << ")";
+     }
+
+    SLHAea_add_block(slha, "TE");
+    SLHAea_add_block(slha, "TU");
+    SLHAea_add_block(slha, "TD");
+
+    for(int i=1; i<=3; i++)
+      for(int j=1; j<=3; j++)
+      {
+        slha["TE"][""] << i << j << (*A_l_0)(i,j).re << "# A_(E," << i << j << ")";
+        slha["TU"][""] << i << j << (*A_u_0)(i,j).re << "# A_(U," << i << j << ")";
+        slha["TD"][""] << i << j << (*A_d_0)(i,j).re << "# A_(D," << i << j << ")";
       }
 
-      Al_pmns = *A_l;
-      Ad_sckm = *A_d;
-      Au_sckm = *A_u;
+    SLHAea_add_block(slha, "GAUGE", *m_GUT);
+    slha["GAUGE"][""] << 1 << (*gauge_0)(1) << "# g'(M_GUT)^DRbar";
+    slha["GAUGE"][""] << 2 << (*gauge_0)(2) << "# g(M_GUT)^DRbar";
+    slha["GAUGE"][""] << 3 << (*gauge_0)(3) << "# g3(M_GUT)^DRbar";
 
-      M2D_sckm = *M2_D;
-      M2U_sckm = *M2_U;
-      M2Q_sckm = *M2_Q;
-      M2E_pmns = *M2_E;
-      M2L_pmns = *M2_L;
-
-      RUsq_ckm = *RSup;
-      RDsq_ckm = *RSdown;
- 
-      RSn_pmns = *RSneut;
-      RSl_pmns = *RSlepton;      
-    }
+    SLHAea_add_block(slha, "Yu", *m_GUT);
+    SLHAea_add_block(slha, "Yd", *m_GUT);
+    SLHAea_add_block(slha, "Ye", *m_GUT);
+   
+    for(int i=1; i<=3; i++)
+      for(int j=1; j<=3; j++)
+      { 
+        slha["Yu"][""] << i << j << (*Y_u_0)(i,j).re << "# Y_u(" << i << "," << j << ")(M_GUT)^DRbar";
+        slha["Yd"][""] << i << j << (*Y_d_0)(i,j).re << "# Y_d(" << i << "," << j << "(M_GUT)^DRbar";
+        slha["Ye"][""] << i << j << (*Y_l_0)(i,j).re << "# Y_e(" << i << "," << j << "(M_GUT)^DRbar";
+      }
 
     SLHAea_add_block(slha, "GAUGE", Q);
     slha["GAUGE"][""] << 1 << (*gauge)(1) << "# g'(Q)^DRbar";
@@ -416,81 +391,43 @@ BE_NAMESPACE
     slha["GAUGE"][""] << 3 << (*gauge)(3) << "# g3(Q)^DRbar";
 
     SLHAea_add_block(slha, "Yu", Q);
-    slha["Yu"][""] << 1 << 1 << Yu(1) << "# Y_u(Q)^DRbar";
-    slha["Yu"][""] << 2 << 2 << Yu(2) << "# Y_c(Q)^DRbar";
-    slha["Yu"][""] << 3 << 3 << Yu(3) << "# Y_t(Q)^DRbar";
-
     SLHAea_add_block(slha, "Yd", Q);
-    slha["Yd"][""] << 1 << 1 << Yd(1) << "# Y_d(Q)^DRbar";
-    slha["Yd"][""] << 2 << 2 << Yd(2) << "# Y_s(Q)^DRbar";
-    slha["Yd"][""] << 3 << 3 << Yd(3) << "# Y_b(Q)^DRbar";
+    SLHAea_add_block(slha, "Ye", Q);   
 
-    SLHAea_add_block(slha, "Ye", Q);
-    slha["Ye"][""] << 1 << 1 << Yl(1) << "# Y_e(Q)^DRbar";
-    slha["Ye"][""] << 2 << 2 << Yl(2) << "# Y_mu(Q)^DRbar";
-    slha["Ye"][""] << 3 << 3 << Yl(3) << "# Y_tau(Q)^DRbar";
+    for(int i=1; i<=3; i++)
+      for(int j=1; j<=3; j++)
+      {
+        slha["Yu"][""] << i << j << (*Y_u)(i,j).re << "# Y_u(" << i << "," << j << ")(Q)^DRbar";
+        slha["Yd"][""] << i << j << (*Y_d)(i,j).re << "# Y_d(" << i << "," << j << ")(Q)^DRbar";
+        slha["Ye"][""] << i << j << (*Y_l)(i,j).re << "# Y_e(" << i << "," << j << ")(Q)^DRbar";
+      }
 
-    if(*GenerationMixing)
-    {
-      // TODO: GenerationMixing
-    }
-    else
-    {
-      SLHAea_add_block(slha, "Au", Q);
-      if((*Y_u)(1,1).abs() > 0)
-        slha["Au"][""] << 1 << 1 << (Au_sckm(1,1)/(*Y_u)(1,1)).re << "# A_u(Q)^DRbar";
-      if((*Y_u)(2,2).abs() > 0)
-        slha["Au"][""] << 2 << 2 << (Au_sckm(2,2)/(*Y_u)(2,2)).re << "# A_c(Q)^DRbar";
-      if((*Y_u)(3,3).abs() > 0)
-        slha["Au"][""] << 3 << 3 << (Au_sckm(3,3)/(*Y_u)(3,3)).re << "# A_t(Q)^DRbar";
-      if(Au_sckm(1,1).im != 0 or Au_sckm(2,2).im != 0 or Au_sckm(3,3).im != 0)
+    SLHAea_add_block(slha, "Au", Q);
+    SLHAea_add_block(slha, "IMAu", Q);
+    SLHAea_add_block(slha, "Ad", Q);
+    SLHAea_add_block(slha, "IMAd", Q);
+    SLHAea_add_block(slha, "Ae", Q);
+    SLHAea_add_block(slha, "IMAe", Q);
+        
+    for(int i=1; i<=3; i++)
+      for(int j=1; j<=3; j++)
       {
-        SLHAea_add_block(slha, "IMAu", Q);
-        if((*Y_u)(1,1).abs() > 0)
-          slha["IMAu"][""] << 1 << 1 << (Au_sckm(1,1)/(*Y_u)(1,1)).im << "# Im(A_u)(Q)^DRbar";
-        if((*Y_u)(2,2).abs() > 0)
-          slha["IMAu"][""] << 2 << 2 << (Au_sckm(2,2)/(*Y_u)(2,2)).im << "# Im(A_c)(Q)^DRbar";
-        if((*Y_u)(3,3).abs() > 0)
-          slha["IMAu"][""] << 3 << 3 << (Au_sckm(3,3)/(*Y_u)(3,3)).im << "# Im(A_t)(Q)^DRbar";
+        if((*Y_u)(i,j).abs() > 0)
+        {
+          slha["Au"][""] << i << j << ((*A_u)(i,j)/(*Y_u)(i,j)).re << "# A_u" << i << "," << j << ")(Q)^DRbar";
+          slha["IMAu"][""] << i << j << ((*A_u)(i,j)/(*Y_u)(i,j)).im << "# Im(A_u)(" << i << "," << j << ")(Q)^DRbar";
+        }
+        if((*Y_d)(i,j).abs() > 0)
+        {
+          slha["Ad"][""] << i << j << ((*A_d)(i,j)/(*Y_d)(i,j)).re << "# A_d(" << i << "," << j << ")(Q)^DRbar";
+          slha["IMAd"][""] << i << j << ((*A_d)(i,j)/(*Y_d)(i,j)).im << "# Im(A_d)(" << i << "," << j << ")(Q)^DRbar";
+        }
+        if((*Y_l)(i,j).abs() > 0)
+        {
+          slha["Ae"][""] << i << j << ((*A_l)(i,j)/(*Y_l)(i,j)).re << "# A_e(" << i << "," << j << ")(Q)^DRbar";
+          slha["IMAe"][""] << i << j << ((*A_l)(i,j)/(*Y_l)(i,j)).im << "# Im(A_e)(" << i << "," << j << ")(Q)^DRbar";
+        }
       }
-   
-      SLHAea_add_block(slha, "Ad", Q);
-      if((*Y_d)(1,1).abs() > 0)
-        slha["Ad"][""] << 1 << 1 << (Ad_sckm(1,1)/(*Y_d)(1,1)).re << "# A_d(Q)^DRbar";
-      if((*Y_u)(2,2).abs() > 0)
-        slha["Ad"][""] << 2 << 2 << (Ad_sckm(2,2)/(*Y_d)(2,2)).re << "# A_s(Q)^DRbar";
-      if((*Y_u)(3,3).abs() > 0)
-        slha["Ad"][""] << 3 << 3 << (Ad_sckm(3,3)/(*Y_d)(3,3)).re << "# A_b(Q)^DRbar";
-      if(Ad_sckm(1,1).im != 0 or Ad_sckm(2,2).im != 0 or Ad_sckm(3,3).im != 0)
-      {
-        SLHAea_add_block(slha, "IMAd", Q);
-        if((*Y_d)(1,1).abs() > 0)
-          slha["IMAd"][""] << 1 << 1 << (Ad_sckm(1,1)/(*Y_d)(1,1)).im << "# Im(A_d)(Q)^DRbar";
-        if((*Y_d)(2,2).abs() > 0)
-          slha["IMAd"][""] << 2 << 2 << (Ad_sckm(2,2)/(*Y_d)(2,2)).im << "# Im(A_s)(Q)^DRbar";
-        if((*Y_d)(3,3).abs() > 0)
-          slha["IMAd"][""] << 3 << 3 << (Ad_sckm(3,3)/(*Y_d)(3,3)).im << "# Im(A_b)(Q)^DRbar";
-      }
-     
-      SLHAea_add_block(slha, "Ae", Q);
-      if((*Y_l)(1,1).abs() > 0)
-        slha["Ae"][""] << 1 << 1 << (Al_pmns(1,1)/(*Y_l)(1,1)).re << "# A_e(Q)^DRbar";
-      if((*Y_l)(2,2).abs() > 0)
-        slha["Ae"][""] << 2 << 2 << (Al_pmns(2,2)/(*Y_l)(2,2)).re << "# A_mu(Q)^DRbar";
-      if((*Y_l)(3,3).abs() > 0)
-        slha["Ae"][""] << 3 << 3 << (Al_pmns(3,3)/(*Y_l)(3,3)).re << "# A_tau(Q)^DRbar";
-      if(Al_pmns(1,1).im != 0 or Al_pmns(2,2).im != 0 or Al_pmns(3,3).im != 0)
-      {
-        SLHAea_add_block(slha, "IMAe", Q);
-        if((*Y_l)(1,1).abs() > 0)
-          slha["IMAe"][""] << 1 << 1 << (Al_pmns(1,1)/(*Y_l)(1,1)).im << "# Im(A_e)(Q)^DRbar";
-        if((*Y_l)(2,2).abs() > 0)
-          slha["IMAe"][""] << 2 << 2 << (Al_pmns(2,2)/(*Y_l)(2,2)).im << "# Im(A_mu)(Q)^DRbar";
-        if((*Y_l)(3,3).abs() > 0)
-          slha["IMAe"][""] << 3 << 3 << (Al_pmns(3,3)/(*Y_l)(3,3)).im << "# Im(A_tau)(Q)^DRbar";
-      }
-    
-    }
 
     SLHAea_add_block(slha, "MSOFT", Q);
     slha["MSOFT"][""] << 1 << (*Mi)(1).re << "# M_1";
@@ -499,21 +436,21 @@ BE_NAMESPACE
     slha["MSOFT"][""] << 21 << (*M2_H)(1) << "# M^2_(H,d)";
     slha["MSOFT"][""] << 22 << (*M2_H)(2) << "# M^2_(H,u)";
  
-    slha["MSOFT"][""] << 31 << sqrt(M2L_pmns(1,1).re) << "# M_(L,11)";
-    slha["MSOFT"][""] << 32 << sqrt(M2L_pmns(2,2).re) << "# M_(L,22)";
-    slha["MSOFT"][""] << 33 << sqrt(M2L_pmns(3,3).re) << "# M_(L,33)";
-    slha["MSOFT"][""] << 34 << sqrt(M2E_pmns(1,1).re) << "# M_(E,11)";
-    slha["MSOFT"][""] << 35 << sqrt(M2E_pmns(2,2).re) << "# M_(E,22)";
-    slha["MSOFT"][""] << 36 << sqrt(M2E_pmns(3,3).re) << "# M_(E,33)";
-    slha["MSOFT"][""] << 41 << sqrt(M2Q_sckm(1,1).re) << "# M_(Q,11)";
-    slha["MSOFT"][""] << 42 << sqrt(M2Q_sckm(2,2).re) << "# M_(Q,22)";
-    slha["MSOFT"][""] << 43 << sqrt(M2Q_sckm(3,3).re) << "# M_(Q,33)";
-    slha["MSOFT"][""] << 44 << sqrt(M2U_sckm(1,1).re) << "# M_(U,11)";
-    slha["MSOFT"][""] << 45 << sqrt(M2U_sckm(2,2).re) << "# M_(U,22)";
-    slha["MSOFT"][""] << 46 << sqrt(M2U_sckm(3,3).re) << "# M_(U,33)";
-    slha["MSOFT"][""] << 47 << sqrt(M2D_sckm(1,1).re) << "# M_(D,11)";
-    slha["MSOFT"][""] << 48 << sqrt(M2D_sckm(2,2).re) << "# M_(D,22)";
-    slha["MSOFT"][""] << 49 << sqrt(M2D_sckm(3,3).re) << "# M_(D,33)";
+    slha["MSOFT"][""] << 31 << sqrt((*M2_L)(1,1).re) << "# M_(L,11)";
+    slha["MSOFT"][""] << 32 << sqrt((*M2_L)(2,2).re) << "# M_(L,22)";
+    slha["MSOFT"][""] << 33 << sqrt((*M2_L)(3,3).re) << "# M_(L,33)";
+    slha["MSOFT"][""] << 34 << sqrt((*M2_E)(1,1).re) << "# M_(E,11)";
+    slha["MSOFT"][""] << 35 << sqrt((*M2_E)(2,2).re) << "# M_(E,22)";
+    slha["MSOFT"][""] << 36 << sqrt((*M2_E)(3,3).re) << "# M_(E,33)";
+    slha["MSOFT"][""] << 41 << sqrt((*M2_Q)(1,1).re) << "# M_(Q,11)";
+    slha["MSOFT"][""] << 42 << sqrt((*M2_Q)(2,2).re) << "# M_(Q,22)";
+    slha["MSOFT"][""] << 43 << sqrt((*M2_Q)(3,3).re) << "# M_(Q,33)";
+    slha["MSOFT"][""] << 44 << sqrt((*M2_U)(1,1).re) << "# M_(U,11)";
+    slha["MSOFT"][""] << 45 << sqrt((*M2_U)(2,2).re) << "# M_(U,22)";
+    slha["MSOFT"][""] << 46 << sqrt((*M2_U)(3,3).re) << "# M_(U,33)";
+    slha["MSOFT"][""] << 47 << sqrt((*M2_D)(1,1).re) << "# M_(D,11)";
+    slha["MSOFT"][""] << 48 << sqrt((*M2_D)(2,2).re) << "# M_(D,22)";
+    slha["MSOFT"][""] << 49 << sqrt((*M2_D)(3,3).re) << "# M_(D,33)";
 
     if((*Mi)(1).im != 0 or (*Mi)(2).im != 0 or (*Mi)(3).im != 0)
     {
@@ -662,12 +599,26 @@ BE_NAMESPACE
     slha["HMIX"][""] << 2 << *tanb_Q << "# tan[beta](Q)";
     slha["HMIX"][""] << 3 << *vev_Q << "# v(Q)";
     slha["HMIX"][""] << 4 << *mA2_Q << "# m^2_A(Q)";
+    slha["HMIX"][""] << 101 << B->re << "# Bmu DRBar";
+    slha["HMIX"][""] << 102 << (*vevSM)(1) << "# vd DRBar";
+    slha["HMIX"][""] << 103 << (*vevSM)(2) << "# vu DRBar";
 
     if(mu->im != 0)
     {
       SLHAea_add_block(slha, "IMHMIX", Q);
       slha["IMHMIX"][""] << 1 << mu->im << "# Im(mu)";
     }
+
+    SLHAea_add_block(slha, "SCALARMIX");
+    SLHAea_add_block(slha, "PSEUDOSCALARMIX");
+    SLHAea_add_block(slha, "CHARGEMIX");
+    for(int i=1; i<=2; i++)
+      for(int j=1; j<=2; j++)
+      {
+        slha["SCALARMIX"][""] << i << j << (*RS0)(i,j) << "# ZH(" << i << "," << j << ")";
+        slha["PSEUDOSCALARMIX"][""] << i << j << (*RP0)(i,j) << "# ZA(" << i << "," << j << ")";
+        slha["CHARGEMIX"][""] << i << j << (*RSpm)(i,j).re << "# ZP(" << i << "," << j << ")"; 
+      } 
 
     if(*GenerationMixing)
     {
@@ -679,11 +630,11 @@ BE_NAMESPACE
       for(int i=1; i<=2; i++)
         for(int j=1; j<=2; j++)
         {
-          slha["STOPMIX"][""] << i << j << RUsq_ckm(i+4,j+4).re << "# R_st(" << i << "," << j << ")";
-          if(RUsq_ckm(i+4,j+4).im != 0)
+          slha["STOPMIX"][""] << i << j << (*RSup)(i+4,j+4).re << "# R_st(" << i << "," << j << ")";
+          if((*RSup)(i+4,j+4).im != 0)
           {
             SLHAea_check_block(slha, "IMSTOPMIX", i, true);
-            slha["IMSTOPMIX"][""] << i << j << RUsq_ckm(i+4,j+4).im << "# Im(R_st)(" << i << "," << j << ")";
+            slha["IMSTOPMIX"][""] << i << j << (*RSup)(i+4,j+4).im << "# Im(R_st)(" << i << "," << j << ")";
           }
         }
 
@@ -691,11 +642,11 @@ BE_NAMESPACE
       for(int i=1; i<=2; i++)
         for(int j=1; j<=2; j++)
         {
-          slha["SBOTMIX"][""] << i << j << RDsq_ckm(i+4,j+4).re << "# R_sb(" << i << "," << j << ")";
-          if(RDsq_ckm(i+4,j+4).im != 0)
+          slha["SBOTMIX"][""] << i << j << (*RSdown)(i+4,j+4).re << "# R_sb(" << i << "," << j << ")";
+          if((*RSdown)(i+4,j+4).im != 0)
           {
             SLHAea_check_block(slha, "IMSBOTMIX", i, true);
-            slha["IMSBOTMIX"][""] << i << j << RDsq_ckm(i+4,j+4).im << "# Im(R_sb)(" << i << "," << j << ")";
+            slha["IMSBOTMIX"][""] << i << j << (*RSdown)(i+4,j+4).im << "# Im(R_sb)(" << i << "," << j << ")";
           }
         }
 
@@ -703,11 +654,11 @@ BE_NAMESPACE
       for(int i=1; i<=2; i++)
         for(int j=1; j<=2; j++)
         {
-          slha["STAUMIX"][""] << i << j << RSl_pmns(i+4,j+4).re << "# R_sta(" << i << "," << j << ")";
-          if(RSl_pmns(i+4,j+4).im != 0)
+          slha["STAUMIX"][""] << i << j << (*RSlepton)(i+4,j+4).re << "# R_sta(" << i << "," << j << ")";
+          if((*RSlepton)(i+4,j+4).im != 0)
           {
             SLHAea_check_block(slha, "IMSBOTMIX", i, true);
-            slha["IMSBOTMIX"][""] << i << j << RSl_pmns(i+4,j+4).im << "# Im(R_sta)(" << i << "," << j << ")";
+            slha["IMSBOTMIX"][""] << i << j << (*RSlepton)(i+4,j+4).im << "# Im(R_sta)(" << i << "," << j << ")";
           }
         }
     }   
@@ -751,8 +702,16 @@ BE_NAMESPACE
 
     // TODO: Low Energy Observables
 
+    // Block GAMBIT
+    SLHAea_add_block(slha, "GAMBIT");
+    slha["GAMBIT"][""] << 1 << *m_GUT << "# Input scale of (upper) boundary contidions, e.g. GUT scale";
+
     // Create Spectrum object from the slhaea object
-    Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha);    
+    Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha);
+
+    // Add the high scale variable by hand, TODO: this should be done already in the function above
+    spectrum.get_HE().set_override(Par::mass1,SLHAea::to<double>(slha.at("GAMBIT").at(1).at(1)), "high_scale", true);
+
 
     return spectrum;
 
