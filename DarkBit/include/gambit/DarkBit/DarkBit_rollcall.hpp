@@ -64,8 +64,9 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum) 
-      DEPENDENCY(decay_rates, DecayTable) 
+      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(decay_rates, DecayTable
+      ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
@@ -157,7 +158,7 @@ START_MODULE
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
 #ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum) 
+      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
 #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
@@ -186,7 +187,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegasSingletDM), double, (double*,int,double))
+      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegas_SingletDM), double, (double*,int,double))
       ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -362,7 +363,7 @@ START_MODULE
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)      
+      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)
@@ -379,7 +380,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(decay_rates,DecayTable)      
+      DEPENDENCY(decay_rates,DecayTable)
       DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
@@ -520,7 +521,7 @@ START_MODULE
       MODEL_GROUP(group2, (MSSM63atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
       BACKEND_OPTION((MicrOmegas_MSSM),(gimmemicro))
-      BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_SingletDM),(gimmemicro))
       FORCE_SAME_BACKEND(gimmemicro)
     #undef FUNCTION
 
