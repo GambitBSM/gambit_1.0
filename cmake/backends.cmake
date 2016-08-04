@@ -531,26 +531,24 @@ add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
 # SPheno
-set(spheno_ver "3.3.8")
-set(spheno_lib "lib/libSPheno.so")
-set(spheno_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SPheno/3.3.8")
-set(spheno_short_dir "./Backends/installed/SPheno/3.3.8")
-set(spheno_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SPheno/3.3.8")
-set(spheno_dl "SPheno-3.3.8.tar.gz")
-ExternalProject_Add(spheno
-  URL http://www.hepforge.org/archive/spheno/${spheno_dl}
-  URL_MD5 4307cb4b736cebca5e57ca6c5e0b5836
-  DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${spheno_dir}
+set(name "spheno")
+set(ver "3.3.8")
+set(lib "lib/libSPheno.so")
+set(dl "http://www.hepforge.org/archive/spheno/SPheno-${ver}.tar.gz")
+set(md5 "4307cb4b736cebca5e57ca6c5e0b5836")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
+ExternalProject_Add(${name}_${ver}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+  SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
-  PATCH_COMMAND patch -bp0 --ignore-whitespace < ${spheno_patch}/patch_SPheno_3_3_8.dif
+  PATCH_COMMAND patch -bp0 --ignore-whitespace < ${patch}_3_3_8.dif
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} $F90=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} ${spheno_lib}  
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} $F90=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} ${lib}  
   INSTALL_COMMAND ""
 )
-add_extra_targets(spheno ${spheno_dir} ${backend_download}/${spheno_dl} clean)
-
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+set_as_default_version("backend" ${name} ${ver})
 
 # gm2calc
 set(name "gm2calc")

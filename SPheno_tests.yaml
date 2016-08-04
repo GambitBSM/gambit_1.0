@@ -21,12 +21,12 @@ Parameters:
 Printer:
   printer: hdf5
   options:
-    output_file: "SPheno_2.hdf5"
-    group: "/SPheno"
-    delete_file_on_restart: true
+    output_file: "SPheno_tests_FS.hdf5"
+    group: "/SPheno_tests"
+    delete_files_on_restart: true
 
 Scanner:
-  use_scanner: square_grid
+  use_scanner: de 
 
   scanners:
     square_grid:
@@ -34,6 +34,20 @@ Scanner:
       version: ">=1.0"
       like: LogLike
       grid_pts: 5 
+
+    multinest:
+      plugin: MultiNest
+      like: LogLike
+      nlive: 1
+      tol: 0.5
+      updInt: 1
+
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 1
+      convthresh: 1e-3
+      verbosity: 1
 
 ObsLikes:
   - purpose: Observable
@@ -76,7 +90,7 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
 
-  default_output_path: "runs/SPheno"
+  default_output_path: "runs/SPheno_tests"
 
   debug: true
 
