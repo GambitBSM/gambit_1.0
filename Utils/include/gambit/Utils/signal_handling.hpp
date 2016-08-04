@@ -159,6 +159,9 @@ namespace Gambit
 
        /// Number of times synchronisation for soft shutdown has been attempted;
        int shutdown_attempts;
+       int attempts_since_ff; // Number of shutdown attempts since last "fast-forward" period
+       int ff_loop_count;
+       bool ff_on; 
 
        /// Flag to switch signal handling behavior to multithreaded mode
        /// (i.e. triggers switch to threadsafe emergency shutdown behaviour)
