@@ -93,7 +93,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_LocalHalo_func
       START_FUNCTION(bool)
       DEPENDENCY(RD_fraction, double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
       BACKEND_REQ(dshmcom,(),DS_HMCOM)
       BACKEND_REQ(dshmisodf,(),DS_HMISODF)
       BACKEND_REQ(dshmframevelcom,(),DS_HMFRAMEVELCOM)
@@ -461,7 +461,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_rho0_lognormal
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -469,7 +469,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vrot_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -477,7 +477,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_v0_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -485,7 +485,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vesc_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 

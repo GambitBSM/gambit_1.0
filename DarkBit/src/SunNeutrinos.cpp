@@ -12,6 +12,10 @@
 ///          (pscott@imperial.ac.uk)
 ///  \date 2015 Apr
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -547,11 +551,13 @@ namespace Gambit
     {
         using namespace Pipes::DarkSUSY_PointInit_LocalHalo_func;
 
-          double rho0 = *Param["rho0"];
-          double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
-          double vrot = *Param["vrot"];
-          double vd_3d = sqrt(3./2.)*(*Param["v0"]);
-          double vesc = *Param["vesc"];
+          LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+
+          double rho0 = LocalHaloParameters.rho0;
+          double rho0_eff = (*Dep::RD_fraction)*rho0;
+          double vrot = LocalHaloParameters.vrot;
+          double vd_3d = sqrt(3./2.)*LocalHaloParameters.v0;
+          double vesc = LocalHaloParameters.vesc;
           // Keplerian velocity of the Earth around the Sun (km/s)
           double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
 

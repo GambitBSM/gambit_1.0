@@ -12,6 +12,10 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -312,7 +316,8 @@ namespace Gambit {
     void lnL_rho0_lognormal(double &result)
     {
         using namespace Pipes::lnL_rho0_lognormal;
-        double rho0 = *Param["rho0"];
+        LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+        double rho0 = LocalHaloParameters.rho0;
       // FIXME: Add getValue documentation
         double rho0_obs = runOptions->getValueOrDef<double>(.4, "rho0_obs");
       // FIXME: Add getValue documentation
@@ -326,7 +331,8 @@ namespace Gambit {
     void lnL_vrot_gaussian(double &result)
     {
       using namespace Pipes::lnL_vrot_gaussian;
-      double vrot = *Param["vrot"];
+      LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+      double vrot = LocalHaloParameters.vrot;
       // FIXME: Add getValue documentation
       double vrot_obs = runOptions->getValueOrDef<double>(235, "vrot_obs");
       // FIXME: Add getValue documentation
@@ -338,7 +344,8 @@ namespace Gambit {
     void lnL_v0_gaussian(double &result)
     {
       using namespace Pipes::lnL_v0_gaussian;
-      double v0 = *Param["v0"];
+      LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+      double v0 = LocalHaloParameters.v0;
       // FIXME: Add getValue documentation
       double v0_obs = runOptions->getValueOrDef<double>(235, "v0_obs");
       // FIXME: Add getValue documentation
@@ -350,7 +357,8 @@ namespace Gambit {
     void lnL_vesc_gaussian(double &result)
     {
       using namespace Pipes::lnL_vesc_gaussian;
-      double vesc = *Param["vesc"];
+      LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+      double vesc = LocalHaloParameters.vesc;
       // FIXME: Add getValue documentation
       double vesc_obs = runOptions->getValueOrDef<double>(550, "vesc_obs");
       // FIXME: Add getValue documentation
