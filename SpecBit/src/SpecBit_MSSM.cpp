@@ -403,6 +403,9 @@ namespace Gambit
              mchi0 < msqd;
     }
 
+
+    
+    
     /// @} End module convenience functions
 
 
@@ -419,7 +422,45 @@ namespace Gambit
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
+    void most_SMlike_Higgs(int &result)
+    {
+      using namespace Pipes::most_SMlike_Higgs;
+      const Spectrum* full_spec = *Dep::unimproved_MSSM_spectrum;
+      const SubSpectrum* mssm_spec = full_spec->get_HE();
+      double sa =  - mssm_spec->get(Par::Pole_Mixing,"h0",1,1);
+      double ca = mssm_spec->get(Par::Pole_Mixing,"h0",1,2);
+      double saALT =  mssm_spec->get(Par::Pole_Mixing,"h0",2,2);
+      double caALT = mssm_spec->get(Par::Pole_Mixing,"h0",2,1);
 
+      std::cout << "sin alpha = " << sa << std::endl;
+      std::cout << "cos alpha = " << ca << std::endl;
+      std::cout << "sin alphaALT = " << saALT << std::endl;
+      std::cout << "cos alphaALT = " << caALT << std::endl;
+
+      double tb = mssm_spec->get(Par::dimensionless, "tanbeta" );
+      double sb = sin(atan(tb));
+      double cb = cos(atan(tb));
+      std::cout << "tb = "  << tb << std::endl;
+      std::cout << "cb = "  << cb << std::endl;
+      std::cout << "sb = "  << sb << std::endl;
+      //cos (beta - alpha)
+      double camb = cb * ca + sb * sa;
+      double samb = sb * ca - cb * ca;
+      
+      if(camb > samb)
+    	{
+    	  result = 25;
+    	}
+      else
+    	{
+    	  result = 35;
+    	}
+      
+      return;
+    }
+    
+    
+    
     void get_CMSSM_spectrum (const Spectrum* &result)
     {
 
@@ -455,6 +496,10 @@ namespace Gambit
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
+      int pdg = -66.6;
+      most_SMlike_Higgs(pdg);
+      std::cout << "pdg = " << pdg << std::endl;
+      
       // Only allow neutralino LSPs.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
