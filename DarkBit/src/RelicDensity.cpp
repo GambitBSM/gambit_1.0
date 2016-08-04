@@ -25,8 +25,10 @@
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
+
 namespace Gambit {
   namespace DarkBit {
+
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -81,7 +83,8 @@ namespace Gambit {
 #endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
-      // and instead depend on the process catalog! The use of any
+      // (i.e. SUSY particle conventions should follow GAMBUT, not DS etc)! 
+      // The use of any
       // DarkSUSY conventions need thus be moved to RD_annrate_DSprep_func
 
 
@@ -134,7 +137,11 @@ namespace Gambit {
             > 2.)
         {
 
-          // FIXME: This is no longer needed here.  Remove.
+/////////////////////////////
+/////////////////////////////
+// JONATHAN FIXME : please comment out everything and check whether this induces more 
+//           "dgdap ..." errros. Comment out from here
+          // DS-specific treatment of narrow Higgs width: is no longer needed here.
           if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
@@ -145,6 +152,10 @@ namespace Gambit {
                   mymspctm->mass(reslist[i]), mywidths->width(reslist[i])));
         }
       }
+// to here
+/////////////////////////////
+/////////////////////////////
+
 
       // determine thresholds; lowest threshold = 2*WIMP rest mass  (unlike DS
       // convention!)
@@ -190,8 +201,8 @@ namespace Gambit {
 
 #ifdef DARKBIT_DEBUG
       std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
-      std::cout << "Test : " << BEreq::particle_code("d_3")
-      << " " << BEreq::particle_code("u_3") << std::endl;
+//      std::cout << "Test : " << BEreq::particle_code("d_3")
+//      << " " << BEreq::particle_code("u_3") << std::endl;
 #endif
 
 
@@ -276,8 +287,8 @@ namespace Gambit {
       // RDspectrum.
       RD_spectrum_type specres = *Dep::RD_spectrum;
 
-      // FIXME: Here goes a translation GAMBIT particle identifiers
-      // -> DS particle codes
+      // FIXME: Here goes a translation of GAMBIT particle identifiers
+      // -> DS particle codes (once RD_spectrum_SUSY is backend independent)
 
       //write info about coannihilating particles to DS common blocks
       //[this is essentially the model-dependent part of dsrdstart]
@@ -305,7 +316,18 @@ namespace Gambit {
             myrdmgev.kcoann(j)=itmp;
           }
         }
+#ifdef DARKBIT_RD_DEBUG
+      std::cout << "co : "<< myrdmgev.kcoann(i) << " " <<
+          myrdmgev.mco(i) << " " << myrdmgev.mdof(i)
+          << std::endl;
+#endif
       }
+#ifdef DARKBIT_RD_DEBUG
+      std::cout << "co : "<< myrdmgev.kcoann(myrdmgev.nco) << " " <<
+          myrdmgev.mco(myrdmgev.nco) << " " << myrdmgev.mdof(myrdmgev.nco)
+          << std::endl;
+#endif
+
       *BEreq::rdmgev = myrdmgev;
 
       result=1; // everything OK
@@ -325,9 +347,7 @@ namespace Gambit {
       }
       // similar for other BEs...
 
-      // TB : why testing this only for peff= 0.1 ? Just commenting this out
-      // is not the solution ;)
-      // FIXME: !!!
+      // FIXME: test for m_WIMP/100 instead and then comment in!
 //      double peff = 0.1;
 //      if ( Utils::isnan((*result)(peff)) )
 //      {
@@ -386,228 +406,198 @@ namespace Gambit {
       // Retrieve ordered list of resonances and thresholds from
       // RD_thresholds_resonances.
       RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
-      if (myRDspec.coannihilatingParticles.empty()){
+      if (myRDspec.coannihilatingParticles.empty())
+      {
         DarkBit_error().raise(LOCAL_INFO, "RD_oh2_general: No DM particle!");
       }
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
 
-#ifdef DARKBIT_RD_DEBUG
-      double tbtest=0;
-#endif
+      #ifdef DARKBIT_RD_DEBUG
+        bool tbtest=false;
+      #endif
+
+      // What follows below is the standard accurate calculation of oh2 in DS
+      // either in fast = 0 (slower, accuracy <1%)  or fast = 1 (faster, default) mode
+
+      // the following replaces dsrdcom -- which cannot be linked properly!?
+      DS_RDPARS myrdpars;
+
+      /// Option fast<int>: Numerical performance of Boltzmann solver in DS
+      /// (default: 1) [NB: accurate is fast = 0 !]
+      int fast = runOptions->getValueOrDef<int>(1, "fast");
+      switch (fast)
+      {
+        case 0:
+          myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
+          myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
+          break;
+        case 1:
+          myrdpars.cosmin=0.996195;myrdpars.waccd=0.05;myrdpars.dpminr=5.0e-4;
+          myrdpars.dpthr=2.5e-3;myrdpars.wdiffr=0.5;myrdpars.wdifft=0.1;
+          break;
+        default:
+          DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1)");
+      }
+      
+      myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
+      myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;
+      myrdpars.cfr=0.5;
+      *BEreq::rdpars = myrdpars;
+      DS_RDSWITCH myrdswitch;
+      myrdswitch.thavint=1;myrdswitch.rdprt=0;
+      *BEreq::rdswitch = myrdswitch;
+      DS_RDLUN myrdlun;
+      myrdlun.rdlulog=6;myrdlun.rdluerr=6;
+      *BEreq::rdlun = myrdlun;
+      DS_RDPADD myrdpadd;
+      myrdpadd.pdivr=2.0;myrdpadd.dpres=0.5;myrdpadd.nlow=20;
+      myrdpadd.nhigh=10;
+      myrdpadd.npres=4;myrdpadd.nthup=4;myrdpadd.cthtest=0;myrdpadd.spltest=1;
+      *BEreq::rdpadd = myrdpadd;
+
+      DS_RDERRORS myrderrors;
+      myrderrors.rderr=0;myrderrors.rdwar=0;myrderrors.rdinit=1234;
+      *BEreq::rderrors = myrderrors;
 
 
-      // HERE STARTS A GIANT IF STATEMENT WHICH
-      // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
-      if (1==1) {
-        // What follows below is the standard accurate calculation of oh2 in DS
-        // either in fast = 0 (<1%)  or fast = 1 (default) mode
+      // write mass and dof of DM & coannihilating particle to DS common blocks
+      DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev);
 
-        // FIXME: keep track of error flags in oh2_general
-
-        // the following replaces dsrdcom -- which cannot be linked properly!?
-        DS_RDPARS myrdpars;
-
-        /// Option fast<int>: Numerical performance of Boltzmann solver in DS
-        /// (default: 1) [NB: accurate is fast = 0 !]
-        int fast = runOptions->getValueOrDef<int>(1, "fast");
-        switch (fast)
-        {
-          case 0:
-            myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
-            myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
-            break;
-          case 1:
-            myrdpars.cosmin=0.996195;myrdpars.waccd=0.05;myrdpars.dpminr=5.0e-4;
-            myrdpars.dpthr=2.5e-3;myrdpars.wdiffr=0.5;myrdpars.wdifft=0.1;
-            break;
-          default:
-            DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1)");
-        }
-        myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
-        myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;
-        myrdpars.cfr=0.5;
-        *BEreq::rdpars = myrdpars;
-        DS_RDSWITCH myrdswitch;
-        myrdswitch.thavint=1;myrdswitch.rdprt=0;
-        *BEreq::rdswitch = myrdswitch;
-        DS_RDLUN myrdlun;
-        myrdlun.rdlulog=6;myrdlun.rdluerr=6;
-        *BEreq::rdlun = myrdlun;
-        DS_RDPADD myrdpadd;
-        myrdpadd.pdivr=2.0;myrdpadd.dpres=0.5;myrdpadd.nlow=20;
-        myrdpadd.nhigh=10;
-        myrdpadd.npres=4;myrdpadd.nthup=4;myrdpadd.cthtest=0;myrdpadd.spltest=1;
-        *BEreq::rdpadd = myrdpadd;
-
-        DS_RDERRORS myrderrors;
-        myrderrors.rderr=0;myrderrors.rdwar=0;myrderrors.rdinit=1234;
-        *BEreq::rderrors = myrderrors;
-
-
-        // write mass and dof of DM & coannihilating particle to DS common blocks
-        DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev);
-
-        myrdmgev->nco=myRDspec.coannihilatingParticles.size();
-        for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
-          myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
-          myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom;
-          myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index;   // FIXME: Discuss!!!
-#ifdef DARKBIT_RD_DEBUG
+      myrdmgev->nco=myRDspec.coannihilatingParticles.size();
+      for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++)
+      {
+        myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
+        myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom;
+        myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index;
+        #ifdef DARKBIT_RD_DEBUG
           std::cout << "kcoann, mco, mdof: " << myrdmgev->kcoann(i) << "  " << myrdmgev->mco(i) << "  " << myrdmgev->mdof(i) << std::endl;
-#endif
-        }
+        #endif
+      }
 
-        // write information about thresholds and resonances to DS common blocks
-        // [this is the model-independent part of dsrdstart]
-        myrdmgev->nres=0;
-        if (!myRDspec.resonances.empty()){
-          myrdmgev->nres=myRDspec.resonances.size();
-          for (std::size_t i=1; i<=myRDspec.resonances.size(); i++) {
-            myrdmgev->rgev(i)=myRDspec.resonances[i-1].energy;
-            myrdmgev->rwid(i)=myRDspec.resonances[i-1].width;
-#ifdef DARKBIT_RD_DEBUG
+      // write information about thresholds and resonances to DS common blocks
+      // [this is the model-independent part of dsrdstart]
+      myrdmgev->nres=0;
+      if (!myRDspec.resonances.empty())
+      {
+        myrdmgev->nres=myRDspec.resonances.size();
+        for (std::size_t i=1; i<=myRDspec.resonances.size(); i++)
+        {
+          myrdmgev->rgev(i)=myRDspec.resonances[i-1].energy;
+          myrdmgev->rwid(i)=myRDspec.resonances[i-1].width;
+          #ifdef DARKBIT_RD_DEBUG
             std::cout << "rgev, rwid: " << myrdmgev->rgev(i) << "  " << myrdmgev->rwid(i) << std::endl;
-#endif
-          }
+          #endif
         }
-        // convert to momenta and write to DS common blocks
-        DS_RDPTH myrdpth;
-        // NB: DS does not count 2* WIMP rest mass as thr
-        myrdpth.nth=myRDspec.threshold_energy.size()-1;
-        myrdpth.pth(0)=0; myrdpth.incth(0)=1;
-        for (std::size_t i=1; i<myRDspec.threshold_energy.size(); i++) {
-          myrdpth.pth(i)=sqrt(pow(myRDspec.threshold_energy[i],2)/4-pow(mwimp,2));
-          myrdpth.incth(i)=1;
-#ifdef DARKBIT_RD_DEBUG
+      }
+      // convert to momenta and write to DS common blocks
+      DS_RDPTH myrdpth;
+      // NB: DS does not count 2* WIMP rest mass as thr
+      myrdpth.nth=myRDspec.threshold_energy.size()-1;
+      myrdpth.pth(0)=0; myrdpth.incth(0)=1;
+      for (std::size_t i=1; i<myRDspec.threshold_energy.size(); i++)
+      {
+        myrdpth.pth(i)=sqrt(pow(myRDspec.threshold_energy[i],2)/4-pow(mwimp,2));
+        myrdpth.incth(i)=1;
+        #ifdef DARKBIT_RD_DEBUG
           std::cout << "pth, incth: " << myrdpth.pth(i) << "  " << myrdpth.incth(i) << std::endl;
-#endif
+        #endif
+      }
+      *BEreq::rdpth = myrdpth;
+
+      // determine starting point for integration of Boltzmann eq and write
+      // to DS common blocks
+      DS_RDDOF *myrddof = &(*BEreq::rddof);
+      double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof->tgev(1));
+      double tstart=mwimp/xstart;
+      int k; myrddof->khi=myrddof->nf; myrddof->klo=1;
+      while (myrddof->khi > myrddof->klo+1){
+        k=(myrddof->khi+myrddof->klo)/2;
+        if (myrddof->tgev(k) < tstart){
+          myrddof->khi=k;
         }
-        *BEreq::rdpth = myrdpth;
-
-        // determine starting point for integration of Boltzmann eq and write
-        // to DS common blocks
-        DS_RDDOF *myrddof = &(*BEreq::rddof);
-        double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof->tgev(1));
-        double tstart=mwimp/xstart;
-        int k; myrddof->khi=myrddof->nf; myrddof->klo=1;
-        while (myrddof->khi > myrddof->klo+1){
-          k=(myrddof->khi+myrddof->klo)/2;
-          if (myrddof->tgev(k) < tstart){
-            myrddof->khi=k;
-          }
-          else {
-            myrddof->klo=k;
-          }
+        else {
+          myrddof->klo=k;
         }
+      }
 
 
-        // follow wide res treatment for heavy Higgs adopted in DS
-        double widthheavyHiggs=
-               (*BEreq::widths).width(BEreq::particle_code("h0_2"));
-        if (widthheavyHiggs<0.1)
-          (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
+      // follow wide res treatment for heavy Higgs adopted in DS
+      double widthheavyHiggs=
+             (*BEreq::widths).width(BEreq::particle_code("h0_2"));
+      if (widthheavyHiggs<0.1)
+        (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
-#ifdef DARKBIT_DEBUG
+      #ifdef DARKBIT_RD_DEBUG
         // Dump Weff info on screen
         std::cout << "xstart = " << xstart << std::endl;
-        for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
+        for ( double peff = mwimp/1000;  peff < mwimp; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
-#endif
-
-#ifdef DARKBIT_RD_DEBUG
         // Set up timing
         std::chrono::time_point<std::chrono::system_clock> start, end;
-#endif
-
-
-        // FIXME: Remove?
-//            /*TAG*/ Spectrum mySpec = *Dep::MSSM_spectrum;
-//            SLHAstruct mySLHA = mySpec->getSLHAea();
-//            std::ofstream ofs("RelicDensity_debug.slha");
-//            ofs << mySLHA;
-//            ofs.close();
-
-//        std::cout << "SLHA written to file" << std::endl;
-
-#ifdef DARKBIT_RD_DEBUG
         start = std::chrono::system_clock::now();
-#endif
-
-#ifdef DARKBIT_RD_DEBUG
         logger() << "Tabulating RD_eff_annrate..." << std::endl;
         std::cout << "Starting dsrdtab..." << std::endl;
-#endif
+      #endif
+    
+      // Tabulate invariant rate
+      BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
 
-        // Tabulate invariant rate
-        BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
-
-#ifdef DARKBIT_RD_DEBUG
+      #ifdef DARKBIT_RD_DEBUG
         std::cout << "...done" << std::endl;
         logger() << "...done!" << std::endl;
-#endif
-
-#ifdef DARKBIT_RD_DEBUG
+      
         // Get runtime
         end = std::chrono::system_clock::now();
         double runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
+      
         // Check if runtime too long
         if ( runtime > 30. )
         {
           std::cout << "Duration [ms]: " << runtime << std::endl;
-          /*TAG*/ Spectrum mySpec = *Dep::MSSM_spectrum;
-          SLHAstruct mySLHA = mySpec->getSLHAea();
+          SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea();
           std::ofstream ofs("RelicDensity_debug.slha");
           ofs << mySLHA;
           ofs.close();
-          tbtest=1;
-//            exit(1);  // And stop
+          tbtest=true;
         }
-#endif
+      #endif
+    
+      // Check whether piped invalid point was thrown
+      piped_invalid_point.check();
 
-        // Check whether piped invalid point was thrown
-        piped_invalid_point.check();
+      // determine integration limit
+      BEreq::dsrdthlim();
 
-        // determine integration limit
-        BEreq::dsrdthlim();
+      // now solve Boltzmann eqn using tabulated rate
+      double xend, yend, xf; int nfcn;
+      BEreq::dsrdeqn(byVal(BEreq::dsrdwintp.pointer()),
+          xstart,xend,yend,xf,nfcn);
+      // using the untabulated rate gives the same result but is usually
+      // slower:
+      // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
 
-        // now solve Boltzmann eqn using tabulated rate
-        double xend, yend, xf; int nfcn;
-        BEreq::dsrdeqn(byVal(BEreq::dsrdwintp.pointer()),
-            xstart,xend,yend,xf,nfcn);
-        // using the untabulated rate gives the same result but is usually
-        // slower:
-        // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
+      // change heavy Higgs width in DS back to standard value
+      (*BEreq::widths).width(BEreq::particle_code("h0_2"))
+         =widthheavyHiggs;
 
-        // change heavy Higgs width in DS back to standard value
-        (*BEreq::widths).width(BEreq::particle_code("h0_2"))
-           =widthheavyHiggs;
+      //capture NAN result and map it to zero RD
+      if (yend!=yend){
+        logger() <<
+          "WARNING: DS returned NAN for relic density. Setting to zero..."
+          << std::endl;
+        yend=0;
+      }
 
-        //capture NAN result and map it to zero RD
-        if (yend!=yend){
-          logger() <<
-            "WARNING: DS returned NAN for relic density. Setting to zero..."
-            << std::endl;
-          yend=0;
-        }
-
-        result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
-
-      } // USING BE=DS
+      result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
 
-
-#ifdef DARKBIT_DEBUG
-      std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
-      std::cout << "Oh2     = " << result << std::endl << std::endl;
-#endif
-
-#ifdef DARKBIT_RD_DEBUG
-      if (tbtest==1) {exit(1);}
-#endif
-
-
+      #ifdef DARKBIT_DEBUG
+        std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
+        std::cout << "Oh2     = " << result << std::endl << std::endl;
+        if (tbtest) exit(1);
+      #endif
+    
     } // function RD_oh2_general
 
 

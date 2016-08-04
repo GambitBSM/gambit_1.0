@@ -6,13 +6,25 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Update LUX constraints [PS/FK?]
+- Comment out RelicDensity.cpp:137ff and check whether this introduces more
+  problems in relic density calculations [CW]
 - Merge DarkBit back into master and inform Martin [CW]
-- Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
+- Merge new LUX likelihoods into DarkBit_dev [PS/FK]
+- WAIT FOR JE: IB routines issues
+  - check whether warnings disappear after setting quark masses in DS correctly [JC/JE]
+    (if not check out mail from Torsten 26-07 for solutions)
+- WAIT FOR JE: Relic densiy routines
+  - Check whether top-width is set correctly [JE]
+- URGENT? Write DS patch for raising invalid points (or whatever) when RD
+  calculations take too long (if scan actually stall) [TB/JE/CW/PS]
+- DONE? Confirm that SimYieldTable extrapolation switch is working correctly
+  (Mail Anders 29-07-16) [JC]
+- DONE? Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
 
 Before internal paper review:
+- Add discussion about LUX likelihoods to paper [FK]
+- Double-check that fast option for general oh2 routine is clear [CW]
 - Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
-- Add discussion about additional SimYieldTable extrapolation switch [SW]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
 - Update nuclear parameter best fit value discussion [JC] [Added by JC]
@@ -21,17 +33,18 @@ Before internal paper review:
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Remove everything related to setMassesForIB [CW]
+- Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
+  exception (Mail Anders 29-07-16) [CW]
 - Check accuracy of fallback gsl_integration [CW]
 - <sigma v>_eff plots [JC]
 - Update cascade code discussions in paper to new treatment [CW]
-- Figure out h+ higgswidth problems with DS SLHA initialization (CMSSM_dsSLHA_problem.yaml) [JE/TB]
+- Skype with Joakim
+  - Figure out h+ higgswidth problems with DS SLHA initialization
+    (CMSSM_dsSLHA_problem.yaml) [JE/TB/CW]
+  - Go through diskless init problems via skype with Joakim (see file)
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Add RD_oh2_general to MSSM standalone (update numbers in paper) [JC]
-- Do Skypes [CW, JE, TB]
-  - Go through RelicDensity FIXME items via skype with Torsten (see file)
-  - Check IB mass setting routines
-  - Make decision about default speeds for RD in DS [TB, CW]
-  - Go through diskless init problems via skype with Joakim (see file)
 - GalacticHalo model [CW/SW]
   - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
   - Update GalacticHalo model to include Sun distance
@@ -49,12 +62,17 @@ After internal paper review started:
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
+- Include proper isnan check in RD_eff_annrate_SUSY [?]
 
 Before release:
 - Clean up header and src files from old mess [CW]
 - Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
+- Check parallelized oh2 DS routines again after scans are working [?]
+- Add to RD_spectrum_from_ProcessCatalog coannihilation information [?]
+- Rewrite RD_spectrum_SUSY in a DS independent way [?]
+  (and change RD_annrate_DSprep_func accordingly)
 - MicrOmegas MSSM diskless initialization [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
 — Update LUX limits and SD constraints in DDCalc [Added by JC]
@@ -80,6 +98,12 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Do Skypes [CW, JE, TB]
+  - Go through RelicDensity FIXME items via skype with Torsten (see file)
+  - Check IB mass setting routines
+  - Make decision about default speeds for RD in DS [TB, CW]
+  - Discuss parallel routines
+- Add discussion about additional SimYieldTable extrapolation switch [SW]
 - gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep? [JC]
   indicating a bug? [PS -- checked, works fine now.]
 - Move micromegas installation routines into the cmake system [PS]
