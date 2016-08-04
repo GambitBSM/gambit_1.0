@@ -133,9 +133,9 @@ namespace Gambit
                                 
                         for (auto it = found_incs_plug.begin(), end = found_incs_plug.end(); it != end; it++)
                         {
+                            cout << *it << endl;
                             found_incs.insert(std::pair<std::string, std::string>(type + "_locations.yaml", *it));
                         }
-                        
                         std::vector<std::string> found_temp;
                         for (auto it = reqd_incs_not_found.begin(), end = reqd_incs_not_found.end(); it != end; ++it)
                         {

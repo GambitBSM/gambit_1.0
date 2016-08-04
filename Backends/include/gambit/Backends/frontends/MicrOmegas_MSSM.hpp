@@ -1,11 +1,11 @@
-/* Frontend for micrOMEGAs backend
+/* Frontend for MicrOmegas MSSM backend
  *
  * \author Jonathan Cornell
  * \date 2013-10-11
  *
  */
 
-#define BACKENDNAME MicrOmegas
+#define BACKENDNAME MicrOmegas_MSSM
 #define VERSION 3.6.9.2
 #define SAFE_VERSION 3_6_9_2
 

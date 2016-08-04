@@ -14,7 +14,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/MicrOmegas.hpp"
+#include "gambit/Backends/frontends/MicrOmegas_MSSM.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/threadsafe_rng.hpp"
