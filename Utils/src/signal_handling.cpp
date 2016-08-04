@@ -66,6 +66,9 @@ namespace Gambit
      , POSIX_signal_noticed(false)
      , shutdown_due_to_MPI_message(false)
      , shutdown_attempts(0)
+     , attempts_since_ff(0)
+     , ff_loop_count(0)
+     , ff_on(false)
      , inside_omp_block(false)
      , N_signals(0)
      #ifdef WITH_MPI
@@ -74,7 +77,7 @@ namespace Gambit
      , looptimes(1000)
      , next(0)
      , listfull(false)
-     , timeout(1000)
+     , timeout(100)
     #endif
    {}
 
@@ -191,18 +194,45 @@ namespace Gambit
    void SignalData::attempt_soft_shutdown()
    {
      const int max_attempts=2000; // Number of extra likelihood evaluations allowed for sync attempts before we declare failure 
+     const int attempts_before_ff=10; // Number of times to attempt synchronisation before entering a "fast forward" period
+     const int ff_loops=1000; // Number of "fast-forward" loops to perform in a fast-forward period
 
      /// Start counting...
      static std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
    
      if(shutdown_attempts==0)
      {
-       /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
-       /// so that it can get its own affairs in order.
-       logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
+        /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
+        /// so that it can get its own affairs in order.
+        logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
      }  
+     else if(ff_on)
+     {
+        // Fast-forward active; just increment counters and return
+        ++ff_loop_count;
+        if(ff_loop_count>=ff_loops) 
+        {
+          logger() << "Fast-forward period finished (performed "<<ff_loop_count<<" fast loops)." << EOM;
+          ff_on = false;
+          ff_loop_count=0;
+        }
+     }
+     else if(attempts_since_ff>=attempts_before_ff)
+     {
+        // Enter "fast-forward" period
+        ff_on = true;
+        std::ostringstream msg;
+        #ifdef WITH_MPI
+        msg << "rank "<<myrank()<<": Tried to synchronise for shutdown "<<shutdown_attempts<<" but failed. Will now 'skip' through "<<attempts_before_ff<<" iterations in an attempt to 'unlock' possible MPI deadlocks with the scanner.";
+        #endif
+        std::cerr << msg.str() << std::endl;
+        logger() << msg.str() << EOM;
+        // Reset counters
+        attempts_since_ff=0;  
+     }
      else
      {
+        // Normal sync attempt (no fast forward) 
         if(shutdown_attempts==1)
         {
            logger() << "Scanner did not shut down when given the chance; we will therefore assume responsibility for terminating the scan." << EOM;
@@ -239,9 +269,9 @@ namespace Gambit
         {
           logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << std::endl;
         }
+        shutdown_attempts+=1;
+        attempts_since_ff+=1;
      }
-
-     shutdown_attempts+=1;
    }
 
    /// Check for signals that early shutdown is required
