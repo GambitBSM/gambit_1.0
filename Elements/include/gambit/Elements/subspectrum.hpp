@@ -102,13 +102,13 @@ namespace Gambit
          virtual std::unique_ptr<SubSpectrum> clone() const = 0;
       
          /// Dump out spectrum information to an SLHA file (if possible)
-         virtual void getSLHA(const str&) const;
+         virtual void getSLHA(const str&, bool include_SLHA1_blocks = false) const;
 
          /// Get spectrum information in SLHAea format (if possible)
-         virtual SLHAstruct getSLHAea() const;
+         virtual SLHAstruct getSLHAea(bool include_SLHA1_blocks = false) const;
 
          /// Add spectrum information to an SLHAea object (if possible)
-         virtual void add_to_SLHAea(SLHAstruct&) const {}
+         virtual void add_to_SLHAea(SLHAstruct&, bool = false) const {}
          
          /// There may be more than one *new* stable particle
          ///  this method will tell you how many.

@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
   GMPI::Init();
   #endif
 
-  { // Scope to ensure that all MPI communicators get destructed before Finalize is called.
+  { // Scope to ensure that all MPI communicators get destroyed before Finalize is called.
 
     // Set up signal handling function
     // We attempt a clean shutdown on any of these signals
@@ -49,14 +49,6 @@ int main(int argc, char* argv[])
     signal(SIGINT,  sighandler_soft);
     signal(SIGUSR1, sighandler_soft);
     signal(SIGUSR2, sighandler_soft);
-
-    // // Add these signals to the list of signals to be blocked by global 
-    // // block/unblock functions (see Utils/signal_helpers.hpp)
-    // sigemptyset(signal_mask());
-    // sigaddset(signal_mask(), SIGTERM);
-    // sigaddset(signal_mask(), SIGINT);
-    // sigaddset(signal_mask(), SIGUSR1);
-    // sigaddset(signal_mask(), SIGUSR2);
  
     #ifdef WITH_MPI
       /// Create an MPI communicator group for use by error handlers
@@ -121,8 +113,13 @@ int main(int argc, char* argv[])
       // Set up dependency resolver
       DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *(printerManager.printerptr));
 
-      // Log module function infos
+      // Log module function info
       dependencyResolver.printFunctorList();
+
+      // Do the dependency resolution
+      cout << "Resolving dependencies and backend requirements.  Hang tight..." << endl;
+      dependencyResolver.doResolution();
+      cout << "...done!" << endl;
 
       // Do the dependency resolution
       dependencyResolver.doResolution();

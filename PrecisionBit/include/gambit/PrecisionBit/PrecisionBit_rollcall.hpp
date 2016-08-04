@@ -68,20 +68,20 @@ START_MODULE
   #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
     #define FUNCTION make_MSSM_precision_spectrum
-    START_FUNCTION(/*TAG*/ Spectrum)
-    DEPENDENCY(unimproved_MSSM_spectrum, /*TAG*/ Spectrum)
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
     DEPENDENCY(prec_mw, triplet<double>)
     DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     #undef FUNCTION
   #undef CAPABILITY
   
   // Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
-  QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, /*TAG*/ Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, /*TAG*/ Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, triplet<double>, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, /*TAG*/ Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mh, NEW_CAPABILITY, mh_from_SM_spectrum,   double, (), (SM_spectrum, /*TAG*/ Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_SS_spectrum,   double, (SingletDM, SingletDMZ3), (SingletDM_spectrum, /*TAG*/ Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_MSSM_spectrum, double, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, /*TAG*/ Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, triplet<double>, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mh, NEW_CAPABILITY, mh_from_SM_spectrum,   double, (), (SM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_SS_spectrum,   double, (SingletDM, SingletDMZ3), (SingletDM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_MSSM_spectrum, double, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, Spectrum))
 
   // SM nuisance likelihoods
   QUICK_FUNCTION(PrecisionBit, lnL_Z_mass,   NEW_CAPABILITY, lnL_Z_mass_chi2,   double, (), (SMINPUTS, SMInputs))

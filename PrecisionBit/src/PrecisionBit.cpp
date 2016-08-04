@@ -475,7 +475,7 @@ namespace Gambit
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        improved_spec.getSLHA(filename);
+        improved_spec.getSLHA(filename,true);
       }
 
     }
@@ -485,7 +485,7 @@ namespace Gambit
     void mw_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SM_spectrum;
-      const SubSpectrum& HE = (*Dep::SM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::SM_spectrum->get_HE();
       result.central = HE.get(Par::Pole_Mass, "W+");;
       result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
       result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
@@ -493,7 +493,7 @@ namespace Gambit
     void mw_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SS_spectrum;
-      const SubSpectrum& HE = (*Dep::SingletDM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::SingletDM_spectrum->get_HE();
       result.central = HE.get(Par::Pole_Mass, "W+");;
       result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
       result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
@@ -501,7 +501,7 @@ namespace Gambit
     void mw_from_MSSM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_MSSM_spectrum;
-      const SubSpectrum& HE = (*Dep::MSSM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::MSSM_spectrum->get_HE();
       result.central = HE.get(Par::Pole_Mass, "W+");
       result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
       result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
@@ -509,20 +509,20 @@ namespace Gambit
     void mh_from_SM_spectrum(double &result)
     {
       using namespace Pipes::mh_from_SM_spectrum;
-      const SubSpectrum& HE = (*Dep::SM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::SM_spectrum->get_HE();
       result = HE.get(Par::Pole_Mass, 25, 0);
     }
     void mh_from_SS_spectrum(double &result)
     {
       using namespace Pipes::mh_from_SS_spectrum;
-      const SubSpectrum& HE = (*Dep::SingletDM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::SingletDM_spectrum->get_HE();
       result = HE.get(Par::Pole_Mass, 25, 0);
     }
     void mh_from_MSSM_spectrum(double &result)
     {
       //FIXME this needs to use the PDG code provided by a new SpecBit function SMlikeHiggs (is not always lightest, therefore can be 25 or 35)
       using namespace Pipes::mh_from_MSSM_spectrum;
-      const SubSpectrum& HE = (*Dep::MSSM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::MSSM_spectrum->get_HE();
       result = HE.get(Par::Pole_Mass, 25, 0);
     }
     /// @}
@@ -671,8 +671,7 @@ namespace Gambit
     void GM2C_SUSY(triplet<double> &result)
     {
       using namespace Pipes::GM2C_SUSY;
-      const Spectrum& spec = *Dep::MSSM_spectrum;
-      const SubSpectrum& mssm = spec.get_HE();
+      const SubSpectrum& mssm = Dep::MSSM_spectrum->get_HE();
       
       gm2calc::MSSMNoFV_onshell model;
   
@@ -732,7 +731,7 @@ namespace Gambit
           }
         }
         
-        const SMInputs& smin = spec.get_SMInputs();
+        const SMInputs& smin = Dep::MSSM_spectrum->get_SMInputs();
 
         model.get_physical().MVZ =smin.mZ;
         model.get_physical().MFb =smin.mBmB;

@@ -278,10 +278,10 @@ namespace Gambit
       int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
 
       /// Retrieve SLHAea object
-      SLHAea::Coll MSSMSimpleSpec::getSLHAea() const { return slhawrap.getSLHAea(); } 
+      SLHAea::Coll MSSMSimpleSpec::getSLHAea(bool) const { return slhawrap.getSLHAea(); } 
 
       /// Add SLHAea object to another
-      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
+      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha, bool) const { return slhawrap.add_to_SLHAea(slha); } 
 
       /// Retrieve the PDG translation map
       const std::map<int, int>& MSSMSimpleSpec::PDG_translator() const { return slhawrap.PDG_translator(); }

@@ -54,6 +54,9 @@
 #define NORMAL_DEPENDENCY 1
 #define LOOP_MANAGER_DEPENDENCY 2
 
+// Debug flag
+//#define DEPRES_DEBUG
+
 namespace Gambit
 {
 
@@ -170,8 +173,10 @@ namespace Gambit
     // Matches function name and type
     bool matchesRules( functor *f, const Rule & rule)
     {
-      //cout << (*f).name() << " vs " << rule.function << endl;
-      //cout << (*f).origin() << " vs " << rule.module << endl;
+      #ifdef DEPRES_DEBUG
+        cout << (*f).name() << " vs " << rule.function << endl;
+        cout << (*f).origin() << " vs " << rule.module << endl;
+      #endif
       return ( stringComp( rule.function, (*f).name()) and
                stringComp( rule.module, (*f).origin())
              );
@@ -917,7 +922,9 @@ namespace Gambit
       YAML::Node nodes;
       YAML::Node zlevels;
 
-      cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+      #ifdef DEPRES_DEBUG
+        cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+      #endif
 
       const IniParser::ObservablesType & entries = boundIniFile->getRules();
       //entries = boundIniFile->getObservables();
@@ -926,12 +933,16 @@ namespace Gambit
       {
         if ( moduleFuncMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
         {
-          cout << "Getting option from: " << it->capability << " " << it->type << endl;
+          #ifdef DEPRES_DEBUG
+            cout << "Getting option from: " << it->capability << " " << it->type << endl;
+          #endif
           for (auto jt = it->options.begin(); jt != it->options.end(); ++jt)
           {
             if ( not nodes[jt->first.as<std::string>()] )
             {
-              cout << jt->first.as<std::string>() << ": " << jt->second << endl;
+              #ifdef DEPRES_DEBUG
+                cout << jt->first.as<std::string>() << ": " << jt->second << endl;
+              #endif
               nodes[jt->first.as<std::string>()] = jt->second;
               zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
             }
@@ -939,14 +950,14 @@ namespace Gambit
             {
               if ( zlevels[jt->first.as<std::string>()].as<int>() < getEntryLevelForOptions(*it) )
               {
-                cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
+                #ifdef DEPRES_DEBUG
+                  cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
+                #endif
                 zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
                 nodes[jt->first.as<std::string>()] = jt->second;
               }
               else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
               {
-                //cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
-                //exit(-1);
                 std::ostringstream errmsg;
                 errmsg << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>();
                 dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
@@ -1380,7 +1391,9 @@ namespace Gambit
       logger() << EOM;
 
       // Print something to stdout as well
-      std::cout << "Resolving dependency graph..." << std::endl;
+      #ifdef DEPRES_DEBUG
+        std::cout << "Resolving dependency graph..." << std::endl;
+      #endif
 
       // Read ini entries
       use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");

@@ -24,6 +24,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2016 Apr
 ///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August
+///
 ///  *********************************************
 
 // Identify backend
@@ -72,6 +76,12 @@ BE_FUNCTION(DDCalc_InitDetector, int, (const bool&), "C_DDExperiments_ddcalc_ini
 // should be performed for some no-background-subtraction limits (not necessary for likelihoods).
 BE_FUNCTION(XENON100_2012_Init,  int, (const bool&), "C_DDCalc_xenon100_2012_init",  "XENON100_2012_Init")
 BE_FUNCTION(LUX_2013_Init,       int, (const bool&), "C_DDCalc_lux_2013_init",       "LUX_2013_Init")
+BE_FUNCTION(LUX_2016_prelim_Init,int, (const bool&), "C_DDCalc_lux_2016_prelim_init","LUX_2016_prelim_Init")
+BE_FUNCTION(PandaX_2016_Init,    int, (const bool&), "C_DDCalc_pandax_2016_init",    "PandaX_2016_Init")
+BE_FUNCTION(LUX_2015_Init,       int, (const bool&), "C_DDCalc_lux_2015_init",       "LUX_2015_Init")
+BE_FUNCTION(PICO_2L_Init,        int, (const bool&), "C_DDCalc_pico_2l_init",        "PICO_2L_Init")
+BE_FUNCTION(PICO_60_F_Init,      int, (const bool&), "C_DDCalc_pico_60_f_init",      "PICO_60_F_Init")
+BE_FUNCTION(PICO_60_I_Init,      int, (const bool&), "C_DDCalc_pico_60_i_init",      "PICO_60_I_Init")
 BE_FUNCTION(SuperCDMS_2014_Init, int, (const bool&), "C_DDCalc_supercdms_2014_init", "SuperCDMS_2014_Init")
 BE_FUNCTION(SIMPLE_2014_Init,    int, (const bool&), "C_DDCalc_simple_2014_init",    "SIMPLE_2014_Init")
 //BE_FUNCTION(DARWIN_Ar_Init,      int, (const bool&), "C_DDCalc_darwin_ar_init", "DARWIN_Ar_Init")

@@ -17,6 +17,7 @@
 
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Elements/sminputs.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 
 namespace Gambit
 {
@@ -78,16 +79,16 @@ namespace Gambit
    }
 
    // Return a fresh SLHAea object containing the contents of this object.
-   SLHAstruct SMInputs::getSLHAea() const
+   SLHAstruct SMInputs::getSLHAea(bool) const
    {
       SLHAstruct slha;
       this->add_to_SLHAea(slha);
-      add_MODSEL_disclaimer(slha, "spectrum");
+      slhahelp::add_MODSEL_disclaimer(slha, "spectrum");
       return slha;
    }
 
    // Add the contents of this object to an existing SLHAea object
-   void SMInputs::add_to_SLHAea(SLHAea::Coll& data) const
+   void SMInputs::add_to_SLHAea(SLHAea::Coll& data,bool) const
    {
       // SMINPUTS block
       SLHAea_add(data,"SMINPUTS",1 , alphainv, "alpha^{-1}(mZ)^MSbar");
