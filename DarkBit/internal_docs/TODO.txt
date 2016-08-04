@@ -6,7 +6,7 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Update LUX constraints [PS/FK?]
+- Update LUX constraints [PS/FK]
 - Merge DarkBit back into master and inform Martin [CW]
 - Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
 - IB routines issues
@@ -20,7 +20,7 @@ Urgent (for production runs):
 - Comment out RelicDensity.cpp:137ff and check whether this introduces more
   problems in relic density calculations [JC]
 - Write DS patch for raising invalid points (or whatever) when RD calculations
-  take too long [TB/JE/CW/PS]
+  take too long (if scan actually stall) [TB/JE/CW/PS]
 
 Before internal paper review:
 - Double-check that fast option for general oh2 routine is clear [CW]
