@@ -69,6 +69,7 @@ namespace Gambit
      , attempts_since_ff(0)
      , ff_loop_count(0)
      , ff_on(false)
+     , ff_count(0)
      , inside_omp_block(false)
      , N_signals(0)
      #ifdef WITH_MPI
@@ -205,6 +206,7 @@ namespace Gambit
         /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
         /// so that it can get its own affairs in order.
         logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
+        ++shutdown_attempts;
      }  
      else if(ff_on)
      {
@@ -221,6 +223,7 @@ namespace Gambit
      {
         // Enter "fast-forward" period
         ff_on = true;
+        ++ff_count;
         std::ostringstream msg;
         #ifdef WITH_MPI
         msg << "rank "<<myrank()<<": Tried to synchronise for shutdown "<<shutdown_attempts<<" but failed. Will now 'skip' through "<<attempts_before_ff<<" iterations in an attempt to 'unlock' possible MPI deadlocks with the scanner.";
@@ -262,15 +265,15 @@ namespace Gambit
           #ifdef WITH_MPI
           msg << "rank "<<myrank()<<": ";
           #endif
-          msg << "Soft shutdown failed (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
+          msg << "Soft shutdown failed, emergency shutdown performed instead! (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds; fast-forward periods of "<<ff_loops<<" iterations were performed "<<ff_count<<" times). Data handled by external scanner codes may have been left in an inconsistent state." << std::endl;
           throw HardShutdownException(msg.str()); 
         } 
         else
         {
           logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << std::endl;
         }
-        shutdown_attempts+=1;
-        attempts_since_ff+=1;
+        ++shutdown_attempts;
+        ++attempts_since_ff;
      }
    }
 

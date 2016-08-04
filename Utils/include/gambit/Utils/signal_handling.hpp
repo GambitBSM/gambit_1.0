@@ -162,6 +162,7 @@ namespace Gambit
        int attempts_since_ff; // Number of shutdown attempts since last "fast-forward" period
        int ff_loop_count;
        bool ff_on; 
+       int ff_count; // Number of fast-forward periods performed
 
        /// Flag to switch signal handling behavior to multithreaded mode
        /// (i.e. triggers switch to threadsafe emergency shutdown behaviour)
