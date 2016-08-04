@@ -492,4 +492,4 @@ KeyValues:
 
   default_output_path: "runs/MSSM7/"
 
-  #debug: true
+  debug: true
