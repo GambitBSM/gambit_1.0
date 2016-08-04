@@ -184,7 +184,7 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:    LogLike
 
-    # Dark matter halo nuisance parameter likelihoods
+    # DM Local Halo likelihoods
     - capability: lnL_rho0
       purpose: LogLike
 
@@ -300,6 +300,8 @@ Rules:
   - capability: unimproved_MSSM_spectrum
     function: get_MSSMatQ_spectrum
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -360,10 +362,10 @@ Rules:
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_obs: 43.
-      sigmas_obserr: 8.
-      sigmal_obs: 58.
-      sigmal_obserr: 9.
+      sigmas_central: 43.
+      sigmas_error: 8.
+      sigmal_central: 58.
+      sigmal_error: 9.
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
