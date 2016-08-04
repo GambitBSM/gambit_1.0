@@ -194,11 +194,11 @@ namespace Gambit
     void DD_couplings_SingletDM(DM_nucleon_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
-      const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const SubSpectrum* he = spec->get_HE();
-      double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = he->get(Par::dimensionless,"lambda_hS");
-      double mh = spec->get(Par::Pole_Mass,"h0_1");
+      const Spectrum& spec = *Dep::SingletDM_spectrum;
+      const SubSpectrum& he = spec.get_HE();
+      double mass = spec.get(Par::Pole_Mass,"S");
+      double lambda = he.get(Par::dimensionless,"lambda_hS");
+      double mh = spec.get(Par::Pole_Mass,"h0_1");
 
       // FIXME: Double check expressions (taken from Cline et al. 2013)
       double fp = 2./9. + 7./9.*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
@@ -259,20 +259,20 @@ namespace Gambit
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(SM->get(Par::Pole_Mass,Name), spinX2)));
+       (Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));    
       #define addParticle(Name, Mass, spinX2)                                   \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));
 
       // Import Spectrum objects
-      const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const SubSpectrum* he = spec->get_HE();
-      const SubSpectrum* SM = spec->get_LE();
-      const SMInputs& SMI   = spec->get_SMInputs();
+      const Spectrum& spec = *Dep::SingletDM_spectrum;
+      const SubSpectrum& he = spec.get_HE();
+      const SubSpectrum& SM = spec.get_LE();
+      const SMInputs& SMI   = spec.get_SMInputs();
 
       // Import couplings
-      double lambda = he->get(Par::dimensionless,"lambda_hS");
-      double v = he->get(Par::mass1,"vev");
+      double lambda = he.get(Par::dimensionless,"lambda_hS");
+      double v = he.get(Par::mass1,"vev");
 
       // Get SM pole masses
       getSMmass("e-_1",     1)
@@ -312,8 +312,8 @@ namespace Gambit
       addParticle("nubar_tau",0.0, 1)
 
       // Higgs-sector masses
-      double mS = spec->get(Par::Pole_Mass,"S");
-      double mH = spec->get(Par::Pole_Mass,"h0_1");
+      double mS = spec.get(Par::Pole_Mass,"S");
+      double mH = spec.get(Par::Pole_Mass,"h0_1");
       addParticle("S",        mS, 0)  // Singlet DM
       addParticle("h0_1",     mH, 0)  // SM-like Higgs
       addParticle("pi0",   meson_masses.pi0,       0)

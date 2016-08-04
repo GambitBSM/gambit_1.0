@@ -40,6 +40,82 @@ widths: |
 xsection: |
    Another mystery cross-section
 
+#-------------------------------------
+#  SpecBit
+#-------------------------------------
+
+#####  SingletDM  #####
+
+SingletDM_spectrum: |
+    Create spectrum object for scalar singlet dark matter model, available functions
+    are a simple container spectrum and one produced by a spectrum generator
+
+check_perturb: |
+    Compute the spectrum with the spectrum generator and return a
+    likelihood corresponding to the validity of the spectrum up to the chosen high scale.
+
+vacuum_stability: |
+    Run the quartic Higgs coupling to high scales, in order to determine
+    the expected lifetime of the electroweak vacuum, the instability scale, and
+    the perturbativity of the couplings up to the necessary scale.
+
+
+check_perturb_min_lambda: |
+    Check that dimensionless couplings are sufficiently small up to the smaller
+    of the Planck scale and the scale at which the quartic Higgs coupling is
+    minimised and non-positive.
+
+VS_likelihood: |
+    Compute likelihood of no electroweak vacuum decays in the past light cone.
+
+expected_lifetime: |
+    Return the expected lifetime of the electroweak vacuum.
+
+print_SingletDM_spectrum: |
+    Print the spectrum contents to the output stream.
+
+#####   Standard model  #####
+
+SMINPUTS: |
+    Provide Standard Model parameters in SLHA2 input conventions.
+
+qedqcd_subspectrum: |
+    Create QedQcdWrapper version of Spectrum* from SMInputs structs.
+
+SM_spectrum: |
+    Create Spectrum object from SMInputs structs and SM Higgs parameters.
+
+
+#####   MSSM  #####
+
+
+unimproved_MSSM_spectrum: |
+    Returns unimproved MSSM spectrum object calculated with boundary conditions
+    depedent on the choice of function used.
+
+SM_subspectrum: |
+    Return the standard model subspectrum object from the MSSM_spectrum
+
+FH_MSSMMasses: |
+    SUSY masses and mixings, as computed by FeynHiggs.
+
+prec_HiggsMasses: |
+    Higgs masses and mixings with theoretical uncertainties, as computed by FeynHiggs.
+
+Higgs_Couplings: |
+    Higgs couplings, as computed by FeynHiggs
+
+
+
+#-------------------------------------
+#  PrecisionBit
+#-------------------------------------
+
+
+MSSM_spectrum: |
+    Provide an updated MSSM spectrum from the unimproved version with
+    precision W and Higgs masses.
+
 
 
 #-------------------------------------
@@ -223,6 +299,7 @@ FH_HiggsProd: |
 #             mass eigenstates $X$ and $Y$.
 
 
+
 #-------------------------------------
 #  DarkBit capabilities
 #-------------------------------------
@@ -236,16 +313,22 @@ DD_couplings: |
    Provides WIMP mass and couplings to nucleons.
 
 mwimp: |
-   DM mass in GeV
+   DM mass in GeV.
 
 sigmav: |
-   Thermally averaged annihilation cross section <sv>, for v=0.
+   Thermally averaged annihilation cross section <sigma v>, for v=0, in cm^3 s^-1.
 
-sigma_SI_N: |
-   Spin-independent WIMP-Nucleon cross section.
+sigma_SI_p: |
+   Spin-independent WIMP-proton cross section, in cm^2.
 
-sigma_SD_N: |
-   Spin-dependent WIMP-Nucleon cross section.
+sigma_SD_p: |
+   Spin-dependent WIMP-proton cross section, in cm^2.
+
+sigma_SI_n: |
+   Spin-independent WIMP-neutron cross section, in cm^2.
+
+sigma_SD_n: |
+   Spin-dependent WIMP-neutron cross section, in cm^2.
 
 DarkMatter_ID: |
    Contains string ID to identify dark matter particle.
@@ -457,6 +540,9 @@ capture_rate_Sun: |
 equilibration_time_Sun: |
    Timescale on which capture and annihilation of dark matter in the Sun equilibrate (s).
 
+annihilation_rate_Sun: |
+   Annihilation rate of dark matter in the Sun (s^-1).
+
 nuyield_ptr: |
    A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
 
@@ -548,7 +634,7 @@ IC79_loglike: |
    The full 79-string IceCube log-likelihood.
 
 IceCube_likelihood: |
-   The complete IceCube log-likelihood.
+   The complete IceCube log-likelihood, including 22-string and 79-string data.
 
 DarkSUSY_PointInit: |
    DESCRIPTION MISSING

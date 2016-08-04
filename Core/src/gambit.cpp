@@ -23,7 +23,13 @@ using namespace Gambit;
 using namespace LogTags;
 
 /// Cleanup function
-void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
+void do_cleanup() { 
+  if(signaldata().jumppoint_set)
+  {
+    Gambit::Scanner::Plugins::plugin_info.dump(); 
+  }
+  // No cleanup needed if jump point is not set, means the scan never began.
+}
 
 #ifdef WITH_MPI
 bool use_mpi_abort = true; // Set later via inifile value
@@ -174,7 +180,9 @@ int main(int argc, char* argv[])
     dependencyResolver.printFunctorList();
 
     // Do the dependency resolution
+    cout << "Resolving dependencies and backend requirements.  Hang tight..." << endl;
     dependencyResolver.doResolution();
+    cout << "...done!" << endl;
 
     // Check that all requested models are used for at least one computation
     Models::ModelDB().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());

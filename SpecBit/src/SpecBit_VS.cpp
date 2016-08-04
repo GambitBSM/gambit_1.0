@@ -51,30 +51,30 @@ namespace Gambit
     using namespace flexiblesusy;
 
     
-    void shift(double &a, double &b, double &c, const double d) // subroutine used to rearrange points in minimisation algorithm
+    void swap(double &a, double &b, double &c, const double d) // subroutine used to rearrange points in minimisation algorithm
     {
         a=b;
         b=c;
         c=d;
     }
     
-    bool check_perturb(const Spectrum*  spec,double scale,int pts)
+    bool check_perturb_to_min_lambda(const Spectrum& spec,double scale,int pts)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
-    double step = scale / pts;
-    //bool nperturbative = 0;
+
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
+    double step = log10(scale) / pts;
+    double runto;
+   
     double ul=3.5449077018110318; // sqrt(4*Pi), maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
-    for (int i=1;i<pts;i++)
+    for (int i=0;i<pts;i++)
     {
-    SingletDM -> RunToScale(step*float(i));
-//    bool p1 = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;  // for now we just check these couplings, can easily add more, should
-//    bool p2 = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul; // add the SM gauge couplings, although not very interesting for SingletDM
-//    bool p3 = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
-//    nperturbative =!(p1 | p2 | p3);
-//    }
+    runto = pow(10,step*float(i+1.0)); // scale to run spectrum to
+    if (runto<100){runto=200.0;}// avoid running to low scales
+  
+    SingletDM -> RunToScale(runto);
    
     static const SpectrumContents::SingletDM contents;
     static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters_with_tag(Par::dimensionless);
@@ -85,29 +85,49 @@ namespace Gambit
          const Par::Tags        tag   = it->tag();
          const std::string      name  = it->name();
          const std::vector<int> shape = it->shape();
-
            std::ostringstream label;
            label << name <<" "<< Par::toString.at(tag);
+          if(shape.size()==1 and shape[0]==1)
+         {
            if (abs(SingletDM->get(tag,name))>ul)
            {
             return false;
            }
-      }
-      }
-
-
-      
-      
-      
+         }
+        
+          else if(shape.size()==1 and shape[0]>1)
+         {
+           for(int k = 1; k<=shape[0]; ++k) {
+           if (abs(SingletDM->get(tag,name,k))>ul)
+           {
+            return false;
+           }
+           
+           }
+          }
+          else if(shape.size()==2)
+         {
+           for(int k = 1; k<=shape[0]; ++k) {
+             for(int j = 1; j<=shape[0]; ++j) {
+             if (abs(SingletDM->get(tag,name,k,j))>ul)
+           {
+            return false;
+           }
+           }
+           }
+          }
+    }
+    }
+    
     return true;
     }
     
-    double run_lambda(const Spectrum*  spec,double scale)
+    double run_lambda(const Spectrum& spec,double scale)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE(); // clone the original spectrum incase the running takes the spectrum
                                                                 // into a non-perturbative scale and thus the spectrum is no longer reliable
     SingletDM -> RunToScale(scale);
     double lambda1 = SingletDM->get(Par::dimensionless,"lambda_h");
@@ -121,10 +141,10 @@ namespace Gambit
       namespace myPipe = Pipes::find_min_lambda;//get_SingletDM_spectrum;
       const Options& runOptions=*myPipe::runOptions;
       double high_energy_limit = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
-      int check_perturb_pts = runOptions.getValueOrDef<double>(100,"check_perturb_pts");
+      int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
       using namespace Gambit;
       using namespace SpecBit;
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
+      const Spectrum& fullspectrum = *myPipe::Dep::SingletDM_spectrum;
       // const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
       //std::unique_ptr<SubSpectrum> SingletDM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
@@ -210,8 +230,8 @@ namespace Gambit
           if (fu <= fx)
           {
               if(u >= x) a=x; else b=x;
-              shift(v,w,x,u); // rearrange the bracketing of the minimum depending as required
-              shift(fv,fw,fx,fu);
+              swap(v,w,x,u); // rearrange the bracketing of the minimum depending as required
+              swap(fv,fw,fx,fu);
           }
           else
           {
@@ -265,7 +285,7 @@ namespace Gambit
         #endif
         // vacuum is stable
       }
-      bool perturbative=check_perturb(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale
+      bool perturbative=check_perturb_to_min_lambda(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale
       double perturb=float(!perturbative);
       age_pair = triplet<double>(lifetime,LB,perturb); // output all three results as a triplet, perturb could be bool but all 3 need to be doubles for this type
      

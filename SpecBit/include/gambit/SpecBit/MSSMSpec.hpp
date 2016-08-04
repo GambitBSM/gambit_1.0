@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
@@ -78,7 +79,7 @@ namespace Gambit
 
       // Fill an SLHAea object with spectrum information
       template <class MI>
-      void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha) const
+      void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha, bool include_SLHA1_blocks) const
       {
 
         // Here we assume that all SM input info comes from the SMINPUT object,
@@ -208,6 +209,17 @@ namespace Gambit
         {
           comment.str(""); comment << "# " << N.second << " mixing matrix (" << i << "," << j << ")";
           SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
+        }
+
+        // Here we add some SLHA1 legacy stuff, for backwards compatibility with backwards backends.
+        if (include_SLHA1_blocks)
+        {
+          slha.push_back("# The following are SLHA1 blocks, provided for backwards compatibility with");
+          slha.push_back("# codes that are not SLHA2 compliant.");
+          str s1, s2;
+          slhahelp::attempt_to_add_SLHA1_mixing("STOPMIX", slha, "~u", *this, 1.0, s1, s2, true);
+          slhahelp::attempt_to_add_SLHA1_mixing("SBOTMIX", slha, "~d", *this, 1.0, s1, s2, true);
+          slhahelp::attempt_to_add_SLHA1_mixing("STAUMIX", slha, "~e-", *this, 1.0, s1, s2, true);
         }
 
       }

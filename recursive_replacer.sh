@@ -1,7 +1,7 @@
 # Script to replace all occurrences of a string in all files in all GAMBIT source/config files.
 
-FIND=delete_file_if_exists
-REPLACE=delete_file_on_restart
+FIND="const Spectrum\*"
+REPLACE="\/\*TAG\*\/ Spectrum"
 
 find . -type f \
  -not -path "./doc/*" \

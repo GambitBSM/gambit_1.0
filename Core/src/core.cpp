@@ -39,10 +39,12 @@
 
 // MPI
 #ifdef WITH_MPI
-  #include <mpi.h>
+  #include "gambit/Utils/mpiwrapper.hpp"
   #define GET_RANK GMPI::Comm().Get_rank()
+  #define GET_SIZE GMPI::Comm().Get_size()
 #else
   #define GET_RANK 0
+  #define GET_SIZE 1
 #endif
 
 
@@ -150,8 +152,7 @@ namespace Gambit
           case 10:
           {
             // Display version number and shutdown.
-            int mpirank = GET_RANK;
-            if (mpirank == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
+            if (GET_RANK == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
             logger().disable();
             throw SilentShutdownException();
           }
@@ -167,6 +168,14 @@ namespace Gambit
           case 'd':
             // Display proposed functor evaluation order and quit
             show_runorder = true; // Sorted out in dependency resolver
+            // Should not allow this on multiple processes, just produces
+            // mixed up junk output.
+            if(GET_SIZE>1)
+            {
+               cout << "Tried to run GAMBIT dry-run mode in parallel! This is not allowed, please use only one process when performing dry-runs." << endl;
+               logger().disable();
+               throw SilentShutdownException();
+            }
             break;
           case 'r':
             // Restart scan (turn off "resume" mode, activate output overwrite)

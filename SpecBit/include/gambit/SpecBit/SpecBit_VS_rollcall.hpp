@@ -28,7 +28,7 @@
     START_FUNCTION(triplet<double>)
     DEPENDENCY(SMINPUTS, SMInputs)
     //DEPENDENCY(SingletDM_pole_mh, double)
-    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    DEPENDENCY(SingletDM_spectrum,/*TAG*/ Spectrum)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SingletDMZ3)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running,SingletDMZ3))

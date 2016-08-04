@@ -80,7 +80,7 @@ BE_INI_FUNCTION
       rho0_ptr = Param["rho0"];
       vrot_ptr = Param["vrot"];
       v0_ptr   = Param["v0"];
-      vesc_ptr = Param["rho0"];
+      vesc_ptr = Param["vesc"];
     }    
 
   }

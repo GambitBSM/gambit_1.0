@@ -64,7 +64,7 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, const Spectrum*)
+      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
       DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
@@ -158,7 +158,7 @@ START_MODULE
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
 #ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, const Spectrum*)
+      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
 #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
@@ -187,7 +187,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      BACKEND_REQ(oh2, (MicrOmegas, MicrOmegasSingletDM), double, (double*,int,double))
+      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegas_SingletDM), double, (double*,int,double))
       ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -363,7 +363,7 @@ START_MODULE
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, const Spectrum*)
+      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)
@@ -381,7 +381,7 @@ START_MODULE
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       DEPENDENCY(decay_rates,DecayTable)
-      DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -520,14 +520,14 @@ START_MODULE
       MODEL_GROUP(group1, (nuclear_params_fnq))
       MODEL_GROUP(group2, (MSSM63atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
-      BACKEND_OPTION((MicrOmegas),(gimmemicro))
-      BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_MSSM),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_SingletDM),(gimmemicro))
       FORCE_SAME_BACKEND(gimmemicro)
     #undef FUNCTION
 
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DM_nucleon_couplings)
-      DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
 
@@ -971,7 +971,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM
     START_FUNCTION(std::string)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 

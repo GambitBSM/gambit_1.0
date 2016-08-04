@@ -35,14 +35,14 @@ namespace Gambit
     // Definitions of methods for struct mass_es_pseudonyms
     
     /// Refill strings in struct
-    void mass_es_pseudonyms::refill(const SubSpectrum* mssm, double tol, bool pt_error, bool debug)
+    void mass_es_pseudonyms::refill(const SubSpectrum& mssm, double tol, bool pt_error, bool debug)
     {
       filled = false;
       fill(mssm, tol, pt_error, debug);
     }
 
     /// Fill strings in struct
-    void  mass_es_pseudonyms::fill(const SubSpectrum* mssm, double tol, bool pt_error, bool debug) 
+    void  mass_es_pseudonyms::fill(const SubSpectrum& mssm, double tol, bool pt_error, bool debug) 
     {
       if(filled == true) return;  // Don't refill unnecessarily
      
@@ -79,7 +79,7 @@ namespace Gambit
     }
 
     /// Helper function for getting mass eigenstates from gauge eigenstates
-    void mass_es_pseudonyms::fill_mass_es_psn_gauge(str& is, str& isbar, str gauge_es, const SubSpectrum* mssm, 
+    void mass_es_pseudonyms::fill_mass_es_psn_gauge(str& is, str& isbar, str gauge_es, const SubSpectrum& mssm, 
                                                     double tol, bool pt_error_on_mixing_failure, bool debug)
     { 
       double max_mix = 0; 
@@ -109,7 +109,7 @@ namespace Gambit
     }
 
     /// Helper function for getting family states from gauge eigenstates
-    void mass_es_pseudonyms::fill_mass_es_psn_family(str& is, str& isbar, str family_state, const SubSpectrum* mssm,
+    void mass_es_pseudonyms::fill_mass_es_psn_family(str& is, str& isbar, str family_state, const SubSpectrum& mssm,
                                                      double tol, bool pt_error_on_mixing_failure, bool debug)
     { 
       /// First identify the mass eigenstate that best matches the requested family state.
@@ -150,7 +150,7 @@ namespace Gambit
     }
 
     /// General debug printer for pseudonyms      
-    void mass_es_pseudonyms::debug_print(const SubSpectrum* mssm)
+    void mass_es_pseudonyms::debug_print(const SubSpectrum& mssm)
     {
       std::cout.precision(8);
       std::cout << "Dmix :" << std::endl;;
@@ -160,7 +160,7 @@ namespace Gambit
         {
           std::cout << "     " << i << j << " = "  
                     << std::scientific << std::setw(10)  
-                    <<  mssm->get(Par::Pole_Mixing,"~d", i, j);
+                    <<  mssm.get(Par::Pole_Mixing,"~d", i, j);
         }
         std::cout << std::endl;
       }
@@ -171,7 +171,7 @@ namespace Gambit
         for(int j = 1; j <=6; j++)
         {
           std::cout << "     " << i << j << " = "  
-                    << mssm->get(Par::Pole_Mixing,"~u", i, j);
+                    << mssm.get(Par::Pole_Mixing,"~u", i, j);
         }
         std::cout << std::endl;
       }
@@ -182,7 +182,7 @@ namespace Gambit
         for(int j = 1; j <=6; j++)
         {
           std::cout << "     " << i << j << " = "  
-                    << mssm->get(Par::Pole_Mixing,"~e-", i, j);
+                    << mssm.get(Par::Pole_Mixing,"~e-", i, j);
         }
         std::cout << std::endl;
       }
@@ -193,7 +193,7 @@ namespace Gambit
         for(int j = 1; j <=3; j++)
         {
          std::cout << "     " << i << j << " = "  
-                   << mssm->get(Par::Pole_Mixing,"~nu", i, j);
+                   << mssm.get(Par::Pole_Mixing,"~nu", i, j);
         }
         std::cout << std::endl;
       }
@@ -255,7 +255,7 @@ namespace Gambit
     }
 
     /// Gauge state debug printer for pseudonyms
-    void mass_es_pseudonyms::debug_print_gauge(const SubSpectrum* mssm, str& gauge_es, str& mass_es, double& max_mix)
+    void mass_es_pseudonyms::debug_print_gauge(const SubSpectrum& mssm, str& gauge_es, str& mass_es, double& max_mix)
     {
       std::cout << "******** Extra tests ********* " << std::endl;
       std::cout << "gauge_es = " << gauge_es << std::endl;
@@ -278,7 +278,7 @@ namespace Gambit
     }
 
     /// Family state debug printer for pseudonyms
-    void mass_es_pseudonyms::debug_print_family(const SubSpectrum* mssm, str& family_state, str& mass_es, double& mix_mag_sq, double& tol)
+    void mass_es_pseudonyms::debug_print_family(const SubSpectrum& mssm, str& family_state, str& mass_es, double& mix_mag_sq, double& tol)
     {
       std::cout << "******** Extra tests ********* " << std::endl;
       std::cout << "family_state = "  << family_state <<std::endl;

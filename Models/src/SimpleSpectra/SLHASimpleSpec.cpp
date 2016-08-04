@@ -49,13 +49,13 @@ namespace Gambit
       {}
 
       /// Get reference to internal SLHAea object
-      const SLHAea::Coll& SLHAeaModel::getSLHAea() const
+      const SLHAea::Coll& SLHAeaModel::getSLHAea(bool) const
       {
         return data;
       }
 
       /// Add spectrum information to an SLHAea object
-      void SLHAeaModel::add_to_SLHAea(SLHAea::Coll& slha) const
+      void SLHAeaModel::add_to_SLHAea(SLHAea::Coll& slha, bool) const
       {
         slha.insert(slha.end(), data.cbegin(), data.cend());
       }

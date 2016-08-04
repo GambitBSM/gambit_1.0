@@ -57,13 +57,16 @@ namespace Gambit
    struct MapCollection
    {
       typename MapTypes::fmap0        map0;
-      typename MapTypes::fmap0_extraM map0_extraM;
-      typename MapTypes::fmap0_extraI map0_extraI;
       typename MapTypes::fmap1        map1;    
-      typename MapTypes::fmap1_extraM map1_extraM;
-      typename MapTypes::fmap1_extraI map1_extraI;
       typename MapTypes::fmap2        map2;    
+      typename MapTypes::fmap0W       map0W;
+      typename MapTypes::fmap1W       map1W;    
+      typename MapTypes::fmap2W       map2W;    
+      typename MapTypes::fmap0_extraM map0_extraM;
+      typename MapTypes::fmap1_extraM map1_extraM;
       typename MapTypes::fmap2_extraM map2_extraM;
+      typename MapTypes::fmap0_extraI map0_extraI;
+      typename MapTypes::fmap1_extraI map1_extraI;
       typename MapTypes::fmap2_extraI map2_extraI;
    };
 
@@ -86,26 +89,26 @@ namespace Gambit
  
       public:
          /// @{ Constructors/destructors
-	 SubSpectrum() : override_maps(create_override_maps()) {}      
-	 virtual ~SubSpectrum() {} 
-	 /// @}
+         SubSpectrum() : override_maps(create_override_maps()) {}      
+         virtual ~SubSpectrum() {} 
+         /// @}
 
          /// @{ Main public interface functions
 
-	 /// Get name
+         /// Get name
          virtual std::string getName() const = 0;
  
          /// Clone the SubSpectrum object
          virtual std::unique_ptr<SubSpectrum> clone() const = 0;
       
          /// Dump out spectrum information to an SLHA file (if possible)
-         virtual void getSLHA(const str&) const;
+         virtual void getSLHA(const str&, bool include_SLHA1_blocks = false) const;
 
          /// Get spectrum information in SLHAea format (if possible)
-         virtual SLHAstruct getSLHAea() const;
+         virtual SLHAstruct getSLHAea(bool include_SLHA1_blocks = false) const;
 
          /// Add spectrum information to an SLHAea object (if possible)
-         virtual void add_to_SLHAea(SLHAstruct&) const {}
+         virtual void add_to_SLHAea(SLHAstruct&, bool = false) const {}
          
          /// There may be more than one *new* stable particle
          ///  this method will tell you how many.
@@ -143,69 +146,107 @@ namespace Gambit
          // behave = 1  -- If running beyond soft limit requested, throw warning
          //                  "           "   hard limit     "    , throw error
          // behave = anything else -- Ignore limits and attempt running to requested scale 
-         void RunToScale(double scale, int behave = 0);
+         void RunToScale(double scale, const int behave = 0);
          
          /// Getters/Setters etc.        
 
-         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         /* note: set check_antiparticle = SafeBool(false) to disable matching on antiparticle entries */
-         virtual bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
-         virtual bool   has(const Par::Tags, const str&, int, int) const = 0;
-         virtual double get(const Par::Tags, const str&, int, int) const = 0;
+         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices
+            Note optional arguments: 
+             first bool; "check_overrides". Set to SafeBool(false) to disable matching on override entries
+             second bool; "check_antiparticle". Set to SafeBool(false) to disable matching on antiparticle entries */
+         virtual bool   has(const Par::Tags, const str&, const SpecOverrideOptions=use_overrides, const SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const Par::Tags, const str&, const SpecOverrideOptions=use_overrides, const SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual bool   has(const Par::Tags, const str&, const int, const SpecOverrideOptions=use_overrides, const SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const Par::Tags, const str&, const int, const SpecOverrideOptions=use_overrides, const SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual bool   has(const Par::Tags, const str&, const int, const int, const SpecOverrideOptions=use_overrides) const = 0;
+         virtual double get(const Par::Tags, const str&, const int, const int, const SpecOverrideOptions=use_overrides) const = 0;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         virtual void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true)) = 0;
-         virtual void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
-         virtual void set(const Par::Tags, const double, const str&, int, int) = 0;
+         virtual void set(const Par::Tags, const double, const str&, const SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const Par::Tags, const double, const str&, const int, const SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const Par::Tags, const double, const str&, const int, const int) = 0;
 
          /* The parameter overrides are handled entirely by this base class, so
-            they are not virtual.  */
-         void set_override(const Par::Tags, const double, const str&, const bool safety = true);
-         void set_override(const Par::Tags, const double, const str&, const int, const bool safety = true);
-         void set_override(const Par::Tags, const double, const str&, const int, const int, const bool safety = true);
+            they are not virtual.
+            optional arguments:
+               allow_new:   Allow "overriding" non-existent parameters if 'true'..
+               decouple: If allow_new=true AND decouple=true, allows adding separate particle and antiparticle values. */
+         void set_override(const Par::Tags, const double, const str&, const bool allow_new = false, const bool decouple = false);
+         void set_override(const Par::Tags, const double, const str&, const int, const bool allow_new = false, const bool decouple = false);
+         void set_override(const Par::Tags, const double, const str&, const int, const int, const bool allow_new = false);
 
          /* Helpers for override functions which take parameter names and indices as vectors, and
             loop over them, to make it easy to set many parameters to the same value.
             No two-index versions at the moment, but could be added if needed. */
-         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, bool safety = true);
-         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const std::vector<int>, bool safety = true);
-         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const int, bool safety = true);
-         void set_override_vector(const Par::Tags, const double, const str&, const std::vector<int>, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const bool allow_new = false, const bool decouple = false);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const std::vector<int>, const bool allow_new = false, const bool decouple = false);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const int, const bool allow_new = false, const bool decouple = false);
+         void set_override_vector(const Par::Tags, const double, const str&, const std::vector<int>, const bool allow_new = false, const bool decouple = false);
 
          /* Overloads of getter/checker functions to allow access using PDG codes */
          /* as defined in Models/src/particle_database.cpp */
          /* These don't have to be virtual; they just call the virtual functions in the end. */
-         bool   has(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         double get(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         bool   has(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         double get(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         bool   has(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
-         double get(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         bool   has(const Par::Tags, const int, const int, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+
+         double get(const Par::Tags, const int, const int, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+
+         bool   has(const Par::Tags, const std::pair<int,int>, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+
+         double get(const Par::Tags, const std::pair<int,int>, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+
+         bool   has(const Par::Tags, const std::pair<str,int>, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         double get(const Par::Tags, const std::pair<str,int>, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
 
          /* Getters which first check the sanity of the thing they are returning */
          /* These don't have to be virtual; they just call the virtual functions in the end. */
-         double safeget(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-         double safeget(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-         double safeget(const Par::Tags, const str&, int, int) const;
-         double safeget(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         double safeget(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         double safeget(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         double safeget(const Par::Tags, const str&, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const;
+
+         double safeget(const Par::Tags, const str&, const int, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const;
+
+         double safeget(const Par::Tags, const str&, const int, const int,
+              const SpecOverrideOptions=use_overrides) const;
+
+         double safeget(const Par::Tags, const int, const int, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+
+         double safeget(const Par::Tags, const std::pair<int,int>, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+
+         double safeget(const Par::Tags, const std::pair<str,int>, 
+              const SpecOverrideOptions=use_overrides, 
+              const SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
 
          /// @{ PDB overloads for setters
 
          /* Input PDG code plus context integer */
-         void set_override(const Par::Tags, const double, const int, const int,     const bool safety = true);  
-         void set_override(const Par::Tags, const double, const std::pair<int,int>, const bool safety = true);
+         void set_override(const Par::Tags, const double, const int, const int,     const bool allow_new = false, const bool decouple = false);  
+         void set_override(const Par::Tags, const double, const std::pair<int,int>, const bool allow_new = false, const bool decouple = false);
 
          /* Input short name plus index */
-         void set_override(const Par::Tags, const double, const std::pair<str,int>, const bool safety = true);
+         void set_override(const Par::Tags, const double, const std::pair<str,int>, const bool allow_new = false, const bool decouple = false);
 
          /// @}
 
