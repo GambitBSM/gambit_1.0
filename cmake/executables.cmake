@@ -38,6 +38,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
                                 $<TARGET_OBJECTS:Core>
                                 $<TARGET_OBJECTS:Printers>
   )
+  set_target_properties(gambit PROPERTIES EXCLUDE_FROM_ALL 0)
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit flexiblesusy)
   endif()
@@ -68,6 +69,8 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/SpecBit/" AND (";${GAMBIT_BITS};" MATCHES ";Spe
     add_dependencies(3bithit delphes)
   endif()
 endif()
+
+##########  Standalones #############
 
 # Add the ExampleBit_A_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;"))
@@ -180,3 +183,12 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";Dark
     add_dependencies(DarkBit_standalone_WIMP delphes)
   endif()
 endif()
+
+# Add a target that collects all standalones
+add_custom_target(standalones DEPENDS ExampleBit_A_standalone
+                                      ColliderBit_standalone
+                                      ScannerBit_standalone
+                                      DarkBit_standalone_MSSM
+                                      DarkBit_standalone_SingletDM
+                                      DarkBit_standalone_WIMP
+                                      )
