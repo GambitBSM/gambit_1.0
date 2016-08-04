@@ -151,6 +151,9 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
+    - purpose:    LogLike 
+      capability: b2sgamma_LL
+
     # Precision physics likelihoods
     - capability: lnL_W_mass
       purpose:    LogLike
@@ -174,7 +177,19 @@ ObsLikes:
     - capability: XENON100_2012_LogLikelihood
       purpose:    LogLike
 
-    - capability: LUX_2013_LogLikelihood
+    - capability: LUX_2015_LogLikelihood
+      purpose:    LogLike
+
+    - capability: LUX_2016_prelim_LogLikelihood
+      purpose:    LogLike
+
+    - capability: PandaX_2016_LogLikelihood
+      purpose:    LogLike
+
+    - capability: PICO_2L_LogLikelihood
+      purpose:    LogLike
+
+    - capability: PICO_60_F_LogLikelihood
       purpose:    LogLike
 
     - capability: SuperCDMS_2014_LogLikelihood
