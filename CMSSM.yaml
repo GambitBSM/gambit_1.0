@@ -182,13 +182,7 @@ ObsLikes:
       capability: L3_Stau_LLike
 
     - purpose:    LogLike
-      capability: L3_Neutralino_All_Channels_LLike
-
-    - purpose:    LogLike
       capability: L3_Neutralino_Leptonic_LLike
-
-    - purpose:    LogLike
-      capability: L3_Chargino_All_Channels_LLike
 
     - purpose:    LogLike
       capability: L3_Chargino_Leptonic_LLike
@@ -201,9 +195,6 @@ ObsLikes:
 
     - purpose:    LogLike
       capability: OPAL_Chargino_Leptonic_LLike
-
-    - purpose:    LogLike
-      capability: OPAL_Chargino_All_Channels_LLike
 
     - purpose:    LogLike
       capability: OPAL_Neutralino_Hadronic_LLike
