@@ -74,7 +74,7 @@ namespace Gambit
      , looptimes(1000)
      , next(0)
      , listfull(false)
-     , timeout(1000)
+     , timeout(10)
     #endif
    {}
 
@@ -313,7 +313,9 @@ namespace Gambit
        }
 
        std::ostringstream ss;
-       ss << "Shutdown is in progress; emergency="<< emergency << std::endl;
+       static int loopi(0);
+       ss << "rank "<<rank<<": Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< std::endl;
+       ++loopi;
        std::cerr << ss.str();
        logger() << ss.str() << EOM;
 

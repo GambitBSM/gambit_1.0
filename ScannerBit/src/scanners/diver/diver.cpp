@@ -177,16 +177,18 @@ namespace Gambit
       // Increment the number of function calls, tell Diver to continue and return the likelihood
       fcall += 1;
 
-      // Check whether the calling code wants us to shut down early
-      if(Gambit::Scanner::Plugins::plugin_info.early_shutdown_in_progress())
-      {
-        std::cout << "Diver received 'quit' command! Run will be terminated safely in preparation for future resuming." << std::endl;
-        quit = true;
-      }
-      else
-      {
-        quit = false;
-      }
+      // Diver currently called 'quit' (in fortran) to shutdown; so don't use the below code until this is changed.
+      // // Check whether the calling code wants us to shut down early
+      // if(Gambit::Scanner::Plugins::plugin_info.early_shutdown_in_progress())
+      // {
+      //   int rank = data.printer->get_stream()->getRank();
+      //   std::cout << "rank "<<rank<<": Diver received 'quit' command! Run will be terminated safely in preparation for future resuming." << std::endl;
+      //   quit = true;
+      // }
+      // else
+      // {
+      //   quit = false;
+      // }
       return -lnlike;
       
     }
