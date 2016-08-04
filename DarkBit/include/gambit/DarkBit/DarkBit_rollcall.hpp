@@ -42,6 +42,10 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar, Aug
 ///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -64,7 +68,7 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
@@ -158,7 +162,7 @@ START_MODULE
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
 #ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(MSSM_spectrum, Spectrum)
 #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
@@ -363,7 +367,7 @@ START_MODULE
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)
@@ -381,7 +385,7 @@ START_MODULE
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       DEPENDENCY(decay_rates,DecayTable)
-      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(SingletDM_spectrum, Spectrum)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -527,7 +531,7 @@ START_MODULE
 
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DM_nucleon_couplings)
-      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(SingletDM_spectrum, Spectrum)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
 
@@ -589,6 +593,12 @@ START_MODULE
   DD_DECLARE_EXPERIMENT(SIMPLE_2014)
   DD_DECLARE_EXPERIMENT(DARWIN_Ar)
   DD_DECLARE_EXPERIMENT(DARWIN_Xe)
+  DD_DECLARE_EXPERIMENT(LUX_2016_prelim)
+  DD_DECLARE_EXPERIMENT(PandaX_2016)
+  DD_DECLARE_EXPERIMENT(LUX_2015)
+  DD_DECLARE_EXPERIMENT(PICO_2L)
+  DD_DECLARE_EXPERIMENT(PICO_60_F)
+  DD_DECLARE_EXPERIMENT(PICO_60_I)
 
 
   // INDIRECT DETECTION: NEUTRINOS =====================================

@@ -23,7 +23,11 @@
 ///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
-///  \date 2016 Apr
+///  \date 2016 Apr, Aug
+///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August 
 ///
 ///  *********************************************
 
@@ -70,6 +74,12 @@ BE_INI_FUNCTION
       ex_map["LUX_2013"] = LUX_2013_Init(false);
       ex_map["SuperCDMS_2014"] = SuperCDMS_2014_Init(false);
       ex_map["SIMPLE_2014"] = SIMPLE_2014_Init(false);
+      ex_map["LUX_2016_prelim"] = LUX_2016_prelim_Init(false);
+      ex_map["PandaX_2016"] = PandaX_2016_Init(false);
+      ex_map["LUX_2015"] = LUX_2015_Init(false);
+      ex_map["PICO_2L"] = PICO_2L_Init(false);
+      ex_map["PICO_60_F"] = PICO_60_F_Init(false);
+      ex_map["PICO_60_I"] = PICO_60_I_Init(false);
       //ex_map["DARWIN_Ar"] = DARWIN_Ar_Init(false);
       //ex_map["DARWIN_Xe"] = DARWIN_Xe_Init(false);
     }
