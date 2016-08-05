@@ -1,0 +1,46 @@
+diff -rupN ./sources/micromegas.h ../../installed/micromegas/3.6.9.2/sources/micromegas.h
+--- ./sources/micromegas.h	2014-05-13 12:26:25.000000000 +0100
++++ ../../installed/micromegas/3.6.9.2/sources/micromegas.h	2016-07-21 15:38:04.713995015 +0100
+@@ -170,6 +170,9 @@ output parameters:
+           we get a non-SM particle which has not 1->2 decays.  
+ */
+ 
++extern int readSpectra();
++extern void mInterp(double,int,int,double*);
++
+ extern aChannel* vSigmaCh;
+ extern double zInterp(double z, double * tab);
+ /* input parameter:
+diff -rupN ./sources/omega.c ../../installed/micromegas/3.6.9.2/sources/omega.c
+--- ./sources/omega.c	2014-05-13 12:26:25.000000000 +0100
++++ ../../installed/micromegas/3.6.9.2/sources/omega.c	2016-07-21 15:38:04.717995015 +0100
+@@ -139,7 +139,7 @@ static  double sigma(double PcmIn)
+     if(r<=0) return 0;
+     l=AUX[nsub22].virt;
+     l_=5-l;  
+-    if(AUX[nsub22].w[l_-2])
++    if(r>0 && AUX[nsub22].w[l_-2])
+     { double m1,m2,sqrtS;
+       m1=pmass[0];
+       m2=pmass[1];
+diff -rupN ./sources/spectra.c ../../installed/micromegas/3.6.9.2/sources/spectra.c
+--- ./sources/spectra.c	2014-05-13 12:26:25.000000000 +0100
++++ ../../installed/micromegas/3.6.9.2/sources/spectra.c	2016-07-21 15:38:04.713995015 +0100
+@@ -332,7 +332,7 @@ static double Spectra22A(char*name1,char
+ /* ------------------------------------------------- */
+ 
+ 
+-static int readSpectra(void)
++int readSpectra(void)
+ { static int rdOk=0;
+   int k,l,i,n;
+   FILE *f;
+@@ -421,7 +421,7 @@ double zInterp(double zz, double * tab)
+ 
+ 
+ 
+-static void mInterp(double Nmass,  int  CHin,int  CHout, double*tab)
++void mInterp(double Nmass,  int  CHin,int  CHout, double*tab)
+ {  
+ //  float mi[NEn]={10,25,50,80.3,91.2,100,150,176,200,250,350,500,750,1000,1500,2000,3000,5000};
+    double mi[NEn]={2,5,10,25,50,80.3,85,91.2,92,95,100,110,120,125,130,140,150,176,200,250,350,500,750,1000,1500,2000,3000,5000};

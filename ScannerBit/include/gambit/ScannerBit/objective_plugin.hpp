@@ -27,34 +27,6 @@
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/plugin_macros.hpp"
 
-namespace Gambit
-{
-    /*ScannerBit specific stuff.*/
-    namespace Scanner
-    {       
-        /*Prior Transform*/
-        class PriorTransform
-        {
-        public:
-            virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
-            virtual double operator()(const std::vector<double>&) const = 0;
-            virtual ~PriorTransform() = 0;
-        };
-        
-        inline void __print_to_main__(Gambit::Scanner::printer * printer, const std::vector<std::string>&key, 
-                                const std::unordered_map<std::string, double> &key_map, unsigned long long int id)
-        {
-            using Gambit::Printers::get_main_param_id;
-            for (auto it = key.begin(), end = key.end(); it != end; it++)
-            {
-                printer->print(key_map.at(*it), *it, get_main_param_id(*it), printer->getRank(), id);
-            }
-        }
-        
-    }
-    
-}
-
 ///\name Objective Plugin Macros
 ///Macros used by the objective plugins.
 ///@{
@@ -66,34 +38,16 @@ namespace Gambit
 using namespace Gambit::Scanner;                                                                                \
 using Gambit::Printers::get_point_id;                                                                           \
                                                                                                                 \
-inline std::vector<std::string> &get_keys()  {return get_input_value<std::vector<std::string>>(0);}             \
-inline void set_dimension(unsigned int val)  {get_input_value<unsigned int>(1) = val;}                          \
-                                                                                                                \
-inline std::vector<double> &prior_transform(const std::vector<double> &in)                                      \
+inline std::vector<std::string> &get_keys() {return get_input_value<std::vector<std::string>>(0);}              \
+inline void set_dimension(unsigned int val) {get_input_value<unsigned int>(1) = val;}                           \
+inline void print_parameters(std::unordered_map<std::string, double> &key_map)                                  \
 {                                                                                                               \
     using Gambit::Printers::get_main_param_id;                                                                  \
-    static const PriorTransform &prior = get_input_value<PriorTransform>(1);                                    \
-    static std::unordered_map<std::string, double> key_map;                                                     \
-    static std::vector<double> ret(get_keys().size());                                                          \
-    static const int rank = get_printer().get_stream()->getRank();                                              \
-                                                                                                                \
-    prior.transform(in, key_map);                                                                               \
-                                                                                                                \
-    auto it_ret = ret.begin();                                                                                  \
-    for (auto it = get_keys().begin(), end = get_keys().end(); it != end; it++, it_ret++)                       \
+    Gambit::Scanner::printer *printer = get_printer().get_stream();                                             \
+    for (auto it = get_keys().begin(), end = get_keys().end(); it != end; ++it)                                 \
     {                                                                                                           \
-        *it_ret = key_map[*it];                                                                                 \
-        get_printer().get_stream()->print(*it_ret, *it, get_main_param_id(*it), rank, get_point_id());          \
+        printer->print(key_map[*it], *it, get_main_param_id(*it), printer->getRank(), get_point_id());          \
     }                                                                                                           \
-                                                                                                                \
-    return ret;                                                                                                 \
-}                                                                                                               \
-                                                                                                                \
-inline void prior_transform(const std::vector<double> &in, std::unordered_map<std::string, double> &key_map)    \
-{                                                                                                               \
-    static const PriorTransform &prior = get_input_value<PriorTransform>(1);                                    \
-    prior.transform(in, key_map);                                                                               \
-    Gambit::Scanner::__print_to_main__ (get_printer().get_stream(), get_keys(), key_map, get_point_id());       \
 }                                                                                                               \
 
 #define OBJECTIVE_PLUGIN(plug_name, ...)                                                                        \

@@ -54,86 +54,86 @@ namespace Gambit
         void add_SM_with_short_pair(str, std::pair<int, int>, std::pair<str, int>);
 
         /// Retrieve the PDG code and context integer, from the long name
-        std::pair<int, int> pdg_pair(str);
+        std::pair<int, int> pdg_pair(str) const; 
 
         /// Retrieve the PDG code and context integer, from the short name and index
-        std::pair<int, int> pdg_pair(str,int);
+        std::pair<int, int> pdg_pair(str,int) const;
 
         /// Retrieve the PDG code and context integer, from the short name and index pair
-        std::pair<int, int> pdg_pair(std::pair<str,int>);
+        std::pair<int, int> pdg_pair(std::pair<str,int>) const;
 
         /// Retrieve the long name, from the short name and index
-        str long_name(str,int);
+        str long_name(str,int) const;
 
         /// Retrieve the long name, from the PDG code and context integer 
-        str long_name(std::pair<int, int>);
+        str long_name(std::pair<int, int>) const;
 
         /// Retrieve the long name, from the PDG code and context integer
-        str long_name(int,int);
+        str long_name(int,int) const;
 
         /// Retrieve the short name and index, from the long name 
-        std::pair<str, int> short_name_pair(str);
+        std::pair<str, int> short_name_pair(str) const;
 
         /// Retrieve the short name and index, from the PDG code and context integer 
-        std::pair<str, int> short_name_pair(std::pair<int, int>);
+        std::pair<str, int> short_name_pair(std::pair<int, int>) const;
 
         /// Retrieve the short name and index, from the PDG code and context integer
-        std::pair<str, int> short_name_pair(int,int);
+        std::pair<str, int> short_name_pair(int,int) const;
 
         /// Get a vector PDG codes and context integers of Standard Model particles in the database
-        const std::vector<std::pair<int, int> >& get_SM_particles();
+        const std::vector<std::pair<int, int> >& get_SM_particles() const;
         
         /// Get a vector PDG codes and context integers of generic particle classes in the database
-        const std::vector<std::pair<int, int> >& get_generic_particles();
+        const std::vector<std::pair<int, int> >& get_generic_particles() const;
         
         /// Check if a particle is in the database, using the long name 
-        bool has_particle(str);
+        bool has_particle(str) const;
 
         /// Check if a particle is in the database, using the short name and index 
-        bool has_particle(str, int);
-        bool has_particle(std::pair<str, int>);
+        bool has_particle(str, int) const;
+        bool has_particle(std::pair<str, int>) const;
 
         /// Check if a particle is in the database, using the PDG code and context integer 
-        bool has_particle(std::pair<int, int>);
+        bool has_particle(std::pair<int, int>) const;
 
         /// Get the matching anti-particle long name for a particle in the database, using the long name 
-        str get_antiparticle(str);
+        str get_antiparticle(str) const;
 
         /// Get the matching anti-particle short name and index for a particle in the database, using the short name and index 
         /// @{
-        std::pair<str, int> get_antiparticle(std::pair<str, int>);
-        std::pair<str, int> get_antiparticle(str, int);
+        std::pair<str, int> get_antiparticle(std::pair<str, int>) const;
+        std::pair<str, int> get_antiparticle(str, int) const;
         /// @}
 
         /// Get the matching anti-particle PDG code and index for a particle in the database, using the PDG code and index 
         /// @{
-        std::pair<int, int> get_antiparticle(std::pair<int, int>);
-        std::pair<int, int> get_antiparticle(int, int);
+        std::pair<int, int> get_antiparticle(std::pair<int, int>) const;
+        std::pair<int, int> get_antiparticle(int, int) const;
         /// @}
 
         /// Check if a particle has a matching anti-particle in the database, using the long name 
-        bool has_antiparticle(str);
+        bool has_antiparticle(str) const;
 
         /// Check if a particle has a matching anti-particle in the database, using the short name and index 
         /// @{
-        bool has_antiparticle(std::pair<str, int>);
-        bool has_antiparticle(str, int);
+        bool has_antiparticle(std::pair<str, int>) const;
+        bool has_antiparticle(str, int) const;
         /// @}
 
         /// Check if a particle has a matching anti-particle in the database, using the PDG code and context integer 
         /// @{
-        bool has_antiparticle(std::pair<int, int>);
-        bool has_antiparticle(int, int);
+        bool has_antiparticle(std::pair<int, int>) const;
+        bool has_antiparticle(int, int) const;
         /// @}
 
         /// Check if a particle has a short name, using the long name 
-        bool has_short_name(str);
+        bool has_short_name(str) const;
 
         /// Check if a particle has a short name, using the PDG code and context integer 
-        bool has_short_name(std::pair<int, int>);
+        bool has_short_name(std::pair<int, int>) const;
 
         /// For debugging: use to check the contents of the particle database
-        void check_contents();
+        void check_contents() const;
 
       private:
           

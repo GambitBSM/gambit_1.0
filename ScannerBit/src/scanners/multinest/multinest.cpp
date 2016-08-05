@@ -39,7 +39,7 @@ namespace Gambit
 }
 
 /// Typedef for the ScannerBit pointer to the external loglikelihood function
-typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
+typedef Gambit::Scanner::like_ptr scanPtr;
 
 
 /// =================================================
@@ -104,6 +104,8 @@ scanner_plugin(MultiNest, version(3, 9))
       // Which parameters to have periodic boundary conditions?
       int pWrap[ndims];
       for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)        
+
+      // TODO: check what happens if resume mode is active but multinest native output is not written. I guess it will resume writing to the printer output, but actually start a new scan?
 
       // Root for output files
       std::string root_str;
@@ -202,7 +204,7 @@ namespace Gambit {
 
       /// LogLikeWrapper Constructor
       LogLikeWrapper::LogLikeWrapper(scanPtr loglike, printer_interface& printer, int ndim)
-        : boundLogLike(loglike), boundPrinter(printer), my_ndim(ndim)
+        : boundLogLike(loglike), boundPrinter(printer), my_ndim(ndim), dumper_runonce(false)
       { }
    
       /// Main interface function from MultiNest to ScannerBit-supplied loglikelihood function 
@@ -231,7 +233,7 @@ namespace Gambit {
          //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
          //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
          
-         double lnew = (*boundLogLike)(unitpars); 
+         double lnew = boundLogLike(unitpars); 
 
          // Extract the primary printer from the printer manager
          //printer* primary_stream( boundPrinter.get_stream() );
@@ -304,6 +306,20 @@ namespace Gambit {
                       << scan_end;
           } 
 
+          // Send signal to other processes to switch to higher min_logL value.
+          // MultiNest was sometimes getting stuck looking for live point candidates,
+          // increasing this above the MultiNext zero_LogL value should avoid that
+          // issue.
+          // We do this here because initial live point generation should be finished 
+          // once the dumper runs, and we want the original min_logL value while generating
+          // live points.
+          if (!dumper_runonce) 
+          {
+             dumper_runonce = true;
+             boundLogLike->switch_to_alternate_min_LogL();
+             std::cerr << "Multinest dumper first ran on process "<<boundLogLike->getRank()<<" at iteration "<<boundLogLike->getPtID()<<std::endl;
+          }
+
           // Get printers for each auxiliary stream
           //printer* stats_stream( boundPrinter.get_stream("stats") ); //FIXME see below
           printer* txt_stream(   boundPrinter.get_stream("txt")   );
@@ -340,8 +356,8 @@ namespace Gambit {
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
              //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             txt_stream->print( myrank,  "MPIrank", myrank, pointID);
-             txt_stream->print( pointID, "pointID", myrank, pointID);
+             //txt_stream->print( myrank,  "MPIrank", myrank, pointID);
+             //txt_stream->print( pointID, "pointID", myrank, pointID);
              //txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   myrank, pointID);
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
              // Put rest of parameters into a vector for printing all together
@@ -357,8 +373,8 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             live_stream->print( myrank,  "MPIrank",  myrank, pointID);
-             live_stream->print( pointID, "pointID", myrank, pointID);
+             //live_stream->print( myrank,  "MPIrank",  myrank, pointID);
+             //live_stream->print( pointID, "pointID", myrank, pointID);
              //live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", myrank, pointID);
              live_stream->print( true, "LastLive", myrank, pointID); // Flag which points were the last live set
              // Put rest of parameters into a vector for printing all together

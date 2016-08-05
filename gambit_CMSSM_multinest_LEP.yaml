@@ -64,7 +64,7 @@ Scanner:
         info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.live_info"
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 100
       output_file:  output
       like:  LogLike
@@ -173,8 +173,8 @@ Rules:
   - capability: A0_decay_rates
     function: A0_decays
 
-  - capability: Hplus_decay_rates
-    function: Hplus_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
       
   - capability: decay_rates
     function: all_decays

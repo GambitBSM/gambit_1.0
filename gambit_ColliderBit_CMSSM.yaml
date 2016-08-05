@@ -67,7 +67,7 @@ Scanner:
       aux_printer_live_options:
 
     #random:
-    #  plugin: random_sampler
+    #  plugin: random
     #  point_number: 1
     #  output_file:  output
     #  like:  Likelihood
@@ -207,8 +207,8 @@ Rules:
     function: FH_A0_decays
   - capability: Higgs_decay_rates
     function: FH_MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: FH_Hplus_decays
+  - capability: H_plus_decay_rates
+    function: FH_H_plus_decays
   - capability: h0_2_decay_rates
     function: FH_h0_2_decays
   - capability: t_decay_rates

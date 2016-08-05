@@ -43,7 +43,7 @@ namespace Gambit {
   /// Can translate this model into MSSM63atQ (where Q will then be set to MGUT)
   INTERPRET_AS_PARENT_FUNCTION(MSSM63atMGUT_to_MSSM63atQ)
   /// Depends on an MSSM spectrum, since RGEs must run in order to determine MGUT
-  INTERPRET_AS_PARENT_DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+  INTERPRET_AS_PARENT_DEPENDENCY(unimproved_MSSM_spectrum, /*TAG*/ Spectrum)
 
   DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)

@@ -279,13 +279,14 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
                                                                                                             \
         extern "C" const std::map<type_index, void *> &                                                     \
             __gambit_plugin_pluginInit_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## __   \
-            (const std::string *tag, const YAML::Node *node, Gambit::Scanner::printer_interface & printer,  \
-                                                                                std::vector<void *> *input )\
+            (const std::string *tag, const YAML::Node *node, Gambit::Scanner::printer_interface &printer,   \
+                                    Gambit::Scanner::prior_interface &prior, std::vector<void *> *input )   \
         {                                                                                                   \
             if (!myData.loaded)                                                                             \
             {                                                                                               \
                 myData.tag = *tag;                                                                          \
                 myData.printer = &printer;                                                                  \
+                myData.prior = &prior;                                                                      \
                 myData.loaded = true;                                                                       \
                                                                                                             \
                 if (input != 0)                                                                             \
@@ -327,6 +328,11 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
         return *__gambit_plugin_namespace__::myData.printer;                                                \
     }                                                                                                       \
                                                                                                             \
+    inline Gambit::Scanner::prior_interface &get_prior()                                                    \
+    {                                                                                                       \
+        return *__gambit_plugin_namespace__::myData.prior;                                                  \
+    }                                                                                                       \
+                                                                                                            \
     template <typename T>                                                                                   \
     inline T get_inifile_value(std::string in)                                                              \
     {                                                                                                       \
@@ -343,6 +349,11 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
     inline YAML::Node get_inifile_node(std::string in)                                                      \
     {                                                                                                       \
         return __gambit_plugin_namespace__::myData.node[in];                                                \
+    }                                                                                                       \
+                                                                                                            \
+    inline YAML::Node get_inifile_node()                                                                    \
+    {                                                                                                       \
+        return __gambit_plugin_namespace__::myData.node;                                                    \
     }                                                                                                       \
                                                                                                             \
     template <typename T>                                                                                   \

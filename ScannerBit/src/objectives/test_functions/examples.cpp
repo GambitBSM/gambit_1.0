@@ -26,11 +26,8 @@
 
 objective_plugin(uniform, version(1,0,0))
 {
-    double plugin_main (const std::vector<double> &vec)
+    double plugin_main (std::unordered_map<std::string, double> &map)
     {
-        std::unordered_map<std::string, double> map;
-        prior_transform(vec, map);
-        
         return 0;
     }
 }
@@ -86,12 +83,17 @@ objective_plugin(gaussian, version(1, 0, 0))
         }
     }
     
-    double plugin_main(const std::vector<double> &vec)
+    double plugin_main(std::unordered_map<std::string, double> &map)
     {
-        std::vector<double> &params = prior_transform(vec);
-        //std::unordered_map<std::string, double> map;
-        //prior_transform(vec, map);
-        //std::vector<double> params(dim, 0.0);
+        static std::vector<double> params(get_keys().size());
+        
+        print_parameters(map);
+        
+        auto it_p = params.begin();
+        for (auto it = get_keys().begin(), end = get_keys().end(); it != end; ++it, ++it_p)
+        {
+            *it_p = map[*it];
+        }
         
         return -chol.Square(params, mean)/2.0;
     }
@@ -113,13 +115,15 @@ objective_plugin(EggBox, version(1, 0, 0))
         length = get_inifile_value<std::pair<double, double> > ("length", std::pair<double, double>(10.0, 10.0));
     }
     
-    double plugin_main(const std::vector<double> &unit)
+    double plugin_main(std::unordered_map<std::string, double> &map)
     {
-        std::vector<double> params = prior_transform(unit);
-        params[0] *= length.first;
-        params[1] *= length.second;
+        print_parameters(map);
         
-        return 5.0*std::log(2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2));
+        double params[2];
+        params[0] = map[get_keys()[0]]*length.first;
+        params[1] = map[get_keys()[1]]*length.second;
+        
+        return 5.0*std::log(2.0 + std::cos(params[0]*M_PI_2)*std::cos(params[1]*M_PI_2));
     }
 }
 
@@ -130,9 +134,9 @@ objective_plugin(flat_prior, version(1, 0, 0))
     
     plugin_constructor
     {
-        //keys = get_keys();
-        //set_dimension(keys.size());
-        //range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+        keys = get_keys();
+        set_dimension(keys.size());
+        range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
     }
     
     void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)

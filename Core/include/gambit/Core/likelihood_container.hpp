@@ -35,7 +35,7 @@ namespace Gambit
 {
 
   /// Class for collecting pointers to all the likelihood components, then running and combining them.
-  class Likelihood_Container : public Scanner::Function_Base<double (const std::vector<double>&)>
+  class Likelihood_Container : public Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>
   {
 
     private:
@@ -49,14 +49,11 @@ namespace Gambit
       /// Bound dependency resolver object
       DRes::DependencyResolver &dependencyResolver;
 
-      /// Bound prior object
-      Priors::CompositePrior &prior;
-
       /// Bound printer object
       Printers::BaseBasePrinter &printer;
 
       /// Map of parameter names to values
-      std::unordered_map<str, double> parameterMap;
+      //std::unordered_map<str, double> parameterMap;
 
       /// Map of scanned model names to primary model functors
       std::map<str, primary_model_functor *> functorMap;
@@ -66,8 +63,14 @@ namespace Gambit
       GMPI::Comm& errorComm;
       #endif
 
-      /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
+      /// Primary value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
+
+      /// Alternate value for the minimum log likelihood (scanner can trigger a switch to this in special circumstances)
+      double alt_min_valid_lnlike;
+
+      /// Active value for the minimum log likelihood (one of the above two values, whichever is currently in-use)
+      double active_min_valid_lnlike;
 
       /// Map of return types of target functors
       std::map<DRes::VertexID,str> return_types;
@@ -95,17 +98,17 @@ namespace Gambit
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-       Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+       const str &purpose, Printers::BaseBasePrinter& printer
        #ifdef WITH_MPI
        , GMPI::Comm& comm
        #endif
       );
 
       /// Do the prior transformation and populate the parameter map  
-      void setParameters (const std::vector<double> &vec); 
+      void setParameters (const std::unordered_map<std::string, double> &); 
       
       /// Evaluate total likelihood function
-      double main (const std::vector<double> &in);
+      double main (std::unordered_map<std::string, double> &in);
 
   };
 

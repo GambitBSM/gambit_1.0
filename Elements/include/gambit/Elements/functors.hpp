@@ -178,7 +178,7 @@ namespace Gambit
       virtual void setNestedList (std::vector<functor*>&);
 
       /// Set the iteration number in a loop in which this functor runs
-      virtual void setIteration (int);
+      virtual void setIteration (long long);
 
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager();
@@ -391,14 +391,14 @@ namespace Gambit
       safe_ptr<str> getChosenReqFromGroup(str);
 
       /// Execute a single iteration in the loop managed by this functor.
-      virtual void iterate(int iteration);
+      virtual void iterate(long long iteration);
 
       /// Initialise the array holding the current iteration(s) of this functor.
       virtual void init_myCurrentIteration_if_NULL();
       /// Setter for setting the iteration number in the loop in which this functor runs
-      virtual void setIteration (int iteration);
+      virtual void setIteration (long long iteration);
       /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-      virtual omp_safe_ptr<int> iterationPtr();
+      virtual omp_safe_ptr<long long> iterationPtr();
 
       /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
       virtual void setCanBeLoopManager (bool canManage);
@@ -532,6 +532,9 @@ namespace Gambit
       /// Initialise the memory of this functor.
       virtual void init_memory();
 
+      /// Construct the list of known models only if it doesn't yet exist
+      void fill_activeModelFlags();
+
       /// Beginning and end timing points
       std::chrono::time_point<std::chrono::system_clock> *start, *end;
 
@@ -577,7 +580,7 @@ namespace Gambit
       std::vector<functor*> myNestedFunctorList;
 
       /// Pointer to counters for iterations of nested functor loop.
-      int* myCurrentIteration;
+      long long* myCurrentIteration;
 
       /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
       const int globlMaxThreads;
@@ -699,7 +702,7 @@ namespace Gambit
       void calculate();
 
       /// Operation (return value)
-      TYPE operator()(int index);
+      const TYPE& operator()(int index);
 
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr();

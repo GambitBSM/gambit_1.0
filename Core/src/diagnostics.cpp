@@ -407,7 +407,7 @@ namespace Gambit
         // Tell the user what the default version is for classes of this backend (if there are any).
         if (has_classloader)
         {
-          const std::map<str, str> defs = backendData->defaults;
+          const std::map<str, str> defs = backendData->default_safe_versions;
           const str my_def = (defs.find(it->first) != defs.end() ? backendData->version_from_safe_version(it->first,defs.at(it->first)) : "none");
           out << std::endl << "Default version for loaded classes: "  << my_def << std::endl << std::endl;
         }

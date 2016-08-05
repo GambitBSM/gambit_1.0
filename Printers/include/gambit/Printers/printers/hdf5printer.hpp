@@ -231,7 +231,7 @@ namespace Gambit
         bool get_resume() { return resume; }
 
         /// Retrieve the starting position in output datasets for new data
-        bool get_startpos() { return startpos; }
+        //bool get_startpos() { return startpos; } // OBSOLETE
 
         /// Retreive any stored PPIDpairs from previous runs (resume mode)
         const std::vector<PPIDpair>& get_previous_points() { return previous_points; }
@@ -483,7 +483,7 @@ namespace Gambit
 
         /// Position to start writing new output. Should be zero unless we are in
         /// resume mode.
-        unsigned long startpos = 0;
+        //unsigned long startpos = 0; // OBSOLETE
 
         /// Write position to which output buffers should be synchronised
         unsigned long sync_pos = 0;

@@ -23,7 +23,13 @@ using namespace Gambit;
 using namespace LogTags;
 
 /// Cleanup function
-void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
+void do_cleanup() { 
+  if(signaldata().jumppoint_set)
+  {
+    Gambit::Scanner::Plugins::plugin_info.dump(); 
+  }
+  // No cleanup needed if jump point is not set, means the scan never began.
+}
 
 #ifdef WITH_MPI
 bool use_mpi_abort = true; // Set later via inifile value
@@ -87,8 +93,8 @@ int main(int argc, char* argv[])
   sigaddset(signal_mask(), SIGUSR1);
   sigaddset(signal_mask(), SIGUSR2);
  
-  /// Create an MPI communicator group for use by error handlers
   #ifdef WITH_MPI
+    /// Create an MPI communicator group for use by error handlers
     GMPI::Comm errorComm;
     errorComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
     const int ERROR_TAG=1;         // Tag for error messages
@@ -96,6 +102,10 @@ int main(int argc, char* argv[])
     int rank = errorComm.Get_rank();
     signaldata().set_MPI_comm(&errorComm); // Provide a communicator for signal handling routines to use.
     signaldata().rank = rank;      // set variable for use in signal handlers
+    /// Create an MPI communicator group for ScannerBit to use
+    GMPI::Comm scanComm;
+    scanComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
+    Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
   #endif
 
   try
@@ -170,7 +180,9 @@ int main(int argc, char* argv[])
     dependencyResolver.printFunctorList();
 
     // Do the dependency resolution
+    cout << "Resolving dependencies and backend requirements.  Hang tight..." << endl;
     dependencyResolver.doResolution();
+    cout << "...done!" << endl;
 
     // Check that all requested models are used for at least one computation
     Models::ModelDB().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
@@ -181,19 +193,21 @@ int main(int argc, char* argv[])
     // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
     if (not Core().show_runorder)
     {
- 
-      //Define the prior
-      Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
-  
       //Define the likelihood container object for the scanner
-      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior, *(printerManager.printerptr)
+      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, *(printerManager.printerptr)
         #ifdef WITH_MPI
         , errorComm
         #endif
       );
  
+      //Make scanner yaml node
+      YAML::Node scanner_node;
+      scanner_node["Scanner"] = iniFile.getScannerNode();
+      scanner_node["Parameters"] = iniFile.getParametersNode();
+      scanner_node["Priors"] = iniFile.getPriorsNode();
+      
       //Create the master scan manager 
-      Scanner::Scan_Manager scan(&factory, iniFile.getScannerNode(), &prior, &printerManager);
+      Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
 
       // Signal handing can be set to trigger a longjmp back to here upon receiving some signal
       signaldata().havejumped = setjmp(signaldata().env);

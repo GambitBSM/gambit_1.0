@@ -20,7 +20,7 @@
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Utils/static_members.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
-#include "gambit/Utils/equivalency_singleton.hpp"
+#include "gambit/Elements/equivalency_singleton.hpp"
 #include "gambit/Backends/backend_rollcall.hpp"
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Core/yaml_parser.hpp"

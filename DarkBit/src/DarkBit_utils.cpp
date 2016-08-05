@@ -7,11 +7,11 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Torsten Bringmann 
+///
+///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2015 May
-///  
+///
 ///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 May
@@ -23,19 +23,19 @@
 
 //#define DARKBIT_DEBUG
 
-namespace Gambit 
+namespace Gambit
 {
-  namespace DarkBit 
+  namespace DarkBit
   {
     namespace DarkBit_utils
     {
       /*! \brief Calculate kinematical limits for three-body final states.
       *
-      * Notes: 
+      * Notes:
       * - m0 = 0, E0 = Eg
       * - M_DM is half of center of mass energy
       * - returns E1_low or E1_high, or 0 if kinematically forbidden
-      * - Template parameter 0(1) means lower (upper) limit of range.  
+      * - Template parameter 0(1) means lower (upper) limit of range.
       */
       template <int i>
       double gamma3bdy_limits(double Eg, double M_DM, double m1, double m2)
@@ -66,7 +66,7 @@ namespace Gambit
       }
       template double gamma3bdy_limits<0>(double, double, double, double);
       template double gamma3bdy_limits<1>(double, double, double, double);
-      
+
 
       // Convert between mass and flavour eigenstate identifiers
       std::string str_flav_to_mass(std::string flav)
@@ -116,8 +116,8 @@ namespace Gambit
       }
 
 
-      void ImportDecays(std::string pID, TH_ProcessCatalog &catalog, 
-                        std::set<std::string> &importedDecays, 
+      void ImportDecays(std::string pID, TH_ProcessCatalog &catalog,
+                        std::set<std::string> &importedDecays,
                         const DecayTable* tbl, double minBranching,
                         std::vector<std::string> excludeDecays)
       {
@@ -125,17 +125,17 @@ namespace Gambit
 #ifdef DARKBIT_DEBUG
         std::cout << "Importing decay information for: " << pID << std::endl;
 #endif
-        importedDecays.insert(pID);        
+        importedDecays.insert(pID);
         const double m_init = catalog.getParticleProperty(pID).mass;
         const DecayTable::Entry* entry;
-        try{entry = &(tbl->at(pID));} 
+        try{entry = &(tbl->at(pID));}
         catch(const std::out_of_range& oor)
         {
 #ifdef DARKBIT_DEBUG
           std::cout << "  ! No entry found in DecayTable object (nothing imported) !" << std::endl;
 #endif
           return;
-        }     
+        }
         double totalWidth = entry->width_in_GeV;
 #ifdef DARKBIT_DEBUG
         std::cout << "  totalWidth = " << totalWidth << std::endl;
@@ -143,7 +143,7 @@ namespace Gambit
         if(totalWidth>0)
         {
           TH_Process process(pID);
-          process.genRateMisc = Funk::cnst(0.);
+          process.genRateMisc = daFunk::cnst(0.);
           for(auto fState_it = entry->channels.begin();
               fState_it!= entry->channels.end(); ++fState_it)
           {
@@ -165,8 +165,8 @@ namespace Gambit
 #ifdef DARKBIT_DEBUG
                 std::cout << name << " ";
 #endif
-              } 
-              double partialWidth = totalWidth * bFraction;        
+              }
+              double partialWidth = totalWidth * bFraction;
 #ifdef DARKBIT_DEBUG
               std::cout << std::endl;
               std::cout << "    m_init = " << m_init << std::endl;
@@ -176,7 +176,7 @@ namespace Gambit
               if(m_final<=m_init)
               {
                 process.channelList.push_back(
-                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
+                    TH_Channel(pIDs, daFunk::cnst(partialWidth)));
                 // Recursively import decays of final states (for cascades)
                 for(auto f_it=pIDs.begin(); f_it!=pIDs.end();++f_it)
                 {
@@ -190,8 +190,8 @@ namespace Gambit
 #endif
             }
           }
-          catalog.processList.push_back(process);          
-        }   
+          catalog.processList.push_back(process);
+        }
       }
 
     } // namespace DarkBit_utils

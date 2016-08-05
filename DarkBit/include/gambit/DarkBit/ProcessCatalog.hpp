@@ -8,12 +8,12 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2012 Mar, 2014 Jan
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2015 Mar
 ///
@@ -28,14 +28,14 @@
 
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/daFunk.hpp"
 
 namespace Gambit
 {
 
   namespace DarkBit
   {
-    /// A single resonance of a given width at a given energy (both in GeV) 
+    /// A single resonance of a given width at a given energy (both in GeV)
     struct TH_Resonance
     {
       TH_Resonance() : energy(0.), width (0.) {}
@@ -51,11 +51,11 @@ namespace Gambit
     {
       TH_resonances_thresholds() {}
 
-      TH_resonances_thresholds(const TH_resonances_thresholds & copy) : 
+      TH_resonances_thresholds(const TH_resonances_thresholds & copy) :
         resonances(copy.resonances), threshold_energy(copy.threshold_energy) {}
 
       TH_resonances_thresholds(const std::vector<TH_Resonance> & resonances,
-          const std::vector<double> & thresholds) : 
+          const std::vector<double> & thresholds) :
         resonances(resonances), threshold_energy(thresholds) {}
 
       std::vector<TH_Resonance> resonances;
@@ -70,7 +70,7 @@ namespace Gambit
 
         /// Particle mass (GeV)
         double mass;
-        
+
         /// Twice the spin of the particle
         unsigned int spin2;
     };
@@ -82,8 +82,8 @@ namespace Gambit
         // Functions
 
         /// Constructor
-        TH_Channel(std::vector<str> finalStateIDs, Funk::Funk genRate);
-        
+        TH_Channel(std::vector<str> finalStateIDs, daFunk::Funk genRate);
+
         /// Print information about this channel.
         void printChannel() const;
 
@@ -106,27 +106,27 @@ namespace Gambit
         unsigned int nFinalStates;
 
         /// Energy dependence of final state particles. Includes v_rel ("v") as last argument in case of annihilation
-        Funk::Funk genRate = Funk::zero("dummyArgument");
+        daFunk::Funk genRate = daFunk::zero("dummyArgument");
     };
 
     /// A container for a single process.
-    /// Contains all channels for decay of a single particle, or for 
+    /// Contains all channels for decay of a single particle, or for
     /// annihilation of a specific pair of particles.  That is,
     /// TH_Process groups channels together according to initial states,
     /// e.g. chi --> everything, chi chi --> everything.
     struct TH_Process
     {
         // Functions
-        
+
         /// Constructor for decay process
-        TH_Process(str particle1ID);
-        
+        TH_Process(const str & particle1ID);
+
         /// Constructor for annihilation process
-        TH_Process(str particle1ID, str particle2ID);
+        TH_Process(const str & particle1ID, const str & particle2ID);
 
         /// Compare initial states
-        bool isProcess(str, str = "") const;
- 
+        bool isProcess(const str &, const str & = std::string()) const;
+
         /// Check for given channel.  Return a pointer to it if found, NULL if not.
         const TH_Channel* find(std::vector<str>) const;
 
@@ -145,19 +145,18 @@ namespace Gambit
         /// List of channels
         std::vector<TH_Channel> channelList;
 
-        /// List of resonances and thresholds 
-        // FIXME: rename thresholdResonances to TH_resonances_thresholds
-        TH_resonances_thresholds thresholdResonances;
+        /// List of resonances and thresholds
+        TH_resonances_thresholds resonances_thresholds;
 
         /// Additional decay rate or sigmav (in addition to above channels)
-        Funk::Funk genRateMisc;
+        daFunk::Funk genRateMisc;
     };
 
     /// A container holding all annihilation and decay initial states relevant for DarkBit.
     struct TH_ProcessCatalog
     {
         // Functions
-  
+
         /// Retrieve a specific process from the catalog
         TH_Process getProcess(str, str = "") const;
 

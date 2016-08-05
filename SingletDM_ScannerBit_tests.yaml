@@ -107,8 +107,6 @@ Parameters:
       fixed_value: 235 # km/s
     vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
@@ -140,9 +138,17 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: multinest
+  use_scanner: random
 
   scanners:
+
+    random:
+      plugin: random_sampler
+      point_number: 2
+      output_file:  output
+      like:  LogLike
+      files:
+        output_file: "weights ..."
 
     multinest:
       plugin: MultiNest
@@ -158,17 +164,22 @@ Scanner:
       
     twalk:
       plugin: twalk
-      tolerance: 1.03
-      #projection_dimension: 4
-      #chain_number:
-
-    twalk:
-      plugin: twalk
       tolerance: 1.001
       projection_dimension: 4
       chain_number: 10
 
-    #great:
+    mcmc:
+      plugin: GreAT
+      nTrialLists: 5
+      nTrials: 40000
+      like: Likelihood
+      aux_printer_ind_samples_options:
+    
+#twalk:
+#      plugin: twalk
+#      tolerance: 1.001
+#      projection_dimension: 4
+#      chain_number: 10
 
 
 ###############################
@@ -249,6 +260,8 @@ Rules:
 
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
+    options:
+      allow_yield_extrapolation: true
 
   - capability: SingletDM_spectrum
     function: get_SingletDM_spectrum
@@ -301,10 +314,10 @@ Rules:
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_obs: 43.
+      sigmas_obserr: 8.
+      sigmal_obs: 58.
+      sigmal_obserr: 9.
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
@@ -378,6 +391,9 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4
+
+  exceptions:
+    invalid_point_fatal: false
 
   default_output_path: "runs/singletDM_ScannerBit_test4/"
 

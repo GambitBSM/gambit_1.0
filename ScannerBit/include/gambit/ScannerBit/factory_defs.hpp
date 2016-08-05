@@ -27,8 +27,8 @@
 #endif
 
 #ifdef WITH_MPI
-  #include <mpi.h>
   #include <chrono>
+  #include "gambit/Utils/mpiwrapper.hpp"
 #endif
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
@@ -68,51 +68,86 @@ namespace Gambit
             friend class scan_ptr<ret (args...)>;
             
             printer *main_printer;
+            Priors::BasePrior *prior;
             std::string purpose;
             int rank;
  
+            /// Variable to store state of affairs regarding use of alternate min_LogL
+            bool use_alternate_min_LogL;
+
             virtual void deleter(Function_Base <ret (args...)> *in) const
             {
-                    delete in;
+                delete in;
             }
             
             virtual const std::type_info & type() const {return typeid(ret (args...));}
                 
         public:
-            Function_Base() : rank(0)
+            Function_Base() : rank(0), use_alternate_min_LogL(false)
             {
 #ifdef WITH_MPI
-                    GMPI::Comm world;
-                    rank = world.Get_rank();
+                GMPI::Comm world;
+                rank = world.Get_rank();
 #endif
             }
-            
-            
             
             virtual ret main(const args&...) = 0;
             virtual ~Function_Base(){} 
             
             ret operator () (const args&... params) 
             {
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
-                    unsigned long long int id = ++Gambit::Printers::get_point_id();
-                    ret ret_val = main(params...);
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
-                    if (sizeof...(params) == 1)
-                            main_printer->print(params..., "unitCubeParameters", rank, id);
-                    main_printer->print(ret_val, purpose, rank, id);
-                    main_printer->print(int(id), "pointID", rank, id);
-                    main_printer->print(rank, "MPIrank", rank, id);
-                    return ret_val;
+                Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
+                ++Gambit::Printers::get_point_id();
+                ret ret_val = main(params...);
+                Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
+                
+                return ret_val;
             }
             
-            void setPurpose(const std::string p){purpose = p;}
-            void setPrinter(printer* p){main_printer = p;}
-            printer *getPrinter(){return main_printer;}
+            void setPurpose(const std::string p) {purpose = p;}
+            void setPrinter(printer* p) {main_printer = p;}
+            void setPrior(Priors::BasePrior *p) {prior = p;}
+            printer &getPrinter() {return *main_printer;}
+            Priors::BasePrior &getPrior() {return *prior;}
+            std::vector<std::string> getParameters() {return prior->getParameters();}
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
-        };
+            unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
+
+            /// Tell log-likelihood function (defined by driver code) to switch to an alternate value for the minimum
+            /// log-likelihood. Called by e.g. MultiNest scanner plugin.
+            void switch_to_alternate_min_LogL()
+            {
+              use_alternate_min_LogL = true;
+              #ifdef WITH_MPI
+              GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
+              static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
+              MPI_Request req_null = MPI_REQUEST_NULL;
+              int nullmsg = 0; // Don't need message content, the message itself is the signal.
+              myComm.IsendToAll(&nullmsg, 1, TAG, &req_null);
+              #endif
+            }
+
+            /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function 
+            bool check_for_switch_to_alternate_min_LogL()
+            {
+              #ifdef WITH_MPI
+              GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
+              static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
+              if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+              {
+                int nullmsg;
+                MPI_Status msg_status;
+                myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
+                use_alternate_min_LogL = true;
+              }
+              #endif
+              return use_alternate_min_LogL;
+            }
+            /// @}
+
+       };
         
         template<typename ret, typename... args>
         class Function_Deleter<ret (args...)>
@@ -194,6 +229,50 @@ namespace Gambit
             ret operator()(const args&... params)
             {
                 return (*this)->operator()(params...);
+            }
+        };
+        
+        class like_ptr : public scan_ptr<double (std::unordered_map<std::string, double> &)>
+        {
+        private:
+            typedef scan_ptr<double (std::unordered_map<std::string, double> &)> s_ptr;
+            std::unordered_map<std::string, double> map;
+            
+        public:
+            like_ptr(){}
+            like_ptr(const like_ptr &in) : s_ptr (in){}
+            //like_ptr(like_ptr &&in) : s_ptr (std::move(in)) {}
+            like_ptr(void *in) : s_ptr(in) {}
+            
+            double operator()(const std::vector<double> &vec)
+            {
+                static int rank = (*this)->getRank();
+                (*this)->getPrior().transform(vec, map);
+                double ret_val = (*this)->operator()(map);
+                unsigned long long int id = Gambit::Printers::get_point_id();
+                (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
+                (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)
+                (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                (*this)->getPrinter().print(int(id), "pointID", rank, id);
+                (*this)->getPrinter().print(rank, "MPIrank", rank, id);
+                
+                return ret_val;
+            }
+            
+            double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
+            {
+                static int rank = (*this)->getRank();
+                (*this)->getPrior().transform(vec, map);
+                double ret_val = (*this)->operator()(map);
+                unsigned long long int id = Gambit::Printers::get_point_id();
+                (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
+                (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)
+                if (vec.size() > 0)
+                    (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                (*this)->getPrinter().print(int(id), "pointID", rank, id);
+                (*this)->getPrinter().print(rank, "MPIrank", rank, id);
+                
+                return ret_val;
             }
         };
         

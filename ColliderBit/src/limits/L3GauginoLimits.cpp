@@ -4,9 +4,6 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    /// @name L3CharginoAllChannelsLimitAt188pt6GeV methods
-    /// @{
-
     P2 L3CharginoAllChannelsLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 1171.00) / (1792.00 - 1171.00) * (100. - 45.),
@@ -214,10 +211,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(4, contoursPointer));
 
     }
-    /// @}
 
-    /// @name L3CharginoLeptonicLimitAt188pt6GeV methods
-    /// @{
+
 
     P2 L3CharginoLeptonicLimitAt188pt6GeV::convertPt(double x, double y) const
     {
@@ -361,10 +356,8 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
 
-    /// @name L3NeutralinoAllChannelsLimitAt188pt6GeV methods
-    /// @{
+
 
     P2 L3NeutralinoAllChannelsLimitAt188pt6GeV::convertPt(double x, double y) const
     {
@@ -551,11 +544,9 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(5, contoursPointer));
 
     }
-    /// @}
-
-    /// @name L3NeutralinoLeptonicLimitAt188pt6GeV methods
-    /// @{
     
+
+
     P2 L3NeutralinoLeptonicLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(0. + (x - 251.00) / (870.00 - 251.00) * (200. - 0.),
@@ -664,7 +655,6 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    /// @}
 
   }
 }

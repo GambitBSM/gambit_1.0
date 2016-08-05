@@ -75,7 +75,7 @@ Scanner:
         output_file: "weights ..."
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 2
       output_file:  output
       like:  Likelihood
@@ -183,8 +183,8 @@ Rules:
   - capability: A0_decay_rates
     function: A0_decays
 
-  - capability: Hplus_decay_rates
-    function: Hplus_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
       
   - capability: decay_rates
     function: all_decays

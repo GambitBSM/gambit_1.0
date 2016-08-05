@@ -77,7 +77,7 @@ namespace Gambit
             virtual int get_numbers_stable_particles() const;  /***/
    
             /// Add QEDQCD information to an SLHAea object
-            virtual void add_to_SLHAea(SLHAstruct& slha) const;
+            virtual void add_to_SLHAea(SLHAstruct& slha, bool = false) const;
 
             /// RunningPars interface overrides
             virtual double GetScale() const;      /***/

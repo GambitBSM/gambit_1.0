@@ -27,6 +27,7 @@
 
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit 
 {
@@ -417,171 +418,173 @@ namespace Gambit
             my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
         }  
         
-        CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const Options &options_in) : param_names(params_in), shown_param_names(params_in)
+        CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const Options &options_in) : BasePrior(params_in), shown_param_names(params_in)
         {       
-                std::unordered_map<std::string, std::string> sameMap;
-                std::unordered_map<std::string, std::pair<double, double>> sameMapOptions;
-                std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());
-                std::unordered_set<std::string> paramSet(params_in.begin(), params_in.end()); 
+            std::unordered_map<std::string, std::string> sameMap;
+            std::unordered_map<std::string, std::pair<double, double>> sameMapOptions;
+            std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());
+            std::unordered_set<std::string> paramSet(params_in.begin(), params_in.end()); 
 
-                auto priorNames = options_in.getNames();
-                
-                for (auto priorname_it = priorNames.begin(), priorname_end = priorNames.end(); priorname_it != priorname_end; priorname_it++)
+            auto priorNames = options_in.getNames();
+            
+            for (auto priorname_it = priorNames.begin(), priorname_end = priorNames.end(); priorname_it != priorname_end; priorname_it++)
+            {
+                std::string &priorname = *priorname_it;
+                if (options_in.hasKey(priorname, "parameters") && options_in.hasKey(priorname, "prior_type"))
                 {
-                        std::string &priorname = *priorname_it;
-                        if (options_in.hasKey(priorname, "parameters") && options_in.hasKey(priorname, "prior_type"))
+                    //auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
+                    
+                    auto params = Gambit::Scanner::get_yaml_vector<std::string>(options_in.getNode(priorname, "parameters"));
+                    
+                    for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
+                    {
+                        std::string &par = *par_it;
+                        if (paramSet.find(par) == paramSet.end())
                         {
-                                auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
+                            scan_err << "Parameter " << par << " requested by " << priorname 
+                                << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scan_end;
+                        }
+                        else
+                        {
+                            auto find_it = needSet.find(par);
+                            if (find_it == needSet.end())
+                            {
+                                scan_err << "Parameter " << par << " requested by prior '"<< priorname 
+                                    <<"' is reserved by a different prior." << scan_end;
+                            }
+                            else
+                            {
+                                needSet.erase(find_it);
+                            }
+                        }
+                    }
+
+                    auto options = options_in.getOptions(priorname);
+                    auto priortype = options_in.getValue<std::string>(priorname, "prior_type");
+                    
+                    if (prior_creators.find(priortype) == prior_creators.end())
+                    {
+                        scan_err << "Prior '"<< priorname <<"' is of type '"<< priortype 
+                            <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scan_end;
+                    }
+                    else
+                    {
+                        if (priortype == "fixed")
+                        {
+                            for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
+                            {
+                                shown_param_names.erase
+                                (
+                                    std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
+                                );
+                            }
                                 
+                            my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                        }
+                        else if (priortype == "same_as")
+                        {
+                            if (options.hasKey("same_as"))
+                            {
+                                std::string same_name = options.getValue<std::string>("same_as");
                                 for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                 {
-                                        std::string &par = *par_it;
-                                        if (paramSet.find(par) == paramSet.end())
-                                        {
-                                                scan_err << "Parameter " << par << " requested by " << priorname 
-                                                << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scan_end;
-                                        }
-                                        else
-                                        {
-                                                auto find_it = needSet.find(par);
-                                                if (find_it == needSet.end())
-                                                {
-                                                        scan_err << "Parameter " << par << " requested by prior '"<< priorname 
-                                                        <<"' is reserved by a different prior." << scan_end;
-                                                }
-                                                else
-                                                {
-                                                        needSet.erase(find_it);
-                                                }
-                                        }
+                                    shown_param_names.erase
+                                    (
+                                        std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
+                                    );
+                                    sameMap[*par_it] = same_name;
                                 }
-
-                                auto options = options_in.getOptions(priorname);
-                                auto priortype = options_in.getValue<std::string>(priorname, "prior_type");
-                                
-                                if (prior_creators.find(priortype) == prior_creators.end())
-                                {
-                                        scan_err << "Prior '"<< priorname <<"' is of type '"<< priortype 
-                                        <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scan_end;
-                                }
-                                else
-                                {
-                                        if (priortype == "fixed")
-                                        {
-                                                for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
-                                                {
-                                                        shown_param_names.erase
-                                                        (
-                                                                std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
-                                                        );
-                                                }
-                                                
-                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
-                                        }
-                                        else if (priortype == "same_as")
-                                        {
-                                                if (options.hasKey("same_as"))
-                                                {
-                                                        std::string same_name = options.getValue<std::string>("same_as");
-                                                        for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
-                                                        {
-                                                                shown_param_names.erase
-                                                                (
-                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
-                                                                );
-                                                                sameMap[*par_it] = same_name;
-                                                        }
-                                                }
-                                                else
-                                                {
-                                                        scan_err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scan_end;
-                                                }
-                                        }
-                                        else
-                                        {
-                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
-                                        }
-                                }
+                            }
+                            else
+                            {
+                                scan_err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scan_end;
+                            }
                         }
                         else
                         {
-                                scan_err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scan_end;
+                            my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
                         }
+                    }
                 }
-                
-                if (needSet.size() != 0)
+                else
                 {
-                        scan_err << "Priors are not defined for the following parameters:  [";
-                        auto it = needSet.begin();
-                        scan_err << *(it++);
-                        for (; it != needSet.end(); it++)
-                        {
-                                scan_err << ", "<< *it;
-                        }
-                        scan_err << "]" << scan_end;
+                    scan_err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scan_end;
                 }
-                
-                std::unordered_map<std::string, std::string> keyMap;
-                std::string index, result;
-                unsigned int reps;
-                for (auto strMap_it = sameMap.begin(), strMap_end = sameMap.end(); strMap_it != strMap_end; strMap_it++)
+            }
+            
+            if (needSet.size() != 0)
+            {
+                scan_err << "Priors are not defined for the following parameters:  [";
+                auto it = needSet.begin();
+                scan_err << *(it++);
+                for (; it != needSet.end(); it++)
                 {
-                        index = strMap_it->first;
-                        result = strMap_it->second;
-                        reps = 0;
-                        while (sameMap.find(result) != sameMap.end())
-                        {
-                                index = result;
-                                result = sameMap[index];
-                                
-                                if (result == strMap_it->first)
-                                {
-                                        scan_err << "Parameter " << strMap_it->first << " is \"same as\" itself." << scan_end;
-                                        break;
-                                }
-                                
-                                if (reps > sameMap.size())
-                                {
-                                        scan_err << "Parameter's \"same as\"'s are loop in on each other." << scan_end;
-                                        break;
-                                }
-                                reps++;
-                        }
-                        
-                        if (keyMap.find(result) == keyMap.end())
-                                keyMap[result] = strMap_it->first + std::string("+") + result;
-                        else
-                                keyMap[result] = strMap_it->first + std::string("+") + keyMap[result];
+                    scan_err << ", "<< *it;
                 }
-                
-                for (auto str_it = shown_param_names.begin(), str_end = shown_param_names.end(); str_it != str_end; str_it++)
+                scan_err << "]" << scan_end;
+            }
+            
+            std::unordered_map<std::string, std::string> keyMap;
+            std::string index, result;
+            unsigned int reps;
+            for (auto strMap_it = sameMap.begin(), strMap_end = sameMap.end(); strMap_it != strMap_end; strMap_it++)
+            {
+                index = strMap_it->first;
+                result = strMap_it->second;
+                reps = 0;
+                while (sameMap.find(result) != sameMap.end())
                 {
-                        auto it = keyMap.find(*str_it);
-                        if (it != keyMap.end())
-                        {
-                                *str_it = it->second;
-                        }
+                    index = result;
+                    result = sameMap[index];
+                    
+                    if (result == strMap_it->first)
+                    {
+                        scan_err << "Parameter " << strMap_it->first << " is \"same as\" itself." << scan_end;
+                        break;
+                    }
+                    
+                    if (reps > sameMap.size())
+                    {
+                        scan_err << "Parameter's \"same as\"'s are loop in on each other." << scan_end;
+                        break;
+                    }
+                    reps++;
                 }
                 
-                for (auto key_it = keyMap.begin(), key_end = keyMap.end(); key_it != key_end; key_it++)
+                if (keyMap.find(result) == keyMap.end())
+                    keyMap[result] = strMap_it->first + std::string("+") + result;
+                else
+                    keyMap[result] = strMap_it->first + std::string("+") + keyMap[result];
+            }
+            
+            for (auto str_it = shown_param_names.begin(), str_end = shown_param_names.end(); str_it != str_end; str_it++)
+            {
+                auto it = keyMap.find(*str_it);
+                if (it != keyMap.end())
                 {
-                        if (paramSet.find(key_it->first) == paramSet.end())
-                        {
-                                scan_err << "same_as:  " << key_it->first << " is not defined in inifile." << scan_end;
-                        }
-                        else
-                        {
-                                my_subpriors.push_back(new MultiPriors(key_it->second, sameMapOptions));
-                        }
+                    *str_it = it->second;
                 }
-                
-                int param_size = 0;
-                for (auto subprior = my_subpriors.begin(), subprior_end = my_subpriors.end(); subprior != subprior_end; subprior++)
+            }
+            
+            for (auto key_it = keyMap.begin(), key_end = keyMap.end(); key_it != key_end; key_it++)
+            {
+                if (paramSet.find(key_it->first) == paramSet.end())
                 {
-                        param_size += (*subprior)->size();
+                    scan_err << "same_as:  " << key_it->first << " is not defined in inifile." << scan_end;
                 }
-                
-                setSize(param_size);
+                else
+                {
+                    my_subpriors.push_back(new MultiPriors(key_it->second, sameMapOptions));
+                }
+            }
+            
+            int param_size = 0;
+            for (auto subprior = my_subpriors.begin(), subprior_end = my_subpriors.end(); subprior != subprior_end; subprior++)
+            {
+                param_size += (*subprior)->size();
+            }
+            
+            setSize(param_size);
         }
     } // end namespace Priors
 } // end namespace Gambit

@@ -2,18 +2,18 @@
 //   *********************************************
 ///  \file
 ///
-///  Central module file of DarkBit.  Calculates dark matter 
+///  Central module file of DarkBit.  Calculates dark matter
 ///  related observables.
-///  
-///  Most of the model- or observable-specific code is 
+///
+///  Most of the model- or observable-specific code is
 ///  stored in separate source files.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de) 
+///          (torsten.bringmann@desy.de)
 ///  \date 2013 Jun
 ///  \date 2014 Mar
 ///
@@ -21,15 +21,15 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct
-///  
+///
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
 ///  \date 2015 Jan, Feb
-///  
+///
 ///  \author Pat Scott
 ///          (pscott@imperial.ac.uk)
 ///  \date 2014 Mar
@@ -41,8 +41,10 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -51,9 +53,11 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    void mwimp_generic(double &result) { 
+    void mwimp_generic(double &result)
+    {
       using namespace Pipes::mwimp_generic;
-      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
+      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
+      if (result < 0.0) DarkBit_error().raise(LOCAL_INFO, "Negative WIMP mass detected.");
     }
 
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
@@ -65,6 +69,7 @@ namespace Gambit {
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       result = 0.0;
+      // Add all the regular channels
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
@@ -74,6 +79,8 @@ namespace Gambit {
           result += it->genRate->bind("v")->eval(0.);
         }
       }
+      // Add invisible contributions
+      result += annProc.genRateMisc->bind("v")->eval(0.);
     }
 
 
@@ -96,8 +103,8 @@ namespace Gambit {
        * afterwards can be checked against the expectations.
        */
 
-      double M_DM = 
-        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
+      double M_DM =
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
       double Gps = (*Dep::DD_couplings).gps;
       double Gpa = (*Dep::DD_couplings).gpa;
       double Gns = (*Dep::DD_couplings).gns;
@@ -106,7 +113,7 @@ namespace Gambit {
 
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-      Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
+      daFunk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
       std::ostringstream filename;
       /*
@@ -141,16 +148,16 @@ namespace Gambit {
         os << "\n";
 
         // Output gamma-ray spectrum (grid be set in YAML file).
-        double x_min = 
+        double x_min =
           /// Option GA_AnnYield::Emin<double>: Minimum energy in GeV (default 0.1)
           runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-        double x_max = 
+        double x_max =
           /// Option GA_AnnYield::Emax<double>: Maximum energy in GeV (default 1e4)
           runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
           /// Option GA_AnnYield::nbins<int>: Number of energy bins (default 26)
         int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
         // from 0.1 to 500 GeV
-        std::vector<double> x = Funk::logspace(log10(x_min), log10(x_max), n);
+        std::vector<double> x = daFunk::logspace(log10(x_min), log10(x_max), n);
         std::vector<double> y = spectrum->bind("E")->vect(x);
         os << "# Annihilation spectrum dNdE [1/GeV]\n";
         os << "GammaRaySpectrum:\n";
@@ -170,7 +177,7 @@ namespace Gambit {
             it != annProc.channelList.end(); ++it)
         {
           os << "  ";
-          for (std::vector<std::string>::iterator 
+          for (std::vector<std::string>::iterator
               jt = it->finalStateIDs.begin(); jt!=it->finalStateIDs.end(); jt++)
           {
             os << *jt << "";
@@ -184,18 +191,16 @@ namespace Gambit {
             double m2 = (*Dep::TH_ProcessCatalog).getParticleProperty(
                 it->finalStateIDs[2]).mass;
             double mass = M_DM;
-            Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
-            Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
-            Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set_epsrel(1e-3)->set("v", 0);
-            auto xgrid = Funk::logspace(-2, 3, 1000);
-            auto ygrid = Funk::logspace(-2, 3, 1000);
+            daFunk::Funk E1_low =  daFunk::func(gamma3bdy_limits<0>, daFunk::var("E"), mass, m1, m2);
+            daFunk::Funk E1_high =  daFunk::func(gamma3bdy_limits<1>, daFunk::var("E"), mass, m1, m2);
+            daFunk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set_epsrel(1e-3)->set("v", 0);
+            auto xgrid = daFunk::logspace(-2, 3, 1000);
+            auto ygrid = daFunk::logspace(-2, 3, 1000);
             for ( size_t i = 0; i<xgrid.size(); i++ )
             {
               ygrid[i] = dsigmavde->bind("E")->eval(xgrid[i]);
             }
-            auto interp = Funk::interp("E", xgrid, ygrid);
-            // FIXME: Directly nested integrals seems to be buggy
-            // double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
+            auto interp = daFunk::interp("E", xgrid, ygrid);
             double svTOT = interp->gsl_integration("E", 10., 20.)->set_epsabs(1e-3)->bind()->eval();
             os << ": " << svTOT;
           }

@@ -71,7 +71,7 @@ namespace Gambit
 
     /// Split a string into a vector of strings, using a delimiter,
     /// and removing any whitespace around the delimiter.
-    std::vector<str> delimiterSplit(str, str);
+    std::vector<str> delimiterSplit(str s, str delim);
 
     /// Strips namespace from the start of a string, or after "const".
     str strip_leading_namespace(str s, str ns);
@@ -79,9 +79,6 @@ namespace Gambit
     /// Strip all whitespace except that following "const", 
     /// in which case the whitespace is replaced by a single space.
     void strip_whitespace_except_after_const(str&);
-
-    /// Strip Gambit namespace and clean out whitespace
-    inline str fix_type(str s) { strip_whitespace_except_after_const(s); return strip_leading_namespace(s, "Gambit"); } 
 
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);

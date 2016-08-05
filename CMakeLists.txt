@@ -93,6 +93,14 @@ foreach(module yaml os re datetime sys getopt shutil itertools)
   find_python_module(${module} REQUIRED)
 endforeach()
 
+# Check for axel
+find_program(axel_FOUND axel)
+if(axel_FOUND)
+  message("${BoldYellow}   Found axel.${ColourReset} Backend and scanner downloads will be as fast as possible.")
+else()
+  message("${Red}   Axel utility not found.  Backend downloads would be faster if you installed axel.${ColourReset}")
+endif()
+
 # Do OSX checks
 include(cmake/MacOSX.cmake)
 
@@ -232,10 +240,7 @@ set(GAMBIT_VERSION_MINOR 0)
 set(GAMBIT_VERSION_REVISION 0)
 
 # Add doxygen build as an external project
-add_custom_target(docs  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
-
-# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
-add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
+add_custom_target(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
 
 # Work out which modules to include in the compile
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
@@ -273,8 +278,7 @@ set(PRINTER_HARVESTER ${PROJECT_SOURCE_DIR}/Printers/scripts/printer_harvester.p
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
-# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp, printer_rollcall.hpp
-# and the various standalone_functors.cpp.
+# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp and printer_rollcall.hpp.
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp"
                                   "${PROJECT_SOURCE_DIR}/Models/CMakeLists.txt")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp"
@@ -291,14 +295,6 @@ list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//inclu
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
 list(APPEND MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml")
 set(MODULE_HARVESTER_FILES ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES})
-foreach(bit ${GAMBIT_BITS})
-  if(NOT ScannerBit STREQUAL ${bit})
-    set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
-      file(WRITE ${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp "#include \"gambit/Elements/functor_definitions.hpp\"")
-    endif()
-  endif()
-endforeach()
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
 add_gambit_custom(model_harvest   models_harvested   MODEL_HARVESTER   MODEL_HARVESTER_FILES)
 add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES)
@@ -346,6 +342,3 @@ include(cmake/executables.cmake)
 
 # Finish setting the link commands and rpath variables
 include(${PROJECT_BINARY_DIR}/linkedout.cmake)
-
-# Arrange clean commands
-include(cmake/cleaning.cmake)

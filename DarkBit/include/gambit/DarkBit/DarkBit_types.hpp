@@ -4,19 +4,19 @@
 ///
 ///  Type definition header for module DarkBit.
 ///
-///  Compile-time registration of type definitions 
+///  Compile-time registration of type definitions
 ///  required for the rest of the code to
 ///  communicate with DarkBit.
 ///
 ///  Add to this if you want to define a new type
 ///  for the functions in DarkBit to return, but
-///  you don't expect that type to be needed by 
+///  you don't expect that type to be needed by
 ///  any other modules.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2012 Mar, 2014 Jan
@@ -25,13 +25,13 @@
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
 ///  \date 2014 Jan, Apr
 ///  \date 2015 Mar
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct, Dec
 ///  \date 2015 Jan
@@ -63,7 +63,7 @@
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/daFunk.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -126,7 +126,7 @@ namespace Gambit
         bool threadsafe;
         nuyield_function_pointer pointer;
     };
-    
+
     /// Neutrino telescope data container
     struct nudata
     {
@@ -139,147 +139,11 @@ namespace Gambit
         double pvalue;
     };
 
-    ////////////////////////////////////////////////////
-    // Indirect detection final state yield structures
-    ////////////////////////////////////////////////////
-         
-    /// Channel container
-    struct SimYieldChannel
-    {
-        SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
-            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
-        {
-          #ifdef DARKBIT_DEBUG
-            std::ostringstream msg;
-            msg << "SimYieldChannel for " << p1 << " " << p2 << " final state(s): Requested center-of-mass energy out of range (";
-            msg << Ecm_min << "-" << Ecm_max << " GeV).";
-            auto error = Funk::raiseInvalidPoint(msg.str());
-            auto Ecm = Funk::var("Ecm");
-            this->dNdE = Funk::ifelse(Ecm - Ecm_min, Funk::ifelse(Ecm_max - Ecm, dNdE, error), error);
-          #endif
-          dNdE_bound = dNdE->bind("E", "Ecm");
-        }
-        Funk::Funk dNdE;       
-        Funk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays
-        std::string p1;
-        std::string p2;
-        std::string finalState;
-        double Ecm_min;
-        double Ecm_max;        
-    };
-
-    /// Aggregated yield table (consisting of multiple channels)
-    class SimYieldTable
-    {
-        /* Object containing tabularized yields for particle decay and two-body
-         * final states.
-         */
-        public:
-            SimYieldTable() : 
-                dummy_channel(Funk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
-
-            void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
-            {
-                if ( hasChannel(p1, p2) )
-                {
-                    DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
-                    return;
-                }
-                channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
-            }
-            
-            void addChannel(Funk::Funk dNdE, std::string p1, std::string finalState, double Ecm_min, double Ecm_max)
-            {
-                addChannel(dNdE, p1, "", finalState, Ecm_min, Ecm_max);
-            }
-
-            bool hasChannel(std::string p1, std::string p2, std::string finalState) const
-            {
-                return ( findChannel(p1, p2, finalState) != -1 );
-            }
-
-            bool hasChannel(std::string p1, std::string finalState) const
-            {
-                return hasChannel(p1, "", finalState);
-            }
-            
-            bool hasAnyChannel(std::string p1) const
-            {
-                return hasAnyChannel(p1, "");
-            }         
-            
-            bool hasAnyChannel(std::string p1, std::string p2) const
-            {
-                const std::vector<SimYieldChannel> &cl = channel_list;
-                for ( unsigned int i = 0; i < channel_list.size(); i++ )
-                {
-                    if ((p1==cl[i].p1 and p2==cl[i].p2) or (p1==cl[i].p2 and p2==cl[i].p1) )
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            
-            const SimYieldChannel& getChannel(std::string p1, std::string p2, std::string finalState) const
-            {
-                int index = findChannel(p1, p2, finalState);
-                if ( index == -1 )
-                {
-                    DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
-                    return dummy_channel;
-                }
-                return channel_list[index];
-            }
-
-            Funk::Funk operator()(std::string p1, std::string p2, std::string finalState, double Ecm) const
-            {
-                return this->operator()(p1, p2, finalState)->set("Ecm", Ecm);
-            }
-
-            Funk::Funk operator()(std::string p1, std::string finalState, double Ecm) const
-            {
-                return this->operator()(p1,finalState)->set("Ecm", Ecm);
-            }
-
-            Funk::Funk operator()(std::string p1, std::string p2, std::string finalState) const
-            {
-                int index = findChannel(p1, p2, finalState);
-                if ( index == -1 )
-                {
-                    DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
-                    return Funk::zero("E", "Ecm");
-                }
-                return channel_list[index].dNdE;
-            }
-
-            Funk::Funk operator()(std::string p1, std::string finalState) const
-            {
-                return this->operator()(p1, "", finalState);
-            }
-
-        private:
-            SimYieldChannel dummy_channel;
-            std::vector<SimYieldChannel> channel_list;
-
-            int findChannel(std::string p1, std::string p2, std::string finalState) const
-            {
-                const std::vector<SimYieldChannel> &cl = channel_list;
-                for ( unsigned int i = 0; i < channel_list.size(); i++ )
-                {
-                    if ((p1==cl[i].p1 and p2==cl[i].p2 and finalState==cl[i].finalState) or (p1==cl[i].p2 and p2==cl[i].p1 and finalState==cl[i].finalState) )
-                    {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-    };
 
     //////////////////////////////////////////////
     // Direct detection data structures
     //////////////////////////////////////////////
-    
+
     // NOTE:
     // The structures here are
     // preliminary ideas for generic, robust means of
@@ -315,7 +179,7 @@ namespace Gambit
         double vpec[3];  // Sun's peculiar velocity
         double vsun[3];  // Sun's total velocity: vsun = vLSR + vpec
         // Earth's motion -------------
-        // At some point in the future, this structure may 
+        // At some point in the future, this structure may
         // contain parameterizations of the Earth's motion
         // relative to the Sun.
     };
@@ -367,7 +231,7 @@ namespace Gambit
         // only used here, but this is meant to mirror the
         // distributions in external DDCalc package.
         std::vector<DDHaloComponentS> C;
-        // A key-value array 
+        // A key-value array
         //std::map<int,DDHaloComponentS> C;
     };
 
@@ -411,10 +275,139 @@ namespace Gambit
     };
     */
 
+    struct SimYieldChannel
+    {
+        SimYieldChannel(daFunk::Funk dNdE, std::string p1, std::string p2,
+            std::string finalState, double Ecm_min, double Ecm_max):
+          dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min),
+          Ecm_max(Ecm_max)
+        {
+            std::ostringstream msg;
+            msg << "SimYieldChannel for " << p1 << " " << p2 <<
+              " final state(s): Requested center-of-mass energy out of range (";
+            msg << Ecm_min << "-" << Ecm_max << " GeV).";
+            auto error = daFunk::raiseInvalidPoint(msg.str());
+            auto Ecm = daFunk::var("Ecm");
+            this->dNdE = daFunk::ifelse(Ecm - Ecm_min, daFunk::ifelse(Ecm_max - Ecm, dNdE, error), error);
+            dNdE_bound = this->dNdE->bind("E", "Ecm");
+        }
+        daFunk::Funk dNdE;
+        daFunk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays
+        std::string p1;
+        std::string p2;
+        std::string finalState;
+        double Ecm_min;
+        double Ecm_max;
+    };
 
+    // Channel container
+    class SimYieldTable
+    {
+        /* Object containing tabularized yields for particle decay and two-body
+         * final states.
+         */
+        public:
+            SimYieldTable() :
+                dummy_channel(daFunk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
+
+            void addChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
+            {
+                if ( hasChannel(p1, p2) )
+                {
+                    DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
+                    return;
+                }
+                channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
+            }
+
+            void addChannel(daFunk::Funk dNdE, std::string p1, std::string finalState, double Ecm_min, double Ecm_max)
+            {
+                addChannel(dNdE, p1, "", finalState, Ecm_min, Ecm_max);
+            }
+
+            bool hasChannel(std::string p1, std::string p2, std::string finalState) const
+            {
+                return ( findChannel(p1, p2, finalState) != -1 );
+            }
+
+            bool hasChannel(std::string p1, std::string finalState) const
+            {
+                return hasChannel(p1, "", finalState);
+            }
+
+            bool hasAnyChannel(std::string p1) const
+            {
+                return hasAnyChannel(p1, "");
+            }
+
+            bool hasAnyChannel(std::string p1, std::string p2) const
+            {
+                const std::vector<SimYieldChannel> &cl = channel_list;
+                for ( unsigned int i = 0; i < channel_list.size(); i++ )
+                {
+                    if ((p1==cl[i].p1 and p2==cl[i].p2) or (p1==cl[i].p2 and p2==cl[i].p1) )
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            const SimYieldChannel& getChannel(std::string p1, std::string p2, std::string finalState) const
+            {
+                int index = findChannel(p1, p2, finalState);
+                if ( index == -1 )
+                {
+                    DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
+                    return dummy_channel;
+                }
+                return channel_list[index];
+            }
+
+            daFunk::Funk operator()(std::string p1, std::string p2, std::string finalState, double Ecm) const
+            {
+                return this->operator()(p1, p2, finalState)->set("Ecm", Ecm);
+            }
+
+            daFunk::Funk operator()(std::string p1, std::string finalState, double Ecm) const
+            {
+                return this->operator()(p1,finalState)->set("Ecm", Ecm);
+            }
+
+            daFunk::Funk operator()(std::string p1, std::string p2, std::string finalState) const
+            {
+                int index = findChannel(p1, p2, finalState);
+                if ( index == -1 )
+                {
+                    DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
+                    return daFunk::zero("E", "Ecm");
+                }
+                return channel_list[index].dNdE;
+            }
+
+            daFunk::Funk operator()(std::string p1, std::string finalState) const
+            {
+                return this->operator()(p1, "", finalState);
+            }
+
+        private:
+            SimYieldChannel dummy_channel;
+            std::vector<SimYieldChannel> channel_list;
+
+            int findChannel(std::string p1, std::string p2, std::string finalState) const
+            {
+                const std::vector<SimYieldChannel> &cl = channel_list;
+                for ( unsigned int i = 0; i < channel_list.size(); i++ )
+                {
+                    if ((p1==cl[i].p1 and p2==cl[i].p2 and finalState==cl[i].finalState) or (p1==cl[i].p2 and p2==cl[i].p1 and finalState==cl[i].finalState) )
+                    {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+    };
   }
 }
-
-
 
 #endif // defined __DarkBit_types_hpp__

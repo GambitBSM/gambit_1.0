@@ -51,6 +51,15 @@
 /// Change this to 1 if you really don't care about parameter clashes.
 #define ALLOW_DUPLICATES_IN_PARAMS_MAP 0
 
+/// Suppress unused variable warnings in GCC (and do nothing for other compilers)
+#ifndef VARIABLE_IS_NOT_USED
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+#endif
+
 #include <map>
 
 #include "gambit/Elements/functors.hpp"
@@ -560,7 +569,7 @@
     /* Set up a helper function to call the iterate method if the functor is   \
     able to manage loops. */                                                   \
     BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                                \
-     void CAT(FUNCTION,_iterate)(int it) { FUNCTION.iterate(it); }             \
+     void CAT(FUNCTION,_iterate)(long long it) { FUNCTION.iterate(it); }       \
     ,)                                                                         \
     /* Create a helper function to indicate whether a given model is in use. */\
     BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                              \
@@ -589,7 +598,7 @@
        {                                                                       \
          /* Create a pointer to the single iteration of the loop that can      \
          be executed by this functor */                                        \
-         void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate);    \
+         void (*executeIteration)(long long)=&Functown::CAT(FUNCTION,_iterate);\
          /* Declare a safe pointer to the flag indicating that a managed loop  \
          is ready for breaking. */                                             \
          safe_ptr<bool> done;                                                  \
@@ -602,12 +611,11 @@
   }                                                                            \
                                                                                \
   /* Register the function */                                                  \
-  const int CAT(FUNCTION,_registered1) = register_function(Functown::FUNCTION, \
+  const int VARIABLE_IS_NOT_USED CAT(FUNCTION,_registered1) = register_function(Functown::FUNCTION, \
    CAN_MANAGE,                                                                 \
    BOOST_PP_IIF(CAN_MANAGE, &Pipes::FUNCTION::Loop::done, NULL),               \
    Accessors::iCanDo, Accessors::map_bools,                                    \
    Accessors::provides<Gambit::Tags::CAPABILITY>, Pipes::FUNCTION::runOptions);\
-
 
 // Determine whether to make registration calls to the Core in the 
 // CORE_NEEDS_MANAGER_WITH_CAPABILITY macro, depending on STANDALONE flag 
@@ -646,7 +654,7 @@
           {                                                                    \
             /* Create a safe pointer to the iteration number of the loop this  \
             functor is running within. */                                      \
-            omp_safe_ptr<int> iteration;                                       \
+            omp_safe_ptr<long long> iteration;                                 \
             /* Create a loop-breaking function that can be called to tell the  \
             functor's loop manager that it is time to break. */                \
             void wrapup() { Functown::FUNCTION.breakLoopFromManagedFunctor(); }\
@@ -685,7 +693,8 @@
         namespace FUNCTION                                                     \
         {                                                                      \
           BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
-           namespace Dep {dep_bucket<TYPE> DEP;})                              \
+           namespace Dep {dep_bucket<TYPE> DEP(STRINGIFY(MODULE),              \
+           STRINGIFY(FUNCTION),STRINGIFY(DEP));})                              \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -819,7 +828,12 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Dep { dep_bucket<ModelParameters> CAT(MODEL,_parameters); }\
+          namespace Dep                                                        \
+          {                                                                    \
+            dep_bucket<ModelParameters> CAT(MODEL,_parameters)                 \
+             (STRINGIFY(MODULE),STRINGIFY(FUNCTION),                           \
+             STRINGIFY(CAT(MODEL,_parameters)));                               \
+          }                                                                    \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -1089,7 +1103,8 @@
              CONVERT_VARIADIC_ARG(ARGS)), TYPE                                 \
              INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))>                        \
              CAT(REQUIREMENT,func);                                            \
-            CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT;   \
+            CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT    \
+             (STRINGIFY(MODULE),STRINGIFY(FUNCTION),STRINGIFY(REQUIREMENT));   \
           }                                                                    \
         }                                                                      \
       }                                                                        \

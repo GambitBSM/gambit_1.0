@@ -29,6 +29,7 @@
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
@@ -52,6 +53,9 @@
 // Dependency types
 #define NORMAL_DEPENDENCY 1
 #define LOOP_MANAGER_DEPENDENCY 2
+
+// Debug flag
+//#define DEPRES_DEBUG
 
 namespace Gambit
 {
@@ -169,8 +173,10 @@ namespace Gambit
     // Matches function name and type
     bool matchesRules( functor *f, const Rule & rule)
     {
-      //cout << (*f).name() << " vs " << rule.function << endl;
-      //cout << (*f).origin() << " vs " << rule.module << endl;
+      #ifdef DEPRES_DEBUG
+        cout << (*f).name() << " vs " << rule.function << endl;
+        cout << (*f).origin() << " vs " << rule.module << endl;
+      #endif
       return ( stringComp( rule.function, (*f).name()) and
                stringComp( rule.module, (*f).origin())
              );
@@ -260,10 +266,17 @@ namespace Gambit
     }
 
     // Same thing for types (taking into account equivalence classes)
-    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq, bool with_regex)
+    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq, bool with_regex)
     {
       bool match1, match2;
-      if (stringComp(s1, s2, with_regex)) return true;  // Does it just match?
+      // Loop over all the default versions of BOSSed backends and strip off any corresponding leading namespace.
+      for (auto it = Backends::backendInfo().default_safe_versions.begin(); it != Backends::backendInfo().default_safe_versions.end(); ++it)
+      {
+        s1 = Utils::strip_leading_namespace(s1, it->first+"_"+it->second);
+        s2 = Utils::strip_leading_namespace(s2, it->first+"_"+it->second);
+      }
+      // Does it just match?
+      if (stringComp(s1, s2, with_regex)) return true;
       // Otherwise loop over equivalence classes.
       for (auto it1 = eq.equivalency_classes.begin(); it1 != eq.equivalency_classes.end(); it1++)
       {
@@ -909,7 +922,9 @@ namespace Gambit
       YAML::Node nodes;
       YAML::Node zlevels;
 
-      cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+      #ifdef DEPRES_DEBUG
+        cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+      #endif
 
       const IniParser::ObservablesType & entries = boundIniFile->getRules();
       //entries = boundIniFile->getObservables();
@@ -918,12 +933,16 @@ namespace Gambit
       {
         if ( moduleFuncMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
         {
-          cout << "Getting option from: " << it->capability << " " << it->type << endl;
+          #ifdef DEPRES_DEBUG
+            cout << "Getting option from: " << it->capability << " " << it->type << endl;
+          #endif
           for (auto jt = it->options.begin(); jt != it->options.end(); ++jt)
           {
             if ( not nodes[jt->first.as<std::string>()] )
             {
-              cout << jt->first.as<std::string>() << ": " << jt->second << endl;
+              #ifdef DEPRES_DEBUG
+                cout << jt->first.as<std::string>() << ": " << jt->second << endl;
+              #endif
               nodes[jt->first.as<std::string>()] = jt->second;
               zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
             }
@@ -931,14 +950,14 @@ namespace Gambit
             {
               if ( zlevels[jt->first.as<std::string>()].as<int>() < getEntryLevelForOptions(*it) )
               {
-                cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
+                #ifdef DEPRES_DEBUG
+                  cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
+                #endif
                 zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
                 nodes[jt->first.as<std::string>()] = jt->second;
               }
               else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
               {
-                //cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
-                //exit(-1);
                 std::ostringstream errmsg;
                 errmsg << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>();
                 dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
@@ -1371,6 +1390,11 @@ namespace Gambit
       logger() << "################################################" << endl;
       logger() << EOM;
 
+      // Print something to stdout as well
+      #ifdef DEPRES_DEBUG
+        std::cout << "Resolving dependency graph..." << std::endl;
+      #endif
+
       // Read ini entries
       use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
       print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
@@ -1490,21 +1514,26 @@ namespace Gambit
           logger() << LogTags::dependency_resolver << "Activate new module function" << endl;
           masterGraph[fromVertex]->setStatus(2); // activate node
           resolveVertexBackend(fromVertex);
-          if ( boundIniFile->getValueOrDef<bool>( false, "dependency_resolution", "use_old_routines") )
+
+          // Don't need options during dry-run, so skip this (just to simplify terminal output)
+          if(not boundCore->show_runorder)
           {
-            // Generate options object from ini-file entry that corresponds to
-            // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
-            iniEntry = findIniEntry(fromVertex, boundIniFile->getRules(), "Rules");
-            if ( iniEntry != NULL )
+            if ( boundIniFile->getValueOrDef<bool>( false, "dependency_resolution", "use_old_routines") )
             {
-              Options myOptions(iniEntry->options);
+              // Generate options object from ini-file entry that corresponds to
+              // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
+              iniEntry = findIniEntry(fromVertex, boundIniFile->getRules(), "Rules");
+              if ( iniEntry != NULL )
+              {
+                Options myOptions(iniEntry->options);
+                masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
+              }
+            }
+            else
+            {
+              Options myOptions = collectIniOptions(fromVertex);
               masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
             }
-          }
-          else
-          {
-            Options myOptions = collectIniOptions(fromVertex);
-            masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex
           fillParQueue(&parQueue, fromVertex);

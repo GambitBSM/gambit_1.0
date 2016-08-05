@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2015 May
@@ -32,9 +32,9 @@ namespace Gambit {
       int fast;  // 0: standard; 1: fast; 2: dirty
 
       // Set options via ini-file
-      // FIXME: Add getValue documentation
+      /// Option omtype<int>: 0 no coann, 1 all coann (default 1)
       omtype = runOptions->getValueOrDef<int>(1, "omtype");
-      // FIXME: Add getValue documentation
+      /// Option fast<int>: 0 standard, 1 fast, 2 dirty (default 0)
       fast = runOptions->getValueOrDef<int>(0, "fast");
 
       // Output

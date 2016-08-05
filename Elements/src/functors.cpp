@@ -37,7 +37,8 @@
 #include <chrono>
 
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Elements/functor_definitions.hpp" // Had to add this for signal decoupling, might be some other way around the linking problems...
+#include "gambit/Elements/functor_definitions.hpp"
+#include "gambit/Elements/type_equivalency.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
@@ -176,7 +177,7 @@ namespace Gambit
     }
 
     /// Set the iteration number in a loop in which this functor runs
-    void functor::setIteration (int)
+    void functor::setIteration (long long)
     {
       utils_error().raise(LOCAL_INFO,"The setIteration method has not been defined in this class.");
     }
@@ -529,16 +530,28 @@ namespace Gambit
     }
 
     /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+    /// Preferentially returns the 'least removed' parent or friend, i.e. less steps back in the model lineage.
     str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::set<sspair> > karta)
     {
+      std::vector<str> candidates;
       for (std::map< str, std::set<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->downstream_of(model, it->first)) return it->first;
+          if (myClaw->downstream_of(model, it->first)) candidates.push_back(it->first);
         }
       }
-      return "";
+      // If found no candidates, return the empty string.
+      if (candidates.empty()) return "";
+      // If found just one, return it with no further questions.
+      if (candidates.size() == 1) return candidates[0];
+      // If found more than one, choose the one closest to the model passed in. 
+      str result = candidates.front();
+      for (std::vector<str>::iterator it = candidates.begin()+1; it != candidates.end(); ++it)
+      {
+        if (myClaw->downstream_of(*it, result)) result = *it;
+      }
+      return result;
     }
 
     /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
@@ -703,7 +716,7 @@ namespace Gambit
     }
 
     /// Execute a single iteration in the loop managed by this functor.
-    void module_functor_common::iterate(int iteration)
+    void module_functor_common::iterate(long long iteration)
     {
       if (not myNestedFunctorList.empty())
       {
@@ -736,7 +749,7 @@ namespace Gambit
             // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
             int nslots = (iRunNested ? globlMaxThreads : 1);
             // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-            myCurrentIteration = new int[nslots];
+            myCurrentIteration = new long long[nslots];
             // Zero them to start off
             std::fill(myCurrentIteration, myCurrentIteration+nslots, 0);
           }
@@ -786,18 +799,18 @@ namespace Gambit
     }
 
     /// Setter for setting the iteration number in the loop in which this functor runs
-    void module_functor_common::setIteration (int iteration)
+    void module_functor_common::setIteration (long long iteration)
     {
       init_myCurrentIteration_if_NULL(); // Init memory if this is the first run through.
       myCurrentIteration[omp_get_thread_num()] = iteration;
     }
 
     /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-    omp_safe_ptr<int> module_functor_common::iterationPtr()
+    omp_safe_ptr<long long> module_functor_common::iterationPtr()
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
       init_myCurrentIteration_if_NULL();  // Init memory if this is the first run through.
-      return omp_safe_ptr<int>(myCurrentIteration);
+      return omp_safe_ptr<long long>(myCurrentIteration);
     }
 
     /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
@@ -1378,8 +1391,8 @@ namespace Gambit
 
     }
 
-    /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
-    void module_functor_common::notifyOfModel(str model)
+    /// Construct the list of known models only if it doesn't yet exist
+    void module_functor_common::fill_activeModelFlags()
     {
       // Construct the list of known models only if it doesn't yet exist
       if (activeModelFlags.empty())
@@ -1393,13 +1406,45 @@ namespace Gambit
         for (auto it = myModelConditionalDependencies.begin(); it != myModelConditionalDependencies.end(); ++it) { activeModelFlags[it->first] = false; }
         for (auto it = myModelConditionalBackendReqs.begin();  it != myModelConditionalBackendReqs.end();  ++it) { activeModelFlags[it->first] = false; }
       }
+    }
+
+    /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
+    void module_functor_common::notifyOfModel(str model)
+    {
+      // If activeModels hasn't been populated yet, make sure it is.
+      fill_activeModelFlags();
 
       // Now activate the flags for the models that are being used.
       for (auto it = activeModelFlags.begin(); it != activeModelFlags.end(); ++it)
       {
-        if (myClaw->model_exists(it->first))
+        str activation_candidate = it->first;
+        if (myClaw->model_exists(activation_candidate))
         {
-          if (myClaw->downstream_of(model, it->first)) it->second = true;
+          if (myClaw->downstream_of(model, activation_candidate))
+          {
+            // Found an activation candidate that the model being scanned can be cast to.
+            // Assume for now that the candidate will indeed be activated. 
+            it->second = true;
+            // Compare with models that have already been activated, to avoid activating multiple models of the same lineage.
+            for (auto jt = activeModelFlags.begin(); jt != activeModelFlags.end(); ++jt)
+            {
+              str active_model = jt->first;
+              if (activation_candidate != active_model and myClaw->model_exists(active_model) and jt->second)
+              {
+                // If the already active model can be upcast to the activation candidate, abort the activiation of the candidate.
+                if (myClaw->downstream_of(active_model, activation_candidate)) it->second = false;
+                // If the candidate can be upcast to the already active model, activate the candidate instead of the already active model.
+                if (myClaw->downstream_of(activation_candidate, active_model)) jt->second = false;
+                if (verbose)
+                {
+                  cout << "model: " << model << " " << "model to be activated: " << activation_candidate << "(" << it->second << ") active model: " << active_model << "(" << jt->second << ")" << endl;
+                  cout << "active model lives below:" << myClaw->downstream_of(active_model, activation_candidate) << endl;
+                  cout << "activation candidate lives below:" << myClaw->downstream_of(activation_candidate, active_model) << endl;
+                }
+              }
+            }
+            if (verbose) cout << "Activate candidate " << activation_candidate << "?" << it->second << endl;
+          }
         }
       }
 
@@ -1532,6 +1577,7 @@ namespace Gambit
         }
         boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
+        fill_activeModelFlags();                     // If activeModels hasn't been populated yet, make sure it is.
         init_memory();                               // Init memory if this is the first run through.
         if (needs_recalculating[thread_num])
         {

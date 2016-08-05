@@ -32,7 +32,9 @@ namespace Gambit
 
     /// Forward declaration of base printer classes (Declared fully in baseprinter.hpp and basebaseprinter.hpp)
     class BaseBasePrinter; 
+    class BaseBaseReader; 
     class BasePrinter; 
+    class BaseReader; 
 
     /// Manager class for creating printer objects  
     class PrinterManager: public BasePrinterManager
@@ -40,6 +42,9 @@ namespace Gambit
       private:
         /// Map containing pointers to auxiliary printer objects
         std::map<std::string, BasePrinter*> auxprinters;
+
+        /// Map containing pointers to reader objects
+        std::map<std::string, BaseReader*> readers;
 
         /// Name specifying the printer type
         std::string tag;
@@ -60,9 +65,15 @@ namespace Gambit
         /// Create auxiliary printer object
         void new_stream(const std::string&, const Options&);
 
+        /// Create reader object
+        void new_reader(const std::string&, const Options&);
+
         /// Getter for auxiliary printer objects
         BaseBasePrinter* get_stream(const std::string& = "");
   
+        /// Getter for reader objects
+        BaseBaseReader* get_reader(const std::string&);
+
         /// Instruct printers that scan has finished and to perform cleanup
         void finalise(bool abnormal=false);
 

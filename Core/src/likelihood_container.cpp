@@ -39,19 +39,20 @@ namespace Gambit
   /// Constructor
   Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-   Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+   const str &purpose, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
   ) 
   : dependencyResolver (dependencyResolver), 
-    prior              (prior),
     printer            (printer),
     functorMap         (functorMap),
     #ifdef WITH_MPI
     errorComm          (comm), 
     #endif
-    min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    min_valid_lnlike    (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    alt_min_valid_lnlike(iniFile.getValueOrDef<double>(min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")),
+    active_min_valid_lnlike(min_valid_lnlike), // can be switched to the alternate value by the scanner
     intralooptime_label("Runtime(ns) intraloop"),
     interlooptime_label("Runtime(ns) interloop"),
     totallooptime_label("Runtime(ns) totalloop"),
@@ -90,10 +91,10 @@ namespace Gambit
   }
 
   /// Do the prior transformation and populate the parameter map
-  void Likelihood_Container::setParameters (const std::vector<double> &vec)
+  void Likelihood_Container::setParameters (const std::unordered_map<std::string, double> &parameterMap)
   {
-    // Do the prior transformation, saving the real parameter values in the parameterMap
-    prior.transform(vec, parameterMap);
+    // Clear the parameter map to make sure no junk from the last iteration gets left in there
+    //parameterMap.clear();
 
     // Set up a stream containing the parameter values, for diagnostic output
     std::ostringstream parstream;
@@ -108,8 +109,23 @@ namespace Gambit
       for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
         str key = act_it->first + "::" + *par_it;
-        parstream << "    " << *par_it << ": " << parameterMap[key] << endl;
-        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[key]);
+        auto tmp_it = parameterMap.find(key);
+        if(tmp_it == parameterMap.end())
+        {
+           std::ostringstream err;
+           err << "Error! Failed to set parameter '"<<key<<"' following prior transformation! The parameter could not be found in the map returned by the prior. This probably means that the prior you are using contains a bug." << std::endl;
+           err << "The parameters and values that *were* returned by the prior were:" <<std::endl;
+           if(parameterMap.size()==0){ err << "None! Size of map was zero." << std::endl; } 
+           else {
+             for (auto par_jt = parameterMap.begin(); par_jt != parameterMap.end(); ++par_jt)
+             {
+               err << par_jt->first << "=" << par_jt->second << std::endl;
+             }
+           }
+           core_error().raise(LOCAL_INFO,err.str());
+        }
+        parstream << "    " << *par_it << ": " << tmp_it->second << endl;
+        act_it->second->getcontentsPtr()->setValue(*par_it, tmp_it->second);
       }
     }
 
@@ -129,7 +145,7 @@ namespace Gambit
   }
 
   /// Evaluate total likelihood function
-  double Likelihood_Container::main (const std::vector<double> &in)
+  double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
   {
     double lnlike = 0;
 
@@ -141,6 +157,12 @@ namespace Gambit
 
     // Check for signals to abort run
     signaldata().check_for_shutdown_signal();
+
+    // Check for signals to switch to an alternate minimum log likelihood value.
+    if(check_for_switch_to_alternate_min_LogL())
+    {
+       active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
+    }
 
     bool compute_aux = true;
 
@@ -218,7 +240,7 @@ namespace Gambit
         }
 
         // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
-        if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
+        if (lnlike <= active_min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
 
         // Log completion of this likelihood.
         if (debug) logger() << LogTags::core << "Computed l" << likelihood_tag << "." << EOM;
@@ -229,9 +251,10 @@ namespace Gambit
       {
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         logger().leaving_module();
-        lnlike = min_valid_lnlike;
+        lnlike = active_min_valid_lnlike;
         compute_aux = false;
         if (debug) cout << "Point invalid." << endl;
+        printer.disable(); // Disable the printer so that it doesn't try to output the min_valid_lnlike as a valid likelihood value. ScannerBit will re-enable it when needed again.
         break;
       }
 
@@ -257,11 +280,11 @@ namespace Gambit
       }
     }
 
-    if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
-
     // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
     if (compute_aux)
     {
+      if (debug) logger() << LogTags::core <<  "Completed likelihoods.  Calculating additional observables." << EOM;
+
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
         // Log the observables being tried.
@@ -276,13 +299,14 @@ namespace Gambit
         }
         catch(Gambit::invalid_point_exception& e)
         {
-          logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
+          if (debug) logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         }
       }
     }
 
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
+    logger() << "Total lnL: " << lnlike << EOM;
     dependencyResolver.resetAll();
 
     /// Check once more for signals to abort run

@@ -72,7 +72,7 @@ Parameters:
 
     SingletDM:
       mS: 620
-      lambda_hS: 2.25 #0.30
+      lambda_hS: 1 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -113,7 +113,7 @@ Scanner:
 
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 200
       output_file:  output
       like:  LogLike
@@ -174,17 +174,19 @@ ObsLikes:
     - capability: check_perturb_min_lambda
       purpose: Observable
 
- #   - capability: check_perturb
- #     purpose: Observable
-
  #   - capability: expected_lifetime
  #     purpose: Observable
 
 #    - capability: LHC_Higgs_LogLike
 #      purpose:  LogLike
 
-    - capability: print_SingletDM_spectrum
-      purpose: observable
+    - capability: SingletDM_spectrum
+      purpose: Observable
+      function: get_SingletDM_spectrum_as_map
+      dependencies:
+         - capability: SingletDM_spectrum
+           type: const Spectrum*
+
 
 
 
@@ -194,17 +196,14 @@ ObsLikes:
 #########################
 
 Rules:
-  #  - capability: check_perturb
- #     purpose: Observable
-#      function: check_perturb_SingletDM #or check_perturb_simple
-    #  options:
-    #    set_high_scale: 1e18  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
+      type: const Spectrum*
       function: get_SingletDM_spectrum_pole
-   #   options:
-   #     set_high_scale: 1e20
-   #     check_perturb_pts: 10
+      options:
+        check_perturb: true
+        check_high_scale: 1e5
+        check_perturb_pts: 10
 
     - capability: Higgs_decay_rates
       function: SingletDM_Higgs_decays
@@ -267,7 +266,6 @@ KeyValues:
     ExampleBit_A_error: non-fatal
     DecayBit_error: non-fatal
     utils_error: non-fatal
-    invalid_point_fatal: false
 
   enable_testing: false
 

@@ -173,6 +173,13 @@ namespace Gambit
           " NormalDist! There is probably a bug ExampleBit_A_rollcall.hpp; this module "
           " function should have ALLOW_MODELS(NormalDist) defined.");
       }
+
+      // Randomly invalidate points for testing purposes
+      if (Random::draw() < 0.5)
+      {
+        invalid_point().raise("I don't like this point.");
+      }
+
       result = loglTotal;
     }
 
@@ -510,7 +517,9 @@ namespace Gambit
       result = test3;
     }
 
-
+    /// Flat test likelihood for checking prior distributions
+    void flat_likelihood(double &result){ result = 1; }
+ 
     /// @}
   }
 

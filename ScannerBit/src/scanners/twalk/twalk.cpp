@@ -26,7 +26,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
 {
     int plugin_main ()
     {
-        scan_ptr<double (const std::vector<double>&)> LogLike = get_purpose("Likelihood");
+        like_ptr LogLike = get_purpose(get_inifile_value<std::string>("like", "LogLike"));
         int dim = get_dimension();
         
         int numtasks;
@@ -42,7 +42,8 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
         //txt_options.setValue("info_file", "info");
         get_printer().new_stream("txt", txt_options);
 
-        TWalk(LogLike, get_printer(), set_resume_params,
+        TWalk(LogLike, get_printer(),
+                        set_resume_params,
                         dim,
                         get_inifile_value<double>("kwalk_ratio", 0.9836),
                         get_inifile_value<int>("projection_dimension", 4),
@@ -60,11 +61,11 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
     }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
+void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
 {
     std::vector<double> chisq(NThreads);
-    std::vector<double> aNext(ma, 0.0);
-    std::vector<std::vector<double>> a0 = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma, 0.0));
+    std::vector<double> aNext(ma);
+    std::vector<std::vector<double>> a0 = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma));
     double ans, chisqnext;
     std::vector<int> mult(NThreads, 1);
     std::vector<int> totN(NThreads, 0);
@@ -81,7 +82,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
     std::vector<unsigned long long int> ids(NThreads);
     std::vector<int> ranks(NThreads);
     unsigned long long int next_id;
-    double logZ, Ravg = 0.0;
+    double Ravg = 0.0;
     
     set_resume_params(chisq, a0, mult, totN, count, total, ttotal, Nlength, covT, avgT, W, avgTot, ids, ranks);
     Gambit::Scanner::assign_aux_numbers("mult", "chain");
@@ -101,7 +102,12 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
     int numtasks = 1;
     int rank = 0;
 #endif
-    RandomPlane gDev(proj, ma, din, alim, alimt, rand);
+    //RandomPlane gDev(proj, ma, din, alim, alimt, rand);
+    std::vector<RanNumGen *> gDev;
+    for (int i = 0; i < NThreads; i++)
+    {
+        gDev.push_back(new RanNumGen(proj, ma, din, alim, alimt, div, rand));
+    }
     
     Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
     out_stream->reset();
@@ -130,7 +136,8 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             {
 #endif
                 for (int j = 0; j < ma; j++)
-                    a0[t][j] = (gDev.Doub());
+                    a0[t][j] = (gDev[t]->Doub());
+                a0[t][ma] = -1;
                 chisq[t] = -LogLike(a0[t]);
                 ids[t] = LogLike->getPtID();
                 ranks[t] = rank;
@@ -151,9 +158,6 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             
     std::cout << "Metropolis Hastings/TWalk Algorthm Started"  << std::endl;
     //std::cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << "\n\tR = "  << std::endl;//double div = 0.9836;
-    double b0 = div/2.0;
-    double b1 = div;
-    double b2 = (1.0 + div)/2.0;
     
     do
     {       
@@ -163,7 +167,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             int j = NThreads;
             for(int i = 0; i < numtasks; i++)
             {
-                int temp = int((j--)*gDev.Doub());
+                int temp = int((j--)*gDev[0]->Doub());
                 talls[i] = tints[temp];
                 tints[temp] = tints[j];
                 tints[j] = talls[i];
@@ -171,7 +175,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             
             for(int i = numtasks, end = talls.size(); i < end; i++)
             {
-                talls[i] = tints[int(j*gDev.Doub())];
+                talls[i] = tints[int(j*gDev[0]->Doub())];
             }
         }
 
@@ -181,74 +185,20 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         
         t = talls[rank];
         tt = talls[rank + numtasks];
+        double logZ = gDev[t]->Dev(aNext, a0, t, tt, NThreads - numtasks, tints);
 #else
-        t = int(NThreads*gDev.Doub());
-        tt = int((NThreads - 1)*gDev.Doub());
+        t = int(NThreads*gDev[0]->Doub());
+        tt = int((NThreads - 1)*gDev[0]->Doub());
         if (tt >= t) tt++;
+        double logZ = gDev[t]->Dev(aNext, a0, t, tt);
 #endif
-        double ran = gDev.Doub();
-        if (ran < b0)
-        {
-            logZ = gDev.WalkDev(c_ptr(aNext), c_ptr(a0[t]), c_ptr(a0[tt]));
-        }
-        else if (ran < b1)
-        {
-            logZ = gDev.TransDev(c_ptr(aNext), c_ptr(a0[t]), c_ptr(a0[tt]));
-        }
-        else if (ran < b2)
-        {
-            std::vector<std::vector<double>> temp = a0;
-#ifdef WITH_MPI
-            for (int i = 0, end = NThreads - numtasks; i < end; i++)
-            {
-                temp.push_back(a0[tints[i]]);
-            }
-#else
-            for (int i = 0, end = a0.size(); i < end; i++)
-            {
-                if (i != tt)
-                    temp.push_back(a0[i]);
-            }
-#endif
-            if (!gDev.EnterMat(calcCov(temp)))
-            {
-                gDev.EnterMat(calcIndent(temp));
-            }
-                    
-            gDev.MultiDev(c_ptr(aNext), c_ptr(a0[t]));
-            logZ = 0.0;
-        }
-        else
-        {
-            std::vector<std::vector<double>> temp;
-#ifdef WITH_MPI
-            for (int i = 0, end = NThreads - numtasks; i < end; i++)
-            {
-                temp.push_back(a0[tints[i]]);
-            }
-#else
-            for (int i = 0, end = a0.size(); i < end; i++)
-            {
-                if (i != tt)
-                    temp.push_back(a0[i]);
-            }
-#endif
-            if (!gDev.EnterMat(calcCov(temp)))
-            {
-                gDev.EnterMat(calcIndent(temp));
-            }
-            
-            gDev.MultiDev(c_ptr(aNext), c_ptr(a0[tt]));
-            logZ = 0.0;
-        }
-
         if(!(hyper_grid && notUnit(aNext)))
         {
             chisqnext = -LogLike(aNext);
             ans = chisqnext - chisq[t] - logZ;
             next_id = LogLike->getPtID();
-            
-            if ((ans <= 0.0)||(gDev.ExpDev() >= ans))
+            //std::cout << ans << "   " << chisqnext << "   " << chisq[t] << std::endl;
+            if ((ans <= 0.0)||(gDev[0]->ExpDev() >= ans))
             {
                 out_stream->print(mult[t], "mult", ranks[t], ids[t]);
                 out_stream->print(t, "chain", ranks[t], ids[t]);
@@ -265,6 +215,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                 out_stream->print(-1, "chain", rank, next_id);
             }
         }
+        
 #ifdef WITH_MPI
         for (int i = 0; i < numtasks; i++)
         {
@@ -328,10 +279,13 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         {
                             cont = false;
                             Nlength--;
-                            covT = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma, 0.0));
-                            avgT = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma, 0.0));
-                            W = std::vector<double> (ma, 0.0);
-                            avgTot = std::vector<double> (ma, 0.0);
+                            for (int i = 0; i < NThreads; i++)
+                            {
+                                for (int j = 0; j < ma; j++)
+                                {
+                                    covT[i][j] = avgT[i][j] = avgTot[j] = W[j] = 0.0;
+                                }
+                            }
                             ttotal++;
                         }
                     }
@@ -352,6 +306,9 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
     }
     while((cont));
 
+    for (auto &&gd : gDev)
+        delete gd;
+    
     std::cout << "twalk for rank " << rank << " has finished." << std::endl;
     
     return;
