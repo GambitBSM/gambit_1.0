@@ -3423,9 +3423,9 @@ namespace Gambit
       result.BR_hjgg[0] = decays.BF("g", "g");
     }
 
-    void set_invisible_width(const DecayTable::Entry* decays, hb_ModelParameters &result,str P)
+    void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters &result,str P)
     {
-    result.BR_hjinvisible[0] = decays->BF(P, P);
+    result.BR_hjinvisible[0] = decays.BF(P, P);
     }
 
 
@@ -3442,11 +3442,11 @@ namespace Gambit
     void SMlikeHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::SMlikeHiggs_ModelParameters;
-      const Spectrum* fullspectrum;
+      const Spectrum& fullspectrum = *Dep::SingletDM_spectrum;
       str invisible_particle;
       if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
       {
-       fullspectrum = *Dep::SingletDM_spectrum;
+       //fullspectrum = *Dep::SingletDM_spectrum;
        invisible_particle = "S";
       }
       else
@@ -3454,7 +3454,7 @@ namespace Gambit
        ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
       }
       
-      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
+      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
       set_SMHiggs_ModelParameters(fullspectrum,decays,result);
       set_invisible_width(decays,result,invisible_particle);
     }
