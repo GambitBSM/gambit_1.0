@@ -30,7 +30,7 @@ axel_worked=0
 filename=$($2 -E echo $3 | sed 's#.*/##g')
 $2 -E make_directory $1 >/dev/null
 if command -v axel >/dev/null; then
-  if axel $3 -o $1; then
+  if $2 -E chdir $1 axel $3; then
     axel_worked=1
   else
     $2 -E echo "Axel failed! The link probably redirects to https. Falling back to wget/curl..." 
