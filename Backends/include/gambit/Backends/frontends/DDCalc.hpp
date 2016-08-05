@@ -24,12 +24,18 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2016 Apr
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 // Identify backend
 #define BACKENDNAME DDCalc
 #define VERSION 1.0.0
 #define SAFE_VERSION 1_0_0
+
+#include "gambit/DarkBit/DarkBit_types.hpp"
 
 // Load it
 LOAD_LIBRARY
