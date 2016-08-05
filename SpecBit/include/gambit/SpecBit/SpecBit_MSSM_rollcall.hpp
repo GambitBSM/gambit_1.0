@@ -115,7 +115,7 @@
     DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
-  
+
   #define CAPABILITY SM_subspectrum
   START_CAPABILITY
  

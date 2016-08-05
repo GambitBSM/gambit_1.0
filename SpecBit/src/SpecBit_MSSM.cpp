@@ -436,16 +436,16 @@ namespace Gambit
       double sbma = sb * ca - cb * ca;
 
       if(sbma > cbma)
-    	{
-    	  result = 25;
-    	}
+      {
+        result = 25;
+      }
       else
-    	{
-    	  result = 35;
-    	}
-      
+      {
+        result = 35;
+      }
+
       return;
-    }    
+    }
 
     void get_CMSSM_spectrum (Spectrum& result)
     {
