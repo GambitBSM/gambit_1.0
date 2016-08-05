@@ -22,14 +22,15 @@
 using namespace Gambit;
 using namespace LogTags;
 
+#ifdef WITH_MPI
+  bool use_mpi_abort = true; // Set later via inifile value
+#endif
+
 /// Cleanup function
-void do_cleanup() { 
+void do_cleanup()
+{ 
     Gambit::Scanner::Plugins::plugin_info.dump(); // Also calls printer finalise() routine 
 }
-
-#ifdef WITH_MPI
-bool use_mpi_abort = true; // Set later via inifile value
-#endif
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
@@ -92,7 +93,7 @@ int main(int argc, char* argv[])
 
       // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
       #ifdef WITH_MPI
-      use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
+        use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
       #endif
 
       // Initialise the random number generator, letting the RNG class choose its own default.
@@ -120,9 +121,6 @@ int main(int argc, char* argv[])
       cout << "Resolving dependencies and backend requirements.  Hang tight..." << endl;
       dependencyResolver.doResolution();
       cout << "...done!" << endl;
-
-      // Do the dependency resolution
-      dependencyResolver.doResolution();
 
       // Check that all requested models are used for at least one computation
       Models::ModelDB().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
