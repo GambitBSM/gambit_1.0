@@ -37,7 +37,7 @@ input_files = [
 ]
 include_paths = [
     '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src', 
-    '../../../contrib/eigen3'
+    '../../../contrib/eigen3.2.8'
 ]
 base_paths = ['../../../Backends/installed/gm2calc/'+gambit_backend_version]
 

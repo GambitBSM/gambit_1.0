@@ -111,7 +111,7 @@ namespace Gambit
             virtual std::string AccessError(std::string state) const;
 
             // Fill an SLHAea object with spectrum information
-            virtual void add_to_SLHAea(SLHAstruct& slha) const;
+            virtual void add_to_SLHAea(SLHAstruct& slha, bool include_SLHA1_blocks = false) const;
 
             /// TODO: Need to implement this properly...
             /// Copy low energy spectrum information from another model object

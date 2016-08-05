@@ -28,6 +28,9 @@ namespace Gambit
    {
       /// Simple extension of the SMHiggsSimpleSpec "model object"
       /// to include scalar singlet DM parameters
+      /// We could easily just put these in the wrapper itself, but
+      /// I am leaving them in a separate struct for the sake of building
+      /// up examples towards a more complicated "model" object
       struct SingletDMModel
       {
          double HiggsPoleMass;
@@ -35,16 +38,12 @@ namespace Gambit
          double SingletPoleMass;
          double SingletLambda;
 
-         double get_HiggsPoleMass()   const { return HiggsPoleMass; } 
-         double get_HiggsVEV()        const { return HiggsVEV;      } 
-         double get_SingletPoleMass() const { return SingletPoleMass; } 
-         double get_lambda_hS()       const { return SingletLambda; } 
-
-         void set_HiggsPoleMass(double in)   { HiggsPoleMass=in; } 
-         void set_HiggsVEV(double in)        { HiggsVEV=in;      } 
-         void set_SingletPoleMass(double in) { SingletPoleMass=in; } 
-         void set_lambda_hS(double in)       { SingletLambda=in; } 
+         double LambdaH;
+         double SingletLambdaS;
+         double g1, g2, g3, sinW2;
+         double Yd[3], Ye[3], Yu[3];
       };
+     
   
       /// Forward declare the wrapper class so that we can use it
       /// as the template parameter for the SpecTraits specialisation. 
@@ -53,12 +52,10 @@ namespace Gambit
 
    /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
    template <>
-   struct SpecTraits<Models::ScalarSingletDMSimpleSpec> 
+   struct SpecTraits<Models::ScalarSingletDMSimpleSpec> : DefaultTraits
    {
       static std::string name() { return "ScalarSingletDMSimpleSpec"; }
-      typedef SpectrumContents::ScalarSingletDM Contents;
-      typedef Models::SingletDMModel Model;
-      typedef DummyInput              Input; // DummyInput is just an empty struct
+      typedef SpectrumContents::SingletDM Contents;
    };
 
    namespace Models
@@ -66,54 +63,115 @@ namespace Gambit
       class ScalarSingletDMSimpleSpec : public Spec<ScalarSingletDMSimpleSpec> 
       {
          private:
-            Model model;
-            Input dummyinput;
+            SingletDMModel params;
+
+            typedef ScalarSingletDMSimpleSpec Self;
 
          public:
             /// @{ Constructors/destructors
-            ScalarSingletDMSimpleSpec(const Model& m)
-             : model(m)
-             , dummyinput()
+            ScalarSingletDMSimpleSpec(const SingletDMModel& p)
+             : params(p)
             {}
+
+            static int index_offset() {return -1;}
+        
             /// @}
  
-            // Functions to interface Model and Input objects with the base 'Spec' class
-            Model& get_Model() { return model; }
-            Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
-            const Model& get_Model() const { return model; }
-            const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            /// Wrapper-side interface functions to parameter object
+            double get_HiggsPoleMass()   const { return params.HiggsPoleMass; } 
+            double get_HiggsVEV()        const { return params.HiggsVEV;      } 
+            double get_SingletPoleMass() const { return params.SingletPoleMass; } 
+            double get_lambda_hS()       const { return params.SingletLambda; }
+            double get_lambda_S()       const { return params.SingletLambdaS; }
+            double get_lambda_h()       const { return params.LambdaH; }
+            double get_g1()       const { return params.g1; }
+            double get_g2()       const { return params.g2; }
+            double get_g3()       const { return params.g3; }
+            double get_sinW2()       const { return params.sinW2; }
+           
+            double get_Yd(int i, int j)       const { if (i==j){return params.Yd[i];}else{return 0;} }
+            double get_Yu(int i, int j)       const { if (i==j){return params.Yu[i];}else{return 0;} }
+            double get_Ye(int i, int j)       const { if (i==j){return params.Ye[i];}else{return 0;} }
+           
+            void set_HiggsPoleMass(double in)   { params.HiggsPoleMass=in; } 
+            void set_HiggsVEV(double in)        { params.HiggsVEV=in;      } 
+            void set_SingletPoleMass(double in) { params.SingletPoleMass=in; } 
+            void set_lambda_hS(double in)       { params.SingletLambda=in; }
+            void set_lambda_S(double in)       { params.SingletLambdaS=in; }
+            void set_lambda_h(double in)       { params.LambdaH=in; }
+            void set_g1(double in)        { params.g1=in; }
+            void set_g2(double in)        { params.g2=in; }
+            void set_g3(double in)       { params.g3=in; }
+            void set_sinW2(double in)       { params.sinW2=in; }
+           
+            void set_Yd(double in, int i, int j)       { if (i==j){params.Yd[i]=in;}}
+            void set_Yu(double in, int i, int j)       { if (i==j){params.Yu[i]=in;}}
+            void set_Ye(double in, int i, int j)       { if (i==j){params.Ye[i]=in;}}
 
             /// @{ Map fillers
             static GetterMaps fill_getter_maps()
             {
-               GetterMaps map_collection; 
+               GetterMaps getters;
+               typedef typename MTget::FInfo2W FInfo2W;
+               static const int i012v[] = {0,1,2};
+               static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-               map_collection[Par::mass1].map0["vev"]       = &Model::get_HiggsVEV;
-               map_collection[Par::dimensionless].map0["lambda_hS"] = &Model::get_lambda_hS;
+               using namespace Par;
 
-               map_collection[Par::Pole_Mass].map0["h0"]    = &Model::get_HiggsPoleMass;
-               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::get_HiggsPoleMass;
+               getters[mass1]        .map0W["vev"]       = &Self::get_HiggsVEV;
+               getters[dimensionless].map0W["lambda_hS"] = &Self::get_lambda_hS;
+
+               getters[Pole_Mass].map0W["h0"]      = &Self::get_HiggsPoleMass;
+               getters[Pole_Mass].map0W["h0_1"]    = &Self::get_HiggsPoleMass;
  
-               map_collection[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
-               map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
-   
-               return map_collection;
+               getters[Pole_Mass].map0W["S"]       = &Self::get_SingletPoleMass; 
+               //getters[Pole_Mass].map0W["Singlet"] = &Self::get_SingletPoleMass;
+              
+               getters[dimensionless].map0W["lambda_S"] = &Self::get_lambda_S;
+               getters[dimensionless].map0W["lambda_h"] = &Self::get_lambda_h;
+              
+               getters[dimensionless].map0W["g1"] = &Self::get_g1;
+               getters[dimensionless].map0W["g2"] = &Self::get_g2;
+               getters[dimensionless].map0W["g3"] = &Self::get_g3;
+               getters[dimensionless].map0W["sinW2"] = &Self::get_sinW2;
+              
+               getters[dimensionless].map2W["Yd"]= FInfo2W( &Self::get_Yd, i012, i012);
+               getters[dimensionless].map2W["Yu"]= FInfo2W( &Self::get_Yu, i012, i012);
+               getters[dimensionless].map2W["Ye"]= FInfo2W( &Self::get_Ye, i012, i012);
+
+               return getters;
             }
 
             static SetterMaps fill_setter_maps()
             {
-               SetterMaps map_collection; 
+               SetterMaps setters;
+               typedef typename MTset::FInfo2W FInfo2W;
+               static const int i012v[] = {0,1,2};
+               static const std::set<int> i012(i012v, Utils::endA(i012v));
+              
+               using namespace Par;
 
-               map_collection[Par::mass1].map0["vev"]       = &Model::set_HiggsVEV;
-               map_collection[Par::dimensionless].map0["lambda_hS"] = &Model::set_lambda_hS;
+               setters[mass1].map0W["vev"]       = &Self::set_HiggsVEV;
+               setters[dimensionless].map0W["lambda_hS"] = &Self::set_lambda_hS;
+               setters[dimensionless].map0W["lambda_S"] = &Self::set_lambda_S;
+               setters[dimensionless].map0W["lambda_h"] = &Self::set_lambda_h;
 
-               map_collection[Par::Pole_Mass].map0["h0"]    = &Model::set_HiggsPoleMass;
-               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::set_HiggsPoleMass;
+               setters[dimensionless].map0W["g1"] = &Self::set_g1;
+               setters[dimensionless].map0W["g2"] = &Self::set_g2;
+               setters[dimensionless].map0W["g3"] = &Self::set_g3;
+               setters[dimensionless].map0W["sinW2"] = &Self::set_sinW2;
+
+               setters[Pole_Mass].map0W["h0"]    = &Self::set_HiggsPoleMass;
+               //setters[Pole_Mass].map0W["h0_1"]  = &Self::set_HiggsPoleMass;
  
-               map_collection[Par::Pole_Mass].map0["S"]       = &Model::set_SingletPoleMass; 
-               map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::set_SingletPoleMass; 
+               setters[Pole_Mass].map0W["S"]       = &Self::set_SingletPoleMass; 
+               //setters[Pole_Mass].map0W["Singlet"] = &Self::set_SingletPoleMass; 
    
-               return map_collection;
+               setters[dimensionless].map2W["Yd"]= FInfo2W( &Self::set_Yd, i012, i012);
+               setters[dimensionless].map2W["Yu"]= FInfo2W( &Self::set_Yu, i012, i012);
+               setters[dimensionless].map2W["Ye"]= FInfo2W( &Self::set_Ye, i012, i012);
+
+               return setters;
             }
             /// @}
 

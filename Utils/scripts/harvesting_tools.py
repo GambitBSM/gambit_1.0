@@ -143,6 +143,9 @@ def check_for_declaration(input_snippet,module,all_modules,local_namespace,candi
 
 # Parse a string to see if it has a namespace declaration
 def check_for_namespace(input_snippet,local_namespace):
+    # Exit if the line just defines a namespace alias
+    if "=" in input_snippet:
+        return local_namespace
     splitline = neatsplit('\s',input_snippet)
     if len(splitline)>1:
         # If the line starts by declaring a namespace, return it appended to the current namespace

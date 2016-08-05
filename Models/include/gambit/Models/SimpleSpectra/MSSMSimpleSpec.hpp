@@ -125,8 +125,8 @@ namespace Gambit
             virtual ~MSSMSimpleSpec() {};
 
             virtual int get_index_offset() const;
-            virtual SLHAstruct getSLHAea() const;
-            virtual void add_to_SLHAea(SLHAea::Coll&) const; 
+            virtual SLHAstruct getSLHAea(bool = false) const;
+            virtual void add_to_SLHAea(SLHAea::Coll&, bool = false) const; 
             virtual const std::map<int, int>& PDG_translator() const;
  
             /// Map fillers
