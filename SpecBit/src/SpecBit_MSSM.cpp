@@ -425,7 +425,7 @@ namespace Gambit
     void most_SMlike_Higgs(int &result)
     {
       using namespace Pipes::most_SMlike_Higgs;
-      const SubSpectrum& mssm_spec = Dep::unimproved_MSSM_spectrum->get_HE();
+      const SubSpectrum& mssm_spec = Dep::MSSM_spectrum->get_HE();
       double sa =  - mssm_spec.get(Par::Pole_Mixing,"h0",1,1);
       double ca = mssm_spec.get(Par::Pole_Mixing,"h0",1,2);
       double tb = mssm_spec.get(Par::dimensionless, "tanbeta" );

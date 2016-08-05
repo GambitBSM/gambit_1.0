@@ -112,7 +112,7 @@
   START_CAPABILITY
     #define FUNCTION most_SMlike_Higgs
     START_FUNCTION(int) // just returns pdg code of most SM-like CP even Higgs
-    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
   
