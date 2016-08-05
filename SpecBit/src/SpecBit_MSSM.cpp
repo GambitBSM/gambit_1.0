@@ -435,10 +435,6 @@ namespace Gambit
       double cbma = cb * ca + sb * sa;
       double sbma = sb * ca - cb * ca;
 
-      std::cout << "cbma = "  << cbma << std::endl;
-      std::cout << "sbma = "  << sbma << std::endl;
-      
-    
       if(sbma > cbma)
     	{
     	  result = 25;

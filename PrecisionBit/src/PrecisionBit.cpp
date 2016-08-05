@@ -671,11 +671,7 @@ namespace Gambit
     void GM2C_SUSY(triplet<double> &result)
     {
       using namespace Pipes::GM2C_SUSY;
-      
       const SubSpectrum& mssm = Dep::MSSM_spectrum->get_HE();
-
-      int pdg = *Dep::Identify_SMlike_Higgs;
-      std::cout << "pdg = "  << pdg << std::endl;
       
       gm2calc::MSSMNoFV_onshell model;
   

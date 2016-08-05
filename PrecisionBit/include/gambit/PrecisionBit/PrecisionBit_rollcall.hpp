@@ -162,7 +162,6 @@ START_MODULE
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
     DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
-    DEPENDENCY(Identify_SMlike_Higgs, int)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
