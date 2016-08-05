@@ -426,27 +426,18 @@ namespace Gambit
       const SubSpectrum* mssm_spec = full_spec->get_HE();
       double sa =  - mssm_spec->get(Par::Pole_Mixing,"h0",1,1);
       double ca = mssm_spec->get(Par::Pole_Mixing,"h0",1,2);
-      double saALT =  mssm_spec->get(Par::Pole_Mixing,"h0",2,2);
-      double caALT = mssm_spec->get(Par::Pole_Mixing,"h0",2,1);
-
-      std::cout << "sin alpha = " << sa << std::endl;
-      std::cout << "cos alpha = " << ca << std::endl;
-      std::cout << "sin alphaALT = " << saALT << std::endl;
-      std::cout << "cos alphaALT = " << caALT << std::endl;
 
       double tb = mssm_spec->get(Par::dimensionless, "tanbeta" );
       double sb = sin(atan(tb));
       double cb = cos(atan(tb));
-      std::cout << "tb = "  << tb << std::endl;
-      std::cout << "cb = "  << cb << std::endl;
-      std::cout << "sb = "  << sb << std::endl;
-      //cos (beta - alpha)
+      //cos (beta - alpha) and sin(beta-alpha)
       double cbma = cb * ca + sb * sa;
       double sbma = sb * ca - cb * ca;
 
       std::cout << "cbma = "  << cbma << std::endl;
       std::cout << "sbma = "  << sbma << std::endl;
       
+    
       if(sbma > cbma)
     	{
     	  result = 25;
