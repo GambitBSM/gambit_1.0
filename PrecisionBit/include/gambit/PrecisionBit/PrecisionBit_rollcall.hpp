@@ -158,9 +158,11 @@ START_MODULE
 
     // Muon g-2 -- Using the C++ interface to gm2calc
     #define FUNCTION GM2C_SUSY
+
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(Identify_SMlike_Higgs, int)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, (const gm2calc::MSSMNoFV_onshell&))
