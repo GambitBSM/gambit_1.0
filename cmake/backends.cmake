@@ -109,13 +109,12 @@ ExternalProject_Add(${name}_${ver}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile
-        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" <SOURCE_DIR>/Makefile
+  BUILD_COMMAND sed ${dashi} -e "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile
+        COMMAND sed ${dashi} -e "s#rcsU#rcs#g" <SOURCE_DIR>/src/Makefile
+        COMMAND sed ${dashi} -e "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" <SOURCE_DIR>/Makefile
         COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ar x <SOURCE_DIR>/src/libisospin.a
-        COMMAND echo "${CMAKE_C_COMPILER} -shared -o ${lib}.so *.o -lm" > make_so.sh
-        COMMAND chmod u+x make_so.sh
-        COMMAND ./make_so.sh
+        COMMAND ${CMAKE_C_COMPILER} -shared -o ${lib}.so *.o -lm
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
