@@ -47,13 +47,16 @@ if [ "${axel_worked}" = "0" ]; then
   fi
 fi
 # Check the MD5 sum
-md5=$($2 -E md5sum $1/${filename} | sed 's#\s.*##g')
-if [ "${md5}" != "$4" ]; then
-  $2 -E cmake_echo_color --red --bold  "ERROR: MD5 sum of downloaded file $1/${filename} does not match"
-  $2 -E cmake_echo_color --red --bold  "Expected: $4"
-  $2 -E cmake_echo_color --red --bold  "Found:    ${md5}"
-  exit 1
-fi
+$2 -E md5sum $1/${filename} |
+{
+  read md5 name;  
+  if [ "${md5}" != "$4" ]; then
+    $2 -E cmake_echo_color --red --bold  "ERROR: MD5 sum of downloaded file $1/${filename} does not match"
+    $2 -E cmake_echo_color --red --bold  "Expected: $4"
+    $2 -E cmake_echo_color --red --bold  "Found:    ${md5}"
+    exit 1
+  fi
+}
 # Do the extraction
 cd $5
 $2 -E tar -xf $1/${filename}
