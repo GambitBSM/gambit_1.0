@@ -422,6 +422,31 @@ namespace Gambit
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
 
+    void most_SMlike_Higgs_MSSM(int &result)
+    {
+      using namespace Pipes::most_SMlike_Higgs_MSSM;
+      const SubSpectrum& mssm_spec = Dep::MSSM_spectrum->get_HE();
+      double sa =  - mssm_spec.get(Par::Pole_Mixing,"h0",1,1);
+      double ca = mssm_spec.get(Par::Pole_Mixing,"h0",1,2);
+      double tb = mssm_spec.get(Par::dimensionless, "tanbeta" );
+      double sb = sin(atan(tb));
+      double cb = cos(atan(tb));
+      //cos (beta - alpha) and sin(beta-alpha)
+      double cbma = cb * ca + sb * sa;
+      double sbma = sb * ca - cb * ca;
+
+      if(sbma > cbma)
+      {
+        result = 25;
+      }
+      else
+      {
+        result = 35;
+      }
+
+      return;
+    }
+
     void get_CMSSM_spectrum (Spectrum& result)
     {
 

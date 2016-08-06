@@ -79,8 +79,8 @@ Scanner:
 ObsLikes:
 
     # LHC likelihoods
-    #- purpose:    LogLike
-    #  capability: LHC_Combined_LogLike
+    - purpose:    LogLike
+      capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
