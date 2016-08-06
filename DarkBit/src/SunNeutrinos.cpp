@@ -337,7 +337,7 @@ namespace Gambit
       char experiment[300] = "IC-22";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -369,7 +369,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -401,7 +401,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -433,7 +433,7 @@ namespace Gambit
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -558,7 +558,7 @@ namespace Gambit
           double vrot = LocalHaloParameters.vrot;
           double vd_3d = sqrt(3./2.)*LocalHaloParameters.v0;
           double vesc = LocalHaloParameters.vesc;
-          // Keplerian velocity of the Earth around the Sun (km/s)
+          /// Option v_earth<double>: Keplerian velocity of the Earth around the Sun in km/s (default 29.78)
           double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
 
           BEreq::dshmcom->rho0 = rho0;

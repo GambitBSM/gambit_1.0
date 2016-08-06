@@ -57,7 +57,7 @@ namespace Gambit {
       if (runOptions->hasKey("debug_SLHA_filenames"))
       {
         static unsigned int counter = 0;
-        logger() <<
+        logger() << LogTags::debug <<
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
         std::vector<str> filenames =
@@ -122,12 +122,12 @@ namespace Gambit {
       // use SLHA format for initialization
       else if (ModelInUse("MSSM63atQ") || ModelInUse("CMSSM"))
       {
-        // Retrieve SLHAea object from spectrum object
-        const Spectrum* mySpec = *Dep::MSSM_spectrum;
-        SLHAstruct mySLHA = mySpec->getSLHAea();
+        // Retrieve SLHAea object from spectrum object 
+        const Spectrum& mySpec = *Dep::MSSM_spectrum;
+        SLHAstruct mySLHA = mySpec.getSLHAea();
 
         // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
-      /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
+        /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
           int rank = 0;
@@ -157,7 +157,7 @@ namespace Gambit {
           int len = fstr.size();
           int flag = 15;
           const char * filename = fstr.c_str();
-          logger() << "Initializing DarkSUSY via SLHA." << std::endl;
+          logger() << LogTags::debug << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
           result = true;
@@ -167,7 +167,7 @@ namespace Gambit {
         {
           if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
-            logger() << "Using JE's DarkSUSY BE initialization." << std::endl;
+            logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << std::endl;
             BEreq::dsprep();
             result = true;
           }
@@ -252,16 +252,16 @@ namespace Gambit {
       ///////////////////////////
 
       // Import based on Spectrum objects
-      const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
-      const SubSpectrum* spec = matched_spectra->get_HE();
-      const SubSpectrum* SM   = matched_spectra->get_LE();
-      const SMInputs& SMI  = matched_spectra->get_SMInputs();
+      const Spectrum& matched_spectra = *Dep::MSSM_spectrum;
+      const SubSpectrum& spec = matched_spectra.get_HE();
+      const SubSpectrum& SM   = matched_spectra.get_LE();
+      const SMInputs& SMI  = matched_spectra.get_SMInputs();  
 
       // Get SM masses
 #define getSMmass(Name, spinX2)                                               \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
-        Name , TH_ParticleProperty(SM->get(Par::Pole_Mass,Name), spinX2)));
+        Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));   
       getSMmass("e-_1",     1)
       getSMmass("e+_1",     1)
       getSMmass("e-_2",     1)
@@ -314,7 +314,7 @@ namespace Gambit {
 #define getMSSMmass(Name, spinX2)                                                   \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
-        Name , TH_ParticleProperty(std::abs(spec->get(Par::Pole_Mass,Name)), spinX2)));
+        Name , TH_ParticleProperty(std::abs(spec.get(Par::Pole_Mass,Name)), spinX2)));  
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)

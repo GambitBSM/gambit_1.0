@@ -46,14 +46,14 @@ void MODEL_NAMESPACE::MSSM63atMGUT_to_MSSM63atQ (const ModelParameters &myP, Mod
    targetP.setValues(myP);
 
    // Now only the "Qin" parameter is left unset. Need to extract this from the Spectrum object dependency.
-   const Spectrum* spec = *Dep::unimproved_MSSM_spectrum;
+   const Spectrum& spec = *Dep::unimproved_MSSM_spectrum;
 
    // Make sure the high-scale value was correctly added to the spectrum wrapper object
-   spec->get_HE();
-   spec->get_HE()->has(Par::mass1,"high_scale");
-   if( spec->get_HE()->has(Par::mass1,"high_scale") )
+   spec.get_HE();
+   spec.get_HE().has(Par::mass1,"high_scale");
+   if( spec.get_HE().has(Par::mass1,"high_scale") )
    {
-      targetP.setValue("Qin", spec->get_HE()->get(Par::mass1,"high_scale") );
+      targetP.setValue("Qin", spec.get_HE().get(Par::mass1,"high_scale") );
    } 
    else 
    {

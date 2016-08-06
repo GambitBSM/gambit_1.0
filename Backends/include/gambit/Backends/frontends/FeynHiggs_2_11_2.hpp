@@ -87,7 +87,7 @@ BE_FUNCTION(FHHiggsProd, void, (int&, fh_real&, Farray< fh_real,1,52>&), "fhhigg
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(SMINPUTS, SMInputs)                          // Need SLHA2 SMINPUTS to initialize FH
-BE_INI_DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
+BE_INI_DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)   // Need MSSM spectrum inputs to initialize FH
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

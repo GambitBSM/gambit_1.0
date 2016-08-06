@@ -29,7 +29,7 @@ namespace Gambit {
     struct SM              : SubSpectrumContents { SM(); };
     struct SM_slha         : SubSpectrumContents { SM_slha(); }; // Missing some running masses that aren't part of SMINPUTS in slha
     struct SMHiggs         : SubSpectrumContents { SMHiggs(); };
-    struct ScalarSingletDM : SubSpectrumContents { ScalarSingletDM(); };
+  //  struct ScalarSingletDM : SubSpectrumContents { ScalarSingletDM(); };
     struct MSSM            : SubSpectrumContents { MSSM(); };
     struct SingletDM       : SubSpectrumContents { SingletDM(); };
     struct SingletDMZ3     : SubSpectrumContents { SingletDMZ3(); };

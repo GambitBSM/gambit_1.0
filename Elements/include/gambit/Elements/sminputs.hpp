@@ -90,10 +90,10 @@ namespace Gambit
       PMNSdef PMNS;
 
       // Return a fresh SLHAea object containing the contents of this object.
-      SLHAstruct getSLHAea() const;
+      SLHAstruct getSLHAea(bool = false) const;
 
       // Add the contents of this object to an existing SLHAea object
-      void add_to_SLHAea(SLHAstruct& slha /*modify*/) const;
+      void add_to_SLHAea(SLHAstruct& slha /*modify*/, bool = false) const;
       
    };
 

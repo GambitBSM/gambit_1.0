@@ -39,16 +39,16 @@ START_MODULE
   #include "gambit/SpecBit/SpecBit_SingletDM_rollcall.hpp"
 
   /// Module function declarations for SpecBit_tests.cpp (new tests)
-  #include "gambit/SpecBit/SpecBit_tests.hpp"
+  #include "gambit/SpecBit/SpecBit_tests_rollcall.hpp"
 
   /// For SpecBit testing only
-  //#include "gambit/SpecBit/SpecBit_sandbox.hpp"
+  //#include "gambit/SpecBit/SpecBit_sandbox_rollcall.hpp"
 
   // Functions to changes the capability associated with a Spectrum object to "SM_spectrum"
   ///TODO: CURRENTLY THERE SEEMS TO BE A BUG WITH RETRIEVING THESE DEPENDENCIES! SWITCHING BACK TO OLD METHOD
-  //QUICK_FUNCTION(SpecBit, SM_spectrum, NEW_CAPABILITY, convert_MSSM_to_SM,   Spectrum*, (), (MSSM_spectrum, Spectrum*))
-  //QUICK_FUNCTION(MODULE, SM_spectrum, OLD_CAPABILITY, convert_NMSSM_to_SM,  Spectrum*, (), (NMSSM_spectrum, Spectrum*))
-  //QUICK_FUNCTION(MODULE, SM_spectrum, OLD_CAPABILITY, convert_E6MSSM_to_SM, Spectrum*, (), (E6MSSM_spectrum, Spectrum*))
+  //QUICK_FUNCTION(SpecBit, SM_spectrum, NEW_CAPABILITY, convert_MSSM_to_SM,   Spectrum, (), (MSSM_spectrum, Spectrum))
+  //QUICK_FUNCTION(MODULE, SM_spectrum, OLD_CAPABILITY, convert_NMSSM_to_SM,  Spectrum, (), (NMSSM_spectrum, Spectrum))
+  //QUICK_FUNCTION(MODULE, SM_spectrum, OLD_CAPABILITY, convert_E6MSSM_to_SM, Spectrum, (), (E6MSSM_spectrum, Spectrum))
 
   // Note: QUICK_FUNCTION usage:
   // Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, (n x ALLOWED_MODEL), m x (DEPENDENCY, DEPENDENCY_TYPE)

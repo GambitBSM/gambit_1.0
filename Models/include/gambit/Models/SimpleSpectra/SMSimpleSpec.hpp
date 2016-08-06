@@ -18,6 +18,7 @@
 #define __SMSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
+#include "gambit/Elements/sminputs.hpp"
 #include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp"
 #include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
@@ -82,6 +83,7 @@ namespace Gambit
             // Constructors/destructors
             SMSimpleSpec();
             SMSimpleSpec(const SLHAea::Coll&);
+            SMSimpleSpec(const SMInputs&);
             SMSimpleSpec(const SMSimpleSpec&);
             virtual ~SMSimpleSpec() {};
 

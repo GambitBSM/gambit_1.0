@@ -40,6 +40,82 @@ widths: |
 xsection: |
    Another mystery cross-section
 
+#-------------------------------------
+#  SpecBit
+#-------------------------------------
+
+#####  SingletDM  #####
+
+SingletDM_spectrum: |
+    Create spectrum object for scalar singlet dark matter model, available functions
+    are a simple container spectrum and one produced by a spectrum generator
+
+check_perturb: |
+    Compute the spectrum with the spectrum generator and return a
+    likelihood corresponding to the validity of the spectrum up to the chosen high scale.
+
+vacuum_stability: |
+    Run the quartic Higgs coupling to high scales, in order to determine
+    the expected lifetime of the electroweak vacuum, the instability scale, and
+    the perturbativity of the couplings up to the necessary scale.
+
+
+check_perturb_min_lambda: |
+    Check that dimensionless couplings are sufficiently small up to the smaller
+    of the Planck scale and the scale at which the quartic Higgs coupling is
+    minimised and non-positive.
+
+VS_likelihood: |
+    Compute likelihood of no electroweak vacuum decays in the past light cone.
+
+expected_lifetime: |
+    Return the expected lifetime of the electroweak vacuum.
+
+print_SingletDM_spectrum: |
+    Print the spectrum contents to the output stream.
+
+#####   Standard model  #####
+
+SMINPUTS: |
+    Provide Standard Model parameters in SLHA2 input conventions.
+
+qedqcd_subspectrum: |
+    Create QedQcdWrapper version of Spectrum* from SMInputs structs.
+
+SM_spectrum: |
+    Create Spectrum object from SMInputs structs and SM Higgs parameters.
+
+
+#####   MSSM  #####
+
+
+unimproved_MSSM_spectrum: |
+    Returns unimproved MSSM spectrum object calculated with boundary conditions
+    depedent on the choice of function used.
+
+SM_subspectrum: |
+    Return the standard model subspectrum object from the MSSM_spectrum
+
+FH_MSSMMasses: |
+    SUSY masses and mixings, as computed by FeynHiggs.
+
+prec_HiggsMasses: |
+    Higgs masses and mixings with theoretical uncertainties, as computed by FeynHiggs.
+
+Higgs_Couplings: |
+    Higgs couplings, as computed by FeynHiggs
+
+
+
+#-------------------------------------
+#  PrecisionBit
+#-------------------------------------
+
+
+MSSM_spectrum: |
+    Provide an updated MSSM spectrum from the unimproved version with
+    precision W and Higgs masses.
+
 
 
 #-------------------------------------
@@ -221,6 +297,7 @@ FH_HiggsProd: |
 #             Calculates the LEP chargino pair production
 #             cross-section for centre of mass energy $E$, with chargino
 #             mass eigenstates $X$ and $Y$.
+
 
 
 #-------------------------------------

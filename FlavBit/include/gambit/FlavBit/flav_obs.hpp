@@ -33,33 +33,6 @@ namespace Gambit
     using namespace std; 
 
 
-    /*
-    struct Correlation
-    {
-      double corr_val;
-      string corr_name;
-    };
-
-    struct Measurement
-    {
-      double value;
-      double stat_error_plus;
-      double sys_error_plus;
-      double stat_error_minus;
-      double sys_error_minus;
- 
-      double error_plus;
-      double error_minus;
-  
-      double limit;
-      bool is_limit;
-      vector<Correlation> corr;
-      string name;
-      string source;
-    };
-    
-    */
-
 
     class Flav_reader
     {
@@ -84,17 +57,13 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_glob_correlation;
       boost::numeric::ublas::matrix<double> M_glob_correlation_inv;
       
-      boost::numeric::ublas::matrix<double> M_glob_cov_uu;
-      boost::numeric::ublas::matrix<double> M_glob_cov_ud;
-      boost::numeric::ublas::matrix<double> M_glob_cov_du;
-      boost::numeric::ublas::matrix<double> M_glob_cov_dd;
       boost::numeric::ublas::matrix<double> M_glob_cov;
-      
-      boost::numeric::ublas::matrix<double> M_glob_cov_inv_uu;
-      boost::numeric::ublas::matrix<double> M_glob_cov_inv_ud;
-      boost::numeric::ublas::matrix<double> M_glob_cov_inv_du;
-      boost::numeric::ublas::matrix<double> M_glob_cov_inv_dd;
       boost::numeric::ublas::matrix<double> M_glob_cov_inv;
+
+      boost::numeric::ublas::matrix<double> th_err;
+
+
+      
       
     public:
       
@@ -114,12 +83,10 @@ namespace Gambit
       void print_cov_matrix(); 
       void print_cov_inv_matrix();
       //double calc_Chi2(vector<double> theory, vector<double> theory_error);
-      boost::numeric::ublas::matrix<double> get_cov_uu(){return M_glob_cov_uu;};
-      boost::numeric::ublas::matrix<double> get_cov_ud(){return M_glob_cov_ud;};  
-      boost::numeric::ublas::matrix<double> get_cov_du(){return M_glob_cov_du;};  
-      boost::numeric::ublas::matrix<double> get_cov_dd(){return M_glob_cov_dd;};  
+      boost::numeric::ublas::matrix<double> get_cov(){return M_glob_cov;};
       boost::numeric::ublas::matrix<double> get_exp_value(){return M_measurement;};
-      
+      boost::numeric::ublas::matrix<double> get_th_err(){return th_err;};   
+
 
       
     };

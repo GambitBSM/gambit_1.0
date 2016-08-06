@@ -87,7 +87,7 @@ BE_VARIABLE(sd_selectron, sd_selectron_type, "sd_selectron_", "cb_sd_selectron")
 BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, int*), "susy_hit_backend_level_init")
 
 // Initialisation function (dependencies)
-BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
+BE_INI_DEPENDENCY(MSSM_spectrum, Spectrum)
 BE_INI_DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
 BE_INI_DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
 BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)
