@@ -15,6 +15,10 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2016 Feb
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
@@ -30,7 +34,8 @@ BE_INI_FUNCTION
     std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
     set_data_path(path);  // Note that passing per reference is default per backend system
   }
-  if ( ModelInUse("GalacticHalo_gNFW") or ModelInUse("GalacticHalo_gNFW") )
+
+  if ( ModelInUse("Halo_gNFW") or ModelInUse("Halo_gNFW_rho0") or ModelInUse("Halo_gNFW_rhos") or ModelInUse("Halo_Einasto") or ModelInUse("Halo_Einasto_rho0") or ModelInUse("Halo_Einasto_rhos"))
   {
 #ifdef GAMLIKE_DEBUG
     logger() << "Using GalacticHalo initialization" << EOM;
@@ -38,12 +43,12 @@ BE_INI_FUNCTION
     daFunk::Funk profile = *Dep::GalacticHalo;
     auto r = daFunk::logspace(-3, 2, 100);
     auto rho = daFunk::logspace(-3, 2, 100);
-    double dist = 8.5;  // FIXME: Sun GC distance [kpc] should be free parameter
+    double dist = *Param["r_sun"];
     for ( size_t i = 0; i<r.size(); i++ )
     {
       rho[i] = profile->bind("r")->eval(r[i]);
     }
-    set_MW_profile(r, rho, dist);
+    //set_MW_profile(r, rho, dist);
   }
 #ifdef GAMLIKE_DEBUG
   else

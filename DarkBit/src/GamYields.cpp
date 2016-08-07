@@ -721,7 +721,7 @@ namespace Gambit {
      *
      * This function returns the radial dark matter profile in units GeV/cm3
      */
-    void GalacticHalo(daFunk::Funk & halo)
+    void GalacticHalo(daFunk::Funk & profile)
     {
       using namespace Pipes::GalacticHalo;
       if (ModelInUse("GalacticHalo_Einasto"))
@@ -729,7 +729,7 @@ namespace Gambit {
         double rhos  = *Param["rhos"];
         double rs    = *Param["rs"];
         double alpha = *Param["alpha"];
-        daFunk::Funk profile = daFunk::func(profile_Einasto_OLD, rhos, rs, alpha, daFunk::var("r"));
+        profile = daFunk::func(profile_Einasto_OLD, rhos, rs, alpha, daFunk::var("r"));
       }
       if (ModelInUse("GalacticHalo_gNFW"))
       {
@@ -738,7 +738,7 @@ namespace Gambit {
         double alpha = *Param["alpha"];
         double beta  = *Param["beta"];
         double gamma = *Param["gamma"];
-        daFunk::Funk profile = daFunk::func(profile_gNFW_OLD, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
+        profile = daFunk::func(profile_gNFW_OLD, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
       }
     }
   }

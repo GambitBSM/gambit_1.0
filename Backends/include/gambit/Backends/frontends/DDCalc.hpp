@@ -39,8 +39,6 @@
 #define VERSION 1.0.0
 #define SAFE_VERSION 1_0_0
 
-#include "gambit/DarkBit/DarkBit_types.hpp"
-
 // Load it
 LOAD_LIBRARY
 
@@ -154,7 +152,6 @@ BE_FUNCTION(DDCalc_FreeAll,       void, (), "C_DDUtils_ddcalc_freeall",       "F
 BE_INI_DEPENDENCY(mwimp, double)
 BE_INI_DEPENDENCY(DD_couplings, DM_nucleon_couplings)
 BE_INI_DEPENDENCY(RD_fraction, double)
-BE_INI_DEPENDENCY(LocalHalo, DarkBit::LocalMaxwellianHalo)
 
 // Convenience function for returning detector index given an analysis name.
 BE_CONV_FUNCTION(DDCalc_Experiment, int, (const str&), "DD_Experiment")
