@@ -1001,10 +1001,6 @@ START_MODULE
     START_FUNCTION(daFunk::Funk)
     ALLOW_MODEL(Halo_Einasto)
     #undef FUNCTION
-    #define FUNCTION GalacticHalo // old function, should be deleted
-    START_FUNCTION(daFunk::Funk)
-    ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
-    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY LocalHalo
