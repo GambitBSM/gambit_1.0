@@ -29,6 +29,10 @@
 ///          (felix.kahlhoefer@desy.de)
 ///  \date 2016 August 
 ///
+///  \author Sebastian Wild
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
@@ -54,7 +58,8 @@ BE_INI_FUNCTION
 {
   // Halo model parameters and pointers to their entries in the Params map.
   static double rho0_eff = 0.4, vrot = 235, v0 = 235, vesc = 550;
-  static safe_ptr<double> rho0_ptr,vrot_ptr,v0_ptr,vesc_ptr;
+  static safe_ptr<double> rho0_ptr,vrot_ptr,v0_ptr,vesc_ptr;  // FIXME: to delete
+  static safe_ptr<DarkBit::LocalMaxwellianHalo> LocalHaloParameters_ptr;
 
   // Fraction of DM
   double fraction = *Dep::RD_fraction;
@@ -84,6 +89,8 @@ BE_INI_FUNCTION
       //ex_map["DARWIN_Xe"] = DARWIN_Xe_Init(false);
     }
     
+
+    // FIXME: DELETE THIS PARAGRAPH
     // Save safe pointers to halo parameters. The if clause only exists in case another halo model is added later.
     if (ModelInUse("LocalHalo"))
     {
@@ -91,7 +98,11 @@ BE_INI_FUNCTION
       vrot_ptr = Param["vrot"];
       v0_ptr   = Param["v0"];
       vesc_ptr = Param["vesc"];
-    }    
+    } 
+
+
+    LocalHaloParameters_ptr = Dep::LocalHalo.safe_pointer();
+      
 
   }
   scan_level = false;
@@ -124,6 +135,16 @@ BE_INI_FUNCTION
     if (halo_changed)
     {
       DDCalc_SetSHM(Halo,rho0_eff,vrot,v0,vesc);
+
+
+      // FIXME: DELETE THIS
+      std::cout << "rho0 = " << *rho0_ptr << std::endl;
+      std::cout << "vrot = " << vrot << std::endl;
+      std::cout << "v0 = " << v0 << std::endl;
+      std::cout << "vesc = " << vesc << std::endl;
+
+
+
       // Log stuff if in debug mode
       #ifdef DDCALC_DEBUG
         logger() << "Updated DDCalc halo parameters:" << EOM;

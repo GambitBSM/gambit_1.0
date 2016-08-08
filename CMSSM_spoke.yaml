@@ -32,9 +32,13 @@ Parameters:
     vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
 
-#  GalacticHalo_gNFW:
-#    rhos: .4
-#    rs: 8.
+#  Halo_gNFW_rho0:
+#    rho0: 0.4
+#    v0: 235.0
+#    vesc: 550.0
+#    vrot: 235.0
+#    rs: 20.0
+#    r_sun: 8.5
 #    alpha: 1
 #    beta: 3
 #    gamma: 1
