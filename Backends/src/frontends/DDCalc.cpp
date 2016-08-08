@@ -59,10 +59,7 @@ BE_INI_FUNCTION
 
   // Halo model parameters and pointers to their entries in the Params map.
   static double rho0_eff = 0.4, vrot = 235, v0 = 235, vesc = 550;
-  static safe_ptr<double> rho0_ptr,vrot_ptr,v0_ptr,vesc_ptr;  // FIXME: to delete
-  //static safe_ptr<LocalMaxwellianHalo> LocalHaloParameters_ptr;
-
-  std::cout << "Point1." << std::endl;
+  static safe_ptr<LocalMaxwellianHalo> LocalHaloParameters_ptr;
 
   // Fraction of DM
   double fraction = *Dep::RD_fraction;
@@ -74,9 +71,6 @@ BE_INI_FUNCTION
     // Initialize halo and WIMP models
     WIMP = DDCalc_InitWIMP();
     Halo = DDCalc_InitHalo();
-    
-
-     std::cout << "Point2." << std::endl;
 
     // Initialize experiments
     if (*InUse::DDCalc_Experiment)
@@ -95,23 +89,8 @@ BE_INI_FUNCTION
       //ex_map["DARWIN_Xe"] = DARWIN_Xe_Init(false);
     }
     
-
-    // FIXME: DELETE THIS PARAGRAPH
-    // Save safe pointers to halo parameters. The if clause only exists in case another halo model is added later.
-    if (ModelInUse("LocalHalo"))
-    {
-      rho0_ptr = Param["rho0"];
-      vrot_ptr = Param["vrot"];
-      v0_ptr   = Param["v0"];
-      vesc_ptr = Param["vesc"];
-    } 
-
-
-    //LocalHaloParameters_ptr = Dep::LocalHalo.safe_pointer();
-      
-
-    std::cout << "Point3." << std::endl;
-
+    // Save safe pointers to local halo parameters.
+    LocalHaloParameters_ptr = Dep::LocalHalo.safe_pointer();
   }
   scan_level = false;
 
@@ -132,38 +111,28 @@ BE_INI_FUNCTION
     logger() << "  sigmanSD = " << sigmanSD << std::endl;
   #endif
 
-  // Change halo parameters. The if clause only exists in case another halo model is added later.
-  if (ModelInUse("LocalHalo"))
-  {
+  // Change halo parameters.
     bool halo_changed = false;
-    if (*rho0_ptr * fraction != rho0_eff) {rho0_eff = *rho0_ptr * fraction; halo_changed = true;}
-    if (*vrot_ptr != vrot)                {vrot     = *vrot_ptr;            halo_changed = true;}
-    if (*v0_ptr   != v0)                  {v0       = *v0_ptr;              halo_changed = true;}
-    if (*vesc_ptr != vesc)                {vesc     = *vesc_ptr;            halo_changed = true;}
+
+    if (LocalHaloParameters_ptr->rho0 * fraction != rho0_eff) {rho0_eff = LocalHaloParameters_ptr->rho0 * fraction; halo_changed = true;}
+    if (LocalHaloParameters_ptr->vrot != vrot)                {vrot     = LocalHaloParameters_ptr->vrot;            halo_changed = true;}
+    if (LocalHaloParameters_ptr->v0   != v0)                  {v0       = LocalHaloParameters_ptr->v0;              halo_changed = true;}
+    if (LocalHaloParameters_ptr->vesc != vesc)                {vesc     = LocalHaloParameters_ptr->vesc;            halo_changed = true;}
+
     if (halo_changed)
     {
       DDCalc_SetSHM(Halo,rho0_eff,vrot,v0,vesc);
 
-
-      // FIXME: DELETE THIS
-      //std::cout << "rho0 = " << *rho0_ptr << std::endl;
-      //std::cout << "vrot = " << vrot << std::endl;
-      //std::cout << "v0 = " << v0 << std::endl;
-      //std::cout << "vesc = " << vesc << std::endl;
-
-
-
       // Log stuff if in debug mode
       #ifdef DDCALC_DEBUG
         logger() << "Updated DDCalc halo parameters:" << EOM;
-        logger() << "    rho0 [GeV/cm^3]     = " << *rho0_ptr << EOM;
+        logger() << "    rho0 [GeV/cm^3]     = " << LocalHaloParameters_ptr->rho0 << EOM;
         logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
         logger() << "    vrot [km/s]         = " << vrot << EOM;
         logger() << "    v0   [km/s]         = " << v0   << EOM;
         logger() << "    vesc [km/s]         = " << vesc << EOM;
       #endif
     }
-  }
   
 }
 END_BE_INI_FUNCTION                                                

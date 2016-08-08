@@ -42,8 +42,6 @@
 // Load it
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(LocalHalo)  // FIXME: to delete
-
 // BACKEND FUNCTIONS =======================================
 
 /* Import functions.

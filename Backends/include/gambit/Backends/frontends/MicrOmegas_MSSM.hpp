@@ -3,6 +3,8 @@
  * \author Jonathan Cornell
  * \date 2013-10-11
  *
+ * \author Sebastian Wild
+ * \date 2016-08-08
  */
 
 #define BACKENDNAME MicrOmegas_MSSM
@@ -11,8 +13,8 @@
 
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(MSSM63atQ, LocalHalo)
-// FIXME "LocalHalo" is just a workaround to allow initializing MO without MSSM
+BE_ALLOW_MODELS(MSSM63atQ, Halo_gNFW, Halo_gNFW_rho0, Halo_gNFW_rhos, Halo_Einasto, Halo_Einasto_rho0, Halo_Einasto_rhos)
+// FIXME the presence of the various halo models is just a workaround to allow initializing MO without MSSM
 // model
 
 BE_FUNCTION(assignVal, int, (char*,double),"assignVal","assignVal")
