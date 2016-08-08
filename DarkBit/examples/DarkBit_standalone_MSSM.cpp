@@ -59,7 +59,7 @@ namespace Gambit
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);
-      //std::cout << "Exemplary width:" << std::endl;
+      //std::cout << "Example width:" << std::endl;
       //std::cout << outDecays.at(std::pair<int,int>(25,0)).width_in_GeV << std::endl;
     }
   }

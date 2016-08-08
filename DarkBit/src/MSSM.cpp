@@ -61,7 +61,7 @@ namespace Gambit {
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
         std::vector<str> filenames =
-      /// Option debug_SLHA_filenames<std::vector<std::string>>: Optional override list of SLHA filenames used for backend initialization default
+          /// Option debug_SLHA_filenames<std::vector<std::string>>: Optional override list of SLHA filenames used for backend initialization default
           runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
         const char * filename = filenames[counter].c_str();
         int len = filenames[counter].length();
@@ -131,13 +131,14 @@ namespace Gambit {
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
           int rank = 0;
-#ifdef WITH_MPI
-          if(GMPI::Is_initialized())
-          {
+          #ifdef WITH_MPI
+            if(GMPI::Is_initialized())
+            {
               GMPI::Comm comm;
               rank = comm.Get_rank();
-          }
-#endif
+            }
+          #endif
+
           // Add model select block to inform DS about 6x6 mixing
           SLHAea::Block modsel_block("MODSEL");
           modsel_block.push_back("BLOCK MODSEL");
@@ -213,14 +214,14 @@ namespace Gambit {
       double result = IBfunc(IBch,x,y);
       setMassesForIB(false);
 
-#ifdef DARKBIT_DEBUG
-      std::cout << "  x, y = " << x << ", " << y << std::endl;
-      std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", "
-           << E2 << std::endl;
-      std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", "
-           << m_2 << std::endl;
-      std::cout << "  IBfunc = " << result << std::endl;
-#endif
+      #ifdef DARKBIT_DEBUG
+        std::cout << "  x, y = " << x << ", " << y << std::endl;
+        std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", "
+             << E2 << std::endl;
+        std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", "
+             << m_2 << std::endl;
+        std::cout << "  IBfunc = " << result << std::endl;
+      #endif
 
       // M_DM^-2 is from the Jacobi determinant
       return std::max(0., result) / (M_DM*M_DM);

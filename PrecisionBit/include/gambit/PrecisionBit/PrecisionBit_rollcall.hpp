@@ -79,9 +79,9 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, Spectrum))
   QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, Spectrum))
   QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, triplet<double>, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mh, NEW_CAPABILITY, mh_from_SM_spectrum,   double, (), (SM_spectrum, Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_SS_spectrum,   double, (SingletDM, SingletDMZ3), (SingletDM_spectrum, Spectrum))
-  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_MSSM_spectrum, double, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mh, NEW_CAPABILITY, mh_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, Spectrum))
+  QUICK_FUNCTION(PrecisionBit, mh, OLD_CAPABILITY, mh_from_MSSM_spectrum, triplet<double>, (MSSM63atQ, MSSM63atMGUT), (MSSM_spectrum, Spectrum), (SMlike_Higgs_PDG_code, int))
 
   // SM nuisance likelihoods
   QUICK_FUNCTION(PrecisionBit, lnL_Z_mass,   NEW_CAPABILITY, lnL_Z_mass_chi2,   double, (), (SMINPUTS, SMInputs))
@@ -95,12 +95,22 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, lnL_light_quark_masses, NEW_CAPABILITY, lnL_light_quark_masses_chi2, double, (),
           (SMINPUTS, SMInputs))
 
+
   // Electroweak precision likelihoods: W mass
   #define CAPABILITY lnL_W_mass
   START_CAPABILITY
     #define FUNCTION lnL_W_mass_chi2
     START_FUNCTION(double)
     DEPENDENCY(mw, triplet<double>)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Naive Higgs mass likelihood
+  #define CAPABILITY lnL_h_mass
+  START_CAPABILITY
+    #define FUNCTION lnL_h_mass_chi2
+    START_FUNCTION(double)
+    DEPENDENCY(mh, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -158,6 +168,7 @@ START_MODULE
 
     // Muon g-2 -- Using the C++ interface to gm2calc
     #define FUNCTION GM2C_SUSY
+
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
     DEPENDENCY(MSSM_spectrum, Spectrum)
