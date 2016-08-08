@@ -83,6 +83,9 @@ def main(argv):
     # Loop over the found modules.
     for mod in modules:
 
+        # Clear the excluded components
+        excluded_components = set([])
+
         # Retrieve the list of module source files.
         srcs = []
         for root,dirs,files in os.walk("./"+mod+"/src"):
@@ -93,10 +96,11 @@ def main(argv):
             for name in files:
                 if (name.endswith(".c") or name.endswith(".cc") or name.endswith(".cpp")) and not hidden(name):
                     short_root = re.sub("\\./"+mod+"/src/?","",root)
-                    if mod in ["Backends", "Models"] and excluded(name, exclude_backends | exclude_models):
-                        if verbose: print "    Ignoring {0} source file '{1}'".format(mod,short_root+name)
-                        continue # skip this file
                     if short_root != "" : short_root += "/" 
+                    if mod in ["Backends", "Models"] and "/backend_types/" not in short_root and excluded(name, exclude_backends | exclude_models):
+                        if verbose: print "    Ignoring {0} source file '{1}'".format(mod,short_root+name)
+                        excluded_components.add(os.path.splitext(name)[0])
+                        continue # skip this file
                     if verbose: print "    Located {0} source file '{1}'".format(mod,short_root+name)
                     srcs+=[short_root+name]
     
@@ -106,14 +110,16 @@ def main(argv):
             current_dirname =  os.path.basename(os.path.normpath(root))
             if mod=="Printers" and excluded(current_dirname, exclude_printers):
                 if verbose: print "    Ignoring header files for printer {0}".format(current_dirname) 
+                excluded_components.add(current_dirname)
                 continue # skip this directory
             for name in files:
                 short_root = re.sub("\\./"+mod+"/include/?","",root)
-                if mod in ["Backends", "Models", "Printers"] and excluded(name, exclude_backends | exclude_models | exclude_printers):
+                if short_root != "" : short_root += "/" 
+                if mod in ["Backends", "Models", "Printers"] and "/backend_types/" not in short_root and excluded(name, exclude_backends | exclude_models | exclude_printers):
                     if verbose: print "    Ignoring {0} header file '{1}'".format(mod,short_root+name)
+                    excluded_components.add(os.path.splitext(name)[0])
                     continue # skip this file
                 if (name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp")) and not hidden(name):
-                    if short_root != "" : short_root += "/" 
                     if verbose: print "    Located {0} header file '{1}'".format(mod,short_root+name)
                     headers+=[short_root+name]
 
@@ -164,6 +170,7 @@ set(source_files                                \n"
         for hpp in headers: towrite+='include/{0}\n'.format(hpp)
         towrite+=")\n\n"
         towrite+="add_gambit_library("+mod+" OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})"
+        for x in excluded_components: towrite+="\n\nmessage(\"${BoldCyan} X Excluding " + x + " from GAMBIT configuration.${ColourReset}\")"
         cmakelist = "./"+mod+"/CMakeLists.txt"
         candidate = "./scratch/"+mod+"_CMakeLists.txt"
         with open(candidate,"w") as f: f.write(towrite)

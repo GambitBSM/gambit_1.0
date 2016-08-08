@@ -11,7 +11,7 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 May, June, July
-//
+///
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
 ///  \date 2013 July, Aug
@@ -147,40 +147,20 @@ namespace Gambit
             for(auto &&pluginName : pluginNames)
             {
                 Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
-                
-                //if(plugin_interface["initialize_mpi"] && !plugin_interface["initialize_mpi"].as<bool>())
-                if (false)
+                plugin_interface();
+                if(Plugins::plugin_info.early_shutdown_in_progress())
                 {
-                    plugin_interface();
-                    printerInterface->finalise();
+                  #ifdef WITH_MPI
+                    int rank = GMPI::Comm().Get_rank();
+                  #else
+                    int rank = 0;
+                  #endif
+                  if (rank == 0) cout << "ScannerBit has received a shutdown signal and will terminate early. Finalising resume data..." << endl;
+                  printerInterface->finalise(true); // abnormal (early) termination
                 }
                 else
                 {
-#ifdef WITH_MPI
-                    if(GMPI::Is_initialized())
-                    {
-                        //scan_err << "Error initialising MPI! It is already initialised!" << scan_end; 
-                    } 
-                    else
-                    {
-                        //MPI_Init(&argc,&argv); 
-                    }
-                    //GMPI::Init(argc,argv);
-#endif
-                    plugin_interface();
-                    if(Plugins::plugin_info.early_shutdown_in_progress())
-                    {
-                      cout << "Scan has terminated early due to receiving a shutdown signal. Finalising resume data..." << endl;
-                      printerInterface->finalise(true); // abnormal (early) termination
-                      // TODO: do we also need to call the ScannerBit cleanup routines? i.e. for resuming? Or can we assume that the plugin already took care of that if it exited?
-                    }
-                    else
-                    {
-                      printerInterface->finalise();                     
-                    }
-#ifdef WITH_MPI
-                    //MPI_Finalize(); 
-#endif
+                  printerInterface->finalise();
                 }
             }
 

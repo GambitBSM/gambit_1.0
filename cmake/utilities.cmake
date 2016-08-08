@@ -101,19 +101,6 @@ endmacro()
 # Arrange clean commands
 include(cmake/cleaning.cmake)
 
-# Arrange make backends command (will be filled in from backends.cmake)
-add_custom_target(backends)
-
-# Arrange make scanners command (will be filled in from scanners.cmake)
-add_custom_target(scanners)
-
-# Macro to clear the build stamp manually for an external project
-macro(enable_auto_rebuild package)
-  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
-  add_custom_target(check-rebuild-${package} ${CMAKE_COMMAND} -E remove -f ${rmstring})
-  add_dependencies(${package} check-rebuild-${package})
-endmacro()
-
 # Macro to write some shell commands to clean an external code.  Adds clean-[package] and nuke-[package]
 macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
@@ -129,36 +116,10 @@ macro(add_chained_external_clean package dir target dependee)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
-  add_custom_target(dependeenuke-${package} DEPENDS clean-${package}
+  add_custom_target(chained-nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt || true)
   add_dependencies(clean-${dependee} clean-${package}) 
-  add_dependencies(nuke-${dependee} dependeenuke-${package}) 
-endmacro()
-
-# Macro to add all additional targets for a new backend
-macro(add_extra_targets package dir dl target)
-  enable_auto_rebuild(${package})
-  add_external_clean(${package} ${dir} ${dl} ${target})
-  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
-  add_dependencies(clean-backends clean-${package})
-  add_dependencies(nuke-backends nuke-${package})
-endmacro()
-
-# Macro to add all additional targets for a new chained backend
-macro(add_chained_extra_targets package dir target dependee)
-  enable_auto_rebuild(${package})
-  add_chained_external_clean(${package} ${dir} ${target} ${dependee})
-  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
-  add_dependencies(clean-backends clean-${package})
-endmacro()
-
-# Macro to add all additional targets for a new scanner
-macro(add_extra_targets_scanner package dir dl target)
-  enable_auto_rebuild(${package})
-  add_external_clean(${package} ${dir} ${dl} ${target})
-  set_target_properties(${package} PROPERTIES EXCLUDE_FROM_ALL 1)
-  add_dependencies(clean-scanners clean-${package})
-  add_dependencies(nuke-scanners nuke-${package})
+  add_dependencies(nuke-${dependee} chained-nuke-${package}) 
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
@@ -170,7 +131,7 @@ endfunction()
 
 # Function to add static GAMBIT library
 function(add_gambit_library libraryname)
-  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" ${ARGN})
 
   add_library(${libraryname} ${ARG_OPTION} ${ARG_SOURCES} ${ARG_HEADERS})
   add_dependencies(${libraryname} model_harvest)
@@ -249,9 +210,10 @@ endfunction()
 
 # Function to add GAMBIT executable
 function(add_gambit_executable executablename LIBRARIES)
-  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" ${ARGN})
 
   add_executable(${executablename} ${ARG_SOURCES} ${ARG_HEADERS})
+  set_target_properties(${executablename} PROPERTIES EXCLUDE_FROM_ALL 1)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
     foreach (dir ${GAMBIT_INCDIRS})
@@ -307,6 +269,83 @@ function(add_gambit_executable executablename LIBRARIES)
 
 endfunction()
 
+# Standalone harvester script
+set(STANDALONE_FACILITATOR ${PROJECT_SOURCE_DIR}/Elements/scripts/standalone_facilitator.py)
+
+# Function to add a standalone executable
+function(add_standalone executablename)
+  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;LIBRARIES;MODULES" ${ARGN})
+
+  # Iterate over modules, checking if the neccessary ones are present, and adding them to the target objects if so.
+  set(standalone_permitted 1)
+  foreach(module ${ARG_MODULES})
+    if(standalone_permitted AND EXISTS "${PROJECT_SOURCE_DIR}/${module}/" AND (";${GAMBIT_BITS};" MATCHES ";${module};"))
+      if(COMMA_SEPARATED_MODULES)
+        set(COMMA_SEPARATED_MODULES "${COMMA_SEPARATED_MODULES},${module}")
+        set(STANDALONE_OBJECTS ${STANDALONE_OBJECTS} $<TARGET_OBJECTS:${module}>)
+      else()
+        set(COMMA_SEPARATED_MODULES "${module}")
+        set(STANDALONE_OBJECTS $<TARGET_OBJECTS:${module}>)
+        set(first_module ${module})
+      endif()
+      # Exclude standalones that need SpecBit when FS has been excluded.  Remove this once FS is BOSSed.
+      if(module STREQUAL "SpecBit" AND EXCLUDE_FLEXIBLESUSY)
+        set(standalone_permitted 0)
+      endif()
+    else()
+      set(standalone_permitted 0)
+    endif()
+  endforeach()
+
+  # Add the standalone only if the required modules are all present
+  if(standalone_permitted)
+
+    # Iterate over sources and add leading source path
+    set(STANDALONE_FUNCTORS "${PROJECT_SOURCE_DIR}/${first_module}/examples/functors_for_${executablename}.cpp")
+    foreach(source_file ${ARG_SOURCES})
+      list(APPEND STANDALONE_SOURCES ${PROJECT_SOURCE_DIR}/${source_file})
+    endforeach()
+    list(APPEND STANDALONE_SOURCES ${STANDALONE_FUNCTORS})
+
+    # Set up the target to call the facilitator script to make the functors source file for this standalone. 
+    add_custom_command(OUTPUT ${STANDALONE_FUNCTORS}
+                       COMMAND python ${STANDALONE_FACILITATOR} ${executablename} -m __not_a_real_name__,${COMMA_SEPARATED_MODULES}
+                       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                       DEPENDS module_harvest
+                               ${STANDALONE_FACILITATOR}
+                               ${HARVEST_TOOLS}
+                               ${PROJECT_BINARY_DIR}/CMakeCache.txt)  
+  
+    # Do ad hoc checks for stuff that will eventually be BOSSed and removed from here. 
+    if (NOT EXCLUDE_FLEXIBLESUSY)
+      set(ARG_LIBRARIES ${ARG_LIBRARIES} ${flexiblesusy_LDFLAGS})
+    endif()
+    if (NOT EXCLUDE_DELPHES)
+      set(ARG_LIBRARIES ${ARG_LIBRARIES} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+    endif()
+
+    add_gambit_executable(${executablename} "${ARG_LIBRARIES}"
+                          SOURCES ${STANDALONE_SOURCES}
+                                  ${STANDALONE_OBJECTS}
+                                  ${GAMBIT_ALL_COMMON_OBJECTS}
+                          HEADERS ${ARG_HEADERS})
+
+    # Do more ad hoc checks for stuff that will eventually be BOSSed and removed from here
+    if (NOT EXCLUDE_FLEXIBLESUSY)
+      add_dependencies(${executablename} flexiblesusy)
+    endif()
+    if (NOT EXCLUDE_DELPHES)
+      add_dependencies(${executablename} delphes)
+    endif()
+
+    # Add the new executable to the standalones target
+    add_dependencies(standalones ${executablename})
+
+  endif()
+
+endfunction()
+
+
 # Simple function to find specific Python modules
 macro(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
@@ -326,31 +365,34 @@ endmacro()
 set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
 set(needs_BOSSing "")
 set(needs_BOSSing_failed "")
-macro(BOSS_backend cmake_project backend_name backend_version)
+macro(BOSS_backend name backend_version)
 
   # Replace "." by "_" in the backend version number
   string(REPLACE "." "_" backend_version_safe ${backend_version})
 
   # Construct path to the config file expected by BOSS
-  set(config_file_path "${BOSS_dir}/configs/${backend_name}_${backend_version_safe}.py")
+  set(config_file_path "${BOSS_dir}/configs/${name}_${backend_version_safe}.py")
 
   # Only add BOSS step to the build process if the config file exists
   if(NOT EXISTS ${config_file_path})
     message("${BoldRed}-- The config file ${config_file_path} required ")
-    message("   to BOSS the backend ${backend_name} ${backend_version} was not found. This backend will not be BOSSed. ${ColourReset}")
-    list(APPEND needs_BOSSing_failed ${cmake_project})
+    message("   to BOSS the backend ${name} ${backend_version} was not found. This backend will not be BOSSed. ${ColourReset}")
+    list(APPEND needs_BOSSing_failed ${name}_${ver})
   else()
-    list(APPEND needs_BOSSing ${cmake_project})
+    list(APPEND needs_BOSSing ${name}_${ver})
+    file(READ "${config_file_path}" conf_file)
+    string(REGEX MATCH "gambit_backend_name[ \t\n]*=[ \t\n]*'\([^\n]+\)'" dummy "${conf_file}")
+    set(name_in_frontend "${CMAKE_MATCH_1}")
     set(BOSS_includes "-I ${Boost_INCLUDE_DIR}")
     if (NOT ${GSL_INCLUDE_DIR} STREQUAL "")
       set(BOSS_includes "${BOSS_includes} -I ${GSL_INCLUDE_DIR}")
     endif()
-    ExternalProject_Add_Step(${cmake_project} BOSS
+    ExternalProject_Add_Step(${name}_${ver} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} ${backend_name}_${backend_version_safe}
+      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} ${name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
-      COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
-      COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp
+      COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
+      COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${name_in_frontend}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp
       DEPENDEES patch
       DEPENDERS configure
     )

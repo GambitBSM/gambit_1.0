@@ -12,24 +12,24 @@
 
 
 DarkSUSY:
-  5.1.1:       ./Backends/installed/DarkSUSY/5.1.1/lib/libdarksusy.so
-  5.1.3:       ./Backends/installed/DarkSUSY/5.1.3/lib/libdarksusy.so
+  5.1.1:       ./Backends/installed/darksusy/5.1.1/lib/libdarksusy.so
+  5.1.3:       ./Backends/installed/darksusy/5.1.3/lib/libdarksusy.so
 
 SuperIso:
-  3.4:         ./Backends/installed/SuperIso/3.4/libsuperiso.so
+  3.6:         ./Backends/installed/superiso/3.6/libsuperiso.so
 
 DDCalc:
-  1.0.0:       ./Backends/installed/DDCalc/1.0.0/lib/libDDCalc.so
+  1.0.0:       ./Backends/installed/ddcalc/1.0.0/lib/libDDCalc.so
 
 HiggsBounds:
-  4.2.1:       ./Backends/installed/HiggsBounds/4.2.1/lib/libhiggsbounds.so
+  4.2.1:       ./Backends/installed/higgsbounds/4.2.1/lib/libhiggsbounds.so
 
 HiggsSignals:
-  1.4:         ./Backends/installed/HiggsSignals/1.4.0/lib/libhiggssignals.so
+  1.4:         ./Backends/installed/higgssignals/1.4.0/lib/libhiggssignals.so
 
 FeynHiggs:
-  2.11.2:      ./Backends/installed/FeynHiggs/2.11.2/lib/libFH.so
-  2.11.3:      ./Backends/installed/FeynHiggs/2.11.3/lib/libFH.so
+  2.11.2:      ./Backends/installed/feynhiggs/2.11.2/lib/libFH.so
+  2.11.3:      ./Backends/installed/feynhiggs/2.11.3/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/examples/libFarrayTest.so
@@ -42,24 +42,24 @@ LibFortran:
   1.0:         ./Backends/examples/libfortran.so
 
 Pythia:
-  8.212:       ./Backends/installed/Pythia/8.212/lib/libpythia8.so
-  8.212.EM:    ./Backends/installed/Pythia/8.212.EM/lib/libpythia8.so
+  8.212:       ./Backends/installed/pythia/8.212/lib/libpythia8.so
+  8.212.EM:    ./Backends/installed/pythia/8.212.EM/lib/libpythia8.so
 
 gamLike:
-  1.0.0:       ./Backends/installed/gamLike/1.0.0/lib/gamLike.so
+  1.0.0:       ./Backends/installed/gamlike/1.0.0/lib/gamLike.so
 
 gm2calc:
   1.2.0:       ./Backends/installed/gm2calc/1.2.0/src/libgm2calc.so
 
-MicrOmegas:
+MicrOmegas_MSSM:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/MSSM/libmicromegas.so
 
-MicrOmegasSingletDM:
+MicrOmegas_SingletDM:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/SingletDM/libmicromegas.so
 
 nulike:
   1.0.3:       ./Backends/installed/nulike/1.0.3/lib/libnulike.so
 
 SUSY_HIT:
-  1.5:         ./Backends/installed/SUSY-HIT/1.5/libsusyhit.so
+  1.5:         ./Backends/installed/susyhit/1.5/libsusyhit.so
 

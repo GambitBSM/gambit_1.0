@@ -475,7 +475,7 @@ namespace Gambit
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        improved_spec.getSLHA(filename);
+        improved_spec.getSLHA(filename,true);
       }
 
     }
@@ -485,45 +485,50 @@ namespace Gambit
     void mw_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SM_spectrum;
-      const SubSpectrum& HE = (*Dep::SM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::SM_spectrum->get_HE();
       result.central = HE.get(Par::Pole_Mass, "W+");;
-      result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
+      result.upper = HE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower = HE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SS_spectrum;
-      const SubSpectrum& HE = (*Dep::SingletDM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::SingletDM_spectrum->get_HE();
       result.central = HE.get(Par::Pole_Mass, "W+");;
-      result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
+      result.upper = HE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower = HE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_MSSM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_MSSM_spectrum;
-      const SubSpectrum& HE = (*Dep::MSSM_spectrum).get_HE();
+      const SubSpectrum& HE = Dep::MSSM_spectrum->get_HE();
       result.central = HE.get(Par::Pole_Mass, "W+");
-      result.upper =  HE.get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE.get(Par::Pole_Mass_1srd_low, "W+");
+      result.upper = HE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower = HE.get(Par::Pole_Mass_1srd_low, "W+");
     }
-    void mh_from_SM_spectrum(double &result)
+    void mh_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mh_from_SM_spectrum;
-      const SubSpectrum& HE = (*Dep::SM_spectrum).get_HE();
-      result = HE.get(Par::Pole_Mass, 25, 0);
+      const SubSpectrum& HE = Dep::SM_spectrum->get_HE();
+      result.central = HE.get(Par::Pole_Mass, 25, 0);
+      result.upper = HE.get(Par::Pole_Mass_1srd_high, 25, 0);
+      result.lower = HE.get(Par::Pole_Mass_1srd_low, 25, 0);
     }
-    void mh_from_SS_spectrum(double &result)
+    void mh_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mh_from_SS_spectrum;
-      const SubSpectrum& HE = (*Dep::SingletDM_spectrum).get_HE();
-      result = HE.get(Par::Pole_Mass, 25, 0);
+      const SubSpectrum& HE = Dep::SingletDM_spectrum->get_HE();
+      result.central = HE.get(Par::Pole_Mass, 25, 0);
+      result.upper = HE.get(Par::Pole_Mass_1srd_high, 25, 0);
+      result.lower = HE.get(Par::Pole_Mass_1srd_low, 25, 0);
     }
-    void mh_from_MSSM_spectrum(double &result)
+    void mh_from_MSSM_spectrum(triplet<double> &result)
     {
-      //FIXME this needs to use the PDG code provided by a new SpecBit function SMlikeHiggs (is not always lightest, therefore can be 25 or 35)
       using namespace Pipes::mh_from_MSSM_spectrum;
-      const SubSpectrum& HE = (*Dep::MSSM_spectrum).get_HE();
-      result = HE.get(Par::Pole_Mass, 25, 0);
+      const SubSpectrum& HE = Dep::MSSM_spectrum->get_HE();
+      result.central = HE.get(Par::Pole_Mass, *Dep::SMlike_Higgs_PDG_code, 0);
+      result.upper = HE.get(Par::Pole_Mass_1srd_high, *Dep::SMlike_Higgs_PDG_code, 0);
+      result.lower = HE.get(Par::Pole_Mass_1srd_low, *Dep::SMlike_Higgs_PDG_code, 0);
     }
     /// @}
 
@@ -622,6 +627,15 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(Dep::mw->central, mw_central_observed, theory_uncert, mw_err_observed);
     }
 
+    /// Simple, naive h boson mass likelihood
+    /// Reference: http://pdg.lbl.gov/2015/tables/rpp2015-sum-gauge-higgs-bosons.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+    void lnL_h_mass_chi2(double &result)
+    {
+      using namespace Pipes::lnL_h_mass_chi2;
+      double theory_uncert = std::max(Dep::mh->upper, Dep::mh->lower);
+      result = Stats::gaussian_loglikelihood(Dep::mh->central, 125.09, theory_uncert, 0.24);
+    }
+
     /// Effective leptonic sin^2(theta_W) likelihood
     /// sin^2theta_W^leptonic_effective~ sin^2theta_W(mZ)^MSbar + 0.00029 = 0.23155 +/- 0.00005    (1 sigma), Gaussian.  (PDG global SM fit)
     /// Reference: http://pdg.lbl.gov/2014/reviews/rpp2014-rev-standard-model.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
@@ -671,8 +685,7 @@ namespace Gambit
     void GM2C_SUSY(triplet<double> &result)
     {
       using namespace Pipes::GM2C_SUSY;
-      const Spectrum& spec = *Dep::MSSM_spectrum;
-      const SubSpectrum& mssm = spec.get_HE();
+      const SubSpectrum& mssm = Dep::MSSM_spectrum->get_HE();
       
       gm2calc::MSSMNoFV_onshell model;
   
@@ -732,7 +745,7 @@ namespace Gambit
           }
         }
         
-        const SMInputs& smin = spec.get_SMInputs();
+        const SMInputs& smin = Dep::MSSM_spectrum->get_SMInputs();
 
         model.get_physical().MVZ =smin.mZ;
         model.get_physical().MFb =smin.mBmB;
@@ -781,7 +794,6 @@ namespace Gambit
           std::ostringstream err;
           err << "gm2calc routine convert_to_onshell raised warning: "
               << model.get_problems().get_warnings() << ".";
-          logger() << err.str() << EOM;
           // Maybe you would argue that we want to invalidate such points, but the DRbar-->OS
           // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
           PrecisionBit_warning().raise(LOCAL_INFO, err.str());          

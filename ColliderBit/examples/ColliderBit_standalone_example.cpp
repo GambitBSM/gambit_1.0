@@ -46,7 +46,8 @@ namespace Gambit
   namespace ColliderBit {
 
     // Make a GAMBIT spectrum object from an SLHA file
-    void createSpectrum(Spectrum& outSpec){
+    void createSpectrum(Spectrum& outSpec)
+    {
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
     }
     

@@ -42,6 +42,10 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar, Aug
 ///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -64,8 +68,8 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, Spectrum) 
-      DEPENDENCY(decay_rates, DecayTable) 
+      DEPENDENCY(MSSM_spectrum, Spectrum)
+      DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -157,9 +161,9 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
-#ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, Spectrum) 
-#endif
+      #ifdef DARKBIT_RD_DEBUG
+        DEPENDENCY(MSSM_spectrum, Spectrum)
+      #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
       BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
@@ -187,7 +191,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      BACKEND_REQ(oh2, (MicrOmegas, MicrOmegasSingletDM), double, (double*,int,double))
+      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegas_SingletDM), double, (double*,int,double))
       ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -363,10 +367,10 @@ START_MODULE
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, Spectrum)      
+      DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
-//      BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      //BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
@@ -380,7 +384,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(decay_rates,DecayTable)      
+      DEPENDENCY(decay_rates,DecayTable)
       DEPENDENCY(SingletDM_spectrum, Spectrum)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
@@ -388,11 +392,6 @@ START_MODULE
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
-//    #define FUNCTION lnL_FermiLATdwarfsSimple
-//      START_FUNCTION(double)
-//      DEPENDENCY(GA_AnnYield, daFunk::Funk)
-//      DEPENDENCY(RD_fraction, double)
-//    #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
@@ -520,14 +519,14 @@ START_MODULE
       MODEL_GROUP(group1, (nuclear_params_fnq))
       MODEL_GROUP(group2, (MSSM63atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
-      BACKEND_OPTION((MicrOmegas),(gimmemicro))
-      BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_MSSM),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_SingletDM),(gimmemicro))
       FORCE_SAME_BACKEND(gimmemicro)
     #undef FUNCTION
 
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DM_nucleon_couplings)
-      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(SingletDM_spectrum, Spectrum)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
 
@@ -589,6 +588,12 @@ START_MODULE
   DD_DECLARE_EXPERIMENT(SIMPLE_2014)
   DD_DECLARE_EXPERIMENT(DARWIN_Ar)
   DD_DECLARE_EXPERIMENT(DARWIN_Xe)
+  DD_DECLARE_EXPERIMENT(LUX_2016_prelim)
+  DD_DECLARE_EXPERIMENT(PandaX_2016)
+  DD_DECLARE_EXPERIMENT(LUX_2015)
+  DD_DECLARE_EXPERIMENT(PICO_2L)
+  DD_DECLARE_EXPERIMENT(PICO_60_F)
+  DD_DECLARE_EXPERIMENT(PICO_60_I)
 
 
   // INDIRECT DETECTION: NEUTRINOS =====================================
@@ -971,7 +976,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM
     START_FUNCTION(std::string)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 

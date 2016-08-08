@@ -40,9 +40,11 @@ extern "C"
 //extern "C" void dumper(int, int, int, double*, double*, double*,
 //                       double, double, double, void*);
 
-namespace Gambit {
-   
-   namespace MultiNest {
+namespace Gambit
+{
+
+   namespace MultiNest
+   {
 
       /// Typedef for the ScannerBit pointer to the external loglikelihood function
       typedef Gambit::Scanner::like_ptr scanPtr;
@@ -87,6 +89,7 @@ namespace Gambit {
       ///@}      
 
    } // End Multinest namespace
+
 } // End Gambit namespace
 
 #endif

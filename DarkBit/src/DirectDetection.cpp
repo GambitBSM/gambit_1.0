@@ -18,6 +18,10 @@
 ///          (jcornell@ucsc.edu)
 ///  \date 2015 Mar
 ///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -249,6 +253,12 @@ namespace Gambit {
     DD_EX(SuperCDMS_2014)       // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
     DD_EX(DARWIN_Ar)
     DD_EX(DARWIN_Xe)
+    DD_EX(LUX_2016_prelim)
+    DD_EX(PandaX_2016)
+    DD_EX(LUX_2015)
+    DD_EX(PICO_2L)
+    DD_EX(PICO_60_F)
+    DD_EX(PICO_60_I)
 
     // Just in case, to make sure we don't mess with other things elsewhere.
     #undef DD_EX

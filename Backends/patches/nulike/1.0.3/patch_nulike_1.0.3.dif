@@ -24,16 +24,3 @@
  	$(FC) $(FFLAGS) -c $< -o $@
  
  $(BUILD)/%.o : $(CUBPACK)/src/%.f90
-@@ -106,10 +106,10 @@ $(BUILD)/tspack.o : $(TSPACK_FULL_SOURCE
- 	$(FC) $(FFLAGS) -c tspack.f -o $(BUILD)/tspack.o
- 	rm tspack.f
- 
--libnulike.a : $(CUBPACK_OBJ) $(OBJ)
-+libnulike.a : $(OBJ) 
- 	$(AR) $(ARFLAGS) $(LIB)/$@ $(OBJ) $(CUBPACK_OBJ)
- 
--libnulike.so : $(CUBPACK_OBJ) $(OBJ)
-+libnulike.so : $(OBJ)
- 	$(FC) $(SHARFLAGS) -o $(LIB)/$@ $(OBJ) $(CUBPACK_OBJ)
- 
- #Note the link order of the libraries in the following executables! -lnulike must always come before -ldarksusy, 

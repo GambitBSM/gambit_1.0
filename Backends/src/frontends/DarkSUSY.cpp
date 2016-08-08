@@ -42,12 +42,12 @@
 
 #define square(x) ((x) * (x))  // square a number
 
-//#define DARKSUSY_DEBUG
+#define DARKSUSY_DEBUG
 
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
 {
-  const double min_chi01_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
+  const double min_DS_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
   const std::vector<str> IBfinalstate = initVector<str>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
   std::vector<double> DSparticle_mass;
   std::vector<double> GAMBITparticle_mass;
@@ -612,14 +612,12 @@ BE_NAMESPACE
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     }
 
-    // FIXME: Commenting out these lines might help to fix the DD coupling
-    // problems (CW 2016-07-09)
     // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
     mssmiuseful->kln = 1;
     dsvertx();
-
+    
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
     widths->width(DSparticle_code("h0_1")) = myDecays.at(std::pair<int,int>(25,0)).width_in_GeV;
     widths->width(DSparticle_code("h0_2")) = myDecays.at(std::pair<int,int>(35,0)).width_in_GeV;
@@ -676,8 +674,8 @@ BE_NAMESPACE
     widths->width(DSpart->ksqd(5)) = myDecays.at(std::pair<int,int>(2000003,0)).width_in_GeV;
     widths->width(DSpart->ksqd(6)) = myDecays.at(std::pair<int,int>(2000005,0)).width_in_GeV;
 
-    // Set up neutralino widths.  Give the lightest some small nonzero width to avoid internal numerical issues in DS.
-    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_rwidth * to<double>(mySLHA.at("MASS").at(1000022).at(1))); 
+    // Set up neutralino widths.  Note that the zero neutralino width is taken care of below.
+    widths->width(DSpart->kn(1)) = myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV;
     widths->width(DSpart->kn(2)) = myDecays.at(std::pair<int,int>(1000023,0)).width_in_GeV;
     widths->width(DSpart->kn(3)) = myDecays.at(std::pair<int,int>(1000025,0)).width_in_GeV;
     widths->width(DSpart->kn(4)) = myDecays.at(std::pair<int,int>(1000035,0)).width_in_GeV;
@@ -691,6 +689,16 @@ BE_NAMESPACE
 
     // Gravitino width (not implemented in DS).
     //widths->width(DSparticle_code("~G")) = ;
+
+    // Integration routines in DS cannot handle very small sparticle widths.
+    // Make sure not to fall below minimal value in order to avoid numerical issues.
+    for (std::size_t i=21; i<49; i++)
+    {
+      if (widths->width(i)<min_DS_rwidth *mspctm->mass(i))
+      {
+        widths->width(i)=min_DS_rwidth *mspctm->mass(i);
+      }
+    }
 
     #ifdef DARKSUSY_DEBUG
       // Spit out spectrum and width files for debug purposes

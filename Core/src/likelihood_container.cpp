@@ -71,31 +71,24 @@ namespace Gambit
     // Set the list of valid return types of functions that can be used for 'purpose' by this container class.
     const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>", "float", "std::vector<float>");
     // Find subset of vertices that match requested purpose
-    target_vertices = dependencyResolver.getObsLikeOrder();
-    int size = 0;
-    auto it = target_vertices.begin();
-    for (auto vert_it = target_vertices.begin(), vert_end = target_vertices.end(); vert_it != vert_end; vert_it++)
+    auto all_vertices = dependencyResolver.getObsLikeOrder();
+    for (auto it = all_vertices.begin(); it != all_vertices.end(); ++it)
     {
-      if (dependencyResolver.getIniEntry(*vert_it)->purpose == purpose)
+      if (dependencyResolver.getIniEntry(*it)->purpose == purpose)
       {
-        return_types[*vert_it] = dependencyResolver.checkTypeMatch(*vert_it, purpose, allowed_types_for_purpose);
-        *(it++) = *vert_it;
-        size++;
+        return_types[*it] = dependencyResolver.checkTypeMatch(*it, purpose, allowed_types_for_purpose);
+        target_vertices.push_back(std::move(*it));
       }
       else
       {
-        aux_vertices.push_back(*vert_it);
+        aux_vertices.push_back(std::move(*it));
       }
     }
-    target_vertices.resize(size);
   }
 
   /// Do the prior transformation and populate the parameter map
   void Likelihood_Container::setParameters (const std::unordered_map<std::string, double> &parameterMap)
   {
-    // Clear the parameter map to make sure no junk from the last iteration gets left in there
-    //parameterMap.clear();
-
     // Set up a stream containing the parameter values, for diagnostic output
     std::ostringstream parstream;
 
@@ -182,7 +175,8 @@ namespace Gambit
       setParameters(in);
 
       // Logger debug output; things labelled 'LogTags::debug' only get logged if the logger::debug or master debug flags are true, not if only 'likelihood::debug' is true.
-      logger() << LogTags::core << LogTags::debug << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
+      logger() << LogTags::core << LogTags::debug << "Number of target vertices to calculate:    " << target_vertices.size() << endl
+                                                  << "Number of auxiliary vertices to calculate: " << aux_vertices.size() << EOM;
 
       // Begin timing of total likelihood evaluation
       std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
@@ -193,8 +187,7 @@ namespace Gambit
       // First work through the target functors, i.e. the ones contributing to the likelihood.
       for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
       {
-
-        // Log the likleihood being tried.
+        // Log the likelihood being tried.
         str likelihood_tag = "ikelihood contribution from " + dependencyResolver.get_functor(*it)->origin()
                              + "::" + dependencyResolver.get_functor(*it)->name();
         if (debug) logger() << LogTags::core << "Calculating l" << likelihood_tag << "." << EOM;
@@ -319,27 +312,8 @@ namespace Gambit
         printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
       }
 
-      // Ben: TODO: This appeared during a recent merge: is it correct? Isn't it done already above? Or was the above version supposed to be deleted?
-      //for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
-      //{
-      //  // Log the observables being tried.
-      //  str aux_tag = "dditional observable from " + dependencyResolver.get_functor(*it)->origin()
-      //                       + "::" + dependencyResolver.get_functor(*it)->name();
-      //  if (debug) logger() << LogTags::core <<  "Calculating a" << aux_tag << "." << EOM;
-      // 
-      //  try
-      //  {
-      //    dependencyResolver.calcObsLike(*it,getPtID());
-      //    if (debug) logger() << LogTags::core << "Computed a" << aux_tag << "." << EOM;
-      //  }
-      //  catch(Gambit::invalid_point_exception& e)
-      //  {
-      //    if (debug) logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
-      //             << "::" << e.thrower()->name() << ": " << e.message() << EOM;
-      //  }
-      //}
-
     }
+
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
     logger() << "Total lnL: " << lnlike << EOM;
     dependencyResolver.resetAll();

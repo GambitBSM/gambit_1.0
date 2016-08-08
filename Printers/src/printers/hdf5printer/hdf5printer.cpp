@@ -668,7 +668,9 @@ namespace Gambit
         {
           // Check whether a readable output file exists with the name that we want to use.
           std::string msg_finalfile;
-          std::cout << "File readable: " << finalfile << " : " << HDF5::checkFileReadable(finalfile, msg_finalfile) <<std::endl;
+          #ifdef DEBUG_MODE
+            std::cout << "File readable: " << finalfile << " : " << HDF5::checkFileReadable(finalfile, msg_finalfile) <<std::endl;
+          #endif
           if(HDF5::checkFileReadable(finalfile, msg_finalfile))
           {
             if(overwrite_file and not resume)

@@ -145,7 +145,7 @@ namespace Gambit
 
     /// Operation (return value)
     template <typename TYPE>
-    TYPE module_functor<TYPE>::operator()(int index)
+    const TYPE& module_functor<TYPE>::operator()(int index)
     {
       if (this == NULL) functor::failBigTime("operator()");
       init_memory(); // Init memory if this is the first run through.
