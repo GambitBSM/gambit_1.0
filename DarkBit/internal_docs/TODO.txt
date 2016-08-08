@@ -32,6 +32,7 @@ Before internal paper review:
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 
 After internal paper review started:
+- Remove Sloppy.cpp [CW]
 - Remove everything related to setMassesForIB [CW]
 - Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
   exception (Mail Anders 29-07-16) [CW]
