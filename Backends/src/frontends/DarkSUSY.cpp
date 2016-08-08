@@ -386,6 +386,10 @@ BE_NAMESPACE
     mspctm->mass(DSpart->kqu(2)) = mspctm->mcmc;
     mspctm->ms2gev               = to<double>(mySLHA.at("SMINPUTS").at(23).at(1)); // stange mass @ 2 GeV
     mspctm->mass(DSpart->kqd(2)) = mspctm->ms2gev;
+    // FIXME: Make sure that the *pole mass* is transferred to DS common blocks here!
+    // In principle, this should be the case for all masses -- but it's particularly
+    // urgent to do so for the bottom mass in order to avoid wrong/inkonsistent kinematic
+    // boundaries when setting up the process catalogue (discuss with TB if unclear)
     mspctm->mbmb                 = to<double>(mySLHA.at("SMINPUTS").at(5).at(1));  // bottom mass at m_b
     mspctm->mass(DSpart->kqd(3)) = mspctm->mbmb;
     mspctm->mass(DSpart->kqu(3)) = to<double>(mySLHA.at("SMINPUTS").at(6).at(1));  // top mass
@@ -650,6 +654,16 @@ BE_NAMESPACE
     {
       mssmwidths->hdwidth(i+1,4) = (Hpm.has_channel(charged_channels[i]) ? widths->width(DSparticle_code("H+")) * Hpm.BF(charged_channels[i]) : 0.0);
     }
+
+    // Set up fermion widths
+    // FIXME: this is simply missing -- same goes for W and Z widths!!!
+    widths->width(DSpart->kqu(3)) = 1.35; // TB: just hard-coded top width as quick fix...
+
+    // Set up gauge boson widths
+    // FIXME: right now just hard-coded values on rhs as quick fix
+    widths->width(DSparticle_code("W-")) = 2.1; // W width 
+    widths->width(DSparticle_code("Z0")) = 2.5; // Z width
+    
 
     // Set up sfermion widths
     widths->width(DSpart->ksnu(1)) = myDecays.at(std::pair<int,int>(1000012,0)).width_in_GeV;
