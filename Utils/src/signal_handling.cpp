@@ -78,7 +78,7 @@ namespace Gambit
      , looptimes(1000)
      , next(0)
      , listfull(false)
-     , timeout(100)
+     , timeout(500)
     #endif
    {}
 
@@ -210,6 +210,7 @@ namespace Gambit
      }  
      else if(ff_on)
      {
+        logger() << "Fast-forward active (loop "<<ff_loop_count<<"); no synchronisation attempted." << EOM; 
         // Fast-forward active; just increment counters and return
         ++ff_loop_count;
         if(ff_loop_count>=ff_loops) 
@@ -225,9 +226,7 @@ namespace Gambit
         ff_on = true;
         ++ff_count;
         std::ostringstream msg;
-        #ifdef WITH_MPI
-        msg << "rank "<<myrank()<<": Tried to synchronise for shutdown "<<shutdown_attempts<<" but failed. Will now 'skip' through "<<attempts_before_ff<<" iterations in an attempt to 'unlock' possible MPI deadlocks with the scanner.";
-        #endif
+        msg << "rank "<<myrank()<<": Tried to synchronise for shutdown (attempt "<<shutdown_attempts<<") but failed. Will now fast-forward through "<<ff_loops<<" iterations in an attempt to 'unlock' possible MPI deadlocks with the scanner.";
         std::cerr << msg.str() << std::endl;
         logger() << msg.str() << EOM;
         // Reset counters
@@ -349,7 +348,7 @@ namespace Gambit
        static int loopi(0);
        ss << "rank "<<rank<<": Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< std::endl;
        ++loopi;
-       std::cerr << ss.str();
+       //std::cerr << ss.str();
        logger() << ss.str() << EOM;
 
        #ifdef WITH_MPI
