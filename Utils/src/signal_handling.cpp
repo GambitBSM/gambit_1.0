@@ -345,7 +345,9 @@ namespace Gambit
        }
 
        std::ostringstream ss;
-       ss << "Shutdown is in progress; emergency="<< emergency << std::endl;
+       static int loopi(0);
+       ss << "rank "<<rank<<": Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< std::endl;
+       ++loopi;
        //std::cerr << ss.str();
        logger() << ss.str() << EOM;
 
