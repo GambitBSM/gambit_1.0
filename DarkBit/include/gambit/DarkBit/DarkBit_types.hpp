@@ -119,19 +119,6 @@ namespace Gambit
     };
 
 
-
-    //////////////////////////////////////////////
-    // Halo model data structures
-    //////////////////////////////////////////////
-
-    // structure describing the local properties of a maxwellian halo
-    struct LocalMaxwellianHalo
-    {
-      double rho0, v0, vesc, vrot;
-    };
-
-
-
     //////////////////////////////////////////////
     // Neutrino telescope data structures
     //////////////////////////////////////////////

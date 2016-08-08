@@ -56,10 +56,13 @@ END_BE_NAMESPACE
 // Initialisation function
 BE_INI_FUNCTION
 {
+
   // Halo model parameters and pointers to their entries in the Params map.
   static double rho0_eff = 0.4, vrot = 235, v0 = 235, vesc = 550;
   static safe_ptr<double> rho0_ptr,vrot_ptr,v0_ptr,vesc_ptr;  // FIXME: to delete
-  static safe_ptr<DarkBit::LocalMaxwellianHalo> LocalHaloParameters_ptr;
+  //static safe_ptr<LocalMaxwellianHalo> LocalHaloParameters_ptr;
+
+  std::cout << "Point1." << std::endl;
 
   // Fraction of DM
   double fraction = *Dep::RD_fraction;
@@ -72,6 +75,9 @@ BE_INI_FUNCTION
     WIMP = DDCalc_InitWIMP();
     Halo = DDCalc_InitHalo();
     
+
+     std::cout << "Point2." << std::endl;
+
     // Initialize experiments
     if (*InUse::DDCalc_Experiment)
     {
@@ -101,8 +107,10 @@ BE_INI_FUNCTION
     } 
 
 
-    LocalHaloParameters_ptr = Dep::LocalHalo.safe_pointer();
+    //LocalHaloParameters_ptr = Dep::LocalHalo.safe_pointer();
       
+
+    std::cout << "Point3." << std::endl;
 
   }
   scan_level = false;
@@ -138,10 +146,10 @@ BE_INI_FUNCTION
 
 
       // FIXME: DELETE THIS
-      std::cout << "rho0 = " << *rho0_ptr << std::endl;
-      std::cout << "vrot = " << vrot << std::endl;
-      std::cout << "v0 = " << v0 << std::endl;
-      std::cout << "vesc = " << vesc << std::endl;
+      //std::cout << "rho0 = " << *rho0_ptr << std::endl;
+      //std::cout << "vrot = " << vrot << std::endl;
+      //std::cout << "v0 = " << v0 << std::endl;
+      //std::cout << "vesc = " << vesc << std::endl;
 
 
 
