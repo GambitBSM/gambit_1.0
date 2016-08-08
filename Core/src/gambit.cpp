@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   cout << std::setprecision(Core().get_outprec());
 
   #ifdef WITH_MPI
-  GMPI::Init();
+    GMPI::Init();
   #endif
 
   { // Scope to ensure that all MPI communicators get destroyed before Finalize is called.
@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
       Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
       /// MPI rank for use in error messages;
       int rank = scanComm.Get_rank();
+    #else
+      int rank = 0;
     #endif
 
     try
@@ -72,9 +74,12 @@ int main(int argc, char* argv[])
       // if the argument passed warrants it. Otherwise just get the filename.
       const str filename = Core().run_diagnostic(argc,argv);
  
-      cout << endl << "Starting GAMBIT" << endl;
-      cout << "----------" << endl;
-      if(Core().found_inifile) cout << "YAML file: "<< filename << endl;
+      if (rank == 0)
+      {
+        cout << endl << "Starting GAMBIT" << endl;
+        cout << "----------" << endl;
+        if(Core().found_inifile) cout << "YAML file: "<< filename << endl;
+      }
 
       std::vector<std::string> arguments(argv, argv + argc);
       logger() << core << "Command invoked: ";
@@ -118,9 +123,9 @@ int main(int argc, char* argv[])
       dependencyResolver.printFunctorList();
 
       // Do the dependency resolution
-      cout << "Resolving dependencies and backend requirements.  Hang tight..." << endl;
+      if (rank == 0) cout << "Resolving dependencies and backend requirements.  Hang tight..." << endl;
       dependencyResolver.doResolution();
-      cout << "...done!" << endl;
+      if (rank == 0) cout << "...done!" << endl;
 
       // Check that all requested models are used for at least one computation
       Models::ModelDB().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
@@ -134,7 +139,7 @@ int main(int argc, char* argv[])
         //Define the likelihood container object for the scanner
         Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, *(printerManager.printerptr)
           #ifdef WITH_MPI
-          , errorComm
+            , errorComm
           #endif
         );
  
@@ -152,7 +157,7 @@ int main(int argc, char* argv[])
 
         //Do the scan!
         logger() << core << "Starting scan." << EOM;
-        std::cerr        << "Starting scan." << std::endl;
+        if (rank == 0) std::cerr << "Starting scan." << std::endl;
         scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
 
         // Check why we have exited the scanner; scan may have been terminated early by a signal. 
@@ -160,16 +165,15 @@ int main(int argc, char* argv[])
         // cleanup it requires, including finalising the printers, i.e. the 'do_cleanup()' function will NOT run.
         if(signaldata().shutdown_begun())
         {
-           cout << "GAMBIT has performed a controlled early shutdown." << endl;
-           cout << endl;
            logger() << "GAMBIT has performed a controlled early shutdown due to early termination of the scanner plugin." << EOM;
+           if (rank == 0) cout << "GAMBIT has performed a controlled early shutdown." << endl << endl;
         } 
         else
         {
            //Scan is done; inform signal handlers 
            signaldata().set_shutdown_begun();
-           cout << "GAMBIT has finished successfully!" << endl;
-           cout << endl;
+           logger() << "GAMBIT run completed successfully." << EOM;
+           if (rank == 0) cout << endl << "GAMBIT has finished successfully!" << endl << endl;
         }
       }
     
@@ -192,7 +196,7 @@ int main(int argc, char* argv[])
         std::ostringstream ss;
         ss << e.what() << endl;
         #ifdef WITH_MPI
-        ss << "rank "<<rank<<": ";
+          ss << "rank "<<rank<<": ";
         #endif
         ss << "GAMBIT has performed a controlled early shutdown." << endl;
         ss << signaldata().display_received_signals() << endl;
@@ -213,7 +217,7 @@ int main(int argc, char* argv[])
         std::ostringstream ss;
         ss << e.what() << endl;
         #ifdef WITH_MPI
-        ss << "rank "<<rank<<": ";
+          ss << "rank "<<rank<<": ";
         #endif
         ss << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
         ss << signaldata().display_received_signals() << endl;
@@ -231,14 +235,14 @@ int main(int argc, char* argv[])
         std::ostringstream ss;
         ss << e.what() << endl;
         #ifdef WITH_MPI
-        ss << "rank "<<rank<<": ";
+          ss << "rank "<<rank<<": ";
         #endif
         ss << "GAMBIT has shutdown due to an error on another process." << endl;
         cout     << ss.str();    
         logger() << ss.str() << EOM;
         #ifdef WITH_MPI
-        signaldata().discard_excess_shutdown_messages();
-        GMPI::FinalizeWithTimeout(use_mpi_abort); // Do we need to move this outside the main scope to destruct all the MPI communicator objects first?
+          signaldata().discard_excess_shutdown_messages();
+          GMPI::FinalizeWithTimeout(use_mpi_abort); // Do we need to move this outside the main scope to destruct all the MPI communicator objects first?
         #endif     
       }
       return EXIT_FAILURE;
@@ -252,9 +256,9 @@ int main(int argc, char* argv[])
         cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
       }
       #ifdef WITH_MPI
-      signaldata().broadcast_shutdown_signal();
-      signaldata().discard_excess_shutdown_messages();
-      GMPI::FinalizeWithTimeout(use_mpi_abort);
+        signaldata().broadcast_shutdown_signal();
+        signaldata().discard_excess_shutdown_messages();
+        GMPI::FinalizeWithTimeout(use_mpi_abort);
       #endif     
       return EXIT_FAILURE;  
     }
@@ -269,21 +273,25 @@ int main(int argc, char* argv[])
       cout << "exceptions that inherit from std::exception.  Error string: " << endl;
       cout << e << endl;
       #ifdef WITH_MPI
-      signaldata().broadcast_shutdown_signal();
-      signaldata().discard_excess_shutdown_messages();
-      GMPI::FinalizeWithTimeout(use_mpi_abort);
+        signaldata().broadcast_shutdown_signal();
+        signaldata().discard_excess_shutdown_messages();
+        GMPI::FinalizeWithTimeout(use_mpi_abort);
       #endif     
       return EXIT_FAILURE;  
     }
 
     #ifdef WITH_MPI
-    signaldata().discard_excess_shutdown_messages();  // Note: if all processes receive a POSIX signal to shutdown there might be many of these (e.g. says 1000 processes all independently get a POSIX signal to shut down; they will each broadcast this command via MPI to all other processes, i.e. 1000*1000 messages will be sent. Could be slow.
+      signaldata().discard_excess_shutdown_messages();
+      // If all processes receive a POSIX signal to shutdown there might be many of these
+      // (e.g. says 1000 processes all independently get a POSIX signal to shut down;
+      // they will each broadcast this command via MPI to all other processes, i.e.
+      // 1000*1000 messages will be sent. Could be slow.
     #endif
+
   } // End main scope; want to destruct all communicators before MPI_Finalize() is called
 
-  // FIXME to be done in ScannerBit
   #ifdef WITH_MPI
-  GMPI::Finalize(); // Finalise MPI
+    GMPI::Finalize();
   #endif
 
   return EXIT_SUCCESS;
