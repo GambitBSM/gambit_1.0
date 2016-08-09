@@ -48,13 +48,6 @@ Parameters:
     beta: 3
     gamma: 1
 
-  GalacticHalo_gNFW:
-    rhos: .4
-    rs: 8.
-    alpha: 1
-    beta: 3
-    gamma: 1
-
 Priors:
 
   # All priors simple, so specified in Parameters section
