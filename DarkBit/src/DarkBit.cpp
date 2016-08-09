@@ -102,24 +102,28 @@ namespace Gambit
     double profile_Einasto(double rhos, double rs, double alpha, double r)
     { return rhos*exp((-2.0/alpha)*(pow(r/rs, alpha)-1)); }
 
-    void GalacticHalo_gNFW(daFunk::Funk &result)
+    void GalacticHalo_gNFW(GalacticHaloProperties &result)
     {
       using namespace Pipes::GalacticHalo_gNFW;
       double rhos  = *Param["rhos"];
       double rs    = *Param["rs"];
+      double r_sun = *Param["r_sun"];
       double alpha = *Param["alpha"];
       double beta  = *Param["beta"];
       double gamma = *Param["gamma"];
-      result = daFunk::func(profile_gNFW, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
+      result.DensityProfile = daFunk::func(profile_gNFW, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
+      result.r_sun = r_sun;
     }
 
-    void GalacticHalo_Einasto(daFunk::Funk &result)
+    void GalacticHalo_Einasto(GalacticHaloProperties &result)
     {
       using namespace Pipes::GalacticHalo_Einasto;
       double rhos  = *Param["rhos"];
       double rs    = *Param["rs"];
+      double r_sun = *Param["r_sun"];
       double alpha = *Param["alpha"];
-      result = daFunk::func(profile_Einasto, rhos, rs, alpha, daFunk::var("r"));
+      result.DensityProfile = daFunk::func(profile_Einasto, rhos, rs, alpha, daFunk::var("r"));
+      result.r_sun = r_sun;
     }
 
     void ExtractLocalMaxwellianHalo(LocalMaxwellianHalo &result)

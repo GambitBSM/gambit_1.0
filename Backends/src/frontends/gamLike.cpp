@@ -35,26 +35,15 @@ BE_INI_FUNCTION
     set_data_path(path);  // Note that passing per reference is default per backend system
   }
 
-  if ( ModelInUse("Halo_gNFW") or ModelInUse("Halo_gNFW_rho0") or ModelInUse("Halo_gNFW_rhos") or ModelInUse("Halo_Einasto") or ModelInUse("Halo_Einasto_rho0") or ModelInUse("Halo_Einasto_rhos"))
+  daFunk::Funk profile = (Dep::GalacticHalo)->DensityProfile;
+  auto r = daFunk::logspace(-3, 2, 100);
+  auto rho = daFunk::logspace(-3, 2, 100);
+  double dist = (Dep::GalacticHalo)->r_sun;
+  for ( size_t i = 0; i<r.size(); i++ )
   {
-#ifdef GAMLIKE_DEBUG
-    logger() << "Using GalacticHalo initialization" << EOM;
-#endif
-    daFunk::Funk profile = *Dep::GalacticHalo;
-    auto r = daFunk::logspace(-3, 2, 100);
-    auto rho = daFunk::logspace(-3, 2, 100);
-    double dist = *Param["r_sun"];
-    for ( size_t i = 0; i<r.size(); i++ )
-    {
-      rho[i] = profile->bind("r")->eval(r[i]);
-    }
-    //set_MW_profile(r, rho, dist);
+    rho[i] = profile->bind("r")->eval(r[i]);
   }
-#ifdef GAMLIKE_DEBUG
-  else
-  {
-    logger() << "Not using GalacticHalo initialization" << EOM;
-  }
-#endif
+  //set_MW_profile(r, rho, dist); // FIXME: uncomment this after set_MW_profile has been setup!
+
 }
 END_BE_INI_FUNCTION

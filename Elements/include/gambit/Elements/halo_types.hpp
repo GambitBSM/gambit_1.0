@@ -21,8 +21,10 @@
 #include <map>
 #include <set>
 
-#include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
+#include "gambit/Elements/daFunk.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 namespace Gambit
 {
@@ -34,11 +36,11 @@ namespace Gambit
     };
 
     // structure describing the density profile of DM in the Milky Way
-    //struct GalacticHaloProperties
-    //{
-    //  daFunk::Funk DensityProfile;
-    //  double r_sun;
-    //};
+    struct GalacticHaloProperties
+    {
+      daFunk::Funk DensityProfile;
+      double r_sun;
+    };
 
 }
 

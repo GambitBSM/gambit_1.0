@@ -994,11 +994,11 @@ START_MODULE
   #define CAPABILITY GalacticHalo
   START_CAPABILITY
     #define FUNCTION GalacticHalo_gNFW
-    START_FUNCTION(daFunk::Funk)
+    START_FUNCTION(GalacticHaloProperties)
     ALLOW_MODEL(Halo_gNFW)
     #undef FUNCTION
     #define FUNCTION GalacticHalo_Einasto
-    START_FUNCTION(daFunk::Funk)
+    START_FUNCTION(GalacticHaloProperties)
     ALLOW_MODEL(Halo_Einasto)
     #undef FUNCTION
   #undef CAPABILITY
