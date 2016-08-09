@@ -903,6 +903,9 @@ lnL_t_mass : |
 lnL_Z_mass : |
    Log-likelihood of the Z boson pole mass.
 
+lnL_h_mass : |
+   Simple log-likelihood of the SM-like Higgs boson pole mass.
+
 lnL_W_mass : |
    Log-likelihood of the W boson pole mass.
 
