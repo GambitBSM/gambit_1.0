@@ -282,9 +282,14 @@ namespace Gambit
             {
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
-              errormsg << "Tag name received in Logging::str2tag function could not be found in str2tag map!";
-              errormsg << "This is probably because you specified an invalid LogTag name in the logging redirection ";
-              errormsg << "section of your YAML input file. Tag string was: "<<*stag<<".";
+              errormsg << "If you have an entry something like this:"<< endl
+                       << "  Logger:" << endl
+                       << "    redirection:" << endl
+                       << "    [" << *stag << "] : \"blah.log\"" << endl
+                       << "in your yaml file, then you probably should remove the last line.  The LogTag" << endl
+                       << "\"" << *stag << "\" is not recognised by the logger system.  This commonly happens" << endl
+                       << "if you try to redirect log output for a module that either doesn't exist, or was" << endl
+                       << "ditched at cmake time." << endl;
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";
