@@ -351,6 +351,16 @@ RD_fraction: |
 lnL_oh2: |
    Contains the log likelihood function constraining the relic density.
 
+LocalHalo: |
+   Provides the parameters of the Maxwell-Boltzmann velocity distribution,
+   in terms of the strucutre LocalMaxwellianHalo containing the parameters
+   rho0, v0, vrot, vesc.
+
+GalacticHalo: |
+   Provides the properties of the dark matter density distribution in the Galaxy,
+   in terms of the structure GalacticHaloProperties containing the function rho(r)
+   and the Sun-GC distance r_sun.
+
 XENON100_2012_Calculate: |
    Perform rate and likelihood calculations for the XENON100 2012 direct detection analysis.
 
