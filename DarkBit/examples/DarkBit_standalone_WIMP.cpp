@@ -13,6 +13,8 @@
 ///  \date 2016 Feb
 ///  \author Jonathan Cornell
 ///  \date 2016 July
+///  \author Sebastian Wild
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -239,14 +241,6 @@ int main(int argc, char* argv[])
 
     // ---- Initialize models ----
 
-    //FIXME: delete
-    // Initialize LocalHalo model
-    //ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
-    //LocalHalo_primary_parameters->setValue("rho0", 0.4);
-    //LocalHalo_primary_parameters->setValue("vrot", 235.);
-    //LocalHalo_primary_parameters->setValue("v0", 235.);
-    //LocalHalo_primary_parameters->setValue("vesc", 550.);
-
     // Initialize halo model
     ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
     Halo_primary_parameters->setValue("rho0", 0.4);
@@ -274,8 +268,6 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
-    //DDCalc_1_0_0_init.notifyOfModel("LocalHalo"); //FIXME: delete
-    //DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters); //FIXME: delete
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
@@ -283,8 +275,6 @@ int main(int argc, char* argv[])
 
 
     // Initialize gamLike backend
-    //gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
-    //gamLike_1_0_0_init.notifyOfModel("GalacticHalo_gNFW");  // FIXME: Hack
     gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
 
@@ -518,16 +508,10 @@ int main(int argc, char* argv[])
       // Systematic parameter maps scattering
       std::cout << "Producing test maps." << std::endl;
 
-      // FIXME: go back to these old settings 
-      //int mBins = 40;
-      //int sBins = 40;
-      //std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
-      //std::vector<double> s_list = daFunk::logspace(-10, -6, sBins);
-
-      int mBins = 3;
-      int sBins = 3;
-      std::vector<double> m_list = daFunk::logspace(2.0, 3.0, mBins);
-      std::vector<double> s_list = daFunk::logspace(-9, -7, sBins);
+      int mBins = 40;
+      int sBins = 40;
+      std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
+      std::vector<double> s_list = daFunk::logspace(-10, -6, sBins);
 
       boost::multi_array<double, 2> sigma_SI_p_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
