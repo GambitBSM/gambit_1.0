@@ -133,11 +133,11 @@ namespace Gambit {
       if (result.coannihilatingParticles.size() == 1)
         resmax -= 2;
 
-      for (int i=0; i<resmax; i++)
-      {
-        if (mymspctm->mass(reslist[i])/result.coannihilatingParticles[0].mass
-            > 2.)
-        {
+//      for (int i=0; i<resmax; i++)
+//      {
+//        if (mymspctm->mass(reslist[i])/result.coannihilatingParticles[0].mass
+//            > 2.)
+//        {
 
 /////////////////////////////
 /////////////////////////////
