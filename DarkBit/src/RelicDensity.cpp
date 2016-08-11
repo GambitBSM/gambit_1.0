@@ -143,17 +143,17 @@ namespace Gambit {
 /////////////////////////////
 // JONATHAN FIXME : please comment out everything and check whether this induces more 
 //           "dgdap ..." errros. Comment out from here
-          // DS-specific treatment of narrow Higgs width: is no longer needed here.
-          if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
-            // wide res treatment adopted in DS
-            result.resonances.push_back(
-                TH_Resonance(mymspctm->mass(reslist[i]), 0.1));
-          else
-            result.resonances.push_back(
-                TH_Resonance(
-                  mymspctm->mass(reslist[i]), mywidths->width(reslist[i])));
-        }
-      }
+//          // DS-specific treatment of narrow Higgs width: is no longer needed here.
+//          if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
+//            // wide res treatment adopted in DS
+//            result.resonances.push_back(
+//                TH_Resonance(mymspctm->mass(reslist[i]), 0.1));
+//          else
+//            result.resonances.push_back(
+//                TH_Resonance(
+//                  mymspctm->mass(reslist[i]), mywidths->width(reslist[i])));
+//        }
+//      }
 // to here
 /////////////////////////////
 /////////////////////////////
