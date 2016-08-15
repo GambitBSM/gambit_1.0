@@ -230,6 +230,7 @@ namespace Gambit
         {
           std::ostringstream ss; 
           ss << dirname << pDirent->d_name;
+          cout << "Deleting " << ss.str() << endl;
           remove(ss.str().c_str());
         }
       }
