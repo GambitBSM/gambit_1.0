@@ -75,8 +75,8 @@ namespace Gambit
   /// Forward declare helper friend functions
   class module_functor_common;
   namespace FunctorHelp {
-    void check_for_shutdown_signal(module_functor_common&);
-    bool emergency_shutdown_begun();
+    // void check_for_shutdown_signal(module_functor_common&);
+    // bool emergency_shutdown_begun();
     void entering_multithreaded_region(module_functor_common&);
     void leaving_multithreaded_region(module_functor_common&);
   }
@@ -661,12 +661,12 @@ namespace Gambit
       /// @}
 
       /// Connectors to external helper functions (to decouple signal handling from this class)
-      friend void FunctorHelp::check_for_shutdown_signal(module_functor_common&);
-      friend bool FunctorHelp::emergency_shutdown_begun();
+      // friend void FunctorHelp::check_for_shutdown_signal(module_functor_common&);
+      // friend bool FunctorHelp::emergency_shutdown_begun();
       friend void FunctorHelp::entering_multithreaded_region(module_functor_common&);
       friend void FunctorHelp::leaving_multithreaded_region(module_functor_common&);
-      void check_for_shutdown_signal(){ FunctorHelp::check_for_shutdown_signal(*this); }
-      bool emergency_shutdown_begun(){ return FunctorHelp::emergency_shutdown_begun(); }
+      // void check_for_shutdown_signal(){ FunctorHelp::check_for_shutdown_signal(*this); }
+      // bool emergency_shutdown_begun(){ return FunctorHelp::emergency_shutdown_begun(); }
       void entering_multithreaded_region(){ FunctorHelp::entering_multithreaded_region(*this); }
       void leaving_multithreaded_region(){ FunctorHelp::leaving_multithreaded_region(*this); }
 

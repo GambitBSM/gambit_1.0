@@ -97,7 +97,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
-      double ln0 (0.9*get_inifile_value<double>("logZero",gl0));// points with loglike < logZero will be ignored by MultiNest
+      double ln0 (get_inifile_value<double>("logZero",0.9999*gl0)); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
       void *context = 0;                                        // any additional information user wants to pass (not required by MN)
@@ -279,6 +279,8 @@ namespace Gambit {
       /// physLive[1][nlive * (nPar + 1)]                      = 2D array containing the last set of live points 
       ///                                                        (physical parameters plus derived parameters) along 
       ///                                                        with their loglikelihood values
+      /// TODO: Multinest uses the likelihood of the lowest live point as the "threshold" for iterating, i.e. it throws out the live point if it finds a better one. So we can use this number to update the GAMBIT 'cutoff' threshold when evaluating the likelihood function.
+
       /// posterior[1][nSamples * (nPar + 2)]                  = posterior distribution containing nSamples points. 
       ///                                                        Each sample has nPar parameters (physical + derived)
       ///                                                        along with the their loglike value & posterior probability

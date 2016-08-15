@@ -541,6 +541,7 @@ set_as_default_version("backend" ${name} ${ver})
 
 
 # gm2calc
+# TODO: The eigen3 include path should be automatically learned from GAMBIT to make it robust against version updates
 set(name "gm2calc")
 set(ver "1.2.0")
 set(dl "http://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")

@@ -542,12 +542,12 @@ namespace Gambit
         // handy to check before launching a full job. It can always be checked via
         // the logs, but this feature is more convenient.
         cout << ss.str();
-#ifdef HAVE_GRAPHVIZ
-        cout << "To get postscript plot of active functors, please run: " << endl;
-        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
-#else
-        cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl << endl;
-#endif
+        #ifdef HAVE_GRAPHVIZ
+          cout << "To get postscript plot of active functors, please run: " << endl;
+          cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
+        #else
+          cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl << endl;
+        #endif
       }
 
       logger() << LogTags::dependency_resolver << ss.str() << EOM;

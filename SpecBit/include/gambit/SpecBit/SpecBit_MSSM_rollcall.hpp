@@ -22,6 +22,9 @@
 #ifndef __SpecBit_MSSM_hpp__
 #define __SpecBit_MSSM_hpp__
 
+// Include this here so that typedef for SLHAstruct gets passed on to standalone codes which use these module functions
+#include "gambit/Elements/slhaea_helpers.hpp"
+
   /// @{ Functions to supply particle spectra in various forms
   
   // This capability supplies the physical mass spectrum of the MSSM plus running
@@ -76,7 +79,7 @@
     // Can use as an improvement upon creating a Spectrum object from an SLHA file (avoids
     // disk access), but without going to a full SubSpectrum wrapper interface.
     #define FUNCTION get_MSSM_spectrum_from_SLHAstruct
-    START_FUNCTION(/*TAG*/ Spectrum)
+    START_FUNCTION(Spectrum)
     DEPENDENCY(unimproved_MSSM_spectrum, SLHAstruct)
     #undef FUNCTION
     

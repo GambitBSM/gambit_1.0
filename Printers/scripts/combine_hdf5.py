@@ -41,6 +41,9 @@ def check_lengths(d):
          length=value
       elif length!=value:
          raise ValueError("Length of dataset '{0}' is inconsistent with the others in the target group! (length was {1}; previous dataset had length={2})".format(key,value,length)) 
+   if length==None:
+      # No datasets found; manually set length to zero
+      length = 0
    return length 
 
 def copy_dset(indset,outdset,nextempty):
@@ -78,14 +81,14 @@ def check_for_duplicates(fout,group):
    error = False
    for ID,p,r in zip(ids,pid,rank):
       if(p==1 and r==0):
-         print "   Detected entry ({0},{1})".format(p,r)
+         print "   Spotted first entry ({0},{1})".format(r,p)
       Nmatches = np.sum(ID==ids)
       if Nmatches>1:
          print "   Error!", ID, "is duplicated {0} times!".format(Nmatches)
          error = True
          Match = np.sum((p==pid) & (r==rank))
          if Match>1:
-           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(p,r,Match)
+           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(r,p,Match)
       if error==True:
          raise ValueError("Duplicates detected in output dataset!")
 
@@ -236,6 +239,11 @@ for fname in fnames:
    print "to file:"
    print "   {0}".format(outfname)
    fin = files[fname]
+
+   if runchecks:
+     print "Checking {0}[{1}] for duplicate entries".format(fname,group)
+     check_for_duplicates(fin,group) 
+     print "No duplicates, proceeding with copy" 
 
    dset_length=None
    for itemname in fin[group]: 
