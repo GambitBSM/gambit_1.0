@@ -706,7 +706,7 @@ namespace Gambit
       void calculate();
 
       /// Operation (return value)
-      TYPE operator()(int index);
+      const TYPE& operator()(int index);
 
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr();

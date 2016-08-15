@@ -250,8 +250,8 @@ namespace Gambit
     {
       using namespace Pipes::Ref_SM_Higgs_decays_table;
     
-      // Get the Higgs pole mass
-      double mh = *Dep::mh;
+      // Get the Higgs pole mass.  Forget about the uncertainties for now.
+      double mh = Dep::mh->central;
       
       // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al. 
       double minmass = runOptions->getValueOrDef

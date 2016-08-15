@@ -152,10 +152,10 @@ namespace Gambit
          /// the LE subspectrum (if possible), followed by the HE subspectrum (if possible). Any duplicate
          /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
          /// over SMINPUTS.
-         SLHAstruct getSLHAea() const;
+         SLHAstruct getSLHAea(bool include_SLHA1_blocks = false) const;
 
          /// Output spectrum contents as an SLHA file, using getSLHAea.
-         void getSLHA(str) const;
+         void getSLHA(const str&, bool include_SLHA1_blocks = false) const;
 
          /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
          const std::map<int, int>& PDG_translator() const;

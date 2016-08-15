@@ -72,7 +72,7 @@
     // Convert spectrum into a standard map so that it can be printed
  /*   #define FUNCTION get_SingletDM_spectrum_as_map
     START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
-    DEPENDENCY(SingletDMZ3_spectrum, const Spectrum*)
+    DEPENDENCY(SingletDMZ3_spectrum, Spectrum)
     #undef FUNCTION*/
 
   #undef CAPABILITY

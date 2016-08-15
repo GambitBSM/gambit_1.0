@@ -27,25 +27,17 @@ namespace Gambit
   /// Read an SLHA file in to an SLHAea object with some error-checking
   SLHAstruct read_SLHA(str slha)
   {
-     SLHAstruct slhaea;
-     std::ifstream ifs(slha.c_str());
-     if (!ifs.good())
-     {
-       std::ostringstream err;
-       err << "ERROR: SLHA file " << slha << " not found.";
-       utils_error().raise(LOCAL_INFO,err.str());
-     }
-     ifs >> slhaea;
-     ifs.close();
-     return slhaea;
-   }
-
-  /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
-  void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object)
-  {
-    slha.push_front("# depend on which calculator you intend this object or file to be used with.");
-    slha.push_front("# Note that block MODSEL is not automatically emitted, as its contents");
-    slha.push_front("# This SLHA(ea) object was created from a GAMBIT "+object+" object.");
+    SLHAstruct slhaea;
+    std::ifstream ifs(slha.c_str());
+    if (!ifs.good())
+    {
+     std::ostringstream err;
+     err << "ERROR: SLHA file " << slha << " not found.";
+     utils_error().raise(LOCAL_INFO,err.str());
+    }
+    ifs >> slhaea;
+    ifs.close();
+    return slhaea;
   }
 
   /// Get an entry from an SLHAea object as a double, with some error checking

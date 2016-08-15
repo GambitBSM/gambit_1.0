@@ -1391,7 +1391,9 @@ namespace Gambit
       logger() << EOM;
 
       // Print something to stdout as well
-      std::cout << "Resolving dependency graph..." << std::endl;
+      #ifdef DEPRES_DEBUG
+        std::cout << "Resolving dependency graph..." << std::endl;
+      #endif
 
       // Read ini entries
       use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");

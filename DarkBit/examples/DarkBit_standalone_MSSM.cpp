@@ -60,7 +60,7 @@ namespace Gambit
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);
-      //std::cout << "Exemplary width:" << std::endl;
+      //std::cout << "Example width:" << std::endl;
       //std::cout << outDecays.at(std::pair<int,int>(25,0)).width_in_GeV << std::endl;
     }
   }
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     // ---- Check that required backends are present ----
     
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
-    if (not Backends::backendInfo().works["MicrOmegas3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 is missing!");
+    if (not Backends::backendInfo().works["MicrOmegas_MSSM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
     if (not Backends::backendInfo().works["nulike1.0.3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
@@ -142,9 +142,9 @@ int main(int argc, char* argv[])
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_3_6_9_2_init.resolveDependency(&createSpectrum);
-    MicrOmegas_3_6_9_2_init.notifyOfModel("MSSM30atQ");
-    MicrOmegas_3_6_9_2_init.reset_and_calculate();
+    MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createSpectrum);
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("MSSM30atQ");
+    MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
     // ---- Relic density ----
 
     // Relic density calculation with MicrOmegas
-    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::darkOmega);
+    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::darkOmega);
     RD_oh2_MicrOmegas.setOption<int>("fast", 0);  // 0: accurate; 1: fast
     RD_oh2_MicrOmegas.reset_and_calculate();
 
@@ -234,9 +234,9 @@ int main(int argc, char* argv[])
     DD_couplings_MicrOmegas.notifyOfModel("MSSM30atQ");
     DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
     DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::nucleonAmplitudes);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::FeScLoop);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::mocommon_);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::nucleonAmplitudes);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::FeScLoop);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::mocommon_);
     DD_couplings_MicrOmegas.reset_and_calculate();
 
     // Calculate DD couplings with DarkSUSY

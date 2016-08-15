@@ -465,6 +465,31 @@ namespace Gambit
 
     }
 
+    void most_SMlike_Higgs_MSSM(int &result)
+    {
+      using namespace Pipes::most_SMlike_Higgs_MSSM;
+      const SubSpectrum& mssm_spec = Dep::MSSM_spectrum->get_HE();
+      double sa =  - mssm_spec.get(Par::Pole_Mixing,"h0",1,1);
+      double ca = mssm_spec.get(Par::Pole_Mixing,"h0",1,2);
+      double tb = mssm_spec.get(Par::dimensionless, "tanbeta" );
+      double sb = sin(atan(tb));
+      double cb = cos(atan(tb));
+      //cos (beta - alpha) and sin(beta-alpha)
+      double cbma = cb * ca + sb * sa;
+      double sbma = sb * ca - cb * ca;
+
+      if(sbma > cbma)
+      {
+        result = 25;
+      }
+      else
+      {
+        result = 35;
+      }
+
+      return;
+    }
+
     void get_CMSSM_spectrum (Spectrum& result)
     {
 
@@ -507,7 +532,7 @@ namespace Gambit
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename);
+        result.getSLHA(filename,true);
       }
 
     }
@@ -525,9 +550,9 @@ namespace Gambit
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
       if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
       {
-        // Spit out the full spectrum as an SLHA file.
+        // Spit out the full spectrum as an SLHA file, including legacy SLHA1 blocks.
         str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename);
+        result.getSLHA(filename,true);
       }
     }
 
@@ -626,7 +651,7 @@ namespace Gambit
     /// Get an MSSMSpectrum object from an SLHAstruct
     /// Wraps it up in MSSMSimpleSpec; i.e. no RGE running possible.
     /// This can be used as a poor-man's interface to backend spectrum generators
-    void get_MSSM_spectrum_from_SLHAstruct(const Spectrum* &result)
+    void get_MSSM_spectrum_from_SLHAstruct(Spectrum &result)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAstruct;
       const SLHAstruct& input_slha_tmp = *myPipe::Dep::unimproved_MSSM_spectrum; // Retrieve dependency on SLHAstruct
@@ -638,11 +663,10 @@ namespace Gambit
       std::cout << input_slha << std::endl; // test
 
       // Create Spectrum object from the slhaea object
-      static Spectrum matched_spectra;
-      matched_spectra = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
+      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
 
       // No sneaking in charged LSPs via SLHA, jävlar.
-      if (not has_neutralino_LSP(matched_spectra)) invalid_point().raise("Neutralino is not LSP.");
+      if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
       // In order to translate from e.g. MSSM63atMGUT to MSSM63atQ, we need 
       // to know that input scale Q. This is generally not stored in SLHA format,
@@ -654,22 +678,24 @@ namespace Gambit
       // Need to check if this information exists:
       SLHAstruct::const_iterator block = input_slha.find("GAMBIT"); 
       std::vector<std::string> key(1, "1");
-      if(block != input_slha.end() and block->find(key) != block->end())
+      if(block == input_slha.end() or block->find(key) == block->end())
       {
-        // No problem
-      } else {
         // Big problem
         std::ostringstream errmsg;
-        errmsg << "Error constructing Spectrum object from a pre-existing SLHAstruct! The supplied SLHAstruct did not have the special GAMBIT block added. This block carries extra information from the spectrum generator which is usually thrown away, but which is needed for properly creating a Spectrum object. In whatever module function created the SLHAstruct that you want to use, please add code that adds the following information to the SLHAstruct (SLHAea::Coll): \n\
-  BLOCK GAMBIT\n\
-	1	<high_scale>	# Input scale of (upper) boundary conditions, e.g. GUT scale\n";
+        errmsg << "Error constructing Spectrum object from a pre-existing SLHAstruct!    " << endl
+               << "The supplied SLHAstruct did not have the special GAMBIT block added.  " << endl
+               << "This block carries extra information from the spectrum generator      " << endl
+               << "that is usually thrown away, but which is needed for properly creating" << endl
+               << "a Spectrum object. In whatever module function created the SLHAstruct " << endl
+               << "that you want to use, please add code that adds the following         " << endl
+               << "information to the SLHAstruct (SLHAea::Coll):                         " << endl
+               << "  BLOCK GAMBIT                                                        " << endl
+               << " 1	<high_scale>	# Input scale of (upper) boundary conditions, e.g. GUT scale\n";
         SpecBit_error().raise(LOCAL_INFO,errmsg.str());
       }
 
-      // Ok the GAMBIT block exists, add the data to the MSSM SubSpectrum object.  
-      matched_spectra.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
-
-      result = &matched_spectra;
+      // OK the GAMBIT block exists, add the data to the MSSM SubSpectrum object.  
+      result.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
     }
 
     /// FeynHiggs SUSY masses and mixings

@@ -235,7 +235,7 @@ int main(int argc, char* argv[])
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
-    if (not Backends::backendInfo().works["MicrOmegas3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
+    if (not Backends::backendInfo().works["MicrOmegas_MSSM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
 
     // ---- Initialize models ----
 
@@ -268,8 +268,8 @@ int main(int argc, char* argv[])
     DarkSUSY_5_1_3_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_3_6_9_2_init.notifyOfModel("LocalHalo");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
-    MicrOmegas_3_6_9_2_init.reset_and_calculate();
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("LocalHalo");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+    MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
 
 
 
@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
     // Initialize tabulated gamma-ray yields
     // FIXME: Use three different simyieldtables
     SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
-    SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::dNdE);
+    SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::dNdE);
 
     // Select SimYieldTable
     //auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;

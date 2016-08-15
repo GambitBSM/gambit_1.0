@@ -23,7 +23,11 @@
 ///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
-///  \date 2016 Apr
+///  \date 2016 Apr, Aug
+///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August 
 ///
 ///  *********************************************
 
@@ -49,7 +53,7 @@ END_BE_NAMESPACE
 BE_INI_FUNCTION
 {
   // Halo model parameters and pointers to their entries in the Params map.
-  static double rho0,vrot,v0,vesc,rho0_eff;
+  static double rho0_eff = 0.4, vrot = 235, v0 = 235, vesc = 550;
   static safe_ptr<double> rho0_ptr,vrot_ptr,v0_ptr,vesc_ptr;
 
   // Fraction of DM
@@ -70,40 +74,24 @@ BE_INI_FUNCTION
       ex_map["LUX_2013"] = LUX_2013_Init(false);
       ex_map["SuperCDMS_2014"] = SuperCDMS_2014_Init(false);
       ex_map["SIMPLE_2014"] = SIMPLE_2014_Init(false);
+      ex_map["LUX_2016_prelim"] = LUX_2016_prelim_Init(false);
+      ex_map["PandaX_2016"] = PandaX_2016_Init(false);
+      ex_map["LUX_2015"] = LUX_2015_Init(false);
+      ex_map["PICO_2L"] = PICO_2L_Init(false);
+      ex_map["PICO_60_F"] = PICO_60_F_Init(false);
+      ex_map["PICO_60_I"] = PICO_60_I_Init(false);
       //ex_map["DARWIN_Ar"] = DARWIN_Ar_Init(false);
       //ex_map["DARWIN_Xe"] = DARWIN_Xe_Init(false);
     }
     
-    // Set halo model.  Currently allows only for Standard Halo Model with the following parameters:
-    // Local dark matter density [GeV/cm^3]
-    rho0 = runOptions->getValueOrDef<double>(0.4, "LocalHalo","rho0");
-    rho0_eff = rho0*fraction;
-    // Local disk rotation speed [km/s]
-    vrot = runOptions->getValueOrDef<double>(235.,"LocalHalo","vrot");
-    // Maxwellian most-probably speed [km/s]
-    v0   = runOptions->getValueOrDef<double>(vrot,"LocalHalo","v0");
-    // Local galactic escape speed [km/s]
-    vesc = runOptions->getValueOrDef<double>(550.,"LocalHalo","vesc");
-    DDCalc_SetSHM(Halo,rho0_eff,vrot,v0,vesc);
-
-    // Save safe pointers to dynamic halo parameters, if they are being scanned over/set in the Parameters section of the yaml file. 
+    // Save safe pointers to halo parameters. The if clause only exists in case another halo model is added later.
     if (ModelInUse("LocalHalo"))
     {
       rho0_ptr = Param["rho0"];
       vrot_ptr = Param["vrot"];
       v0_ptr   = Param["v0"];
-      vesc_ptr = Param["rho0"];
+      vesc_ptr = Param["vesc"];
     }    
-
-    // Log stuff if in debug mode
-    #ifdef DDCALC_DEBUG
-      logger() << "  Initial Halo parameters for DDCalc:" << EOM;
-      logger() << "    rho0 [GeV/cm^3]     = " << rho0 << EOM;
-      logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
-      logger() << "    vrot [km/s]         = " << vrot << EOM;
-      logger() << "    v0   [km/s]         = " << v0   << EOM;
-      logger() << "    vesc [km/s]         = " << vesc << EOM;
-    #endif
 
   }
   scan_level = false;
@@ -125,7 +113,7 @@ BE_INI_FUNCTION
     logger() << "  sigmanSD = " << sigmanSD << std::endl;
   #endif
 
-  // Change halo parameters, if they are being scanned over/set in the Parameters section of the yaml file. 
+  // Change halo parameters. The if clause only exists in case another halo model is added later.
   if (ModelInUse("LocalHalo"))
   {
     bool halo_changed = false;
@@ -139,7 +127,7 @@ BE_INI_FUNCTION
       // Log stuff if in debug mode
       #ifdef DDCALC_DEBUG
         logger() << "Updated DDCalc halo parameters:" << EOM;
-        logger() << "    rho0 [GeV/cm^3]     = " << rho0 << EOM;
+        logger() << "    rho0 [GeV/cm^3]     = " << *rho0_ptr << EOM;
         logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
         logger() << "    vrot [km/s]         = " << vrot << EOM;
         logger() << "    v0   [km/s]         = " << v0   << EOM;

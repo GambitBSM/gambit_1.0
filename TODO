@@ -11,50 +11,35 @@ For first analyses:
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
 
-EWPOBit:
-* SUSY-POPE interface (Peter)
-* Testing of FeynHiggs interface (Peter)
-
 BOSS:
 * Fix possible copy-constructor memory leak (Anders)
 * Fix erroneous header include bug (Anders)
 * Wrap global backend functions requiring BOSSed classes (Anders)
 
-ScannerBit:
-* Plugins need the option to link standard GAMBIT/ScannerBit libraries: etc (Greg)
-* Get rid of 'optional options:' entries in yaml options object. (Greg)
-
-
 For first release:
 
 Messaging:
 * Separate output/log for points with "BadPoint" errors (Ben)
-* Write printer functions for all common functor types and print streams (Ben)
-* Make loggers threadsafe! (Ben)
 
 General:
 * Make ditchlist (Pat + Ben)
 * Add credit/citation system (Pat)
 * Fill out capabilities database (all)
 * Fill out models database (all)
-* Fix naming conventions for filenames (lowercase+underscore) (Pat)
 * Convert comment headers in source/header files to doxygen (///) format; many are still in old-style (//) format (all)
 * Convert comments to Doxygen (all)
 * Tinkering with rollcall macros to improve compile time with -O2 (Pat)
 * Bool pipe indicating if conditional deps / bereqs have been activated or not (Pat)
 
 ScannerBit:
-* Implement parallel postprocessor as a scanner (Greg)
-* Connect Great (Antje)
-* Allow partial linking of scanner external libraries, so that multiple versions of the same external scanner can be compiled into GAMBIT at the same time (Greg)
-* Test runs for ScannerBit paper
+* Implement parallel postprocessor as a scanner (Ben)
+* Test runs for ScannerBit paper (James)
 
 BOSS:
 * Wrap member variables of type pointer-to-BOSSed (Anders)
 * Deal with function pointers (Anders)
 * Propagate constness properly (Anders)
 * Bow out more gracefully when encountering templates, etc (Anders)
-* Polishing (Anders)
 
 Jenkins:
 * multiple test scripts (Andy, Antje, Pat)
@@ -68,8 +53,6 @@ Release:
 * tarball release for module standalone release, git + tarball release for main gambit release
 
 cmake:
-* general stocktake of backend make system
-* info message about things not reverted/deleted after make distclean
 * switching off openmp (Antje, Pat)
 
 
@@ -85,6 +68,9 @@ Backends:
 * Resolve residual issues with passing strings to fortran backends (Lars / Pat)
 * Implement backending of Mathematica codes
 * Implement backending of Python codes
+
+PrecisionBit:
+* Look again at SUSY-POPE interface (Peter)
 
 General:
 * Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (Antje & Pat)
@@ -226,8 +212,6 @@ Scanner
 -------
 
 Ongoing:
-* Interface to GREAT (Antje's MCMC code)
-* Interface to k-walk (Greg)
 * Interface to genetic algorithms (Abram)
 * Organise grouping of parameters into fast and slow subsets (useful for some scanners), possibly via the ini file.
 * add documentation
@@ -236,6 +220,8 @@ Ongoing:
 * plugin descriptions in plugin files
 
 Done:
+* Interface to GREAT
+* Interface to t-walk
 * Interface to MultiNest
 * Streamlining of Scanner Plugin architecture
 * scanner info to core → scanner name, version, library file, library present, YAML options
@@ -255,31 +241,16 @@ DarkBit
 -------
 
 Ongoing:
-* DarkSUSY relic density solver
-  - Problem with Fortran vs. C++ array indexing
-* Annihilation yields in DarkSUSY
 * Lars' p-/e+ propagation codes
 * Neutrinos from sun code in DarkSUSY + IceCube
-* Direct search codes (Chris' Fortran routines)
-* Relic density solver of MicrOmegas
 * SuperISO relic
 * PPPC (tables only?)
 * CR data (PAMELA, AMS-02 etc)
 * Planck, ATC, BESS, WMAP pol, HST... (CosmoBit)
 * Astrophysical probes in general (stars, DM self-interaction)
-* Implementation of minimal model (singlet DM) for prototypical model and
-  cross-section definitions etc.
-  - as new Model
-  - Calculation of relic density
-  - Primitive indirect dwarf limits
-  - Direct limits with Chris' module
 * Implementation of CMB limits (starting with codes from singlet paper)
-* Primitive dwarf/GC likelihood
-* Astrophysical DM distributions (substucture & phase space)
 * Decaying dark matter
 * Asymmetric dark matter
-* Make use of print functions, once completed
-* Make use error system, once there
 
 
 More

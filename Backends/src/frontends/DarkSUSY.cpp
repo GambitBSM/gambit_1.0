@@ -42,12 +42,12 @@
 
 #define square(x) ((x) * (x))  // square a number
 
-//#define DARKSUSY_DEBUG
+#define DARKSUSY_DEBUG
 
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
 {
-  const double min_chi01_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
+  const double min_DS_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
   const std::vector<str> IBfinalstate = initVector<str>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
   std::vector<double> DSparticle_mass;
   std::vector<double> GAMBITparticle_mass;
@@ -260,7 +260,7 @@ BE_NAMESPACE
      kpart=21;
     }else if (particleID=="~e-_1" or particleID=="~e+_1"){
      kpart=22;
-    }else if (particleID=="~e-_4" or particleID=="~e+_4"){ //FIXME: someone should check this...
+    }else if (particleID=="~e-_4" or particleID=="~e+_4"){
      kpart=23;
     }else if (particleID=="~nu_2" or particleID=="~nubar_2"){
      kpart=24;
@@ -364,31 +364,40 @@ BE_NAMESPACE
     required_block("SELMIX",   mySLHA);
     required_block("SNUMIX",   mySLHA);
 
+    // Make sure the b pole mass is present in the MASS block
+    if (mySLHA.at("MASS").find(initVector<str>("5")) == mySLHA.at("MASS").end())
+      backend_error().raise(LOCAL_INFO, "DarkSUSY init_diskless needs b pole mass entry (5) in SLHA(ea) MASS block.");
+    
     // Block SMINPUTS
     couplingconstants->alphem   = 1./to<double>(mySLHA.at("SMINPUTS").at(1).at(1)); // 1/alpha_{QED}
     smruseful->alph3mz          = to<double>(mySLHA.at("SMINPUTS").at(3).at(1));    // alpha_s @ MZ
     smruseful->gfermi           = to<double>(mySLHA.at("SMINPUTS").at(2).at(1));    // Fermi constant
 
+    // Here we set the masses to be used in DarkSUSY.  Note that all masses in the mspctm->mass block
+    // must match those in the ProcessCatalog in DarkBit, as these are used to define the kinematic
+    // edges used in relic density integrations and similar within DarkSUSY.  Mostly these should be
+    // pole masses, except in cases where that is not possible (i.e. light quarks).
+
     // Lepton masses
-    mspctm->mass(DSpart->kl(1))  = to<double>(mySLHA.at("SMINPUTS").at(11).at(1));  // electron mass
-    mspctm->mass(DSpart->kl(2))  = to<double>(mySLHA.at("SMINPUTS").at(13).at(1));  // muon mass
-    mspctm->mass(DSpart->kl(3))  = to<double>(mySLHA.at("SMINPUTS").at(7).at(1));   // tau mass
-    mspctm->mass(DSpart->knu(1)) = to<double>(mySLHA.at("SMINPUTS").at(12).at(1));  // nu_1
-    mspctm->mass(DSpart->knu(2)) = to<double>(mySLHA.at("SMINPUTS").at(14).at(1));  // nu_2
-    mspctm->mass(DSpart->knu(3)) = to<double>(mySLHA.at("SMINPUTS").at(8).at(1));   // nu_3
+    mspctm->mass(DSpart->kl(1))  = to<double>(mySLHA.at("SMINPUTS").at(11).at(1));  // electron pole mass
+    mspctm->mass(DSpart->kl(2))  = to<double>(mySLHA.at("SMINPUTS").at(13).at(1));  // muon pole mass
+    mspctm->mass(DSpart->kl(3))  = to<double>(mySLHA.at("SMINPUTS").at(7).at(1));   // tau pole mass
+    mspctm->mass(DSpart->knu(1)) = to<double>(mySLHA.at("SMINPUTS").at(12).at(1));  // nu_1 pole mass
+    mspctm->mass(DSpart->knu(2)) = to<double>(mySLHA.at("SMINPUTS").at(14).at(1));  // nu_2 pole mass
+    mspctm->mass(DSpart->knu(3)) = to<double>(mySLHA.at("SMINPUTS").at(8).at(1));   // nu_3 pole mass
 
     // Quark masses
     mspctm->mu2gev               = to<double>(mySLHA.at("SMINPUTS").at(22).at(1)); // up quark mass @ 2 GeV
-    mspctm->mass(DSpart->kqu(1)) = mspctm->mu2gev;
+    mspctm->mass(DSpart->kqu(1)) = mspctm->mu2gev;                                 // use as proxy for pole
     mspctm->md2gev               = to<double>(mySLHA.at("SMINPUTS").at(21).at(1)); // down quark mass @ 2 GeV
-    mspctm->mass(DSpart->kqd(1)) = mspctm->md2gev;
+    mspctm->mass(DSpart->kqd(1)) = mspctm->md2gev;                                 // use as proxy for pole
     mspctm->mcmc                 = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
-    mspctm->mass(DSpart->kqu(2)) = mspctm->mcmc;
+    mspctm->mass(DSpart->kqu(2)) = mspctm->mcmc;                                   // use as proxy for pole
     mspctm->ms2gev               = to<double>(mySLHA.at("SMINPUTS").at(23).at(1)); // stange mass @ 2 GeV
-    mspctm->mass(DSpart->kqd(2)) = mspctm->ms2gev;
+    mspctm->mass(DSpart->kqd(2)) = mspctm->ms2gev;                                 // use as proxy for pole
     mspctm->mbmb                 = to<double>(mySLHA.at("SMINPUTS").at(5).at(1));  // bottom mass at m_b
-    mspctm->mass(DSpart->kqd(3)) = mspctm->mbmb;
-    mspctm->mass(DSpart->kqu(3)) = to<double>(mySLHA.at("SMINPUTS").at(6).at(1));  // top mass
+    mspctm->mass(DSpart->kqd(3)) = to<double>(mySLHA.at("MASS").at(5).at(1));      // bottom pole mass
+    mspctm->mass(DSpart->kqu(3)) = to<double>(mySLHA.at("SMINPUTS").at(6).at(1));  // top pole mass
 
 
     // Weinberg angle will be dealt with later using this W mass (need to respect tree level relation)
@@ -612,14 +621,12 @@ BE_NAMESPACE
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     }
 
-    // FIXME: Commenting out these lines might help to fix the DD coupling
-    // problems (CW 2016-07-09)
     // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
     mssmiuseful->kln = 1;
     dsvertx();
-
+    
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
     widths->width(DSparticle_code("h0_1")) = myDecays.at(std::pair<int,int>(25,0)).width_in_GeV;
     widths->width(DSparticle_code("h0_2")) = myDecays.at(std::pair<int,int>(35,0)).width_in_GeV;
@@ -653,6 +660,15 @@ BE_NAMESPACE
       mssmwidths->hdwidth(i+1,4) = (Hpm.has_channel(charged_channels[i]) ? widths->width(DSparticle_code("H+")) * Hpm.BF(charged_channels[i]) : 0.0);
     }
 
+    // Set up SM fermion widths
+    widths->width(DSparticle_code("t"))    = myDecays.at(std::pair<int,int>(6,1)).width_in_GeV;
+    widths->width(DSparticle_code("mu-"))  = myDecays.at(std::pair<int,int>(13,1)).width_in_GeV;
+    widths->width(DSparticle_code("tau-")) = myDecays.at(std::pair<int,int>(15,1)).width_in_GeV;
+
+    // Set up SM gauge boson widths
+    widths->width(DSparticle_code("W+")) = myDecays.at(std::pair<int,int>(24,0)).width_in_GeV; 
+    widths->width(DSparticle_code("Z0")) = myDecays.at(std::pair<int,int>(23,0)).width_in_GeV;
+
     // Set up sfermion widths
     widths->width(DSpart->ksnu(1)) = myDecays.at(std::pair<int,int>(1000012,0)).width_in_GeV;
     widths->width(DSpart->ksnu(2)) = myDecays.at(std::pair<int,int>(1000014,0)).width_in_GeV;
@@ -676,8 +692,8 @@ BE_NAMESPACE
     widths->width(DSpart->ksqd(5)) = myDecays.at(std::pair<int,int>(2000003,0)).width_in_GeV;
     widths->width(DSpart->ksqd(6)) = myDecays.at(std::pair<int,int>(2000005,0)).width_in_GeV;
 
-    // Set up neutralino widths.  Give the lightest some small nonzero width to avoid internal numerical issues in DS.
-    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_rwidth * to<double>(mySLHA.at("MASS").at(1000022).at(1))); 
+    // Set up neutralino widths.  Note that the zero neutralino width is taken care of below.
+    widths->width(DSpart->kn(1)) = myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV;
     widths->width(DSpart->kn(2)) = myDecays.at(std::pair<int,int>(1000023,0)).width_in_GeV;
     widths->width(DSpart->kn(3)) = myDecays.at(std::pair<int,int>(1000025,0)).width_in_GeV;
     widths->width(DSpart->kn(4)) = myDecays.at(std::pair<int,int>(1000035,0)).width_in_GeV;
@@ -691,6 +707,16 @@ BE_NAMESPACE
 
     // Gravitino width (not implemented in DS).
     //widths->width(DSparticle_code("~G")) = ;
+
+    // Integration routines in DS cannot handle very small sparticle widths.
+    // Make sure not to fall below minimal value in order to avoid numerical issues.
+    for (std::size_t i=21; i<49; i++)
+    {
+      if (widths->width(i)<min_DS_rwidth *mspctm->mass(i))
+      {
+        widths->width(i)=min_DS_rwidth *mspctm->mass(i);
+      }
+    }
 
     #ifdef DARKSUSY_DEBUG
       // Spit out spectrum and width files for debug purposes
