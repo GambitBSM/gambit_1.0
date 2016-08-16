@@ -54,19 +54,20 @@ scanner_plugin(MultiNest, version(3, 9))
    // Tell cmake system to search known paths for these libraries; any not found must be specified in config/scanner_locations.yaml. 
    reqd_libraries("nest3");
 
+   // Pointer to the (log)likelihood function
+   scanPtr LogLike;
+
    /// The constructor to run when the MultiNest plugin is loaded.
    plugin_constructor
    {
-      std::cout << "Firing up MultiNest scanner plugin..." << std::endl;
+      // Retrieve the external likelihood calculator
+      LogLike = get_purpose(get_inifile_value<std::string>("like"));
+      if(LogLike->getRank() == 0) std::cout << "Loading MultiNest nested sampling plugin for ScannerBit." << std::endl;
    }
 
    /// The main routine to run for the MultiNest scanner.
    int plugin_main (void)
    {
-
-      // Retrieve the external likelihood calculator
-      scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
-
       /// ************
       /// TODO: Replace with some wrapper? Maybe not, this is already pretty straightforward,
       /// though perhaps a little counterintuitive that the printer is the place to get this
@@ -116,10 +117,6 @@ scanner_plugin(MultiNest, version(3, 9))
       char root[1000];  // I think MultiNest will truncate this to 100. But lets use a larger array just in case.
       Gambit::Utils::strcpy2f(root, 1000, root_str);// (copy std::string into char array for transport to Fortran)
 
-      // Print some basic startup diagnostics.      
-      std::cout << "MultiNest ndims:" << ndims << std::endl;
-      std::cout << "MultiNest nPar: " << nPar  << std::endl;
- 
       if(resume==1 and outfile==0)
       {
         // It is stupid to be in resume mode while not writing output files. 
@@ -132,7 +129,6 @@ scanner_plugin(MultiNest, version(3, 9))
       // Setup auxilliary streams. These are only needed by the master process,
       // so let's create them only for that process
       int myrank = get_printer().get_stream()->getRank(); // MPI rank of this process
-      std::cout << "myrank? " << myrank <<std::endl;
       if(myrank==0)
       {
          // Get inifile options for each print stream
@@ -159,11 +155,11 @@ scanner_plugin(MultiNest, version(3, 9))
       Gambit::MultiNest::global_loglike_object = &loglwrapper;
 
       //Run MultiNest, passing callback functions for the loglike and dumper.
-      std::cout << "Starting MultiNest run..." << std::endl;
+      if(myrank == 0) std::cout << "Starting MultiNest run..." << std::endl;
       run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, 
           root, seed, pWrap, fb, resume, outfile, initMPI, ln0, maxiter, 
           Gambit::MultiNest::callback_loglike, Gambit::MultiNest::callback_dumper, context);
-      std::cout << "Multinest run finished!" << std::endl;
+      if(myrank == 0) std::cout << "Multinest run finished!" << std::endl;
       return 0;
 
    }
