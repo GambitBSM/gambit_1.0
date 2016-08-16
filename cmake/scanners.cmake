@@ -100,7 +100,7 @@ set(name "great")
 set(ver "1.0.0")
 set(lib "libgreat")
 set(dl "null")
-set(dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/GreAT/${ver}")
+set(dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   GIT_REPOSITORY https://gitlab.in2p3.fr/derome/GreAT.git
   SOURCE_DIR ${dir}

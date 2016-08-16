@@ -24,9 +24,10 @@
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
-#include "../../../installed/GreAT/1.0.0/Manager/include/TGreatModel.h"
-#include "../../../installed/GreAT/1.0.0/Manager/include/TGreatManager.h"
-#include "../../../installed/GreAT/1.0.0/MCMC/include/TGreatMCMCAlgorithmCovariance.h"
+
+#include "TGreatModel.h"
+#include "TGreatManager.h"
+#include "TGreatMCMCAlgorithmCovariance.h"
 
 
 // Set up the global scan data container
@@ -57,7 +58,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
 
   // Tell CMake to search for the GreAT library.
   reqd_libraries("great");
-  reqd_headers("fparser.hh", "TGreatManager.h");
+  reqd_headers("fparser.hh", "TGreatModel.h", "TGreatManager.h", "TGreatMCMCAlgorithmCovariance.h");
 
   // Code to execute when the plugin is loaded.
   plugin_constructor

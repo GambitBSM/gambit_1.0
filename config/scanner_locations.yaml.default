@@ -22,5 +22,6 @@ Diver:
 GreAT:
   1.0.0:
     - lib: ./build/great_1.0.0-prefix/src/great_1.0.0-build/lib/libgreat.so
-    - headers: ./ScannerBit/installed/GreAT/1.0.0/Manager/include
-    - headers: ./ScannerBit/installed/GreAT/1.0.0/fparser4.5.1
+    - headers: ./ScannerBit/installed/great/1.0.0/Manager/include
+    - headers: ./ScannerBit/installed/great/1.0.0/MCMC/include
+    - headers: ./ScannerBit/installed/great/1.0.0/fparser4.5.1
