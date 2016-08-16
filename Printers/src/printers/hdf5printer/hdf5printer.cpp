@@ -710,6 +710,9 @@ namespace Gambit
                 errmsg << "  1. Choose a new group via the 'group' option in the Printer section of your input YAML file;"<<std::endl;
                 errmsg << "  2. Delete the existing group from '"<<finalfile<<"';"<<std::endl;
                 errmsg << "  3. Delete the existing output file, or set 'delete_file_on_restart: true' in your input YAML file to give GAMBIT permission to automatically delete it (applies when -r/--restart flag used);"<<std::endl;
+                errmsg << std::endl;
+                errmsg << "*** Note: This error most commonly occurs when you try to resume a scan that has already finished! ***" <<std::endl;
+                errmsg << std::endl;   
                 printer_error().raise(LOCAL_INFO, errmsg.str());
               }
               HDF5::closeFile(file_id);
