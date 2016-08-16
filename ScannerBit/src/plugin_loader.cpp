@@ -535,10 +535,11 @@ namespace Gambit
                 }
                 
                 printer->finalise(true); //"true" flag for "abnormal" stop; i.e. run is not completely finished
-                #ifdef WITH_MPI 
-                  std::cout << "rank " << getRank() <<": ";
-                #endif
-                std::cout << "Gambit has written resume data to disk, preparing to stop!" << std::endl;
+                // Debugging output
+                // #ifdef WITH_MPI 
+                //   std::cout << "rank " << getRank() <<": ";
+                // #endif
+                // std::cout << "Gambit has written resume data to disk, preparing to stop!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()

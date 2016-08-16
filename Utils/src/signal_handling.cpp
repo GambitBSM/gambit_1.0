@@ -245,10 +245,7 @@ namespace Gambit
           logger() << "Calling cleanup routines" << EOM;
           call_cleanup();
           std::ostringstream msg;
-          #ifdef WITH_MPI
-          msg << "rank "<<myrank()<<": ";
-          #endif
-          msg << "Performing soft shutdown!";
+          logger() << "Throwing soft shutdown exception";
           throw SoftShutdownException(msg.str()); 
         } 
 
@@ -337,16 +334,15 @@ namespace Gambit
        if(not POSIX_signal_noticed and not shutdown_due_to_MPI_message)
        {
          std::ostringstream ss;
-         ss << "Shutdown signal detected! (in SignalData)"<< std::endl;
-         ss << display_received_signals();
-         std::cerr << ss.str();
-         logger() << ss.str() << EOM;
+         ss << "Process "<<rank<<": Shutdown signal detected!"<< std::endl;
+         // std::cerr << ss.str();
+         logger() << ss.str() << display_received_signals() << EOM;
          POSIX_signal_noticed = true;
        }
 
        std::ostringstream ss;
        static int loopi(0);
-       ss << "rank "<<rank<<": Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< std::endl;
+       logger() << "Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< std::endl;
        ++loopi;
        //std::cerr << ss.str();
        logger() << ss.str() << EOM;
@@ -378,7 +374,7 @@ namespace Gambit
 
 
    /// Add a new loop time to internal array used to decide barrier timeout
-   void SignalData::update_looptime(double newtime)
+   void SignalData::update_looptime(double /*newtime*/)
    {
      // Leave this as 1 second now that likelihood calculation is disabled during shutdown
    }

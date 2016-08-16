@@ -561,6 +561,12 @@ namespace Gambit
          return;
        }
 
+       // If the "cout" tag is seen, repeat the message to stdout
+       if(mail.tags.find(repeat_to_cout) != mail.tags.end()) std::cout << mail.message << std::endl;
+
+       // If the "cerr" tag is seen, repeat the message to stdout
+       if(mail.tags.find(repeat_to_cerr) != mail.tags.end()) std::cerr << mail.message << std::endl;
+
        // Sort the tags
        const SortedMessage sortedmsg(mail);
 
