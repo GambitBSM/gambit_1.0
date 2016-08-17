@@ -341,7 +341,7 @@ namespace Gambit
           // Loop over all the backend functions and variables
           for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
           {
-            if ((*kt)->origin() == it->first) 
+            if (((*kt)->origin() == it->first) and ((*kt)->version() == (*jt))) 
             {
               //if (first)
               //{
