@@ -14,10 +14,10 @@ bufferlength = 100                # Must match setting in hdf5printer.hpp
 max_ppidpairs = 10*bufferlength   #   "  "
 
 def usage():
-   print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
+   print ("\n  Usage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
           "\n"
-          "Attempts to combine the data in a group of hdf5 files produced by HDF5Printer but by separate processes during a GAMBIT run.\n"
-          "Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)")
+          "  Attempts to combine the data in a group of hdf5 files produced by HDF5Printer in separate processes during a GAMBIT run.\n"
+          "  Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)\n")
    exit(1)  
  
 def get_dset_lengths(d,group,dsets):
@@ -98,11 +98,12 @@ def check_for_duplicates(fout,group):
 #if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 #
 runchecks=False
-#if len(sys.argv)==7:
-#   if "--runchecks" in sys.argv: 
-#      runchecks=True
-#   else:
-#      usage()
+if len(sys.argv)<3:
+      usage()
+
+# I dont think this works right...
+if "--runchecks" in sys.argv: 
+  runchecks=True
 
 outfname = sys.argv[1]
 group = sys.argv[2]

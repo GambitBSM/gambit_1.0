@@ -195,13 +195,9 @@ int main(int argc, char* argv[])
       {
         std::ostringstream ss;
         ss << e.what() << endl;
-        #ifdef WITH_MPI
-          ss << "rank "<<rank<<": ";
-        #endif
         ss << "GAMBIT has performed a controlled early shutdown." << endl;
-        ss << signaldata().display_received_signals() << endl;
-        cout     << ss.str();
-        logger() << ss.str() << EOM;
+        if(rank == 0) cout << ss.str();
+        logger() << ss.str() << signaldata().display_received_signals() << EOM;
       }
       // Let program shutdown normally from here
     }
@@ -216,13 +212,9 @@ int main(int argc, char* argv[])
       {
         std::ostringstream ss;
         ss << e.what() << endl;
-        #ifdef WITH_MPI
-          ss << "rank "<<rank<<": ";
-        #endif
         ss << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
-        ss << signaldata().display_received_signals() << endl;
-        cout     << ss.str();    
-        logger() << ss.str() << EOM;
+        if(rank == 0) cout << ss.str();
+        logger() << ss.str() << signaldata().display_received_signals() << EOM;
       }
       return EXIT_SUCCESS;
     }
@@ -234,11 +226,8 @@ int main(int argc, char* argv[])
       {
         std::ostringstream ss;
         ss << e.what() << endl;
-        #ifdef WITH_MPI
-          ss << "rank "<<rank<<": ";
-        #endif
         ss << "GAMBIT has shutdown due to an error on another process." << endl;
-        cout     << ss.str();    
+        if(rank == 0) cout << ss.str();
         logger() << ss.str() << EOM;
         #ifdef WITH_MPI
           signaldata().discard_excess_shutdown_messages();

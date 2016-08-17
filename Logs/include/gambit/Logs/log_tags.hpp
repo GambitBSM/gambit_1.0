@@ -39,6 +39,9 @@ namespace Gambit
       /* Flags */
       fatal,
       nonfatal,
+      /* Repeat message to... */
+      repeat_to_cout,
+      repeat_to_cerr,
       /* Component tags */
       def,
       core,
