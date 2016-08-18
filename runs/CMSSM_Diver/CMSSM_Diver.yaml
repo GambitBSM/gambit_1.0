@@ -16,14 +16,11 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  NUHM1:
+  CMSSM:
     M0:
       range: [50, 1e4]
       prior_type: log
     M12:
-      range: [50, 1e4]
-      prior_type: log
-    mH:
       range: [50, 1e4]
       prior_type: log
     A0:
@@ -58,8 +55,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "NUHM1.hdf5"
-    group: "/NUHM1"
+    output_file: "CMSSM.hdf5"
+    group: "/CMSSM"
 
 Scanner:
 
@@ -280,7 +277,7 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatMGUT_spectrum
+    function: get_CMSSM_spectrum
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1

@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas: #43.0 
-      range:  [19, 67]
-    sigmal: #58.0 
+    sigmas:
+      range:  [19, 67] 
+    sigmal:
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -204,14 +204,14 @@ ObsLikes:
     - capability: lnL_rho0
       purpose: LogLike
 
-    - capability: lnL_vrot
-      purpose: LogLike
+    #- capability: lnL_vrot
+    #  purpose: LogLike
 
-    - capability: lnL_v0
-      purpose: LogLike
+    #- capability: lnL_v0
+    #  purpose: LogLike
 
-    - capability: lnL_vesc
-      purpose: LogLike
+    #- capability: lnL_vesc
+    #  purpose: LogLike
 
     # SM nuisance parameter likelihoods
     - capability: lnL_t_mass
@@ -220,11 +220,11 @@ ObsLikes:
     - capability: lnL_mbmb
       purpose:    LogLike
 
-    - capability: lnL_light_quark_masses
-      purpose:    LogLike
+    #- capability: lnL_light_quark_masses
+    #  purpose:    LogLike
 
-    - capability: lnL_alpha_em
-      purpose:    LogLike
+    #- capability: lnL_alpha_em
+    #  purpose:    LogLike
 
     - capability: lnL_alpha_s
       purpose:    LogLike
