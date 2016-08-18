@@ -57,6 +57,10 @@ namespace Gambit
  
     // Parameter controlling the length of all the standard buffers
     static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
+    /// Max number of PPIDpairs to be tracked
+    /// i.e. chunks of RA output longer than this can potentially contain multiple writes to the same point.
+    /// It is up to the combine script to apply the last scheduled write preferentially.
+    static const unsigned long MAX_PPIDPAIRS = 10*BUFFERLENGTH;
 
     /// @{ Helpful typedefs
 
@@ -455,9 +459,6 @@ namespace Gambit
         /// Offset needed to be added to the reverse lookup in
         /// order for it to match the output dataset position correctly
         unsigned long RA_dset_offset = 0; 
-
-        /// Max number of PPIDpairs to be tracked
-        static const unsigned long MAX_PPIDPAIRS = 10*BUFFERLENGTH;
 
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;

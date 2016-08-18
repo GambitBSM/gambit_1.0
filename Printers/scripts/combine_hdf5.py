@@ -84,11 +84,17 @@ def check_for_duplicates(fout,group):
          print "   Spotted first entry ({0},{1})".format(r,p)
       Nmatches = np.sum(ID==ids)
       if Nmatches>1:
-         print "   Error!", ID, "is duplicated {0} times!".format(Nmatches)
+         print "   Error! ID", ID, "is duplicated {0} times!".format(Nmatches)
          error = True
-         Match = np.sum((p==pid) & (r==rank))
-         if Match>1:
-           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(r,p,Match)
+         matches = (p==pid) & (r==rank)
+         Nmatches2 = np.sum(matches)
+         if Nmatches2>1:
+           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(r,p,Nmatches2)
+           dup_locs = np.where(matches)
+           print "      Indices of duplicates are:", dup_locs
+         else:
+           print "   ...No duplicate pid and rank pairs detected! This seems to indicate that something is screwed up in the Cantor pairing"       
+  
       if error==True:
          raise ValueError("Duplicates detected in output dataset!")
 
@@ -358,7 +364,7 @@ for fname in fnames:
                   print "   Warning! No target for ID {0} found in output selection! ({1},{2})".format(ID,pid,rank)
                   indexid = np.where( (np.array(IDs_out)==ID) )
                   index   = np.where( (np.array(pointIDs_out[mask_out])==pid) &
-                                      (np.array(mpiranks_out[mask_out])==rank) )[0][0]
+                                      (np.array(mpiranks_out[mask_out])==rank) )
                   print "index of match by ID       = ", indexid
                   print "index of match by pid,rank = ", index
                   print "pid,rank =",pid,rank
