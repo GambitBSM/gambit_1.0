@@ -101,15 +101,15 @@ namespace Gambit {
 //      // cross-section as function of individual final state photons)
 //      double AnnYieldint = (*Dep::GA_AnnYield)->
 //        set("v", 0.)->gsl_integration("E", 1, 100)->set_epsabs(0)->set_epsrel(1e-3)->bind()->eval();
-//      logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
+//      logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << EOM;
 //
 //      // Calculate phi-value
 //      double phi = AnnYieldint / 8. / M_PI * 1e26 * fraction * fraction;
 //
 //      // And return final likelihood
 //      result = 0.5*dwarf_likelihood->bind("phi")->eval(phi);
-//      logger() << "dwarf_likelihood: " << result << std::endl;
-//      logger() << "phi: " << phi << std::endl;
+//      logger() << "dwarf_likelihood: " << result << EOM;
+//      logger() << "phi: " << phi << EOM;
 //    }
 
     /*! \brief Fermi LAT dwarf likelihoods, using gamLike backend.
@@ -135,7 +135,7 @@ namespace Gambit {
 
       result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << LogTags::debug << "GamLike dSph likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike dSph likelihood is lnL = " << result << EOM;
     }
 
     void lnL_HESSGC_gamLike(double &result)
@@ -159,7 +159,7 @@ namespace Gambit {
 
       result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << LogTags::debug << "GamLike HESS GC likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike HESS GC likelihood is lnL = " << result << EOM;
     }
 
     void lnL_CTAGC_gamLike(double &result)
@@ -177,7 +177,7 @@ namespace Gambit {
 
       result = BEreq::lnL(5, x, y);
 
-      logger() << LogTags::debug << "GamLike CTA GC likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike CTA GC likelihood is lnL = " << result << EOM;
     }
 
     /*! \brief Fermi LAT galactic center likelihoods, using gamLike backend.
@@ -204,7 +204,7 @@ namespace Gambit {
 
       result = BEreq::lnL(byVal(mode), x, y);
 
-      logger() << LogTags::debug << "GamLike Fermi GC likelihood is lnL = " << result << std::endl;
+      logger() << LogTags::debug << "GamLike Fermi GC likelihood is lnL = " << result << EOM;
     }
 
     /// \brief Likelihood for cosmological relic density constraints.
@@ -222,7 +222,7 @@ namespace Gambit {
       // FIXME: Add getValue documentation
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
       result = Stats::gaussian_loglikelihood(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr);
-      logger() << LogTags::debug << "lnL_oh2_Simple yields " << result << std::endl;
+      logger() << LogTags::debug << "lnL_oh2_Simple yields " << result << EOM;
     }
 
     /// \brief Likelihood for cosmological relic density constraints, implemented as an upper limit only
@@ -242,7 +242,7 @@ namespace Gambit {
       result = Stats::detection_as_upper_limit(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr,
       // FIXME: Add getValue documentation
                                                runOptions->getValueOrDef<str>("simple", "limit_method"));
-      logger() << LogTags::debug << "lnL_oh2_upperlimit yields " << result << std::endl;
+      logger() << LogTags::debug << "lnL_oh2_upperlimit yields " << result << EOM;
     }
 
 
@@ -375,7 +375,7 @@ namespace Gambit {
       // FIXME: Add getValue documentation
       std::string filename = runOptions->getValueOrDef<std::string>(
           "dNdE.dat", "filename");
-      logger() << "FILENAME for gamma dump: " << filename << std::endl;
+      logger() << "FILENAME for gamma dump: " << filename << EOM;
       std::ofstream myfile (filename);
       if (myfile.is_open())
       {

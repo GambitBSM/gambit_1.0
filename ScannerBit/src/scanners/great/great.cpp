@@ -136,8 +136,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
     MyManager.SetNTrials(nTrials);
     // Run GreAT
     if (MPIrank == 0) std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
-    //exit(1);
-    MyManager.ActivateMultiRun(multifilename.c_str());
+    //MyManager.ActivateMultiRun(multifilename.c_str());
     MyManager.Run();
 
     // Analyse

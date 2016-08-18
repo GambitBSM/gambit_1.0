@@ -108,7 +108,7 @@ BE_INI_FUNCTION
     logger() << "  sigmapSI = " << sigmapSI << std::endl;
     logger() << "  sigmanSI = " << sigmanSI << std::endl;
     logger() << "  sigmapSD = " << sigmapSD << std::endl;
-    logger() << "  sigmanSD = " << sigmanSD << std::endl;
+    logger() << "  sigmanSD = " << sigmanSD << std::endl << EOM;
   #endif
 
   // Change halo parameters.

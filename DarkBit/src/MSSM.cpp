@@ -58,7 +58,7 @@ namespace Gambit {
       {
         static unsigned int counter = 0;
         logger() << LogTags::debug <<
-          "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
+          "Initializing DarkSUSY via debug_SLHA_filenames option." << EOM;
 
         std::vector<str> filenames =
           /// Option debug_SLHA_filenames<std::vector<std::string>>: Optional override list of SLHA filenames used for backend initialization default
@@ -88,12 +88,12 @@ namespace Gambit {
         double asgnmu = *Param["SignMu"];  // sign(mu)
         double atanbe = *Param["TanBeta"];   // tan(beta)
         logger() << "Initializing DarkSUSY via dsgive_model_isasugra:"
-          << std::endl;
+          << EOM;
         logger() << "  m0        =" << am0    << std::endl;
         logger() << "  m_1/2     =" << amhf   << std::endl;
         logger() << "  A0        =" << aa0    << std::endl;
         logger() << "  sign(mu)  =" << asgnmu << std::endl;
-        logger() << "  tan(beta) =" << atanbe << std::endl;
+        logger() << "  tan(beta) =" << atanbe << EOM;
         BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
         int unphys, hwarning;
         BEreq::dssusy_isasugra(unphys, hwarning);
@@ -158,7 +158,7 @@ namespace Gambit {
           int len = fstr.size();
           int flag = 15;
           const char * filename = fstr.c_str();
-          logger() << LogTags::debug << "Initializing DarkSUSY via SLHA." << std::endl;
+          logger() << LogTags::debug << "Initializing DarkSUSY via SLHA." << EOM;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
           result = true;
@@ -168,7 +168,7 @@ namespace Gambit {
         {
           if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
-            logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << std::endl;
+            logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << EOM;
             BEreq::dsprep();
             result = true;
           }

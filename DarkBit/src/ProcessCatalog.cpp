@@ -52,7 +52,7 @@ namespace Gambit {
       {
         logger() << *it << " ";
       }
-      logger() << std::endl;
+      logger() << EOM;
     }
 
     /*! \brief Indicate whether or not the final states of this channel contain

@@ -336,7 +336,7 @@ BE_INI_FUNCTION
   {
     static unsigned int counter = 0;
     std::vector<str> filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
-    logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
+    logger() << "Reading SLHA file: " << filenames[counter] << std::endl << EOM;
     std::ifstream ifs(filenames[counter]);
     if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
     ifs >> slha;

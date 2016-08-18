@@ -2610,7 +2610,7 @@ namespace Gambit
       }
       static unsigned int counter = 0;
       std::vector<str> filenames = runOptions->getValue<std::vector<str> >("SLHA_decay_filenames");
-      logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
+      logger() << "Reading SLHA file: " << filenames[counter] << std::endl << EOM;
       std::ifstream ifs(filenames[counter]);
       if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
       SLHAstruct slha(ifs);

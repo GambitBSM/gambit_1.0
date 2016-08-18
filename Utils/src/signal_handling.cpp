@@ -175,20 +175,20 @@ namespace Gambit
    /// Attempt to synchronise all processes, but abort if it takes too long
    bool SignalData::all_processes_ready()
    {
-     logger() << "Waiting up to "<<timeout/1000<<" seconds for all processes to sync..." << std::endl;
+     logger() << "Waiting up to "<<timeout/1000<<" seconds for all processes to sync..." << EOM;
      #ifdef WITH_MPI
-     // sleep setup
-     bool timedout = false;
-     std::chrono::milliseconds bar_timeout(std::lround(timeout)); 
-     if( signalComm->BarrierWithTimeout(bar_timeout, 9999) )
-     {
-       timedout = true; // Barrier timed out waiting for some process to enter
-     }
-     // else the barrier succeed in synchronising all processes
-     logger() << "Synchronised? " << !timedout << EOM;
-     return !timedout; 
+       // sleep setup
+       bool timedout = false;
+       std::chrono::milliseconds bar_timeout(std::lround(timeout)); 
+       if( signalComm->BarrierWithTimeout(bar_timeout, 9999) )
+       {
+         timedout = true; // Barrier timed out waiting for some process to enter
+       }
+       // else the barrier succeed in synchronising all processes
+       logger() << "Synchronised? " << !timedout << EOM;
+       return !timedout; 
      #else
-     return true; // Always ready if no MPI
+       return true; // Always ready if no MPI
      #endif
    }
 
@@ -205,7 +205,11 @@ namespace Gambit
      {
         /// First time we see the shutdown signal, we will allow control to return to the scanner at least once,
         /// so that it can get its own affairs in order.
-        logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so that it can get its affairs in order in preparation for shutdown (it may cease iterating if it has that capability), and next iteration we will attempt to synchronise all processes and shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
+        logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so "
+                 << "that it can get its affairs in order in preparation for shutdown (it may cease iterating if "
+                 << "it has that capability), and next iteration we will attempt to synchronise all processes and "
+                 << "shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to "
+                 << "synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
         ++shutdown_attempts;
      }  
      else if(ff_on)
@@ -245,7 +249,7 @@ namespace Gambit
           logger() << "Calling cleanup routines" << EOM;
           call_cleanup();
           std::ostringstream msg;
-          logger() << "Throwing soft shutdown exception";
+          logger() << "Throwing soft shutdown exception" << EOM;
           throw SoftShutdownException(msg.str()); 
         } 
 
@@ -261,12 +265,17 @@ namespace Gambit
           #ifdef WITH_MPI
           msg << "rank "<<myrank()<<": ";
           #endif
-          msg << "Soft shutdown failed, emergency shutdown performed instead! (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds; fast-forward periods of "<<ff_loops<<" iterations were performed "<<ff_count<<" times). Data handled by external scanner codes may have been left in an inconsistent state." << std::endl;
+          msg << "Soft shutdown failed, emergency shutdown performed instead! (could not synchronise all processes after "<<shutdown_attempts
+              <<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count()
+              <<" seconds; fast-forward periods of "<<ff_loops<<" iterations were performed "<<ff_count
+              <<" times). Data handled by external scanner codes may have been left in an inconsistent state." << std::endl;
           throw HardShutdownException(msg.str()); 
         } 
         else
         {
-          logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << std::endl;
+          logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "
+                   <<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since "
+                   <<"shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << EOM;
         }
         ++shutdown_attempts;
         ++attempts_since_ff;
@@ -342,9 +351,8 @@ namespace Gambit
 
        std::ostringstream ss;
        static int loopi(0);
-       logger() << "Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< std::endl;
+       logger() << "Shutdown is in progress; emergency="<< emergency <<" (loop="<<loopi<<")"<< EOM;
        ++loopi;
-       //std::cerr << ss.str();
        logger() << ss.str() << EOM;
 
        #ifdef WITH_MPI
@@ -388,7 +396,8 @@ namespace Gambit
    {
      /// Check for shutdown signals from other processes
      #ifdef SIGNAL_DEBUG
-     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes (with MPI tag "<<signalComm->mytag<<"). These will be discarded (since we are inside the 'discard_excess_shutdown_messages' routine)" << EOM;
+     logger() << LogTags::core << LogTags::info << "Doing Iprobe to check for shutdown signals from other processes (with MPI tag "
+              <<signalComm->mytag<<"). These will be discarded (since we are inside the 'discard_excess_shutdown_messages' routine)" << EOM;
      #endif
      int max_loops = 2*signalComm->Get_size(); // At most should be one message from every process (minus one), so we will check twice as many times as this before deciding that something has gone horribly wrong.
 
@@ -468,7 +477,8 @@ namespace Gambit
        #ifdef SIGNAL_DEBUG
        else
        {
-         logger() << LogTags::core << LogTags::info << "Received instruction to broadcast code " <<shutdown_name(shutdown_code)<<", however shutdown_broadcast_done=true is already set, so skipping the broadcast!"<< EOM;
+         logger() << LogTags::core << LogTags::info << "Received instruction to broadcast code " <<shutdown_name(shutdown_code)
+                  <<", however shutdown_broadcast_done=true is already set, so skipping the broadcast!"<< EOM;
        }
        #endif
      }
