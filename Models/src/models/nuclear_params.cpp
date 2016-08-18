@@ -28,7 +28,7 @@
     {
         USE_MODEL_PIPE(PARENT)
 
-        logger()<<"Converting sigma_0 and sigma_l to hadronic matrix elements ..."<<LogTags::info<<EOM;
+        logger()<<"Converting sigma_0 and sigma_l to hadronic matrix elements ..."<<LogTags::debug<<EOM;
 
         double sigma0 = myP["sigma0"];
         double sigmal = myP["sigmal"];
@@ -80,7 +80,7 @@
     {
         USE_MODEL_PIPE(PARENT)
 
-        logger()<<"Converting sigma_s to sigma_0 ..."<<LogTags::info<<EOM;
+        logger()<<"Converting sigma_s to sigma_0 ..."<<LogTags::debug<<EOM;
 
         double sigmas = myP["sigmas"];
         double sigmal = myP["sigmal"];

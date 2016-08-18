@@ -26,7 +26,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
+QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, ())
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 
@@ -42,8 +42,7 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(const Spectrum *& outSpec){
-      static Spectrum mySpec;
+    void createSpectrum(Spectrum& outSpec){
       std::string inputFileName = "input.slha";
 
       Models::SingletDMModel singletmodel;
@@ -53,8 +52,7 @@ namespace Gambit
       singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
 
       SLHAstruct slhaea = read_SLHA(inputFileName);      
-      mySpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
-      outSpec = &mySpec;
+      outSpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
     }
 
     // Create decay object from SLHA file input.slha
@@ -93,7 +91,7 @@ int main()
     // ---- Check that required backends are present ----
     
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
-    if (not Backends::backendInfo().works["MicrOmegasSingletDM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "SingletDM version of MicrOmegas 3.6.9.2 is missing!");
+    if (not Backends::backendInfo().works["MicrOmegas_SingletDM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for SingletDM is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
     //if (not Backends::backendInfo().works["nulike_1_0_3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
@@ -112,7 +110,6 @@ int main()
     LocalHalo_primary_parameters->setValue("vrot", 235.);
     LocalHalo_primary_parameters->setValue("v0", 235.);
     LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
   
     // Initialize nuclear_params_fnq model
     ModelParameters* nuclear_params_fnq = Models::nuclear_params_fnq::Functown::primary_parameters.getcontentsPtr();
@@ -143,10 +140,10 @@ int main()
     gamLike_1_0_0_init.reset_and_calculate();
   
     // Initialize MicrOmegas backend (specific for SingletDM)
-    //MicrOmegasSingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
-    MicrOmegasSingletDM_3_6_9_2_init.notifyOfModel("SingletDM");
-    MicrOmegasSingletDM_3_6_9_2_init.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
-    MicrOmegasSingletDM_3_6_9_2_init.reset_and_calculate();
+    //MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
+    MicrOmegas_SingletDM_3_6_9_2_init.notifyOfModel("SingletDM");
+    MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+    MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
   
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -178,7 +175,7 @@ int main()
     // ---- Relic density ----
   
     // Relic density calculation with MicrOmegas
-    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegasSingletDM_3_6_9_2::Functown::darkOmega);
+    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::darkOmega);
     RD_oh2_MicrOmegas.reset_and_calculate();
   
   //  // Relic density calculation with DarkSUSY (the sloppy version)

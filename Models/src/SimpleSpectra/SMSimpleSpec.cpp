@@ -45,9 +45,16 @@ namespace Gambit
       {}
 
       /// Constructor via SLHAea object
-      SMea::SMea(const SLHAea::Coll& input)
-        : SLHAeaModel(input)
+      SMea::SMea(const SLHAea::Coll& slhainput)
+        : SLHAeaModel(slhainput)
       {}
+
+      ///// Constructor via SMInputs struct
+      //SMea::SMea(const SMInputs& input)
+      //{
+      //  /// Build an SLHAea object from the SMINPUTS struct        
+      //  SLHAeaModel(input)
+      //}
 
       /// @{ Getters for SM information 
 
@@ -103,9 +110,14 @@ namespace Gambit
       SMSimpleSpec::SMSimpleSpec() 
       {}
 
-      /// Constructor via SLHAea object
-      SMSimpleSpec::SMSimpleSpec(const SLHAea::Coll& input)
-        : SLHASimpleSpec(input)
+      /// Construct via SLHAea object
+      SMSimpleSpec::SMSimpleSpec(const SLHAea::Coll& slhainput)
+        : SLHASimpleSpec(slhainput)
+      {}
+
+      /// Construct via SMINPUTS object
+      SMSimpleSpec::SMSimpleSpec(const SMInputs& sminput)
+        : SLHASimpleSpec(sminput.getSLHAea())
       {}
 
       /// Copy constructor: needed by clone function.

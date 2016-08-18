@@ -16,29 +16,23 @@
 #  "special" metacharacters may
 #  appear here. The extent of this string is
 #  indicated by indentation.
-
+#
 # We can break this into categories however we want; yaml will just ignore comments
+
 
 #-------------------------------------
 #  Test capabilities
 #-------------------------------------
 
 test_vector: |
-   Some kind of vector or something
-
-vSigma: |
-   Probably a cross-section of some kind
-   Lets add an extra line to demo multiline descriptions
-
-#-------------------------------------
-#  Fake particle capabilities
-#-------------------------------------
+   An example vector.
 
 widths: |
-   The width of some particle or other
+   The width of some make-believe particle.  
 
 xsection: |
-   Another mystery cross-section
+   A cross-section for some make-believe process.
+
 
 #-------------------------------------
 #  SpecBit
@@ -58,7 +52,6 @@ vacuum_stability: |
     Run the quartic Higgs coupling to high scales, in order to determine
     the expected lifetime of the electroweak vacuum, the instability scale, and
     the perturbativity of the couplings up to the necessary scale.
-
 
 check_perturb_min_lambda: |
     Check that dimensionless couplings are sufficiently small up to the smaller
@@ -85,9 +78,7 @@ qedqcd_subspectrum: |
 SM_spectrum: |
     Create Spectrum object from SMInputs structs and SM Higgs parameters.
 
-
 #####   MSSM  #####
-
 
 unimproved_MSSM_spectrum: |
     Returns unimproved MSSM spectrum object calculated with boundary conditions
@@ -105,6 +96,8 @@ prec_HiggsMasses: |
 Higgs_Couplings: |
     Higgs couplings, as computed by FeynHiggs
 
+SMlike_Higgs_PDG_code: |
+    The PDG code of the neutral Higgs boson that is most SM-like in the theory at hand.
 
 
 #-------------------------------------
@@ -115,7 +108,6 @@ Higgs_Couplings: |
 MSSM_spectrum: |
     Provide an updated MSSM spectrum from the unimproved version with
     precision W and Higgs masses.
-
 
 
 #-------------------------------------
@@ -299,7 +291,6 @@ FH_HiggsProd: |
 #             mass eigenstates $X$ and $Y$.
 
 
-
 #-------------------------------------
 #  DarkBit capabilities
 #-------------------------------------
@@ -313,16 +304,22 @@ DD_couplings: |
    Provides WIMP mass and couplings to nucleons.
 
 mwimp: |
-   DM mass in GeV
+   DM mass in GeV.
 
 sigmav: |
-   Thermally averaged annihilation cross section <sv>, for v=0.
+   Thermally averaged annihilation cross section <sigma v>, for v=0, in cm^3 s^-1.
 
-sigma_SI_N: |
-   Spin-independent WIMP-Nucleon cross section.
+sigma_SI_p: |
+   Spin-independent WIMP-proton cross section, in cm^2.
 
-sigma_SD_N: |
-   Spin-dependent WIMP-Nucleon cross section.
+sigma_SD_p: |
+   Spin-dependent WIMP-proton cross section, in cm^2.
+
+sigma_SI_n: |
+   Spin-independent WIMP-neutron cross section, in cm^2.
+
+sigma_SD_n: |
+   Spin-dependent WIMP-neutron cross section, in cm^2.
 
 DarkMatter_ID: |
    Contains string ID to identify dark matter particle.
@@ -486,7 +483,7 @@ lnL_SI_nuclear_parameters: |
 SimYieldTable: |
    DESCRIPTION MISSING
 
-GA_DESCRIPTION MISSINGFinalStates: |
+GA_FinalStates: |
    DESCRIPTION MISSING
 
 GA_AnnYield: |
@@ -533,6 +530,9 @@ capture_rate_Sun: |
 
 equilibration_time_Sun: |
    Timescale on which capture and annihilation of dark matter in the Sun equilibrate (s).
+
+annihilation_rate_Sun: |
+   Annihilation rate of dark matter in the Sun (s^-1).
 
 nuyield_ptr: |
    A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
@@ -625,7 +625,7 @@ IC79_loglike: |
    The full 79-string IceCube log-likelihood.
 
 IceCube_likelihood: |
-   The complete IceCube log-likelihood.
+   The complete IceCube log-likelihood, including 22-string and 79-string data.
 
 DarkSUSY_PointInit: |
    DESCRIPTION MISSING
@@ -635,6 +635,10 @@ dump_GammaSpectrum: |
 
 UnitTest_DarkBit: |
    DESCRIPTION MISSING
+
+vSigma: |
+   DESCRIPTION MISSING
+
 
 #-------------------------------------
 #  DecayBit capabilities
@@ -863,7 +867,6 @@ neutralino_3_decay_rates : |
 
 neutralino_4_decay_rates : | 
    Decays of the neutralino 4.
-
 
 
 #-------------------------------------

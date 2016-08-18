@@ -57,12 +57,12 @@ START_MODULE
 
     #define FUNCTION Ref_SM_Higgs_decays_table
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(mh, double)
+    DEPENDENCY(mh, triplet<double>)
     #undef FUNCTION
 
     //#define FUNCTION Ref_SM_Higgs_decays_FH
     //START_FUNCTION(DecayTable::Entry)
-    //DEPENDENCY(mh, double)
+    //DEPENDENCY(mh, triplet<double>)
     //BACKEND_REQ(xxx, (fh_reqd), xxx)
     //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
     //#undef FUNCTION
@@ -81,7 +81,7 @@ START_MODULE
     #define FUNCTION SingletDM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(SingletDM_spectrum, const Spectrum*)
+    DEPENDENCY(SingletDM_spectrum, Spectrum)
     ALLOW_MODELS(SingletDM, SingletDMZ3)
     #undef FUNCTION
 
@@ -98,7 +98,7 @@ START_MODULE
     #define FUNCTION FH_MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
-     DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
+    DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
 
@@ -663,7 +663,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION check_first_sec_gen_mixing
     START_FUNCTION(int)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -672,7 +672,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 

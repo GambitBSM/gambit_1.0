@@ -58,12 +58,13 @@ namespace Gambit
         c=d;
     }
     
-    bool check_perturb_to_min_lambda(const Spectrum*  spec,double scale,int pts)
+    bool check_perturb_to_min_lambda(const Spectrum& spec,double scale,int pts)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
+
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
     double step = log10(scale) / pts;
     double runto;
    
@@ -122,13 +123,17 @@ namespace Gambit
     return true;
     }
     
-    double run_lambda(const Spectrum*  spec,double scale)
+    double run_lambda(const Spectrum& spec,double scale)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
+    
     if (scale>1e21){scale=1e21;}// avoid running to high scales
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
+
+
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE(); // clone the original spectrum incase the running takes the spectrum
+
                                                                 // into a non-perturbative scale and thus the spectrum is no longer reliable
     SingletDM -> RunToScale(scale);
     double lambda1 = SingletDM->get(Par::dimensionless,"lambda_h");
@@ -145,9 +150,8 @@ namespace Gambit
       int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
       using namespace Gambit;
       using namespace SpecBit;
-      
-      
-      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
+      const Spectrum& fullspectrum = *myPipe::Dep::SingletDM_spectrum;
+
       // const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
       //std::unique_ptr<SubSpectrum> SingletDM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();

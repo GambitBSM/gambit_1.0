@@ -45,15 +45,19 @@ namespace Gambit {
           : label_(label) 
           , fakethis_(fakethis)
           , const_fakethis_(fakethis)
+          , no_overrides_(false)
           , override_only_(false)
           , map0_(NULL)
-          , map0M_(NULL)
-          , map0I_(NULL)
           , map1_(NULL)
-          , map1M_(NULL)
-          , map1I_(NULL)
           , map2_(NULL)
+          , map0W_(NULL)
+          , map1W_(NULL)
+          , map2W_(NULL)
+          , map0M_(NULL)
+          , map1M_(NULL)
           , map2M_(NULL)
+          , map0I_(NULL)
+          , map1I_(NULL)
           , map2I_(NULL)
           , omap0_(NULL)
           , omap1_(NULL)
@@ -65,15 +69,19 @@ namespace Gambit {
           : label_(label) 
           , fakethis_(NULL) // CANNOT USE WHEN HOST IS CONST
           , const_fakethis_(fakethis)
+          , no_overrides_(false)
           , override_only_(false)
           , map0_(NULL)
-          , map0M_(NULL)
-          , map0I_(NULL)
           , map1_(NULL)
-          , map1M_(NULL)
-          , map1I_(NULL)
           , map2_(NULL)
+          , map0W_(NULL)
+          , map1W_(NULL)
+          , map2W_(NULL)
+          , map0M_(NULL)
+          , map1M_(NULL)
           , map2M_(NULL)
+          , map0I_(NULL)
+          , map1I_(NULL)
           , map2I_(NULL)
           , omap0_(NULL)
           , omap1_(NULL)
@@ -85,37 +93,47 @@ namespace Gambit {
 
          /// derived class maps
          SetMaps& map0 (const typename MapTypes<D,MTag>::fmap0&        map0) { map0_ =&map0;  return *this; }
-         SetMaps& map0M(const typename MapTypes<D,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
-         SetMaps& map0I(const typename MapTypes<D,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
          SetMaps& map1 (const typename MapTypes<D,MTag>::fmap1&        map1) { map1_ =&map1;  return *this; }
-         SetMaps& map1M(const typename MapTypes<D,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
-         SetMaps& map1I(const typename MapTypes<D,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
          SetMaps& map2 (const typename MapTypes<D,MTag>::fmap2&        map2) { map2_ =&map2;  return *this; }
+         SetMaps& map0W(const typename MapTypes<D,MTag>::fmap0W&       map0W){ map0W_=&map0W; return *this; }
+         SetMaps& map1W(const typename MapTypes<D,MTag>::fmap1W&       map1W){ map1W_=&map1W; return *this; }
+         SetMaps& map2W(const typename MapTypes<D,MTag>::fmap2W&       map2W){ map2W_=&map2W; return *this; }
+         SetMaps& map0M(const typename MapTypes<D,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
+         SetMaps& map1M(const typename MapTypes<D,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
          SetMaps& map2M(const typename MapTypes<D,MTag>::fmap2_extraM& map2M){ map2M_=&map2M; return *this; }
+         SetMaps& map0I(const typename MapTypes<D,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
+         SetMaps& map1I(const typename MapTypes<D,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
          SetMaps& map2I(const typename MapTypes<D,MTag>::fmap2_extraI& map2I){ map2I_=&map2I; return *this; }
          /// base class override maps
          SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
          SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
          SetMaps& omap2(const std::map<std::string,std::map<int,std::map<int,double>>>& om2){ omap2_=&om2; return *this;}
+         /// Flag to disable searching of override maps (for retrieving original, unoverriden values)
+         SetMaps& no_overrides(const bool flag) { no_overrides_=flag; return *this;}
          /// Flag to permit searching only override maps
          SetMaps& override_only(const bool flag) { override_only_=flag; return *this;}
+         // (Obviously don't set both of the above flags at once, or else there will be no maps to search...)
 
       private:
          friend class FptrFinder<HostSpec,MTag>; 
          const std::string label_;
          HostSpec* const fakethis_;
          const HostSpec* const const_fakethis_;
+         bool no_overrides_;
          bool override_only_;
 
          /// Maps from derived class
          const typename MapTypes<D,MTag>::fmap0*        map0_;
-         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
-         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
          const typename MapTypes<D,MTag>::fmap1*        map1_; 
-         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
-         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2*        map2_; 
+         const typename MapTypes<D,MTag>::fmap0W*       map0W_;
+         const typename MapTypes<D,MTag>::fmap1W*       map1W_; 
+         const typename MapTypes<D,MTag>::fmap2W*       map2W_; 
+         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
          const typename MapTypes<D,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2_extraI* map2I_; 
           
          /// Maps from base class (override maps, only used in getter case)
@@ -150,6 +168,9 @@ namespace Gambit {
          /// Get type of the derived spectrum wrapper from HostSpec
          typedef typename HostSpec::D D; // D for "DerivedSpec"
        
+         /// Flag to disable searching of override maps (for retrieving original, unoverriden values)
+         const bool no_overrides_;
+
          /// Flag to permit searching only override maps
          const bool override_only_;
 
@@ -160,13 +181,16 @@ namespace Gambit {
          const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
          /// Maps filled by derived (wrapper) classes
          const typename MapTypes<D,MTag>::fmap0*        map0_;
-         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
-         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
          const typename MapTypes<D,MTag>::fmap1*        map1_; 
-         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
-         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2*        map2_; 
+         const typename MapTypes<D,MTag>::fmap0W*       map0W_;
+         const typename MapTypes<D,MTag>::fmap1W*       map1W_; 
+         const typename MapTypes<D,MTag>::fmap2W*       map2W_; 
+         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
          const typename MapTypes<D,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<D,MTag>::fmap2_extraI* map2I_; 
 
          /// Iterators needed for storing locatation of search result
@@ -176,13 +200,16 @@ namespace Gambit {
          std::map<std::string,std::map<int,std::map<int,double>>>::const_iterator ito2; // 2
          /// ...for derived class values
          typename MapTypes<D,MTag>::fmap0::const_iterator        it0;  // 3
-         typename MapTypes<D,MTag>::fmap0_extraM::const_iterator it0M; // 4
-         typename MapTypes<D,MTag>::fmap0_extraI::const_iterator it0I; // 5
          typename MapTypes<D,MTag>::fmap1::const_iterator        it1;  // 6
-         typename MapTypes<D,MTag>::fmap1_extraM::const_iterator it1M; // 7
-         typename MapTypes<D,MTag>::fmap1_extraI::const_iterator it1I; // 8
          typename MapTypes<D,MTag>::fmap2::const_iterator        it2;  // 9 //was 7
+         typename MapTypes<D,MTag>::fmap0W::const_iterator       it0W; // ? 12
+         typename MapTypes<D,MTag>::fmap1W::const_iterator       it1W; // ? 13
+         typename MapTypes<D,MTag>::fmap2W::const_iterator       it2W; // ? 14
+         typename MapTypes<D,MTag>::fmap0_extraM::const_iterator it0M; // 4
+         typename MapTypes<D,MTag>::fmap1_extraM::const_iterator it1M; // 7
          typename MapTypes<D,MTag>::fmap2_extraM::const_iterator it2M; // 10
+         typename MapTypes<D,MTag>::fmap0_extraI::const_iterator it0I; // 5
+         typename MapTypes<D,MTag>::fmap1_extraI::const_iterator it1I; // 8
          typename MapTypes<D,MTag>::fmap2_extraI::const_iterator it2I; // 11
 
          /// empty maps used to initialise the above iterators
@@ -190,13 +217,16 @@ namespace Gambit {
          static const std::map<std::string,std::map<int,double>>  nullmap_ito1; // 1
          static const std::map<std::string,std::map<int,std::map<int,double>>> nullmap_ito2; // 2
          static const typename MapTypes<D,MTag>::fmap0        nullmap_it0;  // 3
-         static const typename MapTypes<D,MTag>::fmap0_extraM nullmap_it0M; // 4
-         static const typename MapTypes<D,MTag>::fmap0_extraI nullmap_it0I; // 5
          static const typename MapTypes<D,MTag>::fmap1        nullmap_it1;  // 6
-         static const typename MapTypes<D,MTag>::fmap1_extraM nullmap_it1M; // 7
-         static const typename MapTypes<D,MTag>::fmap1_extraI nullmap_it1I; // 8
          static const typename MapTypes<D,MTag>::fmap2        nullmap_it2;  // 9 //was 7
+         static const typename MapTypes<D,MTag>::fmap0W       nullmap_it0W;  // ? 12
+         static const typename MapTypes<D,MTag>::fmap1W       nullmap_it1W;  // ? 13
+         static const typename MapTypes<D,MTag>::fmap2W       nullmap_it2W;  // ? 14
+         static const typename MapTypes<D,MTag>::fmap0_extraM nullmap_it0M; // 4
+         static const typename MapTypes<D,MTag>::fmap1_extraM nullmap_it1M; // 7
          static const typename MapTypes<D,MTag>::fmap2_extraM nullmap_it2M; // 10
+         static const typename MapTypes<D,MTag>::fmap0_extraI nullmap_it0I; // 5
+         static const typename MapTypes<D,MTag>::fmap1_extraI nullmap_it1I; // 8
          static const typename MapTypes<D,MTag>::fmap2_extraI nullmap_it2I; // 11
 
          /// Functions to check whether or not it is safe to dereference the above iterators
@@ -204,13 +234,16 @@ namespace Gambit {
          bool ito1_safe() { return ito1 != nullmap_ito1.end(); };
          bool ito2_safe() { return ito2 != nullmap_ito2.end(); };
          bool it0_safe()  { return it0  != nullmap_it0.end(); };
-         bool it0M_safe() { return it0M != nullmap_it0M.end(); };
-         bool it0I_safe() { return it0I != nullmap_it0I.end(); };
          bool it1_safe()  { return it1  != nullmap_it1.end(); };
-         bool it1M_safe() { return it1M != nullmap_it1M.end(); };
-         bool it1I_safe() { return it1I != nullmap_it1I.end(); };
          bool it2_safe()  { return it2  != nullmap_it2.end(); };
+         bool it0W_safe() { return it0W != nullmap_it0W.end(); };
+         bool it1W_safe() { return it1W != nullmap_it1W.end(); };
+         bool it2W_safe() { return it2W != nullmap_it2W.end(); };
+         bool it0M_safe() { return it0M != nullmap_it0M.end(); };
+         bool it1M_safe() { return it1M != nullmap_it1M.end(); };
          bool it2M_safe() { return it2M != nullmap_it2M.end(); };
+         bool it0I_safe() { return it0I != nullmap_it0I.end(); };
+         bool it1I_safe() { return it1I != nullmap_it1I.end(); };
          bool it2I_safe() { return it2I != nullmap_it2I.end(); };
 
          // int which records which iterator points to the search result 
@@ -246,30 +279,37 @@ namespace Gambit {
            , lastname("NONE")
            , fakethis(params.fakethis_)
            , const_fakethis(params.const_fakethis_)
+           , no_overrides_(params.no_overrides_)
            , override_only_(params.override_only_)
            , omap0_(params.omap0_)   
            , omap1_(params.omap1_)   
            , omap2_(params.omap2_)   
            , map0_ (params.map0_)   
+           , map1_ (params.map1_)
+           , map2_ (params.map2_)
+           , map0W_(params.map0W_)   
+           , map1W_(params.map1W_)
+           , map2W_(params.map2W_)
            , map0M_(params.map0M_)
-           , map0I_(params.map0I_)
-           , map1_(params.map1_)
            , map1M_(params.map1M_)
-           , map1I_(params.map1I_)
-           , map2_(params.map2_)
            , map2M_(params.map2M_)
+           , map0I_(params.map0I_)
+           , map1I_(params.map1I_)
            , map2I_(params.map2I_)
            , ito0(nullmap_ito0.end())
            , ito1(nullmap_ito1.end())
            , ito2(nullmap_ito2.end())
            , it0 (nullmap_it0.end())
-           , it0M(nullmap_it0M.end())
-           , it0I(nullmap_it0I.end())
            , it1 (nullmap_it1.end())
-           , it1M(nullmap_it1M.end())
-           , it1I(nullmap_it1I.end())
            , it2 (nullmap_it2.end())
+           , it0W(nullmap_it0W.end())
+           , it1W(nullmap_it1W.end())
+           , it2W(nullmap_it2W.end())
+           , it0M(nullmap_it0M.end())
+           , it1M(nullmap_it1M.end())
            , it2M(nullmap_it2M.end())
+           , it0I(nullmap_it0I.end())
+           , it1I(nullmap_it1I.end())
            , it2I(nullmap_it2I.end())
            , whichiter(-1)
            , index1(-1)
@@ -354,108 +394,8 @@ namespace Gambit {
          /// Could protect parameters from being reset by putting these setters in a friend class,
          /// which can only set the FptrFinder parameters via the FptrFinder constructor, but this
          /// is good enough for the use here I think.
-      
-         /// Search function for 0-index maps
-         bool find(const std::string& name, bool doublecheck=true, bool check_antiparticle=true)
-         {
-            bool found = false;   
-            lastname = name;
-            error_code = -2;
-            #ifdef CHECK_WHERE_FOUND
-            std::cout<<"   Searching all 0-index maps for "<<name<<std::endl;
-            #endif
-
-            //  Search override maps first
-            if(doublecheck)
-            {
-               #ifdef CHECK_WHERE_FOUND
-               std::cout<<"   Searching override maps for "<<name<<std::endl;
-               #endif
-               if( omap0_!=NULL and search_map(name,omap0_,ito0) )
-               { 
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout<<"   Searching 0-index override maps for "<<name<<std::endl;
-                  #endif
-                  found=true; 
-                  whichiter=0; 
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout<<"   Found "<<name<<" in 0-index override map"<<std::endl;
-                  #endif
-               }
-               else if( omap1_!=NULL and PDB.has_short_name(name) )
-               {
-                  // Didn't find it in 0-index override map; translate using PDB entry and try
-                  // 1-index override map
-                  std::pair<str, int> p = PDB.short_name_pair(name);
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout<<"   Searching 1-index maps for ("<<p.first<<","<<p.second<<")"<<std::endl;
-                  #endif
-                  if  ( search_map(p.first,omap1_,ito1) )
-                  { 
-                     found=true; 
-                     index1=p.second;
-                     whichiter=1; 
-                     #ifdef CHECK_WHERE_FOUND
-                     std::cout<<"   Converted "<<name<<" to "<<" ("<<p.first<<","<<p.second<<")"<<" and found in 0-index override map"<<std::endl;
-                     #endif
-                  }
-               }
-            }        
+         /// NOTE: I think this comment refers to moved/removed functionality...     
  
-            // If no override, search the wrapper class maps
-            if(not found and not override_only_)
-            {
-               #ifdef CHECK_WHERE_FOUND
-               std::cout<<"   Searching standard maps for "<<name<<std::endl;
-               #endif
-               if     ( search_map(name,map0_,it0)   ){ found=true; whichiter=3; 
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout<<"   Found "<<name<<" in found in 0-index map (type O)"<<std::endl;
-                  #endif
-               }
-               else if( search_map(name,map0M_,it0M) ){ found=true; whichiter=4;
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout<<"   Found "<<name<<" in found in 0-index map (type OM)"<<std::endl;
-                  #endif
-               }
-               else if( search_map(name,map0I_,it0I) ){ found=true; whichiter=5;
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout<<"   Found "<<name<<" in found in 0-index map (type OI)"<<std::endl;
-                  #endif
-               }
-               else if( doublecheck and PDB.has_short_name(name) )
-               {
-                  // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
-                  std::pair<str, int> p = PDB.short_name_pair(name);
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout << "   running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
-                  #endif
-                  found = find(p.first, p.second, false, false);
-               }
-               else { 
-                  found = false;
-                  error_code = 1; 
-               }
-            }
-            
-            // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
-            if(not found and check_antiparticle) 
-            {
-               #ifdef CHECK_WHERE_FOUND
-               std::cout << "   Considering conversion of "<<name<<" to antiparticle" <<std::endl;
-               #endif
-               if(PDB.has_particle(name) and PDB.has_antiparticle(name)) 
-               {  
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout << "   Converting "<<name<<" to "<<PDB.get_antiparticle(name)<<std::endl;
-                  #endif
-                  found = find(PDB.get_antiparticle(name), true, false);
-               }
-            }
-            if(found) error_code = 0; // Should be no problem!
-            return found;
-         }
-
          template<class ITER>
          bool check_indices_1(const std::string& name, const ITER& it, const int i, const int whichit, const bool debug)
          {
@@ -476,98 +416,6 @@ namespace Gambit {
                if(debug) std::cout<<"   Found ("<<name<<","<<i<<") in 1-index map"<<std::endl;
                whichiter=whichit;
             }
-            return found;
-         }
-
-         /// Search function for 1-index maps
-         bool find(const std::string& name, int i, bool doublecheck=true, bool check_antiparticle=true)
-         {
-            bool found = false;
-            lastname = name;
-            error_code = -2;
-
-            #ifdef CHECK_WHERE_FOUND
-            std::cout<<"   Searching all 1-index maps for ("<<name<<","<<i<<")"<<std::endl;
-            #endif
-            //  Search maps for function; if found then store it
-
-            //  Search override maps first
-            if(doublecheck)
-            {
-               #ifdef CHECK_WHERE_FOUND
-               std::cout<<"   Searching override maps for ("<<name<<","<<i<<")"<<std::endl;
-               #endif
-               if( omap1_!=NULL and search_map(name,omap1_,ito1) )
-               {  
-                  // Check that index (key) exists in inner map
-                  std::map<int,double>::const_iterator it = ito1->second.find(i);
-                  if( it != ito1->second.end() )
-                  { 
-                     found=true; 
-                     index1=i;
-                     whichiter=1; 
-                     #ifdef CHECK_WHERE_FOUND
-                     std::cout<<"   Found ("<<name<<","<<i<<") in 1-index override map"<<std::endl;
-                     #endif
-                  }
-                  else if( omap0_!=NULL and search_map(PDB.long_name(name,i),omap0_,ito0) )
-                  {
-                     // Didn't find it in 1-index override map; translate using PDB entry and try
-                     // 0-index override map
-                     found=true; 
-                     whichiter=0;
-                     #ifdef CHECK_WHERE_FOUND
-                     std::cout<<"   Converted ("<<name<<","<<i<<") to "<<PDB.long_name(name,i)<<" and found in 0-index override map"<<std::endl;
-                     #endif
-                 }
-               }
-            }
-
-            // If no override, search the wrapper class maps
-            if(not found and not override_only_)
-            {
-               #ifdef CHECK_WHERE_FOUND
-               std::cout<<"   Searching standard 1-index maps for ("<<name<<","<<i<<")"<<std::endl;
-               #endif
-
-               bool debug=false;
-               #ifdef CHECK_WHERE_FOUND
-               debug=true;
-               #endif
-
-               if( search_map(name,map1_,it1) )       { check(it1_safe());  found=check_indices_1(name,it1 ,i,6,debug); }
-               else if( search_map(name,map1M_,it1M) ){ check(it1M_safe()); found=check_indices_1(name,it1M,i,7,debug); }
-               else if( search_map(name,map1I_,it1I) ){ check(it1I_safe()); found=check_indices_1(name,it1I,i,8,debug); }
-               else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
-               {
-                  // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout << "   running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
-                  #endif
-                  found = find(PDB.long_name(name,i), false, false);
-               }
-               else { 
-                  found = false;
-                  error_code = 1;
-               }
-            }
- 
-            // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
-            if(not found and check_antiparticle) 
-            {
-               #ifdef CHECK_WHERE_FOUND
-               std::cout << "   Considering conversion of "<<name<<" to antiparticle" <<std::endl;
-               #endif
-               if(PDB.has_particle(name,i) and PDB.has_antiparticle(name,i)) 
-               {  
-                  std::pair<str,int> shortpr = PDB.get_antiparticle(name,i);
-                  #ifdef CHECK_WHERE_FOUND
-                  std::cout << "   Converting "<<name<<","<<i<<" to "<<shortpr.first<<","<<shortpr.second<<std::endl;
-                  #endif
-                  found = find(shortpr.first,shortpr.second,true, false); 
-               }
-            } 
-            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
@@ -600,16 +448,58 @@ namespace Gambit {
             return found;
          }
 
-         /// Search function for 2-index maps
-         bool find(const std::string& name, int i, int j)
+         /// @{ Functions to search for specific entries with no translation
+         /// (to factorise the various pieces of the complicated search functions)
+
+         /// Search 0-index override map
+         bool find_override_0index(const std::string& name)
          {
-            bool found = false;   
-            lastname = name;
-            error_code = -2;
+            bool found = false;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching 0-index override maps for "<<name<<std::endl;
+            #endif
+            if( omap0_!=NULL and search_map(name,omap0_,ito0) )
+            { 
+               found=true; 
+               whichiter=0; 
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Found "<<name<<" in 0-index override map"<<std::endl;
+               #endif
+            }
+            return found; 
+         }
+ 
+         /// Search 1-index override map
+         bool find_override_1index(const std::string& name, const int i)
+         {
+            bool found = false;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching 1-index override maps for ("<<name<<","<<i<<")"<<std::endl;
+            #endif
+            if( omap1_!=NULL and search_map(name,omap1_,ito1) )
+            { 
+               // Check that index (key) exists in inner map
+               std::map<int,double>::const_iterator it = ito1->second.find(i);
+               if( it != ito1->second.end() )
+               { 
+                  found=true; 
+                  index1=i;
+                  whichiter=1; 
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Found ("<<name<<","<<i<<") in 1-index override map"<<std::endl;
+                  #endif
+               }
+            }
+            return found; 
+         }
 
-            //  Search maps for function; if found then store it
-
-            //  Search override maps first
+         /// Search 2-index override map
+         bool find_override_2index(const std::string& name, const int i, const int j)
+         {
+            bool found = false;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching 2-index override maps for ("<<name<<","<<i<<","<<j<<")"<<std::endl;
+            #endif
             if( omap2_!=NULL and search_map(name,omap2_,ito2) )
             {  
                // Check that first index (key) exists in inner map
@@ -627,19 +517,233 @@ namespace Gambit {
                   }
                }
             }
+            return found; 
+         }
+
+         /// Search 0-index wrapper maps
+         bool find_0index(const std::string& name)
+         {
+            bool found = false;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching 0-index standard maps for "<<name<<std::endl;
+            #endif
+            if     ( search_map(name,map0_,it0)   ){ found=true; whichiter=3; 
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Found "<<name<<" in found in 0-index map (type O)"<<std::endl;
+               #endif
+            }
+            else if( search_map(name,map0W_,it0W) ){ found=true; whichiter=12; 
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Found "<<name<<" in found in 0-index map (type OW)"<<std::endl;
+               #endif
+            }
+            else if( search_map(name,map0M_,it0M) ){ found=true; whichiter=4;
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Found "<<name<<" in found in 0-index map (type OM)"<<std::endl;
+               #endif
+            }
+            else if( search_map(name,map0I_,it0I) ){ found=true; whichiter=5;
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Found "<<name<<" in found in 0-index map (type OI)"<<std::endl;
+               #endif
+            }
+            return found; 
+         }
+
+         /// Search 1-index wrapper maps
+         bool find_1index(const std::string& name, const int i)
+         {
+            bool found = false;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching standard 1-index maps for ("<<name<<","<<i<<")"<<std::endl;
+            #endif
+
+            bool debug=false;
+            #ifdef CHECK_WHERE_FOUND
+            debug=true;
+            #endif
+
+            if( search_map(name,map1_,it1) )       { check(it1_safe());  found=check_indices_1(name,it1 ,i,6,debug); }
+            else if( search_map(name,map1W_,it1W) ){ check(it1W_safe()); found=check_indices_1(name,it1W,i,13,debug); }
+            else if( search_map(name,map1M_,it1M) ){ check(it1M_safe()); found=check_indices_1(name,it1M,i,7,debug); }
+            else if( search_map(name,map1I_,it1I) ){ check(it1I_safe()); found=check_indices_1(name,it1I,i,8,debug); }
+            return found; 
+         }
+
+         /// Search 2-index wrapper maps
+         bool find_2index(const std::string& name, const int i, const int j)
+         {
+            bool found = false;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching standard 2-index maps for ("<<name<<","<<i<<","<<j<<")"<<std::endl;
+            #endif
+
+            if( search_map(name,map2_,it2) )       { check(it2_safe());  found=check_indices_2(name,it2, i,j,9);  }
+            else if( search_map(name,map2W_,it2W) ){ check(it2W_safe()); found=check_indices_2(name,it2W,i,j,14); }
+            else if( search_map(name,map2M_,it2M) ){ check(it2M_safe()); found=check_indices_2(name,it2M,i,j,10); }
+            else if( search_map(name,map2I_,it2I) ){ check(it2I_safe()); found=check_indices_2(name,it2I,i,j,11); }
+            else { 
+              found = false;
+              error_code = 1;
+            }
+
+            return found; 
+         }
+
+         /// @}
  
+         /// Search function for 0-index maps
+         bool find(const std::string& name, bool /*doublecheck*/=true, bool check_antiparticle=true)
+         {
+            bool found = false;   
+            lastname = name;
+            error_code = -2;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching all 0-index maps for "<<name<<std::endl;
+            #endif
+
+            /// Get antiparticle name if it exists
+            /// Slightly wasteful to do this all the time if not needed, but makes the
+            /// code simpler and realistically won't make any difference.
+            std::string antiname = "none";
+            if(check_antiparticle and PDB.has_particle(name) and PDB.has_antiparticle(name)) 
+            {
+              antiname = PDB.get_antiparticle(name);
+            } else {
+              check_antiparticle = false; // No antiparticle PDB entry, so cancel that part of search.
+            }
+
+            //  Search override maps first
+            if(not found and not no_overrides_)
+            {
+               if(not found) found = find_override_0index(name);
+               if(not found and PDB.has_short_name(name) ) {
+                 std::pair<str, int> p = PDB.short_name_pair(name);
+                 found = find_override_1index(p.first, p.second); 
+               }
+               if(check_antiparticle) // Check antiparticles
+               { 
+                  if(not found) found = find_override_0index(antiname);
+                  if(not found and PDB.has_short_name(antiname) ) {
+                    std::pair<str, int> p = PDB.short_name_pair(antiname);
+                    found = find_override_1index(p.first, p.second);
+                  }
+               }
+               if(not found) error_code = 1;
+            }        
+ 
+            // If no override match, search the wrapper class maps
+            if(not found and not override_only_)
+            {
+               if(not found) found = find_0index(name);
+               if(not found and PDB.has_short_name(name) ) {
+                 std::pair<str, int> p = PDB.short_name_pair(name);
+                 found = find_1index(p.first, p.second); 
+               }
+               if(check_antiparticle) // Check antiparticles
+               { 
+                  if(not found) found = find_0index(antiname);
+                  if(not found and PDB.has_short_name(antiname) ) {
+                    std::pair<str, int> p = PDB.short_name_pair(antiname);
+                    found = find_1index(p.first, p.second);
+                  }
+               }
+               if(not found) error_code = 1;
+            }
+
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   0-index search result: found="<<found<<std::endl;
+            #endif
+
+            if(found) error_code = 0; // Should be no problem!
+            return found;
+         }
+
+         /// Search function for 1-index maps
+         bool find(const std::string& name, int i, bool /*doublecheck*/=true, bool check_antiparticle=true)
+         {
+            bool found = false;
+            lastname = name;
+            error_code = -2;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching all 1-index maps for ("<<name<<","<<i<<")"<<std::endl;
+            #endif
+
+            /// Get antiparticle name if it exists
+            std::string antiname = "none";
+            int ai = 0;
+            if(check_antiparticle and PDB.has_particle(name,i) and PDB.has_antiparticle(name,i)) 
+            {
+              std::pair<str,int> p = PDB.get_antiparticle(name,i);
+              antiname = p.first;
+              ai = p.second;
+            } else {
+              check_antiparticle = false; // No antiparticle PDB entry, so cancel that part of search.
+            }
+
+            //  Search override maps first
+            if(not found and not no_overrides_)
+            {
+               if(not found) found = find_override_1index(name,i);
+               if(not found) found = find_override_0index(PDB.long_name(name,i));
+               if(check_antiparticle) // Check antiparticles
+               { 
+                  if(not found) found = find_override_1index(antiname,ai);
+                  if(not found) found = find_override_0index(PDB.long_name(antiname,ai));
+               }
+               if(not found) error_code = 1;
+            }        
+ 
+            if(not found and not override_only_)
+            {
+               if(not found) found = find_1index(name,i);
+               if(not found) found = find_0index(PDB.long_name(name,i));
+               if(check_antiparticle) // Check antiparticles
+               { 
+                  if(not found) found = find_1index(antiname,ai);
+                  if(not found) found = find_0index(PDB.long_name(antiname,ai));
+               }
+               if(not found) error_code = 1;
+            }
+
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   1-index search result: found="<<found<<std::endl;
+            #endif
+
+            if(found) error_code = 0; // Should be no problem!
+            return found;
+         }
+
+         /// Search function for 2-index maps
+         bool find(const std::string& name, int i, int j)
+         {
+            bool found = false;   
+            lastname = name;
+            error_code = -2;
+
+            // Antiparticle string is a bit tricky here, because it is not
+            // well-defined whether the name or a name plus index is needed
+            // for the conversion. Better off just banning antiparticle
+            // name conversions for two-index cases.
+
+            //  Search maps for function; if found then store it
+            if( not no_overrides_ ) 
+            {
+              if(not found) found = find_override_2index(name,i,j);
+              if(not found) error_code = 1;
+            }
+
             // If no override, search the wrapper class maps
             if(not found and not override_only_)
             {
-               if( search_map(name,map2_,it2) )       { check(it2_safe());  found=check_indices_2(name,it2, i,j,9);  }
-               else if( search_map(name,map2M_,it2M) ){ check(it2M_safe()); found=check_indices_2(name,it2M,i,j,10); }
-               else if( search_map(name,map2I_,it2I) ){ check(it2I_safe()); found=check_indices_2(name,it2I,i,j,11); }
-               else { 
-                 found = false;
-                 error_code = 1;
-               }
+              if(not found) found = find_2index(name,i,j);
+              if(not found) error_code = 1;
             }
  
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   2-index search result: found="<<found<<std::endl;
+            #endif
+
             if(found) error_code = 0; // Should be no problem!
             return found;
          }
@@ -652,13 +756,16 @@ namespace Gambit {
    template<class HS, class MT> const std::map<std::string,std::map<int,std::map<int,double>>> FptrFinder<HS,MT>::nullmap_ito2 = std::map<std::string,std::map<int,std::map<int,double>>>(); // 2
    /// ...for derived class values
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0        FptrFinder<HS,MT>::nullmap_it0  = typename MapTypes<typename HS::D,MT>::fmap0       (); // 3
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraM FptrFinder<HS,MT>::nullmap_it0M = typename MapTypes<typename HS::D,MT>::fmap0_extraM(); // 4
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraI FptrFinder<HS,MT>::nullmap_it0I = typename MapTypes<typename HS::D,MT>::fmap0_extraI(); // 5
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1        FptrFinder<HS,MT>::nullmap_it1  = typename MapTypes<typename HS::D,MT>::fmap1       (); // 6
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraM FptrFinder<HS,MT>::nullmap_it1M = typename MapTypes<typename HS::D,MT>::fmap1_extraM(); // 7
-   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraI FptrFinder<HS,MT>::nullmap_it1I = typename MapTypes<typename HS::D,MT>::fmap1_extraI(); // 8
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2        FptrFinder<HS,MT>::nullmap_it2  = typename MapTypes<typename HS::D,MT>::fmap2       (); // 9 //was 7
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0W       FptrFinder<HS,MT>::nullmap_it0W = typename MapTypes<typename HS::D,MT>::fmap0W      (); // 12
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1W       FptrFinder<HS,MT>::nullmap_it1W = typename MapTypes<typename HS::D,MT>::fmap1W      (); // 13
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2W       FptrFinder<HS,MT>::nullmap_it2W = typename MapTypes<typename HS::D,MT>::fmap2W      (); // 14
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraM FptrFinder<HS,MT>::nullmap_it0M = typename MapTypes<typename HS::D,MT>::fmap0_extraM(); // 4
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraM FptrFinder<HS,MT>::nullmap_it1M = typename MapTypes<typename HS::D,MT>::fmap1_extraM(); // 7
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2_extraM FptrFinder<HS,MT>::nullmap_it2M = typename MapTypes<typename HS::D,MT>::fmap2_extraM(); // 10
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraI FptrFinder<HS,MT>::nullmap_it0I = typename MapTypes<typename HS::D,MT>::fmap0_extraI(); // 5
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraI FptrFinder<HS,MT>::nullmap_it1I = typename MapTypes<typename HS::D,MT>::fmap1_extraI(); // 8
    template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2_extraI FptrFinder<HS,MT>::nullmap_it2I = typename MapTypes<typename HS::D,MT>::fmap2_extraI(); // 11
 
 
@@ -759,6 +866,31 @@ namespace Gambit {
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
                  result = (*f)(input,ff->index1,ff->index2);
+                 break;}
+               case 12: {
+                 ff->check(ff->it0W_safe());
+                 typename MT::FSptrW f = ff->it0W->second;
+                 // These are member functions of DerivedSpec, but "HostSpec" 
+                 // (and therefore the fakethis pointers) is going to be of 
+                 // type Spec<DerivedSpec>. Therefore need to cast to the
+                 // derived type to call the function.
+                 const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
+                 result = (wrapper->*f)();
+                 break;}
+               case 13: {
+                 ff->check(ff->it1W_safe());
+                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 typename MT::FSptr1W f = ff->it1W->second.fptr;
+                 const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
+                 result = (wrapper->*f)(ff->index1);
+                 break;}
+               case 14: {
+                 ff->check(ff->it2W_safe());
+                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 typename MT::FSptr2W f = ff->it2W->second.fptr;
+                 const DerivedSpec* wrapper = static_cast<const DerivedSpec*>(ff->const_fakethis);
+                 result = (wrapper->*f)(ff->index1,ff->index2);
                  break;}
               default:{
                  std::ostringstream errmsg;

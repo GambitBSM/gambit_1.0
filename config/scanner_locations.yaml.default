@@ -1,0 +1,26 @@
+# GAMBIT central scanner location database
+#
+# Cmake will parse this file and use it to locate
+# scanner libraries before writing makefiles
+# that link to them.
+#
+# Paths can be given as full absolute paths, or 
+# relative to the main GAMBIT directory.  Paths 
+# starting with a backslash will be interpreted as 
+# absolute, those beginning with a period will
+# be interpreted as relative to the GAMBIT dir.
+
+
+MultiNest: 
+  3.9: 
+    - lib: ./ScannerBit/installed/multinest/3.9/libnest3.so
+
+Diver:
+  1.0.0:
+    - lib: ./ScannerBit/installed/diver/1.0.0/lib/libdiver.so
+
+GreAT:
+  1.0.0:
+    - lib: ./build/great-prefix/src/great-build/lib/libgreat.so
+    - headers: ./ScannerBit/installed/great/1.0.0/Manager/include
+    - headers: ./ScannerBit/installed/great/1.0.0/fparser4.5.1

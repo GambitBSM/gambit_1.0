@@ -278,10 +278,10 @@ namespace Gambit
       int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
 
       /// Retrieve SLHAea object
-      SLHAea::Coll MSSMSimpleSpec::getSLHAea() const { return slhawrap.getSLHAea(); } 
+      SLHAea::Coll MSSMSimpleSpec::getSLHAea(bool) const { return slhawrap.getSLHAea(); } 
 
       /// Add SLHAea object to another
-      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
+      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha, bool) const { return slhawrap.add_to_SLHAea(slha); } 
 
       /// Retrieve the PDG translation map
       const std::map<int, int>& MSSMSimpleSpec::PDG_translator() const { return slhawrap.PDG_translator(); }
@@ -297,16 +297,16 @@ namespace Gambit
         const std::vector<str> sbosons2   = initVector<str>("~chi+","~chi-","h0"); 
         const std::vector<str> sfermions1 = initVector<str>("~u","~d","~e-","~ubar","~dbar","~e+");
         const std::vector<str> sfermions2 = initVector<str>("~nu","~nubar");
-        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions1, i123456, false);
-        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions1, i123456, false);
-        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions2, i123, false);
-        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions2, i123, false);
-        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons1, false);
-        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons1, false);
-        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons2, i12, false);
-        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons2, i12, false);
-        set_override_vector(Par::Pole_Mass_1srd_high, uncert, "~chi0", i1234, false);
-        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, "~chi0", i1234, false);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions1, i123456, true);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions1, i123456, true);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions2, i123, true);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions2, i123, true);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons1, true);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons1, true);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons2, i12, true);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons2, i12, true);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, "~chi0", i1234, true);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, "~chi0", i1234, true);
       } 
 
       // Map fillers    

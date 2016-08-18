@@ -59,26 +59,11 @@ namespace Gambit
     using namespace LogTags;
     using namespace flexiblesusy;
 
-    /// Get a Spectrum object wrapper for the SingletDM model
-    void get_SingletDM_spectrum(const Spectrum* &result)
+    /// Get a (simple) Spectrum object wrapper for the SingletDM model
+    void get_SingletDM_spectrum(Spectrum& result)
     {
       namespace myPipe = Pipes::get_SingletDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-
-      // SoftSUSY object used to set quark and lepton masses and gauge
-      // couplings in QEDxQCD effective theory
-      softsusy::QedQcd oneset;
-
-      // Fill QedQcd object with SMInputs values
-      setup_QedQcd(oneset,sminputs);
-
-      // Run everything to Mz
-      oneset.toMz();
-
-      // Create a SubSpectrum object to wrap the qedqcd object
-      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
-      // extracted from the QedQcd object, so use the values that we put into it.)
-      QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Initialise an object to carry the Singlet plus Higgs sector information
       Models::SingletDMModel singletmodel;
@@ -149,30 +134,14 @@ namespace Gambit
       // Create a SubSpectrum object to wrap the EW sector information
       Models::ScalarSingletDMSimpleSpec singletspec(singletmodel);
 
-      // Create full Spectrum object from components above
-      // Note: SubSpectrum objects cannot be copied, but Spectrum
-      // objects can due to a special copy constructor which does
-      // the required cloning of the constituent SubSpectra.
-      static Spectrum full_spectrum;
-
-      // Note subtlety! There are TWO constructors for the Spectrum object:
-      // If pointers to SubSpectrum objects are passed, it is assumed that
-      // these objects are managed EXTERNALLY! So if we were to do this:
-      //   full_spectrum = Spectrum(&qedqcdspec,&singletspec,sminputs);
-      // then the SubSpectrum objects would end up DELETED at the end of
-      // this scope, and we will get a segfault if we try to access them
-      // later. INSTEAD, we should just pass the objects themselves, and
-      // then they will be CLONED and the Spectrum object will take
-      // possession of them:
-      full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs,&myPipe::Param);
-
-      result = &full_spectrum;
+      // We don't supply a LE subspectrum here; an SMSimpleSpec will therefore be automatically created from 'sminputs'
+      result = Spectrum(singletspec,sminputs,&myPipe::Param);
     }
     
     
   //  template <class MI,class SI,class SIinfo>
     template<class MI,class SI>
-    const Spectrum* run_FS_spectrum_generator
+    Spectrum run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
         , const Options& runOptions
@@ -292,11 +261,7 @@ namespace Gambit
          }
       }
       
-      
-      static Spectrum matched_spectra;
-      matched_spectra = Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
-    
-      return &matched_spectra;
+      return Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
     }
 
 
@@ -324,14 +289,12 @@ namespace Gambit
       input.mu3Input=*Param.at("mu3");
     }
 
-    
-    
-    bool check_perturb(const Spectrum*  spec,double scale,int pts)
+    bool check_perturb(const Spectrum& spec,double scale,int pts)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
+    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
     double step = log10(scale) / pts;
     double runto;
    
@@ -389,7 +352,7 @@ namespace Gambit
     return true;
     }
     
-    void get_SingletDM_spectrum_pole(const Spectrum* &result)
+    void get_SingletDM_spectrum_pole(Spectrum& result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_SingletDM_spectrum_pole;
@@ -423,7 +386,7 @@ namespace Gambit
     
     }
 
-    void get_SingletDMZ3_spectrum(const Spectrum* &result)
+    void get_SingletDMZ3_spectrum(Spectrum& result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_SingletDMZ3_spectrum;
@@ -457,24 +420,17 @@ namespace Gambit
     }
 
     
-    
-    
-    
-    
-    
-    
-    
     // print spectrum out, stripped down copy from MSSM version with variable names changed
-    void fill_map_from_SingletDMspectrum(std::map<std::string,double>&, const Spectrum*);
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>&, const Spectrum&);
    
     void get_SingletDM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
       namespace myPipe = Pipes::get_SingletDM_spectrum_as_map;
-      const Spectrum* singletdmspec(*myPipe::Dep::SingletDM_spectrum);
+      const Spectrum& singletdmspec(*myPipe::Dep::SingletDM_spectrum);
       fill_map_from_SingletDMspectrum(specmap, singletdmspec);
     }
     
-    void fill_map_from_SingletDMspectrum(std::map<std::string,double>& specmap, const Spectrum* singletdmspec)
+    void fill_map_from_SingletDMspectrum(std::map<std::string,double>& specmap, const Spectrum& singletdmspec)
     {
       /// Add everything... use spectrum contents routines to automate task
       static const SpectrumContents::SingletDM contents;
@@ -494,7 +450,7 @@ namespace Gambit
          {
            std::ostringstream label;
            label << name <<" "<< Par::toString.at(tag);
-           specmap[label.str()] = singletdmspec->get_HE()->get(tag,name);
+           specmap[label.str()] = singletdmspec.get_HE().get(tag,name);
          }
          // Check vector case
          else if(shape.size()==1 and shape[0]>1)
@@ -502,7 +458,7 @@ namespace Gambit
            for(int i = 1; i<=shape[0]; ++i) {
              std::ostringstream label;
              label << name <<"_"<<i<<" "<< Par::toString.at(tag);
-             specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i);
+             specmap[label.str()] = singletdmspec.get_HE().get(tag,name,i);
            }
          }
          // Check matrix case
@@ -512,7 +468,7 @@ namespace Gambit
              for(int j = 1; j<=shape[0]; ++j) {
                std::ostringstream label;
                label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
-               specmap[label.str()] = singletdmspec->get_HE()->get(tag,name,i,j);
+               specmap[label.str()] = singletdmspec.get_HE().get(tag,name,i,j);
              }  
            }
          }
@@ -529,7 +485,6 @@ namespace Gambit
 
     }
     
-
   } // end namespace SpecBit
 } // end namespace Gambit
 

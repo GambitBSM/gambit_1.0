@@ -220,7 +220,7 @@ namespace Gambit
         if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
         {
           // MSSM-specific
-          spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+          spectrum = (*Dep::MSSM_spectrum).getSLHAea();
           SLHAea::Block block("MODSEL");
           block.push_back("BLOCK MODSEL              # Model selection");
           SLHAea::Line line;
@@ -1952,16 +1952,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const Spectrum& spec = *Dep::MSSM_spectrum;
 
       double max_mixing;
-      const SubSpectrum* mssm = spec->get_HE();
+      const SubSpectrum& mssm = spec.get_HE();
       str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
       str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
-      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_seL=spec.get(Par::Pole_Mass,sel_string);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_seR = spec.get(Par::Pole_Mass,ser_string);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2019,16 +2019,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const Spectrum& spec = *Dep::MSSM_spectrum;
 
       double max_mixing;
-      const SubSpectrum* mssm = spec->get_HE();
+      const SubSpectrum& mssm = spec.get_HE();
       str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
       str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
-      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_smuL=spec.get(Par::Pole_Mass,smul_string);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_smuR = spec.get(Par::Pole_Mass,smur_string);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2086,16 +2086,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const SubSpectrum* mssm = spec->get_HE();
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const SubSpectrum& mssm = spec.get_HE();
       const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
       const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
-      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_stau1=spec.get(Par::Pole_Mass,stau1_string);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_stau2 = spec.get(Par::Pole_Mass,stau2_string);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2154,16 +2154,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const Spectrum& spec = *Dep::MSSM_spectrum;
 
       double max_mixing;
-      const SubSpectrum* mssm = spec->get_HE();
+      const SubSpectrum& mssm = spec.get_HE();
       str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
       str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
-      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_seL=spec.get(Par::Pole_Mass,sel_string);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_seR = spec.get(Par::Pole_Mass,ser_string);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2222,15 +2222,15 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const Spectrum& spec = *Dep::MSSM_spectrum;
       double max_mixing;
-      const SubSpectrum* mssm = spec->get_HE();
+      const SubSpectrum& mssm = spec.get_HE();
       str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
       str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
-      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_smuL=spec.get(Par::Pole_Mass,smul_string);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_smuR = spec.get(Par::Pole_Mass,smur_string);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2289,16 +2289,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const SubSpectrum* mssm = spec->get_HE();
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const SubSpectrum& mssm = spec.get_HE();
       const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
       const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
-      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_stau1=spec.get(Par::Pole_Mass,stau1_string);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_stau2 = spec.get(Par::Pole_Mass,stau2_string);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2360,13 +2360,13 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const DecayTable& decays = *Dep::decay_rates;
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec.get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec.get(Par::Pole_Mass,1000035, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2380,18 +2380,18 @@ namespace Gambit
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like Z* decays
       totalBR = 0;
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "Z0");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "ubar", "u");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "dbar", "d");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "cbar", "c");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "sbar", "s");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "bbar", "b");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_e", "nu_e");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_mu", "nu_mu");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_tau", "nu_tau");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "Z0");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "ubar", "u");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "dbar", "d");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "cbar", "c");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "sbar", "s");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "bbar", "b");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "e+", "e-");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "nubar_tau", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2411,18 +2411,18 @@ namespace Gambit
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like Z* decays
       totalBR = 0;
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "Z0");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "ubar", "u");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "dbar", "d");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "cbar", "c");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "sbar", "s");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "bbar", "b");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_e", "nu_e");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_mu", "nu_mu");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_tau", "nu_tau");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "Z0");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "ubar", "u");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "dbar", "d");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "cbar", "c");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "sbar", "s");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "bbar", "b");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "e+", "e-");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "nubar_tau", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2442,18 +2442,18 @@ namespace Gambit
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like Z* decays
       totalBR = 0;
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "Z0");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "ubar", "u");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "dbar", "d");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "cbar", "c");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "sbar", "s");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "bbar", "b");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_e", "nu_e");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_mu", "nu_mu");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_tau", "nu_tau");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "Z0");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "ubar", "u");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "dbar", "d");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "cbar", "c");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "sbar", "s");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "bbar", "b");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "e+", "e-");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "nubar_tau", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2484,13 +2484,13 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const DecayTable& decays = *Dep::decay_rates;
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec.get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec.get(Par::Pole_Mass,1000035, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2505,14 +2505,14 @@ namespace Gambit
       // Total up all channels which look like leptonic Z* decays
       // Total up the leptonic Z decays first...
       totalBR = 0;
-      totalBR += decays->at("Z0").BF("e+", "e-");
-      totalBR += decays->at("Z0").BF("mu+", "mu-");
-      totalBR += decays->at("Z0").BF("tau+", "tau-");
-      totalBR = decays->at("~chi0_2").BF("~chi0_1", "Z0") * totalBR;
+      totalBR += decays.at("Z0").BF("e+", "e-");
+      totalBR += decays.at("Z0").BF("mu+", "mu-");
+      totalBR += decays.at("Z0").BF("tau+", "tau-");
+      totalBR = decays.at("~chi0_2").BF("~chi0_1", "Z0") * totalBR;
 
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "e+", "e-");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2533,14 +2533,14 @@ namespace Gambit
       // Total up all channels which look like leptonic Z* decays
       // Total up the leptonic Z decays first...
       totalBR = 0;
-      totalBR += decays->at("Z0").BF("e+", "e-");
-      totalBR += decays->at("Z0").BF("mu+", "mu-");
-      totalBR += decays->at("Z0").BF("tau+", "tau-");
-      totalBR = decays->at("~chi0_3").BF("~chi0_1", "Z0") * totalBR;
+      totalBR += decays.at("Z0").BF("e+", "e-");
+      totalBR += decays.at("Z0").BF("mu+", "mu-");
+      totalBR += decays.at("Z0").BF("tau+", "tau-");
+      totalBR = decays.at("~chi0_3").BF("~chi0_1", "Z0") * totalBR;
 
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "e+", "e-");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2561,14 +2561,14 @@ namespace Gambit
       // Total up all channels which look like leptonic Z* decays
       // Total up the leptonic Z decays first...
       totalBR = 0;
-      totalBR += decays->at("Z0").BF("e+", "e-");
-      totalBR += decays->at("Z0").BF("mu+", "mu-");
-      totalBR += decays->at("Z0").BF("tau+", "tau-");
-      totalBR = decays->at("~chi0_4").BF("~chi0_1", "Z0") * totalBR;
+      totalBR += decays.at("Z0").BF("e+", "e-");
+      totalBR += decays.at("Z0").BF("mu+", "mu-");
+      totalBR += decays.at("Z0").BF("tau+", "tau-");
+      totalBR = decays.at("~chi0_4").BF("~chi0_1", "Z0") * totalBR;
 
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "e+", "e-");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2599,12 +2599,12 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
-      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const DecayTable& decays = *Dep::decay_rates;
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec.get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2618,12 +2618,12 @@ namespace Gambit
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like W* decays
       totalBR = 0;
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "W+");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "W+");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -2643,12 +2643,12 @@ namespace Gambit
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like W* decays
       totalBR = 0;
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "W+");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "W+");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -2679,12 +2679,12 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
-      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const DecayTable& decays = *Dep::decay_rates;
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec.get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2699,14 +2699,14 @@ namespace Gambit
       // Total up all channels which look like leptonic W* decays
       // Total up the leptonic W decays first...
       totalBR = 0;
-      totalBR += decays->at("W+").BF("e+", "nu_e");
-      totalBR += decays->at("W+").BF("mu+", "nu_mu");
-      totalBR += decays->at("W+").BF("tau+", "nu_tau");
-      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+      totalBR += decays.at("W+").BF("e+", "nu_e");
+      totalBR += decays.at("W+").BF("mu+", "nu_mu");
+      totalBR += decays.at("W+").BF("tau+", "nu_tau");
+      totalBR = decays.at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -2727,14 +2727,14 @@ namespace Gambit
       // Total up all channels which look like leptonic W* decays
       // Total up the leptonic W decays first...
       totalBR = 0;
-      totalBR += decays->at("W+").BF("e+", "nu_e");
-      totalBR += decays->at("W+").BF("mu+", "nu_mu");
-      totalBR += decays->at("W+").BF("tau+", "nu_tau");
-      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+      totalBR += decays.at("W+").BF("e+", "nu_e");
+      totalBR += decays.at("W+").BF("mu+", "nu_mu");
+      totalBR += decays.at("W+").BF("tau+", "nu_tau");
+      totalBR = decays.at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -2765,12 +2765,12 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
-      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const DecayTable& decays = *Dep::decay_rates;
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec.get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2784,11 +2784,11 @@ namespace Gambit
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = decays->at("W+").BF("hadron", "hadron");
-      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+      totalBR = decays.at("W+").BF("hadron", "hadron");
+      totalBR = decays.at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "c", "sbar");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -2808,11 +2808,11 @@ namespace Gambit
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = decays->at("W+").BF("hadron", "hadron");
-      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+      totalBR = decays.at("W+").BF("hadron", "hadron");
+      totalBR = decays.at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "c", "sbar");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -2846,16 +2846,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const SubSpectrum *mssm = spec->get_HE();
-      const DecayTable *decays = &(*Dep::decay_rates);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const SubSpectrum& mssm = spec.get_HE();
+      const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
-      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec.get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2870,31 +2870,31 @@ namespace Gambit
       // Total up all channels which look like leptonic W* decays
       // Total up the leptonic W decays first...
       totalBR = 0;
-      totalBR += decays->at("W+").BF("e+", "nu_e");
-      totalBR += decays->at("W+").BF("mu+", "nu_mu");
-      totalBR += decays->at("W+").BF("tau+", "nu_tau");
-      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+      totalBR += decays.at("W+").BF("e+", "nu_e");
+      totalBR += decays.at("W+").BF("mu+", "nu_mu");
+      totalBR += decays.at("W+").BF("tau+", "nu_tau");
+      totalBR = decays.at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
-      totalBR += decays->at("~chi+_1").BF(snue, "e+")
-               * decays->at(snue).BF("~chi0_1", "nu_e");
-      totalBR += decays->at("~chi+_1").BF(snumu, "mu+")
-               * decays->at(snumu).BF("~chi0_1", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF(snutau, "tau+")
-               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF(snue, "e+")
+               * decays.at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays.at("~chi+_1").BF(snumu, "mu+")
+               * decays.at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF(snutau, "tau+")
+               * decays.at(snutau).BF("~chi0_1", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
       // ALSO, total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = decays->at("W+").BF("hadron", "hadron");
-      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+      totalBR = decays.at("W+").BF("hadron", "hadron");
+      totalBR = decays.at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "c", "sbar");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2915,31 +2915,31 @@ namespace Gambit
       // Total up all channels which look like leptonic W* decays
       // Total up the leptonic W decays first...
       totalBR = 0;
-      totalBR += decays->at("W+").BF("e+", "nu_e");
-      totalBR += decays->at("W+").BF("mu+", "nu_mu");
-      totalBR += decays->at("W+").BF("tau+", "nu_tau");
-      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+      totalBR += decays.at("W+").BF("e+", "nu_e");
+      totalBR += decays.at("W+").BF("mu+", "nu_mu");
+      totalBR += decays.at("W+").BF("tau+", "nu_tau");
+      totalBR = decays.at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
-      totalBR += decays->at("~chi+_2").BF(snue, "e+")
-               * decays->at(snue).BF("~chi0_1", "nu_e");
-      totalBR += decays->at("~chi+_2").BF(snumu, "mu+")
-               * decays->at(snumu).BF("~chi0_1", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF(snutau, "tau+")
-               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF(snue, "e+")
+               * decays.at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays.at("~chi+_2").BF(snumu, "mu+")
+               * decays.at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF(snutau, "tau+")
+               * decays.at(snutau).BF("~chi0_1", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
       // ALSO, total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = decays->at("W+").BF("hadron", "hadron");
-      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+      totalBR = decays.at("W+").BF("hadron", "hadron");
+      totalBR = decays.at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "c", "sbar");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -2973,16 +2973,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const SubSpectrum *mssm = spec->get_HE();
-      const DecayTable *decays = &(*Dep::decay_rates);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const SubSpectrum& mssm = spec.get_HE();
+      const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
-      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec.get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2997,20 +2997,20 @@ namespace Gambit
       // Total up all channels which look like leptonic W* decays
       // Total up the leptonic W decays first...
       totalBR = 0;
-      totalBR += decays->at("W+").BF("e+", "nu_e");
-      totalBR += decays->at("W+").BF("mu+", "nu_mu");
-      totalBR += decays->at("W+").BF("tau+", "nu_tau");
-      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+      totalBR += decays.at("W+").BF("e+", "nu_e");
+      totalBR += decays.at("W+").BF("mu+", "nu_mu");
+      totalBR += decays.at("W+").BF("tau+", "nu_tau");
+      totalBR = decays.at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
-      totalBR += decays->at("~chi+_1").BF(snue, "e+")
-               * decays->at(snue).BF("~chi0_1", "nu_e");
-      totalBR += decays->at("~chi+_1").BF(snumu, "mu+")
-               * decays->at(snumu).BF("~chi0_1", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF(snutau, "tau+")
-               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF(snue, "e+")
+               * decays.at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays.at("~chi+_1").BF(snumu, "mu+")
+               * decays.at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF(snutau, "tau+")
+               * decays.at(snutau).BF("~chi0_1", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -3031,20 +3031,20 @@ namespace Gambit
       // Total up all channels which look like leptonic W* decays
       // Total up the leptonic W decays first...
       totalBR = 0;
-      totalBR += decays->at("W+").BF("e+", "nu_e");
-      totalBR += decays->at("W+").BF("mu+", "nu_mu");
-      totalBR += decays->at("W+").BF("tau+", "nu_tau");
-      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+      totalBR += decays.at("W+").BF("e+", "nu_e");
+      totalBR += decays.at("W+").BF("mu+", "nu_mu");
+      totalBR += decays.at("W+").BF("tau+", "nu_tau");
+      totalBR = decays.at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
-      totalBR += decays->at("~chi+_2").BF(snue, "e+")
-               * decays->at(snue).BF("~chi0_1", "nu_e");
-      totalBR += decays->at("~chi+_2").BF(snumu, "mu+")
-               * decays->at(snumu).BF("~chi0_1", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF(snutau, "tau+")
-               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF(snue, "e+")
+               * decays.at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays.at("~chi+_2").BF(snumu, "mu+")
+               * decays.at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF(snutau, "tau+")
+               * decays.at(snutau).BF("~chi0_1", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -3078,16 +3078,16 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const SubSpectrum *mssm = spec->get_HE();
-      const DecayTable *decays = &(*Dep::decay_rates);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const SubSpectrum& mssm = spec.get_HE();
+      const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
-      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec.get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -3101,18 +3101,18 @@ namespace Gambit
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like W* decays
       totalBR = 0;
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "W+");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
-      totalBR += decays->at("~chi+_1").BF(snue, "e+")
-               * decays->at(snue).BF("~chi0_1", "nu_e");
-      totalBR += decays->at("~chi+_1").BF(snumu, "mu+")
-               * decays->at(snumu).BF("~chi0_1", "nu_mu");
-      totalBR += decays->at("~chi+_1").BF(snutau, "tau+")
-               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "W+");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_1").BF(snue, "e+")
+               * decays.at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays.at("~chi+_1").BF(snumu, "mu+")
+               * decays.at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays.at("~chi+_1").BF(snutau, "tau+")
+               * decays.at(snutau).BF("~chi0_1", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -3132,18 +3132,18 @@ namespace Gambit
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like W* decays
       totalBR = 0;
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "W+");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
-      totalBR += decays->at("~chi+_2").BF(snue, "e+")
-               * decays->at(snue).BF("~chi0_1", "nu_e");
-      totalBR += decays->at("~chi+_2").BF(snumu, "mu+")
-               * decays->at(snumu).BF("~chi0_1", "nu_mu");
-      totalBR += decays->at("~chi+_2").BF(snutau, "tau+")
-               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "W+");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays.at("~chi+_2").BF(snue, "e+")
+               * decays.at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays.at("~chi+_2").BF(snumu, "mu+")
+               * decays.at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays.at("~chi+_2").BF(snutau, "tau+")
+               * decays.at(snutau).BF("~chi0_1", "nu_tau");
       xsecWithError.upper *= pow(totalBR, 2);
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
@@ -3174,13 +3174,13 @@ namespace Gambit
       using std::pow;
       using std::log;
 
-      const Spectrum *spec = *Dep::MSSM_spectrum;
-      const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
-      const double mZ = spec->get(Par::Pole_Mass,23, 0);
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+      const DecayTable& decays = *Dep::decay_rates;
+      const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec.get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec.get(Par::Pole_Mass,1000035, 0);
+      const double mZ = spec.get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -3193,13 +3193,13 @@ namespace Gambit
 
       xsecWithError = *Dep::LEP208_xsec_chi00_12;
       // Total up all channels which look like Z* decays
-      totalBR = decays->at("Z0").BF("hadron", "hadron");
-      totalBR = decays->at("~chi0_2").BF("~chi0_1", "Z0") * totalBR;
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "ubar", "u");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "dbar", "d");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "cbar", "c");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "sbar", "s");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "bbar", "b");
+      totalBR = decays.at("Z0").BF("hadron", "hadron");
+      totalBR = decays.at("~chi0_2").BF("~chi0_1", "Z0") * totalBR;
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "ubar", "u");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "dbar", "d");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "cbar", "c");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "sbar", "s");
+      totalBR += decays.at("~chi0_2").BF("~chi0_1", "bbar", "b");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -3218,13 +3218,13 @@ namespace Gambit
 
       xsecWithError = *Dep::LEP208_xsec_chi00_13;
       // Total up all channels which look like Z* decays
-      totalBR = decays->at("Z0").BF("hadron", "hadron");
-      totalBR = decays->at("~chi0_3").BF("~chi0_1", "Z0") * totalBR;
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "ubar", "u");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "dbar", "d");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "cbar", "c");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "sbar", "s");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "bbar", "b");
+      totalBR = decays.at("Z0").BF("hadron", "hadron");
+      totalBR = decays.at("~chi0_3").BF("~chi0_1", "Z0") * totalBR;
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "ubar", "u");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "dbar", "d");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "cbar", "c");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "sbar", "s");
+      totalBR += decays.at("~chi0_3").BF("~chi0_1", "bbar", "b");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -3243,13 +3243,13 @@ namespace Gambit
 
       xsecWithError = *Dep::LEP208_xsec_chi00_14;
       // Total up all channels which look like Z* decays
-      totalBR = decays->at("Z0").BF("hadron", "hadron");
-      totalBR = decays->at("~chi0_4").BF("~chi0_1", "Z0") * totalBR;
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "ubar", "u");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "dbar", "d");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "cbar", "c");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "sbar", "s");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "bbar", "b");
+      totalBR = decays.at("Z0").BF("hadron", "hadron");
+      totalBR = decays.at("~chi0_4").BF("~chi0_1", "Z0") * totalBR;
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "ubar", "u");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "dbar", "d");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "cbar", "c");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "sbar", "s");
+      totalBR += decays.at("~chi0_4").BF("~chi0_1", "bbar", "b");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
@@ -3319,9 +3319,9 @@ namespace Gambit
     }
 
     /// Local function returning a HiggsBounds/Signals ModelParameters object for SM-like Higgs.
-    void set_SMHiggs_ModelParameters(const Spectrum* fullspectrum, const DecayTable::Entry* decays, hb_ModelParameters &result)
+    void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, hb_ModelParameters &result)
     {
-      const SubSpectrum* spec = fullspectrum->get_HE();
+      const SubSpectrum& spec = fullspectrum.get_HE();
 
       for(int i = 0; i < 3; i++)
       {
@@ -3375,18 +3375,21 @@ namespace Gambit
       result.BR_Hpjcs[0] = 0.;
       result.BR_Hpjcb[0] = 0.;
       result.BR_Hptaunu[0] = 0.;
-      result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
-      try
+      result.Mh[0] = spec.get(Par::Pole_Mass,25,0);
+      result.Mh[0] = spec.get(Par::Pole_Mass,25,0);
+      bool has_high_err = spec.has(Par::Pole_Mass_1srd_high, 25, 0);
+      bool has_low_err = spec.has(Par::Pole_Mass_1srd_low, 25, 0);
+      if (has_high_err and has_low_err) 
       {
-        double upper = spec->get(Par::Pole_Mass_1srd_high, 25, 0);
-        double lower = spec->get(Par::Pole_Mass_1srd_low, 25, 0);
+        double upper = spec.get(Par::Pole_Mass_1srd_high, 25, 0);
+        double lower = spec.get(Par::Pole_Mass_1srd_low, 25, 0);
         result.deltaMh[0] = std::max(upper,lower);
       }
-      catch(Gambit::exception)
+      else
       {
         result.deltaMh[0] = 0.;
       }
-      result.hGammaTot[0] = decays->width_in_GeV;
+      result.hGammaTot[0] = decays.width_in_GeV;
       result.CP[0] = 1;
       result.CS_lep_hjZ_ratio[0] = 1.;
       result.CS_lep_bbhj_ratio[0] = 1.;
@@ -3410,24 +3413,24 @@ namespace Gambit
       result.CS_lhc7_tthj_ratio[0] = 1.;
       result.CS_lhc8_vbf_ratio[0] = 1.;
       result.CS_lhc8_tthj_ratio[0] = 1.;
-      result.BR_hjss[0] = decays->BF("s", "sbar");
-      result.BR_hjcc[0] = decays->BF("c", "cbar");
-      result.BR_hjbb[0] = decays->BF("b", "bbar");
-      result.BR_hjmumu[0] = decays->BF("mu+", "mu-");
-      result.BR_hjtautau[0] = decays->BF("tau+", "tau-");
-      result.BR_hjWW[0] = decays->BF("W+", "W-");
-      result.BR_hjZZ[0] = decays->BF("Z0", "Z0");
-      result.BR_hjZga[0] = decays->BF("gamma", "Z0");
-      result.BR_hjgaga[0] = decays->BF("gamma", "gamma");
-      result.BR_hjgg[0] = decays->BF("g", "g");
+      result.BR_hjss[0] = decays.BF("s", "sbar");
+      result.BR_hjcc[0] = decays.BF("c", "cbar");
+      result.BR_hjbb[0] = decays.BF("b", "bbar");
+      result.BR_hjmumu[0] = decays.BF("mu+", "mu-");
+      result.BR_hjtautau[0] = decays.BF("tau+", "tau-");
+      result.BR_hjWW[0] = decays.BF("W+", "W-");
+      result.BR_hjZZ[0] = decays.BF("Z0", "Z0");
+      result.BR_hjZga[0] = decays.BF("gamma", "Z0");
+      result.BR_hjgaga[0] = decays.BF("gamma", "gamma");
+      result.BR_hjgg[0] = decays.BF("g", "g");
     }
 
     /// SM Higgs model parameters for HiggsBounds/Signals
     void SMHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::SMHiggs_ModelParameters;
-      const Spectrum* fullspectrum = *Dep::SM_spectrum;
-      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
+      const Spectrum& fullspectrum = *Dep::SM_spectrum;
+      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
       set_SMHiggs_ModelParameters(fullspectrum,decays,result);
     }
 
@@ -3436,17 +3439,22 @@ namespace Gambit
     {
       using namespace Pipes::SMlikeHiggs_ModelParameters;
       const Spectrum* fullspectrum;
-      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3")) fullspectrum = *Dep::SingletDM_spectrum;     
-      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3")){ fullspectrum = &(*Dep::SingletDM_spectrum); }
+      else if (false) { /* fullspectrum = <blah> */ } // Placeholder clause; expand each time new model dependency added.
+      else 
+      { 
+        ColliderBit_error().raise(LOCAL_INFO, "Bug! You have not finished writing this module function to work with all the models that it is declared to work with!");
+      }
+      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
+      set_SMHiggs_ModelParameters(*fullspectrum,decays,result);
     }
 
     /// MSSM Higgs model parameters
     void MSSMHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::MSSMHiggs_ModelParameters;
-      #define PDB Models::ParticleDB()
-
+      const auto& PDB = Models::ParticleDB();
+      
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::Higgs_Couplings;
 
@@ -3455,50 +3463,50 @@ namespace Gambit
       sHneut.push_back("h0_2");
       sHneut.push_back("A0");
 
-      const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE();
+      const Spectrum& fullspectrum = *Dep::MSSM_spectrum;
+      const SubSpectrum& spec = fullspectrum.get_HE();
       const DecayTable decaytable = *Dep::decay_rates;
 
       const DecayTable::Entry* Hneut_decays[3];
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->get(Par::Pole_Mass,sHneut[i]);
-        double upper = spec->get(Par::Pole_Mass_1srd_high,sHneut[i]);
-        double lower = spec->get(Par::Pole_Mass_1srd_low,sHneut[i]);
+        result.Mh[i] = spec.get(Par::Pole_Mass,sHneut[i]);
+        double upper = spec.get(Par::Pole_Mass_1srd_high,sHneut[i]);
+        double lower = spec.get(Par::Pole_Mass_1srd_low,sHneut[i]);
         result.deltaMh[i] = std::max(upper,lower);
       }
 
       // invisible LSP?
-      double lsp_mass = spec->get(Par::Pole_Mass,"~chi0_1");
+      double lsp_mass = spec.get(Par::Pole_Mass,"~chi0_1");
       int i_snu = 0;
       for(int i = 1; i <= 3; i++)
       {
-        if(spec->get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
+        if(spec.get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
         {
           i_snu = i;
-          lsp_mass = spec->get(Par::Pole_Mass,"~nu",i);
+          lsp_mass = spec.get(Par::Pole_Mass,"~nu",i);
         }
       }
 
       bool inv_lsp = true;
-      if(spec->get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
-      if(spec->get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
+      if(spec.get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec.get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
       if(inv_lsp)
       {
         for(int i = 1; i <= 6; i++)
         {
-          if(spec->get(Par::Pole_Mass,"~d",i) < lsp_mass)
+          if(spec.get(Par::Pole_Mass,"~d",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->get(Par::Pole_Mass,"~u",i) < lsp_mass)
+          if(spec.get(Par::Pole_Mass,"~u",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->get(Par::Pole_Mass,"~e-",i) < lsp_mass)
+          if(spec.get(Par::Pole_Mass,"~e-",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
@@ -3549,9 +3557,9 @@ namespace Gambit
         }
       }
 
-      result.MHplus[0] = spec->get(Par::Pole_Mass,"H+");
-      double upper = spec->get(Par::Pole_Mass_1srd_high,"H+");
-      double lower = spec->get(Par::Pole_Mass_1srd_low,"H+");
+      result.MHplus[0] = spec.get(Par::Pole_Mass,"H+");
+      double upper = spec.get(Par::Pole_Mass_1srd_high,"H+");
+      double lower = spec.get(Par::Pole_Mass_1srd_low,"H+");
       result.deltaMHplus[0] = std::max(upper,lower);
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));

@@ -299,13 +299,14 @@ namespace Gambit
         }
         catch(Gambit::invalid_point_exception& e)
         {
-          logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
+          if (debug) logger() << LogTags::core << "Additional observable invalidated by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         }
       }
     }
 
     if (debug) cout << "Total log-likelihood: " << lnlike << endl << endl;
+    logger() << "Total lnL: " << lnlike << EOM;
     dependencyResolver.resetAll();
 
     /// Check once more for signals to abort run

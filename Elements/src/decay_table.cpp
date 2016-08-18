@@ -17,6 +17,7 @@
 #include <fstream>
 
 #include "gambit/Elements/decay_table.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/file_lock.hpp"
@@ -195,7 +196,7 @@ namespace Gambit
     slha.push_front(DCblock);
 
     // Add a disclaimer about the absence of a MODSEL block
-    add_MODSEL_disclaimer(slha, "DecayTable");
+    slhahelp::add_MODSEL_disclaimer(slha, "DecayTable");
 
     return slha;
   }

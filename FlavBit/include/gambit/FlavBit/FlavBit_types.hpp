@@ -65,19 +65,23 @@ namespace Gambit
      struct Measurement             
      {                              
        double value;                
-       double stat_error_plus;      
-       double sys_error_plus;       
-       double stat_error_minus;     
-       double sys_error_minus;      
-                                
-       double error_plus;           
-       double error_minus;          
+       double exp_stat_error;
+       double exp_sys_error;
+       //double exp_stat_error_minus;     
+       // double exp_sys_error_minus;      
+       
+       double th_error;
+       //double th_error_minus;
+
+       double exp_error;
+       //double exp_error_minus;          
                                 
        double limit;                
        bool is_limit;               
        vector<Correlation> corr;    
        std::string name;                 
-       std::string source;               
+       std::string source;
+       std::string error_type;
      };                             
     struct Flav_measurement_simple
     {
@@ -92,16 +96,11 @@ namespace Gambit
 
       
       boost::numeric::ublas::matrix<double>  value_exp;          
-      boost::numeric::ublas::matrix<double> cov_exp_uu; 
-      boost::numeric::ublas::matrix<double> cov_exp_ud;  
-      boost::numeric::ublas::matrix<double> cov_exp_du;  
-      boost::numeric::ublas::matrix<double> cov_exp_dd;
-
+      boost::numeric::ublas::matrix<double> cov_exp;
+      
       boost::numeric::ublas::matrix<double> value_th;             
-      boost::numeric::ublas::matrix<double> cov_th_uu; 
-      boost::numeric::ublas::matrix<double> cov_th_ud; 
-      boost::numeric::ublas::matrix<double> cov_th_du; 
-      boost::numeric::ublas::matrix<double> cov_th_dd; 
+      boost::numeric::ublas::matrix<double> cov_th;
+
       
       vector<double> diff;
       int dim;

@@ -44,7 +44,7 @@ namespace Gambit
 
       // When calculating the solar capture rate, DarkSUSY assumes that the
       // proton and neutron scattering cross-sections are the same; we
-      // assume that whichever backend has been hooked up here does so too. 
+      // assume that whichever backend has been hooked up here does so too.
       result = BEreq::cap_Sun_v0q0_isoscalar(
           *Dep::mwimp, *Dep::sigma_SI_p, *Dep::sigma_SD_p);
     }
@@ -131,14 +131,14 @@ namespace Gambit
         Higgs_masses_neutral[1] = Dep::TH_ProcessCatalog->getParticleProperty("h0_1").mass;
       else
         DarkBit_error().raise(LOCAL_INFO, "No SM-like Higgs in ProcessCatalog!");
-      Higgs_masses_neutral[0] = 
-        Dep::TH_ProcessCatalog->hasParticleProperty("h0_2") ?  
+      Higgs_masses_neutral[0] =
+        Dep::TH_ProcessCatalog->hasParticleProperty("h0_2") ?
         Dep::TH_ProcessCatalog->getParticleProperty("h0_2").mass : 0.;
-      Higgs_masses_neutral[2] = 
-        Dep::TH_ProcessCatalog->hasParticleProperty("A0") ?  
+      Higgs_masses_neutral[2] =
+        Dep::TH_ProcessCatalog->hasParticleProperty("A0") ?
         Dep::TH_ProcessCatalog->getParticleProperty("A0").mass : 0.;
-      Higgs_mass_charged = 
-        Dep::TH_ProcessCatalog->hasParticleProperty("H+") ?  
+      Higgs_mass_charged =
+        Dep::TH_ProcessCatalog->hasParticleProperty("H+") ?
         Dep::TH_ProcessCatalog->getParticleProperty("H+").mass : 0.;
 
       // Find out which Higgs exist and have decay data in the process
@@ -333,7 +333,7 @@ namespace Gambit
       char experiment[300] = "IC-22";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -365,7 +365,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -397,7 +397,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -429,7 +429,7 @@ namespace Gambit
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      // FIXME: Add getValue documentation
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -550,15 +550,15 @@ namespace Gambit
           double rho0 = *Param["rho0"];
           double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
           double vrot = *Param["vrot"];
-          double vearth = *Param["vearth"];
           double vd_3d = sqrt(3./2.)*(*Param["v0"]);
           double vesc = *Param["vesc"];
-
+          /// Option v_earth<double>: Keplerian velocity of the Earth around the Sun in km/s (default 29.78)
+          double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
 
           BEreq::dshmcom->rho0 = rho0;
           BEreq::dshmcom->rhox = rho0;
           BEreq::dshmcom->v_sun = vrot;
-          BEreq::dshmcom->v_earth = vearth;
+          BEreq::dshmcom->v_earth = v_earth;
           BEreq::dshmcom->rhox = rho0_eff;
 
           BEreq::dshmframevelcom->v_obs = vrot;
@@ -572,7 +572,7 @@ namespace Gambit
           logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
           logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
           logger() << "    v_sun [km/s]  = " << vrot<< EOM;
-          logger() << "    v_earth [km/s]  = " << vearth << EOM;
+          logger() << "    v_earth [km/s]  = " << v_earth << EOM;
           logger() << "    v_obs [km/s]  = " << vrot << EOM;
           logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
           logger() << "    v_esc [km/s]  = " << vesc << EOM;
