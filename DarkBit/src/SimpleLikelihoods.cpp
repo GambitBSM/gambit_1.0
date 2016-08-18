@@ -241,17 +241,10 @@ namespace Gambit {
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
       // FIXME: Add getValue documentation
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
-<<<<<<< HEAD
-      result = Stats::detection_as_upper_limit(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr,
-      // FIXME: Add getValue documentation
-                                               runOptions->getValueOrDef<str>("simple", "limit_method"));
-      logger() << LogTags::debug << "lnL_oh2_upperlimit yields " << result << EOM;
-=======
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
       result = Stats::gaussian_upper_limit(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr, profile);
-      logger() << LogTags::debug << "lnL_oh2_upperlimit yields " << result << std::endl;
->>>>>>> stats_update
+      logger() << LogTags::debug << "lnL_oh2_upperlimit yields " << result << EOM;
     }
 
 
