@@ -35,6 +35,34 @@
 #************************************************
 
 
+# Lilith
+set(name "lilith")
+set(ver "1.1.3")
+set(dl "https://launchpad.net/lilith/lilith/1.1.3/+download/Lilith-1.1.3_DB-15.09.tgz")
+set(md5 "8976d1e7563b926cd4b09b4966ccb061")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(LILITHCAPI "${dir}/lilith/c-api")
+set(lib "lilith")
+ExternalProject_Add(${name}_${ver}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+  SOURCE_DIR ${LILITHCAPI}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_COMMAND} -E echo "CFLAGS=$(python2-config --cflags)" > make_so.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "LFLAGS=$(python2-config --ldflags)" >> make_so.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "INCLUDES=\"-I${LILITHCAPI}\" " >> make_so.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm $CFLAGS $INCLUDES  -o ${lib}.so ${GAMBIT_C_FLAGS} $LFLAGS" >> make_so.sh
+        COMMAND chmod u+x make_so.sh
+        COMMAND ./make_so.sh
+  INSTALL_COMMAND ""
+)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+set_as_default_version("backend" ${name} ${ver})
+
+
+
+
+
 # DarkSUSY
 set(name "darksusy")
 set(ver "5.1.3")

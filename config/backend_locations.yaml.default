@@ -63,3 +63,6 @@ nulike:
 SUSY_HIT:
   1.5:         ./Backends/installed/susyhit/1.5/libsusyhit.so
 
+Lilith:
+  1.1.3:       ./Backends/installed/lilith/1.1.3/lilith/c-api/liblilith.so
+
