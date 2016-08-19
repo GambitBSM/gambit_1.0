@@ -487,7 +487,18 @@ START_MODULE
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
         BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
      #undef FUNCTION
+     #define FUNCTION calc_Lilith_LHC_LogLike
+      START_FUNCTION(double)
+        BACKEND_OPTION( (Lilith, 1.1,.3), (liblilith) )
+     #undef FUNCTION
+
+
   #undef CAPABILITY
+
+
+
+
+
 
 
 #undef MODULE

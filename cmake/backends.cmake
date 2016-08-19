@@ -49,7 +49,7 @@ set(LILITHCAPI "${dir}/lilith/c-api")
 set(lib "lilith")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
-  SOURCE_DIR ${LILITHCAPI}
+  SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "CFLAGS=$(python2-config --cflags)" > make_so.sh
             COMMAND ${CMAKE_COMMAND} -E echo "LFLAGS=$(python2-config --ldflags)" >> make_so.sh

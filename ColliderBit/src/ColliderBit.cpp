@@ -3829,5 +3829,13 @@ namespace Gambit
     }
 
 
+    void calc_Lilith_LHC_LogLike(double &result)
+    {
+      using namespace Pipes::calc_Lilith_LHC_LogLike;
+
+
+      result = 0;
+    }
+
   }
 }

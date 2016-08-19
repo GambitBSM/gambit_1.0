@@ -31,10 +31,10 @@
 // Load the library
 LOAD_LIBRARY
 
-BE_FUNCTION(init, void, (int), "init", "init")
+//BE_FUNCTION(init, void, (int), "init", "init")
 
 // Functions
-//BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
+BE_FUNCTION(initialize_lilith, PyObject*, (char*), "initialize_lilith_", "initialize_lilith")
 
 // Variables
 //BE_VARIABLE(pacodes, DS_PACODES, "pacodes_", "pacodes")
