@@ -30,6 +30,8 @@
 // Load the library
 LOAD_LIBRARY
 
+BE_FUNCTION(init, void, (int), "init", "init")
+
 // Functions
 //BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
 

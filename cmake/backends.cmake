@@ -32,6 +32,10 @@
 #          (c.weniger@uva.nl)
 #  \date 2015 Sep
 #
+#  \author James McKay
+#          (j.mckay14@imperial.ac.uk)
+#  \date 2016 Aug
+#
 #************************************************
 
 
@@ -47,13 +51,12 @@ ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
   SOURCE_DIR ${LILITHCAPI}
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_COMMAND} -E echo "CFLAGS=$(python2-config --cflags)" > make_so.sh
-        COMMAND ${CMAKE_COMMAND} -E echo "LFLAGS=$(python2-config --ldflags)" >> make_so.sh
-        COMMAND ${CMAKE_COMMAND} -E echo "INCLUDES=\"-I${LILITHCAPI}\" " >> make_so.sh
-        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm $CFLAGS $INCLUDES  -o ${lib}.so ${GAMBIT_C_FLAGS} $LFLAGS" >> make_so.sh
-        COMMAND chmod u+x make_so.sh
-        COMMAND ./make_so.sh
+  CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "CFLAGS=$(python2-config --cflags)" > make_so.sh
+            COMMAND ${CMAKE_COMMAND} -E echo "LFLAGS=$(python2-config --ldflags)" >> make_so.sh
+            COMMAND ${CMAKE_COMMAND} -E echo "INCLUDES=\"-I${LILITHCAPI}\" " >> make_so.sh
+            COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm $CFLAGS $INCLUDES  -o ${lib}.so ${GAMBIT_C_FLAGS} $LFLAGS" >> make_so.sh
+            COMMAND chmod u+x make_so.sh
+  BUILD_COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
