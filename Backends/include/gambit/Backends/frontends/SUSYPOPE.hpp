@@ -3,7 +3,13 @@
 ///  \file
 ///
 ///  Frontend for SUSYPOPE 0.2 backend
-//
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+/// \author Peter Athron
+///
 ///  *********************************************
 
 #define BACKENDNAME SUSYPOPE

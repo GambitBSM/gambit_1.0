@@ -1,9 +1,20 @@
-/* 
- * Frontend for HiggsBounds backend
- * 
- * Last modified:
- * Christopher Rogan 2014-08-29
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+/// Frontend for HiggsBounds backend
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Christopher Rogan
+///  \date Aug 2014
+///
+///  \author Pat Scott
+///
+///  *****************************************
+
 
 #define BACKENDNAME HiggsBounds
 #define VERSION 4.2.1

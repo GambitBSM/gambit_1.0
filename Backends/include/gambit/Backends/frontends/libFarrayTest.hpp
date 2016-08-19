@@ -1,10 +1,19 @@
-/* 
- * Another backend test...
- *
- * \author Lars A. Dal
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  A fortran backend-frontend example, showing
+///  how to use the special GAMBIT fortran variable
+///  types, in particular fortran arrays.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+/// \author Lars A. Dal
+///
+///  *****************************************
 
-#include "gambit/Utils/util_types.hpp"
 
 #define BACKENDNAME LibFarrayTest
 #define VERSION 1.0

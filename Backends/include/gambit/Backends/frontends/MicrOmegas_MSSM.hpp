@@ -1,11 +1,20 @@
-/* Frontend for MicrOmegas MSSM backend
- *
- * \author Jonathan Cornell
- * \date 2013-10-11
- *
- * \author Sebastian Wild
- * \date 2016-08-08
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Frontend for MicrOmegas SingletDM backend
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+/// \author Jonathan Cornell
+/// \date Oct 2013
+///
+/// \author Sebastian Wild
+/// \date Aug 2016
+///
+///  *****************************************
 
 #define BACKENDNAME MicrOmegas_MSSM
 #define VERSION 3.6.9.2

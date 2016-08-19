@@ -1,14 +1,25 @@
-/*
- * Example of how to use the macros in 'backend_macros.hpp'
- * to set up a frontend for a specific library.
- *
- * \author Anders Kvellestad
- * \date 2013-03-26
- *
- * Modified: 2013-04-05
- * Pat Scott 2013-04-22
- * Anders Kvellestad 2013, Nov
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Example of how to use the macros in 
+///  'backend_macros.hpp' to set up a frontend for
+///  a specific library.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Anders Kvellestad
+///  \date 2013 Mar, Apr, Nov
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Apr
+///  \date 2014 May
+///
+///  *********************************************
+
 
 #define BACKENDNAME LibFirst
 #define VERSION 1.0

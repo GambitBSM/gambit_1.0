@@ -41,12 +41,6 @@
 #define VERSION 5.1.3
 #define SAFE_VERSION 5_1_3
 
-#include "gambit/DarkBit/ProcessCatalog.hpp"
-#include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/daFunk.hpp"
-#include "gambit/DarkBit/DarkBit_utils.hpp"
-#include <string>
-
 // Load the library
 LOAD_LIBRARY
 

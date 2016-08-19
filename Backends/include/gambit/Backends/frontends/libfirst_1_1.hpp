@@ -11,7 +11,6 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Anders Kvellestad
-///          ()
 ///  \date 2013 Mar, Apr
 ///
 ///  \author Pat Scott 

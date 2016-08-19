@@ -1,9 +1,20 @@
-/* 
- * Frontend for HiggsSignals backend
- * 
- * Last modified:
- * Christopher Rogan 2014-08-28
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+/// Frontend for HiggsSignals backend
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Christopher Rogan
+///  \date Aug 2014
+///
+///  \author Pat Scott
+///
+///  *****************************************
+
 
 #define BACKENDNAME HiggsSignals
 #define VERSION 1.4

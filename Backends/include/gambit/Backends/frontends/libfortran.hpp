@@ -1,8 +1,17 @@
-/* 
- * Another backend test...
- *
- * \author Anders Kvellestad
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  A fortran backend-frontend example.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+/// \author Anders Kvellestad
+///
+///  *****************************************
+
 
 #define BACKENDNAME LibFortran
 #define VERSION 1.0

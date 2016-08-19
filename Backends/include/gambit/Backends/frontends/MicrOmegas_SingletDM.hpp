@@ -1,9 +1,17 @@
-/* Frontend for MicrOmegas SingletDM backend
- *
- * \author Jonathan Cornell
- * \date May 2015
- *
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Frontend for MicrOmegas SingletDM backend
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+/// \author Jonathan Cornell
+/// \date May 2015
+///
+///  *********************************************
 
 #define BACKENDNAME MicrOmegas_SingletDM
 #define VERSION 3.6.9.2
