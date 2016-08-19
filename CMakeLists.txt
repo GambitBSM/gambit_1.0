@@ -182,6 +182,16 @@ if (OPENMP_FOUND)
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 endif()
 
+
+# Find Python Libs
+find_package(PythonLibs 2.7 REQUIRED)
+include_directories("${PYTHON_INCLUDE_DIRS}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${Python_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Python_CXX_FLAGS}")
+
+
+
 # Check for Gnu Scientific Library (GSL)
 include(cmake/FindGSL.cmake)
 if(GSL_FOUND)

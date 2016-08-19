@@ -54,7 +54,7 @@ ExternalProject_Add(${name}_${ver}
   CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "CFLAGS=$(python2-config --cflags)" > make_so.sh
             COMMAND ${CMAKE_COMMAND} -E echo "LFLAGS=$(python2-config --ldflags)" >> make_so.sh
             COMMAND ${CMAKE_COMMAND} -E echo "INCLUDES=\"-I${LILITHCAPI}\" " >> make_so.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm $CFLAGS $INCLUDES  -o ${lib}.so ${GAMBIT_C_FLAGS} $LFLAGS" >> make_so.sh
+            COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm $CFLAGS $INCLUDES  -o ${lib}.so ${GAMBIT_C_FLAGS} ${LILITHCAPI}/lilith.c $LFLAGS"  >> make_so.sh
             COMMAND chmod u+x make_so.sh
   BUILD_COMMAND ./make_so.sh
   INSTALL_COMMAND ""

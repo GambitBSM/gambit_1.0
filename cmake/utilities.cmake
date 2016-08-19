@@ -255,6 +255,11 @@ function(add_gambit_executable executablename LIBRARIES)
     endif()
     set(LIBRARIES ${LIBRARIES} ${HDF5_LIBRARIES})
   endif()
+  if (PYTHONLIBS_FOUND)
+    set(LIBRARIES ${LIBRARIES} ${PYTHON_LIBRARIES})
+  endif()
+
+
   target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
   add_dependencies(${executablename} mkpath)
 
