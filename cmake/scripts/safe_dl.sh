@@ -54,6 +54,9 @@ $2 -E md5sum $1/${filename} |
     $2 -E cmake_echo_color --red --bold  "ERROR: MD5 sum of downloaded file $1/${filename} does not match"
     $2 -E cmake_echo_color --red --bold  "Expected: $4"
     $2 -E cmake_echo_color --red --bold  "Found:    ${md5}"
+    $2 -E cmake_echo_color --red --bold  "Deleting downloaded file."
+    # Delete the file if the md5 is bad, as cmake does not actually check if DOWNLOAD_COMMAND fails.
+    $2 -E remove $1/${filename}
     exit 1
   fi
 }

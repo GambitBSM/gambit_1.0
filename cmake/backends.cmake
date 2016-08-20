@@ -399,6 +399,36 @@ set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
 set(name "feynhiggs")
+set(ver "2.12.0")
+set(lib "libFH")
+set(dl "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${ver}.tar.gz")
+set(md5 "da2d0787311525213cd4721da9946b86")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+#set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+#set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
+#set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
+set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
+set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
+ExternalProject_Add(${name}_${ver}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+  SOURCE_DIR ${dir}
+  BUILD_IN_SOURCE 1
+  # Fix bug preventing the use of array bounds checking.
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" src/Decays/VecSet.F
+            COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND ${CMAKE_COMMAND} -E make_directory lib
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_Fortran_COMPILER} -shared -o lib/${lib}.so build/*.o" > make_so.sh
+        COMMAND chmod u+x make_so.sh
+        COMMAND ./make_so.sh
+  INSTALL_COMMAND ""
+)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+set_as_default_version("backend" ${name} ${ver})
+
+# FeynHiggs
+set(name "feynhiggs")
 set(ver "2.11.3")
 set(lib "libFH")
 set(dl "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${ver}.tar.gz")
@@ -425,7 +455,6 @@ ExternalProject_Add(${name}_${ver}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
 set(name "feynhiggs")

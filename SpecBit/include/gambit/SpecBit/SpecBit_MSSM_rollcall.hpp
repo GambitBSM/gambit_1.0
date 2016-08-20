@@ -152,7 +152,7 @@
                 Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
                 Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
                 Farray< fh_real,1,4>&, fh_real&))
-    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -169,7 +169,7 @@
     BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
                 Farray<fh_complex, 1,3, 1,3>&, 
                 Farray<fh_complex, 1,3, 1,3>&))
-    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -185,7 +185,7 @@
                                                     Farray< fh_complex,1,231>&,
                                                     Farray< fh_real,1,978>&,
                                                     Farray< fh_real,1,250>&, int&))
-    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY

@@ -80,8 +80,8 @@ Scanner:
 ObsLikes:
 
     # LHC likelihoods
-    - purpose:    LogLike
-      capability: LHC_Combined_LogLike
+    #- purpose:    LogLike
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
@@ -321,27 +321,28 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
+  # Make sure to use the latest version (2.12.0) of FeynHiggs for everything.
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: prec_HiggsMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: Higgs_Couplings
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_HiggsProd
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_MSSMMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
-  #  version: 2.11.3
+  #  version: 2.12.0
   # In practice, the easiest option is just to not install / nuke the versions you don't want to use, e.g.
+  #  make nuke-feynhiggs_2_11_3  
   #  make nuke-feynhiggs_2_11_2  
 
   # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
