@@ -85,7 +85,7 @@ namespace Gambit {
       logger() << LogTags::debug << "DarkSUSY delta q set to:" << endl;
       logger() << LogTags::debug << "delu = delta u = " << (*BEreq::ddcom).delu;
       logger() << LogTags::debug << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
-      logger() << LogTags::debug << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl << EOM;
+      logger() << LogTags::debug << "\tdels = delta s = " << (*BEreq::ddcom).dels << EOM;
 
       if (*Dep::DarkSUSY_PointInit) {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
@@ -102,14 +102,14 @@ namespace Gambit {
         logger() << LogTags::debug << " gps = " << result.gps << std::endl;
         logger() << LogTags::debug << " gns = " << result.gns << std::endl;
         logger() << LogTags::debug << " gpa = " << result.gpa << std::endl;
-        logger() << LogTags::debug << " gna = " << result.gna << std::endl << EOM;
+        logger() << LogTags::debug << " gna = " << result.gna << EOM;
       } else {
         // Set couplings to zero if DarkSUSY point initialization
         // was not successful
         result.gps = 0.0; result.gns = 0.0;
         result.gpa = 0.0; result.gna = 0.0;
         logger() << "DarkSUSY point initialization failed:" << std::endl;
-        logger() << " couplings set to zero." << std::endl << EOM;
+        logger() << " couplings set to zero." << EOM;
       }
     }
 
@@ -174,7 +174,7 @@ namespace Gambit {
       logger() << LogTags::debug << " gps: " << result.gps << endl;
       logger() << LogTags::debug << " gns: " << result.gns << endl;
       logger() << LogTags::debug << " gpa: " << result.gpa << endl;
-      logger() << LogTags::debug << " gna: " << result.gna << endl << EOM;
+      logger() << LogTags::debug << " gna: " << result.gna << EOM;
     }
 
     /// Simple calculator of the spin-independent WIMP-proton cross-section

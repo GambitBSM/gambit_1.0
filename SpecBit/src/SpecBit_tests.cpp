@@ -705,7 +705,7 @@ namespace Gambit
        const SubSpectrum& qedqcd = **myPipe::Dep::qedqcd_subspectrum;
    
        // Check light quark mass ratios 
-       logger() << "Checking light quark mass ratios:" << std::endl << EOM;
+       logger() << "Checking light quark mass ratios:" << EOM;
     
        /// Generate data for a plot of quark mass 
        double Qs[] = {

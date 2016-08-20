@@ -314,10 +314,10 @@ namespace Gambit
       logger() << LogTags::dependency_resolver << endl;
       logger() << "#######################################"   << endl;
       logger() << "#  List of Type Equivalency Classes   #"   << endl;
-      logger() << "#######################################"   << endl;
+      logger() << "#######################################";
       for (std::set<std::set<str> >::const_iterator it = boundTEs->equivalency_classes.begin(); it != boundTEs->equivalency_classes.end(); ++it)
       {
-        logger() << *it << endl;
+        logger() << endl << *it;
       }
       logger() << EOM;
     }
@@ -341,11 +341,11 @@ namespace Gambit
       logger() << "#        List of Target ObsLikes      #"   << endl;
       logger() << "#                                     #"   << endl;
       logger() << "# format: Capability (Type) [Purpose] #"   << endl;
-      logger() << "#######################################"   << endl;
+      logger() << "#######################################";
       for (auto it = observables.begin(); it != observables.end(); ++it)
       {
         // TODO: Format output
-        logger() << LogTags::dependency_resolver << it->capability << " (" << it->type << ") [" << it->purpose << "]" << endl;
+        logger() << LogTags::dependency_resolver << endl << it->capability << " (" << it->type << ") [" << it->purpose << "]";
         queueEntry.first.first = it->capability;
         queueEntry.first.second = it->type;
         queueEntry.second = OBSLIKE_VERTEXID;
@@ -600,7 +600,7 @@ namespace Gambit
         colleages.insert(colleages_min.begin(), colleages_min.end());
         double prop = masterGraph[*it_min]->getInvalidationRate();
         logger() << LogTags::dependency_resolver << "Estimated T [s]: " << t2p_min*prop << EOM;
-        logger() << LogTags::dependency_resolver << "Estimated p: " << prop<< EOM;
+        logger() << LogTags::dependency_resolver << "Estimated p: " << prop << EOM;
         sorted.push_back(*it_min);
         unsorted.erase(it_min);
       }
@@ -1126,10 +1126,9 @@ namespace Gambit
         }
       }
 
-      logger()<<"Number of identified rules: "
-        <<rules.size()<< endl;
-      logger()<<"Number of these rules that are marked as !weak: "
-        <<rules.size()-strong_rules.size()<<endl<<EOM;
+      logger() << "Number of identified rules: " << rules.size() << endl
+               << "Number of these rules that are marked as !weak: "
+               << rules.size()-strong_rules.size() << EOM;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator
@@ -1386,8 +1385,7 @@ namespace Gambit
       logger() << "#         Starting dependency resolution       #" << endl;
       logger() << "#                                              #" << endl;
       logger() << "# format: Capability (Type) [Function, Module] #" << endl;
-      logger() << "################################################" << endl;
-      logger() << EOM;
+      logger() << "################################################" << EOM;
 
       // Print something to stdout as well
       #ifdef DEPRES_DEBUG

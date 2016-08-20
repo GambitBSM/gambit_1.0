@@ -582,10 +582,9 @@ namespace Gambit {
          =widthheavyHiggs;
 
       //capture NAN result and map it to zero RD
-      if (yend!=yend){
-        logger() << LogTags::repeat_to_cout
-                 << "WARNING: DS returned NAN for relic density. Setting to zero..."
-                 << std::endl << EOM;
+      if (yend!=yend)
+      {
+        logger() << LogTags::repeat_to_cout << "WARNING: DS returned NAN for relic density. Setting to zero..." << EOM;
         yend=0;
       }
 
