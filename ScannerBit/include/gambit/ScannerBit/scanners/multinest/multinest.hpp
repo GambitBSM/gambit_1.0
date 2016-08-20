@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  ScannerBit interface to Multinest 3.9
+///  ScannerBit interface to Multinest 3.10
 ///
 ///  Header file
 ///

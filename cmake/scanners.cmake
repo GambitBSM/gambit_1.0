@@ -57,11 +57,16 @@ set_as_default_version("scanner" ${name} ${ver})
 
 
 # MultiNest
-set(loc "${GAMBIT_INTERNAL}/MultiNest_v3.9")
 set(name "multinest")
-set(ver "3.9")
+set(ver "3.10")
 set(lib "libnest3")
-set(dl "null")
+set(md5 "342202f04d5728f229c976ad702c0bd1")
+set(baseurl "https://ccpforge.cse.rl.ac.uk")
+set(endurl "/gf/download/frsrelease/491/6815/MultiNest_v${ver}.tar.gz")
+set(gateurl "/gf/account/?action=LoginAction")
+set(dl "${baseurl}${endurl}")
+set(dl2 "${baseurl}${gateurl}")
+set(login_data "password=${CCPForge_p1}${CCPForge_p2}${CCPForge_p3}&username=${CCPForge_user}&redirect=${endurl}")
 set(dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/${name}/${ver}")
 set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${OpenMP_Fortran_FLAGS} ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if (NOT LAPACK_STATIC)
@@ -73,13 +78,7 @@ else()
   set(mnFFLAGS "${GAMBIT_Fortran_FLAGS}")
 endif()
 ExternalProject_Add(${name}_${ver} 
-  #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask CCPForge for a solution.
-  #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
-  #URL_MD5 6c0c9e9ee0ac3c906109675302fb30f0
-  DOWNLOAD_DIR ${scanner_download}
-  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-           COMMAND ${CMAKE_COMMAND} -E copy_directory ${loc} ${dir}
+  DOWNLOAD_COMMAND ${DL_SCANNER} ${dl} ${md5} ${dir} "null" ${login_data} ${dl2} 
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
