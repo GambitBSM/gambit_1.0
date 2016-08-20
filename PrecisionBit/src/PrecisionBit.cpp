@@ -827,7 +827,14 @@ namespace Gambit
       catch (const gm2calc_1_2_0::gm2calc::Abstract_Error& e) 
       {
         std::ostringstream err;
-        err << "gm2calc routine convert_to_onshell raised error: " 
+        err << "gm2calc 1.2.0 routine convert_to_onshell raised error: " 
+        << e.what() << ".";
+        invalid_point().raise(err.str());
+      }  
+      catch (const gm2calc_1_3_0::gm2calc::Abstract_Error& e) 
+      {
+        std::ostringstream err;
+        err << "gm2calc 1.3.0 routine convert_to_onshell raised error: " 
         << e.what() << ".";
         invalid_point().raise(err.str());
       }  

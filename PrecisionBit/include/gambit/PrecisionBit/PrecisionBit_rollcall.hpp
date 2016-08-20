@@ -168,7 +168,6 @@ START_MODULE
 
     // Muon g-2 -- Using the C++ interface to gm2calc
     #define FUNCTION GM2C_SUSY
-
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
     DEPENDENCY(MSSM_spectrum, Spectrum)
