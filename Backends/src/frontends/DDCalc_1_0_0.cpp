@@ -36,7 +36,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/DDCalc.hpp"
+#include "gambit/Backends/frontends/DDCalc_1_0_0.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
 #include <map>

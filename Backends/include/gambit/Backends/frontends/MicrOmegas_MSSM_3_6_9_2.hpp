@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for MicrOmegas SingletDM backend
+///  Frontend for MicrOmegas MSSM backend
 ///
 ///  *********************************************
 ///

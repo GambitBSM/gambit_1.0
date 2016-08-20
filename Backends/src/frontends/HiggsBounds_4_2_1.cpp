@@ -21,7 +21,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/HiggsBounds.hpp"
+#include "gambit/Backends/frontends/HiggsBounds_4_2_1.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
 BE_INI_FUNCTION

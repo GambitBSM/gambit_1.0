@@ -22,7 +22,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/gamLike.hpp"
+#include "gambit/Backends/frontends/gamLike_1_0_0.hpp"
 
 BE_INI_FUNCTION
 {

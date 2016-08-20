@@ -37,7 +37,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/DarkSUSY.hpp"
+#include "gambit/Backends/frontends/DarkSUSY_5_1_3.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
 #define square(x) ((x) * (x))  // square a number

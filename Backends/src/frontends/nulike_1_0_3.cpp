@@ -19,7 +19,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/nulike.hpp"
+#include "gambit/Backends/frontends/nulike_1_0_3.hpp"
 
 
 BE_INI_FUNCTION

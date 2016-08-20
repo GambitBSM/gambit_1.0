@@ -18,7 +18,7 @@
 
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
-#include "gambit/Backends/frontends/HiggsSignals.hpp"
+#include "gambit/Backends/frontends/HiggsSignals_1_4.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
 BE_INI_FUNCTION

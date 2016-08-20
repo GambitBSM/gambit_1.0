@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/SuperIso.hpp"
+#include "gambit/Backends/frontends/SuperIso_3_6.hpp"
 #include "gambit/Backends/backend_types/SuperIso.hpp"
 
 
