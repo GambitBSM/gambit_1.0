@@ -191,7 +191,7 @@ namespace Gambit {
 
     /// Wrapper around DarkSUSY kinematic functions
     double DSgamma3bdy(double(*IBfunc)(int&,double&,double&),
-        void(*setMassesForIB)(bool), int IBch, double Eg, double
+        int IBch, double Eg, double
         E1, double M_DM, double m_1, double m_2)
     {
       double E2 = 2*M_DM - Eg - E1;
@@ -210,9 +210,7 @@ namespace Gambit {
       // photon momentum.  (note that the expressions above and below only
       // apply to the v->0 limit)
 
-      setMassesForIB(true);
       double result = IBfunc(IBch,x,y);
-      setMassesForIB(false);
 
       #ifdef DARKBIT_DEBUG
         std::cout << "  x, y = " << x << ", " << y << std::endl;
@@ -464,7 +462,7 @@ namespace Gambit {
         index = SV_IDX;                                                      \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
         daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
-            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
+            STRIP_PARENS(IBFUNC), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
             M_DM, m_1, m_2);                                                 \
         /* Create channel identifier string */                               \
         std::vector<std::string> CAT(finalStates_,NAME);                     \
