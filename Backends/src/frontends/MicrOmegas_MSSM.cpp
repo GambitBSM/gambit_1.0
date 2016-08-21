@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for MicrOmegas MSSM 3.5.5 backend
+///  Frontend for MicrOmegas MSSM 3.6.9.2 backend
 ///
 ///  *********************************************
 ///

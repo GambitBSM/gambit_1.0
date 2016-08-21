@@ -52,6 +52,8 @@ After internal paper review started:
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
+- Check that all SM values are being set by MicrOmegas SLHA reader [JC] [Added by JC]
+- Properly MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
 - Include proper isnan check in RD_eff_annrate_SUSY [?]
 
 Before release:
@@ -65,6 +67,7 @@ Later/maybe/not-first-release:
 - Rewrite RD_spectrum_SUSY in a DS independent way [?]
   (and change RD_annrate_DSprep_func accordingly)
 - MicrOmegas MSSM diskless initialization [JC] [Added by JC]
+- Set up MicrOmegas MSSM to use GAMBIT decay rates (don’t use internal calculations) [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
 — Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
