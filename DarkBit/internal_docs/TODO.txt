@@ -6,7 +6,7 @@ DarkBit
 =======
 
 Urgent (for production runs):
-  pass
+- Bring paper to internal review [CW]
 
 Before internal paper review:
 - Add discussion about LUX likelihoods to paper [FK]
@@ -14,11 +14,12 @@ Before internal paper review:
 - Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
-- Update nuclear parameter best fit value discussion [JC] [Added by JC]
+- Update nuclear parameter best fit value discussion [JC]
 - Update likelihood technical details in physics papers [all]
 - Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
 - Update cascade code discussions in paper to new treatment [CW]
+- Mention all options in the darkbit paper [CW, JE, JC]
 
 After internal paper review started:
 - Figure out whether cascade routines run properly when doing MSSM7 scans, but
@@ -48,7 +49,6 @@ After internal paper review started:
 - Concepts/cosmetics
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
 - Start adding descriptions to the capability database [CW, JE, JC]
-- Mention all options in the darkbit paper [CW, JE, JC]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
