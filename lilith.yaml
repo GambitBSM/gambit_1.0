@@ -1,0 +1,179 @@
+# Ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs example modules ExampleBit_A and ExampleBit_B,
+# plus example backends libfirst and libFortran.
+#
+# Don't commit modified versions of this file!
+# If you want to change it in order to test
+# your own modifications to the code, copy
+# it to spartan_personal.yaml, which will be
+# ignored by git.
+#
+# Pat Scott <p.scott@imperial.ac.uk>
+# Oct 2014
+#
+
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+
+    StandardModel_Higgs:
+      mH:
+        range: [124,126]
+    #prior_type: flat
+     # QEWSB: 173
+
+
+ #   SingletDM:
+ #     mS:
+      #  range: [50.0,50.0]
+      #  prior_type: log
+      #lambda_hS:
+      #  range: [0.01, 0.01]
+      #  prior_type: log
+
+  #  SSDM:  # use running mass model and able to choose lambda_S as well
+  #    mS2: 1000
+  #    lambda_hS: 0.1
+  #    lambda_S: 0.01
+
+
+
+
+
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "gambit_output.hdf5"
+   # group: "/lilith"
+    delete_file_if_exists: true
+    delete_file_on_restart: true
+
+
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  #use_objectives: uniform
+  use_scanner: random
+
+# Scanners
+
+  scanners:
+
+
+    random:
+      plugin: random
+      point_number: 1
+      output_file:  output
+      like:  LogLike
+      files:
+        output_file: "weights ..."
+
+  objectives:
+
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]
+
+
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+
+
+
+
+    - capability: LHC_Higgs_LogLike
+      purpose:  LogLike
+      function: calc_Lilith_LHC_LogLike
+
+
+#########################
+# Auxiliary entries
+#########################
+
+Rules:
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames".
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  redirection:
+    # [Debug] : stdout #"debug.log"
+    # [Default] : stdout #"default.log"
+    # [Error] : stdout #"errors.log"
+    # [Warning] : stdout #"warnings.log"
+    # [Core,Error] : stdout #"core_errors.log"
+    # [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
+    # [Dependency Resolver] : stdout #"stdout"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+    [Default] : "default.log"
+  #  [Logger, Debug] : "stdout"
+  #  [Core] : "stdout"
+  #  [Dependency Resolver] : "stdout"
+
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  # Some example keys and subkeys
+  my_key: 123
+  debug: true
+  another_key:
+    subkey3:
+      subsubkey1: value2
+
+  rng: ranlux48
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+    log_runtime: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    ExampleBit_A_error: non-fatal
+    DecayBit_error: non-fatal
+    utils_error: non-fatal
+    invalid_point_fatal: false
+
+  enable_testing: false
+
+  default_output_path: "runs/lilith/"
+
