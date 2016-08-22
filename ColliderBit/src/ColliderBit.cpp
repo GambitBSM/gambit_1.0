@@ -3832,9 +3832,86 @@ namespace Gambit
     void calc_Lilith_LHC_LogLike(double &result)
     {
       using namespace Pipes::calc_Lilith_LHC_LogLike;
+      // Creating an XML input string for the reduced coupling mode
+      // signalstrength mode would work as well
+      char XMLinputstring[6000]="";
+      char buffer[100];
+    
+      double mh = 125.4;
+      double CU = 1.0;
+      double CD = 1.0;
+      double CV = 1.0;
+      double CGa = 1.0;
+      double Cg = 1.0;
+      double BRinv = 0.0;
+      double BRund = 0.0;
+      char precision[] = "BEST-QCD";
 
 
-      result = 0;
+   char experimental_input[] = "/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/data/latest.list";
+//    char XMLinputpath[] = "userinput/example_couplings.xml";
+  
+    // Accessible outputs for a given point
+    // * Output of the reduced couplings
+    // * Output of the various contributions to the total -2LogL in a XML format
+    // * Output of the total -2LogL in a SLHA format
+    // * Output of the signal strengths
+  //  char output_couplings[] = "lilith_couplings_output.xml";
+  //  char output_XML[] = "lilith_likelihood_output.xml";
+  //  char output_SLHA[] = "lilith_likelihood_output.slha";
+  //  char output_mu[] = "lilith_mu_output.xml";
+  
+  
+  
+    // Creating an object of the class Lilith: lilithcalc
+    PyObject* lilithcalc = BEreq::initialize_lilith(experimental_input);
+      sprintf(buffer,"<?xml version=\"1.0\"?>\n");
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<lilithinput>\n");
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<reducedcouplings>\n");
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<mass>%f</mass>\n", mh);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"tt\">%f</C>\n", CU);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"cc\">%f</C>\n", CU);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"bb\">%f</C>\n", CD);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"tautau\">%f</C>\n", CD);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"ZZ\">%f</C>\n", CV);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"WW\">%f</C>\n", CV);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"gammagamma\">%f</C>\n", CGa);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"gg\">%f</C>\n", Cg);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<extraBR>\n");
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<BR to=\"invisible\">%f</BR>\n", BRinv);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<BR to=\"undetected\">%f</BR>\n", BRund);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"</extraBR>\n");
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<precision>%s</precision>\n",precision);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"</reducedcouplings>\n");
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"</lilithinput>\n");
+      strcat(XMLinputstring, buffer);
+      
+      // Reading user input XML string
+      lilithcalc = BEreq::lilith_readuserinput(byVal(lilithcalc), XMLinputstring);
+
+      // Getting -2LogL
+      float my_likelihood;
+      my_likelihood = BEreq::lilith_computelikelihood(byVal(lilithcalc));
+      result = my_likelihood;
+     // result = 0;
     }
 
   }

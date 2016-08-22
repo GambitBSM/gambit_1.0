@@ -34,10 +34,14 @@ LOAD_LIBRARY
 //BE_FUNCTION(init, void, (int), "init", "init")
 
 // Functions
-BE_FUNCTION(initialize_lilith, PyObject*, (char*), "initialize_lilith_", "initialize_lilith")
+BE_FUNCTION(initialize_lilith, PyObject*, (char*), "initialize_lilith", "initialize_lilith")
+
+BE_FUNCTION(lilith_computelikelihood,float,(PyObject*),"lilith_computelikelihood","lilith_computelikelihood")
+
+BE_FUNCTION(lilith_readuserinput, PyObject*, (PyObject*, char*),"lilith_readuserinput","lilith_readuserinput")
 
 // Variables
-//BE_VARIABLE(pacodes, DS_PACODES, "pacodes_", "pacodes")
+//BE_VARIABLE(lilithcalc, PyObject*, "lilithcalc", "lilithcalc")
 
 // Convenience functions (registration)
 //BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")

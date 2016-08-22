@@ -32,7 +32,7 @@ BE_INI_FUNCTION
        // Parameters:
     // * Experimental list path
     // * Path to a user input file
-    char experimental_input[] = "/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/data/latest.list";
+/*    char experimental_input[] = "/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/data/latest.list";
 //    char XMLinputpath[] = "userinput/example_couplings.xml";
   
     // Accessible outputs for a given point
@@ -48,7 +48,7 @@ BE_INI_FUNCTION
   
   
     // Creating an object of the class Lilith: lilithcalc
-    PyObject* lilithcalc = initialize_lilith(experimental_input);
+    PyObject* lilithcalc = initialize_lilith(experimental_input);*/
     scan_level = false;
   }
 

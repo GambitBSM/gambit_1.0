@@ -482,14 +482,21 @@ START_MODULE
         BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,
         (double*, double*, double*, double*,
          double*, double*, double*, double*))
-        BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
+        BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
         BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
      #undef FUNCTION
      #define FUNCTION calc_Lilith_LHC_LogLike
       START_FUNCTION(double)
-        BACKEND_OPTION( (Lilith, 1.1,.3), (liblilith) )
+      ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
+//      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
+//      MODEL_GROUP(singlet_running, (SingletDM_running))
+        BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*))
+        BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*))
+        BACKEND_REQ(initialize_lilith,(lilith),PyObject*,(char*))
+        //BACKEND_REQ(lilithcalc,(lilith),PyObject*)
+        BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
      #undef FUNCTION
 
 
