@@ -5,6 +5,7 @@ from numpy import *
 #import pylab as plt
 import matplotlib.pyplot as plt
 from scipy.integrate import trapz
+from scipy.interpolate import griddata
 
 def plotSpectraCascade():
     plt.clf()
@@ -100,14 +101,30 @@ def plotLimits():
     plt.savefig("DarkBit_limits.eps")
 
 def plotLUX():
-    plt.clf()
-    plt.figure(figsize=(5, 4))
-    data = loadtxt("../LUX2013_table.dat")
-    s = data[1:, 0]
-    m = data[0, 1:]
-    lnL = -data[1:, 1:]
+
+    import matplotlib
+    matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    matplotlib.rcParams['font.size'] = 15
+
+    #data = loadtxt("../LUX2013_table.dat")
+    # lnL(m, gps)
+    data_lnL = loadtxt("../LUX2013_table.dat")
+    # sigma_SI,p(m, gps)
+    data_sigmaSIp = loadtxt("../sigmaSIp_table.dat")
+    #s = data[1:, 0]
+    #m = data[0, 1:]
+    #lnL = -data[1:, 1:]
+    #lnL -= lnL.min()
+    lnL = -data_lnL[1:, 1:]
     lnL -= lnL.min()
-    plt.contour(m, s, lnL, levels = [2.71], colors='r')
+    m = data_lnL[0, 1:]
+    gps = data_lnL[1:,0]
+    sigma = data_sigmaSIp[1:, 1:]
+    m_grid = tile(m,(gps.size,1))
+
+    # Exclusion plot in m/gps plane
+    plt.contour(m, gps, lnL, levels = [2.71], colors='r')
 
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
@@ -115,7 +132,37 @@ def plotLUX():
     plt.xlabel("m [GeV]")
     plt.ylabel("gps [GeV-2]")
     plt.tight_layout(pad=0.3)
-    plt.savefig("DarkBit_LUX2013.eps")
+    plt.savefig("DarkBit_LUX2013_gps_m.eps")
+
+
+    # Exclusion plot in m/sigma_SI,p plane
+    plt.clf()
+    plt.figure(figsize=(5, 4))
+
+    # Interpolate likelihood into m/sigma_SI,p plane
+    mi = logspace(log10(min(m)), log10(max(m)), num=100, base=10)
+    sigmai = logspace(log10(min(sigma[:,-1])), log10(max(sigma[:,0])), num=80, base=10)
+    lnL_interp=griddata((m_grid.flatten(),sigma.flatten()),lnL.flatten(),(mi[None,:],sigmai[:,None]),rescale=True,method='nearest')
+
+    limit = genfromtxt("../DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
+
+    gambit = plt.contour(mi, sigmai, lnL_interp, levels = [3.84], colors='r')
+    gambit.collections[0].set_label("DarkBit")
+    plt.plot(limit[:,0],limit[:,1]*10**-36,label="Official")
+    
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=2,xmax=2000)
+    plt.gca().set_ylim(ymin=10**-46,ymax=10**-39)
+    
+    plt.xlabel(r'$m_\chi$ [GeV]')
+    plt.ylabel(r'$\sigma_{{\rm SI},N}$ [${\rm cm^2}$]')
+    plt.tight_layout(h_pad=.7)
+    plt.legend(loc="best",frameon=False,fontsize='medium')
+    plt.title("LUX 2013 95% CL")
+
+    plt.savefig("DarkBit_LUX2013_sigma_m.eps",bbox_inches="tight")
+
 
 def plotMSSM7():
     data = genfromtxt("runs/MSSM7/samples/runs/MSSM7/samples/MSSM7.hdf5_0")[2]
