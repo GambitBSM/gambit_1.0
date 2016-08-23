@@ -496,6 +496,11 @@ namespace Gambit
     const char* HardShutdownException::what() const throw() { return myWhat.c_str(); }
     /// @}
 
+    /// @{ MPIShutdownException member functions 
+    MPIShutdownException::MPIShutdownException(const std::string& message) : myWhat(message) {}
+    const char* MPIShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
+
     /// Global instance of piped invalid point class.
     Piped_invalid_point piped_invalid_point;
         

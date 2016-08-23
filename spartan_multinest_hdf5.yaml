@@ -37,21 +37,15 @@ Scanner:
       plugin: MultiNest
       like:  LogLike
       nlive: 1000
-      updInt: 5000
-      tol: 1e-2
+      updInt: 100
+      tol: 0.5
       mmodal: 0
-      # write native MultiNest ascii output files?
-      outfile: 1 # yes, need them for resuming
-      # No options to set, but still need the nodes at the moment...
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
+
     de:
       plugin: Diver
       like: LogLike
       NP: 1000
-      #path: "diver_native"
-      verbosity: 1
+      verbosity: 2
                     
 #======== Observables of interest ========
 ObsLikes:
@@ -77,7 +71,7 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_multinest_hdf5///"
+  default_output_path: "runs/spartan_multinest_hdf5/"
 
   print_timing_data: true  #default: false
 
@@ -85,7 +79,7 @@ KeyValues:
 
   # Customise shutdown behaviour on receiving OS signals
   signal_handling:
-    SIGINT : "emergency_shutdown"    # default: emergency_shutdown
+    SIGINT : "soft_shutdown" #"emergency_shutdown"    # default: emergency_shutdown
     SIGTERM: "emergency_shutdown_longjmp"    # default: emergency_shutdown
     SIGUSR1: "soft_shutdown"    # default: soft_shutdown
     SIGUSR2: "soft_shutdown"    # default: soft_shutdown

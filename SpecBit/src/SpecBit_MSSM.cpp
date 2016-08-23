@@ -608,7 +608,7 @@ namespace Gambit
     /// Get an MSSMSpectrum object from an SLHAstruct
     /// Wraps it up in MSSMSimpleSpec; i.e. no RGE running possible.
     /// This can be used as a poor-man's interface to backend spectrum generators
-    void get_MSSM_spectrum_from_SLHAstruct(Spectrum &result)
+    void get_MSSM_spectrum_from_SLHAstruct(Spectrum& result)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAstruct;
       const SLHAstruct& input_slha_tmp = *myPipe::Dep::unimproved_MSSM_spectrum; // Retrieve dependency on SLHAstruct

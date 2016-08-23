@@ -267,7 +267,7 @@ namespace Gambit
       }
       else
       {
-        logger() << "Warning: outputfile not open for writing." << std::endl;
+        logger() << "Warning: outputfile not open for writing." << EOM;
       }
       os.close();
       result = 0;

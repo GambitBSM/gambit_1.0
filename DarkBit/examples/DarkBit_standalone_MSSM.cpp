@@ -47,7 +47,6 @@ namespace Gambit
     void createSpectrum(Spectrum& outSpec)
     {
       using namespace Pipes::createSpectrum;
-      static Spectrum mySpec;
       /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
