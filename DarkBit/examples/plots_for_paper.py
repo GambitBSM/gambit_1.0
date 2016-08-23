@@ -146,9 +146,9 @@ def plotLUX():
 
     limit = genfromtxt("../DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
 
-    gambit = plt.contour(mi, sigmai, lnL_interp, levels = [3.84], colors='r')
+    gambit = plt.contour(mi, sigmai, lnL_interp, levels = [2.71], colors='r')
     gambit.collections[0].set_label("DarkBit")
-    plt.plot(limit[:,0],limit[:,1]*10**-36,label="Official")
+    plt.plot(limit[:,0],limit[:,1]*10**-36,label="Official",ls="--")
     
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
@@ -157,7 +157,6 @@ def plotLUX():
     
     plt.xlabel(r'$m_\chi$ [GeV]')
     plt.ylabel(r'$\sigma_{{\rm SI},N}$ [${\rm cm^2}$]')
-    plt.tight_layout(h_pad=.7)
     plt.legend(loc="best",frameon=False,fontsize='medium')
     plt.title("LUX 2013 95% CL")
 
@@ -669,5 +668,5 @@ if __name__ == '__main__':
     #spokePlots()
     #plotLimits()
     #plotSpectraValidation()
-    plotSpectraCascade()
-    #plotLUX()
+    #plotSpectraCascade()
+    plotLUX()
