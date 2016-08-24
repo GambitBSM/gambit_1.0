@@ -445,6 +445,15 @@ namespace Gambit {
             daFunk::var("Ecm")/2);                                    \
         result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);
 
+#define ADD_CHANNEL_WITH_SCALING(ch, P1, P2, FINAL, EcmMin, EcmMax, Ecm_ToScale)                \
+	daFunk::Funk Ecm_ToUse = fmax(Ecm_ToScale, daFunk::var("Ecm"));    \
+	daFunk::Funk ScalingFactor = Ecm_ToUse/daFunk::var("Ecm");      \
+        dNdE = ScalingFactor * daFunk::func_fromThreadsafe(                           \
+            BEreq::dshayield.pointer(), daFunk::var("mwimp"),         \
+            ScalingFactor * daFunk::var("E"), ch, yieldk, flag)->set("mwimp",         \
+            Ecm_ToUse/2);                                    \
+        result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);
+
         // specifies also center of mass energy range
         ADD_CHANNEL(12, "Z0", "Z0", "gamma", 2*90.288, 2*mDM_max)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 2*79.4475, 2*mDM_max)
@@ -461,7 +470,7 @@ namespace Gambit {
         ADD_CHANNEL(22, "c", "cbar", "gamma", 2*std::max(mDM_min, 1.35), 2*mDM_max)
         //ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 2*mDM_max)  // Zero
         ADD_CHANNEL(22, "s", "sbar", "gamma", 2*std::max(mDM_min, 1.35), 2*mDM_max)  // approx by cc
-        ADD_CHANNEL(24, "t", "tbar", "gamma", 2*173.25, 2*mDM_max)
+        ADD_CHANNEL_WITH_SCALING(24, "t", "tbar", "gamma", 2*160.0, 2*mDM_max, 2*173.3)
         ADD_CHANNEL(25, "b", "bbar", "gamma", 2*std::max(mDM_min, 5.0), 2*mDM_max)
         ADD_CHANNEL(26, "g", "g", "gamma", 2*std::max(mDM_min, 0.0), 2*mDM_max)
 #undef ADD_CHANNEL
