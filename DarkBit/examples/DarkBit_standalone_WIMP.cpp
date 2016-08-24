@@ -401,14 +401,29 @@ int main(int argc, char* argv[])
 
     // ---- Calculate direct detection constraints ----
 
-    // Calculate direct detection rates for LUX 2013
+    // Calculate direct detection rates for LUX 2016, PandaX 2016, LUX 2013, and XENON100 2012
+    LUX_2016_prelim_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    LUX_2016_prelim_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    PandaX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    PandaX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    XENON100_2012_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    XENON100_2012_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
 
     // Calculate direct detection likelihood for LUX 2013
+    LUX_2016_prelim_GetLogLikelihood.resolveDependency(&LUX_2016_prelim_Calc);
+    LUX_2016_prelim_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    LUX_2016_prelim_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    PandaX_2016_GetLogLikelihood.resolveDependency(&PandaX_2016_Calc);
+    PandaX_2016_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    PandaX_2016_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
     LUX_2013_GetLogLikelihood.resolveDependency(&LUX_2013_Calc);
     LUX_2013_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     LUX_2013_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    XENON100_2012_GetLogLikelihood.resolveDependency(&XENON100_2012_Calc);
+    XENON100_2012_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    XENON100_2012_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
 
     // Set generic WIMP mass object
     mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -495,52 +510,29 @@ int main(int argc, char* argv[])
     {
       // Systematic parameter maps scattering
       std::cout << "Producing test maps." << std::endl;
-      double sigma_SI_p, lnL;
-      int mBins = 200;
-      int sBins = 300;
+      double sigma_SI_p, lnL1, lnL2, lnL3, lnL4;
+      int mBins = 300;
+      int sBins = 200;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
       std::vector<double> s_list = daFunk::logspace(-10, -4, sBins);
-      boost::multi_array<double, 2> sigma_SI_p_array{boost::extents[mBins][sBins]};
-      boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
+      boost::multi_array<double, 2> sigma_array{boost::extents[mBins][sBins]};
+      boost::multi_array<double, 2> lnL_array1{boost::extents[mBins][sBins]}, lnL_array2{boost::extents[mBins][sBins]},
+          lnL_array3{boost::extents[mBins][sBins]}, lnL_array4{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
       TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
 
-      // Calculate array of sigma_SI,p values for different scalar couplings
+      // Calculate array of sigma_SI and lnL values for LUX 2016 and PandaX, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
         {
-          TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
-          DarkMatter_ID_WIMP.reset_and_calculate();
-          TH_ProcessCatalog_WIMP.reset_and_calculate();
-          DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
-          DD_couplings_WIMP.setOption<double>("gns", s_list[j]);
-          DD_couplings_WIMP.setOption<double>("gpa", 0.);
-          DD_couplings_WIMP.setOption<double>("gna", 0.);
-          DD_couplings_WIMP.reset_and_calculate();
-          mwimp_generic.reset_and_calculate();
-          sigma_SI_p_simple.reset_and_calculate();
-          sigma_SI_p = sigma_SI_p_simple(0);
-          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
-          sigma_SI_p_array[i][j] = sigma_SI_p;
-        }
-      }
+          // Set LocalHalo Model parameters to DarkBit default values
+          LocalHalo_primary_parameters->setValue("rho0", 0.4);
+          LocalHalo_primary_parameters->setValue("vrot", 235.);
+          LocalHalo_primary_parameters->setValue("v0", 235.);
+          LocalHalo_primary_parameters->setValue("vesc", 550.);
 
-      dump_array_to_file("sigmaSIp_table.dat", sigma_SI_p_array, m_list, s_list);
-
-      // Re-initialize DDCalc with LUX 2013 halo parameters
-      LocalHalo_primary_parameters->setValue("rho0", 0.3);
-      LocalHalo_primary_parameters->setValue("vrot", 245.);
-      LocalHalo_primary_parameters->setValue("v0", 220.);
-      LocalHalo_primary_parameters->setValue("vesc", 544.);
-
-      // Calculate array of lnL values using LUX 2013 results, assuming gps=gns
-      for (size_t i = 0; i < m_list.size(); i++)
-      {
-        for (size_t j = 0; j < s_list.size(); j++)
-        {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
           DarkMatter_ID_WIMP.reset_and_calculate();
@@ -552,16 +544,58 @@ int main(int argc, char* argv[])
           DD_couplings_WIMP.setOption<double>("gna", 0.);
           DD_couplings_WIMP.reset_and_calculate();
           mwimp_generic.reset_and_calculate();
+          sigma_SI_p_simple.reset_and_calculate();
+          sigma_SI_p = sigma_SI_p_simple(0);
+          DDCalc_1_0_0_init.reset_and_calculate();
+          LUX_2016_prelim_Calc.reset_and_calculate();
+          LUX_2016_prelim_GetLogLikelihood.reset_and_calculate();
+          PandaX_2016_Calc.reset_and_calculate();
+          PandaX_2016_GetLogLikelihood.reset_and_calculate();
+          lnL1 = LUX_2016_prelim_GetLogLikelihood(0);
+          lnL2 = PandaX_2016_GetLogLikelihood(0);
+
+          // Re-initialize DDCalc with LUX 2013 halo parameters
+          LocalHalo_primary_parameters->setValue("rho0", 0.3);
+          LocalHalo_primary_parameters->setValue("vrot", 245.);
+          LocalHalo_primary_parameters->setValue("v0", 220.);
+          LocalHalo_primary_parameters->setValue("vesc", 544.);
+
           DDCalc_1_0_0_init.reset_and_calculate();
           LUX_2013_Calc.reset_and_calculate();
           LUX_2013_GetLogLikelihood.reset_and_calculate();
-          lnL = LUX_2013_GetLogLikelihood(0);
-          std::cout << "LUX2013 lnL = " << lnL << std::endl;
-          lnL_array[i][j] = lnL;
+          lnL3 = LUX_2013_GetLogLikelihood(0);
+
+          // Re-initialize DDCalc with Xenon100 2012 halo parameters
+          LocalHalo_primary_parameters->setValue("rho0", 0.3);
+          LocalHalo_primary_parameters->setValue("vrot", 220.);
+          LocalHalo_primary_parameters->setValue("v0", 220.);
+          LocalHalo_primary_parameters->setValue("vesc", 544.);
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          XENON100_2012_Calc.reset_and_calculate();
+          XENON100_2012_GetLogLikelihood.reset_and_calculate();
+          lnL4 = XENON100_2012_GetLogLikelihood(0);
+
+          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
+          std::cout << "LUX2016 lnL = " << lnL1 << std::endl;
+          std::cout << "PandaX lnL = " << lnL2 << std::endl;
+          std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
+          std::cout << "XENON100_2012 = " << lnL4 << std::endl;
+
+          sigma_array[i][j] = sigma_SI_p;
+//          lnL_array1[i][j] = lnL1;
+//          lnL_array2[i][j] = lnL2;
+          lnL_array3[i][j] = lnL3;
+//          lnL_array4[i][j] = lnL4;
         }
       }
 
-      dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
+      dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
+//      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
+//      dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
+      dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
+//      dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
+
     }
   }
 
