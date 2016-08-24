@@ -41,7 +41,7 @@ BE_FUNCTION(lilith_computelikelihood,float,(PyObject*),"lilith_computelikelihood
 BE_FUNCTION(lilith_readuserinput, PyObject*, (PyObject*, char*),"lilith_readuserinput","lilith_readuserinput")
 
 // Variables
-//BE_VARIABLE(lilithcalc, PyObject*, "lilithcalc", "lilithcalc")
+BE_VARIABLE(lilithcalc,PyObject,"lilithcalc","lilithcalc")
 
 // Convenience functions (registration)
 //BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")

@@ -3847,8 +3847,8 @@ namespace Gambit
       double BRund = 0.0;
       char precision[] = "BEST-QCD";
 
-
-   char experimental_input[] = "/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/data/latest.list";
+//std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
+   char experimental_input[] = "";//"/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/data/latest.list";
 //    char XMLinputpath[] = "userinput/example_couplings.xml";
   
     // Accessible outputs for a given point
@@ -3864,7 +3864,8 @@ namespace Gambit
   
   
     // Creating an object of the class Lilith: lilithcalc
-    PyObject* lilithcalc = BEreq::initialize_lilith(experimental_input);
+    
+      //PyObject* lilithcalc_local = BEreq::lilithcalc;
       sprintf(buffer,"<?xml version=\"1.0\"?>\n");
       strcat(XMLinputstring, buffer);
       sprintf(buffer,"<lilithinput>\n");
@@ -3905,13 +3906,13 @@ namespace Gambit
       strcat(XMLinputstring, buffer);
       
       // Reading user input XML string
-      lilithcalc = BEreq::lilith_readuserinput(byVal(lilithcalc), XMLinputstring);
+      //lilithcalc = BEreq::lilith_readuserinput(byVal(lilithcalc_local), XMLinputstring);
 
       // Getting -2LogL
       float my_likelihood;
-      my_likelihood = BEreq::lilith_computelikelihood(byVal(lilithcalc));
-      result = my_likelihood;
-     // result = 0;
+      //my_likelihood = BEreq::lilith_computelikelihood(byVal(lilithcalc));
+     // result = my_likelihood;
+      result = 0;
     }
 
   }

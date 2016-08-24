@@ -495,7 +495,7 @@ START_MODULE
         BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*))
         BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*))
         BACKEND_REQ(initialize_lilith,(lilith),PyObject*,(char*))
-        //BACKEND_REQ(lilithcalc,(lilith),PyObject*)
+        //BACKEND_REQ(lilithcalc,(lilith),PyObject)
         BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
      #undef FUNCTION
 
