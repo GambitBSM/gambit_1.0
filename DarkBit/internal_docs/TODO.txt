@@ -32,7 +32,8 @@ After internal paper review started:
 - <sigma v>_eff plots [JC]
 - Skype with Joakim
   - STATUS? Figure out h+ higgswidth problems with DS SLHA initialization
-    (CMSSM_dsSLHA_problem.yaml) [JE/TB/CW]
+    (CMSSM_dsSLHA_problem.yaml) (related to SLHA reader of DS) [JE/TB/CW]
+    (bug in the standalone -- ask TB)
   - Go through diskless init problems via skype with Joakim (see file)
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Add RD_oh2_general to MSSM and SingletDM standalones, remove Sloppy.cpp and
