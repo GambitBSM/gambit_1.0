@@ -120,6 +120,7 @@ namespace Gambit {
           }
         }
         // Raise any exceptions
+        piped_invalid_point.check();
         piped_warnings.check(DarkBit_warning());
         piped_errors.check(DarkBit_error());
         Loop::reset();
