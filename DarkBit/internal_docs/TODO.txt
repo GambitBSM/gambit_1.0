@@ -9,25 +9,24 @@ Urgent (for production runs):
 - Bring paper to internal review [CW]
 
 Before internal paper review:
-- Add discussion about LUX likelihoods to paper [FK]
+- Add discussion about LUX etc likelihoods to paper [FK]
 - Double-check that fast option for general oh2 routine is clear [CW]
-- Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
 - Update nuclear parameter best fit value discussion [JC]
 - Update likelihood technical details in physics papers [all]
-- Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
+  (as discussed during meeting)
 - Update cascade code discussions in paper to new treatment [CW]
 - Mention all options in the darkbit paper [CW, JE, JC]
 
 After internal paper review started:
+- Make sure that content of future automatic paper reference system is complete
+  (in particular for DarkSUYS) [TB]
 - Figure out whether cascade routines run properly when doing MSSM7 scans, but
   have instabilities when running SingletDM (which are hidden by the fall-back
   routines) [JC]
 - Check parallelized oh2 DS routines again after scans are working [CW/TB]
-- Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
-  exception (Mail Anders 29-07-16) [CW]
 - Check accuracy of fallback gsl_integration [CW]
 - <sigma v>_eff plots [JC]
 - Skype with Joakim
@@ -87,6 +86,8 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
+  exception (Mail Anders 29-07-16) [CW]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Check content of SloopyDarkBit.cpp [CW]
 - Remove everything related to setMassesForIB [CW]
