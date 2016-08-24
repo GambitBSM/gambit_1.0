@@ -26,7 +26,7 @@ Printer:
   printer: ascii
   options:
      output_file: "gambit_great_output.txt"
-     delete_file_if_exists: true
+     delete_file_on_restart: true
 
 #======== Scanner setup ========
 Scanner:

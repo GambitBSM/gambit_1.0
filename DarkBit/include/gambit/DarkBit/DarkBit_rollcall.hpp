@@ -42,6 +42,10 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar, Aug
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  \author Felix Kahlhoefer
 ///          (felix.kahlhoefer@desy.de)
 ///  \date 2016 August
@@ -93,7 +97,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_LocalHalo_func
       START_FUNCTION(bool)
       DEPENDENCY(RD_fraction, double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
       BACKEND_REQ(dshmcom,(),DS_HMCOM)
       BACKEND_REQ(dshmisodf,(),DS_HMISODF)
       BACKEND_REQ(dshmframevelcom,(),DS_HMFRAMEVELCOM)
@@ -161,9 +165,9 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
-#ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, Spectrum)
-#endif
+      #ifdef DARKBIT_RD_DEBUG
+        DEPENDENCY(MSSM_spectrum, Spectrum)
+      #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
       BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
@@ -370,7 +374,7 @@ START_MODULE
       DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
-//      BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      //BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
@@ -388,11 +392,6 @@ START_MODULE
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
-//    #define FUNCTION lnL_FermiLATdwarfsSimple
-//      START_FUNCTION(double)
-//      DEPENDENCY(GA_AnnYield, daFunk::Funk)
-//      DEPENDENCY(RD_fraction, double)
-//    #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
@@ -457,7 +456,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_rho0_lognormal
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -465,7 +464,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vrot_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -473,7 +472,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_v0_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -481,7 +480,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vesc_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -981,11 +980,25 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // --- Functions related to the local and global properties of the DM halo ---
+
   #define CAPABILITY GalacticHalo
   START_CAPABILITY
-    #define FUNCTION GalacticHalo
-    START_FUNCTION(daFunk::Funk)
-    ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
+    #define FUNCTION GalacticHalo_gNFW
+    START_FUNCTION(GalacticHaloProperties)
+    ALLOW_MODEL(Halo_gNFW)
+    #undef FUNCTION
+    #define FUNCTION GalacticHalo_Einasto
+    START_FUNCTION(GalacticHaloProperties)
+    ALLOW_MODEL(Halo_Einasto)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY LocalHalo
+  START_CAPABILITY
+    #define FUNCTION ExtractLocalMaxwellianHalo
+    START_FUNCTION(LocalMaxwellianHalo)
+    ALLOW_MODELS(Halo_gNFW, Halo_Einasto)
     #undef FUNCTION
   #undef CAPABILITY
 #undef MODULE

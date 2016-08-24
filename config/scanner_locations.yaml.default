@@ -12,8 +12,8 @@
 
 
 MultiNest: 
-  3.9: 
-    - lib: ./ScannerBit/installed/multinest/3.9/libnest3.so
+  3.10: 
+    - lib: ./ScannerBit/installed/multinest/3.10/libnest3.so
 
 Diver:
   1.0.0:
@@ -21,6 +21,7 @@ Diver:
 
 GreAT:
   1.0.0:
-    - lib: ./build/great-prefix/src/great-build/lib/libgreat.so
+    - lib: ./build/great_1.0.0-prefix/src/great_1.0.0-build/lib/libgreat.so
     - headers: ./ScannerBit/installed/great/1.0.0/Manager/include
+    - headers: ./ScannerBit/installed/great/1.0.0/MCMC/include
     - headers: ./ScannerBit/installed/great/1.0.0/fparser4.5.1

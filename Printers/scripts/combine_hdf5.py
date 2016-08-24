@@ -14,10 +14,10 @@ bufferlength = 100                # Must match setting in hdf5printer.hpp
 max_ppidpairs = 10*bufferlength   #   "  "
 
 def usage():
-   print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
+   print ("\n  Usage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
           "\n"
-          "Attempts to combine the data in a group of hdf5 files produced by HDF5Printer but by separate processes during a GAMBIT run.\n"
-          "Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)")
+          "  Attempts to combine the data in a group of hdf5 files produced by HDF5Printer in separate processes during a GAMBIT run.\n"
+          "  Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)\n")
    exit(1)  
  
 def get_dset_lengths(d,group,dsets):
@@ -41,6 +41,9 @@ def check_lengths(d):
          length=value
       elif length!=value:
          raise ValueError("Length of dataset '{0}' is inconsistent with the others in the target group! (length was {1}; previous dataset had length={2})".format(key,value,length)) 
+   if length==None:
+      # No datasets found; manually set length to zero
+      length = 0
    return length 
 
 def copy_dset(indset,outdset,nextempty):
@@ -78,14 +81,20 @@ def check_for_duplicates(fout,group):
    error = False
    for ID,p,r in zip(ids,pid,rank):
       if(p==1 and r==0):
-         print "   Detected entry ({0},{1})".format(p,r)
+         print "   Spotted first entry ({0},{1})".format(r,p)
       Nmatches = np.sum(ID==ids)
       if Nmatches>1:
-         print "   Error!", ID, "is duplicated {0} times!".format(Nmatches)
+         print "   Error! ID", ID, "is duplicated {0} times!".format(Nmatches)
          error = True
-         Match = np.sum((p==pid) & (r==rank))
-         if Match>1:
-           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(p,r,Match)
+         matches = (p==pid) & (r==rank)
+         Nmatches2 = np.sum(matches)
+         if Nmatches2>1:
+           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(r,p,Nmatches2)
+           dup_locs = np.where(matches)
+           print "      Indices of duplicates are:", dup_locs
+         else:
+           print "   ...No duplicate pid and rank pairs detected! This seems to indicate that something is screwed up in the Cantor pairing"       
+  
       if error==True:
          raise ValueError("Duplicates detected in output dataset!")
 
@@ -95,11 +104,12 @@ def check_for_duplicates(fout,group):
 #if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 #
 runchecks=False
-#if len(sys.argv)==7:
-#   if "--runchecks" in sys.argv: 
-#      runchecks=True
-#   else:
-#      usage()
+if len(sys.argv)<3:
+      usage()
+
+# I dont think this works right...
+if "--runchecks" in sys.argv: 
+  runchecks=True
 
 outfname = sys.argv[1]
 group = sys.argv[2]
@@ -237,6 +247,11 @@ for fname in fnames:
    print "   {0}".format(outfname)
    fin = files[fname]
 
+   if runchecks:
+     print "Checking {0}[{1}] for duplicate entries".format(fname,group)
+     check_for_duplicates(fin,group) 
+     print "No duplicates, proceeding with copy" 
+
    dset_length=None
    for itemname in fin[group]: 
       item = fin[group][itemname]
@@ -349,7 +364,7 @@ for fname in fnames:
                   print "   Warning! No target for ID {0} found in output selection! ({1},{2})".format(ID,pid,rank)
                   indexid = np.where( (np.array(IDs_out)==ID) )
                   index   = np.where( (np.array(pointIDs_out[mask_out])==pid) &
-                                      (np.array(mpiranks_out[mask_out])==rank) )[0][0]
+                                      (np.array(mpiranks_out[mask_out])==rank) )
                   print "index of match by ID       = ", indexid
                   print "index of match by pid,rank = ", index
                   print "pid,rank =",pid,rank

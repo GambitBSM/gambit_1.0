@@ -98,15 +98,17 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  LocalHalo:
-    rho0: #0.4 # Local dark matter density
+  Halo_gNFW_rho0:
+    rho0:
       range: [0.2, 0.8]
-    vrot: # Local disk rotation speed
-      fixed_value: 235 # km/s
-    v0: # Maxwellian most-probable speed
-      fixed_value: 235 # km/s
-    vesc: # Local galactic escape speed
-      fixed_value: 550 # km/s
+    v0: 235.0
+    vesc: 550.0
+    vrot: 235.0
+    rs: 20.0
+    r_sun: 8.5
+    alpha: 1
+    beta: 3
+    gamma: 1
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
@@ -143,7 +145,7 @@ Scanner:
   scanners:
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 2
       output_file:  output
       like:  LogLike

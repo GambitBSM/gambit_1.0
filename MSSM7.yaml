@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas: #43.0 
-      range:  [19, 67]
-    sigmal: #58.0 
+    sigmas:
+      range:  [19, 67] 
+    sigmal:
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -43,17 +43,18 @@ Parameters:
       prior_type: double_log_flat_join
       ranges: [0, 0, 1e4, 1e8]    
 
-  LocalHalo:
-    rho0: # Local dark matter density
-      #fixed_value: .4 # GeV/cm^3
+  Halo_gNFW_rho0:
+    rho0:
       range: [.2, .8]
       prior_type: flat
-    vrot: # Local disk rotation speed
-      fixed_value: 235 # km/s
-    v0: # Maxwellian most-probable speed
-      fixed_value: 235 # km/s
-    vesc: # Local galactic escape speed
-      fixed_value: 550 # km/s
+    v0: 235.0
+    vesc: 550.0
+    vrot: 235.0
+    rs: 20.0
+    r_sun: 8.5
+    alpha: 1
+    beta: 3
+    gamma: 1
 
 Priors:
 
@@ -203,14 +204,14 @@ ObsLikes:
     - capability: lnL_rho0
       purpose: LogLike
 
-    - capability: lnL_vrot
-      purpose: LogLike
+    #- capability: lnL_vrot
+    #  purpose: LogLike
 
-    - capability: lnL_v0
-      purpose: LogLike
+    #- capability: lnL_v0
+    #  purpose: LogLike
 
-    - capability: lnL_vesc
-      purpose: LogLike
+    #- capability: lnL_vesc
+    #  purpose: LogLike
 
     # SM nuisance parameter likelihoods
     - capability: lnL_t_mass
@@ -219,11 +220,11 @@ ObsLikes:
     - capability: lnL_mbmb
       purpose:    LogLike
 
-    - capability: lnL_light_quark_masses
-      purpose:    LogLike
+    #- capability: lnL_light_quark_masses
+    #  purpose:    LogLike
 
-    - capability: lnL_alpha_em
-      purpose:    LogLike
+    #- capability: lnL_alpha_em
+    #  purpose:    LogLike
 
     - capability: lnL_alpha_s
       purpose:    LogLike
@@ -330,27 +331,28 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
+  # Make sure to use the latest version (2.12.0) of FeynHiggs for everything.
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: prec_HiggsMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: Higgs_Couplings
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_HiggsProd
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_MSSMMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
-  #  version: 2.11.3
+  #  version: 2.12.0
   # In practice, the easiest option is just to not install / nuke the versions you don't want to use, e.g.
+  #  make nuke-feynhiggs_2_11_3  
   #  make nuke-feynhiggs_2_11_2  
 
   # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).

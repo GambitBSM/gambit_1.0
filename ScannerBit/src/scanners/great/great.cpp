@@ -23,9 +23,12 @@
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
-#include "../../../installed/GreAT/1.0.0/Manager/include/TGreatModel.h"
-#include "../../../installed/GreAT/1.0.0/Manager/include/TGreatManager.h"
-#include "../../../installed/GreAT/1.0.0/MCMC/include/TGreatMCMCAlgorithmCovariance.h"
+#include "gambit/Utils/mpiwrapper.hpp"
+
+#include "TGreatModel.h"
+#include "TGreatManager.h"
+#include "TGreatMCMCAlgorithmCovariance.h"
+
 
 // Set up the global scan data container
 namespace Gambit
@@ -51,16 +54,17 @@ scanner_plugin(GreAT, version(1, 0, 0))
   //  const static PriorTransform prior;
 
   // Error thrown if the following entries are not present in the inifile
-  reqd_inifile_entries(); // None at the momement. Needed to be added later
+  reqd_inifile_entries(); // None at the momement. Might need some later.
 
   // Tell CMake to search for the GreAT library.
   reqd_libraries("great");
-  reqd_headers("fparser.hh", "TGreatManager.h");
+  reqd_headers("fparser.hh", "TGreatModel.h", "TGreatManager.h", "TGreatMCMCAlgorithmCovariance.h");
 
   // Code to execute when the plugin is loaded.
   plugin_constructor
   {
-    std::cout << "\033[1;31mLoading GreAT plugin for ScannerBit.\033[0m" << std::endl;
+    const int  MPIrank = get_printer().get_stream()->getRank();
+    if (MPIrank == 0) std::cout << "\033[1;31mLoading GreAT plugin for ScannerBit.\033[0m" << std::endl;
     // Retrieve the external likelihood calculator
     data.likelihood_function = get_purpose(get_inifile_value<std::string>("like"));
     // Retrieve the external printer
@@ -86,16 +90,21 @@ scanner_plugin(GreAT, version(1, 0, 0))
     std::string outputfilename = ss1.str();
     std::string multifilename = ss2.str();
     std::string lockfilename = ss3.str();
-
-    // Clear GreAT lock file
-    remove(lockfilename.c_str());
     
-    // Wipe previous GreAT output if not resuming
-    if (not resume_mode)
+    if (resume_mode and MPIrank == 0)
     {
-      remove(outputfilename.c_str());
-      if (MPIrank == 0) remove(multifilename.c_str());
+      // Clear GreAT lock file
+      remove(lockfilename.c_str());
     }
+    else
+    {
+      // Wipe entire previous GreAT output if not resuming
+      Utils::remove_all_files_in(outpath);
+    }
+    #ifdef WITH_MPI
+      GMPI::Comm mpi;
+      mpi.Barrier();
+    #endif
 
     // Creating GreAT Model, i.e. parameter space and function to be minimised
     TGreatModel* MyModel = new TGreatModel();
@@ -113,7 +122,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
     MyModel->SetLogLikelihoodFunction(LogLikelihoodFunction);
 
     // Setting up the GreAT Manager
-    std::cout << "\033[1;31mCreating GreAT Manager\033[0m" << std::endl;
+    if (MPIrank == 0) std::cout << "\033[1;31mCreating GreAT Manager\033[0m" << std::endl;
     // TGreatManager<typename T> MyManager(TGreatModel*);
     // Using here a multivariate Gaussian distribution (TGreatMCMCAlgorithmCovariance)
     TGreatManager<TGreatMCMCAlgorithmCovariance> MyManager(MyModel);
@@ -126,8 +135,8 @@ scanner_plugin(GreAT, version(1, 0, 0))
     MyManager.SetNTrialLists(nTrialLists);
     MyManager.SetNTrials(nTrials);
     // Run GreAT
-    std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
-    MyManager.ActivateMultiRun(multifilename.c_str());
+    if (MPIrank == 0) std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
+    //MyManager.ActivateMultiRun(multifilename.c_str());
     MyManager.Run();
 
     // Analyse
@@ -150,7 +159,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
       // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
       ind_samples_options.setValue("synchronised", false);
 
-      std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
+      if (MPIrank == 0) std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
       // Initialise auxiliary print stream
       data.printer->new_stream("ind_samples", ind_samples_options);
 
@@ -173,12 +182,14 @@ scanner_plugin(GreAT, version(1, 0, 0))
           multiplicity = 1;
         }
       }
-      // save the last point
+      // Save the last point
       ind_samples_printer->print(multiplicity, "multiplicity", MPIrank, prev_sample->GetID());
       ind_samples_printer->print(prev_sample->GetID(), "Point ID", MPIrank, prev_sample->GetID());
-    }
 
-    std::cout << "\033[1;31mGreAT finished successfully!\033[0m" << std::endl;
+      // Finish.
+      std::cout << "\033[1;31mGreAT finished successfully!\033[0m" << std::endl;
+    }
+    
     return 0;
   }
 }
