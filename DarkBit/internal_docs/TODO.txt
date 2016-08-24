@@ -38,13 +38,7 @@ After internal paper review started:
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Add RD_oh2_general to MSSM and SingletDM standalones, remove Sloppy.cpp and
   associated functions (and update numbers and tables in paper) [JC]
-- GalacticHalo model [CW/SW]
-  - Replace gamLike halo discussion with example for setting up a halo [SW]
-  - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
-  - Update GalacticHalo model to include Sun distance
-  - Update GalacticHalo model in gamlike
-  - Make sure that halo model is used consistently between nuLike, gamLike and
-    DDCalc
+- J-factor calculation in gamLike, using the new halo model scheme [CW/SW]
 - Prepare post-processing of CMSSM results with alternative DarkBit
   configurations [CW/JC/SW]
 - Concepts/cosmetics
@@ -158,6 +152,13 @@ Done:
   - Double-check sampling in cascade code
   - Think about convergence criterion in cascade code
   - Check FIXME in Cascades.cpp, decay_chain.cpp [CW]
+- GalacticHalo model [CW/SW]
+  - Replace gamLike halo discussion with example for setting up a halo
+  - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
+  - Update GalacticHalo model to include Sun distance
+  - Update GalacticHalo model in gamlike
+  - Make sure that halo model is used consistently between nuLike, gamLike and
+    DDCalc
 
 
 Core
