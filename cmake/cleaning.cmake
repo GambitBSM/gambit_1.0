@@ -28,12 +28,9 @@
 # Get a list of all bits, including ditched ones.
 retrieve_bits(ALL_GAMBIT_BITS ${PROJECT_SOURCE_DIR} "" "Quiet")
 
-# Ensure that clean removes automatically-generated CMakeLists.txt and source files in modules
+# Ensure that clean removes automatically-generated CMakeLists.txt files in modules
 foreach(bit ${ALL_GAMBIT_BITS})
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt")
-  if(NOT ScannerBit STREQUAL ${bit})
-    set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
-  endif()
 endforeach()
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")

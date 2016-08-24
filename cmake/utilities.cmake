@@ -131,7 +131,7 @@ endfunction()
 
 # Function to add static GAMBIT library
 function(add_gambit_library libraryname)
-  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" ${ARGN})
 
   add_library(${libraryname} ${ARG_OPTION} ${ARG_SOURCES} ${ARG_HEADERS})
   add_dependencies(${libraryname} model_harvest)
@@ -210,7 +210,7 @@ endfunction()
 
 # Function to add GAMBIT executable
 function(add_gambit_executable executablename LIBRARIES)
-  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" ${ARGN})
 
   add_executable(${executablename} ${ARG_SOURCES} ${ARG_HEADERS})
   set_target_properties(${executablename} PROPERTIES EXCLUDE_FROM_ALL 1)
@@ -268,6 +268,84 @@ function(add_gambit_executable executablename LIBRARIES)
   ##add_precompiled_header(${executablename} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/common.hpp" TRUE)
 
 endfunction()
+
+# Standalone harvester script
+set(STANDALONE_FACILITATOR ${PROJECT_SOURCE_DIR}/Elements/scripts/standalone_facilitator.py)
+
+# Function to add a standalone executable
+function(add_standalone executablename)
+  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;LIBRARIES;MODULES" ${ARGN})
+
+  # Iterate over modules, checking if the neccessary ones are present, and adding them to the target objects if so.
+  set(standalone_permitted 1)
+  foreach(module ${ARG_MODULES})
+    if(standalone_permitted AND EXISTS "${PROJECT_SOURCE_DIR}/${module}/" AND (";${GAMBIT_BITS};" MATCHES ";${module};"))
+      if(COMMA_SEPARATED_MODULES)
+        set(COMMA_SEPARATED_MODULES "${COMMA_SEPARATED_MODULES},${module}")
+        set(STANDALONE_OBJECTS ${STANDALONE_OBJECTS} $<TARGET_OBJECTS:${module}>)
+      else()
+        set(COMMA_SEPARATED_MODULES "${module}")
+        set(STANDALONE_OBJECTS $<TARGET_OBJECTS:${module}>)
+        set(first_module ${module})
+      endif()
+      # Exclude standalones that need SpecBit when FS has been excluded.  Remove this once FS is BOSSed.
+      if(module STREQUAL "SpecBit" AND EXCLUDE_FLEXIBLESUSY)
+        set(standalone_permitted 0)
+      endif()
+    else()
+      set(standalone_permitted 0)
+    endif()
+  endforeach()
+
+  # Add the standalone only if the required modules are all present
+  if(standalone_permitted)
+
+    # Iterate over sources and add leading source path
+    set(STANDALONE_FUNCTORS "${PROJECT_SOURCE_DIR}/${first_module}/examples/functors_for_${executablename}.cpp")
+    foreach(source_file ${ARG_SOURCES})
+      list(APPEND STANDALONE_SOURCES ${PROJECT_SOURCE_DIR}/${source_file})
+    endforeach()
+    list(APPEND STANDALONE_SOURCES ${STANDALONE_FUNCTORS})
+
+    # Set up the target to call the facilitator script to make the functors source file for this standalone. 
+    add_custom_command(OUTPUT ${STANDALONE_FUNCTORS}
+                       COMMAND python ${STANDALONE_FACILITATOR} ${executablename} -m __not_a_real_name__,${COMMA_SEPARATED_MODULES}
+                       COMMAND touch ${STANDALONE_FUNCTORS}
+                       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                       DEPENDS modules_harvested
+                               ${STANDALONE_FACILITATOR}
+                               ${HARVEST_TOOLS}
+                               ${PROJECT_BINARY_DIR}/CMakeCache.txt)  
+  
+    # Do ad hoc checks for stuff that will eventually be BOSSed and removed from here. 
+    if (NOT EXCLUDE_FLEXIBLESUSY)
+      set(ARG_LIBRARIES ${ARG_LIBRARIES} ${flexiblesusy_LDFLAGS})
+    endif()
+    if (NOT EXCLUDE_DELPHES)
+      set(ARG_LIBRARIES ${ARG_LIBRARIES} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+    endif()
+
+    add_gambit_executable(${executablename} "${ARG_LIBRARIES}"
+                          SOURCES ${STANDALONE_SOURCES}
+                                  ${STANDALONE_OBJECTS}
+                                  ${GAMBIT_ALL_COMMON_OBJECTS}
+                          HEADERS ${ARG_HEADERS})
+
+    # Do more ad hoc checks for stuff that will eventually be BOSSed and removed from here
+    if (NOT EXCLUDE_FLEXIBLESUSY)
+      add_dependencies(${executablename} flexiblesusy)
+    endif()
+    if (NOT EXCLUDE_DELPHES)
+      add_dependencies(${executablename} delphes)
+    endif()
+
+    # Add the new executable to the standalones target
+    add_dependencies(standalones ${executablename})
+
+  endif()
+
+endfunction()
+
 
 # Simple function to find specific Python modules
 macro(find_python_module module)

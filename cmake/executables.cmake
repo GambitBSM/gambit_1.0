@@ -20,8 +20,9 @@
 #                                               
 #************************************************
 
-# Indicate which executables need ScannerBit
-set(uses_scannerbit gambit)
+# Add the module standalones
+add_custom_target(standalones)
+include(cmake/standalones.cmake)
 
 # Add the main GAMBIT executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
@@ -44,75 +45,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   endif()
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(gambit delphes)
-  endif()
-endif()
-
-# Add the 3-BIT HIT executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/SpecBit/" AND (";${GAMBIT_BITS};" MATCHES ";SpecBit;") AND
-   EXISTS "${PROJECT_SOURCE_DIR}/DecayBit/" AND (";${GAMBIT_BITS};" MATCHES ";DecayBit;") AND
-   EXISTS "${PROJECT_SOURCE_DIR}/PrecisionBit/" AND (";${GAMBIT_BITS};" MATCHES ";PrecisionBit;") AND
-   NOT EXCLUDE_FLEXIBLESUSY)
-  set(BITHIT_XTRA ${flexiblesusy_LDFLAGS})
-  if (NOT EXCLUDE_DELPHES)
-    set(BITHIT_XTRA ${BITHIT_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
-  endif()
-  add_gambit_executable(3bithit "${BITHIT_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/DecayBit/examples/3bithit.cpp 
-                                ${PROJECT_SOURCE_DIR}/DecayBit/examples/standalone_functors.cpp 
-                                $<TARGET_OBJECTS:SpecBit>
-                                $<TARGET_OBJECTS:DecayBit>
-                                $<TARGET_OBJECTS:PrecisionBit>
-                                ${GAMBIT_ALL_COMMON_OBJECTS}
-  )
-  add_dependencies(3bithit flexiblesusy)
-  if (NOT EXCLUDE_DELPHES)
-    add_dependencies(3bithit delphes)
-  endif()
-endif()
-
-##########  Standalones #############
-
-# Add the ExampleBit_A_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;"))
-  if (NOT EXCLUDE_FLEXIBLESUSY)
-    set(ExampleBit_A_XTRA ${flexiblesusy_LDFLAGS})
-  endif()
-  if (NOT EXCLUDE_DELPHES)
-    set(ExampleBit_A_XTRA ${ExampleBit_A_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
-  endif()
-  add_gambit_executable(ExampleBit_A_standalone "${ExampleBit_A_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp 
-                                ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/standalone_functors.cpp 
-                                $<TARGET_OBJECTS:ExampleBit_A>
-                                ${GAMBIT_ALL_COMMON_OBJECTS}
-  )
-  if (NOT EXCLUDE_FLEXIBLESUSY)
-    add_dependencies(ExampleBit_A_standalone flexiblesusy)
-  endif()
-  if (NOT EXCLUDE_DELPHES)
-    add_dependencies(ExampleBit_A_standalone delphes)
-  endif()
-endif()
-
-# Add the ColliderBit_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES ";ColliderBit;"))
-  if (NOT EXCLUDE_FLEXIBLESUSY)
-    set(ColliderBit_XTRA ${flexiblesusy_LDFLAGS})
-  endif()
-  if (NOT EXCLUDE_DELPHES)
-    set(ColliderBit_XTRA ${ColliderBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
-  endif()
-  add_gambit_executable(ColliderBit_standalone "${ColliderBit_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/ColliderBit/examples/ColliderBit_standalone_example.cpp
-                                ${PROJECT_SOURCE_DIR}/ColliderBit/examples/standalone_functors.cpp
-                                $<TARGET_OBJECTS:ColliderBit>
-                                ${GAMBIT_ALL_COMMON_OBJECTS}
-  )
-  if (NOT EXCLUDE_FLEXIBLESUSY)
-    add_dependencies(ColliderBit_standalone flexiblesusy)
-  endif()
-  if (NOT EXCLUDE_DELPHES)
-    add_dependencies(ColliderBit_standalone delphes)
   endif()
 endif()
 
@@ -144,51 +76,5 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
     # Make sure the printers compile OK if the rest of GAMBIT is missing
     add_definitions(-DSTANDALONE=1)
   endif()
+  add_dependencies(standalones ScannerBit_standalone)
 endif()
-
-# Add the DarkBit_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";DarkBit;")
-  if (NOT EXCLUDE_FLEXIBLESUSY)
-    set(DarkBit_XTRA ${flexiblesusy_LDFLAGS})
-  endif()
-  if (NOT EXCLUDE_DELPHES)
-    set(DarkBit_XTRA ${DarkBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
-  endif()
-  add_gambit_executable(DarkBit_standalone_MSSM "${DarkBit_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_MSSM.cpp
-                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
-                                $<TARGET_OBJECTS:DarkBit>
-                                ${GAMBIT_ALL_COMMON_OBJECTS}
-  )
-  add_gambit_executable(DarkBit_standalone_SingletDM "${DarkBit_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_SingletDM.cpp
-                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
-                                $<TARGET_OBJECTS:DarkBit>
-                                ${GAMBIT_ALL_COMMON_OBJECTS}
-  )
-  add_gambit_executable(DarkBit_standalone_WIMP "${DarkBit_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_WIMP.cpp
-                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
-                                $<TARGET_OBJECTS:DarkBit>
-                                ${GAMBIT_ALL_COMMON_OBJECTS}
-  )
-  if (NOT EXCLUDE_FLEXIBLESUSY)
-    add_dependencies(DarkBit_standalone_MSSM flexiblesusy)
-    add_dependencies(DarkBit_standalone_SingletDM flexiblesusy)
-    add_dependencies(DarkBit_standalone_WIMP flexiblesusy)
-  endif()
-  if (NOT EXCLUDE_DELPHES)
-    add_dependencies(DarkBit_standalone_MSSM delphes)
-    add_dependencies(DarkBit_standalone_SingletDM delphes)
-    add_dependencies(DarkBit_standalone_WIMP delphes)
-  endif()
-endif()
-
-# Add a target that collects all standalones
-add_custom_target(standalones DEPENDS ExampleBit_A_standalone
-                                      ColliderBit_standalone
-                                      ScannerBit_standalone
-                                      DarkBit_standalone_MSSM
-                                      DarkBit_standalone_SingletDM
-                                      DarkBit_standalone_WIMP
-                                      )

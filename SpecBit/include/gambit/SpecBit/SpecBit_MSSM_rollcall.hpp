@@ -111,7 +111,7 @@
     // Can use as an improvement upon creating a Spectrum object from an SLHA file (avoids
     // disk access), but without going to a full SubSpectrum wrapper interface.
     #define FUNCTION get_MSSM_spectrum_from_SLHAstruct
-    START_FUNCTION(const Spectrum*)
+    START_FUNCTION(/*TAG*/ Spectrum)
     DEPENDENCY(unimproved_MSSM_spectrum, SLHAstruct)
     #undef FUNCTION
     
@@ -142,6 +142,14 @@
     #undef FUNCTION    
   #undef CAPABILITY
 
+
+  #define CAPABILITY SMlike_Higgs_PDG_code
+  START_CAPABILITY
+    #define FUNCTION most_SMlike_Higgs_MSSM
+    START_FUNCTION(int) // just returns pdg code of most SM-like CP even Higgs
+    DEPENDENCY(MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   #define CAPABILITY SM_subspectrum
   START_CAPABILITY

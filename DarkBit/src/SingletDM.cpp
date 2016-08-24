@@ -204,8 +204,8 @@ namespace Gambit
       double fp = 2./9. + 7./9.*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
       double fn = 2./9. + 7./9.*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
 
-      result.gps = lambda*fp*m_neutron/pow(mh,2)/mass/2;
-      result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
+      result.gps = lambda*fp*m_proton/pow(mh,2)/mass/2;
+      result.gns = lambda*fn*m_neutron/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
 
@@ -259,7 +259,7 @@ namespace Gambit
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));
+       (Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));    
       #define addParticle(Name, Mass, spinX2)                                   \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));

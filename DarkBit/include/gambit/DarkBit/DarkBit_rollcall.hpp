@@ -42,6 +42,14 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar, Aug
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
+///  \author Felix Kahlhoefer
+///          (felix.kahlhoefer@desy.de)
+///  \date 2016 August
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -64,8 +72,8 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum) 
-      DEPENDENCY(decay_rates, DecayTable) 
+      DEPENDENCY(MSSM_spectrum, Spectrum)
+      DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -89,7 +97,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_LocalHalo_func
       START_FUNCTION(bool)
       DEPENDENCY(RD_fraction, double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
       BACKEND_REQ(dshmcom,(),DS_HMCOM)
       BACKEND_REQ(dshmisodf,(),DS_HMISODF)
       BACKEND_REQ(dshmframevelcom,(),DS_HMFRAMEVELCOM)
@@ -158,7 +166,7 @@ START_MODULE
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
 #ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum) 
+      DEPENDENCY(MSSM_spectrum, Spectrum)
 #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
@@ -187,7 +195,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegasSingletDM), double, (double*,int,double))
+      BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegas_SingletDM), double, (double*,int,double))
       ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -363,7 +371,7 @@ START_MODULE
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(MSSM63atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)      
+      DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)
@@ -380,8 +388,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(decay_rates,DecayTable)      
-      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(decay_rates,DecayTable)
+      DEPENDENCY(SingletDM_spectrum, Spectrum)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -457,7 +465,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_rho0_lognormal
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -465,7 +473,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vrot_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -473,7 +481,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_v0_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -481,7 +489,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vesc_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -521,13 +529,13 @@ START_MODULE
       MODEL_GROUP(group2, (MSSM63atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
       BACKEND_OPTION((MicrOmegas_MSSM),(gimmemicro))
-      BACKEND_OPTION((MicrOmegasSingletDM),(gimmemicro))
+      BACKEND_OPTION((MicrOmegas_SingletDM),(gimmemicro))
       FORCE_SAME_BACKEND(gimmemicro)
     #undef FUNCTION
 
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DM_nucleon_couplings)
-      DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
+      DEPENDENCY(SingletDM_spectrum, Spectrum)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
 
@@ -589,6 +597,12 @@ START_MODULE
   DD_DECLARE_EXPERIMENT(SIMPLE_2014)
   DD_DECLARE_EXPERIMENT(DARWIN_Ar)
   DD_DECLARE_EXPERIMENT(DARWIN_Xe)
+  DD_DECLARE_EXPERIMENT(LUX_2016_prelim)
+  DD_DECLARE_EXPERIMENT(PandaX_2016)
+  DD_DECLARE_EXPERIMENT(LUX_2015)
+  DD_DECLARE_EXPERIMENT(PICO_2L)
+  DD_DECLARE_EXPERIMENT(PICO_60_F)
+  DD_DECLARE_EXPERIMENT(PICO_60_I)
 
 
   // INDIRECT DETECTION: NEUTRINOS =====================================
@@ -971,15 +985,29 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM
     START_FUNCTION(std::string)
-    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 
+  // --- Functions related to the local and global properties of the DM halo ---
+
   #define CAPABILITY GalacticHalo
   START_CAPABILITY
-    #define FUNCTION GalacticHalo
-    START_FUNCTION(daFunk::Funk)
-    ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
+    #define FUNCTION GalacticHalo_gNFW
+    START_FUNCTION(GalacticHaloProperties)
+    ALLOW_MODEL(Halo_gNFW)
+    #undef FUNCTION
+    #define FUNCTION GalacticHalo_Einasto
+    START_FUNCTION(GalacticHaloProperties)
+    ALLOW_MODEL(Halo_Einasto)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY LocalHalo
+  START_CAPABILITY
+    #define FUNCTION ExtractLocalMaxwellianHalo
+    START_FUNCTION(LocalMaxwellianHalo)
+    ALLOW_MODELS(Halo_gNFW, Halo_Einasto)
     #undef FUNCTION
   #undef CAPABILITY
 #undef MODULE

@@ -16,29 +16,23 @@
 #  "special" metacharacters may
 #  appear here. The extent of this string is
 #  indicated by indentation.
-
+#
 # We can break this into categories however we want; yaml will just ignore comments
+
 
 #-------------------------------------
 #  Test capabilities
 #-------------------------------------
 
 test_vector: |
-   Some kind of vector or something
-
-vSigma: |
-   Probably a cross-section of some kind
-   Lets add an extra line to demo multiline descriptions
-
-#-------------------------------------
-#  Fake particle capabilities
-#-------------------------------------
+   An example vector.
 
 widths: |
-   The width of some particle or other
+   The width of some make-believe particle.  
 
 xsection: |
-   Another mystery cross-section
+   A cross-section for some make-believe process.
+
 
 #-------------------------------------
 #  SpecBit
@@ -58,7 +52,6 @@ vacuum_stability: |
     Run the quartic Higgs coupling to high scales, in order to determine
     the expected lifetime of the electroweak vacuum, the instability scale, and
     the perturbativity of the couplings up to the necessary scale.
-
 
 check_perturb_min_lambda: |
     Check that dimensionless couplings are sufficiently small up to the smaller
@@ -85,9 +78,7 @@ qedqcd_subspectrum: |
 SM_spectrum: |
     Create Spectrum object from SMInputs structs and SM Higgs parameters.
 
-
 #####   MSSM  #####
-
 
 unimproved_MSSM_spectrum: |
     Returns unimproved MSSM spectrum object calculated with boundary conditions
@@ -105,6 +96,8 @@ prec_HiggsMasses: |
 Higgs_Couplings: |
     Higgs couplings, as computed by FeynHiggs
 
+SMlike_Higgs_PDG_code: |
+    The PDG code of the neutral Higgs boson that is most SM-like in the theory at hand.
 
 
 #-------------------------------------
@@ -115,7 +108,6 @@ Higgs_Couplings: |
 MSSM_spectrum: |
     Provide an updated MSSM spectrum from the unimproved version with
     precision W and Higgs masses.
-
 
 
 #-------------------------------------
@@ -299,7 +291,6 @@ FH_HiggsProd: |
 #             mass eigenstates $X$ and $Y$.
 
 
-
 #-------------------------------------
 #  DarkBit capabilities
 #-------------------------------------
@@ -359,6 +350,16 @@ RD_fraction: |
 
 lnL_oh2: |
    Contains the log likelihood function constraining the relic density.
+
+LocalHalo: |
+   Provides the parameters of the Maxwell-Boltzmann velocity distribution,
+   in terms of the strucutre LocalMaxwellianHalo containing the parameters
+   rho0, v0, vrot, vesc.
+
+GalacticHalo: |
+   Provides the properties of the dark matter density distribution in the Galaxy,
+   in terms of the structure GalacticHaloProperties containing the function rho(r)
+   and the Sun-GC distance r_sun.
 
 XENON100_2012_Calculate: |
    Perform rate and likelihood calculations for the XENON100 2012 direct detection analysis.
@@ -492,7 +493,7 @@ lnL_SI_nuclear_parameters: |
 SimYieldTable: |
    DESCRIPTION MISSING
 
-GA_DESCRIPTION MISSINGFinalStates: |
+GA_FinalStates: |
    DESCRIPTION MISSING
 
 GA_AnnYield: |
@@ -644,6 +645,10 @@ dump_GammaSpectrum: |
 
 UnitTest_DarkBit: |
    DESCRIPTION MISSING
+
+vSigma: |
+   DESCRIPTION MISSING
+
 
 #-------------------------------------
 #  DecayBit capabilities
@@ -874,7 +879,6 @@ neutralino_4_decay_rates : |
    Decays of the neutralino 4.
 
 
-
 #-------------------------------------
 #  PrecisionBit capabilities
 #-------------------------------------
@@ -902,6 +906,9 @@ lnL_t_mass : |
 
 lnL_Z_mass : |
    Log-likelihood of the Z boson pole mass.
+
+lnL_h_mass : |
+   Simple log-likelihood of the SM-like Higgs boson pole mass.
 
 lnL_W_mass : |
    Log-likelihood of the W boson pole mass.

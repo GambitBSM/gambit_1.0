@@ -115,8 +115,6 @@ namespace Gambit
          // BEGIN DEMO OF SPECTRUM OBJECT AND PARTICLE DATABASE
          // ---------------------------------------------------------
 
-         //#define ECHO(COMMAND) cout << "  " << STRINGIFY(COMMAND) << " = " << COMMAND << endl;
-         //Replacing with a version that deals with SLHAea access errors            
          #define ECHO(COMMAND)                                \
          {                                                    \
              try {                                            \
@@ -127,7 +125,7 @@ namespace Gambit
          }
          
          /* ----------Test particle database access ---------------- */
-         #define PDB Models::ParticleDB()        
+         const auto& PDB = Models::ParticleDB();
 
          // First check out what is actually in the database
          PDB.check_contents();
@@ -386,6 +384,7 @@ namespace Gambit
              const Spectrum& fullspectrum;
              const SubSpectrum& spec;
              SLHAea::Coll slhaea;
+             const Models::partmap& PDB = Models::ParticleDB();
          }; 
 
          get_polemass_functor get_polemass(report,fullspectrum,spec,slhaea);

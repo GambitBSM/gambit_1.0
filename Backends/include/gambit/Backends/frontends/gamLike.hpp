@@ -16,6 +16,10 @@
 ///  \date 2014 Sep, Oct
 ///  \date 2016 Feb
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 // Identify backend
@@ -34,8 +38,8 @@ BE_FUNCTION(set_data_path, void, (const std::string &), "set_data_path", "set_da
 BE_FUNCTION(lnL, double, (int, const std::vector<double> &, const std::vector<double> &), "lnL", "lnL")
 BE_FUNCTION(set_MW_profile, void, (const std::vector<double> &, const std::vector<double> &, double), "set_MW_profile", "set_MW_profile")
 
-// Dependence on halo profile if scan over halo models
-BE_INI_CONDITIONAL_DEPENDENCY(GalacticHalo, daFunk::Funk, GalacticHalo_gNFW, GalacticHalo_Einasto)
+// Dependence on global halo properties
+BE_INI_DEPENDENCY(GalacticHalo, GalacticHaloProperties)
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
