@@ -1064,15 +1064,13 @@ namespace Gambit
       // has access to all the buffers.
       if(is_primary_printer)
       {
-        logger() << LogTags::printers << "rank "<<myRank<<": Running finalise() routine for HDF5Printer (with name=\""<<printer_name<<"\")..." << EOM;
+        logger() << LogTags::printers << "Running finalise() routine for HDF5Printer (with name=\""<<printer_name<<"\")..." << EOM;
 
         // Make sure all the buffers are caught up to the final point.
         synchronise_buffers();
-
+        logger() << LogTags::printers << "Print buffers synchronised; flushing them to disk" << EOM;
         flush();
-#ifdef FINAL_MPI_DEBUG
-        std::cout << "rank "<<myRank<<": Final buffer flush done ("<<printer_name<<")"<<std::endl;
-#endif
+        logger() << LogTags::printers << "Final buffer flush done ("<<printer_name<<")"<<EOM;
 
         // close HDF5 datasets, groups, and file
 
@@ -1089,6 +1087,7 @@ namespace Gambit
         // (though each group can have different lengths)
         unsigned long dset_length = 0;
         unsigned long RA_dset_length = 0;
+        logger() << LogTags::printers << "Checking for any leftover RA write attempts" << EOM;
 
         for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
         {
@@ -1129,6 +1128,7 @@ namespace Gambit
         }
 
         /// Double-check that all the buffers are empty.
+        logger() << LogTags::printers << "Double-checking that all print buffers are empty" << EOM;
         for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
         {
           if(it->second->is_synchronised())
@@ -1180,14 +1180,16 @@ namespace Gambit
         if(not abnormal) // Don't do the combination in case of abnormal termination, since we cannot reliably wait for all the other processes to finish
         {
 #ifdef WITH_MPI
+          logger() << LogTags::printers << "We are in normal shutdown mode, meaning that the run has finished and output files should be combined. However, the master process must wait for all workers to write their output to disk before attempting the combination. We are now entering this barrier; if we are master we will wait here; all other processes will just register entry and then continue." << EOM;
           myComm.masterWaitForAll(FINAL_SYNC);
 #endif
 
-          logger() << LogTags::printers << "rank "<<myRank<<": passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;
+          logger() << LogTags::printers << "Passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;
 
           if(myRank==0)
           {
             // Make sure all datasets etc are closed before doing this or else errors may occur.
+            logger() << LogTags::printers << "We are the master process: beginning combination of output files." << EOM;
             combine_output(find_temporary_files(true),true);
           }
         }
