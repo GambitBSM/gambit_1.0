@@ -540,10 +540,10 @@ int main(int argc, char* argv[])
         for (size_t j = 0; j < s_list.size(); j++)
         {
           // Set LocalHalo Model parameters to DarkBit default values
-          LocalHalo_primary_parameters->setValue("rho0", 0.4);
-          LocalHalo_primary_parameters->setValue("vrot", 235.);
-          LocalHalo_primary_parameters->setValue("v0", 235.);
-          LocalHalo_primary_parameters->setValue("vesc", 550.);
+          Halo_primary_parameters->setValue("rho0", 0.4);
+          Halo_primary_parameters->setValue("vrot", 235.);
+          Halo_primary_parameters->setValue("v0", 235.);
+          Halo_primary_parameters->setValue("vesc", 550.);
 
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
@@ -567,10 +567,10 @@ int main(int argc, char* argv[])
           lnL2 = PandaX_2016_GetLogLikelihood(0);
 
           // Re-initialize DDCalc with LUX 2013 halo parameters
-          LocalHalo_primary_parameters->setValue("rho0", 0.3);
-          LocalHalo_primary_parameters->setValue("vrot", 245.);
-          LocalHalo_primary_parameters->setValue("v0", 220.);
-          LocalHalo_primary_parameters->setValue("vesc", 544.);
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 245.);
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
 
           DDCalc_1_0_0_init.reset_and_calculate();
           LUX_2013_Calc.reset_and_calculate();
@@ -578,10 +578,10 @@ int main(int argc, char* argv[])
           lnL3 = LUX_2013_GetLogLikelihood(0);
 
           // Re-initialize DDCalc with Xenon100 2012 halo parameters
-          LocalHalo_primary_parameters->setValue("rho0", 0.3);
-          LocalHalo_primary_parameters->setValue("vrot", 220.);
-          LocalHalo_primary_parameters->setValue("v0", 220.);
-          LocalHalo_primary_parameters->setValue("vesc", 544.);
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 220.);
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
 
           DDCalc_1_0_0_init.reset_and_calculate();
           XENON100_2012_Calc.reset_and_calculate();
@@ -595,18 +595,25 @@ int main(int argc, char* argv[])
           std::cout << "XENON100_2012 = " << lnL4 << std::endl;
 
           sigma_array[i][j] = sigma_SI_p;
-//          lnL_array1[i][j] = lnL1;
-//          lnL_array2[i][j] = lnL2;
+          lnL_array1[i][j] = lnL1;
+          lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
-//          lnL_array4[i][j] = lnL4;
+          lnL_array4[i][j] = lnL4;
         }
       }
 
+      // Reset halo parameters to DarkBit defaults.
+      Halo_primary_parameters->setValue("rho0", 0.4);
+      Halo_primary_parameters->setValue("vrot", 235.);
+      Halo_primary_parameters->setValue("v0", 235.);
+      Halo_primary_parameters->setValue("vesc", 550.);
+
+
       dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
-//      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
-//      dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
+      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
+      dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
-//      dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
+      dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
 
     }
   }
