@@ -48,7 +48,6 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
-      static Spectrum mySpec;
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
     }
     
@@ -352,45 +351,55 @@ int main()
     // User can edit this section to configure ColliderBit
     // See the ColiderBit manual for available options
     
+
+
     // First we have the LHC options - here we choose to run only one ATLAS analysis
     std::vector<std::string> runTheseATLASAnalyses;
     runTheseATLASAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which ATLAS analyses to run
     getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesATLAS",runTheseATLASAnalyses);
     getCMSAnalysisContainer.setOption<bool>("useCMS",false);
 
+
     // The standalone Pythia instance is given a name
     // Can be set to anything, provided it matches the same name given below
     std::vector<std::string> pythiaNames;
     pythiaNames.push_back("Pythia_Standalone");
-    YAML::Node Pythia_Standalone;   
-    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:MPI = off");
-    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:ISR = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:FSR = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("HadronLevel:all = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("TauDecays:mode = 0");
-    Pythia_Standalone["pythiaOptions_1"].push_back("SUSY:all = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("Beams:eCM = 8000");
-    Pythia_Standalone["pythiaOptions_1"].push_back("Main:timesAllowErrors = 1000");
-    getPythiaFileReader.setOption<YAML::Node>("Pythia_Standalone",Pythia_Standalone);
+
+    std::vector<std::string> Pythia_Standalone;
+    Pythia_Standalone.push_back("PartonLevel:MPI = off");
+    Pythia_Standalone.push_back("PartonLevel:ISR = on");
+    Pythia_Standalone.push_back("PartonLevel:FSR = on");
+    Pythia_Standalone.push_back("HadronLevel:all = on");
+    Pythia_Standalone.push_back("TauDecays:mode = 0");
+    Pythia_Standalone.push_back("SUSY:all = on");
+    Pythia_Standalone.push_back("Beams:eCM = 8000");
+    Pythia_Standalone.push_back("Main:timesAllowErrors = 1000");
+    getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_Standalone",Pythia_Standalone);
+
     std::vector<std::string> inputFiles;
     inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
     getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
     getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
 
+
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
     operateLHCLoop.setOption<int>("nEvents",5000.); // specify the number of simulated LHC events
     
+
+
     // Start running here
     
     {
       
       // Call the initialisation functions for all backends that are in use. 
       nulike_1_0_3_init.reset_and_calculate();
+
       
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();
       calc_LHC_LogLike.reset_and_calculate();
       
+
       // Retrieve and print the LHC likelihood
       double loglike = calc_LHC_LogLike(0);
       std::cout << "LHC log likelihood is " << loglike << std::endl;

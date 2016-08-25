@@ -165,9 +165,9 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
-#ifdef DARKBIT_RD_DEBUG
-      DEPENDENCY(MSSM_spectrum, Spectrum)
-#endif
+      #ifdef DARKBIT_RD_DEBUG
+        DEPENDENCY(MSSM_spectrum, Spectrum)
+      #endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
       BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
@@ -374,17 +374,13 @@ START_MODULE
       DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
-//      BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      //BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
-      //PS: commented out for now, as this can't be a backend function in its current form.
-      //BACKEND_REQ(registerMassesForIB, (), void,
-      //    (std::map<std::string, DarkBit::TH_ParticleProperty>&))
-      BACKEND_REQ(setMassesForIB, (), void, (bool))
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
@@ -396,11 +392,6 @@ START_MODULE
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
-//    #define FUNCTION lnL_FermiLATdwarfsSimple
-//      START_FUNCTION(double)
-//      DEPENDENCY(GA_AnnYield, daFunk::Funk)
-//      DEPENDENCY(RD_fraction, double)
-//    #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)

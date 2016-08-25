@@ -314,10 +314,10 @@ namespace Gambit
       logger() << LogTags::dependency_resolver << endl;
       logger() << "#######################################"   << endl;
       logger() << "#  List of Type Equivalency Classes   #"   << endl;
-      logger() << "#######################################"   << endl;
+      logger() << "#######################################";
       for (std::set<std::set<str> >::const_iterator it = boundTEs->equivalency_classes.begin(); it != boundTEs->equivalency_classes.end(); ++it)
       {
-        logger() << *it << endl;
+        logger() << endl << *it;
       }
       logger() << EOM;
     }
@@ -341,11 +341,11 @@ namespace Gambit
       logger() << "#        List of Target ObsLikes      #"   << endl;
       logger() << "#                                     #"   << endl;
       logger() << "# format: Capability (Type) [Purpose] #"   << endl;
-      logger() << "#######################################"   << endl;
+      logger() << "#######################################";
       for (auto it = observables.begin(); it != observables.end(); ++it)
       {
         // TODO: Format output
-        logger() << LogTags::dependency_resolver << it->capability << " (" << it->type << ") [" << it->purpose << "]" << endl;
+        logger() << LogTags::dependency_resolver << endl << it->capability << " (" << it->type << ") [" << it->purpose << "]";
         queueEntry.first.first = it->capability;
         queueEntry.first.second = it->type;
         queueEntry.second = OBSLIKE_VERTEXID;
@@ -542,12 +542,12 @@ namespace Gambit
         // handy to check before launching a full job. It can always be checked via
         // the logs, but this feature is more convenient.
         cout << ss.str();
-#ifdef HAVE_GRAPHVIZ
-        cout << "To get postscript plot of active functors, please run: " << endl;
-        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
-#else
-        cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl << endl;
-#endif
+        #ifdef HAVE_GRAPHVIZ
+          cout << "To get postscript plot of active functors, please run: " << endl;
+          cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
+        #else
+          cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl << endl;
+        #endif
       }
 
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
@@ -600,7 +600,7 @@ namespace Gambit
         colleages.insert(colleages_min.begin(), colleages_min.end());
         double prop = masterGraph[*it_min]->getInvalidationRate();
         logger() << LogTags::dependency_resolver << "Estimated T [s]: " << t2p_min*prop << EOM;
-        logger() << LogTags::dependency_resolver << "Estimated p: " << prop<< EOM;
+        logger() << LogTags::dependency_resolver << "Estimated p: " << prop << EOM;
         sorted.push_back(*it_min);
         unsorted.erase(it_min);
       }
@@ -842,7 +842,6 @@ namespace Gambit
       //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
       //Ok well it does seem to work in the constructor, not sure why though...
 
-      logger() << LogTags::dependency_resolver;
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
@@ -861,7 +860,7 @@ namespace Gambit
 
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
-          //logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
+          //logger() << LogTags::dependency_resolver << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
 
           //masterGraph[*vi]->print(boundPrinter,-1);
         }
@@ -1034,7 +1033,7 @@ namespace Gambit
 
       logger() << LogTags::dependency_resolver;
       logger() << "List of candidate vertices:" << endl;
-      logger() << printGenericFunctorList(vertexCandidates) << endl;
+      logger() << printGenericFunctorList(vertexCandidates) << EOM;
 
       if (toVertex != OBSLIKE_VERTEXID)
       {
@@ -1127,10 +1126,9 @@ namespace Gambit
         }
       }
 
-      logger()<<"Number of identified rules: "
-        <<rules.size()<< endl;
-      logger()<<"Number of these rules that are marked as !weak: "
-        <<rules.size()-strong_rules.size()<<endl<<endl;
+      logger() << "Number of identified rules: " << rules.size() << endl
+               << "Number of these rules that are marked as !weak: "
+               << rules.size()-strong_rules.size() << EOM;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator
@@ -1164,7 +1162,7 @@ namespace Gambit
       if (rules.size() > 0 and filteredVertexCandidates.size() > 0)
       {
         logger() << "Candidate vertices that fulfill all rules:" << endl;
-        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << EOM;
       }
 
       if (filteredVertexCandidates.size() == 0)
@@ -1172,7 +1170,7 @@ namespace Gambit
         filteredVertexCandidates = filteredVertexCandidates2;
         logger() << "Ignoring rules declared as '!weak'" << endl;
         logger() << "Candidate vertices that fulfill all non-weak rules:" << endl;
-        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << EOM;
       }
 
       // Apply tailor-made filter
@@ -1185,7 +1183,7 @@ namespace Gambit
         logger() << "A subset of vertex candidates is tailor-made for the scanned model." << endl;
         logger() << "This is used as additional constraint since the YAML rules alone" << endl;
         logger() << "are not constraining enough. These vertices are:" << endl;
-        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << EOM;
       }
 
       // Nothing left?
@@ -1387,8 +1385,7 @@ namespace Gambit
       logger() << "#         Starting dependency resolution       #" << endl;
       logger() << "#                                              #" << endl;
       logger() << "# format: Capability (Type) [Function, Module] #" << endl;
-      logger() << "################################################" << endl;
-      logger() << EOM;
+      logger() << "################################################" << EOM;
 
       // Print something to stdout as well
       #ifdef DEPRES_DEBUG
@@ -1399,7 +1396,7 @@ namespace Gambit
       use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
       print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
       if ( use_regex )    logger() << "Using regex for string comparison." << endl;
-      if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << endl;
+      if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << EOM;
 
       //
       // Main loop: repeat until dependency queue is empty
@@ -1416,7 +1413,7 @@ namespace Gambit
         // Print information about required quantity and dependent vertex
         logger() << LogTags::dependency_resolver;
         logger() << "Resolving ";
-        logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;;
+        logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;
 
         // Check that ObsLike vertices have non-empty capability
         if ( toVertex == OBSLIKE_VERTEXID and quantity.first == "" )
@@ -1441,7 +1438,6 @@ namespace Gambit
         logger() << "Resolved by: [";
         logger() << (*masterGraph[fromVertex]).name() << ", ";
         logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
-        //logger() << EOM;
 
         // Check if we wanted to output this observable to the printer system.
         if ( toVertex==OBSLIKE_VERTEXID ) masterGraph[fromVertex]->setPrintRequirement(printme);
@@ -1552,10 +1548,7 @@ namespace Gambit
       bool printme_default = false; // for parQueue constructor
       std::set<sspair> s = (*masterGraph[vertex]).dependencies();
       logger() << LogTags::dependency_resolver;
-      if (s.size() > 0)
-        logger() << "Add dependencies of new module function to queue" << endl;
-      //else
-      //  logger() << "No further module function dependencies" << endl;
+      if (s.size() > 0) logger() << "Add dependencies of new module function to queue" << endl;
       for (std::set<sspair>::iterator it = s.begin(); it != s.end(); ++it)
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
@@ -1570,7 +1563,6 @@ namespace Gambit
         (*parQueue).push(QueueEntry (sspair
                   (loopManagerCapability, ""), vertex, LOOP_MANAGER_DEPENDENCY, printme_default));
       }
-      //logger() << EOM;
     }
 
     /// Boost lib topological sort

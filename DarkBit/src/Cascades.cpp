@@ -120,6 +120,7 @@ namespace Gambit {
           }
         }
         // Raise any exceptions
+        piped_invalid_point.check();
         piped_warnings.check(DarkBit_warning());
         piped_errors.check(DarkBit_error());
         Loop::reset();
@@ -697,7 +698,7 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_PrintResult;
       logger() << "************************" << std::endl;
       logger() << "Cascade decay results:" << std::endl;
-      logger() << "------------------------" << std::endl;
+      logger() << "------------------------" << EOM;
       std::map<std::string, std::map<std::string,SimpleHist> >
         cascadeMC_HistList = *Dep::cascadeMC_Histograms;
 
@@ -705,9 +706,9 @@ namespace Gambit {
           it = cascadeMC_HistList.begin();
           it != cascadeMC_HistList.end(); ++it )
       {
-        logger() << "Initial state: " << (it->first) << ":" << std::endl;
+        logger() << "Initial state: " << (it->first) << ":" << EOM;
         int nEvents = (*Dep::cascadeMC_EventCount).at(it->first);
-        logger() << "Number of events: " << nEvents << std::endl;
+        logger() << "Number of events: " << nEvents << EOM;
         for(std::map<std::string,SimpleHist>::iterator
             it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
         {
@@ -722,7 +723,7 @@ namespace Gambit {
         }
         logger() << "------------------------" << std::endl;
       }
-      logger() << "************************" << std::endl;
+      logger() << "************************" << EOM;
     }
     */
   }

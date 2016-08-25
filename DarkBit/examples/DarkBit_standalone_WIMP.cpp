@@ -507,17 +507,48 @@ int main(int argc, char* argv[])
     {
       // Systematic parameter maps scattering
       std::cout << "Producing test maps." << std::endl;
-
-      int mBins = 40;
-      int sBins = 40;
+      double sigma_SI_p, lnL;
+      int mBins = 200;
+      int sBins = 300;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
-      std::vector<double> s_list = daFunk::logspace(-10, -6, sBins);
-
+      std::vector<double> s_list = daFunk::logspace(-10, -4, sBins);
       boost::multi_array<double, 2> sigma_SI_p_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
       TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
+
+      // Calculate array of sigma_SI,p values for different scalar couplings
+      for (size_t i = 0; i < m_list.size(); i++)
+      {
+        for (size_t j = 0; j < s_list.size(); j++)
+        {
+          TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          DarkMatter_ID_WIMP.reset_and_calculate();
+          TH_ProcessCatalog_WIMP.reset_and_calculate();
+          DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
+          DD_couplings_WIMP.setOption<double>("gns", s_list[j]);
+          DD_couplings_WIMP.setOption<double>("gpa", 0.);
+          DD_couplings_WIMP.setOption<double>("gna", 0.);
+          DD_couplings_WIMP.reset_and_calculate();
+          mwimp_generic.reset_and_calculate();
+          sigma_SI_p_simple.reset_and_calculate();
+          sigma_SI_p = sigma_SI_p_simple(0);
+          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
+          sigma_SI_p_array[i][j] = sigma_SI_p;
+        }
+      }
+
+      dump_array_to_file("sigmaSIp_table.dat", sigma_SI_p_array, m_list, s_list);
+
+      // Re-initialize DDCalc with LUX 2013 halo parameters
+      LocalHalo_primary_parameters->setValue("rho0", 0.3);
+      LocalHalo_primary_parameters->setValue("vrot", 245.);
+      LocalHalo_primary_parameters->setValue("v0", 220.);
+      LocalHalo_primary_parameters->setValue("vesc", 544.);
+
+      // Calculate array of lnL values using LUX 2013 results, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -528,26 +559,21 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_fixed.reset_and_calculate();
           DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
-          DD_couplings_WIMP.setOption<double>("gns", 0.);
+          DD_couplings_WIMP.setOption<double>("gns", s_list[j]);
           DD_couplings_WIMP.setOption<double>("gpa", 0.);
           DD_couplings_WIMP.setOption<double>("gna", 0.);
           DD_couplings_WIMP.reset_and_calculate();
           mwimp_generic.reset_and_calculate();
-          sigma_SI_p_simple.reset_and_calculate();
-          double sigma_SI_p = sigma_SI_p_simple(0);
-          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
           DDCalc_1_0_0_init.reset_and_calculate();
           LUX_2013_Calc.reset_and_calculate();
           LUX_2013_GetLogLikelihood.reset_and_calculate();
-          double lnL = LUX_2013_GetLogLikelihood(0);
+          lnL = LUX_2013_GetLogLikelihood(0);
           std::cout << "LUX2013 lnL = " << lnL << std::endl;
-          sigma_SI_p_array[i][j] = sigma_SI_p;
           lnL_array[i][j] = lnL;
         }
       }
 
-      dump_array_to_file("LUX2013_lnL_table.dat", lnL_array, m_list, s_list);
-      dump_array_to_file("LUX2013_sigmaSIp_table.dat", sigma_SI_p_array, m_list, s_list);
+      dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
     }
   }
 
