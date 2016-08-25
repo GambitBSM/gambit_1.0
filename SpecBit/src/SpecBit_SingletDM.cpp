@@ -128,9 +128,6 @@ namespace Gambit
       singletmodel.Yd[1] = sqrt2v * sminputs.mS;
       singletmodel.Yd[2] = sqrt2v * sminputs.mBmB;
       
-      //singletmodel.set_override(Par::Pole_Mass_1srd_low, "h0_1", 0.0);
-      //singletmodel.set_override(Par::Pole_Mass_1srd_low,"h0_1", 0.0);
-      
       
       
 
@@ -227,6 +224,12 @@ namespace Gambit
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",true);
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
+
+
+      singletdmspec.set_override(Par::Pole_Mass_1srd_high,0.0, "h0_1", true);
+      singletdmspec.set_override(Par::Pole_Mass_1srd_low,0.0,"h0_1", true);
+      
+
 
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator

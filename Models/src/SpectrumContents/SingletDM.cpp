@@ -51,8 +51,8 @@ namespace Gambit {
 
      addParameter(Par::Pole_Mass, "h0_1");
      
-     addParameter(Par::Pole_Mass_1srd_high, "h0_1");
-     addParameter(Par::Pole_Mass_1srd_low,  "h0_1");
+   //  addParameter(Par::Pole_Mass_1srd_high, "h0_1");
+  // addParameter(Par::Pole_Mass_1srd_low,  "h0_1");
 
      addParameter(Par::Pole_Mass, "S" );
     
