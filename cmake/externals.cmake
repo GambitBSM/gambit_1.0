@@ -34,6 +34,12 @@ include(ExternalProject)
 # Specify the location of unreleased codes in the gambit_internal repository.
 set(GAMBIT_INTERNAL "${PROJECT_SOURCE_DIR}/../gambit_internal/unreleased")
 
+# Specify CCPForge credentials
+set(CCPForge_user "gambit_user")
+set(CCPForge_p1 "bsm")
+set(CCPForge_p2 "or")
+set(CCPForge_p3 "bust")
+
 # Specify the warning to give when trying to compile unreleased codes.
 set(private_code_warning "       Retrieving unreleased code from GAMBIT Collaboration private repository. This will fail if you don't have the repository.")
 set(private_code_warning1 "       Retrieving unreleased code from GAMBIT Collaboration private repository.")

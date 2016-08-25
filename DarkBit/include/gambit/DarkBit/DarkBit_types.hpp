@@ -44,6 +44,10 @@
 ///          (jcornell@ucsc.edu)
 ///  \date 2014
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 

@@ -13,6 +13,8 @@
 ///  \date 2016 Feb
 ///  \author Jonathan Cornell
 ///  \date 2016 July
+///  \author Sebastian Wild
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -239,12 +241,26 @@ int main(int argc, char* argv[])
 
     // ---- Initialize models ----
 
-    // Initialize LocalHalo model
-    ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
-    LocalHalo_primary_parameters->setValue("rho0", 0.4);
-    LocalHalo_primary_parameters->setValue("vrot", 235.);
-    LocalHalo_primary_parameters->setValue("v0", 235.);
-    LocalHalo_primary_parameters->setValue("vesc", 550.);
+    // Initialize halo model
+    ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
+    Halo_primary_parameters->setValue("rho0", 0.4);
+    Halo_primary_parameters->setValue("rhos", 0.08);
+    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("v0", 235.);
+    Halo_primary_parameters->setValue("vesc", 550.);
+    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("r_sun", 8.5);
+    Halo_primary_parameters->setValue("alpha", 0.17);
+
+
+    // --- Resolve halo dependencies ---
+    ExtractLocalMaxwellianHalo.notifyOfModel("Halo_Einasto");
+    ExtractLocalMaxwellianHalo.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+    GalacticHalo_Einasto.notifyOfModel("Halo_Einasto");
+    GalacticHalo_Einasto.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    GalacticHalo_Einasto.reset_and_calculate();
 
     // ---- Initialize backends ----
 
@@ -252,26 +268,22 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
-    DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
-    DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+    DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP); // Use DarkSUSY for DD couplings
 
 
     // Initialize gamLike backend
-    //gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
-    //gamLike_1_0_0_init.notifyOfModel("GalacticHalo_gNFW");  // FIXME: Hack
+    gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("LocalHalo");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("Halo_Einasto");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
     MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
-
-
 
     // ---- Set up basic internal structures for direct & indirect detection ----
 

@@ -537,7 +537,7 @@ namespace Gambit {
         // Set up timing
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
-        logger() << "Tabulating RD_eff_annrate..." << std::endl;
+        logger() << "Tabulating RD_eff_annrate..." << EOM;
         std::cout << "Starting dsrdtab..." << std::endl;
       #endif
     
@@ -545,8 +545,7 @@ namespace Gambit {
       BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
 
       #ifdef DARKBIT_RD_DEBUG
-        std::cout << "...done" << std::endl;
-        logger() << "...done!" << std::endl;
+        logger() << LogTags::repeat_to_cout << "...done!" << EOM;
       
         // Get runtime
         end = std::chrono::system_clock::now();
@@ -583,16 +582,15 @@ namespace Gambit {
          =widthheavyHiggs;
 
       //capture NAN result and map it to zero RD
-      if (yend!=yend){
-        logger() <<
-          "WARNING: DS returned NAN for relic density. Setting to zero..."
-          << std::endl;
+      if (yend!=yend)
+      {
+        logger() << LogTags::repeat_to_cout << "WARNING: DS returned NAN for relic density. Setting to zero..." << EOM;
         yend=0;
       }
 
       result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 
-      logger() << "RD_oh2_general: oh2 =" << result << std::endl;
+      logger() << LogTags::debug << "RD_oh2_general: oh2 =" << result << EOM;
 
       #ifdef DARKBIT_DEBUG
         std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
@@ -622,12 +620,12 @@ namespace Gambit {
       // Set options via ini-file (MicrOmegas-specific performance options)
       fast = runOptions->getValueOrDef<int>(0, "fast");
       Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
-      logger() << "Using fast: " << fast << " and Beps: " << Beps << endl;
+      logger() << LogTags::debug << "Using fast: " << fast << " and Beps: " << Beps << EOM;
 
       // Output
       double Xf;
       oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
-      logger() << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
+      logger() << LogTags::debug << "X_f = " << Xf << " Omega h^2 = " << oh2 << EOM;
     }
 
 
@@ -654,7 +652,7 @@ namespace Gambit {
         result = oh2_theory/oh2_obs;
       if (result == -1)
         DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_fraction: Unknown mode (options: one, leq_one, any)");
-      logger() << "Fraction of dark matter that the scanned model accounts for: " << result << std::endl;
+      logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
     }
 
     void RD_fraction_fixed(double &result)

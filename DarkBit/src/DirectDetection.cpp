@@ -59,7 +59,7 @@ namespace Gambit {
       logger() << LogTags::debug << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
       logger() << LogTags::debug << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
       logger() << LogTags::debug << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " <<
-        (*BEreq::ddcom).ftp(9) << endl;
+        (*BEreq::ddcom).ftp(9) << EOM;
 
       // Set neutron hadronic matrix elements
       (*BEreq::ddcom).ftn(7)  = *Param["fnu"];
@@ -76,7 +76,7 @@ namespace Gambit {
       logger() << LogTags::debug << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
       logger() << LogTags::debug << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
       logger() << LogTags::debug << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " <<
-        (*BEreq::ddcom).ftn(9) << endl;
+        (*BEreq::ddcom).ftn(9) << EOM;
 
       // Set deltaq
       (*BEreq::ddcom).delu = *Param["deltau"];
@@ -85,7 +85,7 @@ namespace Gambit {
       logger() << LogTags::debug << "DarkSUSY delta q set to:" << endl;
       logger() << LogTags::debug << "delu = delta u = " << (*BEreq::ddcom).delu;
       logger() << LogTags::debug << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
-      logger() << LogTags::debug << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
+      logger() << LogTags::debug << "\tdels = delta s = " << (*BEreq::ddcom).dels << EOM;
 
       if (*Dep::DarkSUSY_PointInit) {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
@@ -102,14 +102,14 @@ namespace Gambit {
         logger() << LogTags::debug << " gps = " << result.gps << std::endl;
         logger() << LogTags::debug << " gns = " << result.gns << std::endl;
         logger() << LogTags::debug << " gpa = " << result.gpa << std::endl;
-        logger() << LogTags::debug << " gna = " << result.gna << std::endl;
+        logger() << LogTags::debug << " gna = " << result.gna << EOM;
       } else {
         // Set couplings to zero if DarkSUSY point initialization
         // was not successful
         result.gps = 0.0; result.gns = 0.0;
         result.gpa = 0.0; result.gna = 0.0;
         logger() << "DarkSUSY point initialization failed:" << std::endl;
-        logger() << " couplings set to zero." << std::endl;
+        logger() << " couplings set to zero." << EOM;
       }
     }
 
@@ -127,7 +127,7 @@ namespace Gambit {
       logger() << LogTags::debug << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
       logger() << LogTags::debug << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
       logger() << LogTags::debug << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
-      logger() << LogTags::debug << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+      logger() << LogTags::debug << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << EOM;
 
       // Set neutron hadronic matrix elements.
       (*BEreq::MOcommon).par[11] = *Param["fnd"];
@@ -137,7 +137,7 @@ namespace Gambit {
       logger() << LogTags::debug << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
       logger() << LogTags::debug << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
       logger() << LogTags::debug << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
-      logger() << LogTags::debug << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
+      logger() << LogTags::debug << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << EOM;
 
       //Set delta q.
       (*BEreq::MOcommon).par[5] = *Param["deltad"];
@@ -154,7 +154,7 @@ namespace Gambit {
       logger() << LogTags::debug << "pVectorFFPu = pVectorFFPd = delta u = "
         << (*BEreq::MOcommon).par[6] << endl;
       logger() << LogTags::debug << "pVectorFFPs = pVectorFFNs = delta s = "
-        << (*BEreq::MOcommon).par[7] << endl;
+        << (*BEreq::MOcommon).par[7] << EOM;
 
       double p1[2], p2[2], p3[2], p4[2];
       int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()),
@@ -174,7 +174,7 @@ namespace Gambit {
       logger() << LogTags::debug << " gps: " << result.gps << endl;
       logger() << LogTags::debug << " gns: " << result.gns << endl;
       logger() << LogTags::debug << " gpa: " << result.gpa << endl;
-      logger() << LogTags::debug << " gna: " << result.gna << endl;
+      logger() << LogTags::debug << " gna: " << result.gna << EOM;
     }
 
     /// Simple calculator of the spin-independent WIMP-proton cross-section
