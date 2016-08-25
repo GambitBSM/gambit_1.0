@@ -221,9 +221,9 @@ namespace Gambit
       //SingletDMSpec<MI> singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // should be 1.2.4?
 
     
-      singletdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      singletdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      singletdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      singletdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",true);
+      singletdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
+      singletdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
 
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
@@ -365,10 +365,8 @@ namespace Gambit
     
       int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
       double do_check_perturb = runOptions.getValueOrDef<bool>(false,"check_perturb");
-      double check_perturb_scale = runOptions.getValueOrDef<double>(1.22e19,"check_high_scale");
-      
-      
-      
+      double check_perturb_scale = runOptions.getValueOrDef<double>(1.22e19,"check_high_scale");      
+ 
       if (do_check_perturb)
       {
       if (!check_perturb(result,check_perturb_scale,check_perturb_pts))

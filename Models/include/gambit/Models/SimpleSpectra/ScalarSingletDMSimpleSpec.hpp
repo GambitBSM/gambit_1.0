@@ -121,11 +121,9 @@ namespace Gambit
                getters[mass1]        .map0W["vev"]       = &Self::get_HiggsVEV;
                getters[dimensionless].map0W["lambda_hS"] = &Self::get_lambda_hS;
 
-               getters[Pole_Mass].map0W["h0"]      = &Self::get_HiggsPoleMass;
                getters[Pole_Mass].map0W["h0_1"]    = &Self::get_HiggsPoleMass;
  
                getters[Pole_Mass].map0W["S"]       = &Self::get_SingletPoleMass; 
-               //getters[Pole_Mass].map0W["Singlet"] = &Self::get_SingletPoleMass;
               
                getters[dimensionless].map0W["lambda_S"] = &Self::get_lambda_S;
                getters[dimensionless].map0W["lambda_h"] = &Self::get_lambda_h;
@@ -161,11 +159,9 @@ namespace Gambit
                setters[dimensionless].map0W["g3"] = &Self::set_g3;
                setters[dimensionless].map0W["sinW2"] = &Self::set_sinW2;
 
-               setters[Pole_Mass].map0W["h0"]    = &Self::set_HiggsPoleMass;
-               //setters[Pole_Mass].map0W["h0_1"]  = &Self::set_HiggsPoleMass;
+               setters[Pole_Mass].map0W["h0_1"]    = &Self::set_HiggsPoleMass;
  
                setters[Pole_Mass].map0W["S"]       = &Self::set_SingletPoleMass; 
-               //setters[Pole_Mass].map0W["Singlet"] = &Self::set_SingletPoleMass; 
    
                setters[dimensionless].map2W["Yd"]= FInfo2W( &Self::set_Yd, i012, i012);
                setters[dimensionless].map2W["Yu"]= FInfo2W( &Self::set_Yu, i012, i012);

@@ -29,7 +29,7 @@ namespace Gambit {
   {
      setName("SMHiggs");
      addParameter(Par::mass1,     "vev");
-     addParameter(Par::Pole_Mass, "h0" );
+     addParameter(Par::Pole_Mass, "h0_1" );
   }
 
 }
