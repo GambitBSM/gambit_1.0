@@ -24,9 +24,13 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2016 Apr
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  \author Felix Kahlhoefer
 ///          (felix.kahlhoefer@desy.de)
-///  \date 2016 August
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -37,8 +41,6 @@
 
 // Load it
 LOAD_LIBRARY
-
-BE_ALLOW_MODELS(LocalHalo)
 
 // BACKEND FUNCTIONS =======================================
 
@@ -148,6 +150,7 @@ BE_FUNCTION(DDCalc_FreeAll,       void, (), "C_DDUtils_ddcalc_freeall",       "F
 BE_INI_DEPENDENCY(mwimp, double)
 BE_INI_DEPENDENCY(DD_couplings, DM_nucleon_couplings)
 BE_INI_DEPENDENCY(RD_fraction, double)
+BE_INI_DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
 
 // Convenience function for returning detector index given an analysis name.
 BE_CONV_FUNCTION(DDCalc_Experiment, int, (const str&), "DD_Experiment")

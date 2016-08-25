@@ -64,5 +64,5 @@ SUSY_HIT:
   1.5:         ./Backends/installed/susyhit/1.5/libsusyhit.so
 
 SPheno:
-  3.3.8:	./Backends/installed/SPheno/3.3.8/lib/libSPheno.so
+  3.3.8:	./Backends/installed/spheno/3.3.8/lib/libSPheno.so
 

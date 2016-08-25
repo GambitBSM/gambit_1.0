@@ -11,6 +11,8 @@
 ///   
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
+///  \author Sebastian Wild
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -104,12 +106,26 @@ int main()
     SingletDM_primary_parameters->setValue("mS", 100.);
     SingletDM_primary_parameters->setValue("lambda_hS", 0.05);
   
-    // Initialize LocalHalo model
-    ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
-    LocalHalo_primary_parameters->setValue("rho0", 0.4);
-    LocalHalo_primary_parameters->setValue("vrot", 235.);
-    LocalHalo_primary_parameters->setValue("v0", 235.);
-    LocalHalo_primary_parameters->setValue("vesc", 550.);
+    // Initialize halo model
+    ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
+    Halo_primary_parameters->setValue("rho0", 0.4);
+    Halo_primary_parameters->setValue("rhos", 0.08);
+    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("v0", 235.);
+    Halo_primary_parameters->setValue("vesc", 550.);
+    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("r_sun", 8.5);
+    Halo_primary_parameters->setValue("alpha", 0.17);
+
+
+    // --- Resolve halo dependencies ---
+    ExtractLocalMaxwellianHalo.notifyOfModel("Halo_Einasto");
+    ExtractLocalMaxwellianHalo.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+    GalacticHalo_Einasto.notifyOfModel("Halo_Einasto");
+    GalacticHalo_Einasto.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    GalacticHalo_Einasto.reset_and_calculate();
   
     // Initialize nuclear_params_fnq model
     ModelParameters* nuclear_params_fnq = Models::nuclear_params_fnq::Functown::primary_parameters.getcontentsPtr();
@@ -137,6 +153,7 @@ int main()
   //  nulike_1_0_3_init.reset_and_calculate();
     
     // Initialize gamLike backend
+    gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
   
     // Initialize MicrOmegas backend (specific for SingletDM)
@@ -162,8 +179,8 @@ int main()
   //  DarkSUSY_PointInit_MSSM.reset_and_calculate();
   
     // Initialize DarkSUSY Local Halo Model
-    DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
-    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+
+    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&ExtractLocalMaxwellianHalo);
     DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
@@ -252,8 +269,8 @@ int main()
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
-    DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
-    DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+
+    DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_SingletDM);

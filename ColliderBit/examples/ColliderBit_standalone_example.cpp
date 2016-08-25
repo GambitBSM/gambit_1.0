@@ -374,7 +374,7 @@ int main()
     getPythiaFileReader.setOption<YAML::Node>("Pythia_Standalone",Pythia_Standalone);
     std::vector<std::string> inputFiles;
     inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
-    getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
+    getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
     getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
 
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);

@@ -6,11 +6,16 @@ Parameters:
     M12: 507.013
     SignMu: 1
     TanBeta: 56.6243
-  LocalHalo:
-    rho0: 0.471947
-    v0: 235
-    vesc: 550
-    vrot: 235
+  Halo_gNFW_rho0:
+    rho0: 0.4
+    v0: 235.0
+    vesc: 550.0
+    vrot: 235.0
+    rs: 20.0
+    r_sun: 8.5
+    alpha: 1
+    beta: 3
+    gamma: 1
   StandardModel_SLHA2:
     CKM_A: 0.814
     CKM_etabar: 0.353

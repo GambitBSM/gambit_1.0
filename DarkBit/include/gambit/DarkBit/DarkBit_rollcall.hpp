@@ -42,6 +42,10 @@
 ///  \date 2014 Mar
 ///  \date 2015 Mar, Aug
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  \author Felix Kahlhoefer
 ///          (felix.kahlhoefer@desy.de)
 ///  \date 2016 August
@@ -93,7 +97,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_LocalHalo_func
       START_FUNCTION(bool)
       DEPENDENCY(RD_fraction, double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
       BACKEND_REQ(dshmcom,(),DS_HMCOM)
       BACKEND_REQ(dshmisodf,(),DS_HMISODF)
       BACKEND_REQ(dshmframevelcom,(),DS_HMFRAMEVELCOM)
@@ -461,7 +465,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_rho0_lognormal
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -469,7 +473,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vrot_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -477,7 +481,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_v0_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -485,7 +489,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_vesc_gaussian
       START_FUNCTION(double)
-      ALLOW_MODELS(LocalHalo)
+      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -985,11 +989,25 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // --- Functions related to the local and global properties of the DM halo ---
+
   #define CAPABILITY GalacticHalo
   START_CAPABILITY
-    #define FUNCTION GalacticHalo
-    START_FUNCTION(daFunk::Funk)
-    ALLOW_MODELS(GalacticHalo_gNFW, GalacticHalo_Einasto)
+    #define FUNCTION GalacticHalo_gNFW
+    START_FUNCTION(GalacticHaloProperties)
+    ALLOW_MODEL(Halo_gNFW)
+    #undef FUNCTION
+    #define FUNCTION GalacticHalo_Einasto
+    START_FUNCTION(GalacticHaloProperties)
+    ALLOW_MODEL(Halo_Einasto)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY LocalHalo
+  START_CAPABILITY
+    #define FUNCTION ExtractLocalMaxwellianHalo
+    START_FUNCTION(LocalMaxwellianHalo)
+    ALLOW_MODELS(Halo_gNFW, Halo_Einasto)
     #undef FUNCTION
   #undef CAPABILITY
 #undef MODULE

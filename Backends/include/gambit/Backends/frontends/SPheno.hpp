@@ -601,16 +601,6 @@ BE_FUNCTION(RunRGE, void, (Finteger&, // kont
                            Farray<Freal8,1,213>&, // g0
                            Freal8& // mGUT
                           ), "__sugraruns_MOD_runrge", "SPheno_MSSMspectrum")
-//BE_FUNCTION(odeint, void, (Farray<Freal8,1,57>&, // g1
-  //                         Finteger, // 57
-    //                       Freal8&, // tz
-      //                     Freal8, // 0.0
-        //                   Freal8&, // delta
-          //                 Freal8&, // dt
-            //               Freal8, // 0.0
-              //             // rge57
-                //           Finteger& // kont
-                  //        ), "__mathematics_MOD_odeint", "SPheno_MSSMspectrum")
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(run_SPheno, int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
