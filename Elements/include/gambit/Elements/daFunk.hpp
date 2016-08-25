@@ -66,6 +66,7 @@
 //#define GAMBIT_DIR
 
 #ifdef GAMBIT_DIR
+#include <omp.h>
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/util_macros.hpp"
 #endif
@@ -1388,7 +1389,14 @@ namespace daFunk
               (void)bindID;
               (void)data;
 #ifdef GAMBIT_DIR
-              Gambit::utils_error().raise(LOCAL_INFO, "daFunk::ThrowError says: " + msg);
+              if ( omp_get_level() == 0 )  // Outside of OMP blocks
+              {
+                  Gambit::utils_error().raise(LOCAL_INFO, "daFunk::ThrowError says: " + msg);
+              }
+              else  // Inside of OMP blocks
+              {
+                  Gambit::piped_errors.request(LOCAL_INFO, "daFunk::ThrowError says: " + msg);
+              }
 #else
               throw std::invalid_argument("daFunk::ThrowError says: " + msg);
 #endif
@@ -1411,8 +1419,16 @@ namespace daFunk
             {
               (void)bindID;
               (void)data;
-              Gambit::utils_warning().raise(LOCAL_INFO, "daFunk::RaiseInvalidPoint says: " + msg);
-              Gambit::invalid_point().raise("daFunk::RaiseInvalidPoint says: " + msg);
+              if ( omp_get_level() == 0 )  // Outside of OMP blocks
+              {
+                  Gambit::utils_warning().raise(LOCAL_INFO, "daFunk::RaiseInvalidPoint says: " + msg);
+                  Gambit::invalid_point().raise("daFunk::RaiseInvalidPoint says: " + msg);
+              }
+              else  // Inside OMP blocks
+              {
+                  Gambit::utils_warning().raise(LOCAL_INFO, "daFunk::RaisePipedInvalidPoint says: " + msg);
+                  Gambit::piped_invalid_point.request("daFunk::RaisePipedInvalidPoint says: " + msg);
+              }
               return 0;
             }
 

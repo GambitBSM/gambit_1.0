@@ -191,7 +191,7 @@ namespace Gambit {
 
     /// Wrapper around DarkSUSY kinematic functions
     double DSgamma3bdy(double(*IBfunc)(int&,double&,double&),
-        void(*setMassesForIB)(bool), int IBch, double Eg, double
+        int IBch, double Eg, double
         E1, double M_DM, double m_1, double m_2)
     {
       double E2 = 2*M_DM - Eg - E1;
@@ -210,9 +210,7 @@ namespace Gambit {
       // photon momentum.  (note that the expressions above and below only
       // apply to the v->0 limit)
 
-      setMassesForIB(true);
       double result = IBfunc(IBch,x,y);
-      setMassesForIB(false);
 
       #ifdef DARKBIT_DEBUG
         std::cout << "  x, y = " << x << ", " << y << std::endl;
@@ -455,30 +453,29 @@ namespace Gambit {
       //BEreq::registerMassesForIB(catalog.particleProperties);
 
       // Macro for setting up 3-body decays with gammas
-      #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \
-        /* Check if process is kinematically allowed */                            \
-        m_1 = catalog.getParticleProperty(str_flav_to_mass(STRINGIFY(P1))).mass;   \
-        m_2 = catalog.getParticleProperty(str_flav_to_mass(STRINGIFY(P2))).mass;   \
-        if(m_1 + m_2 < 2*M_DM)                                                     \
-        {                                                                          \
-          index = SV_IDX;                                                          \
-          sv = PREFACTOR*BEreq::dssigmav(index);                                   \
-          daFunk::Funk CAT(kinematicFunction_,NAME) =                              \
-           daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, STRIP_PARENS(IBFUNC),    \
-           BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"),                \
-           daFunk::var("E1"), M_DM, m_1, m_2);                                     \
-          /* Create channel identifier string */                                   \
-          std::vector<std::string> CAT(finalStates_,NAME);                         \
-          CAT(finalStates_,NAME).push_back("gamma");                               \
-          CAT(finalStates_,NAME).push_back(str_flav_to_mass(STRINGIFY(P1)));       \
-          CAT(finalStates_,NAME).push_back(str_flav_to_mass(STRINGIFY(P2)));       \
-          /* Create channel and push it into channel list of process */            \
-          TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                    \
-              CAT(kinematicFunction_,NAME));                                       \
-          process.channelList.push_back(CAT(channel_,NAME));                       \
-          annFinalStates.insert(str_flav_to_mass(STRINGIFY(P1)));                  \
-          annFinalStates.insert(str_flav_to_mass(STRINGIFY(P2)));                  \
-        }
+#define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \
+      /* Check if process is kinematically allowed */                        \
+      m_1 = catalog.getParticleProperty(str_flav_to_mass(STRINGIFY(P1))).mass;                 \
+      m_2 = catalog.getParticleProperty(str_flav_to_mass(STRINGIFY(P2))).mass;                 \
+      if(m_1 + m_2 < 2*M_DM)                                                 \
+      {                                                                      \
+        index = SV_IDX;                                                      \
+        sv = PREFACTOR*BEreq::dssigmav(index);                               \
+        daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
+            STRIP_PARENS(IBFUNC), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
+            M_DM, m_1, m_2);                                                 \
+        /* Create channel identifier string */                               \
+        std::vector<std::string> CAT(finalStates_,NAME);                     \
+        CAT(finalStates_,NAME).push_back("gamma");                           \
+        CAT(finalStates_,NAME).push_back(str_flav_to_mass(STRINGIFY(P1)));                     \
+        CAT(finalStates_,NAME).push_back(str_flav_to_mass(STRINGIFY(P2)));                     \
+        /* Create channel and push it into channel list of process */        \
+        TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                \
+            CAT(kinematicFunction_,NAME));                                   \
+        process.channelList.push_back(CAT(channel_,NAME));                   \
+        annFinalStates.insert(str_flav_to_mass(STRINGIFY(P1)));                                \
+        annFinalStates.insert(str_flav_to_mass(STRINGIFY(P2)));                                \
+      }
 
       /// Option ignore_three_body<bool>: Ignore three-body final states (default false)
       if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
