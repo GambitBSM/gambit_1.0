@@ -176,6 +176,15 @@ namespace Gambit
                 }
                 #endif
               }
+              // If we didn't decide to switch yet, check for the existence of
+              // the persistence file. This is not necessary for proper functioning
+              // of this system, but it allows users to manually create the persistence file 
+              // as a 'hack' to force the likelihood to switch to the alternate min LogL
+              // value.
+              if(not use_alternate_min_LogL)
+              {
+                use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
+              }
               return use_alternate_min_LogL;
             }
             /// @}
