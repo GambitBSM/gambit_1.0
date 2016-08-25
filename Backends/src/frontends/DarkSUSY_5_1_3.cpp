@@ -788,50 +788,5 @@ BE_NAMESPACE
       initVector<str>("W+", "A0")
      );
   }
-
-/* PS: I have made the mods requested, but these functions cannot work as designed,
- * because DarkBit::TH_ParticleProperty is a module type, not a backend type.
- * Make it a backend type or move these functions back into DarkBit.
- * FIXME: Fix the IB mass setting routines
-  void registerMassesForIB(
-      std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
-  {
-    DSparticle_mass.clear();
-    GAMBITparticle_mass.clear();
-    for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
-    {
-      DSparticle_mass.push_back(mspctm->mass(DSparticle_code(IBfinalstate[i])));
-      GAMBITparticle_mass.push_back(particleProperties.at(IBfinalstate[i]).mass);
-    }
-  }
-*/
-
-  //PS: this can't compile anyway, as particleProperties is not defined
-  //FIXME: Fix the IB mass setting routines
-  void setMassesForIB(bool set)
-  {
-    if (set)
-    {
-    /*  // Set masses in DS, using above global variables.
-      for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
-      {
-        mspctm->mass(DSparticle_code(IBfinalstate[i])) =
-          particleProperties.at(IBfinalstate[i]).mass;
-      }
-    */
-    }
-    else
-    {
-    /*  // Reset masses.
-      for (int i = 0; i < IBfinalstate.size(); i++ )
-      {
-        particleProperties.at(IBfinalstate[i]).mass =
-            mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i]));
-      } */
-    }
-  }
-
-
 }
 END_BE_NAMESPACE
-
