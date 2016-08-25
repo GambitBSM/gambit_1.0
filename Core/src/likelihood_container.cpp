@@ -146,10 +146,15 @@ namespace Gambit
     bool point_invalidated = false;
 
     // Check for signals from the scanner to switch to an alternate minimum log likelihood value. TODO: could let scanner plugin set the actual value?
-    if(check_for_switch_to_alternate_min_LogL())
+    static bool switch_done(false); // Disable this check once the switch occurs
+    if(not switch_done)
     {
-      active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
-      //std::cerr << "using alt_min_valid_lnlike ("<<alt_min_valid_lnlike<<") instead of original value ("<<min_valid_lnlike<<")" << std::endl; // Debugging
+      if(check_for_switch_to_alternate_min_LogL())
+      {
+        active_min_valid_lnlike = alt_min_valid_lnlike; // starts off equal to min_valid_lnlike
+        logger() << "Switched to using alt_min_valid_lnlike ("<<alt_min_valid_lnlike<<") instead of original value ("<<min_valid_lnlike<<")" << EOM;
+        switch_done = true;
+      }
     }
 
     // Check for signals to abort run
