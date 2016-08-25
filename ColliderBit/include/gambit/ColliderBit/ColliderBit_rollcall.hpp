@@ -443,6 +443,21 @@ START_MODULE
 
   #undef CAPABILITY 
 
+
+  // HiggsBounds input model parameters
+  #define CAPABILITY Lilith_ModelParameters
+  START_CAPABILITY
+
+    // SM Higgs model parameters
+    #define FUNCTION SMHiggs_Lilith_ModelParameters
+    START_FUNCTION(lilith_ModelParameters)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    DEPENDENCY(SM_spectrum, /*TAG*/ Spectrum)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
   // Get a LEP chisq from HiggsBounds
   #define CAPABILITY LEP_Higgs_LogLike
   START_CAPABILITY
@@ -489,12 +504,16 @@ START_MODULE
      #undef FUNCTION
      #define FUNCTION calc_Lilith_LHC_LogLike
       START_FUNCTION(double)
+      DEPENDENCY(Lilith_ModelParameters, lilith_ModelParameters)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
 //      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
 //      MODEL_GROUP(singlet_running, (SingletDM_running))
         BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*))
         BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*))
         BACKEND_REQ(initialize_lilith,(lilith),PyObject*,(char*))
+        BACKEND_REQ(get_lilithcalc,(lilith),PyObject*,())
+        BACKEND_REQ(get_lilith_readuserinput,(lilith),PyObject*, (PyObject*,char*))
+        BACKEND_REQ(get_lilith_computelikelihood,(lilith),float, (PyObject*))
         //BACKEND_REQ(lilithcalc,(lilith),PyObject)
         BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
      #undef FUNCTION

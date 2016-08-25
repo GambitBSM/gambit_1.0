@@ -22,6 +22,10 @@
 #include <Python.h>
 //#include "lilith.h"
 
+PyObject* lilithcalc_global;
+int userread = 0;
+
+
 BE_INI_FUNCTION
 {
   // Scan-level initialisation
@@ -30,8 +34,7 @@ BE_INI_FUNCTION
   {
     Py_Initialize();
     char experimental_input[] = "";
-    initialize_lilith(experimental_input);
-  /*  char experimental_input[] = "";
+    
 
      PyObject* args;
 
@@ -40,13 +43,16 @@ BE_INI_FUNCTION
   // |--------------------------------|
   printf("lilith is running!\n");
 
-  char pathtolilith[200];
+  /*char pathtolilith[200];
   // remove "lilith.c" from the path (8 characters + '\0')
   strncpy(pathtolilith, __FILE__, sizeof(__FILE__)-9);
   pathtolilith[sizeof(__FILE__)-9] = '\0';
   // add "../.." to the path
   strcat(pathtolilith, "../..");
   printf("here\n");
+  */
+  
+  char * pathtolilith = strdup("/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/");
 
    printf("path = %s\n", pathtolilith);
 
@@ -88,10 +94,10 @@ BE_INI_FUNCTION
   PyObject* lilithconstructor = PyObject_GetAttrString(lilithModule,(char*)"Lilith");
   args = PyTuple_Pack(1, Py_False);
   // Creating lilithcalc: an object of the Lilith class
-  lilithcalc = PyObject_CallObject(lilithconstructor, args);
+  lilithcalc_global = PyObject_CallObject(lilithconstructor, args);
 
   // Getting the function that reads the experimental results
-  PyObject* lilithsetexpinput = PyObject_GetAttrString(lilithcalc,(char*)"readexpinput");
+  PyObject* lilithsetexpinput = PyObject_GetAttrString(lilithcalc_global,(char*)"readexpinput");
 
   // Creating the argument for the previous function
   args = PyTuple_Pack(1, PyString_FromString((char*)experimental_input));
@@ -111,7 +117,7 @@ BE_INI_FUNCTION
     PyErr_PrintEx(0);
     printf("\nCode will now exit.\n");
     exit(1);
-    }*/
+    }
     
     
     scan_level = false;
@@ -119,3 +125,83 @@ BE_INI_FUNCTION
 
 }
 END_BE_INI_FUNCTION
+
+
+// Convenience functions
+BE_NAMESPACE
+{
+  
+  PyObject* get_lilithcalc()
+  {
+    return lilithcalc_global;
+  }
+  
+  PyObject* get_lilith_readuserinput(PyObject* lilithcalc, char* XMLinputstring)
+{
+
+      // Getting the function to read the user input
+      PyObject* readuserinput = PyObject_GetAttrString(lilithcalc,(char*)"readuserinput");
+
+      // Passing the user input file to this function
+      PyObject* args;
+      args = PyTuple_Pack(1, PyString_FromString(XMLinputstring));
+      PyObject_CallObject(readuserinput, args);
+
+      // Checking if error has occured
+      if(PyErr_Occurred())
+      {
+        printf("Error during the reading of the user input:\n\n");
+        PyErr_PrintEx(0);
+        printf("\n-2LogL will be set to -1 when evaluated.\n\n");
+        return lilithcalc;
+      }
+  
+      else
+      {
+        userread = 1;
+        return lilithcalc;
+      }
+}
+
+/**
+Evaluate -2LogL
+**/
+float get_lilith_computelikelihood(PyObject* lilithcalc)
+{
+      if(userread==0){
+          printf("\nError occured while reading the user input file\n");
+          printf("-2LogL is set to -1.\n\n");
+          return -1.;
+      }
+      // Getting the function that computes the likelihood
+      PyObject* computelikelihood = PyObject_GetAttrString(lilithcalc,(char*)"computelikelihood");
+      PyObject_CallObject(computelikelihood, NULL);
+      // Extracting the likelihood
+      PyObject* likelihood = PyObject_GetAttrString(lilithcalc,(char*)"l");
+      float my_likelihood = PyFloat_AsDouble(likelihood);
+  
+      // Checking if error has occured
+      // If so, the -2logL is set to -1 and the code keeps on running
+      if(PyErr_Occurred()){
+        printf("Error during the computation of the likelihood:\n\n");
+        PyErr_PrintEx(0);
+        printf("\n-2LogL is set to -1 for this point.\n\n");
+        return -1.;
+        }
+  
+      else{
+        return my_likelihood;
+        }
+  
+}
+
+  
+  
+}
+END_BE_NAMESPACE
+
+
+
+
+
+

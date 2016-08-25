@@ -3425,8 +3425,34 @@ namespace Gambit
       result.BR_hjgg[0] = decays.BF("g", "g");
     }
 
+
+
+
+   void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, lilith_ModelParameters &result)
+    {
+      const SubSpectrum& spec = fullspectrum.get_HE();
+      result.mh = spec.get(Par::Pole_Mass,25,0);
+      result.CU=1;
+      result.CD=1;
+      result.CV=1;
+      result.CGa=1;
+      result.Cg=1;
+      result.BRinv=0;
+      result.BRund=0;
+    }
+
+
     /// SM Higgs model parameters for HiggsBounds/Signals
     void SMHiggs_ModelParameters(hb_ModelParameters &result)
+    {
+      using namespace Pipes::SMHiggs_ModelParameters;
+      const Spectrum& fullspectrum = *Dep::SM_spectrum;
+      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
+      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+    }
+    
+    /// SM Higgs model parameters for Lilith
+    void SMHiggs_Lilith_ModelParameters(lilith_ModelParameters &result)
     {
       using namespace Pipes::SMHiggs_ModelParameters;
       const Spectrum& fullspectrum = *Dep::SM_spectrum;
@@ -3837,35 +3863,21 @@ namespace Gambit
       char XMLinputstring[6000]="";
       char buffer[100];
     
-      double mh = 125.4;
-      double CU = 1.0;
-      double CD = 1.0;
-      double CV = 1.0;
-      double CGa = 1.0;
-      double Cg = 1.0;
-      double BRinv = 0.0;
-      double BRund = 0.0;
+      lilith_ModelParameters ModelParam = *Dep::Lilith_ModelParameters;
+      
+      double mh = ModelParam.mh;
+      double CU = ModelParam.CU;
+      double CD = ModelParam.CD;
+      double CV = ModelParam.CV;
+      double CGa = ModelParam.CGa;
+      double Cg = ModelParam.Cg;
+      double BRinv = ModelParam.BRinv;
+      double BRund = ModelParam.BRund;
+      
+      //double mh = *Param.at("mH");
       char precision[] = "BEST-QCD";
-
-//std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
-   char experimental_input[] = "";//"/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/data/latest.list";
-//    char XMLinputpath[] = "userinput/example_couplings.xml";
-  
-    // Accessible outputs for a given point
-    // * Output of the reduced couplings
-    // * Output of the various contributions to the total -2LogL in a XML format
-    // * Output of the total -2LogL in a SLHA format
-    // * Output of the signal strengths
-  //  char output_couplings[] = "lilith_couplings_output.xml";
-  //  char output_XML[] = "lilith_likelihood_output.xml";
-  //  char output_SLHA[] = "lilith_likelihood_output.slha";
-  //  char output_mu[] = "lilith_mu_output.xml";
-  
-  
-  
-    // Creating an object of the class Lilith: lilithcalc
     
-      //PyObject* lilithcalc_local = BEreq::lilithcalc;
+
       sprintf(buffer,"<?xml version=\"1.0\"?>\n");
       strcat(XMLinputstring, buffer);
       sprintf(buffer,"<lilithinput>\n");
@@ -3906,13 +3918,17 @@ namespace Gambit
       strcat(XMLinputstring, buffer);
       
       // Reading user input XML string
-      //lilithcalc = BEreq::lilith_readuserinput(byVal(lilithcalc_local), XMLinputstring);
+      PyObject* lilithcalc_local = BEreq::get_lilithcalc();
+      
+      cout << "HIGGS MASS = " << mh << endl;
+      
+      lilithcalc_local = BEreq::get_lilith_readuserinput(byVal(lilithcalc_local), XMLinputstring);
 
       // Getting -2LogL
       float my_likelihood;
-      //my_likelihood = BEreq::lilith_computelikelihood(byVal(lilithcalc));
-     // result = my_likelihood;
-      result = 0;
+      my_likelihood = BEreq::get_lilith_computelikelihood(byVal(lilithcalc_local));
+      result = my_likelihood;
+     // result = 0;
     }
 
   }
