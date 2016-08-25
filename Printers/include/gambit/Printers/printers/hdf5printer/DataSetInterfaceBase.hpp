@@ -74,7 +74,7 @@ namespace Gambit {
          hid_t dset_id;
 
          // Safe(r) getter for dataset handle
-         hid_t get_dset_id()
+         hid_t get_dset_id() const
          { 
            if(this->dset_id<0)
            {
@@ -130,6 +130,7 @@ namespace Gambit {
 
          /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
          void extend_dset(const unsigned long i);
+
       };
 
 

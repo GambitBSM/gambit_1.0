@@ -141,7 +141,7 @@ int main()
     std::cout << ExampleBit_A::Pipes::exampleCut::Dep::event.name() << std::endl;
 
     // Set some module function options
-    nevents_pred_rounded.setOption<double>("probability_of_validity", 0.1);
+    nevents_pred_rounded.setOption<double>("probability_of_validity", 0.8);
 
     // Start a loop over some low-E points in the primary model parameter space
     std::cout << "Starting model scan..." << std::endl << std::endl;

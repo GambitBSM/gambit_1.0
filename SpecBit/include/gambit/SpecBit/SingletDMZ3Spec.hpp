@@ -308,12 +308,8 @@ namespace Gambit
             typename MTget::fmap0 tmp_map;
 
             tmp_map["S"] =  &Model::get_Mss_pole_slha;
-            tmp_map["Singlet"] =  &Model::get_Mss_pole_slha; // alternative naming convention as in SingletDMZ3 container
-            tmp_map["h0"] = &Model::get_Mhh_pole_slha;
             tmp_map["h0_1"] = &Model::get_Mhh_pole_slha; //added to match SM Higgs container naming
-
             tmp_map["A0"] = &Model::get_MAh_pole_slha;
-
 
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }

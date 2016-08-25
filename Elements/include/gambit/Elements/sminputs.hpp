@@ -89,6 +89,11 @@ namespace Gambit
       };
       PMNSdef PMNS;
 
+      // Block MASS
+      // Just need W boson mass. Usually an output (according to SLHA), but
+      // in some cases we do not generate a spectrum, so we need a default
+      double mW;        // 24: W pole mass
+
       // Return a fresh SLHAea object containing the contents of this object.
       SLHAstruct getSLHAea(bool = false) const;
 

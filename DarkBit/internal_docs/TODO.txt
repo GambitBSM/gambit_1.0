@@ -6,62 +6,48 @@ DarkBit
 =======
 
 Urgent (for production runs):
-- Comment out RelicDensity.cpp:137ff and check whether this introduces more
-  problems in relic density calculations [CW]
-- Merge DarkBit back into master and inform Martin [CW]
-- Merge new LUX likelihoods into DarkBit_dev [PS/FK]
-- WAIT FOR JE: IB routines issues
-  - check whether warnings disappear after setting quark masses in DS correctly [JC/JE]
-    (if not check out mail from Torsten 26-07 for solutions)
-- WAIT FOR JE: Relic densiy routines
-  - Check whether top-width is set correctly [JE]
-  - Check what is causing warnings for RD calculations
-- URGENT? Write DS patch for raising invalid points (or whatever) when RD
-  calculations take too long (if scan actually stall) [TB/JE/CW/PS]
-- DONE? Figure out whether cascade routines run properly when doing MSSM7 scans etc [JC]
+- Bring paper to internal review [CW]
 
 Before internal paper review:
-- Add discussion about LUX likelihoods to paper [FK]
+- Add discussion about LUX etc likelihoods to paper [FK]
 - Double-check that fast option for general oh2 routine is clear [CW]
-- Add appropriate paper references for DarkSUSY to paper and referencing system [TB]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
-- Update nuclear parameter best fit value discussion [JC] [Added by JC]
+- Update nuclear parameter best fit value discussion [JC]
 - Update likelihood technical details in physics papers [all]
-- Double check likelihood descriptions in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
+  (as discussed during meeting)
+- Update cascade code discussions in paper to new treatment [CW]
+- Mention all options in the darkbit paper [CW, JE, JC]
 
 After internal paper review started:
-- Remove Sloppy.cpp [CW]
-- Remove everything related to setMassesForIB [CW]
-- Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
-  exception (Mail Anders 29-07-16) [CW]
+- Make sure that content of future automatic paper reference system is complete
+  (in particular for DarkSUYS) [TB]
+- Figure out whether cascade routines run properly when doing MSSM7 scans, but
+  have instabilities when running SingletDM (which are hidden by the fall-back
+  routines) [JC]
+- Check parallelized oh2 DS routines again after scans are working [CW/TB]
 - Check accuracy of fallback gsl_integration [CW]
 - <sigma v>_eff plots [JC]
-- Update cascade code discussions in paper to new treatment [CW]
 - Skype with Joakim
-  - Figure out h+ higgswidth problems with DS SLHA initialization
-    (CMSSM_dsSLHA_problem.yaml) [JE/TB/CW]
+  - STATUS? Figure out h+ higgswidth problems with DS SLHA initialization
+    (CMSSM_dsSLHA_problem.yaml) (related to SLHA reader of DS) [JE/TB/CW]
+    (bug in the standalone -- ask TB)
   - Go through diskless init problems via skype with Joakim (see file)
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
-- Add RD_oh2_general to MSSM standalone (update numbers in paper) [JC]
-- GalacticHalo model [CW/SW]
-  - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
-  - Update GalacticHalo model to include Sun distance
-  - Update GalacticHalo model in gamlike
-  - Make sure that halo model is used consistently between nuLike, gamLike and
-    DDCalc
+- Add RD_oh2_general to MSSM and SingletDM standalones, remove Sloppy.cpp and
+  associated functions (and update numbers and tables in paper) [JC]
+- J-factor calculation in gamLike, using the new halo model scheme [CW/SW]
 - Prepare post-processing of CMSSM results with alternative DarkBit
   configurations [CW/JC/SW]
 - Concepts/cosmetics
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
-  - Check content of SloopyDarkBit.cpp [CW]
 - Start adding descriptions to the capability database [CW, JE, JC]
-- Mention all options in the darkbit paper [CW, JE, JC]
-- Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [JE, JC]
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
+- Check that all SM values are being set by MicrOmegas SLHA reader [JC] [Added by JC]
+- Properly MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
 - Include proper isnan check in RD_eff_annrate_SUSY [?]
 
 Before release:
@@ -69,11 +55,13 @@ Before release:
 - Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
-- Check parallelized oh2 DS routines again after scans are working [?]
+- Write DS patch for raising invalid points (or whatever) when RD
+  calculations take too long (if scan actually stall) [TB/JE/CW/PS]
 - Add to RD_spectrum_from_ProcessCatalog coannihilation information [?]
 - Rewrite RD_spectrum_SUSY in a DS independent way [?]
   (and change RD_annrate_DSprep_func accordingly)
 - MicrOmegas MSSM diskless initialization [JC] [Added by JC]
+- Set up MicrOmegas MSSM to use GAMBIT decay rates (don’t use internal calculations) [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
 — Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
@@ -98,6 +86,21 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
+  exception (Mail Anders 29-07-16) [CW]
+- Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
+- Check content of SloopyDarkBit.cpp [CW]
+- Remove everything related to setMassesForIB [CW]
+- Comment out RelicDensity.cpp:137ff and check whether this introduces more
+  problems in relic density calculations [CW]
+- Merge new LUX likelihoods into DarkBit_dev [PS/FK]
+- WAIT FOR JE: IB routines issues
+  - check whether warnings disappear after setting quark masses in DS correctly [JC/JE]
+    (if not check out mail from Torsten 26-07 for solutions)
+- WAIT FOR JE: Relic densiy routines
+  - Check whether top-width is set correctly [JE]
+  - Check what is causing warnings for RD calculations
+- Merge DarkBit back into master and inform Martin [CW]
 - OBSOLETE Confirm that SimYieldTable extrapolation switch is working correctly (Mail Anders 29-07-16) [JC]
 - Do Skypes [CW, JE, TB]
   - Go through RelicDensity FIXME items via skype with Torsten (see file)
@@ -150,6 +153,13 @@ Done:
   - Double-check sampling in cascade code
   - Think about convergence criterion in cascade code
   - Check FIXME in Cascades.cpp, decay_chain.cpp [CW]
+- GalacticHalo model [CW/SW]
+  - Replace gamLike halo discussion with example for setting up a halo
+  - Implement GalacticHalo model with r_s as relevant parameter (Pat mail from 2 Jul)
+  - Update GalacticHalo model to include Sun distance
+  - Update GalacticHalo model in gamlike
+  - Make sure that halo model is used consistently between nuLike, gamLike and
+    DDCalc
 
 
 Core

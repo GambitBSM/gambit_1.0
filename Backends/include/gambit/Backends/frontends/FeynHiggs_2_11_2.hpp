@@ -1,9 +1,21 @@
-/* 
- * Frontend for FeynHiggs backend
- * 
- * Last modified:
- * Christopher Rogan Sept 2015
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+/// Frontend for FeynHiggs backend
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Christopher Rogan
+///  \date Sep 2015
+///
+///  \author Pat Scott
+///  \date Dec 2015
+///
+///  *****************************************
+
 
 #define BACKENDNAME FeynHiggs
 #define VERSION 2.11.2

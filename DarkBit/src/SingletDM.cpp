@@ -200,22 +200,23 @@ namespace Gambit
       double lambda = he.get(Par::dimensionless,"lambda_hS");
       double mh = spec.get(Par::Pole_Mass,"h0_1");
 
-      // FIXME: Double check expressions (taken from Cline et al. 2013)
+      // Expressions taken from Cline et al. (2013, PRD 88:055025, arXiv:1306.4710)
       double fp = 2./9. + 7./9.*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
       double fn = 2./9. + 7./9.*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
 
-      result.gps = lambda*fp*m_neutron/pow(mh,2)/mass/2;
-      result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
+      result.gps = lambda*fp*m_proton/pow(mh,2)/mass/2;
+      result.gns = lambda*fn*m_neutron/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
 
-      logger() << "Singlet DM DD couplings:" << std::endl;
+      logger() << LogTags::debug << "Singlet DM DD couplings:" << std::endl;
       logger() << " gps = " << result.gps << std::endl;
       logger() << " gns = " << result.gns << std::endl;
       logger() << " gpa = " << result.gpa << std::endl;
-      logger() << " gna = " << result.gna << std::endl;
+      logger() << " gna = " << result.gna << EOM;
 
     } // function DD_couplings_SingletDM
+
 
     std::map<std::string, daFunk::Funk> get_f_vs_mass(std::string filename)
     {

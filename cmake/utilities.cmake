@@ -310,8 +310,9 @@ function(add_standalone executablename)
     # Set up the target to call the facilitator script to make the functors source file for this standalone. 
     add_custom_command(OUTPUT ${STANDALONE_FUNCTORS}
                        COMMAND python ${STANDALONE_FACILITATOR} ${executablename} -m __not_a_real_name__,${COMMA_SEPARATED_MODULES}
+                       COMMAND touch ${STANDALONE_FUNCTORS}
                        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                       DEPENDS module_harvest
+                       DEPENDS modules_harvested
                                ${STANDALONE_FACILITATOR}
                                ${HARVEST_TOOLS}
                                ${PROJECT_BINARY_DIR}/CMakeCache.txt)  

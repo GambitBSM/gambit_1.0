@@ -83,10 +83,10 @@ namespace Gambit
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);
 
-    /// Created a std::string of a specified length.
+    /// Created a str of a specified length.
     str str_fixed_len(str, int);
     
-    /// Copy a std::string to a character array, stripping the null termination character.
+    /// Copy a str to a character array, stripping the null termination character.
     void strcpy2f(char*, int, str);
 
     /// Get pointers to beginning and end of array. 
@@ -127,16 +127,19 @@ namespace Gambit
     }
 
      /// Ensure that a path exists (and then return the path, for chaining purposes)
-    const std::string& ensure_path_exists(const std::string&);
+    const str& ensure_path_exists(const str&);
 
     /// Return a vector of strings listing the contents of a directory (POSIX)
-    std::vector<std::string> ls_dir(const std::string& dir);
+    std::vector<str> ls_dir(const str& dir);
 
     /// Get directory name from full path+filename (POSIX)
-    std::string dir_name(const std::string& path);
+    str dir_name(const str& path);
 
     /// Get file name from full path+filename (POSIX)
-    std::string base_name(const std::string& path);
+    str base_name(const str& path);
+
+    /// Delete all files in a directory (does not act recursively)
+    int remove_all_files_in(const str& dirname, bool error_if_absent = true);
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 
@@ -144,19 +147,19 @@ namespace Gambit
     time_point get_clock_now();
 
     /// Get date and time
-    std::string return_time_and_date(const time_point& in);
+    str return_time_and_date(const time_point& in);
 
     /// Check if two strings are a "close" match
     /// Used for "did you mean?" type checking during command line argument processing
-    bool are_similar(const std::string& s1, const std::string& s2);   
+    bool are_similar(const str& s1, const str& s2);   
 
     /// Sub-check for are_similar.
     /// true if s1 can be obtained by deleting one character from s2
-    bool check1(const std::string& s1, const std::string& s2);   
+    bool check1(const str& s1, const str& s2);   
 
     /// Sub-check for are_similar.
     /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)    
-    bool check2(const std::string& s1, const std::string& s2);
+    bool check2(const str& s1, const str& s2);
 
     /// returns square of double - saves tedious repetition
     double sqr(double a);
