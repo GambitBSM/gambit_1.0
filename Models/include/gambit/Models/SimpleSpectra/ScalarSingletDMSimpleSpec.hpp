@@ -20,6 +20,7 @@
 #define __ScalarSingletDMSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
+
 #include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit
@@ -37,6 +38,7 @@ namespace Gambit
          double HiggsVEV;
          double SingletPoleMass;
          double SingletLambda;
+         double HiggsPoleMass_1srd_low,HiggsPoleMass_1srd_high;
 
          double LambdaH;
          double SingletLambdaS;
@@ -78,7 +80,11 @@ namespace Gambit
             /// @}
  
             /// Wrapper-side interface functions to parameter object
-            double get_HiggsPoleMass()   const { return params.HiggsPoleMass; } 
+            double get_HiggsPoleMass()   const { return params.HiggsPoleMass; }
+
+            double get_HiggsPoleMass_1srd_low() const  { return params.HiggsPoleMass_1srd_low; }
+            double get_HiggsPoleMass_1srd_high() const  { return params.HiggsPoleMass_1srd_high; }
+        
             double get_HiggsVEV()        const { return params.HiggsVEV;      } 
             double get_SingletPoleMass() const { return params.SingletPoleMass; } 
             double get_lambda_hS()       const { return params.SingletLambda; }
@@ -93,7 +99,10 @@ namespace Gambit
             double get_Yu(int i, int j)       const { if (i==j){return params.Yu[i];}else{return 0;} }
             double get_Ye(int i, int j)       const { if (i==j){return params.Ye[i];}else{return 0;} }
            
-            void set_HiggsPoleMass(double in)   { params.HiggsPoleMass=in; } 
+            void set_HiggsPoleMass(double in)   { params.HiggsPoleMass=in; }
+            void set_HiggsPoleMass_1srd_low(double in)   { params.HiggsPoleMass_1srd_low=in; }
+            void set_HiggsPoleMass_1srd_high(double in)   { params.HiggsPoleMass_1srd_high=in; }
+        
             void set_HiggsVEV(double in)        { params.HiggsVEV=in;      } 
             void set_SingletPoleMass(double in) { params.SingletPoleMass=in; } 
             void set_lambda_hS(double in)       { params.SingletLambda=in; }
@@ -122,6 +131,8 @@ namespace Gambit
                getters[dimensionless].map0W["lambda_hS"] = &Self::get_lambda_hS;
 
                getters[Pole_Mass].map0W["h0_1"]    = &Self::get_HiggsPoleMass;
+               getters[Pole_Mass_1srd_high].map0W["h0_1"]    = &Self::get_HiggsPoleMass_1srd_high;
+               getters[Pole_Mass_1srd_low].map0W["h0_1"]    = &Self::get_HiggsPoleMass_1srd_low;
  
                getters[Pole_Mass].map0W["S"]       = &Self::get_SingletPoleMass; 
               
@@ -160,6 +171,9 @@ namespace Gambit
                setters[dimensionless].map0W["sinW2"] = &Self::set_sinW2;
 
                setters[Pole_Mass].map0W["h0_1"]    = &Self::set_HiggsPoleMass;
+               
+               setters[Pole_Mass_1srd_high].map0W["h0_1"]    = &Self::set_HiggsPoleMass_1srd_high;
+               setters[Pole_Mass_1srd_low].map0W["h0_1"]    = &Self::set_HiggsPoleMass_1srd_low;
  
                setters[Pole_Mass].map0W["S"]       = &Self::set_SingletPoleMass; 
    

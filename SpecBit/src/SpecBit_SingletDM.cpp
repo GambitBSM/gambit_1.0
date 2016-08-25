@@ -128,6 +128,9 @@ namespace Gambit
       singletmodel.Yd[1] = sqrt2v * sminputs.mS;
       singletmodel.Yd[2] = sqrt2v * sminputs.mBmB;
       
+      //singletmodel.set_override(Par::Pole_Mass_1srd_low, "h0_1", 0.0);
+      //singletmodel.set_override(Par::Pole_Mass_1srd_low,"h0_1", 0.0);
+      
       
       
 
