@@ -38,9 +38,9 @@ the Needs["SARAH`"] command from inside Mathematica.  We recommend the
 following setup:
 
    $ cd ~/.Mathematica/Applications/
-   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.4.6.tar.gz
-   $ tar -xf SARAH-4.4.6.tar.gz
-   $ ln -s $PWD/SARAH-4.4.6/ SARAH
+   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.7.0.tar.gz
+   $ tar -xf SARAH-4.7.0.tar.gz
+   $ ln -s $PWD/SARAH-4.7.0/ SARAH
 
    $ cd ~/.Mathematica/Kernel/
    $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \
@@ -119,8 +119,8 @@ Creating the soucre code documentation
 ======================================
 
 FlexibleSUSY's source code documentation (including the generated
-source code files) can be generated with Doxygen in HTML format.  To
-generate the documentation please run:
+source code files) can be generated with Doxygen in HTML or man
+format.  To generate the HTML documentation please run:
 
    $ make doc-html
 
@@ -128,6 +128,15 @@ The generated HTML index file can then be found in doc/html/index.html
 and can be viewed with any HTML browser, e.g.
 
    $ firefox doc/html/index.html
+
+To generate the man documentation please run:
+
+   $ make doc-man
+
+The generated man pages can then be found in doc/man/man3/ and can be
+viewed as
+
+   $ man doc/man/man3/model_file_options.3
 
 
 Creating only the source code files -- no compilation
@@ -186,6 +195,15 @@ Afterwards, the standalone package can be build via
    $ cd /path/to/export/directory
    $ ./configure
    $ make
+
+It is also possible to create a package which includes only the
+generated source code of a given model.  To create such a package run
+
+    make pack-<model>-src
+
+where <model> is the name of the model whose generated source code
+shall be packed.  After `make' has finished, the package file
+<model>.tar.gz can be found in the working directory.
 
 
 Dynamic libraries
@@ -328,3 +346,39 @@ make compiles all source files and creates the addon library
 addons/<addon>/lib<addon>.a (including the object file file1.o from
 the above example) and an executable (addons/<addon>/run.x in the
 above example).
+
+
+Cleaning
+========
+
+There are several make targets to remove generated files, compiled
+object files, libraries or executables:
+
+   $ make clean      # deletes all .d .o .a .x and generated files
+
+   $ make distclean  # calls `make clean' and deletes in addition
+                     # Makefile flexiblesusy-config config.*
+                     # config/list_sarah_model_files.sh
+
+   $ make clean-dep  # deletes all .d files
+
+   $ make clean-executables # deletes all .x files
+
+   $ make clean-lib  # deletes all libraries
+
+   $ make clean-obj  # deletes all .o files
+
+For each model <model> or addon there are specific clean targets to
+remove model-specific files:
+
+   $ make clean-<model>     # deletes .d .o .a .x and generated files
+
+   $ make distclean-<model> # same as `make clean-<model>'
+
+   $ make clean-<model>-dep # deletes .d files
+
+   $ make clean-<model>-lib # deletes library
+
+   $ make clean-<model>-obj # deletes .o files
+
+   $ make clean-<model>-src # deletes generated files

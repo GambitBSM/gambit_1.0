@@ -74,19 +74,22 @@ void Beta_function::run_to(double x2, double eps)
  */
 void Beta_function::run(double x1, double x2, double eps)
 {
-   const double tol = get_tolerance(eps);
+   if (get_loops() > 0) {
+      const double tol = get_tolerance(eps);
 
-   if (std::fabs(x1) < tol)
-      throw NonPerturbativeRunningError(x1);
-   if (std::fabs(x2) < tol)
-      throw NonPerturbativeRunningError(x2);
+      if (std::fabs(x1) < tol)
+         throw NonPerturbativeRunningError(x1);
+      if (std::fabs(x2) < tol)
+         throw NonPerturbativeRunningError(x2);
 
-   Eigen::ArrayXd y(get());
-   runge_kutta::Derivs derivs = boost::bind(&Beta_function::derivatives,
-                                            this, _1, _2);
+      Eigen::ArrayXd y(get());
+      runge_kutta::Derivs derivs = boost::bind(&Beta_function::derivatives,
+                                               this, _1, _2);
 
-   call_rk(x1, x2, y, derivs, tol);
-   set(y);
+      call_rk(x1, x2, y, derivs, tol);
+      set(y);
+   }
+
    set_scale(x2);
 }
 

@@ -24,6 +24,13 @@
 #define TCf0 threshold_loop_functions::f
 #define TCg0 threshold_loop_functions::g
 #define TCIabc threshold_loop_functions::Iabc
+#define TCB0 threshold_loop_functions::B0
+#define TCDB0 threshold_loop_functions::DB0
+#define TCC0 threshold_loop_functions::C0
+#define TCD0 threshold_loop_functions::D0
+#define TCD2t threshold_loop_functions::D2t
+#define TCD4t threshold_loop_functions::D4t
+#define TCW threshold_loop_functions::W
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
@@ -54,6 +61,27 @@ double f8(double, double);
 
 /// \f$I_{abc}(a,b,c)\f$ (arguments are interpreted as unsquared)
 double Iabc(double, double, double);
+
+/// \f$B_0(p=0,m_1,m_2,Q)\f$ (arguments are interpreted as unsquared)
+double B0(double, double, double);
+
+/// \f$B_0'(p=0,m_1,m_2)\f$ (arguments are interpreted as unsquared)
+double DB0(double, double);
+
+/// \f$C_0(p=0,m_1,m_2,m_3)\f$ (arguments are interpreted as unsquared)
+double C0(double, double, double);
+
+/// \f$D_0(p=0,m_1,m_2,m_3,m_4)\f$ (arguments are interpreted as unsquared)
+double D0(double, double, double, double);
+
+/// \f$\tilde{D}_2(m_1,m_2,m_3,m_4)\f$ (arguments are interpreted as unsquared)
+double D2t(double, double, double, double);
+
+/// \f$\tilde{D}_4(m_1,m_2,m_3,m_4,Q)\f$ (arguments are interpreted as unsquared)
+double D4t(double, double, double, double, double);
+
+/// \f$Q(m_1,m_2,Q)\f$ (arguments are interpreted as unsquared)
+double W(double, double, double);
 
 } // namespace threshold_loop_functions
 } // namespace flexiblesusy

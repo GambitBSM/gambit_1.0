@@ -56,6 +56,7 @@ public:
    void print_version(std::ostream&) const;
    void reset();
 
+   const std::string& get_database_output_file() const { return database_output_file; }
    const std::string& get_slha_input_file() const { return slha_input_file; }
    const std::string& get_slha_output_file() const { return slha_output_file; }
    const std::string& get_program_name() const { return program; }
@@ -71,6 +72,7 @@ private:
    bool do_print_model_info;
    int exit_status;
    std::string program;
+   std::string database_output_file;
    std::string rgflow_file;
    std::string slha_input_file;
    std::string slha_output_file;

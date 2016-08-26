@@ -18,6 +18,7 @@ MSSMNoFVatMGUT_TWO_SCALE_MK := \
 		$(MSSMNoFVatMGUT_TWO_SCALE_SOFT_MK)
 
 MSSMNoFVatMGUT_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.MSSMNoFVatMGUT_generated \
 		$(DIR)/LesHouches.in.MSSMNoFVatMGUT
 
 MSSMNoFVatMGUT_GNUPLOT := \
@@ -34,9 +35,11 @@ LIBMSSMNoFVatMGUT_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBMSSMNoFVatMGUT_SRC += \
+		$(DIR)/MSSMNoFVatMGUT_effective_couplings.cpp \
 		$(DIR)/MSSMNoFVatMGUT_mass_eigenstates.cpp \
 		$(DIR)/MSSMNoFVatMGUT_info.cpp \
 		$(DIR)/MSSMNoFVatMGUT_input_parameters.cpp \
+		$(DIR)/MSSMNoFVatMGUT_observables.cpp \
 		$(DIR)/MSSMNoFVatMGUT_slha_io.cpp \
 		$(DIR)/MSSMNoFVatMGUT_physical.cpp \
 		$(DIR)/MSSMNoFVatMGUT_utilities.cpp \
@@ -55,6 +58,7 @@ EXEMSSMNoFVatMGUT_SRC += \
 		$(DIR)/scan_MSSMNoFVatMGUT.cpp
 LIBMSSMNoFVatMGUT_HDR += \
 		$(DIR)/MSSMNoFVatMGUT_convergence_tester.hpp \
+		$(DIR)/MSSMNoFVatMGUT_effective_couplings.hpp \
 		$(DIR)/MSSMNoFVatMGUT_high_scale_constraint.hpp \
 		$(DIR)/MSSMNoFVatMGUT_mass_eigenstates.hpp \
 		$(DIR)/MSSMNoFVatMGUT_info.hpp \
@@ -63,6 +67,7 @@ LIBMSSMNoFVatMGUT_HDR += \
 		$(DIR)/MSSMNoFVatMGUT_low_scale_constraint.hpp \
 		$(DIR)/MSSMNoFVatMGUT_model.hpp \
 		$(DIR)/MSSMNoFVatMGUT_model_slha.hpp \
+		$(DIR)/MSSMNoFVatMGUT_observables.hpp \
 		$(DIR)/MSSMNoFVatMGUT_physical.hpp \
 		$(DIR)/MSSMNoFVatMGUT_slha_io.hpp \
 		$(DIR)/MSSMNoFVatMGUT_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_MSSMNoFVatMGUT := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBMSSMNoFVatMGUT)
+all-$(MODNAME): $(LIBMSSMNoFVatMGUT) $(EXEMSSMNoFVatMGUT_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBMSSMNoFVatMGUT_DEP)
 		-rm -f $(EXEMSSMNoFVatMGUT_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBMSSMNoFVatMGUT)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBMSSMNoFVatMGUT_OBJ)
 		-rm -f $(EXEMSSMNoFVatMGUT_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBMSSMNoFVatMGUT)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXEMSSMNoFVatMGUT_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_MSSMNoFVatMGUT):
 		@true
 endif
 
-$(LIBMSSMNoFVatMGUT_DEP) $(EXEMSSMNoFVatMGUT_DEP) $(LIBMSSMNoFVatMGUT_OBJ) $(EXEMSSMNoFVatMGUT_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBMSSMNoFVatMGUT_DEP) $(EXEMSSMNoFVatMGUT_DEP) $(LIBMSSMNoFVatMGUT_OBJ) $(EXEMSSMNoFVatMGUT_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBMSSMNoFVatMGUT_DEP) $(EXEMSSMNoFVatMGUT_DEP) $(LIBMSSMNoFVatMGUT_OBJ) $(EXEMSSMNoFVatMGUT_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBMSSMNoFVatMGUT): $(LIBMSSMNoFVatMGUT_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBMSSMNoFVatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBMSSMNoFVatMGUT_DEP) $(EXEMSSMNoFVatMGUT_DEP)
 ALLSRC += $(LIBMSSMNoFVatMGUT_SRC) $(EXEMSSMNoFVatMGUT_SRC)

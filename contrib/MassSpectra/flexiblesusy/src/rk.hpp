@@ -28,7 +28,7 @@ void rungeKuttaStep(const Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx,
 /// organises the variable step-size for Runge-Kutta evolution
 void odeStepper(Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx, double *x,
                 double htry, double eps, const Eigen::ArrayXd& yscal,
-                double *hdid, double *hnext, Derivs derivs);
+                double *hdid, double *hnext, Derivs derivs, int& max_step_dir);
 
 typedef boost::function<decltype(odeStepper)> RungeKuttaQuinticStepper;
 

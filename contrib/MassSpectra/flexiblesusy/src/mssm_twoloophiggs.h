@@ -2,7 +2,11 @@
 #ifndef MSSM_TWOLOOPHIGGS_H
 #define MSSM_TWOLOOPHIGGS_H
 
-/** \file twoloophiggs.h
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** \file mssm_twoloophiggs.h
    - Project:     SOFTSUSY 
    - Author:      Ben Allanach 
    - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305 
@@ -26,7 +30,7 @@
 
      Notice: we assume that the 1-loop part is computed in terms of 
              running (DRbar) parameters, evaluated at the scale Q. */
-extern "C" int ewsb2loop_(double *t, double *g, double * t1, double *t2, 
+int ewsb2loop_(double *t, double *g, double * t1, double *t2, 
 			  double *st, double *ct, double *q, double *mu, 
 			  double *tanb, double *vv, double *gs, 
 			  double *s1, double *s2); 
@@ -45,7 +49,7 @@ extern "C" int ewsb2loop_(double *t, double *g, double * t1, double *t2,
      mu = Higgs mixing parameter, tanb = tan(beta), v2 = v^2, 
      OS = renormalization scheme for 1-loop (0 = DRbar, 1 = On-Shell), 
      Sij = 2-loop corrections to the CP-even Higgs mass matrix elements. */
-extern "C" int dszhiggs_(double * t, double * g, double * T1, double * T2, 
+int dszhiggs_(double * t, double * g, double * T1, double * T2, 
 			  double * st, double * ct, double * q, double * mu, 
 			  double * tanb, double *v2, double * gs, int * OS, 
 			  double * S11, double * S22, double * S12);
@@ -61,7 +65,7 @@ extern "C" int dszhiggs_(double * t, double * g, double * T1, double * T2,
      st = sin(theta_stop), ct = cos(theta_stop), q = Q^2 (ren. scale), 
      mu = Higgs mixing parameter, tanb = tan(beta), v2 = v^2, 
      DMA = 2-loop corrections to the CP-odd Higgs mass. */
-extern "C" int dszodd_(double *rmtsq, double *mgsq, double *mst1sq, 
+int dszodd_(double *rmtsq, double *mgsq, double *mst1sq, 
 			double *mst2sq, double *sxt, double *cxt, 
 			double *scalesq, double *amu, double *tbeta, 
 			double *vev2, double *gstrong, double *p2s); 
@@ -87,7 +91,7 @@ extern "C" int dszodd_(double *rmtsq, double *mgsq, double *mst1sq,
              in terms of the "resummed" bottom Yukawa coupling.
 
 */
-extern "C" int ddshiggs_(double * t, double * b, double * A0, double * T1, 
+int ddshiggs_(double * t, double * b, double * A0, double * T1, 
 			 double * T2, double * B1, double * B2, double * st, 
 			 double * ct, double * sb, double * cb, double * q, 
 			 double * mu, double * tanb, double * vv,  
@@ -114,7 +118,7 @@ extern "C" int ddshiggs_(double * t, double * b, double * A0, double * T1,
              in term of the "resummed" bottom Yukawa coupling.
 
 */
-extern "C" int ddsodd_(double * t, double * b, double * A0, double * T1, 
+int ddsodd_(double * t, double * b, double * A0, double * T1, 
 			 double * T2, double * B1, double * B2, double * st, 
 			 double * ct, double * sb, double * cb, double * q, 
 			 double * mu, double * tanb, double * vv,  
@@ -142,7 +146,7 @@ extern "C" int ddsodd_(double * t, double * b, double * A0, double * T1,
              in term of the "resummed" bottom Yukawa coupling.
 
 */
-extern "C" int ddstad_(double * t, double * b, double * A0, double * T1, 
+int ddstad_(double * t, double * b, double * A0, double * T1, 
 			 double * T2, double * B1, double * B2, double * st, 
 			 double * ct, double * sb, double * cb, double * q, 
 			 double * mu, double * tanb, double * vv,  
@@ -163,7 +167,7 @@ extern "C" int ddstad_(double * t, double * b, double * A0, double * T1,
    mu = Higgs mixing parameter, tb = tan(beta), v2 = v^2, 
    DMA = 2-loop corrections to the CP-odd Higgs mass.
  */
-extern "C" int tausqodd_(double * t, double * A0, double * BL, double * T1, 
+int tausqodd_(double * t, double * A0, double * BL, double * T1, 
 			 double * T2, double * st, double * ct, double * q, 
 			 double * mu, double * tanb, double * vv,  
 			 double * dMA);
@@ -183,7 +187,7 @@ extern "C" int tausqodd_(double * t, double * A0, double * BL, double * T1,
    OS = renormalization scheme for 1-loop (0 = DRbar, 1 = On-Shell),
    Sij = 2-loop corrections to the CP-even Higgs mass matrix elements.
 */
-extern "C" int tausqhiggs_(double * t, double * A0, double * BL, double * T1, 
+int tausqhiggs_(double * t, double * A0, double * BL, double * T1, 
 			   double * T2, double * st, double * ct, double * q,
 			   double * mu, double * tanb, double * vv, int * OS,
 			   double * S11, double * S22, double * S12);
@@ -206,16 +210,10 @@ extern "C" int tausqhiggs_(double * t, double * A0, double * BL, double * T1,
      Notice: we assume that the 1-loop part is computed in terms of 
      running (DRbar) parameters, evaluated at the scale Q.
 */
-extern "C" int tausqtad_(double * t, double * A0, double * BL, double * T1, 
+int tausqtad_(double * t, double * A0, double * BL, double * T1, 
 			 double * T2, double * st, double * ct, double * q, 
 			 double * mu, double * tanb, double * vv,  
 			 double * s1, double * s2);
-
-// dilog wrapper for complex variables: inputs are a.real and b.imag, outputs
-// c.real and d.imag
-extern "C" int dilogwrap_(double * a, double * b, double * c, double * d);
-
-extern "C" int dummy_();
 
 #define tadpole_higgs_2loop_at_as_mssm                ewsb2loop_
 #define tadpole_higgs_2loop_ab_as_mssm                ewsb2loop_
@@ -231,5 +229,9 @@ extern "C" int dummy_();
 #define self_energy_pseudoscalar_2loop_ab_as_mssm     dszodd_
 #define self_energy_pseudoscalar_2loop_at_at_mssm     ddsodd_
 #define self_energy_pseudoscalar_2loop_atau_atau_mssm tausqodd_
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

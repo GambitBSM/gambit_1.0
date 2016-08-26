@@ -18,6 +18,7 @@ lowMSSM_TWO_SCALE_MK := \
 		$(lowMSSM_TWO_SCALE_SOFT_MK)
 
 lowMSSM_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.lowMSSM_generated \
 		$(DIR)/LesHouches.in.lowMSSM
 
 lowMSSM_GNUPLOT := \
@@ -34,9 +35,11 @@ LIBlowMSSM_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBlowMSSM_SRC += \
+		$(DIR)/lowMSSM_effective_couplings.cpp \
 		$(DIR)/lowMSSM_mass_eigenstates.cpp \
 		$(DIR)/lowMSSM_info.cpp \
 		$(DIR)/lowMSSM_input_parameters.cpp \
+		$(DIR)/lowMSSM_observables.cpp \
 		$(DIR)/lowMSSM_slha_io.cpp \
 		$(DIR)/lowMSSM_physical.cpp \
 		$(DIR)/lowMSSM_utilities.cpp \
@@ -55,6 +58,7 @@ EXElowMSSM_SRC += \
 		$(DIR)/scan_lowMSSM.cpp
 LIBlowMSSM_HDR += \
 		$(DIR)/lowMSSM_convergence_tester.hpp \
+		$(DIR)/lowMSSM_effective_couplings.hpp \
 		$(DIR)/lowMSSM_high_scale_constraint.hpp \
 		$(DIR)/lowMSSM_mass_eigenstates.hpp \
 		$(DIR)/lowMSSM_info.hpp \
@@ -63,6 +67,7 @@ LIBlowMSSM_HDR += \
 		$(DIR)/lowMSSM_low_scale_constraint.hpp \
 		$(DIR)/lowMSSM_model.hpp \
 		$(DIR)/lowMSSM_model_slha.hpp \
+		$(DIR)/lowMSSM_observables.hpp \
 		$(DIR)/lowMSSM_physical.hpp \
 		$(DIR)/lowMSSM_slha_io.hpp \
 		$(DIR)/lowMSSM_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_lowMSSM := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBlowMSSM)
+all-$(MODNAME): $(LIBlowMSSM) $(EXElowMSSM_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBlowMSSM_DEP)
 		-rm -f $(EXElowMSSM_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBlowMSSM)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBlowMSSM_OBJ)
 		-rm -f $(EXElowMSSM_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBlowMSSM)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXElowMSSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_lowMSSM):
 		@true
 endif
 
-$(LIBlowMSSM_DEP) $(EXElowMSSM_DEP) $(LIBlowMSSM_OBJ) $(EXElowMSSM_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBlowMSSM_DEP) $(EXElowMSSM_DEP) $(LIBlowMSSM_OBJ) $(EXElowMSSM_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBlowMSSM_DEP) $(EXElowMSSM_DEP) $(LIBlowMSSM_OBJ) $(EXElowMSSM_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBlowMSSM): $(LIBlowMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBlowMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBlowMSSM_DEP) $(EXElowMSSM_DEP)
 ALLSRC += $(LIBlowMSSM_SRC) $(EXElowMSSM_SRC)
