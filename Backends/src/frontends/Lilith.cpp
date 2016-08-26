@@ -47,8 +47,6 @@ BE_INI_FUNCTION
   char * pathtolilith = strdup(path.c_str());
 
 
-   printf("path = %s\n", pathtolilith);
-
   PyObject* sys_path = PySys_GetObject((char*)"path");
   if (sys_path == NULL) {
         printf("sys_path error\n");

@@ -3954,7 +3954,6 @@ namespace Gambit
       // Reading user input XML string
       PyObject* lilithcalc = BEreq::get_lilithcalc();
       
-      cout << "BR inv = " << BRinv << endl;
       
       lilithcalc = BEreq::internal_lilith_readuserinput(byVal(lilithcalc), XMLinputstring);
 
