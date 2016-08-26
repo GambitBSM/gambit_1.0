@@ -65,7 +65,7 @@ Parameters:
     StandardModel_Higgs:
       mH:
         #range: [100.098,100.098]
-        range: [120,120]
+        range: [124,127]
         #prior_type: flat
       #QEWSB: 173
 

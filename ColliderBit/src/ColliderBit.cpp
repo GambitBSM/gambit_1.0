@@ -3453,7 +3453,7 @@ namespace Gambit
     /// SM Higgs model parameters for Lilith
     void SMHiggs_Lilith_ModelParameters(lilith_ModelParameters &result)
     {
-      using namespace Pipes::SMHiggs_ModelParameters;
+      using namespace Pipes::SMHiggs_Lilith_ModelParameters;
       const Spectrum& fullspectrum = *Dep::SM_spectrum;
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
       set_SMHiggs_ModelParameters(fullspectrum,decays,result);
