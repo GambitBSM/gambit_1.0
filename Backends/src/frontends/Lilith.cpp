@@ -52,7 +52,11 @@ BE_INI_FUNCTION
   printf("here\n");
   */
   
-  char * pathtolilith = strdup("/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/");
+  std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../", "datapath");
+  
+  //char * pathtolilith = strdup("/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/");
+  char * pathtolilith = strdup(path.c_str());
+
 
    printf("path = %s\n", pathtolilith);
 
@@ -136,7 +140,7 @@ BE_NAMESPACE
     return lilithcalc_global;
   }
   
-  PyObject* get_lilith_readuserinput(PyObject* lilithcalc, char* XMLinputstring)
+  PyObject* internal_lilith_readuserinput(PyObject* lilithcalc, char* XMLinputstring)
 {
 
       // Getting the function to read the user input
@@ -166,7 +170,7 @@ BE_NAMESPACE
 /**
 Evaluate -2LogL
 **/
-float get_lilith_computelikelihood(PyObject* lilithcalc)
+float internal_lilith_computelikelihood(PyObject* lilithcalc)
 {
       if(userread==0){
           printf("\nError occured while reading the user input file\n");

@@ -45,9 +45,9 @@ BE_FUNCTION(lilith_readuserinput, PyObject*, (PyObject*, char*),"lilith_readuser
 // Convenience functions (registration)
 BE_CONV_FUNCTION(get_lilithcalc, PyObject*, (), "get_lilithcalc")
 
-BE_CONV_FUNCTION(get_lilith_readuserinput, PyObject*, (PyObject*,char*), "get_lilith_readuserinput")
+BE_CONV_FUNCTION(internal_lilith_readuserinput, PyObject*, (PyObject*,char*), "internal_lilith_readuserinput")
 
-BE_CONV_FUNCTION(get_lilith_computelikelihood, float, (PyObject*), "get_lilith_computelikelihood")
+BE_CONV_FUNCTION(internal_lilith_computelikelihood, float, (PyObject*), "internal_lilith_computelikelihood")
 
 
 

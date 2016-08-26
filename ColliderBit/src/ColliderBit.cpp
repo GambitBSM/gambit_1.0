@@ -3435,9 +3435,16 @@ namespace Gambit
       result.BRinv=0;
       result.BRund=0;
     }
+    
+    
     void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters &result,str P)
     {
     result.BR_hjinvisible[0] = decays.BF(P, P);
+    }
+    
+    void set_invisible_width(const DecayTable::Entry& decays, lilith_ModelParameters &result,str P)
+    {
+    result.BRinv = decays.BF(P, P);
     }
 
 
@@ -3458,6 +3465,27 @@ namespace Gambit
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
       set_SMHiggs_ModelParameters(fullspectrum,decays,result);
     }
+    void SMlikeHiggs_Lilith_ModelParameters(lilith_ModelParameters &result)
+    {
+      using namespace Pipes::SMlikeHiggs_Lilith_ModelParameters;
+      const Spectrum& fullspectrum = *Dep::SingletDM_spectrum;
+      str invisible_particle;
+      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
+      {
+       //fullspectrum = *Dep::SingletDM_spectrum;
+       invisible_particle = "S";
+      }
+      else
+      {
+       ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
+      }
+      
+      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
+      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      set_invisible_width(decays,result,invisible_particle);
+    }
+
+    
 
     /// SM-like Higgs model parameters for HiggsBounds/Signals
     void SMlikeHiggs_ModelParameters(hb_ModelParameters &result)
@@ -3924,15 +3952,15 @@ namespace Gambit
       strcat(XMLinputstring, buffer);
       
       // Reading user input XML string
-      PyObject* lilithcalc_local = BEreq::get_lilithcalc();
+      PyObject* lilithcalc = BEreq::get_lilithcalc();
       
-      cout << "HIGGS MASS = " << mh << endl;
+      cout << "BR inv = " << BRinv << endl;
       
-      lilithcalc_local = BEreq::get_lilith_readuserinput(byVal(lilithcalc_local), XMLinputstring);
+      lilithcalc = BEreq::internal_lilith_readuserinput(byVal(lilithcalc), XMLinputstring);
 
       // Getting -2LogL
       float my_likelihood;
-      my_likelihood = BEreq::get_lilith_computelikelihood(byVal(lilithcalc_local));
+      my_likelihood = BEreq::internal_lilith_computelikelihood(byVal(lilithcalc));
       result = my_likelihood;
      // result = 0;
     }

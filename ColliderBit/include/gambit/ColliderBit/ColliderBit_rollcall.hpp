@@ -456,6 +456,13 @@ START_MODULE
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 
+    #define FUNCTION SMlikeHiggs_Lilith_ModelParameters
+    START_FUNCTION(lilith_ModelParameters)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
+    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
   // Get a LEP chisq from HiggsBounds
@@ -508,13 +515,11 @@ START_MODULE
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
 //      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
 //      MODEL_GROUP(singlet_running, (SingletDM_running))
-        BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*))
-        BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*))
-        BACKEND_REQ(initialize_lilith,(lilith),PyObject*,(char*))
+        BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*)) // use .so functions
+        BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*)) // use .so functions
         BACKEND_REQ(get_lilithcalc,(lilith),PyObject*,())
-        BACKEND_REQ(get_lilith_readuserinput,(lilith),PyObject*, (PyObject*,char*))
-        BACKEND_REQ(get_lilith_computelikelihood,(lilith),float, (PyObject*))
-        //BACKEND_REQ(lilithcalc,(lilith),PyObject)
+        BACKEND_REQ(internal_lilith_readuserinput,(lilith),PyObject*, (PyObject*,char*)) // internal functions
+        BACKEND_REQ(internal_lilith_computelikelihood,(lilith),float, (PyObject*)) // internal functions
         BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
      #undef FUNCTION
 
