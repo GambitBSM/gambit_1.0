@@ -38,30 +38,18 @@ BE_INI_FUNCTION
 
      PyObject* args;
 
-  // |--------------------------------|
-  // | Adding Lilith path to sys.path |
-  // |--------------------------------|
-  printf("lilith is running!\n");
+  printf("Lilith is running!\n");
 
-  /*char pathtolilith[200];
-  // remove "lilith.c" from the path (8 characters + '\0')
-  strncpy(pathtolilith, __FILE__, sizeof(__FILE__)-9);
-  pathtolilith[sizeof(__FILE__)-9] = '\0';
-  // add "../.." to the path
-  strcat(pathtolilith, "../..");
-  printf("here\n");
-  */
+
   
   std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../", "datapath");
   
-  //char * pathtolilith = strdup("/Users/jamesmckay/Documents/Programs/gambit/Backends/installed/lilith/1.1.3/");
   char * pathtolilith = strdup(path.c_str());
 
 
    printf("path = %s\n", pathtolilith);
 
   PyObject* sys_path = PySys_GetObject((char*)"path");
-  printf("here 2\n");
   if (sys_path == NULL) {
         printf("sys_path error\n");
         exit(1);
