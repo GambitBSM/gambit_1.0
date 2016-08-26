@@ -1,5 +1,3 @@
-
-
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
@@ -3425,8 +3423,6 @@ namespace Gambit
     }
 
 
-
-
    void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, lilith_ModelParameters &result)
     {
       const SubSpectrum& spec = fullspectrum.get_HE();
@@ -3438,6 +3434,10 @@ namespace Gambit
       result.Cg=1;
       result.BRinv=0;
       result.BRund=0;
+    }
+    void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters &result,str P)
+    {
+    result.BR_hjinvisible[0] = decays.BF(P, P);
     }
 
 
@@ -3463,15 +3463,21 @@ namespace Gambit
     void SMlikeHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::SMlikeHiggs_ModelParameters;
-      const Spectrum* fullspectrum;
-      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3")){ fullspectrum = &(*Dep::SingletDM_spectrum); }
-      else if (false) { /* fullspectrum = <blah> */ } // Placeholder clause; expand each time new model dependency added.
-      else 
-      { 
-        ColliderBit_error().raise(LOCAL_INFO, "Bug! You have not finished writing this module function to work with all the models that it is declared to work with!");
+      const Spectrum& fullspectrum = *Dep::SingletDM_spectrum;
+      str invisible_particle;
+      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
+      {
+       //fullspectrum = *Dep::SingletDM_spectrum;
+       invisible_particle = "S";
       }
+      else
+      {
+       ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
+      }
+      
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      set_SMHiggs_ModelParameters(*fullspectrum,decays,result);
+      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      set_invisible_width(decays,result,invisible_particle);
     }
 
     /// MSSM Higgs model parameters
@@ -3810,6 +3816,7 @@ namespace Gambit
         CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
         BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
       }
+      
 
       BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0],
                  &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0],
