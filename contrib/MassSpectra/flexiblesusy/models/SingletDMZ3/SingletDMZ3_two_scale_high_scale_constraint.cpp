@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:34
+// File generated at Sat 27 Aug 2016 12:43:55
 
 #include "SingletDMZ3_two_scale_high_scale_constraint.hpp"
 #include "SingletDMZ3_two_scale_model.hpp"
@@ -36,6 +36,7 @@
 
 namespace flexiblesusy {
 
+#define DERIVEDPARAMETER(p) model->p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -75,33 +76,15 @@ void SingletDMZ3_high_scale_constraint<Two_scale>::apply()
    assert(model && "Error: SingletDMZ3_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
-   if (std::fabs(model->get_g1()) > 3.54491) {
-#ifdef ENABLE_VERBOSE
-      ERROR("SingletDMZ3_high_scale_constraint: Non-perturbative gauge "
-            "coupling g1 = " << model->get_g1());
-#endif
-      model->set_g1(3.54491);
-   }
-   if (std::fabs(model->get_g2()) > 3.54491) {
-#ifdef ENABLE_VERBOSE
-      ERROR("SingletDMZ3_high_scale_constraint: Non-perturbative gauge "
-            "coupling g2 = " << model->get_g2());
-#endif
-      model->set_g2(3.54491);
-   }
-   if (std::fabs(model->get_g3()) > 3.54491) {
-#ifdef ENABLE_VERBOSE
-      ERROR("SingletDMZ3_high_scale_constraint: Non-perturbative gauge "
-            "coupling g3 = " << model->get_g3());
-#endif
-      model->set_g3(3.54491);
-   }
+
 
    update_scale();
 
 
 
    check_non_perturbative();
+
+
 }
 
 bool SingletDMZ3_high_scale_constraint<Two_scale>::check_non_perturbative()

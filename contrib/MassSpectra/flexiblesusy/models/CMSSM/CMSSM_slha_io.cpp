@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 26 Aug 2016 15:14:09
+// File generated at Sat 27 Aug 2016 12:50:33
 
 #include "CMSSM_slha_io.hpp"
 #include "CMSSM_input_parameters.hpp"

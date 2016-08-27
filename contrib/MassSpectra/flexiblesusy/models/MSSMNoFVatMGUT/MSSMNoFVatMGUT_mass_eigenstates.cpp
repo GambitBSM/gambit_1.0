@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 26 Aug 2016 15:15:59
+// File generated at Sat 27 Aug 2016 12:50:19
 
 /**
  * @file MSSMNoFVatMGUT_mass_eigenstates.cpp
@@ -26,7 +26,7 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Fri 26 Aug 2016 15:15:59 with FlexibleSUSY
+ * This file was generated at Sat 27 Aug 2016 12:50:19 with FlexibleSUSY
  * 1.5.1 (git commit: 8356bacd26e8aecc6635607a32835d534ea3cf01) and SARAH 4.9.0 .
  */
 

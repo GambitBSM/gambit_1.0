@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:58
+// File generated at Sat 27 Aug 2016 12:44:59
 
 /**
  * @file SingletDMZ3_two_scale_model.cpp
@@ -26,8 +26,8 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Mon 22 Feb 2016 17:30:58 with FlexibleSUSY
- * 1.2.4 (git commit: unknown) and SARAH 4.5.8 .
+ * This file was generated at Sat 27 Aug 2016 12:44:59 with FlexibleSUSY
+ * 1.5.1 (git commit: 8356bacd26e8aecc6635607a32835d534ea3cf01) and SARAH 4.9.0 .
  */
 
 #include "SingletDMZ3_two_scale_model.hpp"
@@ -76,6 +76,12 @@ void CLASSNAME::print(std::ostream& out) const
 void CLASSNAME::set_precision(double p)
 {
    SingletDMZ3_mass_eigenstates::set_precision(p);
+}
+
+std::ostream& operator<<(std::ostream& ostr, const SingletDMZ3<Two_scale>& model)
+{
+   model.print(ostr);
+   return ostr;
 }
 
 } // namespace flexiblesusy

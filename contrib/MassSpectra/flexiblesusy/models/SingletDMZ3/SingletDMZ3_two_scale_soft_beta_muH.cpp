@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:32
+// File generated at Sat 27 Aug 2016 12:43:50
 
 #include "SingletDMZ3_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -25,6 +25,42 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+
+namespace {
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m - Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return - m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+} // anonymous namespace
 
 /**
  * Calculates the one-loop beta function of muH.
@@ -74,7 +110,7 @@ double SingletDMZ3_soft_parameters::calc_beta_muH_two_loop(const Soft_traces& so
       g1)*Sqr(g2) + 0.75*muH*traceYeAdjYe*(-16*LamH + 5*Sqr(g1) + 5*Sqr(g2)) +
       40*muH*traceYuAdjYu*Sqr(g3) + 0.25*muH*traceYdAdjYd*(-144*LamH + 5*Sqr(g1
       ) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*muH*Sqr(LamH) - 0.25*muH*Sqr(LamSH) -
-      0.5*muS*Sqr(LamSH)));
+      0.5*muS*Sqr(LamSH) - 4.5*LamSH*Sqr(mu3)));
 
 
    return beta_muH;

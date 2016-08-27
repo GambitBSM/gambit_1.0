@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 26 Aug 2016 15:13:07
+// File generated at Sat 27 Aug 2016 12:48:00
 
 #ifndef lowMSSM_INFO_H
 #define lowMSSM_INFO_H

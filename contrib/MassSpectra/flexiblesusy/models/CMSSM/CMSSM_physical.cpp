@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 26 Aug 2016 15:15:04
+// File generated at Sat 27 Aug 2016 12:50:58
 
 #include "CMSSM_physical.hpp"
 #include "slha_io.hpp"

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 16:41:46
+// File generated at Sat 27 Aug 2016 12:43:00
 
 #ifndef SingletDM_INPUT_PARAMETERS_H
 #define SingletDM_INPUT_PARAMETERS_H
@@ -38,6 +38,9 @@ struct SingletDM_input_parameters {
       : HiggsIN(0), LamSHInput(0), LamSInput(0), muSInput(0), QEWSB(0), Qin(0)
 
    {}
+
+   Eigen::ArrayXd get() const;
+   void set(const Eigen::ArrayXd&);
 };
 
 std::ostream& operator<<(std::ostream&, const SingletDM_input_parameters&);
