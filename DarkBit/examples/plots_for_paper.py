@@ -121,7 +121,7 @@ def plotLimits():
 
     plt.xlabel(r"$m_\chi$ [GeV]")
     plt.ylabel(r"$\langle \sigma v \rangle$ [${\rm cm^3/s}$]")
-    plt.xlim([10,3000])
+    plt.xlim([.1,10000])
     plt.ylim([1e-27, 1e-23])
     plt.legend(loc="best",frameon=False,fontsize='medium')
 

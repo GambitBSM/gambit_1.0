@@ -128,6 +128,8 @@ namespace Gambit
       addParticle("tau-", 1.8,  1)
       addParticle("e+_3", 1.8,  1)
       addParticle("e-_3", 1.8,  1)
+      addParticle("e+_1", 0.00051, 1)
+      addParticle("e-_1", 0.00051, 1)
       addParticle("b", 4.9,  1)
       addParticle("bbar", 4.9,  1)
       addParticle("d_3", 4.9,  1)
@@ -150,15 +152,15 @@ namespace Gambit
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "phi");
-      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "phi2");
+      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "e-_1", "phi");
+      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "e+_1", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
           double mtot_final = 
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
-          if ( mWIMP*2 > mtot_final * 0) //FIXME: Jonathan: Why is the zero here?
+          if ( mWIMP*2 > mtot_final * 0 && brList[i]!= 0.) //FIXME: Jonathan: Why is the zero here?
           {
             std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
             daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i]; //FIXME: Jonathan:
@@ -175,10 +177,10 @@ namespace Gambit
         }
       }
 
-      if ( brList[5] > 0. )
+      if ( brList[6] > 0. )
       {
         auto E = daFunk::var("E");
-        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[5];
+        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[6];
         // FIXME: Include second gamma in AnnYield (currently ignored)
         TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
@@ -306,6 +308,8 @@ int main(int argc, char* argv[])
     // FIXME: Use three different simyieldtables
     SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
     SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::dNdE);
+    SimYieldTable_DarkSUSY.setOption<bool>("allow_yield_extrapolation", true);
+    SimYieldTable_MicrOmegas.setOption<bool>("allow_yield_extrapolation", true);
 
     // Select SimYieldTable
     //auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;
@@ -453,12 +457,12 @@ int main(int argc, char* argv[])
       std::cout << "Producing test spectra." << std::endl;
       double mass = 100.;
       double sv = 3e-26;
-      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
-      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.));
-      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
-      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
-      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.));
-      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
+      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
+      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.,0.));
+      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.,0.));
+      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.,0.));
+      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0.));
+      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1.));
     }
 
     // Generate gamma-ray spectra for various masses
@@ -468,7 +472,7 @@ int main(int argc, char* argv[])
       double mass = 100.;
       double sv = 3e-26;
       std::string filename = "dNdE_FCMC_" + std::to_string(mode) + ".dat";
-      dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.), mode);
+      dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0.), mode);
     }
 
     // Generate gamma-ray likelihood maps
@@ -479,13 +483,16 @@ int main(int argc, char* argv[])
       int mBins = 60;
       int svBins = 40;
       double oh2, lnL;
+      std::vector<double> sv_list, m_list;
       //std::vector<double> m_list = daFunk::logspace(1.0, 4.0, mBins);
-      std::vector<double> m_list = daFunk::logspace(1.0, 3.6, mBins);
-      std::vector<double> sv_list = daFunk::logspace(-28.0, -22.0, svBins);
+
       boost::multi_array<double, 2> lnL_b_array{boost::extents[mBins][svBins]},
           lnL_tau_array{boost::extents[mBins][svBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
 
+      sv_list = daFunk::logspace(-28.0, -22.0, svBins);
+
+      m_list = daFunk::logspace(log10(5.), 4., mBins-10);
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < sv_list.size(); j++)
@@ -498,8 +505,7 @@ int main(int argc, char* argv[])
           //TH_ProcessCatalog_WIMP.setOption<double>("sv", 1e-28);
           std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
-          //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_fixed.reset_and_calculate();
@@ -516,8 +522,21 @@ int main(int argc, char* argv[])
           lnL = lnL_FermiLATdwarfs_gamLike(0);
           std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
           lnL_b_array[i][j] = lnL;
+        }
+      }
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
+      dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
+
+      m_list = daFunk::logspace(log10(1.9), 4., mBins-10);
+      for (size_t i = 0; i < m_list.size(); i++)
+      {
+        for (size_t j = 0; j < sv_list.size(); j++)
+        {
+          TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+          TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_fixed.reset_and_calculate();
@@ -534,7 +553,23 @@ int main(int argc, char* argv[])
           lnL = lnL_FermiLATdwarfs_gamLike(0);
           std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
           lnL_tau_array[i][j] = lnL;
+        }
+      }
 
+      dump_array_to_file("Fermi_tau_table.dat", lnL_tau_array, m_list, sv_list);
+
+      m_list = daFunk::logspace(-1.0, 4., mBins);
+      for (size_t i = 0; i < m_list.size(); i++)
+      {
+        for (size_t j = 0; j < sv_list.size(); j++)
+        {
+          TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+          TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0.));
+          DarkMatter_ID_WIMP.reset_and_calculate();
+          TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
           RD_spectrum_from_ProcessCatalog.reset_and_calculate();
           RD_spectrum_ordered_func.reset_and_calculate();
@@ -543,8 +578,7 @@ int main(int argc, char* argv[])
           oh2_array[i][j] = oh2;
         }
       }
-      dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
-      dump_array_to_file("Fermi_tau_table.dat", lnL_tau_array, m_list, sv_list);
+
       dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
     }
 
@@ -563,7 +597,7 @@ int main(int argc, char* argv[])
           lnL_array3{boost::extents[mBins][sBins]}, lnL_array4{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
-      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
+      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
 
       // Calculate array of sigma_SI and lnL values for LUX 2016 and PandaX, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
