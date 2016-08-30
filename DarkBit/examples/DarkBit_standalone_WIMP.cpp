@@ -123,12 +123,16 @@ namespace Gambit
       // FIXME: Test all input possible for this function
       addParticle("gamma", 0.0,  2)
       addParticle("Z0", 91.2,  2)
+      // FIXME: Jonathan: Do we really need the flavour and mass eigenstates?
       addParticle("tau+", 1.8,  1)
       addParticle("tau-", 1.8,  1)
+      addParticle("e+_3", 1.8,  1)
+      addParticle("e-_3", 1.8,  1)
       addParticle("b", 4.9,  1)
       addParticle("bbar", 4.9,  1)
       addParticle("d_3", 4.9,  1)
       addParticle("dbar_3", 4.9,  1)
+
 
       addParticle("WIMP", mWIMP,  0)
       addParticle("phi",  mPhi,  0)
@@ -146,18 +150,18 @@ namespace Gambit
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "d_3", "phi");
-      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "dbar_3", "phi2");
+      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "phi");
+      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
           double mtot_final = 
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
-          if ( mWIMP*2 > mtot_final * 0)
+          if ( mWIMP*2 > mtot_final * 0) //FIXME: Jonathan: Why is the zero here?
           {
             std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
-            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i];
+            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i]; //FIXME: Jonathan:
             TH_Channel new_channel(
                 daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
@@ -472,21 +476,30 @@ int main(int argc, char* argv[])
     {
       // Systematic parameter maps annihilation
       std::cout << "Producing test maps." << std::endl;
-      int mBins = 40;
-      int svBins = 20;
-      std::vector<double> m_list = daFunk::logspace(1.0, 3.0, mBins);
-      std::vector<double> sv_list = daFunk::logspace(-28.0, -24.0, svBins);
-      boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
+      int mBins = 60;
+      int svBins = 40;
+      double oh2, lnL;
+      //std::vector<double> m_list = daFunk::logspace(1.0, 4.0, mBins);
+      std::vector<double> m_list = daFunk::logspace(1.0, 3.6, mBins);
+      std::vector<double> sv_list = daFunk::logspace(-28.0, -22.0, svBins);
+      boost::multi_array<double, 2> lnL_b_array{boost::extents[mBins][svBins]},
+          lnL_tau_array{boost::extents[mBins][svBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
+
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < sv_list.size(); j++)
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+          //FIXME: The below set of values gives an invalid point exception. Higher
+          // masses also lead to this exception.
+          //TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", 5568.81);
+          //TH_ProcessCatalog_WIMP.setOption<double>("sv", 1e-28);
+          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
           //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 1., 0., 0., 0.));
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_fixed.reset_and_calculate();
@@ -500,20 +513,38 @@ int main(int argc, char* argv[])
           GA_AnnYield_General.reset_and_calculate();
           //dump_GammaSpectrum.reset_and_calculate();
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
-          double lnL = lnL_FermiLATdwarfs_gamLike(0);
+          lnL = lnL_FermiLATdwarfs_gamLike(0);
           std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
-          lnL_array[i][j] = lnL;
+          lnL_b_array[i][j] = lnL;
+
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0.));
+          DarkMatter_ID_WIMP.reset_and_calculate();
+          TH_ProcessCatalog_WIMP.reset_and_calculate();
+          RD_fraction_fixed.reset_and_calculate();
+          SimYieldTable_DarkSUSY.reset_and_calculate();
+          SimYieldTable_MicrOmegas.reset_and_calculate();
+          GA_missingFinalStates.reset_and_calculate();
+          cascadeMC_FinalStates.reset_and_calculate();
+          cascadeMC_DecayTable.reset_and_calculate();
+          cascadeMC_LoopManager.reset_and_calculate();
+          cascadeMC_gammaSpectra.reset_and_calculate();
+          GA_AnnYield_General.reset_and_calculate();
+          //dump_GammaSpectrum.reset_and_calculate();
+          lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
+          lnL = lnL_FermiLATdwarfs_gamLike(0);
+          std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+          lnL_tau_array[i][j] = lnL;
+
           RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
           RD_spectrum_from_ProcessCatalog.reset_and_calculate();
           RD_spectrum_ordered_func.reset_and_calculate();
           RD_oh2_general.reset_and_calculate();
-          double oh2 = RD_oh2_general(0);
+          oh2 = RD_oh2_general(0);
           oh2_array[i][j] = oh2;
-    //    LUX_2013_Calc.reset_and_calculate();
-    //    LUX_2013_GetLogLikelihood.reset_and_calculate();
         }
       }
-      dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
+      dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
+      dump_array_to_file("Fermi_tau_table.dat", lnL_tau_array, m_list, sv_list);
       dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
     }
 
@@ -559,6 +590,7 @@ int main(int argc, char* argv[])
           sigma_SI_p_simple.reset_and_calculate();
           sigma_SI_p = sigma_SI_p_simple(0);
           DDCalc_1_0_0_init.reset_and_calculate();
+
           LUX_2016_prelim_Calc.reset_and_calculate();
           LUX_2016_prelim_GetLogLikelihood.reset_and_calculate();
           PandaX_2016_Calc.reset_and_calculate();

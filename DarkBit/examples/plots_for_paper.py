@@ -76,29 +76,57 @@ def plotSpectraValidation():
     plt.savefig("DarkBit_spectra_validation.eps")
 
 def plotLimits():
+
+    import matplotlib
+    matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    matplotlib.rcParams['font.size'] = 15
+
+    # DarkBit limits from dwarf spheroidal observations
     plt.clf()
     plt.figure(figsize=(5, 4))
-    data = loadtxt("Fermi_table.dat")
-    sv = data[1:, 0]
-    m = data[0, 1:]
-    lnL = -data[1:, 1:]
-    lnL -= lnL.min()
-    plt.contour(m, sv, lnL, levels = [2.71], colors='r')
+    data_b = loadtxt("Fermi_b_table.dat")
+    data_tau = loadtxt("Fermi_tau_table.dat")
+    sv_b = data_b[1:, 0]
+    m_b = data_b[0, 1:]
+    lnL_b = -data_b[1:, 1:]
+    lnL_b -= lnL_b.min()
+    sv_tau = data_tau[1:, 0]
+    m_tau = data_tau[0, 1:]
+    lnL_tau = -data_tau[1:, 1:]
+    lnL_tau -= lnL_tau.min()
 
+    # Omega h^2 calculated by DarkBit
     data = loadtxt("oh2_table.dat")
     sv = data[1:, 0]
     m = data[0, 1:]
     oh2 = data[1:, 1:]
-    plt.contour(m, sv, oh2, levels = [0.1], colors='k')
+    oh2_plt=plt.contour(m, sv, oh2, levels = [0.1188], colors='k')
+    oh2_plt.collections[0].set_label(r'$\Omega_c h^2 = .1188$')
+
+    # Plot DarkBit dwarf spheroidal limits
+    b_plt=plt.contour(m_b, sv_b, lnL_b, levels = [3.84/2], colors='r')
+    tau_plt=plt.contour(m_tau, sv_tau, lnL_tau, levels = [3.84/2], colors='g')
+    b_plt.collections[0].set_label(r'$b \bar b$')
+    tau_plt.collections[0].set_label(r'$\tau^- \tau^+$')
+
+    # Limit curves from Fermi Collaboration
+    bb = genfromtxt("DarkBit/examples/limits/FermiLAT_limits_bb.txt")
+    tautau = genfromtxt("DarkBit/examples/limits/FermiLAT_limits_tautau.txt")
+    plt.plot(bb[:,0],bb[:,26], color='r', ls="--")
+    plt.plot(tautau[:,0],tautau[:,26], color='g', ls="--")
 
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
 
-    plt.xlabel("m [GeV]")
-    plt.ylabel("sv [cm3/s]")
-    plt.ylim([1e-27, 1e-24])
-    plt.tight_layout(pad=0.3)
-    plt.savefig("DarkBit_limits.eps")
+    plt.xlabel(r"$m_\chi$ [GeV]")
+    plt.ylabel(r"$\langle \sigma v \rangle$ [${\rm cm^3/s}$]")
+    plt.xlim([10,3000])
+    plt.ylim([1e-27, 1e-23])
+    plt.legend(loc="best",frameon=False,fontsize='medium')
+
+    #plt.tight_layout(pad=0.3)
+    plt.savefig("DarkBit_limits.eps",bbox_inches="tight")
 
 def plotLUX():
 
