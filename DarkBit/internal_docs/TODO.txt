@@ -13,7 +13,6 @@ Before internal paper review:
 - Double-check that fast option for general oh2 routine is clear [CW]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Update paper discussion about local density [JC/CW]
-- Update nuclear parameter best fit value discussion [JC]
 - Update likelihood technical details in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
   (as discussed during meeting)
@@ -86,6 +85,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Paper: Update nuclear parameter best fit value discussion [JC]
 - Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
   exception (Mail Anders 29-07-16) [CW]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]
