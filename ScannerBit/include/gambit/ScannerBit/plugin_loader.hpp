@@ -17,6 +17,10 @@
 ///          (p.scott@imperial.ac.uk)   
 ///  \date 2014 Dec
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #ifndef __PLUGIN_LOADER_HPP
@@ -183,7 +187,8 @@ namespace Gambit
                 bool func_calculating() const {return funcCalculating;}
                 void set_calculating(bool b){funcCalculating = b;}
                 void set_early_shutdown_in_progress(){earlyShutdownInProgress=true;}
-                bool early_shutdown_in_progress(){return earlyShutdownInProgress;}
+                bool early_shutdown_in_progress() const {return earlyShutdownInProgress;}
+                bool resume_mode() const { return printer->resume_mode(); }
 
                 #ifdef WITH_MPI
                 // tags for messages sent via scannerComm
@@ -198,7 +203,7 @@ namespace Gambit
                 template <typename... T>
                 void resume(const std::string &name, T&... data)
                 {
-                    if (printer->resume_mode())
+                    if (resume_mode())
                     {
                         if (resume_streams.find(name) == resume_streams.end())
                         {
@@ -221,6 +226,16 @@ namespace Gambit
                 
                 ///Dump contains for resume.
                 void dump();
+
+                ///Save persistence file to record that the alternative min_LogL value is in use for this scan
+                void save_alt_min_LogL_state() const;
+
+                ///Delete the persistence file if it exists (e.g. when starting a new run)
+                void clear_alt_min_LogL_state() const;
+
+                ///Check persistence file to see if we should be using the alternative min_LogL value
+                bool check_alt_min_LogL_state() const;
+
                 ///Retrieve plugin data.
                 const Plugin_Loader &operator()() {return plugins;}
                 ///Get plugin data for single plugin.
