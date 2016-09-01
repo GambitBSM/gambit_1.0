@@ -38,6 +38,8 @@
 #define MODULE ColliderBit
 START_MODULE
 
+  #include "ColliderBit_Higgs_rollcall.hpp"
+
   /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
@@ -396,136 +398,6 @@ START_MODULE
 ////QUICK_FUNCTION(ColliderBit, L3_Charged_Gaugino_Small_DeltaM_Heavy_Sneutrino_LLike, NEW_CAPABILITY, L3_Charged_Gaugino_Small_DeltaM_Heavy_Sneutrino_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, /*TAG*/ Spectrum), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
 ////QUICK_FUNCTION(ColliderBit, L3_Charged_Gaugino_Small_DeltaM_Any_Sneutrino_LLike, NEW_CAPABILITY, L3_Charged_Gaugino_Small_DeltaM_Any_Sneutrino_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, /*TAG*/ Spectrum), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
 ////QUICK_FUNCTION(ColliderBit, L3_Charged_Higgsino_Small_DeltaM, NEW_CAPABILITY, L3_Charged_Higgsino_Small_DeltaM, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, /*TAG*/ Spectrum), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
-
-
-  ///////////// Higgs physics /////////////////////
-
-  // FeynHiggs Higgs production cross-sections
-  #define CAPABILITY FH_HiggsProd            
-  START_CAPABILITY
-    #define FUNCTION FH_HiggsProd
-    START_FUNCTION(fh_HiggsProd)
-    BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // HiggsBounds input model parameters
-  #define CAPABILITY HB_ModelParameters
-  START_CAPABILITY
-
-    // SM Higgs model parameters
-    #define FUNCTION SMHiggs_ModelParameters  
-    START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SM_spectrum, /*TAG*/ Spectrum)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
-    #define FUNCTION SMlikeHiggs_ModelParameters
-    START_FUNCTION(hb_ModelParameters)
-    ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    // MSSM Higgs model parameters
-    #define FUNCTION MSSMHiggs_ModelParameters
-    START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
-    DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-
-  #undef CAPABILITY 
-
-
-  // HiggsBounds input model parameters
-  #define CAPABILITY Lilith_ModelParameters
-  START_CAPABILITY
-
-    // SM Higgs model parameters
-    #define FUNCTION SMHiggs_Lilith_ModelParameters
-    START_FUNCTION(lilith_ModelParameters)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SM_spectrum, /*TAG*/ Spectrum)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    #define FUNCTION SMlikeHiggs_Lilith_ModelParameters
-    START_FUNCTION(lilith_ModelParameters)
-    ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-  // Get a LEP chisq from HiggsBounds
-  #define CAPABILITY LEP_Higgs_LogLike
-  START_CAPABILITY
-    #define FUNCTION calc_HB_LEP_LogLike
-    START_FUNCTION(double)
-    DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
-       BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
-       (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, Farray<double, 1,3, 1,3>&))
-       BACKEND_REQ(HiggsBounds_charged_input, (libhiggsbounds), void,
-       (double*, double*, double*, double*,
-        double*, double*, double*, double*))
-       BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
-       BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (int&, int&, double&, int&))            
-       BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
-       BACKEND_OPTION( (HiggsBounds), (libhiggsbounds) )
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY LHC_Higgs_LogLike
-    START_CAPABILITY
-      #define FUNCTION calc_HS_LHC_LogLike
-      START_FUNCTION(double)
-      DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
-         BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
-         (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, Farray<double, 1,3, 1,3>&))
-        BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,
-        (double*, double*, double*, double*,
-         double*, double*, double*, double*))
-        BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))
-        BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
-        BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-        BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
-     #undef FUNCTION
-     #define FUNCTION calc_Lilith_LHC_LogLike
-      START_FUNCTION(double)
-      DEPENDENCY(Lilith_ModelParameters, lilith_ModelParameters)
-      ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
-//      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
-//      MODEL_GROUP(singlet_running, (SingletDM_running))
-        BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*)) // use .so functions
-        BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*)) // use .so functions
-        BACKEND_REQ(get_lilithcalc,(lilith),PyObject*,())
-        BACKEND_REQ(internal_lilith_readuserinput,(lilith),PyObject*, (PyObject*,char*)) // internal functions
-        BACKEND_REQ(internal_lilith_computelikelihood,(lilith),float, (PyObject*)) // internal functions
-        BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
-     #undef FUNCTION
-
-
-  #undef CAPABILITY
-
 
 
 

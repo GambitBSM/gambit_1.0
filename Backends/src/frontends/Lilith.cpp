@@ -42,7 +42,7 @@ BE_INI_FUNCTION
 
 
   
-  std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../", "datapath");
+  std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/", "datapath");
   
   char * pathtolilith = strdup(path.c_str());
 
