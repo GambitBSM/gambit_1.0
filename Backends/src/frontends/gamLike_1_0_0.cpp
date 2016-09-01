@@ -43,7 +43,7 @@ BE_INI_FUNCTION
   {
     rho[i] = profile->bind("r")->eval(r[i]);
   }
-  //set_MW_profile(r, rho, dist); // FIXME: uncomment this after set_MW_profile has been setup!
+  set_halo_profile(0, r, rho, dist);
 
 }
 END_BE_INI_FUNCTION
