@@ -135,60 +135,103 @@ def plotLUX():
     matplotlib.rcParams['font.family'] = 'STIXGeneral'
     matplotlib.rcParams['font.size'] = 15
 
-    #data = loadtxt("../LUX2013_table.dat")
-    # lnL(m, gps)
-    data_lnL = loadtxt("../LUX2013_table.dat")
-    # sigma_SI,p(m, gps)
-    data_sigmaSIp = loadtxt("../sigmaSIp_table.dat")
-    #s = data[1:, 0]
-    #m = data[0, 1:]
-    #lnL = -data[1:, 1:]
-    #lnL -= lnL.min()
-    lnL = -data_lnL[1:, 1:]
-    lnL -= lnL.min()
-    m = data_lnL[0, 1:]
-    gps = data_lnL[1:,0]
-    sigma = data_sigmaSIp[1:, 1:]
-    m_grid = tile(m,(gps.size,1))
+    # SI scattering
 
-    # Exclusion plot in m/gps plane
-    plt.contour(m, gps, lnL, levels = [2.71], colors='r')
+    lux2013 = loadtxt("./LUX_2013_table.dat")
+    lux2016 = loadtxt("./LUX_2016_prelim_table.dat")
+    pandaX = loadtxt("./PandaX_2016_table.dat")
+    xenon100 = loadtxt("./XENON100_2012_table.dat")
+    
+    s_LUX2013 = lux2013[1:, 0]
+    m_LUX2013 = lux2013[0, 1:]
+    lnL_LUX2013 = -lux2013[1:, 1:]
+    lnL_LUX2013 -= lnL_LUX2013.min()
+    s_PandaX = pandaX[1:, 0]
+    m_PandaX = pandaX[0, 1:]
+    lnL_PandaX = -pandaX[1:, 1:]
+    lnL_PandaX -= lnL_PandaX.min()
+    s_LUX2016 = lux2016[1:, 0]
+    m_LUX2016= lux2016[0, 1:]
+    lnL_LUX2016 = -lux2016[1:, 1:]
+    lnL_LUX2016 -= lnL_LUX2016.min()
+    s_XENON100 = xenon100[1:, 0]
+    m_XENON100 = xenon100[0, 1:]
+    lnL_XENON100 = -xenon100[1:, 1:]
+    lnL_XENON100 -= lnL_XENON100.min()
 
-    plt.gca().set_xscale('log')
-    plt.gca().set_yscale('log')
-
-    plt.xlabel("m [GeV]")
-    plt.ylabel("gps [GeV-2]")
-    plt.tight_layout(pad=0.3)
-    plt.savefig("DarkBit_LUX2013_gps_m.eps")
-
-
-    # Exclusion plot in m/sigma_SI,p plane
     plt.clf()
     plt.figure(figsize=(5, 4))
 
-    # Interpolate likelihood into m/sigma_SI,p plane
-    mi = logspace(log10(min(m)), log10(max(m)), num=100, base=10)
-    sigmai = logspace(log10(min(sigma[:,-1])), log10(max(sigma[:,0])), num=80, base=10)
-    lnL_interp=griddata((m_grid.flatten(),sigma.flatten()),lnL.flatten(),(mi[None,:],sigmai[:,None]),rescale=True,method='nearest')
+    lux2013_lim = genfromtxt("./DarkBit/examples/limits/LUX_2013_85d_118kg_SI_95CL.txt")
+    lux2016_lim = genfromtxt("./DarkBit/examples/limits/LUX_2016_IDM_332d.txt")
+    pandaX_lim = genfromtxt("./DarkBit/examples/limits/PandaX_2016_98d_SI_90CL.csv",delimiter = ",")
+    xenon100_lim = genfromtxt("./DarkBit/examples/limits/Xenon100_2012_225d_SI_90CL.csv",delimiter = ",")\
 
-    limit = genfromtxt("../DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
+    lux2013_plt = plt.contour(m_LUX2013, s_LUX2013, lnL_LUX2013, levels = [3.84/2], colors='r')
+    lux2013_plt.collections[0].set_label("LUX 2013")
+    #lux2016_plt = plt.contour(m_LUX2016, s_LUX2016, lnL_LUX2016, levels = [2.71/2], colors='g')
+    #lux2016_plt.collections[0].set_label("LUX 2016")
+    pandaX_plt = plt.contour(m_PandaX, s_PandaX, lnL_PandaX, levels = [2.71/2], colors='b')
+    pandaX_plt.collections[0].set_label("PandaX 2016")
+    xenon100_plt = plt.contour(m_XENON100, s_XENON100, lnL_XENON100, levels = [2.71/2], colors='k')
+    xenon100_plt.collections[0].set_label("XENON100 2012")
 
-    gambit = plt.contour(mi, sigmai, lnL_interp, levels = [2.71], colors='r')
-    gambit.collections[0].set_label("DarkBit")
-    plt.plot(limit[:,0],limit[:,1]*10**-36,label="Official",ls="--")
+    plt.plot(lux2013_lim[:,0],lux2013_lim[:,1]*10**-36,ls="--", color='r')
+    #plt.plot(lux2016_lim[:,0],lux2016_lim[:,1]*10**-45,ls="--", color='g')
+    plt.plot(pandaX_lim[:,0],pandaX_lim[:,1]*10**-44,ls="--", color='b')
+    plt.plot(xenon100_lim[:,0],xenon100_lim[:,1]*10**-44,ls="--", color='k')
     
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
-    plt.gca().set_xlim(xmin=2,xmax=2000)
-    plt.gca().set_ylim(ymin=10**-46,ymax=10**-39)
+    plt.gca().set_xlim(xmin=3,xmax=2000)
+    plt.gca().set_ylim(ymin=10**-46,ymax=10**-42)
     
     plt.xlabel(r'$m_\chi$ [GeV]')
     plt.ylabel(r'$\sigma_{{\rm SI},N}$ [${\rm cm^2}$]')
     plt.legend(loc="best",frameon=False,fontsize='medium')
-    plt.title("LUX 2013 95% CL")
 
-    plt.savefig("DarkBit_LUX2013_sigma_m.eps",bbox_inches="tight")
+    #plt.show()
+    plt.savefig("DarkBit_SI_sigma_m.eps",bbox_inches="tight")
+  
+    # SD proton scattering
+    plt.clf()
+    plt.figure(figsize=(5, 4))
+
+    pico = loadtxt("./PICO_60_F_table.dat")
+    simple = loadtxt("./SIMPLE_2014_table.dat")
+
+    s_PICO = pico[1:, 0]
+    m_PICO = pico[0, 1:]
+    lnL_PICO = -pico[1:, 1:]
+    lnL_PICO -= lnL_PICO.min()
+    s_SIMPLE = simple[1:, 0]
+    m_SIMPLE = simple[0, 1:]
+    lnL_SIMPLE = -simple[1:, 1:]
+    lnL_SIMPLE -= lnL_SIMPLE.min()
+
+    simple_lim = genfromtxt("./DarkBit/examples/limits/SIMPLE_2014_SDp.csv",delimiter=",")
+    pico_lim = genfromtxt("./DarkBit/examples/limits/PICO60_SDp_2015Oct16_90CL.csv",delimiter=",")
+ 
+    # I'm not sure about the CL in the SIMPLE analysis!
+    simple_plt = plt.contour(m_SIMPLE, s_SIMPLE, lnL_SIMPLE, levels = [2.71/2], colors='r')
+    simple_plt.collections[0].set_label("SIMPLE")
+    pico_plt = plt.contour(m_PICO, s_PICO, lnL_PICO, levels = [2.71/2], colors='g')
+    pico_plt.collections[0].set_label("PICO 60")
+
+    plt.plot(simple_lim[:,0],simple_lim[:,1]*10**-36,ls="--", color='r')
+    plt.plot(pico_lim[:,0],pico_lim[:,1]*10**-40,ls="--",color='g')
+
+    plt.gca().set_xscale('log')
+    plt.gca().set_yscale('log')
+    plt.gca().set_xlim(xmin=3,xmax=2000)
+    plt.gca().set_ylim(ymin=10**-40,ymax=10**-37)
+
+    plt.xlabel(r'$m_\chi$ [GeV]')
+    plt.ylabel(r'$\sigma_{{\rm SD},p}$ [${\rm cm^2}$]')
+    plt.legend(loc='upper center',frameon=False,fontsize='medium')
+
+    #plt.show()
+    plt.savefig("DarkBit_SD_sigma_m.eps",bbox_inches="tight")
 
 
 def plotMSSM7():

@@ -421,7 +421,7 @@ int main(int argc, char* argv[])
 
     // ---- Calculate direct detection constraints ----
 
-    // Calculate direct detection rates for LUX 2016, PandaX 2016, LUX 2013, and XENON100 2012
+    // Calculate direct detection rates for LUX 2016, PandaX 2016, LUX 2013, XENON100 2012, SIMPLE and PICO
     LUX_2016_prelim_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     LUX_2016_prelim_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     PandaX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
@@ -430,8 +430,12 @@ int main(int argc, char* argv[])
     LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     XENON100_2012_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     XENON100_2012_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    PICO_60_F_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    PICO_60_F_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    SIMPLE_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    SIMPLE_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
 
-    // Calculate direct detection likelihood for LUX 2013
+    // Calculate direct detection likelihood for LUX 2016, PandaX 2016, LUX 2013, XENON100 2012, SIMPLE and PICO
     LUX_2016_prelim_GetLogLikelihood.resolveDependency(&LUX_2016_prelim_Calc);
     LUX_2016_prelim_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     LUX_2016_prelim_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
@@ -444,6 +448,12 @@ int main(int argc, char* argv[])
     XENON100_2012_GetLogLikelihood.resolveDependency(&XENON100_2012_Calc);
     XENON100_2012_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     XENON100_2012_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    PICO_60_F_GetLogLikelihood.resolveDependency(&PICO_60_F_Calc);
+    PICO_60_F_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    PICO_60_F_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    SIMPLE_2014_GetLogLikelihood.resolveDependency(&SIMPLE_2014_Calc);
+    SIMPLE_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    SIMPLE_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
 
     // Set generic WIMP mass object
     mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -499,10 +509,6 @@ int main(int argc, char* argv[])
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          //FIXME: The below set of values gives an invalid point exception. Higher
-          // masses also lead to this exception.
-          //TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", 5568.81);
-          //TH_ProcessCatalog_WIMP.setOption<double>("sv", 1e-28);
           std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
@@ -587,19 +593,21 @@ int main(int argc, char* argv[])
     {
       // Systematic parameter maps scattering
       std::cout << "Producing test maps." << std::endl;
-      double sigma_SI_p, lnL1, lnL2, lnL3, lnL4;
+      double lnL1, lnL2, lnL3, lnL4;
+      double g, reduced_mass;
       int mBins = 300;
       int sBins = 200;
+      const double mN = (m_proton + m_neutron) / 2;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
-      std::vector<double> s_list = daFunk::logspace(-10, -4, sBins);
-      boost::multi_array<double, 2> sigma_array{boost::extents[mBins][sBins]};
+      std::vector<double> s_list;
       boost::multi_array<double, 2> lnL_array1{boost::extents[mBins][sBins]}, lnL_array2{boost::extents[mBins][sBins]},
           lnL_array3{boost::extents[mBins][sBins]}, lnL_array4{boost::extents[mBins][sBins]};
-      boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
       TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
 
-      // Calculate array of sigma_SI and lnL values for LUX 2016 and PandaX, assuming gps=gns
+      s_list = daFunk::logspace(-46., -39., sBins);
+      // Calculate array of sigma_SI and lnL values for LUX 2016 and 2013, Xenon100,
+      // and PandaX, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -612,17 +620,17 @@ int main(int argc, char* argv[])
 
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          reduced_mass = (m_list[i] * mN) / (mN + m_list[i]);
+          g = sqrt(s_list[j]*pi/gev2cm2) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_fixed.reset_and_calculate();
-          DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
-          DD_couplings_WIMP.setOption<double>("gns", s_list[j]);
+          DD_couplings_WIMP.setOption<double>("gps", g);
+          DD_couplings_WIMP.setOption<double>("gns", g);
           DD_couplings_WIMP.setOption<double>("gpa", 0.);
           DD_couplings_WIMP.setOption<double>("gna", 0.);
           DD_couplings_WIMP.reset_and_calculate();
           mwimp_generic.reset_and_calculate();
-          sigma_SI_p_simple.reset_and_calculate();
-          sigma_SI_p = sigma_SI_p_simple(0);
           DDCalc_1_0_0_init.reset_and_calculate();
 
           LUX_2016_prelim_Calc.reset_and_calculate();
@@ -654,17 +662,68 @@ int main(int argc, char* argv[])
           XENON100_2012_GetLogLikelihood.reset_and_calculate();
           lnL4 = XENON100_2012_GetLogLikelihood(0);
 
-          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
           std::cout << "LUX2016 lnL = " << lnL1 << std::endl;
           std::cout << "PandaX lnL = " << lnL2 << std::endl;
           std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
           std::cout << "XENON100_2012 = " << lnL4 << std::endl;
 
-          sigma_array[i][j] = sigma_SI_p;
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
           lnL_array4[i][j] = lnL4;
+        }
+      }
+
+      //dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
+      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
+      dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
+      dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
+      dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
+
+      s_list = daFunk::logspace(-41., -35., sBins);
+      // Calculate array of sigma_SD,p and lnL values for PICO-60 (Flourine target) and SIMPLE 2014, assuming gps=gns
+      for (size_t i = 0; i < m_list.size(); i++)
+      {
+        for (size_t j = 0; j < s_list.size(); j++)
+        {
+          // Set LocalHalo Model parameters to PICO-60 values
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 220.);
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
+
+          TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          reduced_mass = (m_list[i] * m_proton) / (m_proton + m_list[i]);
+          g = sqrt(s_list[j]*pi/(3*gev2cm2)) / (reduced_mass);
+          DarkMatter_ID_WIMP.reset_and_calculate();
+          TH_ProcessCatalog_WIMP.reset_and_calculate();
+          RD_fraction_fixed.reset_and_calculate();
+          DD_couplings_WIMP.setOption<double>("gps", 0.);
+          DD_couplings_WIMP.setOption<double>("gns", 0.);
+          DD_couplings_WIMP.setOption<double>("gpa", g);
+          DD_couplings_WIMP.setOption<double>("gna", 0.);
+          DD_couplings_WIMP.reset_and_calculate();
+          mwimp_generic.reset_and_calculate();
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          PICO_60_F_Calc.reset_and_calculate();
+          PICO_60_F_GetLogLikelihood.reset_and_calculate();
+          lnL1 = PICO_60_F_GetLogLikelihood(0);
+
+          // Set LocalHalo Model parameters to SIMPLE 2014 values
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 230.);
+          Halo_primary_parameters->setValue("v0", 230.);
+          Halo_primary_parameters->setValue("vesc", 600.);
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          SIMPLE_2014_Calc.reset_and_calculate();
+          SIMPLE_2014_GetLogLikelihood.reset_and_calculate();
+          lnL2 = SIMPLE_2014_GetLogLikelihood(0);
+
+          lnL_array1[i][j] = lnL1;
+          lnL_array2[i][j] = lnL2;
         }
       }
 
@@ -674,13 +733,8 @@ int main(int argc, char* argv[])
       Halo_primary_parameters->setValue("v0", 235.);
       Halo_primary_parameters->setValue("vesc", 550.);
 
-
-      dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
-      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
-      dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
-      dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
-      dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
-
+      dump_array_to_file("PICO_60_F_table.dat", lnL_array1, m_list, s_list);
+      dump_array_to_file("SIMPLE_2014_table.dat", lnL_array2, m_list, s_list);
     }
   }
 
