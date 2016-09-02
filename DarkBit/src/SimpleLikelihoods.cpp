@@ -190,10 +190,11 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
-      std::string version = runOptions->getValueOrDef<std::string>("fixedJ", "version");
+      std::string version = runOptions->getValueOrDef<std::string>("externalJ", "version");
       if ( version == "fixedJ" ) mode = 2;
       else if ( version == "margJ" ) mode = 3;
       else if ( version == "margJ_HEP" ) mode = 4;
+      else if ( version == "externalJ" ) mode = 8;
       else DarkBit_error().raise(LOCAL_INFO, "Fermi LAT GC likelihood version unknown.");
 
       // from 0.3 to 500 GeV
