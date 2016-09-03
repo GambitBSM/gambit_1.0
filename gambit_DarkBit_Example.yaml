@@ -203,12 +203,16 @@ Rules:
   # Consult the DarkBit manual for the required options in each case
   - capability: RD_oh2
     #function: RD_oh2_general
+    #options:
+    #  fast: 1  # 0: standard, 1: fast (defalt)
     #function: RD_oh2_DarkSUSY
+    #options:
+    #  fast: 1  # 0: standard (default), 1: fast, 2: dirty
+    #  omtype: 1  # 0: no coann, 1: all coann (default)
     function: RD_oh2_MicrOmegas
     options:
-      fast: 1
-      omtype: 1
-      Beps: 1e-5
+      fast: 1  # 0: standard (default), 1: fast
+      Beps: 1e-5  #  1e-5: standard, 1: switches coann off
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
