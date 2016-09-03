@@ -10,15 +10,14 @@ Urgent (for production runs):
 
 Before internal paper review:
 - Add discussion about LUX etc likelihoods to paper [FK]
-- Double-check that fast option for general oh2 routine is clear [CW]
-- Add caveat information about decay blocks in SLHA files [CW]
 - Update likelihood technical details in physics papers [all]
 - Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
   (as discussed during meeting)
-- Update cascade code discussions in paper to new treatment [CW]
 - Mention all options in the darkbit paper [CW, JE, JC]
 
 After internal paper review started:
+- Make gambit_DarkBit_example.yaml file complete and useful (in the spirit of
+  class' explanatory.ini) [all]
 - Make sure that content of future automatic paper reference system is complete
   (in particular for DarkSUYS) [TB]
 - Figure out whether cascade routines run properly when doing MSSM7 scans, but
@@ -84,6 +83,9 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Update cascade code discussions in paper to new treatment [CW]
+- Add caveat information about decay blocks in SLHA files [CW]
+- Double-check that fast option for general oh2 routine is clear [CW]
 - Update paper discussion about local density [JC/CW]
 - Update nuclear parameter best fit value discussion [JC]
 - Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
