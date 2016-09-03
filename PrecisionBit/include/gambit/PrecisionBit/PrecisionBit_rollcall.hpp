@@ -131,6 +131,11 @@ START_MODULE
     START_FUNCTION(double)
     DEPENDENCY(muon_gm2, triplet<double>)
     #undef FUNCTION
+// version that uses etsimate based on taui data rather than e^+e^-
+    #define FUNCTION lnL_gm2_chi2_taudata
+    START_FUNCTION(double)
+    DEPENDENCY(muon_gm2, triplet<double>)
+    #undef FUNCTION
   #undef CAPABILITY
   
   // Electroweak precision likelihoods: Delta rho
