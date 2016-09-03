@@ -5,17 +5,18 @@ NEW TODO list
 DarkBit
 =======
 
-Urgent (for production runs):
-- Bring paper to internal review [CW]
-
 Before internal paper review:
-- Add discussion about LUX etc likelihoods to paper [FK]
-- Update likelihood technical details in physics papers [all]
-- Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
+- Update v-related discussion in DDCalc parts of paper [FK]
+- Finalize/delete/shorten discussion about max-gap method [FK/PS]
+- Clarify nucleon matrix element section [JC]
+- Fix DDCalc validation figures [JC]
+- Update J-value discussion for gamLike, after finishing implementation [SW]
+- Redo plots Fig. 7 (more channels) and Fig. 8 & 9 (official limits) [JC]
   (as discussed during meeting)
-- Mention all options in the darkbit paper [CW, JE, JC]
 
 After internal paper review started:
+- Update/finalize LUX 2016 likelihoods [FK]
+- Double-check that all options are mentioned properly in darkbit paper [CW, JE, JC]
 - Make gambit_DarkBit_example.yaml file complete and useful (in the spirit of
   class' explanatory.ini) [all]
 - Make sure that content of future automatic paper reference system is complete
@@ -83,6 +84,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Add discussion about LUX etc likelihoods to paper [FK]
 - Update cascade code discussions in paper to new treatment [CW]
 - Add caveat information about decay blocks in SLHA files [CW]
 - Double-check that fast option for general oh2 routine is clear [CW]
