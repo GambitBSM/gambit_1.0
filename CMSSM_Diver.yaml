@@ -122,6 +122,7 @@ ObsLikes:
 
     - capability:  lnL_gm2
       purpose:     LogLike
+      function: lnL_gm2_chi2
 
     # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses

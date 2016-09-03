@@ -161,6 +161,7 @@ ObsLikes:
 
     - capability:  lnL_gm2
       purpose:     LogLike
+      function: lnL_gm2_chi2
 
     # Dark matter likelihoods
     - capability: lnL_oh2
