@@ -112,6 +112,25 @@ namespace Gambit {
 //      logger() << "phi: " << phi << EOM;
 //    }
 
+
+    // module function which sets the Milky Way halo profile for the gamlike backend
+    void set_gamLike_GC_halo(bool &result)
+    {
+      using namespace Pipes::set_gamLike_GC_halo;
+
+      daFunk::Funk profile = (Dep::GalacticHalo)->DensityProfile;
+      auto r = daFunk::logspace(-3, 2, 100);
+      auto rho = daFunk::logspace(-3, 2, 100);
+      double dist = (Dep::GalacticHalo)->r_sun;
+      for ( size_t i = 0; i<r.size(); i++ )
+      {
+        rho[i] = profile->bind("r")->eval(r[i]);
+      }
+      BEreq::set_halo_profile(0, r, rho, byVal(dist));
+      result = true;
+    }
+
+
     /*! \brief Fermi LAT dwarf likelihoods, using gamLike backend.
     */
     void lnL_FermiLATdwarfs_gamLike(double &result)
