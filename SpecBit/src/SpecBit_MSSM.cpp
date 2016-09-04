@@ -926,7 +926,7 @@ namespace Gambit
       /// Add additional information from inteersting combinations of parameters
       double At = 0;
       double Yt = mssmspec.get_HE().get(Par::dimensionless, "Yu", 3, 3);
-      if(Yt != 0)
+      if(std::abs(Yt) > 1e-12)
          {
             At = mssmspec.get_HE().get(Par::mass1, "TYu", 3, 3) / Yt;
          }
