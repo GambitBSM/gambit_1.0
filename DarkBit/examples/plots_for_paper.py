@@ -197,29 +197,38 @@ def plotLUX():
     plt.clf()
     plt.figure(figsize=(5, 4))
 
-    pico = loadtxt("./PICO_60_F_table.dat")
+    pico60 = loadtxt("./PICO_60_F_table.dat")
     simple = loadtxt("./SIMPLE_2014_table.dat")
+    pico2L = loadtxt("./PICO_2L_table.dat")
 
-    s_PICO = pico[1:, 0]
-    m_PICO = pico[0, 1:]
-    lnL_PICO = -pico[1:, 1:]
-    lnL_PICO -= lnL_PICO.min()
+    s_PICO60 = pico60[1:, 0]
+    m_PICO60 = pico60[0, 1:]
+    lnL_PICO60 = -pico60[1:, 1:]
+    lnL_PICO60 -= lnL_PICO60.min()
+    s_PICO2L = pico2L[1:, 0]
+    m_PICO2L = pico2L[0, 1:]
+    lnL_PICO2L = -pico2L[1:, 1:]
+    lnL_PICO2L -= lnL_PICO2L.min()
     s_SIMPLE = simple[1:, 0]
     m_SIMPLE = simple[0, 1:]
     lnL_SIMPLE = -simple[1:, 1:]
     lnL_SIMPLE -= lnL_SIMPLE.min()
 
     simple_lim = genfromtxt("./DarkBit/examples/limits/SIMPLE_2014_SDp.csv",delimiter=",")
-    pico_lim = genfromtxt("./DarkBit/examples/limits/PICO60_SDp_2015Oct16_90CL.csv",delimiter=",")
+    pico60_lim = genfromtxt("./DarkBit/examples/limits/PICO60_SDp_2015Oct16_90CL.csv",delimiter=",")
+    pico2L_lim = genfromtxt("./DarkBit/examples/limits/PICO_2L_2016_SDp.txt")
  
     # I'm not sure about the CL in the SIMPLE analysis!
     simple_plt = plt.contour(m_SIMPLE, s_SIMPLE, lnL_SIMPLE, levels = [2.71/2], colors='r')
     simple_plt.collections[0].set_label("SIMPLE")
-    pico_plt = plt.contour(m_PICO, s_PICO, lnL_PICO, levels = [2.71/2], colors='g')
-    pico_plt.collections[0].set_label("PICO 60")
+    pico60_plt = plt.contour(m_PICO60, s_PICO60, lnL_PICO60, levels = [2.71/2], colors='g')
+    pico60_plt.collections[0].set_label("PICO 60")
+    pico2L_plt = plt.contour(m_PICO2L, s_PICO2L, lnL_PICO2L, levels = [2.71/2], colors='k')
+    pico2L_plt.collections[0].set_label("PICO 2L")
 
     plt.plot(simple_lim[:,0],simple_lim[:,1]*10**-36,ls="--", color='r')
-    plt.plot(pico_lim[:,0],pico_lim[:,1]*10**-40,ls="--",color='g')
+    plt.plot(pico60_lim[:,0],pico60_lim[:,1]*10**-40,ls="--",color='g')
+    plt.plot(pico2L_lim[:,0],pico2L_lim[:,1],ls="--",color='k')
 
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
