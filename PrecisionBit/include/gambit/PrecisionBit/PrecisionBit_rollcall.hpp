@@ -130,11 +130,7 @@ START_MODULE
     #define FUNCTION lnL_gm2_chi2
     START_FUNCTION(double)
     DEPENDENCY(muon_gm2, triplet<double>)
-    #undef FUNCTION
-// version that uses etsimate based on taui data rather than e^+e^-
-    #define FUNCTION lnL_gm2_chi2_taudata
-    START_FUNCTION(double)
-    DEPENDENCY(muon_gm2, triplet<double>)
+    DEPENDENCY(muon_gm2_SM, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
   
@@ -160,7 +156,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-  // Observable: (g-2)_mu
+
+  // Observable: BSM contribution to (g-2)_mu
   #define CAPABILITY muon_gm2
 
     // Muon g-2 -- Using SuperIso
@@ -184,6 +181,23 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY 
+
+
+  // Observable: SM contribution to (g-2)_mu
+  #define CAPABILITY muon_gm2_SM
+
+    // SM muon g-2, based on e+e- data
+    #define FUNCTION gm2_SM_ee
+    START_FUNCTION(triplet<double>)
+    #undef FUNCTION
+
+    // SM muon g-2, based on tau+tau- data
+    #define FUNCTION gm2_SM_tautau
+    START_FUNCTION(triplet<double>)
+    #undef FUNCTION
+
+  #undef CAPABILITY 
+
 
 #undef MODULE
 

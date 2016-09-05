@@ -22,7 +22,7 @@ DDCalc:
   1.0.0:       ./Backends/installed/ddcalc/1.0.0/lib/libDDCalc.so
 
 HiggsBounds:
-  4.2.1:       ./Backends/installed/higgsbounds/4.2.1/lib/libhiggsbounds.so
+  4.2.1:       ./Backends/installed/higgsbounds/4.2.1/lib/libhiggsbounds.sox
   4.3.1:       ./Backends/installed/higgsbounds/4.3.1/lib/libhiggsbounds.so
 
 HiggsSignals:

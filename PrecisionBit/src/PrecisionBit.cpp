@@ -680,53 +680,42 @@ namespace Gambit
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
       result = Stats::gaussian_loglikelihood(Dep::deltarho->central, 0.00040, theory_uncert, 0.00024, profile);
     }
+
+
+    /// g-2 in SM from e+e- data
+    void gm2_SM_ee(triplet<double> &result)
+    {
+      /// Values taken from prediction in arXiv:1010.4180 (Eq 22)
+      result.central = 2.0 * 11659180.2e-10;
+      result.upper = 2.0 * 4.9e-10;
+      result.lower = result.upper;
+    }
     
+    /// g-2 in SM from tau+tau- data
+    void gm2_SM_tautau(triplet<double> &result)
+    {
+      /// Values taken from prediction in arXiv:1010.4180, based on tau data
+      result.central = 2.0 * 11659189.4e-10;
+      result.upper = 2.0 * 5.4e-10;
+      result.lower = result.upper;
+    }
+
     /// g-2 likelihood
     void lnL_gm2_chi2(double &result)
     {
       using namespace Pipes::lnL_gm2_chi2;
+      double amu_sm  = 0.5*Dep::muon_gm2_SM->central;
+      double amu_sm_error = 0.5*std::max(Dep::muon_gm2_SM->upper, Dep::muon_gm2_SM->lower);
       double amu_bsm = 0.5*Dep::muon_gm2->central; 
-      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper,
-               Dep::muon_gm2->lower); 
-      /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
-      double amu_sm  = 11659180.2e-10;
-      double amu_sm_error = 4.9e-10;
-      // From hep-ex/0602035.
-      double amu_exp = 11659208.9e-10;
-      // Combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.  
-      double amu_exp_error = 6.3e-10;
+      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper, Dep::muon_gm2->lower); 
       double amu_theory = amu_sm + amu_bsm;
-      double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
-             + Gambit::Utils::sqr(amu_bsm_error) );
+      double amu_theory_err = sqrt(Gambit::Utils::sqr(amu_sm_error) + Gambit::Utils::sqr(amu_bsm_error));
+      // From hep-ex/0602035.  Error combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.
+      double amu_exp = 11659208.9e-10;
+      double amu_exp_error = 6.3e-10;
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
-      result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
-                     amu_theory_err, amu_exp_error, profile);
-    }
-
-
-  /// g-2 likelihood
-    void lnL_gm2_chi2_taudata(double &result)
-    {
-      using namespace Pipes::lnL_gm2_chi2;
-      double amu_bsm = 0.5*Dep::muon_gm2->central; 
-      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper,
-               Dep::muon_gm2->lower); 
-      /// Value taken from prediction in arXiv:1010.4180
-      /// based in tau data
-      double amu_sm  = 11659189.4e-10;
-      double amu_sm_error = 5.4e-10;
-      // From hep-ex/0602035.
-      double amu_exp = 11659208.9e-10;
-      // Combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.  
-      double amu_exp_error = 6.3e-10;
-      double amu_theory = amu_sm + amu_bsm;
-      double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
-             + Gambit::Utils::sqr(amu_bsm_error) );
-      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
-      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
-      result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
-                     amu_theory_err, amu_exp_error, profile);
+      result = Stats::gaussian_loglikelihood(amu_theory, amu_exp, amu_theory_err, amu_exp_error, profile);
     }
 
     /// Calculate a_mu_SUSY using the gm2calc backend.
