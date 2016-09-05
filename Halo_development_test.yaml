@@ -19,17 +19,6 @@ Parameters:
      
 
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      fixed_value: 40.0
-    sigmal:
-      fixed_value: 50.0
-    deltau:
-      fixed_value: 0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
 
 
 Priors:
@@ -63,14 +52,8 @@ ObsLikes:
     - capability: lnL_FermiLATdwarfs
       purpose:    LogLike
 
-    - capability: lnL_FermiGC
+    - capability: lnL_HESSGC
       purpose:    LogLike
-
-    - capability: LUX_2013_LogLikelihood
-      purpose:    LogLike
-
-    - capability: LUX_2013_Signal
-      purpose: Observable
 
     - capability: lnL_rho0
       purpose: LogLike
@@ -83,10 +66,6 @@ ObsLikes:
 
     - capability: lnL_vesc
       purpose: LogLike
-
-    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
-    - capability: lnL_SI_nuclear_parameters
-      purpose:    LogLike
 
 Rules:
 
