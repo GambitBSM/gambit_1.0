@@ -173,6 +173,9 @@ namespace Gambit
         have_lock = false;
       }
 
+      /// Getter for lockfile name
+      const std::string& FileLock::get_filename() const { return my_lock_fname; }
+
       /// @} 
    }
 }
