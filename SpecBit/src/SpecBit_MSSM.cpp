@@ -923,6 +923,16 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSM_spectrum_as_map;
       const Spectrum& mssmspec(*myPipe::Dep::MSSM_spectrum);
       fill_map_from_MSSMspectrum(specmap, mssmspec);
+      /// Add additional information from interesting combinations of parameters
+      double At = 0;
+      double Yt = mssmspec.get_HE().get(Par::dimensionless, "Yu", 3, 3);
+      if(std::abs(Yt) > 1e-12)
+      {
+        At = mssmspec.get_HE().get(Par::mass1, "TYu", 3, 3) / Yt;
+      }
+      double MuSUSY = mssmspec.get_HE().get(Par::mass1, "Mu");
+      double tb = mssmspec.get_HE().get(Par::dimensionless, "tanbeta");
+      specmap["Xt"] = At - MuSUSY / tb; 
     }
     void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {

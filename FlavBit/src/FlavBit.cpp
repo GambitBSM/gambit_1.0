@@ -1467,11 +1467,11 @@ namespace Gambit
     void b2sgamma_likelihood(double &result)
     {
       using namespace Pipes::b2sgamma_likelihood;
-      if(flav_debug)  cout<<"Starting b2sgamma_measurements"<<endl;
+      if (flav_debug) cout<<"Starting b2sgamma_measurements"<<endl;
 
       double theory_prediction= *Dep::bsgamma;
       
-      cout<<"Theory prediction: "<<theory_prediction<<endl;
+      if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
       red.debug_mode(flav_debug);
@@ -1484,10 +1484,9 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
       
-      //cout<<"Experiment: "<<M_exp<<" "<<sqrt(M_cov(0,0))<<" "<<th_err<<endl;
+      if (flav_debug) cout<<"Experiment: "<<M_exp<<" "<<sqrt(M_cov(0,0))<<" "<<th_err<<endl;
       
       double exp_meas=M_exp(0,0);
-      
       double exp_b2sgamma_err=sqrt(M_cov(0,0));
       double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
 
