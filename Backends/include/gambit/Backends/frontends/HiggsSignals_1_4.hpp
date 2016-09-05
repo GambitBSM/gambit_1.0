@@ -42,6 +42,7 @@ LOAD_LIBRARY
  * If left out (as done below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability")  */
 
+BE_FUNCTION(initialize_HiggsSignals, void, (int&, int&,char[]), "initialize_higgssignals_", "initialize_HiggsSignals")
 BE_FUNCTION(initialize_HiggsSignals_latestresults, void, (int&, int&), "initialize_higgssignals_latestresults_", "initialize_HiggsSignals_latestresults")
 BE_FUNCTION(initialize_HiggsBounds_int_HS, void, (int&, int&, int&), "initialize_higgsbounds_int_", "initialize_HiggsBounds_int_HS")
 BE_FUNCTION(setup_pdf, void, (int&), "setup_pdf_", "setup_pdf")
