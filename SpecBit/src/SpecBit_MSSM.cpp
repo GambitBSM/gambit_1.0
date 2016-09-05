@@ -927,9 +927,9 @@ namespace Gambit
       double At = 0;
       double Yt = mssmspec.get_HE().get(Par::dimensionless, "Yu", 3, 3);
       if(std::abs(Yt) > 1e-12)
-         {
-            At = mssmspec.get_HE().get(Par::mass1, "TYu", 3, 3) / Yt;
-         }
+      {
+        At = mssmspec.get_HE().get(Par::mass1, "TYu", 3, 3) / Yt;
+      }
       double MuSUSY = mssmspec.get_HE().get(Par::mass1, "Mu");
       double tb = mssmspec.get_HE().get(Par::dimensionless, "tanbeta");
       specmap["Xt"] = At - MuSUSY / tb; 
