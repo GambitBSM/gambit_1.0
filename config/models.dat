@@ -40,3 +40,28 @@ MSSM29: |
 MSSMBen: |
    Some model derived from MSSM29
 
+Halo_Einasto: |
+   Dark matter halo model corresponding to an Einasto density profile with scale density rhos,
+   a local dark matter density rho0, and a local Maxwell-Boltzmann velocity distribution.
+   Here, rhos and rho0 are set independently of each other.
+
+Halo_Einasto_rho0: |
+   Same as Halo_Einasto, but instead of giving rhos explicitly as a parameter, it is derived 
+   from the local dark matter density rho0 and the other parameters of the density profile.
+
+Halo_Einasto_rhos: |
+   Same as Halo_Einasto, but instead of giving rho0 explicitly as a parameter, it is derived 
+   from the scale density rhos and the other parameters of the density profile.
+
+Halo_gNFW: |
+   Dark matter halo model corresponding to a generalized NFW density profile with scale density rhos,
+   a local dark matter density rho0, and a local Maxwell-Boltzmann velocity distribution.
+   Here, rhos and rho0 are set independently of each other.
+
+Halo_gNFW_rho0: |
+   Same as Halo_gNFW, but instead of giving rhos explicitly as a parameter, it is derived 
+   from the local dark matter density rho0 and the other parameters of the density profile.
+
+Halo_gNFW_rhos: |
+   Same as Halo_gNFW, but instead of giving rho0 explicitly as a parameter, it is derived 
+   from the scale density rhos and the other parameters of the density profile.

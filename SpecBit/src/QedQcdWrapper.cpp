@@ -78,7 +78,7 @@ namespace Gambit
       ///     @}
 
       /// Add QED x QCD information to an SLHAea object
-      void QedQcdWrapper::add_to_SLHAea(SLHAstruct& slha) const
+      void QedQcdWrapper::add_to_SLHAea(SLHAstruct& slha, bool) const
       {
         // Here we assume that all SMINPUTS defined in SLHA2 are provided by the
         // SMINPUTS object, so we don't bother repeating them here.  We also assume

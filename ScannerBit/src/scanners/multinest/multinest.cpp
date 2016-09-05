@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  ScannerBit interface to Multinest 3.9
+///  ScannerBit interface to Multinest 3.10
 ///
 ///  *********************************************
 ///
@@ -10,7 +10,7 @@
 //
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
-///  \date 2013 October 2013
+///  \date October 2013 - Aug 2016
 ///
 ///  *********************************************
 
@@ -46,7 +46,7 @@ typedef Gambit::Scanner::like_ptr scanPtr;
 /// Interface to ScannerBit
 /// =================================================
 
-scanner_plugin(MultiNest, version(3, 9))
+scanner_plugin(MultiNest, version(3, 10))
 {
    // An error is thrown if any of the following entries are not present in the inifile (none absolutely required for MultiNest).
    reqd_inifile_entries();
@@ -54,19 +54,20 @@ scanner_plugin(MultiNest, version(3, 9))
    // Tell cmake system to search known paths for these libraries; any not found must be specified in config/scanner_locations.yaml. 
    reqd_libraries("nest3");
 
+   // Pointer to the (log)likelihood function
+   scanPtr LogLike;
+
    /// The constructor to run when the MultiNest plugin is loaded.
    plugin_constructor
    {
-      std::cout << "Firing up MultiNest scanner plugin..." << std::endl;
+      // Retrieve the external likelihood calculator
+      LogLike = get_purpose(get_inifile_value<std::string>("like"));
+      if(LogLike->getRank() == 0) std::cout << "Loading MultiNest nested sampling plugin for ScannerBit." << std::endl;
    }
 
    /// The main routine to run for the MultiNest scanner.
    int plugin_main (void)
    {
-
-      // Retrieve the external likelihood calculator
-      scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
-
       /// ************
       /// TODO: Replace with some wrapper? Maybe not, this is already pretty straightforward,
       /// though perhaps a little counterintuitive that the printer is the place to get this
@@ -97,13 +98,15 @@ scanner_plugin(MultiNest, version(3, 9))
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
-      double ln0 (0.9*get_inifile_value<double>("logZero",gl0));// points with loglike < logZero will be ignored by MultiNest
+      double ln0 (get_inifile_value<double>("logZero",0.9999*gl0)); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
       void *context = 0;                                        // any additional information user wants to pass (not required by MN)
       // Which parameters to have periodic boundary conditions?
       int pWrap[ndims];
       for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)        
+
+      // TODO: check what happens if resume mode is active but multinest native output is not written. I guess it will resume writing to the printer output, but actually start a new scan?
 
       // Root for output files
       std::string root_str;
@@ -114,10 +117,6 @@ scanner_plugin(MultiNest, version(3, 9))
       char root[1000];  // I think MultiNest will truncate this to 100. But lets use a larger array just in case.
       Gambit::Utils::strcpy2f(root, 1000, root_str);// (copy std::string into char array for transport to Fortran)
 
-      // Print some basic startup diagnostics.      
-      std::cout << "MultiNest ndims:" << ndims << std::endl;
-      std::cout << "MultiNest nPar: " << nPar  << std::endl;
- 
       if(resume==1 and outfile==0)
       {
         // It is stupid to be in resume mode while not writing output files. 
@@ -130,7 +129,6 @@ scanner_plugin(MultiNest, version(3, 9))
       // Setup auxilliary streams. These are only needed by the master process,
       // so let's create them only for that process
       int myrank = get_printer().get_stream()->getRank(); // MPI rank of this process
-      std::cout << "myrank? " << myrank <<std::endl;
       if(myrank==0)
       {
          // Get inifile options for each print stream
@@ -157,11 +155,11 @@ scanner_plugin(MultiNest, version(3, 9))
       Gambit::MultiNest::global_loglike_object = &loglwrapper;
 
       //Run MultiNest, passing callback functions for the loglike and dumper.
-      std::cout << "Starting MultiNest run..." << std::endl;
+      if(myrank == 0) std::cout << "Starting MultiNest run..." << std::endl;
       run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, 
           root, seed, pWrap, fb, resume, outfile, initMPI, ln0, maxiter, 
           Gambit::MultiNest::callback_loglike, Gambit::MultiNest::callback_dumper, context);
-      std::cout << "Multinest run finished!" << std::endl;
+      if(myrank == 0) std::cout << "Multinest run finished!" << std::endl;
       return 0;
 
    }
@@ -241,28 +239,9 @@ namespace Gambit {
          int pointID = boundLogLike->getPtID();   // point ID number
          Cube[ndim+0] = myrank;
          Cube[ndim+1] = pointID;
-         //std::cout << "Cube input: rank="<<myrank<<", pointID="<<pointID<<std::endl;
-
-         // Ben: No need to do this anymore, hdf5printer will do it automatically.
-         // However, asciiPrinter won't, so we can still output it anyway. But to make
-         // sure that the hdf5printer only outputs it once (and to avoid the name clash
-         // arising from duplicating the output) please use the ID codes -1000 and -1001 for
-         // these two special outputs) 
-         // Edit: add total LogLike to this list? Special code?
-         //primary_stream->print(pointID, "pointID", -1000, myrank, pointID);
-         //primary_stream->print(myrank,  "MPIrank", -1001, myrank, pointID);
-         //primary_stream->print(lnew,    "LogLike",    -4, myrank, pointID);
 
          // Done! (lnew will be used by MultiNest to guide the search)
          return lnew;                  
-
-         // If we wanted the printer to record anything extra, we could send 
-         // the data to the usual print function by calling, e.g.:
-         //    boundLogLike.printer.print(lnew, "extra_logl", -1)
-         // (need to make sure the IDcode doesn't clash with anything coming from the functors)
-         // Can also send data to auxiliary printers rather than the main printer. See dumper
-         // function for usage of this.
-
       }
    
       /// Main interface to MultiNest dumper routine   
@@ -277,6 +256,8 @@ namespace Gambit {
       /// physLive[1][nlive * (nPar + 1)]                      = 2D array containing the last set of live points 
       ///                                                        (physical parameters plus derived parameters) along 
       ///                                                        with their loglikelihood values
+      /// TODO: Multinest uses the likelihood of the lowest live point as the "threshold" for iterating, i.e. it throws out the live point if it finds a better one. So we can use this number to update the GAMBIT 'cutoff' threshold when evaluating the likelihood function.
+
       /// posterior[1][nSamples * (nPar + 2)]                  = posterior distribution containing nSamples points. 
       ///                                                        Each sample has nPar parameters (physical + derived)
       ///                                                        along with the their loglike value & posterior probability
@@ -305,7 +286,7 @@ namespace Gambit {
           } 
 
           // Send signal to other processes to switch to higher min_logL value.
-          // MultiNest was sometimes getting stuck looking for live point candidates,
+          // MultiNest was sometimes getting stuck looking for live point candidates;
           // increasing this above the MultiNext zero_LogL value should avoid that
           // issue.
           // We do this here because initial live point generation should be finished 
@@ -353,17 +334,13 @@ namespace Gambit {
              myrank  = posterior[(nPar-2)*nSamples + i]; //MPI rank stored in second last entry of cube
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
-             //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             //txt_stream->print( myrank,  "MPIrank", myrank, pointID);
-             //txt_stream->print( pointID, "pointID", myrank, pointID);
-             //txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   myrank, pointID);
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
-             // Put rest of parameters into a vector for printing all together
-             std::vector<double> parameters;
-             for( int j = 0; j < nPar-2; j++ )
-             {
-                 parameters.push_back( posterior[j*nSamples + i] );
-             }
+             // Put rest of parameters into a vector for printing all together // TODO: not needed, delete?
+             // std::vector<double> parameters;
+             // for( int j = 0; j < nPar-2; j++ )
+             // {
+             //     parameters.push_back( posterior[j*nSamples + i] );
+             // }
           }
 
           // The last set of live points
@@ -371,37 +348,15 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             //live_stream->print( myrank,  "MPIrank",  myrank, pointID);
-             //live_stream->print( pointID, "pointID", myrank, pointID);
-             //live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", myrank, pointID);
              live_stream->print( true, "LastLive", myrank, pointID); // Flag which points were the last live set
-             // Put rest of parameters into a vector for printing all together
-             std::vector<double> parameters;
-             for( int j = 0; j < nPar-2; j++ )
-             {
-                 parameters.push_back( physLive[j*nlive + i] );
-             }
-             //live_stream->print(parameters, "Parameters", myrank, pointID);
+             // // Put rest of parameters into a vector for printing all together // TODO: not needed, delete?
+             // std::vector<double> parameters;
+             // for( int j = 0; j < nPar-2; j++ )
+             // {
+             //     parameters.push_back( physLive[j*nlive + i] );
+             // }
+             // //live_stream->print(parameters, "Parameters", myrank, pointID);
           }
-
-          // OLD DEBUG CODE, probably not ready to be tossed just yet.
-          
-          // The posterior distribution
-          // Note that while this is a 2D fortran array, we will only see it as a 1D array here, so we have to 
-          // correctly translate the 2D indices into a single index.
-          // Translation is: array[i*n+j]  (i,j)  with n the length of the j dimension.
-          // e.g.: postdist[j][i] = (*posterior)[i * nSamples + j]
-
-          //DEBUG: try to read out entire posterior array, see if it makes sense
-          //for( int i = 0; i < nSamples; i++ )
-          //{
-          //  for( int j = 0; j < nPar+2; j++ )
-          //  {
-          //    std::cout<<std::setw(14)<<std::scientific << posterior[j*nSamples + i];
-          //  }
-          //  std::cout << std::endl;
-          //}
-
 
       }
 

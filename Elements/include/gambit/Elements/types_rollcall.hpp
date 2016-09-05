@@ -63,10 +63,10 @@
 ///  If the type will be used by multiple modules, 
 ///  multiple models or multiple backends, or any 
 ///  mixture thereof, make some header 
-///   Utils/include/gambit/Utils/__your_header_name__.hpp
+///   Elements/include/gambit/Elements/__your_header_name__.hpp
 ///  that declares the type, and include
 ///  that header by hand from 
-///   Utils/include/gambit/Utils/shared_types.hpp.
+///   Elements/include/gambit/Utils/shared_types.hpp.
 ///  
 ///  PRINTING
 ///  --------

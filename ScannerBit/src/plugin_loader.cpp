@@ -17,11 +17,21 @@
 ///          (p.scott@imperial.ac.uk)   
 ///  \date 2014 Dec
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include <cstdlib>
 #include <iomanip>
 #include <unistd.h>
+#include <iostream>
+#include <fstream> 
+#include <stdio.h>
+#include <sys/types.h> // for 'stat' function
+#include <sys/stat.h>  //    "         "
+
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -610,11 +620,39 @@ namespace Gambit
                     }
                 }
                 
-                printer->finalise(true);
-                #ifdef WITH_MPI 
-                  std::cout << "rank " << getRank() <<": ";
-                #endif
-                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
+                printer->finalise(true); //"true" flag for "abnormal" stop; i.e. run is not completely finished
+                // Debugging output
+                // #ifdef WITH_MPI 
+                //   std::cout << "rank " << getRank() <<": ";
+                // #endif
+                // std::cout << "Gambit has written resume data to disk, preparing to stop!" << std::endl;
+            }
+
+            /// Save persistence file to record that the alternative min_LogL value is in use for this scan
+            void pluginInfo::save_alt_min_LogL_state() const
+            {
+                std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                std::ofstream outfile(state_fname);
+                outfile.close();
+            }
+
+            /// Delete the persistence file if it exists (e.g. when starting a new run)
+            void pluginInfo::clear_alt_min_LogL_state() const
+            {
+                if(check_alt_min_LogL_state())
+                {
+                    std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                    // Persistence file exists: delete it
+                    if (remove(state_fname.c_str())) scan_err << "Failed to delete alternative min_LogL persistence file '" << state_fname << "'! Error was: " << strerror(errno) << scan_end;
+                }
+            }
+
+            /// Check persistence file to see if we should be using the alternative min_LogL value
+            bool pluginInfo::check_alt_min_LogL_state() const
+            {
+                std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                struct stat buffer;   
+                return (stat(state_fname.c_str(), &buffer) == 0); 
             }
             
             pluginInfo::~pluginInfo()
@@ -638,6 +676,7 @@ namespace Gambit
               #ifdef WITH_MPI
               , scannerComm(NULL), MPIdata_is_init(false)
               #endif
+              , earlyShutdownInProgress(false) 
             {}
 
             #ifdef WITH_MPI

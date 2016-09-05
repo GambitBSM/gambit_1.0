@@ -37,6 +37,7 @@
 #include "gambit/Printers/VertexBuffer_mpitags.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
+#include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Logs/logger.hpp"
@@ -56,6 +57,10 @@ namespace Gambit
  
     // Parameter controlling the length of all the standard buffers
     static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
+    /// Max number of PPIDpairs to be tracked
+    /// i.e. chunks of RA output longer than this can potentially contain multiple writes to the same point.
+    /// It is up to the combine script to apply the last scheduled write preferentially.
+    static const unsigned long MAX_PPIDPAIRS = 10*BUFFERLENGTH;
 
     /// @{ Helpful typedefs
 
@@ -234,7 +239,8 @@ namespace Gambit
         //bool get_startpos() { return startpos; } // OBSOLETE
 
         /// Retreive any stored PPIDpairs from previous runs (resume mode)
-        const std::vector<PPIDpair>& get_previous_points() { return previous_points; }
+        /// OBSOLETE
+        //const std::vector<PPIDpair>& get_previous_points() { return previous_points; }
 
         /// Clear previous points list
         void clear_previous_points() { std::vector<PPIDpair>().swap(previous_points); } // This technique also shrinks the capacity of the vector, which 'clear' does not do.
@@ -245,7 +251,10 @@ namespace Gambit
 
         /// Gather MPIrank/pointID pairs from an existing output file
         /// Along the way, verify that datasets in the output file have consistent lengths
-        std::vector<PPIDpair> gather_old_PPIDs();
+        /// OBSOLETE
+        //std::vector<PPIDpair> gather_old_PPIDs();
+
+        PPIDpair get_highest_PPID_from_HDF5(hid_t group_id);
 
         /// Search the output directory for temporary files (pre-combination)
         std::vector<std::string> find_temporary_files(const bool error_if_inconsistent=false);
@@ -450,9 +459,6 @@ namespace Gambit
         /// Offset needed to be added to the reverse lookup in
         /// order for it to match the output dataset position correctly
         unsigned long RA_dset_offset = 0; 
-
-        /// Max number of PPIDpairs to be tracked
-        static const unsigned long MAX_PPIDPAIRS = 10*BUFFERLENGTH;
 
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;

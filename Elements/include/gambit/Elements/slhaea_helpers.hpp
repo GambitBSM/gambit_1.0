@@ -42,9 +42,6 @@ namespace Gambit
   /// Read an SLHA file in to an SLHAea object with some error-checking
   SLHAstruct read_SLHA(str slha); 
 
-  /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
-  void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object);
-
   /// Get an entry from an SLHAea object as a double, with some error checking
   double SLHAea_get(const SLHAstruct& slha, const str& block, const int index);
 

@@ -2,18 +2,18 @@
 //   *********************************************
 ///  \file
 ///
-///  Central module file of DarkBit.  Calculates dark matter 
+///  Central module file of DarkBit.  Calculates dark matter
 ///  related observables.
-///  
-///  Most of the model- or observable-specific code is 
+///
+///  Most of the model- or observable-specific code is
 ///  stored in separate source files.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de) 
+///          (torsten.bringmann@desy.de)
 ///  \date 2013 Jun
 ///  \date 2014 Mar
 ///
@@ -21,19 +21,23 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul - 2015 May
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct
-///  
+///
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
 ///  \date 2015 Jan, Feb
-///  
+///
 ///  \author Pat Scott
 ///          (pscott@imperial.ac.uk)
 ///  \date 2014 Mar
 ///  \date 2015 Mar
+///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -41,8 +45,10 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -51,9 +57,11 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    void mwimp_generic(double &result) { 
+    void mwimp_generic(double &result)
+    {
       using namespace Pipes::mwimp_generic;
-      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
+      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
+      if (result < 0.0) DarkBit_error().raise(LOCAL_INFO, "Negative WIMP mass detected.");
     }
 
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
@@ -80,6 +88,59 @@ namespace Gambit {
     }
 
 
+
+    //////////////////////////////////////////////////////////////////////////
+    //
+    //        Extraction of local and global dark matter halo properties
+    //
+    //////////////////////////////////////////////////////////////////////////
+
+
+    // Dark matter halo profiles
+    double profile_gNFW(double rhos, double rs, double alpha, double beta, double gamma, double r)
+    { return pow(2, (beta-gamma)/alpha)*rhos/pow(r/rs, gamma)/pow(1+pow(r/rs, alpha), (beta-gamma)/alpha); }
+    double profile_Einasto(double rhos, double rs, double alpha, double r)
+    { return rhos*exp((-2.0/alpha)*(pow(r/rs, alpha)-1)); }
+
+    void GalacticHalo_gNFW(GalacticHaloProperties &result)
+    {
+      using namespace Pipes::GalacticHalo_gNFW;
+      double rhos  = *Param["rhos"];
+      double rs    = *Param["rs"];
+      double r_sun = *Param["r_sun"];
+      double alpha = *Param["alpha"];
+      double beta  = *Param["beta"];
+      double gamma = *Param["gamma"];
+      result.DensityProfile = daFunk::func(profile_gNFW, rhos, rs, alpha, beta, gamma, daFunk::var("r"));
+      result.r_sun = r_sun;
+    }
+
+    void GalacticHalo_Einasto(GalacticHaloProperties &result)
+    {
+      using namespace Pipes::GalacticHalo_Einasto;
+      double rhos  = *Param["rhos"];
+      double rs    = *Param["rs"];
+      double r_sun = *Param["r_sun"];
+      double alpha = *Param["alpha"];
+      result.DensityProfile = daFunk::func(profile_Einasto, rhos, rs, alpha, daFunk::var("r"));
+      result.r_sun = r_sun;
+    }
+
+    void ExtractLocalMaxwellianHalo(LocalMaxwellianHalo &result)
+    {
+      using namespace Pipes::ExtractLocalMaxwellianHalo;
+      double rho0  = *Param["rho0"];
+      double v0  = *Param["v0"];
+      double vesc  = *Param["vesc"];
+      double vrot  = *Param["vrot"];
+      result.rho0 = rho0;
+      result.v0 = v0;
+      result.vesc = vesc;
+      result.vrot = vrot;
+    }
+
+
+
     //////////////////////////////////////////////////////////////////////////
     //
     //                          DarkBit Unit Test
@@ -99,8 +160,8 @@ namespace Gambit {
        * afterwards can be checked against the expectations.
        */
 
-      double M_DM = 
-        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
+      double M_DM =
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass;
       double Gps = (*Dep::DD_couplings).gps;
       double Gpa = (*Dep::DD_couplings).gpa;
       double Gns = (*Dep::DD_couplings).gns;
@@ -144,10 +205,10 @@ namespace Gambit {
         os << "\n";
 
         // Output gamma-ray spectrum (grid be set in YAML file).
-        double x_min = 
+        double x_min =
           /// Option GA_AnnYield::Emin<double>: Minimum energy in GeV (default 0.1)
           runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-        double x_max = 
+        double x_max =
           /// Option GA_AnnYield::Emax<double>: Maximum energy in GeV (default 1e4)
           runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
           /// Option GA_AnnYield::nbins<int>: Number of energy bins (default 26)
@@ -173,7 +234,7 @@ namespace Gambit {
             it != annProc.channelList.end(); ++it)
         {
           os << "  ";
-          for (std::vector<std::string>::iterator 
+          for (std::vector<std::string>::iterator
               jt = it->finalStateIDs.begin(); jt!=it->finalStateIDs.end(); jt++)
           {
             os << *jt << "";
@@ -197,8 +258,6 @@ namespace Gambit {
               ygrid[i] = dsigmavde->bind("E")->eval(xgrid[i]);
             }
             auto interp = daFunk::interp("E", xgrid, ygrid);
-            // FIXME: Directly nested integrals seems to be buggy
-            // double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
             double svTOT = interp->gsl_integration("E", 10., 20.)->set_epsabs(1e-3)->bind()->eval();
             os << ": " << svTOT;
           }
@@ -208,7 +267,7 @@ namespace Gambit {
       }
       else
       {
-        logger() << "Warning: outputfile not open for writing." << std::endl;
+        logger() << "Warning: outputfile not open for writing." << EOM;
       }
       os.close();
       result = 0;

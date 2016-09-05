@@ -227,7 +227,7 @@ namespace Gambit
        #endif
 
        // Check options and inform user what they are
-       std::cout << "Initialising logger...";
+       if (MPIrank == 0) std::cout << "Initialising logger...";
        // NOTE! Option to merge log files no longer exists. Concurrent write access is a nightmare. Log messages were
        // being lost due to different processes overwriting each others data, and using the FileLock system doesn't
        // help because the issue is the file pointer location. To fix that, files have to be closed and reopened
@@ -241,14 +241,15 @@ namespace Gambit
        // #endif
        std::ostringstream logmsg;
        logmsg << "  log_debug_messages = ";
-       if(log_debug_messages){ logmsg << "true; log messages tagged as 'Debug' WILL be logged. Warning! This may lead to very large log files!";}
-       else{ 
+       if(log_debug_messages) logmsg << "true; log messages tagged as 'Debug' WILL be logged. " << endl << "WARNING: This may lead to very large log files!";
+       else
+       { 
           // Add "Debug" tag to the global ignore list
           ignore.insert(LogTag::debug);
           logmsg << "false; log messages tagged as 'Debug' will NOT be logged";
        }
  
-       std::cout << logmsg.str() << std::endl;
+       if (MPIrank == 0) std::cout << logmsg.str() << std::endl;
        *this << LogTag::logs << LogTag::debug << logmsg.str() << EOM;
 
        // Iterate through map and build the logger objects
@@ -282,9 +283,14 @@ namespace Gambit
             {
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
-              errormsg << "Tag name received in Logging::str2tag function could not be found in str2tag map!";
-              errormsg << "This is probably because you specified an invalid LogTag name in the logging redirection ";
-              errormsg << "section of your YAML input file. Tag string was: "<<*stag<<".";
+              errormsg << "If you have an entry something like this:"<< endl
+                       << "  Logger:" << endl
+                       << "    redirection:" << endl
+                       << "    [" << *stag << "] : \"blah.log\"" << endl
+                       << "in your yaml file, then you probably should remove the last line.  The LogTag" << endl
+                       << "\"" << *stag << "\" is not recognised by the logger system.  This commonly happens" << endl
+                       << "if you try to redirect log output for a module that either doesn't exist, or was" << endl
+                       << "ditched at cmake time." << endl;
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";
@@ -559,6 +565,12 @@ namespace Gambit
          //std::cout<<"Ignoring message..."<<std::endl;
          return;
        }
+
+       // If the "cout" tag is seen, repeat the message to stdout
+       if(mail.tags.find(repeat_to_cout) != mail.tags.end()) std::cout << mail.message << std::endl;
+
+       // If the "cerr" tag is seen, repeat the message to sterr
+       if(mail.tags.find(repeat_to_cerr) != mail.tags.end()) std::cerr << mail.message << std::endl;
 
        // Sort the tags
        const SortedMessage sortedmsg(mail);

@@ -39,10 +39,12 @@
 
 // MPI
 #ifdef WITH_MPI
-  #include <mpi.h>
+  #include "gambit/Utils/mpiwrapper.hpp"
   #define GET_RANK GMPI::Comm().Get_rank()
+  #define GET_SIZE GMPI::Comm().Get_size()
 #else
   #define GET_RANK 0
+  #define GET_SIZE 1
 #endif
 
 
@@ -150,8 +152,7 @@ namespace Gambit
           case 10:
           {
             // Display version number and shutdown.
-            int mpirank = GET_RANK;
-            if (mpirank == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
+            if (GET_RANK == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
             logger().disable();
             throw SilentShutdownException();
           }
@@ -167,6 +168,14 @@ namespace Gambit
           case 'd':
             // Display proposed functor evaluation order and quit
             show_runorder = true; // Sorted out in dependency resolver
+            // Should not allow this on multiple processes, just produces
+            // mixed up junk output.
+            if(GET_SIZE>1)
+            {
+               cout << "Tried to run GAMBIT dry-run mode in parallel! This is not allowed, please use only one process when performing dry-runs." << endl;
+               logger().disable();
+               throw SilentShutdownException();
+            }
             break;
           case 'r':
             // Restart scan (turn off "resume" mode, activate output overwrite)
@@ -354,7 +363,7 @@ namespace Gambit
       {
         // Warn user of missing descriptions
         std::ostringstream msg;
-        msg << "Warning! Descriptions are missing for the following capabilities:" <<endl;
+        msg << "WARNING" << endl << "Descriptions are missing for the following capabilities:" <<endl;
         for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
         {
           if(not it->has_description)
@@ -367,7 +376,7 @@ namespace Gambit
         // Send to a hardcoded file for now
         report << msg.str() << endl;
         // Also make user directly aware of this problem
-        cout << "Warning! Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
+        if (GET_RANK == 0) cout << "WARNING: Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
       }
 
       // Write out the centralised database file containing all this information
@@ -457,7 +466,7 @@ namespace Gambit
       {
         // Warn user of missing descriptions
         std::ostringstream msg;
-        msg << "Warning! Descriptions are missing for the following models:" <<endl;
+        msg << "WARNING" << endl << "Descriptions are missing for the following models:" <<endl;
         for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
         {
           if(not it->has_description)
@@ -468,7 +477,7 @@ namespace Gambit
         msg << "Please add descriptions of these to "<< input_model_descriptions <<endl;
         report << msg.str() << endl;
         // Also make user directly aware of this problem
-        cout << "Warning! Descriptions missing for some models! See "<<report_file<<" for details." << endl;
+        if (GET_RANK == 0) cout << "WARNING: Descriptions missing for some models! See "<<report_file<<" for details." << endl;
       }
 
       // Write out the centralised database file containing all this information

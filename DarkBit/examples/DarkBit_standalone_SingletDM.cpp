@@ -11,6 +11,8 @@
 ///   
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
+///  \author Sebastian Wild
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -26,7 +28,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
+QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, ())
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 
@@ -42,8 +44,7 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(const Spectrum *& outSpec){
-      static Spectrum mySpec;
+    void createSpectrum(Spectrum& outSpec){
       std::string inputFileName = "input.slha";
 
       Models::SingletDMModel singletmodel;
@@ -53,8 +54,7 @@ namespace Gambit
       singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
 
       SLHAstruct slhaea = read_SLHA(inputFileName);      
-      mySpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
-      outSpec = &mySpec;
+      outSpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
     }
 
     // Create decay object from SLHA file input.slha
@@ -93,7 +93,7 @@ int main()
     // ---- Check that required backends are present ----
     
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
-    if (not Backends::backendInfo().works["MicrOmegasSingletDM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "SingletDM version of MicrOmegas 3.6.9.2 is missing!");
+    if (not Backends::backendInfo().works["MicrOmegas_SingletDM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for SingletDM is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
     //if (not Backends::backendInfo().works["nulike_1_0_3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
@@ -106,13 +106,26 @@ int main()
     SingletDM_primary_parameters->setValue("mS", 100.);
     SingletDM_primary_parameters->setValue("lambda_hS", 0.05);
   
-    // Initialize LocalHalo model
-    ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
-    LocalHalo_primary_parameters->setValue("rho0", 0.4);
-    LocalHalo_primary_parameters->setValue("vrot", 235.);
-    LocalHalo_primary_parameters->setValue("v0", 235.);
-    LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
+    // Initialize halo model
+    ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
+    Halo_primary_parameters->setValue("rho0", 0.4);
+    Halo_primary_parameters->setValue("rhos", 0.08);
+    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("v0", 235.);
+    Halo_primary_parameters->setValue("vesc", 550.);
+    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("r_sun", 8.5);
+    Halo_primary_parameters->setValue("alpha", 0.17);
+
+
+    // --- Resolve halo dependencies ---
+    ExtractLocalMaxwellianHalo.notifyOfModel("Halo_Einasto");
+    ExtractLocalMaxwellianHalo.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+    GalacticHalo_Einasto.notifyOfModel("Halo_Einasto");
+    GalacticHalo_Einasto.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    GalacticHalo_Einasto.reset_and_calculate();
   
     // Initialize nuclear_params_fnq model
     ModelParameters* nuclear_params_fnq = Models::nuclear_params_fnq::Functown::primary_parameters.getcontentsPtr();
@@ -140,13 +153,14 @@ int main()
   //  nulike_1_0_3_init.reset_and_calculate();
     
     // Initialize gamLike backend
+    gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
   
     // Initialize MicrOmegas backend (specific for SingletDM)
-    //MicrOmegasSingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
-    MicrOmegasSingletDM_3_6_9_2_init.notifyOfModel("SingletDM");
-    MicrOmegasSingletDM_3_6_9_2_init.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
-    MicrOmegasSingletDM_3_6_9_2_init.reset_and_calculate();
+    //MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
+    MicrOmegas_SingletDM_3_6_9_2_init.notifyOfModel("SingletDM");
+    MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+    MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
   
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -165,8 +179,8 @@ int main()
   //  DarkSUSY_PointInit_MSSM.reset_and_calculate();
   
     // Initialize DarkSUSY Local Halo Model
-    DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
-    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+
+    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&ExtractLocalMaxwellianHalo);
     DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
@@ -178,7 +192,7 @@ int main()
     // ---- Relic density ----
   
     // Relic density calculation with MicrOmegas
-    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegasSingletDM_3_6_9_2::Functown::darkOmega);
+    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::darkOmega);
     RD_oh2_MicrOmegas.reset_and_calculate();
   
   //  // Relic density calculation with DarkSUSY (the sloppy version)
@@ -255,8 +269,8 @@ int main()
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
-    DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
-    DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+
+    DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_SingletDM);

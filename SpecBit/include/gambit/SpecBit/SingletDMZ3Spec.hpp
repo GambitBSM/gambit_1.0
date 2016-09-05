@@ -100,18 +100,18 @@ namespace Gambit
      
      
 
-//    
-//      template <class Model>
-//      double get_sinthW2_DRbar(const Model& model)
-//      {
-//       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
-//                      (0.6 * Utils::sqr(model.get_g1()) + 
-//                      Utils::sqr(model.get_g2()));
-//       return sthW2;
-//      }
-//      
-//
-//      
+    
+      template <class Model>
+      double get_sinthW2_MSbar2(const Model& model)
+      {
+       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
+                      (0.6 * Utils::sqr(model.get_g1()) + 
+                      Utils::sqr(model.get_g2()));
+       return sthW2;
+      }
+      
+
+     
       template <class Model>
       void set_Mhh_pole_slha(Model& model,double mass)
       {
@@ -317,6 +317,15 @@ namespace Gambit
 
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
+
+
+        
+          {
+            typename MTget::fmap0_extraM tmp_map;
+            tmp_map["sinW2"] = &get_sinthW2_MSbar2<Model>;
+            map_collection[Par::dimensionless].map0_extraM = tmp_map;
+         }
+
 
 
          return map_collection;

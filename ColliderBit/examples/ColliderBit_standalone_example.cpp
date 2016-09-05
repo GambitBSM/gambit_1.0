@@ -26,15 +26,15 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 
 // These functions are defined to allow GAMBIT dependencies to be satisfied properly without using GAMBIT
 // The user does not need to change these
-QUICK_FUNCTION(ColliderBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, const Spectrum*, (MSSM30atQ,MSSM30atMGUT))
-QUICK_FUNCTION(ColliderBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(ColliderBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, Spectrum))
 QUICK_FUNCTION(ColliderBit, Z_decay_rates, NEW_CAPABILITY, createZDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT))
-QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, Spectrum))
 
 // SLHA file for input: user can change name here
 // Note that it must contain the full decay table for the LEP likelihoods to function properly
@@ -46,18 +46,16 @@ namespace Gambit
   namespace ColliderBit {
 
     // Make a GAMBIT spectrum object from an SLHA file
-    void createSpectrum(const Spectrum *& outSpec)
+    void createSpectrum(Spectrum& outSpec)
     {
-      static Spectrum mySpec;
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
-      outSpec = &mySpec;
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
     }
     
     void createDecays(DecayTable& outDecays)
     {
       // This function makes a decay table from an input SLHA file
-      const Spectrum* spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
-      outDecays = DecayTable(inputFileName, spec->PDG_translator(), 0, true);
+      const Spectrum& spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
+      outDecays = DecayTable(inputFileName, spec.PDG_translator(), 0, true);
     }
     
     void createZDecays(DecayTable::Entry& result)
@@ -79,7 +77,7 @@ namespace Gambit
       // This is a little more complicated than the previous function
       // Need to get the string that corresponds to a left-handed selectron (the decay table entries are in the mass eigenstate basis)
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
       outSelDecays = (*Pipes::createSelDecays::Dep::decay_rates)(x);
     }
@@ -88,7 +86,7 @@ namespace Gambit
     {
       // This function extracts the right-handed selectron decay table
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
       outSerDecays = (*Pipes::createSerDecays::Dep::decay_rates)(x);
     }
@@ -97,7 +95,7 @@ namespace Gambit
     {
       // This function extracts the left-handed smuon decay table
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
       outSmulDecays = (*Pipes::createSmulDecays::Dep::decay_rates)(x);
     }
@@ -106,7 +104,7 @@ namespace Gambit
     {
       //This function extracts the right-handed smuon decay table
       double max_mixing;
-      const SubSpectrum* mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
       outSmurDecays = (*Pipes::createSmurDecays::Dep::decay_rates)(x);
     }
@@ -114,7 +112,7 @@ namespace Gambit
     void createStau1Decays(DecayTable::Entry& outStau1Decays)
     {
       //This function extracts the stau1 decay table
-      const SubSpectrum* mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum).get_HE();
       // Set these arguments by hand for this example
       const static double tol = 0.001;
       const static bool pterror=false;
@@ -125,7 +123,7 @@ namespace Gambit
     void createStau2Decays(DecayTable::Entry& outStau2Decays)
     {
       //This function extracts the stau2 decay table
-      const SubSpectrum* mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum).get_HE();
       const static double tol = 0.001;
       const static bool pterror=false;
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
@@ -353,45 +351,55 @@ int main()
     // User can edit this section to configure ColliderBit
     // See the ColiderBit manual for available options
     
+
+
     // First we have the LHC options - here we choose to run only one ATLAS analysis
     std::vector<std::string> runTheseATLASAnalyses;
     runTheseATLASAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which ATLAS analyses to run
     getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesATLAS",runTheseATLASAnalyses);
     getCMSAnalysisContainer.setOption<bool>("useCMS",false);
 
+
     // The standalone Pythia instance is given a name
     // Can be set to anything, provided it matches the same name given below
     std::vector<std::string> pythiaNames;
     pythiaNames.push_back("Pythia_Standalone");
-    YAML::Node Pythia_Standalone;   
-    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:MPI = off");
-    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:ISR = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:FSR = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("HadronLevel:all = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("TauDecays:mode = 0");
-    Pythia_Standalone["pythiaOptions_1"].push_back("SUSY:all = on");
-    Pythia_Standalone["pythiaOptions_1"].push_back("Beams:eCM = 8000");
-    Pythia_Standalone["pythiaOptions_1"].push_back("Main:timesAllowErrors = 1000");
-    getPythiaFileReader.setOption<YAML::Node>("Pythia_Standalone",Pythia_Standalone);
+
+    std::vector<std::string> Pythia_Standalone;
+    Pythia_Standalone.push_back("PartonLevel:MPI = off");
+    Pythia_Standalone.push_back("PartonLevel:ISR = on");
+    Pythia_Standalone.push_back("PartonLevel:FSR = on");
+    Pythia_Standalone.push_back("HadronLevel:all = on");
+    Pythia_Standalone.push_back("TauDecays:mode = 0");
+    Pythia_Standalone.push_back("SUSY:all = on");
+    Pythia_Standalone.push_back("Beams:eCM = 8000");
+    Pythia_Standalone.push_back("Main:timesAllowErrors = 1000");
+    getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_Standalone",Pythia_Standalone);
+
     std::vector<std::string> inputFiles;
     inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
-    getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
+    getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
     getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
+
 
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
     operateLHCLoop.setOption<int>("nEvents",5000.); // specify the number of simulated LHC events
     
+
+
     // Start running here
     
     {
       
       // Call the initialisation functions for all backends that are in use. 
       nulike_1_0_3_init.reset_and_calculate();
+
       
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();
       calc_LHC_LogLike.reset_and_calculate();
       
+
       // Retrieve and print the LHC likelihood
       double loglike = calc_LHC_LogLike(0);
       std::cout << "LHC log likelihood is " << loglike << std::endl;

@@ -55,6 +55,21 @@
 
 #include "gambit/Core/error_handlers.hpp"
 
+// I wanted to keep the GAMBIT logger separate from this code so that it 
+// would be more streamlined for using elsewhere. But the logger is very
+// useful for debugging, so this preprocessor flag can be used to turn
+// it on and off
+// Though it might already be included via the error handlers anyway.
+#define USE_GAMBIT_LOGGER
+
+#ifdef USE_GAMBIT_LOGGER
+  #include "gambit/Logs/logger.hpp"
+  #define LOGGER logger() << LogTags::utils << LogTags::info
+#else
+  #define LOGGER std::cerr
+  #define EOM std::endl
+#endif
+
 
 /// Provide template specialisation of get_mpi_data_type only if the requested type hasn't been used to define one already.
 #define SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_MPI_TYPE)                                                   \
@@ -152,17 +167,26 @@ namespace Gambit
             Comm();
 
             /// Constructor which copies existing communicator into boundcomm
-            Comm(const MPI_Comm& comm);
+            Comm(const MPI_Comm& comm, const std::string& name);
+
+            /// Destructor
+            ~Comm();
  
+            /// As name
+            void check_for_undelivered_messages();
+
             /// Duplicate existing communicator
             /// (NOTE, this is a collective operation on all procceses)
-            void dup(const MPI_Comm& comm);
+            void dup(const MPI_Comm& comm, const std::string& newname);
         
             /// Get total number of MPI tasks in this communicator group
             int Get_size() const;
 
             /// Get "rank" (ID number) of current task in this communicator group
             int Get_rank() const;
+
+            /// Get name of communicator group (for error messages)
+            std::string Get_name() const;
 
             /// Prevent further executation until all members of the bound communicator group enter the call
             void Barrier()
@@ -258,7 +282,7 @@ namespace Gambit
                                   MPI_Request *request /*out*/)
             {
               #ifdef MPI_MSG_DEBUG
-              std::cout<<"rank "<<Get_rank()<<": Isend() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
+              std::cerr<<"rank "<<Get_rank()<<": Isend() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
               #endif 
               int errflag; 
                errflag = MPI_Isend(buf, count, datatype, destination, tag, boundcomm, request);
@@ -309,7 +333,7 @@ namespace Gambit
                }
                #ifdef MPI_MSG_DEBUG
                if(you_have_mail!=0) {
-                     std::cout<<"rank "<<Get_rank()<<": Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
+                     std::cerr<<"rank "<<Get_rank()<<": Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
                }
                #endif
                return (you_have_mail != 0);
@@ -336,7 +360,7 @@ namespace Gambit
             // for messages that will never arrive).
             void Abort()
             {
-              std::cout << "rank "<<Get_rank()<<": MPI_Abort command received, attempting to terminate all processes..." << std::endl;
+              std::cerr << "rank "<<Get_rank()<<": MPI_Abort command received, attempting to terminate all processes..." << std::endl;
               MPI_Abort(boundcomm, 1);
             }
 
@@ -346,11 +370,14 @@ namespace Gambit
             /// Inverse of the above. Everyone waits for master to pass this (but not for anyone else)
             void allWaitForMaster(int tag);
 
+            /// Everyone waits for master to pass this, and runs "func" periodically while waiting
+            void allWaitForMasterWithFunc(int tag, void (*func)());
+
             /// An implementation of Barrier that will fall through if synchronisation takes too long
             /// Could modify to take a function pointer to run while waiting.
             /// Supply MPI tag to identify each particular barrier.
             /// Returns 'false' if barrier succeeds, 'true' if barrier times out (i.e. answers the question "did the barrier time out?")
-            bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog = std::cout);
+            bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag);
 
             /// This is a fancy barrier that waits a certain amount of time after the FIRST process
             /// enters before unlocking (so that other action can be taken). This means that all the
@@ -358,9 +385,41 @@ namespace Gambit
             /// This helps the synchronisation to be achieved next time.
             bool BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
                                           const int tag_entered, 
-                                          const int tag_timeleft, 
-                                          std::ostream& errorlog);
+                                          const int tag_timeleft);
       
+            /// Receive any waiting messages with a given tag from a given source (possibly MPI_ANY_SOURCE)
+            /// Need to know what the messages are in order to provide an appropriate Recv buffer (and size)
+            /// The last message received will remain in the buffer and may be used (useful if several messages
+            /// about the same thing are expected to pile up)
+            template<class T>
+            void Recv_all(T* buffer, int size, int source, int tag, int max_loops)
+            {
+              int loop = 0;
+      
+              MPI_Status status;
+              while(loop<max_loops and Iprobe(source, tag, &status))
+              {
+                #ifdef SIGNAL_DEBUG
+                LOGGER << "Detected message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<"; doing Recv" << EOM;
+                #endif
+                MPI_Status recv_status;
+                Recv(buffer, size, status.MPI_SOURCE, status.MPI_TAG, &recv_status);
+                #ifdef SIGNAL_DEBUG
+                LOGGER << "Received message from process "<<status.MPI_SOURCE<<" with tag "<<status.MPI_TAG<<". Discarding any existing message in the output buffer as obsolete..." << EOM;
+                #endif
+                ++loop;
+              }
+      
+              if(loop==max_loops)
+              {
+                std::ostringstream errmsg;
+                errmsg << "Error while attempting to clean out unreceived messages from other processes! Received maximum allowed number of messages ("<<loop<<", note that MPI size is "<<Get_size()<<")";  
+                utils_error().raise(LOCAL_INFO, errmsg.str());
+              }
+      
+              if(loop>0) LOGGER << "Communicator '"<<myname<<"' received "<<loop<<" messages with tag "<<tag<<". Only the last of these will be readable from the output buffer, the rest were discarded."<<EOM;
+            }
+
             /// A generic place to store a tag commonly used by this communicator
             int mytag = 1;
 
@@ -368,6 +427,9 @@ namespace Gambit
 
             // The MPI communicator to which the current object "talks".
             MPI_Comm boundcomm;
+
+            // A name to identify the communicator group to which this object is bound
+            std::string myname;
       };
 
       /// Check if MPI_Init has been called (it is an error to call it twice)
@@ -375,6 +437,15 @@ namespace Gambit
       
       /// Initialise MPI
       void Init();
+
+      /// Check if MPI_Finalize has been called (it is an error to do anything else after this)
+      bool Is_finalized();
+
+      /// Finalize MPI
+      void Finalize();
+
+      // Finalize MPI, but call MPI_abort and exit function if timeout is exceeded 
+      void FinalizeWithTimeout(bool use_mpi_abort);
 
       /// Nice wrapper for getting the message size from an MPI_status struct.
       /// Provide the type whose MPI_Datatype you want to retrieve as the
@@ -403,7 +474,7 @@ namespace Gambit
           std::string name;
           void (*func)();
         public:
-          MpiIniFunc(std::string l, std::string n, void(*f)())
+          MpiIniFunc(const std::string& l, const std::string& n, void(*f)())
             : location(l)
             , name(n)
             , func(f)
@@ -422,7 +493,7 @@ namespace Gambit
       /// on the same idea as the "ini_code" struct, except it doesn't
       /// cause the functions to be run, just "queues them up" so to speak.
       struct AddMpiIniFunc {
-        AddMpiIniFunc(std::string local_info, std::string name, void(*func)());
+        AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)());
       };
 
       /// @}

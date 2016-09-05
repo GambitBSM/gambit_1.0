@@ -11,6 +11,10 @@
 ///   
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
+///  \author Jonathan Cornell
+///  \date 2016 July
+///  \author Sebastian Wild
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -141,7 +145,7 @@ namespace Gambit
       TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
-      process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
+      process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
       auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "d_3", "phi");
       auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "dbar_3", "phi2");
       {
@@ -161,7 +165,7 @@ namespace Gambit
           }
           else
           {
-            process_ann.thresholdResonances.threshold_energy.
+            process_ann.resonances_thresholds.threshold_energy.
               push_back(mtot_final);
           }
         }
@@ -214,7 +218,7 @@ int main(int argc, char* argv[])
   {
     if (argc==1)
     {
-      std::cout << "Please select test mode (1-7)" << std::endl;
+      std::cout << "Please select test mode>=0" << std::endl;
       exit(1);
     }
     int mode = std::stoi((std::string)argv[1]);
@@ -233,17 +237,30 @@ int main(int argc, char* argv[])
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
-
+    if (not Backends::backendInfo().works["MicrOmegas_MSSM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
 
     // ---- Initialize models ----
 
-    // Initialize LocalHalo model
-    ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
-    LocalHalo_primary_parameters->setValue("rho0", 0.4);
-    LocalHalo_primary_parameters->setValue("vrot", 235.);
-    LocalHalo_primary_parameters->setValue("v0", 235.);
-    LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
+    // Initialize halo model
+    ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
+    Halo_primary_parameters->setValue("rho0", 0.4);
+    Halo_primary_parameters->setValue("rhos", 0.08);
+    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("v0", 235.);
+    Halo_primary_parameters->setValue("vesc", 550.);
+    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("r_sun", 8.5);
+    Halo_primary_parameters->setValue("alpha", 0.17);
+
+
+    // --- Resolve halo dependencies ---
+    ExtractLocalMaxwellianHalo.notifyOfModel("Halo_Einasto");
+    ExtractLocalMaxwellianHalo.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+    GalacticHalo_Einasto.notifyOfModel("Halo_Einasto");
+    GalacticHalo_Einasto.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    GalacticHalo_Einasto.reset_and_calculate();
 
     // ---- Initialize backends ----
 
@@ -251,26 +268,22 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
-    DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
-    DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+    DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP); // Use DarkSUSY for DD couplings
 
 
     // Initialize gamLike backend
-    //gamLike_1_0_0_init.notifyOfModel("CMSSM");  // FIXME: Hack
-    gamLike_1_0_0_init.notifyOfModel("GalacticHalo_gNFW");  // FIXME: Hack
+    gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_3_6_9_2_init.notifyOfModel("LocalHalo");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
-    MicrOmegas_3_6_9_2_init.reset_and_calculate();
-
-
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("Halo_Einasto");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+    MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
 
     // ---- Set up basic internal structures for direct & indirect detection ----
 
@@ -288,7 +301,7 @@ int main(int argc, char* argv[])
     // Initialize tabulated gamma-ray yields
     // FIXME: Use three different simyieldtables
     SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
-    SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::dNdE);
+    SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::dNdE);
 
     // Select SimYieldTable
     //auto SimYieldTablePointer = &SimYieldTable_MicrOmegas;
@@ -307,9 +320,11 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.resolveDependency(SimYieldTablePointer);
 
     // Set up MC loop manager for cascade MC
-    // FIXME: Systematically test accuracy and dependence on setup parameters
-    // FIXME: Add maximum width for energy bins
-    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
+    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 20000);
+    cascadeMC_Histograms.setOption<double>("cMC_endCheckFrequency", 25);
+    cascadeMC_Histograms.setOption<double>("cMC_gammaRelError", .05);
+    cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
+    cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
     cascadeMC_LoopManager.resolveDependency(SimYieldTablePointer);
@@ -330,8 +345,6 @@ int main(int argc, char* argv[])
     //cascadeMC_GenerateChain.reset_and_calculate();
 
     // Generate histogram for cascade MC
-    cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 600);
-    // FIXME: Check dependence on histogram parameters
     cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
     cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
     cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -415,7 +428,7 @@ int main(int argc, char* argv[])
     sigma_SI_p_simple.resolveDependency(&DD_couplings_WIMP);
     sigma_SI_p_simple.resolveDependency(&mwimp_generic);
 
-    // Spectral tests
+    // Generate gamma-ray spectra for various final states
     if ( (mode >= 0) and (mode < 6) )
     {
       std::cout << "Producing test spectra." << std::endl;
@@ -429,6 +442,7 @@ int main(int argc, char* argv[])
       if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 1.));
     }
 
+    // Generate gamma-ray spectra for various masses
     if (mode >= 10)
     {
       std::cout << "Producing test spectra." << std::endl;
@@ -438,6 +452,7 @@ int main(int argc, char* argv[])
       dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0.), mode);
     }
 
+    // Generate gamma-ray likelihood maps
     if (mode==6)
     {
       // Systematic parameter maps annihilation
@@ -487,18 +502,53 @@ int main(int argc, char* argv[])
       dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
     }
 
+    // Generate direct detection likelihood maps
     if (mode==7)
     {
       // Systematic parameter maps scattering
       std::cout << "Producing test maps." << std::endl;
-      int mBins = 40;
-      int sBins = 40;
+      double sigma_SI_p, lnL;
+      int mBins = 200;
+      int sBins = 300;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
-      std::vector<double> s_list = daFunk::logspace(-10, -6, sBins);
+      std::vector<double> s_list = daFunk::logspace(-10, -4, sBins);
+      boost::multi_array<double, 2> sigma_SI_p_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
       TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.));
+
+      // Calculate array of sigma_SI,p values for different scalar couplings
+      for (size_t i = 0; i < m_list.size(); i++)
+      {
+        for (size_t j = 0; j < s_list.size(); j++)
+        {
+          TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          DarkMatter_ID_WIMP.reset_and_calculate();
+          TH_ProcessCatalog_WIMP.reset_and_calculate();
+          DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
+          DD_couplings_WIMP.setOption<double>("gns", s_list[j]);
+          DD_couplings_WIMP.setOption<double>("gpa", 0.);
+          DD_couplings_WIMP.setOption<double>("gna", 0.);
+          DD_couplings_WIMP.reset_and_calculate();
+          mwimp_generic.reset_and_calculate();
+          sigma_SI_p_simple.reset_and_calculate();
+          sigma_SI_p = sigma_SI_p_simple(0);
+          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
+          sigma_SI_p_array[i][j] = sigma_SI_p;
+        }
+      }
+
+      dump_array_to_file("sigmaSIp_table.dat", sigma_SI_p_array, m_list, s_list);
+
+      // Re-initialize DDCalc with LUX 2013 halo parameters
+      LocalHalo_primary_parameters->setValue("rho0", 0.3);
+      LocalHalo_primary_parameters->setValue("vrot", 245.);
+      LocalHalo_primary_parameters->setValue("v0", 220.);
+      LocalHalo_primary_parameters->setValue("vesc", 544.);
+
+      // Calculate array of lnL values using LUX 2013 results, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -509,22 +559,20 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_fixed.reset_and_calculate();
           DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
-          DD_couplings_WIMP.setOption<double>("gns", 0.);
+          DD_couplings_WIMP.setOption<double>("gns", s_list[j]);
           DD_couplings_WIMP.setOption<double>("gpa", 0.);
           DD_couplings_WIMP.setOption<double>("gna", 0.);
           DD_couplings_WIMP.reset_and_calculate();
           mwimp_generic.reset_and_calculate();
-          sigma_SI_p_simple.reset_and_calculate();
-          double sigma_SI_p = sigma_SI_p_simple(0);
-          std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
           DDCalc_1_0_0_init.reset_and_calculate();
           LUX_2013_Calc.reset_and_calculate();
           LUX_2013_GetLogLikelihood.reset_and_calculate();
-          double lnL = LUX_2013_GetLogLikelihood(0);
+          lnL = LUX_2013_GetLogLikelihood(0);
           std::cout << "LUX2013 lnL = " << lnL << std::endl;
           lnL_array[i][j] = lnL;
         }
       }
+
       dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
     }
   }

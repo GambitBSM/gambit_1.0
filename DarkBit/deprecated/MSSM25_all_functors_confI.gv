@@ -137,7 +137,7 @@ digraph G {
 		style="rounded,filled"];
 	1 -> 168;
 	171	 [fillcolor="#F0F0D0",
-		label=< <font point-size="20" color="red">MSSM_spectrum</font><br/>Type: const Spectrum*<br/>Function: get_MSSMatQ_spectrum<br/>Module: SpecBit>,
+		label=< <font point-size="20" color="red">MSSM_spectrum</font><br/>Type: /*TAG*/ Spectrum<br/>Function: get_MSSMatQ_spectrum<br/>Module: SpecBit>,
 		shape=box,
 		style="rounded,filled"];
 	168 -> 171;

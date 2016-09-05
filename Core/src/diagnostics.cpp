@@ -117,7 +117,7 @@ namespace Gambit
     //cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
     std::stringstream out;
     out << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
-    if (all_good) out << endl << "All your backend are belong to us." << endl;
+    if (all_good) out << endl << endl << "\033[032m" << "All your backend are belong to us." << "\033[0m" << endl;
     out << endl;
     out << table.str();
     if (out.str().size() > 0)
@@ -351,7 +351,7 @@ namespace Gambit
           // Loop over all the backend functions and variables
           for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
           {
-            if ((*kt)->origin() == it->first) 
+            if (((*kt)->origin() == it->first) and ((*kt)->version() == (*jt))) 
             {
               //if (first)
               //{

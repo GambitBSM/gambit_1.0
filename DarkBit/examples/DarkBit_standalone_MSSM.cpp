@@ -11,6 +11,8 @@
 ///   
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
+///  \author Sebastian Wild
+///  \date 2016 Aug
 ///
 ///  *********************************************
 
@@ -26,7 +28,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, MSSM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
+QUICK_FUNCTION(DarkBit, MSSM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, ())
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 
@@ -42,15 +44,13 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(const Spectrum *& outSpec)
+    void createSpectrum(Spectrum& outSpec)
     {
       using namespace Pipes::createSpectrum;
-      static Spectrum mySpec;
       /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
-      outSpec = &mySpec;
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
     }
 
     // Create decay object from SLHA file input.slha
@@ -61,7 +61,7 @@ namespace Gambit
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);
-      //std::cout << "Exemplary width:" << std::endl;
+      //std::cout << "Example width:" << std::endl;
       //std::cout << outDecays.at(std::pair<int,int>(25,0)).width_in_GeV << std::endl;
     }
   }
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     // ---- Check that required backends are present ----
     
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
-    if (not Backends::backendInfo().works["MicrOmegas3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 is missing!");
+    if (not Backends::backendInfo().works["MicrOmegas_MSSM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
     if (not Backends::backendInfo().works["nulike1.0.3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
@@ -104,13 +104,25 @@ int main(int argc, char* argv[])
 
     // ---- Initialize models ----
 
-    // Initialize LocalHalo model
-    ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
-    LocalHalo_primary_parameters->setValue("rho0", 0.4);
-    LocalHalo_primary_parameters->setValue("vrot", 235.);
-    LocalHalo_primary_parameters->setValue("v0", 235.);
-    LocalHalo_primary_parameters->setValue("vesc", 550.);
-    LocalHalo_primary_parameters->setValue("vearth", 29.78);
+    // Initialize halo model
+    ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
+    Halo_primary_parameters->setValue("rho0", 0.4);
+    Halo_primary_parameters->setValue("rhos", 0.08);
+    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("v0", 235.);
+    Halo_primary_parameters->setValue("vesc", 550.);
+    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("r_sun", 8.5);
+    Halo_primary_parameters->setValue("alpha", 0.17);
+
+    // --- Resolve halo dependencies ---
+    ExtractLocalMaxwellianHalo.notifyOfModel("Halo_Einasto");
+    ExtractLocalMaxwellianHalo.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+    GalacticHalo_Einasto.notifyOfModel("Halo_Einasto");
+    GalacticHalo_Einasto.resolveDependency(&Models::Halo_Einasto::Functown::primary_parameters);
+    GalacticHalo_Einasto.reset_and_calculate();
 
     // Initialize nuclear_params_fnq model
     ModelParameters* nuclear_params_fnq = Models::nuclear_params_fnq::Functown::primary_parameters.getcontentsPtr();
@@ -140,13 +152,13 @@ int main(int argc, char* argv[])
     nulike_1_0_3_init.reset_and_calculate();
 
     // Initialize gamLike backend
-    gamLike_1_0_0_init.notifyOfModel("GalacticHalo_Einasto");  // FIXME: Hack
+    gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_3_6_9_2_init.resolveDependency(&createSpectrum);
-    MicrOmegas_3_6_9_2_init.notifyOfModel("MSSM30atQ");
-    MicrOmegas_3_6_9_2_init.reset_and_calculate();
+    MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createSpectrum);
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("MSSM30atQ");
+    MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -165,8 +177,7 @@ int main(int argc, char* argv[])
     DarkSUSY_PointInit_MSSM.reset_and_calculate();
 
     // Initialize DarkSUSY Local Halo Model
-    DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
-    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&ExtractLocalMaxwellianHalo);
     DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
@@ -178,14 +189,14 @@ int main(int argc, char* argv[])
     // ---- Relic density ----
 
     // Relic density calculation with MicrOmegas
-    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::darkOmega);
+    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::darkOmega);
     RD_oh2_MicrOmegas.setOption<int>("fast", 0);  // 0: accurate; 1: fast
     RD_oh2_MicrOmegas.reset_and_calculate();
 
     // Relic density calculation with DarkSUSY (the sloppy version)
     RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
     RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-    RD_oh2_DarkSUSY.setOption<int>("fast", 0);  // 0: normal; 1: fast; 2: dirty
+    RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
     RD_oh2_DarkSUSY.reset_and_calculate();
     // FIXME: Use "general" version instead
 
@@ -211,7 +222,6 @@ int main(int argc, char* argv[])
     TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBwhdxdy);
     TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBwwdxdy);
     TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::IBintvars);
-    TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::setMassesForIB);
     TH_ProcessCatalog_MSSM.reset_and_calculate();
 
     // Assume for direct and indirect detection likelihoods that dark matter
@@ -236,9 +246,9 @@ int main(int argc, char* argv[])
     DD_couplings_MicrOmegas.notifyOfModel("MSSM30atQ");
     DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
     DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::nucleonAmplitudes);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::FeScLoop);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::mocommon_);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::nucleonAmplitudes);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::FeScLoop);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::mocommon_);
     DD_couplings_MicrOmegas.reset_and_calculate();
 
     // Calculate DD couplings with DarkSUSY
@@ -254,8 +264,7 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
-    DDCalc_1_0_0_init.notifyOfModel("LocalHalo");
-    DDCalc_1_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+    DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_DarkSUSY); // Use DarkSUSY for DD couplings
@@ -315,8 +324,13 @@ int main(int argc, char* argv[])
     cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
     cascadeMC_DecayTable.reset_and_calculate();
 
+    // cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 100000);
+    // cascadeMC_Histograms.setOption<double>("cMC_endCheckFrequency", 25);
+    // cascadeMC_Histograms.setOption<double>("cMC_gammaRelError", .05);
+    // cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
+    // cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
+
     // Set up MC loop manager for cascade MC
-    cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1000);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
     cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
     cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
@@ -490,6 +504,7 @@ int main(int argc, char* argv[])
     file << "    MO: " << sigma_SD_p_MO << std::endl;
     file << "    DS: " << sigma_SD_p_DS << std::endl;
     file.close();
+
   }
 
   catch (std::exception& e)

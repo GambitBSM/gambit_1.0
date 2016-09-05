@@ -250,8 +250,8 @@ namespace Gambit
     {
       using namespace Pipes::Ref_SM_Higgs_decays_table;
     
-      // Get the Higgs pole mass
-      double mh = *Dep::mh;
+      // Get the Higgs pole mass.  Forget about the uncertainties for now.
+      double mh = Dep::mh->central;
       
       // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al. 
       double minmass = runOptions->getValueOrDef
@@ -2456,12 +2456,12 @@ namespace Gambit
       using namespace Pipes::SingletDM_Higgs_decays;
 
       // Get the spectrum information
-      const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const SubSpectrum* he = spec->get_HE();
-      double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = he->get(Par::dimensionless,"lambda_hS");
-      double v0 = he->get(Par::mass1,"vev");
-      double mhpole = spec->get(Par::Pole_Mass,"h0_1");
+      const Spectrum& spec = *Dep::SingletDM_spectrum;
+      const SubSpectrum& he = spec.get_HE();
+      double mass = spec.get(Par::Pole_Mass,"S");
+      double lambda = he.get(Par::dimensionless,"lambda_hS");
+      double v0 = he.get(Par::mass1,"vev");
+      double mhpole = spec.get(Par::Pole_Mass,"h0_1");
 
       // Get the reference SM Higgs decays
       result = *Dep::Reference_SM_Higgs_decay_rates;
@@ -2610,7 +2610,7 @@ namespace Gambit
       }
       static unsigned int counter = 0;
       std::vector<str> filenames = runOptions->getValue<std::vector<str> >("SLHA_decay_filenames");
-      logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
+      logger() << "Reading SLHA file: " << filenames[counter] << EOM;
       std::ifstream ifs(filenames[counter]);
       if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
       SLHAstruct slha(ifs);
@@ -2624,7 +2624,7 @@ namespace Gambit
     void get_mass_es_pseudonyms(mass_es_pseudonyms& result)
     {
       using namespace Pipes::get_mass_es_pseudonyms;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Dep::MSSM_spectrum).get_HE();
 
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
@@ -2643,7 +2643,7 @@ namespace Gambit
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       result = 0;
       double max_mixing;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      const SubSpectrum& mssm = (*Dep::MSSM_spectrum).get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~u_L", max_mixing, mssm);
       if((max_mixing*max_mixing) <= 1-tol) result = 1;
       x = slhahelp::mass_es_from_gauge_es("~u_R", max_mixing, mssm);

@@ -31,19 +31,16 @@ Parameters:
       prior_type: flat
     SignMu: 1
 
-  LocalHalo:
-    rho0: # Local dark matter density
-      fixed_value: .4 # GeV/cm^3
-      #range: [.2, .8]
-      #prior_type: flat
-    vrot: # Local disk rotation speed
-      fixed_value: 235 # km/s
-    v0: # Maxwellian most-probable speed
-      fixed_value: 235 # km/s
-    vesc: # Local galactic escape speed
-      fixed_value: 550 # km/s
-    vearth: # Keplerian velocity of the earth around the sun
-      fixed_value: 29.78 # km/s
+  Halo_gNFW_rho0:
+    rho0: 0.4
+    v0: 235.0
+    vesc: 550.0
+    vrot: 235.0
+    rs: 20.0
+    r_sun: 8.5
+    alpha: 1
+    beta: 3
+    gamma: 1
 
 Priors:
 
@@ -304,10 +301,10 @@ Rules:
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_obs: 43.
+      sigmas_obserr: 8.
+      sigmal_obs: 58.
+      sigmal_obserr: 9.
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)

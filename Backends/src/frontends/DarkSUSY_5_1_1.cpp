@@ -587,7 +587,7 @@ BE_NAMESPACE
     // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
-    mssmiuseful->kln = DSpart->kn(1);
+    mssmiuseful->kln = 1;
     dsvertx();
         
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
@@ -731,49 +731,5 @@ BE_NAMESPACE
       initVector<str>("W+", "A0")     
      );
   }
-
-/* PS: I have made the mods requested, but these functions cannot work as designed, 
- * because DarkBit::TH_ParticleProperty is a module type, not a backend type.  
- * Make it a backend type or move these functions back into DarkBit.
- * 
-  void registerMassesForIB(
-      std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
-  {
-    DSparticle_mass.clear();
-    GAMBITparticle_mass.clear();
-    for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
-    {
-      DSparticle_mass.push_back(mspctm->mass(DSparticle_code(IBfinalstate[i])));
-      GAMBITparticle_mass.push_back(particleProperties.at(IBfinalstate[i]).mass);
-    }
-  }
-*/
-
-  //PS: this can't compile anyway, as particleProperties is not defined
-  void setMassesForIB(bool set) 
-  {
-    if (set)
-    {
-    /*  // Set masses in DS, using above global variables.
-      for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
-      {
-        mspctm->mass(DSparticle_code(IBfinalstate[i])) =
-          particleProperties.at(IBfinalstate[i]).mass;
-      }
-    */
-    }
-    else
-    {
-    /*  // Reset masses.
-      for (int i = 0; i < IBfinalstate.size(); i++ )
-      {
-        particleProperties.at(IBfinalstate[i]).mass =
-            mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i]));
-      } */
-    }
-  }
-
-
 }
 END_BE_NAMESPACE
-

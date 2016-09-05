@@ -107,19 +107,19 @@ namespace Gambit
         /// @}        
         
         /// Fill strings in struct
-        void fill(const SubSpectrum*, double, bool, bool);
+        void fill(const SubSpectrum&, double, bool, bool);
 
         /// Refill string in struct
-        void refill(const SubSpectrum*, double, bool, bool);
+        void refill(const SubSpectrum&, double, bool, bool);
 
         /// Debug printer for pseudonyms      
-        void debug_print(const SubSpectrum*);
+        void debug_print(const SubSpectrum&);
 
         /// Gauge state debug printer for pseudonyms
-        void debug_print_gauge(const SubSpectrum*, str&, str&, double&);
+        void debug_print_gauge(const SubSpectrum&, str&, str&, double&);
 
         /// Family state debug printer for pseudonyms
-        void debug_print_family(const SubSpectrum*, str&, str&, double&, double&);
+        void debug_print_family(const SubSpectrum&, str&, str&, double&, double&);
 
 
      private:
@@ -129,8 +129,8 @@ namespace Gambit
 
         /// Helper functions for filling maps from MSSM gauge eigenstates to mass eigenstates.
         /// @{
-        void fill_mass_es_psn_gauge(str&, str&, str, const SubSpectrum*, double, bool, bool);
-        void fill_mass_es_psn_family(str&, str&, str, const SubSpectrum*, double, bool, bool);
+        void fill_mass_es_psn_gauge(str&, str&, str, const SubSpectrum&, double, bool, bool);
+        void fill_mass_es_psn_family(str&, str&, str, const SubSpectrum&, double, bool, bool);
         /// @} 
 
       };

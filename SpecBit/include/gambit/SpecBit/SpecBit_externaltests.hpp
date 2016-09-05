@@ -1079,7 +1079,7 @@ namespace Gambit
       // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
       // SMINPUTS sufficiently accurately
       // Set flag SLHAonly=1 if SMskeleton and/or MSSMskeleton are being used.
-      void Spectrum_test(const Spectrum* matched_spectra, const SubSpectrum* smin, bool SLHAonly=0)
+      void Spectrum_test(/*TAG*/ Spectrum matched_spectra, const SubSpectrum* smin, bool SLHAonly=0)
       {
          // Extract pieces of Spectrum to make it clear what they are supposed to be
          SMInputs sminputs = matched_spectra->get_SMInputs();

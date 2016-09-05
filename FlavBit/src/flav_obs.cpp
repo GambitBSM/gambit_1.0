@@ -17,6 +17,8 @@
 ///
 ///  \author Marcin Chrzaszcz
 ///  \data 2015 May
+///  \data 2016 July
+///  \data 2016 August
 ///
 ///
 ///  *********************************************
@@ -110,54 +112,68 @@ namespace Gambit
     void operator >> (const YAML::Node& node, Correlation& c) {
       string tmp;
       // safety
+      //cout<<"READING CORRELATION"<<endl;
       tmp = node["name"].as<std::string>();
       if(tmp=="NONE") return;
       // reading correlation
+      //cout<<"Should not be here"<<endl;
       c.corr_name= node["name"].as<std::string>();
       c.corr_val = node["value"].as<double>();
+      //cout<<"let's see:"<<endl;
+      //cout<<c.corr_name<<endl;
+      //cout<<c.corr_val <<endl;
+
     }
     void operator >> (const YAML::Node& node, Measurement& v) {
       
       v.name=node["name"].as<std::string>();
       
       v.is_limit = node["islimit"].as<bool>();
-      
+
 
       if(v.is_limit== true)
-  {
-    v.limit=node["limit"].as<double>();
-    v.value=-1.;
-    v.stat_error_plus=-1.;
-    v.sys_error_plus=-1.;
-    v.stat_error_minus=-1.;
-    v.sys_error_minus=-1.;
-    v.error_plus=-1.;
-    v.error_minus=-1.;
-
-  }
+	{
+	  v.limit=node["limit"].as<double>();
+	  v.value=-1.;
+	  v.exp_stat_error=-1.;
+	  v.exp_sys_error=-1.;
+	  v.exp_error=-1.;
+	  v.error_type="NONE";
+	  v.th_error=-1.;
+	}
       else
-  {
-    v.value= node["value"].as<double>();
-    v.stat_error_minus = node["stat_error_minus"].as<double>();
-    v.sys_error_minus = node["sys_error_minus"].as<double>();
-    v.stat_error_plus=node["stat_error_plus"].as<double>();
-    v.sys_error_plus=node["sys_error_plus"].as<double>();
-    
-    v.error_plus=sqrt( v.stat_error_plus*v.stat_error_plus +v.sys_error_plus*v.sys_error_plus);
-    v.error_minus=sqrt(v.sys_error_minus*v.sys_error_minus+v.stat_error_minus*v.stat_error_minus);
-
-    v.limit=-1.;
-  }
+	{
+	  v.value= node["value"].as<double>();
+	  //cout<<v.value<<endl;
+	  v.exp_stat_error = node["exp_stat_error"].as<double>();
+	  //cout<<v.exp_stat_error<<endl;
+	  v.exp_sys_error = node["exp_sys_error"].as<double>();
+	  //cout << v.exp_stat_error << endl;
+	  // v.exp_stat_error_plus=node["exp_stat_error_plus"].as<double>();
+	  // v.exp_sys_error_plus=node["exp_sys_error_plus"].as<double>();
+	  v.th_error=node["th_error"].as<double>();  
+	  //cout << v.th_error <<endl;
+	  // v.th_error_plus=node["th_error_plus"].as<double>();    
+	  //adding the errors with 
+	  v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
+	  //v.exp_error_minus=sqrt(v.exp_sys_error_minus*v.exp_sys_error_minus+v.exp_stat_error_minus*v.exp_stat_error_minus);
+	  v.limit=-1.;
+	  v.error_type=node["error_type"].as<std::string>();
+	  // cout<<v.error_type<<endl;
+	}
       v.source = node["source"].as<std::string>();
       // now the correlation
       const YAML::Node& correlations = node["correlation"];
       for(unsigned i=0;i<correlations.size();++i) {
-  Correlation corr_tmp;
-  correlations[i] >> corr_tmp;
-  v.corr.push_back(corr_tmp);
-
+	Correlation corr_tmp;
+	correlations[i] >> corr_tmp;
+	//	cout<<"Correlation name: "<<corr_tmp.corr_name<<endl;
+	if(corr_tmp.corr_name !=""  ) v.corr.push_back(corr_tmp);
+	
 
       }// for loop inside correlation
+      //cout<<"Corrleation size: "<<v.corr[0].size()<<endl;
+
     }
 
 
@@ -182,13 +198,13 @@ namespace Gambit
       // parser.GetNextDocument(doc);
       number_measurements=0;
       for(unsigned i=0;i<doc.size();++i)
-  {
-    Measurement mes_tmp;
-    doc[i] >> mes_tmp;
-    if(debug) print(mes_tmp);
-    measurements.push_back(mes_tmp);
-    number_measurements++;
-  }
+	{
+	  Measurement mes_tmp;
+	  doc[i] >> mes_tmp;
+	  if(debug) print(mes_tmp);
+	  measurements.push_back(mes_tmp);
+	  number_measurements++;
+	}
       if(debug) cout<<"Number of measurements: "<<number_measurements<<endl;
       return OK;
     }
@@ -203,17 +219,16 @@ namespace Gambit
       if(debug) cout<<measurement_name.c_str()<<endl;
       
       for(unsigned i=0;i<doc.size();++i)   
-  {                                  
-    Measurement mes_tmp;             
-    doc[i] >> mes_tmp;               
-    if(mes_tmp.name!=measurement_name.c_str()) continue;
-    
-    measurements.push_back(mes_tmp); 
-    number_measurements++;  
-    if(debug) cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.value<<endl;
-  }                                  
-
-
+	{                                  
+	  Measurement mes_tmp;             
+	  doc[i] >> mes_tmp;               
+	  if(mes_tmp.name!=measurement_name.c_str()) continue;
+	  
+	  measurements.push_back(mes_tmp); 
+	  number_measurements++;  
+	  if(debug) cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.value<<endl;
+	}                                  
+       
     }
     
     
@@ -222,11 +237,11 @@ namespace Gambit
     {
       cout<<"################### Mesurement"<<endl;
       cout<<"Name: "<<mes.name<<endl;
-      if(!mes.is_limit) cout<<"Stat/sys errror: "<<mes.stat_error_plus<<" "<< mes.stat_error_minus<<"/"<<mes.sys_error_plus<<" "<<mes.sys_error_minus<<endl;
+      if(!mes.is_limit) cout<<"Stat/sys errror: "<<mes.exp_stat_error<<"/"<<mes.exp_sys_error<<endl;
       else cout<<"Limit: "<<mes.limit<<endl;
       cout<<"Source: "<<mes.source<<endl;
       cout<<"Correlations:"<<endl;
-      cout<<"Error plus/minus: "<<mes.error_plus<<" "<<mes.error_minus<<endl;
+      cout<<"Error plus/minus: "<<mes.exp_error<<endl;
       for(unsigned i=0;i<mes.corr.size();++i)
   {
     cout<<mes.corr[i].corr_name<<"  "<<mes.corr[i].corr_val<<endl;
@@ -247,42 +262,39 @@ namespace Gambit
       M_glob_correlation = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_correlation_inv = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-
-
-      M_glob_cov_uu = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_ud = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_du = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_dd = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-
-
+      M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_cov_inv = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_inv_uu = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_inv_ud = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_inv_du = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_inv_dd = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-
+      
+      
       
 
 
       for(int i =0; i<number_measurements;++i)
-  {
-    for(int j=0;j<number_measurements;++j)
-      {
-        M_glob_correlation(i,j)=0.;
-        if(i==j) M_glob_correlation(i,j)=1.;
-      }
-  }
+	{
+	  for(int j=0;j<number_measurements;++j)
+	    {
+	      M_glob_correlation(i,j)=0.;
+	      if(i==j) M_glob_correlation(i,j)=1.;
+	    }
+	}
       //  print_corr_matrix() ;
       // fill with correlations from cards
+
       for(int i=0; i<number_measurements; ++i)
-  {
-    for ( unsigned icorr=0; icorr< measurements[i].corr.size(); ++icorr)
-      {
-        int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
-        M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
-        //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];
-      }
-  }
+	{
+    #ifdef FLAVBIT_DEBUG
+  	  cout<<"Correlation size: "<< measurements[i].corr.size()<<endl;
+    #endif
+	  for ( unsigned icorr=0; icorr< measurements[i].corr.size(); ++icorr)
+	    {
+        #ifdef FLAVBIT_DEBUG
+  	      cout<<"Searching for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
+        #endif
+	      int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
+	      M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
+	      //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];
+	    }
+	}
       if(debug) print_corr_matrix();
       bool ok=Flav_reader::check_corr_matrix();
       if(!ok) return;
@@ -291,55 +303,55 @@ namespace Gambit
       //  if(debug)  print_corr_inv_matrix();
       // now creating the Covariance matrix
       for(int i=0; i<number_measurements;++i)
-  {
-    for(int j=0;j<number_measurements;++j)
-      {
-        M_glob_cov(i,j)=M_glob_correlation(i,j)*(measurements[i].error_plus +measurements[i].error_minus)*(measurements[j].error_plus +measurements[j].error_minus)*0.25;
-        M_glob_cov_uu(i,j)=M_glob_correlation(i,j)*(measurements[i].error_plus)*(measurements[j].error_plus);
-        M_glob_cov_ud(i,j)=M_glob_correlation(i,j)*(measurements[i].error_plus)*(measurements[j].error_minus);
-        M_glob_cov_du(i,j)=M_glob_correlation(i,j)*(measurements[i].error_minus)*(measurements[j].error_plus);
-        M_glob_cov_dd(i,j)=M_glob_correlation(i,j)*(measurements[i].error_minus)*(measurements[j].error_minus);
-
-      }
-  }
+	{
+	  for(int j=0;j<number_measurements;++j)
+	    {
+	      M_glob_cov(i,j)=M_glob_correlation(i,j)*(measurements[i].exp_error)*(measurements[j].exp_error);
+	      
+	    }
+	}
       print_cov_matrix();
 
       // InvertMatrix(M_glob_correlation, M_glob_cov_inv);
       
       if(debug) cout<<"Inverting: "<<endl;
-      if(debug) cout<<M_glob_cov_dd<<endl;
+      if(debug) cout<<M_glob_cov<<endl;
 
-      InvertMatrix(M_glob_cov_uu, M_glob_cov_inv_uu);
-      InvertMatrix(M_glob_cov_ud, M_glob_cov_inv_ud);
-      InvertMatrix(M_glob_cov_du, M_glob_cov_inv_du);
-      InvertMatrix(M_glob_cov_dd, M_glob_cov_inv_dd);
+      InvertMatrix(M_glob_cov, M_glob_cov_inv);
+  
       
       if(debug) cout<<"Inverted"<<endl;
-      if(debug) cout<<M_glob_cov_inv_dd<<endl;
+      if(debug) cout<<M_glob_cov_inv<<endl;
 
       // calcul;atin the the measurement vector:
       M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,1);
       
       for(int i=0; i<number_measurements;++i)   
-  {                                       
-    M_measurement(i,0)=measurements[i].value;
-  }
-      if(debug) cout<<M_measurement<<endl;
+	{                                       
+	  M_measurement(i,0)=measurements[i].value;
+	}
+      if(debug) cout<<M_measurement<<endl; 
+
       
+      th_err= boost::numeric::ublas::matrix<double> (number_measurements,1);
+      for(int i=0; i<number_measurements;++i)       
+	{                                           
+	  th_err(i,0)=measurements[i].th_error; 
+	}                                           
 
-
-
-
+      
+      if(debug) cout<<th_err<<endl;
+      
       
     }
 
     int Flav_reader::get_measurement_for_corr(string ss)
     {
       for(int i=0;i<number_measurements;++i)
-  {
-    if(measurements[i].name == ss) return i;
-    
-  }
+	{
+	  if(measurements[i].name == ss) return i;
+	  
+	}
       cout<<"Error!, didn't find measuremnet: "<<ss<<endl;
       return -1;
     }
@@ -350,18 +362,18 @@ namespace Gambit
 
 
       if(debug){
-  for(int i=0; i < number_measurements; ++i)
-    {
-      for(int j=0 ; j< number_measurements; ++j)
-        {
-    cout<<M_glob_correlation(i,j)<<"\t";
-
-        }
-      cout<<endl;
-    }
+	for(int i=0; i < number_measurements; ++i)
+	  {
+	    for(int j=0 ; j< number_measurements; ++j)
+	      {
+		cout<<M_glob_correlation(i,j)<<"\t";
+		
+	      }
+	    cout<<endl;
+	  }
       }
     }
-
+    
     void Flav_reader::print_cov_matrix()
     {
       if(debug) cout<<"Mean Cov matrix:"<<endl;

@@ -88,7 +88,7 @@ namespace Gambit
        using namespace Pipes::specbit_test_func1;
        std::cout << "Running specbit_test_func1" << std::endl;
        std::cout << "Retrieving Spectrum*" << std::endl;
-       const Spectrum* spec = *Dep::MSSM_spectrum;
+       /*TAG*/ Spectrum spec = *Dep::MSSM_spectrum;
  
        std::cout << "Running spec_manipulate" << std::endl;
        // Clone the UV Spectum object so we can access a non-const version
@@ -164,7 +164,7 @@ namespace Gambit
     void specbit_test_Spectrum (double &result)
     {
       using namespace Pipes::specbit_test_Spectrum;
-      const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
+      /*TAG*/ Spectrum matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum* sm = *Dep::SM_subspectrum; 
       bool noRGE = runOptions->getValueOrDef<bool>(0,"noRGE"); // don't test running on skeleton Spectrum wrappers 
       logger() << "Running specbit_test_Spectrum with noRGE="<<noRGE<<std::endl;
@@ -204,7 +204,7 @@ namespace Gambit
     void test_Singlet_spectrum(bool &result)
     {
       using namespace Pipes::test_Singlet_spectrum;
-      const Spectrum* spec = *Dep::SingletDM_spectrum;
+      /*TAG*/ Spectrum spec = *Dep::SingletDM_spectrum;
       logger() << "Parameters from SingletDM_spectrum:" << std::endl;
       logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0") << std::endl; 
       logger() << "Higgs VEV        : " << spec->get_UV()->get_mass_parameter("v0") << std::endl; 
