@@ -432,6 +432,8 @@ int main(int argc, char* argv[])
     XENON100_2012_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     PICO_60_F_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PICO_60_F_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    PICO_60_I_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    PICO_60_I_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     SIMPLE_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     SIMPLE_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     PICO_2L_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
@@ -453,6 +455,9 @@ int main(int argc, char* argv[])
     PICO_60_F_GetLogLikelihood.resolveDependency(&PICO_60_F_Calc);
     PICO_60_F_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PICO_60_F_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    PICO_60_I_GetLogLikelihood.resolveDependency(&PICO_60_I_Calc);
+    PICO_60_I_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    PICO_60_I_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
     SIMPLE_2014_GetLogLikelihood.resolveDependency(&SIMPLE_2014_Calc);
     SIMPLE_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     SIMPLE_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
@@ -683,7 +688,7 @@ int main(int argc, char* argv[])
       dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
 
       s_list = daFunk::logspace(-41., -35., sBins);
-      // Calculate array of sigma_SD,p and lnL values for PICO-60 (Flourine target) and SIMPLE 2014, assuming gps=gns
+      // Calculate array of sigma_SD,p and lnL values for PICO-60 and SIMPLE 2014, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -712,7 +717,9 @@ int main(int argc, char* argv[])
           DDCalc_1_0_0_init.reset_and_calculate();
           PICO_60_F_Calc.reset_and_calculate();
           PICO_60_F_GetLogLikelihood.reset_and_calculate();
-          lnL1 = PICO_60_F_GetLogLikelihood(0);
+          PICO_60_I_Calc.reset_and_calculate();
+          PICO_60_I_GetLogLikelihood.reset_and_calculate();
+          lnL1 = PICO_60_F_GetLogLikelihood(0) + PICO_60_I_GetLogLikelihood(0);
           PICO_2L_Calc.reset_and_calculate();
           PICO_2L_GetLogLikelihood.reset_and_calculate();
           lnL2 = PICO_2L_GetLogLikelihood(0);
@@ -733,7 +740,7 @@ int main(int argc, char* argv[])
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
 
-          std::cout << "PICO_60_F lnL = " << lnL1 << std::endl;
+          std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
           std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
           std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
         }
@@ -747,7 +754,7 @@ int main(int argc, char* argv[])
       ExtractLocalMaxwellianHalo.reset_and_calculate();
       GalacticHalo_Einasto.reset_and_calculate();
 
-      dump_array_to_file("PICO_60_F_table.dat", lnL_array1, m_list, s_list);
+      dump_array_to_file("PICO_60_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PICO_2L_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("SIMPLE_2014_table.dat", lnL_array3, m_list, s_list);
     }
