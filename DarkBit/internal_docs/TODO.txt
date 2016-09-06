@@ -10,7 +10,6 @@ Before internal paper review:
 - Finalize/delete/shorten discussion about max-gap method [FK/PS]
 - Clarify nucleon matrix element section [JC]
 - Fix DDCalc validation figures [JC]
-- Update J-value discussion for gamLike, after finishing implementation [SW]
 - Redo plots Fig. 7 (more channels) and Fig. 8 & 9 (official limits) [JC]
   (as discussed during meeting)
 
@@ -36,6 +35,8 @@ After internal paper review started:
 - Add RD_oh2_general to MSSM and SingletDM standalones, remove Sloppy.cpp and
   associated functions (and update numbers and tables in paper) [JC]
 - J-factor calculation in gamLike, using the new halo model scheme [CW/SW]
+    --> For HESS and CTA, check that the implementation is consistent with the text
+        in the DarkBit paper, in particular with the possible choices for the "version" option!       
 - Prepare post-processing of CMSSM results with alternative DarkBit
   configurations [CW/JC/SW]
 - Concepts/cosmetics
@@ -84,6 +85,7 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Update J-value discussion for gamLike, after finishing implementation [SW]
 - Add discussion about LUX etc likelihoods to paper [FK]
 - Update cascade code discussions in paper to new treatment [CW]
 - Add caveat information about decay blocks in SLHA files [CW]
