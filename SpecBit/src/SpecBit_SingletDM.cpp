@@ -241,6 +241,7 @@ namespace Gambit
             // Deal with points where spectrum generator encountered a problem
       #ifdef SPECBIT_DEBUG
         std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+        std::cout<<"Warning? "<<problems.have_warning()<<std::endl;
       #endif
       if( problems.have_problem() )
       {
