@@ -617,7 +617,7 @@ ExternalProject_Add(${name}_${ver}
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" my_configure
             COMMAND ./my_configure
-            COMMAND sed ${dashi} -e "s|*.intent(in) :: Expt_string.*| character(LEN=13), intent(in) :: Expt_string |" HiggsSignals_subroutines.f90
+            COMMAND sed ${dashi} -e "s|.*intent(in) :: Expt_string.*| character(LEN=13), intent(in) :: Expt_string |" HiggsSignals_subroutines.f90
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ${CMAKE_COMMAND} -E make_directory lib
         COMMAND ${CMAKE_COMMAND} -E remove HiggsSignals.o
