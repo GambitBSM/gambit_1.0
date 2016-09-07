@@ -21,20 +21,7 @@
 #include "gambit/Backends/frontends/HiggsSignals_1_4.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
-void ConvertToFortran(char* fstring, std::size_t fstring_len,
-                      const char* cstring)
-{
-    std::size_t inlen = std::strlen(cstring);
-    std::size_t cpylen = std::min(inlen, fstring_len);
 
-    if (inlen > fstring_len)
-    {
-        // TODO: truncation error or warning
-    }
-
-    std::copy(cstring, cstring + cpylen, fstring);
-    std::fill(fstring + cpylen, fstring + fstring_len, ' ');
-}
 
 
 
@@ -69,18 +56,8 @@ BE_INI_FUNCTION
       cout << "using data path = " << data_path << endl;
       const char * exp_data = strdup(data_path.c_str());//strdup(data_path.c_str());
       cout << "exp_data = " << exp_data << endl;
-      char cstring[2][4] = { "abc", "xyz" };
-      char string[2][4];
-
-      ConvertToFortran(string[0], sizeof string[0], cstring[0]);
-      ConvertToFortran(string[1], sizeof string[1], cstring[1]);
-
-      std::cout << "c++: string[0] = '" << cstring[0] << "'" << std::endl;
-      std::cout << "c++: string[1] = '" << cstring[1] << "'" << std::endl;
-
       
-      
-      initialize_HiggsSignals(nHneut,nHplus,string);
+      initialize_HiggsSignals(nHneut,nHplus,exp_data);
       setup_pdf(pdf);
     }
     for (auto it = mylocks.begin(); it != mylocks.end(); ++it)

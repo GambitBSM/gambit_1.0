@@ -152,9 +152,7 @@ ObsLikes:
 
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
-      function: calc_combined_LHC_LogLike
-      options:
-        HS_data: hello
+      function: calc_Lilith_LHC_LogLike
 
 
 
@@ -166,9 +164,9 @@ Rules:
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum
 
-    - capability: HiggsSignals_1_4_init
-      options:
-        HS_data: latestresults
+  #  - capability: HiggsSignals_1_4_init
+  #    options:
+        #HS_data: latestresults
 
 
 

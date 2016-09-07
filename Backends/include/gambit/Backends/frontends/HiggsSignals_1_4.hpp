@@ -42,7 +42,7 @@ LOAD_LIBRARY
  * If left out (as done below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability")  */
 
-BE_FUNCTION(initialize_HiggsSignals, void, (int&, int&,char[]), "initialize_higgssignals_", "initialize_HiggsSignals")
+BE_FUNCTION(initialize_HiggsSignals, void, (int&, int&, const char*), "initialize_higgssignals_", "initialize_HiggsSignals")
 BE_FUNCTION(initialize_HiggsSignals_latestresults, void, (int&, int&), "initialize_higgssignals_latestresults_", "initialize_HiggsSignals_latestresults")
 BE_FUNCTION(initialize_HiggsBounds_int_HS, void, (int&, int&, int&), "initialize_higgsbounds_int_", "initialize_HiggsBounds_int_HS")
 BE_FUNCTION(setup_pdf, void, (int&), "setup_pdf_", "setup_pdf")
@@ -53,7 +53,7 @@ BE_FUNCTION(finish_HiggsSignals, void, (), "finish_higgssignals_", "finish_Higgs
 BE_FUNCTION(finish_HiggsBounds_HS, void, (), "finish_higgsbounds_", "finish_HiggsBounds_HS")
 
 // input parameter functions
-BE_FUNCTION(HiggsBounds_input_SLHA_HS, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA_HS")
+BE_FUNCTION(HiggsBounds_input_SLHA_HS, void, (const char*), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA_HS")
 BE_FUNCTION(HiggsBounds_neutral_input_part_HS, void, (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
 						      double*, double*, double*, double*, double*, double*, double*,
 						      double*, double*, double*, double*, double*, double*, double*,
