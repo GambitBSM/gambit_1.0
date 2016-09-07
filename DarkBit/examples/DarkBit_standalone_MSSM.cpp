@@ -152,7 +152,6 @@ int main(int argc, char* argv[])
     nulike_1_0_3_init.reset_and_calculate();
 
     // Initialize gamLike backend
-    gamLike_1_0_0_init.resolveDependency(&GalacticHalo_Einasto);
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
