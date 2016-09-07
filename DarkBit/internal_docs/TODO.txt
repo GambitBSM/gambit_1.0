@@ -8,12 +8,11 @@ DarkBit
 Before internal paper review:
 - Update v-related discussion in DDCalc parts of paper [FK]
 - Finalize/delete/shorten discussion about max-gap method [FK/PS]
-- Clarify nucleon matrix element section [JC]
-- Fix DDCalc validation figures [JC]
-- Redo plots Fig. 7 (more channels) and Fig. 8 & 9 (official limits) [JC]
-  (as discussed during meeting)
 
 After internal paper review started:
+- Add +/- to spoke plots to show how parameters are changing [JC]
+- Figure out why SIMPLE and Xenon100 likelihoods do not agree with official limits [JC]
+- Clean up standalones [JC/?]
 - Update/finalize LUX 2016 likelihoods [FK]
 - Double-check that all options are mentioned properly in darkbit paper [CW, JE, JC]
 - Make gambit_DarkBit_example.yaml file complete and useful (in the spirit of
@@ -62,7 +61,6 @@ Later/maybe/not-first-release:
 - MicrOmegas MSSM diskless initialization [JC] [Added by JC]
 - Set up MicrOmegas MSSM to use GAMBIT decay rates (don’t use internal calculations) [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
-— Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
   open annihilation channels
 - Use singlet scalar spectrum object (which is not existing up to now)
@@ -85,6 +83,10 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Clarify nucleon matrix element section [JC]
+- Fix DDCalc validation figures [JC]
+- Redo plots Fig. 7 (more channels) and Fig. 8 & 9 (official limits) [JC]
+  (as discussed during meeting)
 - Update J-value discussion for gamLike, after finishing implementation [SW]
 - Add discussion about LUX etc likelihoods to paper [FK]
 - Update cascade code discussions in paper to new treatment [CW]
