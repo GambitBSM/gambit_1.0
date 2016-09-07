@@ -932,7 +932,17 @@ namespace Gambit
       }
       double MuSUSY = mssmspec.get_HE().get(Par::mass1, "Mu");
       double tb = mssmspec.get_HE().get(Par::dimensionless, "tanbeta");
-      specmap["Xt"] = At - MuSUSY / tb; 
+      specmap["Xt"] = At - MuSUSY / tb;
+      /// Determine which states are the stops then add them for printing
+      const SubSpectrum& mssm = mssmspec.get_HE();
+      str mst1, mst2;
+      /// Since this is for printing I only want to invalidate the point if this is completely wrong.  We can also plot the mixing if we are suspicious.
+      const static double tol = 0.5;
+      const static bool pt_error = true;
+      slhahelp::family_state_mix_matrix("~u", 3, mst1, mst2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["mstop1"] =  mssm.get(Par::Pole_Mass, mst1);
+      specmap["mstop2"] =  mssm.get(Par::Pole_Mass, mst2);
+      
     }
     void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
