@@ -677,7 +677,7 @@ namespace Gambit
 
 
     
-    void calc_Lilith_LHC_LogLike_func(Lilith_logL &result)
+    void calc_Lilith_LHC_LogLike_func(double &result)
     {
       
       using namespace Pipes::calc_Lilith_LHC_LogLike_func;
@@ -699,12 +699,12 @@ namespace Gambit
 
       float my_likelihood;
       my_likelihood = BEreq::internal_lilith_computelikelihood(byVal(lilithcalc));
-      result.logL =  -0.5 * my_likelihood;
+      result =  -0.5 * my_likelihood;
     }
     
  
     
-    void calc_HS_LHC_LogLike_func(HS_logL &result)
+    void calc_HS_LHC_LogLike_func(double &result)
     {
       using namespace Pipes::calc_HS_LHC_LogLike_func;
     
@@ -754,7 +754,7 @@ namespace Gambit
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
-      result.logL = -0.5*csqtot;
+      result = -0.5*csqtot;
     }
 
     
@@ -762,30 +762,30 @@ namespace Gambit
     {
       using namespace Pipes::calc_HS_LHC_LogLike;
       
-      HS_logL logL = *Dep::calc_HS_LHC_LogLike_func;
-      result = logL.logL;
+      double logL = *Dep::calc_HS_LHC_LogLike_func;
+      result = logL;
     }
     
     void calc_Lilith_LHC_LogLike(double &result)
     {
       using namespace Pipes::calc_Lilith_LHC_LogLike;
       
-      Lilith_logL logL = *Dep::calc_Lilith_LHC_LogLike_func;
-      result = logL.logL;
+      double logL = *Dep::calc_Lilith_LHC_LogLike_func;
+      result = logL;
     }
     
         
     void calc_combined_LHC_LogLike(double &result)
     {
       using namespace Pipes::calc_combined_LHC_LogLike;
-      HS_logL HSlogL = *Dep::calc_HS_LHC_LogLike_func;
+      double HSlogL = *Dep::calc_HS_LHC_LogLike_func;
       
       
-      Lilith_logL LilithlogL = *Dep::calc_Lilith_LHC_LogLike_func;
+      double LilithlogL = *Dep::calc_Lilith_LHC_LogLike_func;
       
       
       
-      result = HSlogL.logL +LilithlogL.logL;
+      result = HSlogL +LilithlogL;
     
     
     }

@@ -22,10 +22,6 @@
 namespace Gambit
 {
 
-  struct Lilith_logL
-  {
-  double logL;
-  };
   
   struct lilith_ModelParameters
   {
