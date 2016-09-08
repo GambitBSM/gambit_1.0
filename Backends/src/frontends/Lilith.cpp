@@ -33,17 +33,24 @@ BE_INI_FUNCTION
   if (scan_level)
   {
     Py_Initialize();
-    char experimental_input[] = "";
+    std::string exp_input = runOptions->getValueOrDef<std::string>("", "Lilith_data");
+    
     
 
      PyObject* args;
 
-  printf("Lilith is running!\n");
+    printf("Lilith is running!\n");
 
 
   
   std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/", "datapath");
   
+  if (exp_input!="")
+  {
+  exp_input = backendDir + "/data/" + exp_input;
+  }
+  
+  char * experimental_input = strdup(exp_input.c_str());
   char * pathtolilith = strdup(path.c_str());
 
 

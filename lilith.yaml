@@ -20,7 +20,7 @@ Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
          #range: [160.071,160.071]
-         range: [170,173]
+         range: [170,170]
          #prior_type: flat
 
       # SLHA1
@@ -65,7 +65,7 @@ Parameters:
     StandardModel_Higgs:
       mH:
         #range: [100.098,100.098]
-        range: [124,127]
+        range: [125,125]
         #prior_type: flat
       #QEWSB: 173
 
@@ -104,12 +104,17 @@ Printer:
 Scanner:
 
   #use_objectives: multinest
-  use_scanner: random
+  use_scanner: grid
 
 # Scanners
 
   scanners:
 
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      like:  LogLike
+      grid_pts: [1,1]
 
     multinest:
       plugin: MultiNest
@@ -164,11 +169,14 @@ Rules:
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum
 
-  #  - capability: HiggsSignals_1_4_init
-  #    options:
-        #HS_data: latestresults
+    - capability: HiggsSignals_1_4_init
+      options:
+        HS_data: combineddata2
+        channels: [Hgaga]
 
-
+    - capability: Lilith_1_1_3_init
+      options:
+        Lilith_data: latestCMS.list
 
 #########################
 # Logging setup

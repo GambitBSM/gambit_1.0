@@ -676,12 +676,11 @@ namespace Gambit
     }
 
 
-
-    /*  Functions using the specific namespace */
-
-    double Lilith_loglike()
+    
+    void calc_Lilith_LHC_LogLike_func(Lilith_logL &result)
     {
-      using namespace Pipes::calc_Lilith_LHC_LogLike;
+      
+      using namespace Pipes::calc_Lilith_LHC_LogLike_func;
       
       // Lilith call //
       lilith_ModelParameters ModelParam_lilith = *Dep::Lilith_ModelParameters;
@@ -700,17 +699,14 @@ namespace Gambit
 
       float my_likelihood;
       my_likelihood = BEreq::internal_lilith_computelikelihood(byVal(lilithcalc));
-      return -0.5 * my_likelihood;
+      result.logL =  -0.5 * my_likelihood;
     }
     
  
     
-
-    
-    
-    double HS_loglike()
+    void calc_HS_LHC_LogLike_func(HS_logL &result)
     {
-      using namespace Pipes::calc_HS_LHC_LogLike;
+      using namespace Pipes::calc_HS_LHC_LogLike_func;
     
      hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
@@ -758,114 +754,38 @@ namespace Gambit
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
-      return -0.5*csqtot;
+      result.logL = -0.5*csqtot;
     }
 
-
-    /*    -----------------------------------------------------------------------------------------------------------  */
-    /*    Functions using combined namespace                                                                           */
-    /*    These should be combined with the functions above, literally the only difference is the namespace they use   */
-    /*    -----------------------------------------------------------------------------------------------------------  */
     
-    double Lilith_com_loglike()
-    {
-      using namespace Pipes::calc_combined_LHC_LogLike;
-      
-      // Lilith call //
-      lilith_ModelParameters ModelParam_lilith = *Dep::Lilith_ModelParameters;
-      char XMLinputstring[6000]="";
-      char * buffer;
-      
-      std::string lilith_xml_input;
-      write_lilith_xml_input(ModelParam_lilith,lilith_xml_input);
-      buffer = strdup(lilith_xml_input.c_str());
-      strcat(XMLinputstring, buffer);
-      
-      // Reading user input XML string
-      PyObject* lilithcalc = BEreq::get_lilithcalc();
-      
-      lilithcalc = BEreq::internal_lilith_readuserinput(byVal(lilithcalc), XMLinputstring);
-
-      float my_likelihood;
-      my_likelihood = BEreq::internal_lilith_computelikelihood(byVal(lilithcalc));
-      return -0.5 * my_likelihood;
-    }
-    
- 
-    
-    
-    double HS_com_loglike()
-    {
-      using namespace Pipes::calc_combined_LHC_LogLike;
-    
-      hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
-
-      Farray<double, 1,3, 1,3> CS_lep_hjhi_ratio;
-      Farray<double, 1,3, 1,3> BR_hjhihi;
-      for(int i = 0; i < 3; i++) for(int j = 0; j < 3; j++)
-      {
-        CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
-        BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
-      }
-      
-      BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0],
-                 &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0],
-                 &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio,
-                 &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
-                 &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
-                 &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
-                 &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
-                 &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
-                 &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
-                 &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
-                 &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
-                 &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
-                 &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-                 &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0],
-                 &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-                 &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0],
-                 &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
-                 &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
-
-      BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus[0], &ModelParam.HpGammaTot[0], &ModelParam.CS_lep_HpjHmi_ratio[0],
-            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb[0], &ModelParam.BR_Hpjcs[0],
-            &ModelParam.BR_Hpjcb[0], &ModelParam.BR_Hptaunu[0]);
-
-      BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
-      int mode = 1; // 1- peak-centered chi2 method (recommended)
-      double csqmu, csqmh, csqtot, Pvalue;
-      int nobs;
-      BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
-
-      return -0.5*csqtot;
-    }
-    
-    
-  
-    /// Get an LHC chisq from HiggsSignals
     void calc_HS_LHC_LogLike(double &result)
     {
-      namespace myPipe = Pipes::calc_HS_LHC_LogLike;
-      result = HS_loglike();
+      using namespace Pipes::calc_HS_LHC_LogLike;
+      
+      HS_logL logL = *Dep::calc_HS_LHC_LogLike_func;
+      result = logL.logL;
     }
-    
     
     void calc_Lilith_LHC_LogLike(double &result)
     {
-      namespace myPipe = Pipes::calc_Lilith_LHC_LogLike;
-      result = Lilith_loglike();
+      using namespace Pipes::calc_Lilith_LHC_LogLike;
+      
+      Lilith_logL logL = *Dep::calc_Lilith_LHC_LogLike_func;
+      result = logL.logL;
     }
     
         
     void calc_combined_LHC_LogLike(double &result)
     {
-    namespace myPipe = Pipes::calc_combined_LHC_LogLike;
-    
-    
-    
-    result =  HS_com_loglike() + Lilith_com_loglike();
-    
-    
+      using namespace Pipes::calc_combined_LHC_LogLike;
+      HS_logL HSlogL = *Dep::calc_HS_LHC_LogLike_func;
+      
+      
+      Lilith_logL LilithlogL = *Dep::calc_Lilith_LHC_LogLike_func;
+      
+      
+      
+      result = HSlogL.logL +LilithlogL.logL;
     
     
     }

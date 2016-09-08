@@ -102,6 +102,11 @@
 
   #undef CAPABILITY
 
+
+
+
+
+
   // Get a LEP chisq from HiggsBounds
   #define CAPABILITY LEP_Higgs_LogLike
   START_CAPABILITY
@@ -125,11 +130,14 @@
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY LHC_Higgs_LogLike
+
+
+
+
+#define CAPABILITY calc_HS_LHC_LogLike_func
     START_CAPABILITY
-      #define FUNCTION calc_HS_LHC_LogLike
-      START_FUNCTION(double)
+      #define FUNCTION calc_HS_LHC_LogLike_func
+      START_FUNCTION(HS_logL)
       DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
          BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
          (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
@@ -146,8 +154,17 @@
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
         BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
      #undef FUNCTION
-     #define FUNCTION calc_Lilith_LHC_LogLike
-      START_FUNCTION(double)
+
+  #undef CAPABILITY
+
+
+
+
+
+#define CAPABILITY calc_Lilith_LHC_LogLike_func
+    START_CAPABILITY
+     #define FUNCTION calc_Lilith_LHC_LogLike_func
+      START_FUNCTION(Lilith_logL)
       DEPENDENCY(Lilith_ModelParameters, lilith_ModelParameters)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
 //      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
@@ -160,33 +177,32 @@
         BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
      #undef FUNCTION
 
+  #undef CAPABILITY
+
+
+
+
+
+
+
+  #define CAPABILITY LHC_Higgs_LogLike
+    START_CAPABILITY
+
+    #define FUNCTION calc_HS_LHC_LogLike
+      START_FUNCTION(double)
+      DEPENDENCY(calc_HS_LHC_LogLike_func, HS_logL)
+    #undef FUNCTION
+
+    #define FUNCTION calc_Lilith_LHC_LogLike
+      START_FUNCTION(double)
+      DEPENDENCY(calc_Lilith_LHC_LogLike_func, Lilith_logL)
+    #undef FUNCTION
+
      #define FUNCTION calc_combined_LHC_LogLike
       START_FUNCTION(double)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
-      /* Lilith requirements */
-      DEPENDENCY(Lilith_ModelParameters, lilith_ModelParameters)
-      BACKEND_REQ(lilith_computelikelihood, (lilith), float, (PyObject*)) // use .so functions
-      BACKEND_REQ(lilith_readuserinput, (lilith), PyObject*, (PyObject*, char*)) // use .so functions
-      BACKEND_REQ(get_lilithcalc,(lilith),PyObject*,())
-      BACKEND_REQ(internal_lilith_readuserinput,(lilith),PyObject*, (PyObject*,char*)) // internal functions
-      BACKEND_REQ(internal_lilith_computelikelihood,(lilith),float, (PyObject*)) // internal functions
-      BACKEND_OPTION( (Lilith, 1.1.3), (lilith) )
-      /* Higgs Signals requirements */
-      DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
-      BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
-      (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-      double*, double*, double*, double*, double*, double*, double*,
-      double*, double*, double*, double*, double*, double*, double*,
-      double*, double*, double*, double*, double*, double*, double*,
-      double*, double*, double*, double*, double*, double*, double*,
-      double*, double*, Farray<double, 1,3, 1,3>&))
-      BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,
-      (double*, double*, double*, double*,
-      double*, double*, double*, double*))
-      BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))
-      BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
-      BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-      BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
+      DEPENDENCY(calc_HS_LHC_LogLike_func, HS_logL)
+      DEPENDENCY(calc_Lilith_LHC_LogLike_func, Lilith_logL)
      #undef FUNCTION
 
 
