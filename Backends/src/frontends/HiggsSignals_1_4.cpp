@@ -40,11 +40,11 @@ BE_INI_FUNCTION
     // Find all the versions of HiggsBounds that have been successfully loaded, and get
     // their locks.
     std::vector<str> hbversions = Backends::backendInfo().working_safe_versions("HiggsBounds");    
-    std::vector<Utils::FileLock> mylocks;
+    std::vector<Utils::FileLock*> mylocks;
     for (auto it = hbversions.begin(); it != hbversions.end(); ++it)
     {
-      mylocks.emplace_back("HiggsBounds_" + *it + "_init");
-      mylocks.back().get_lock();
+      mylocks.push_back(new Utils::FileLock("HiggsBounds_" + *it + "_init"));
+      mylocks.back()->get_lock();
     }
     { 
       // initialize HiggsSignals with the latest results and set pdf shape
@@ -53,7 +53,8 @@ BE_INI_FUNCTION
     }
     for (auto it = mylocks.begin(); it != mylocks.end(); ++it)
     {
-      it->release_lock();    
+      (*it)->release_lock();
+      delete *it;
     }
     scan_level = false;
   }

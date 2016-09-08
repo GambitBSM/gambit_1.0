@@ -98,19 +98,21 @@ namespace Gambit
         // Constructor
         CompositePrior::CompositePrior(const Options &model_options, const Options &prior_options)
         {       
-            std::unordered_map<std::string, std::string> sameMap;
+            std::map<std::string, std::string> sameMap;
             std::unordered_map<std::string, std::pair<double, double>> sameMapOptions;
             std::vector<BasePrior *> phantomPriors;
-            std::unordered_set<std::string> needSet;
+            std::set<std::string> needSet;
             
             // Get model parameters from the inifile
             std::vector <std::string> modelNames = model_options.getNames();
+            std::sort(modelNames.begin(), modelNames.end());
             
             //main loop to enter in parameter values
             for (auto mod_it = modelNames.begin(), mod_end = modelNames.end(); mod_it != mod_end; ++mod_it)
             {//loop over iniFile models
                 std::string &mod = *mod_it;
                 std::vector <std::string> parameterNames = model_options.getNames(mod);
+                std::sort(parameterNames.begin(), parameterNames.end());
                 
                 int default_N = 0, default_i = 0;
                 bool isDefault = false;
@@ -260,7 +262,8 @@ namespace Gambit
             
             // Get the list of priors to build from the iniFile
             std::vector<std::string> priorNames = prior_options.getNames();
-            std::unordered_set<std::string> paramSet(shown_param_names.begin(), shown_param_names.end()); 
+            std::sort(priorNames.begin(), priorNames.end());
+            std::set<std::string> paramSet(shown_param_names.begin(), shown_param_names.end()); 
 
             for (auto priorname_it = priorNames.begin(), priorname_end = priorNames.end(); priorname_it != priorname_end; priorname_it++)
             {
@@ -353,7 +356,7 @@ namespace Gambit
                 scan_err << "]" << scan_end;
             }
             
-            std::unordered_map<std::string, std::string> keyMap;
+            std::map<std::string, std::string> keyMap;
             std::string index, result;
             unsigned int reps;
             for (auto strMap = sameMap.begin(), strMap_end = sameMap.end(); strMap != strMap_end; ++strMap)
@@ -420,12 +423,13 @@ namespace Gambit
         
         CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const Options &options_in) : BasePrior(params_in), shown_param_names(params_in)
         {       
-            std::unordered_map<std::string, std::string> sameMap;
+            std::map<std::string, std::string> sameMap;
             std::unordered_map<std::string, std::pair<double, double>> sameMapOptions;
-            std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());
-            std::unordered_set<std::string> paramSet(params_in.begin(), params_in.end()); 
+            std::set<std::string> needSet(params_in.begin(), params_in.end());
+            std::set<std::string> paramSet(params_in.begin(), params_in.end()); 
 
             auto priorNames = options_in.getNames();
+            std::sort(priorNames.begin(), priorNames.end());
             
             for (auto priorname_it = priorNames.begin(), priorname_end = priorNames.end(); priorname_it != priorname_end; priorname_it++)
             {
@@ -524,7 +528,7 @@ namespace Gambit
                 scan_err << "]" << scan_end;
             }
             
-            std::unordered_map<std::string, std::string> keyMap;
+            std::map<std::string, std::string> keyMap;
             std::string index, result;
             unsigned int reps;
             for (auto strMap_it = sameMap.begin(), strMap_end = sameMap.end(); strMap_it != strMap_end; strMap_it++)

@@ -25,11 +25,13 @@
 
 #include <cstdlib>
 #include <iomanip>
+#include <unistd.h>
 #include <iostream>
 #include <fstream> 
 #include <stdio.h>
 #include <sys/types.h> // for 'stat' function
 #include <sys/stat.h>  //    "         "
+
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -37,6 +39,7 @@
 #include "gambit/Utils/table_formatter.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/ScannerBit/priors_rollcall.hpp"
 
 namespace Gambit
 {
@@ -75,29 +78,40 @@ namespace Gambit
             Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
             {
                 std::string p_str;
-                if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                std::ifstream lib_list(path + "plugin_libraries.list");
+                //if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                if (lib_list.is_open())
                 {
-                    char path_buffer[1024];
+                    /*char path_buffer[1024];
                     int p_n;
                     std::stringstream p_ss;
 
                     while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
                     {
                         p_ss << std::string(path_buffer, p_n);
-                    }
+                    }*/
 
-                    while (p_ss >> p_str)
+                    //while (p_ss >> p_str)
+                    while (lib_list >> p_str)
                     {
-                        if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
-                            loadLibrary (path + p_str);
+                        //if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
+                        p_str = path + p_str;
+                        if(access(p_str.c_str(), F_OK) != -1) //can use R_OK|W_OK|X_OK also
+                            loadLibrary (p_str);
+                        else
+                            scan_warn << "Could not find plugin library \"" << p_str << "\"." << scan_end;
                     }
                     
-                    pclose(p_f);
+                    //pclose(p_f);
                     
                     loadExcluded(GAMBIT_DIR "/scratch/scanbit_excluded_libs.yaml");
                     
                     flags_node = YAML::LoadFile(GAMBIT_DIR "/scratch/scanbit_flags.yaml");
                     process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml", GAMBIT_DIR "/scratch/scanbit_flags.yaml");
+                }
+                else
+                {
+                    scan_err << "Cannot open ./ScannerBit/lib/plugin_libraries.list" << scan_end;
                 }
             }
 
@@ -126,7 +140,7 @@ namespace Gambit
             
             void Plugin_Loader::loadExcluded (const std::string& file)
             {
-                    YAML::Node node = YAML::LoadFile(file);
+                YAML::Node node = YAML::LoadFile(file);
                     
                 if (node.IsMap())
                 {
@@ -248,24 +262,87 @@ namespace Gambit
                 return vec;
             }
             
-            std::string Plugin_Loader::print_priors() const
+            std::vector<std::string> Plugin_Loader::list_prior_groups() const
             {
-                std::string path = GAMBIT_DIR "/config/priors.dat";
-                YAML::Node node = YAML::LoadFile(path);
+                YAML::Node node = YAML::LoadFile(GAMBIT_DIR "/config/priors.dat");
+                std::vector<std::string> vec;
+                
+                for(auto &&n : node)
+                {
+                    if (n.second.IsSequence())
+                        vec.push_back(n.first.as<std::string>());
+                }
+                
+                vec.push_back("priors");
+                
+                return vec;
+            }
+            
+            std::string Plugin_Loader::print_priors(const std::string &prior_group) const
+            {
+                YAML::Node node = YAML::LoadFile(GAMBIT_DIR "/config/priors.dat");
                 std::stringstream out;
                 
-                out << "\x1b[01m\x1b[04mPRIORS\x1b[0m\n" << std::endl;
-                out << node["priors"].as<std::string>() << "\n" << std::endl;
-                
-                if (node.IsMap())
+                if (prior_group == "priors")
                 {
-                    for (auto it = node.begin(), end = node.end(); it != end; ++it)
+                    table_formatter table("Prior Name", "Prior Group");
+                    //table.top_line(true);
+                    table.bottom_line(true);
+                    std::unordered_set<std::string> prior_set;
+                    for(auto &&n : node)
                     {
-                        if (it->first.as<std::string>() != "priors")
+                        if (n.second.IsSequence())
                         {
-                            out << "\x1b[01m\x1b[04m" << it->first.as<std::string>() << "\x1b[0m\n" << std::endl;
-                            out << it->second.as<std::string>() << "\n" << std::endl;
+                            for(auto &&v : n.second.as<std::vector<std::string>>())
+                            {
+                                prior_set.insert(v);
+                                if (Gambit::Priors::prior_creators.find(v) != Gambit::Priors::prior_creators.end())
+                                table.no_newline() << v << n.first.as<std::string>();
+                            }
                         }
+                    }
+                    
+                    for (auto &&v : Gambit::Priors::prior_creators)
+                    {
+                        if (prior_set.find(v.first) == prior_set.end())
+                        {
+                            table.no_newline() << v.first << "none";
+                        }
+                    }
+                    
+                    table.no_newline() << "" << "";
+                    out << "\x1b[01m\x1b[04mPRIOR LIST\x1b[0m\n" << std::endl;
+                    out << format_for_screen("For information in a specific prior, see its prior group's dianostic via \"./gambit group_name\".");
+                    out << table.str() << std::endl;
+                    out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
+                    if (node["priors"])
+                        out << format_for_screen(node["priors"].as<std::string>()) << std::endl;
+                }
+                else
+                {
+                    std::vector<std::string> prior_names;
+                    std::string description;
+                    for(auto &&n : node)
+                    {
+                        if (n.first.as<std::string>() == prior_group)
+                        {
+                            if (n.second.IsSequence())
+                            {
+                                prior_names = n.second.as<decltype(prior_names)>();
+                            }
+                            else if (n.second.IsScalar())
+                            {
+                                description = n.second.as<std::string>();
+                            }
+                        }
+                    }
+                    
+                    if (prior_names.size() >0 || description != "")
+                    {
+                        out << "\x1b[01m\x1b[04mPRIORS INFO\x1b[0m\n" << std::endl;
+                        out << "\x1b[01mprior group name:  \x1b[0m" << prior_group << std::endl;
+                        out << "\x1b[01mpriors:  \x1b[0m" << prior_names << "\n" << std::endl;
+                        out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n\n" << description << std::endl;
                     }
                 }
                 

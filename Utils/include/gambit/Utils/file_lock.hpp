@@ -39,8 +39,10 @@
 
 #include <string>
 
-namespace Gambit {
-   namespace Utils {
+namespace Gambit
+{
+   namespace Utils
+   {
 
       /// Class to manage a file lock
       /// Lock will be automatically released if this object is destructed
@@ -79,6 +81,9 @@ namespace Gambit {
           /// Release a lock (error if no lock held)
           void release_lock();
  
+          /// Getter for lockfile name
+          const std::string& get_filename() const;
+
       }; // end class FileLock
    }
 }
