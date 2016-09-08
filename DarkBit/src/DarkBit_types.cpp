@@ -53,12 +53,9 @@
 #include <cmath>
 #include <sstream>
 
+#include "gambit/Backends/backend_types/nulike.hpp"
 #include "gambit/DarkBit/DarkBit_types.hpp"
-#include "gambit/DarkBit/decay_chain.hpp"
-#include "gambit/DarkBit/SimpleHist.hpp"
-#include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/daFunk.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -184,5 +181,3 @@ namespace Gambit
 
   }
 }
-
-#endif // defined __DarkBit_types_hpp__

@@ -54,24 +54,11 @@
 #ifndef __DarkBit_types_hpp__
 #define __DarkBit_types_hpp__
 
-//#include <cmath>
-//#include <algorithm>
-//#include <string>
-//#include <vector>
-//#include <map>
-//#include <array>
-//#include <cmath>
-//#include <sstream>
-
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
-#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/daFunk.hpp"
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-#include <gsl/gsl_integration.h>
 
 namespace Gambit
 {
