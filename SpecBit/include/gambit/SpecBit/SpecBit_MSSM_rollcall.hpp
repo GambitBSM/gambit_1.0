@@ -27,6 +27,9 @@
 #ifndef __SpecBit_MSSM_hpp__
 #define __SpecBit_MSSM_hpp__
 
+// Include this here so that typedef for SLHAstruct gets passed on to standalone codes which use these module functions
+#include "gambit/Elements/slhaea_helpers.hpp"
+
   /// @{ Functions to supply particle spectra in various forms
   
   // This capability supplies the physical mass spectrum of the MSSM plus running
@@ -111,7 +114,7 @@
     // Can use as an improvement upon creating a Spectrum object from an SLHA file (avoids
     // disk access), but without going to a full SubSpectrum wrapper interface.
     #define FUNCTION get_MSSM_spectrum_from_SLHAstruct
-    START_FUNCTION(/*TAG*/ Spectrum)
+    START_FUNCTION(Spectrum)
     DEPENDENCY(unimproved_MSSM_spectrum, SLHAstruct)
     #undef FUNCTION
     
@@ -184,7 +187,7 @@
                 Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
                 Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
                 Farray< fh_real,1,4>&, fh_real&))
-    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -201,7 +204,7 @@
     BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
                 Farray<fh_complex, 1,3, 1,3>&, 
                 Farray<fh_complex, 1,3, 1,3>&))
-    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -217,7 +220,7 @@
                                                     Farray< fh_complex,1,231>&,
                                                     Farray< fh_real,1,978>&,
                                                     Farray< fh_real,1,250>&, int&))
-    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY

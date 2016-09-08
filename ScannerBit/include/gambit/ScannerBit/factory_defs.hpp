@@ -70,10 +70,13 @@ namespace Gambit
             printer *main_printer;
             Priors::BasePrior *prior;
             std::string purpose;
-            int rank;
- 
+            int rank; 
+
             /// Variable to store state of affairs regarding use of alternate min_LogL
             bool use_alternate_min_LogL;
+
+            /// Variable to specify whether the scanner plugin should control the shutdown process
+            bool _scanner_can_quit;
 
             virtual void deleter(Function_Base <ret (args...)> *in) const
             {
@@ -83,12 +86,23 @@ namespace Gambit
             virtual const std::type_info & type() const {return typeid(ret (args...));}
                 
         public:
-            Function_Base() : rank(0), use_alternate_min_LogL(false)
+            Function_Base() : rank(0), use_alternate_min_LogL(false), _scanner_can_quit(false)
             {
 #ifdef WITH_MPI
                 GMPI::Comm world;
                 rank = world.Get_rank();
 #endif
+                // Check if we should be using the alternative min_LogL from the very beginning
+                // (for example if we are resuming from a run where we already switched to this)
+                if (Gambit::Scanner::Plugins::plugin_info.resume_mode())
+                {
+                   use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
+                }
+                else
+                {
+                   // New scan; delete any old persistence file
+                   Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
+                }
             }
             
             virtual ret main(const args&...) = 0;
@@ -115,6 +129,21 @@ namespace Gambit
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
             unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
 
+            /// Tell ScannerBit that we are aborting the scan and it should tell the scanner plugin to stop, and return control to the calling code.
+            void tell_scanner_early_shutdown_in_progress()
+            { 
+              Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress();
+            }
+
+            /// Tells log-likelihood function (defined by driver code) not to use its own shutdown system (e.g the
+            /// GAMBIT soft shutdown procedure) and instead to trust that the scanner plugin will safely terminate
+            /// executions upon checking that shutdown is in progress (via the shutdown_in_progress flag set in
+            /// plugin_info)
+            void disable_external_shutdown() { _scanner_can_quit = true; }
+
+            /// Check whether likelihood container is supposed to control early shutdown of scan
+            bool scanner_can_quit() { return _scanner_can_quit; }
+
             /// Tell log-likelihood function (defined by driver code) to switch to an alternate value for the minimum
             /// log-likelihood. Called by e.g. MultiNest scanner plugin.
             void switch_to_alternate_min_LogL()
@@ -127,22 +156,35 @@ namespace Gambit
               int nullmsg = 0; // Don't need message content, the message itself is the signal.
               myComm.IsendToAll(&nullmsg, 1, TAG, &req_null);
               #endif
+              Gambit::Scanner::Plugins::plugin_info.save_alt_min_LogL_state(); // Write a file to disk so that upon startup we can check if the alternate min LogL is supposed to be used.
             }
 
             /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function 
             bool check_for_switch_to_alternate_min_LogL()
             {
-              #ifdef WITH_MPI
-              GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
-              static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
-              if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+              if(not use_alternate_min_LogL)
               {
-                int nullmsg;
-                MPI_Status msg_status;
-                myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
-                use_alternate_min_LogL = true;
+                #ifdef WITH_MPI
+                GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
+                static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
+                if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+                {
+                  int nullmsg;
+                  MPI_Status msg_status;
+                  myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
+                  use_alternate_min_LogL = true;
+                }
+                #endif
               }
-              #endif
+              // If we didn't decide to switch yet, check for the existence of
+              // the persistence file. This is not necessary for proper functioning
+              // of this system, but it allows users to manually create the persistence file 
+              // as a 'hack' to force the likelihood to switch to the alternate min LogL
+              // value.
+              if(not use_alternate_min_LogL)
+              {
+                use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
+              }
               return use_alternate_min_LogL;
             }
             /// @}

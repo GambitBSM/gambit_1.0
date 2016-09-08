@@ -23,6 +23,7 @@ DDCalc:
 
 HiggsBounds:
   4.2.1:       ./Backends/installed/higgsbounds/4.2.1/lib/libhiggsbounds.so
+  4.3.1:       ./Backends/installed/higgsbounds/4.3.1/lib/libhiggsbounds.so
 
 HiggsSignals:
   1.4:         ./Backends/installed/higgssignals/1.4.0/lib/libhiggssignals.so
@@ -30,6 +31,7 @@ HiggsSignals:
 FeynHiggs:
   2.11.2:      ./Backends/installed/feynhiggs/2.11.2/lib/libFH.so
   2.11.3:      ./Backends/installed/feynhiggs/2.11.3/lib/libFH.so
+  2.12.0:      ./Backends/installed/feynhiggs/2.12.0/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/examples/libFarrayTest.so
@@ -50,6 +52,7 @@ gamLike:
 
 gm2calc:
   1.2.0:       ./Backends/installed/gm2calc/1.2.0/src/libgm2calc.so
+  1.3.0:       ./Backends/installed/gm2calc/1.3.0/src/libgm2calc.so
 
 MicrOmegas_MSSM:
   3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/MSSM/libmicromegas.so

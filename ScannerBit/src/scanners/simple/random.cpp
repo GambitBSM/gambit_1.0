@@ -14,6 +14,10 @@
 ///
 ///  *********************************************
 
+#ifdef WITH_MPI
+#include "mpi.h"
+#endif
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -24,13 +28,21 @@
 scanner_plugin(random, version(1, 0, 0))
 {
     like_ptr LogLike;
-    int num, dim;
+    int num, dim, numtasks, rank;
     
     plugin_constructor
     {
         LogLike = get_purpose(get_inifile_value<std::string>("like"));
         num = get_inifile_value<int>("point_number", 10);
         dim = get_dimension();
+        
+#ifdef WITH_MPI
+        MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#else
+        numtasks = 1;
+        rank = 0;
+#endif
     }
     
     int plugin_main ()
@@ -41,7 +53,7 @@ scanner_plugin(random, version(1, 0, 0))
         
         for (int k = 0; k < num; k++)
         {
-            for (int i = 0; i < dim; i++)
+            for (int i = rank; i < dim; i+=numtasks)
             {
                 a[i] = Gambit::Random::draw();
             }

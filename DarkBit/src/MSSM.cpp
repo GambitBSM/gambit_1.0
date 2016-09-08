@@ -58,7 +58,7 @@ namespace Gambit {
       {
         static unsigned int counter = 0;
         logger() << LogTags::debug <<
-          "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
+          "Initializing DarkSUSY via debug_SLHA_filenames option." << EOM;
 
         std::vector<str> filenames =
           /// Option debug_SLHA_filenames<std::vector<std::string>>: Optional override list of SLHA filenames used for backend initialization default
@@ -88,12 +88,12 @@ namespace Gambit {
         double asgnmu = *Param["SignMu"];  // sign(mu)
         double atanbe = *Param["TanBeta"];   // tan(beta)
         logger() << "Initializing DarkSUSY via dsgive_model_isasugra:"
-          << std::endl;
+          << EOM;
         logger() << "  m0        =" << am0    << std::endl;
         logger() << "  m_1/2     =" << amhf   << std::endl;
         logger() << "  A0        =" << aa0    << std::endl;
         logger() << "  sign(mu)  =" << asgnmu << std::endl;
-        logger() << "  tan(beta) =" << atanbe << std::endl;
+        logger() << "  tan(beta) =" << atanbe << EOM;
         BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
         int unphys, hwarning;
         BEreq::dssusy_isasugra(unphys, hwarning);
@@ -158,7 +158,7 @@ namespace Gambit {
           int len = fstr.size();
           int flag = 15;
           const char * filename = fstr.c_str();
-          logger() << LogTags::debug << "Initializing DarkSUSY via SLHA." << std::endl;
+          logger() << LogTags::debug << "Initializing DarkSUSY via SLHA." << EOM;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
           result = true;
@@ -168,7 +168,7 @@ namespace Gambit {
         {
           if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
-            logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << std::endl;
+            logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << EOM;
             BEreq::dsprep();
             result = true;
           }
@@ -191,7 +191,7 @@ namespace Gambit {
 
     /// Wrapper around DarkSUSY kinematic functions
     double DSgamma3bdy(double(*IBfunc)(int&,double&,double&),
-        void(*setMassesForIB)(bool), int IBch, double Eg, double
+        int IBch, double Eg, double
         E1, double M_DM, double m_1, double m_2)
     {
       double E2 = 2*M_DM - Eg - E1;
@@ -210,9 +210,7 @@ namespace Gambit {
       // photon momentum.  (note that the expressions above and below only
       // apply to the v->0 limit)
 
-      setMassesForIB(true);
       double result = IBfunc(IBch,x,y);
-      setMassesForIB(false);
 
       #ifdef DARKBIT_DEBUG
         std::cout << "  x, y = " << x << ", " << y << std::endl;
@@ -259,7 +257,7 @@ namespace Gambit {
       const SMInputs& SMI  = matched_spectra.get_SMInputs();  
 
       // Get SM masses
-#define getSMmass(Name, spinX2)                                               \
+      #define getSMmass(Name, spinX2)                                         \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
         Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));   
@@ -278,10 +276,10 @@ namespace Gambit {
       getSMmass("dbar_3",   1)
       getSMmass("u_3",      1)
       getSMmass("ubar_3",   1)
-#undef getSMmass
+      #undef getSMmass
 
       // Pole masses not available for the light quarks.
-#define addParticle(Name, Mass, spinX2)                                       \
+      #define addParticle(Name, Mass, spinX2)                                 \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
         Name , TH_ParticleProperty(Mass, spinX2)));
@@ -309,10 +307,10 @@ namespace Gambit {
       addParticle("rho+",  meson_masses.rho_plus,  1)
       addParticle("rho-",  meson_masses.rho_minus, 1)
       addParticle("omega", meson_masses.omega,     1)
-#undef addParticle
+      #undef addParticle
 
       // Get MSSM masses
-#define getMSSMmass(Name, spinX2)                                                   \
+      #define getMSSMmass(Name, spinX2)                                             \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
         Name , TH_ParticleProperty(std::abs(spec.get(Par::Pole_Mass,Name)), spinX2)));  
@@ -368,7 +366,7 @@ namespace Gambit {
       getMSSMmass("~nu_3", 0)
       getMSSMmass("~nubar_3", 0)
 
-#undef getMSSMmass
+      #undef getMSSMmass
 
 
       /////////////////////////////////////////
@@ -386,30 +384,30 @@ namespace Gambit {
       double m_1, m_2, sv;
 
       // Macro for setting up 2-body annihilations (chi chi -> X X) from results in DS
-#define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                      \
-      /* Check if process is kinematically allowed */                          \
-      m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
-      m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                   \
-      if(m_1 + m_2 < 2*M_DM)                                                   \
-      {                                                                        \
-        /* Set cross-section */                                                \
-        index = PARTCH;                                                        \
-        double CAT(sigma_,NAME) = BEreq::dssigmav(index);                      \
-        /* Create associated kinematical functions (just dependent on vrel)    \
-         *  here: s-wave, vrel independent 1-dim constant function */          \
-        daFunk::Funk CAT(kinematicFunction_,NAME) =                            \
-              daFunk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                   \
-        /* Create channel identifier string */                                 \
-        std::vector<std::string> CAT(finalStates_,NAME);                       \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                       \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                       \
-        /* Create channel and push it into channel list of process */          \
-        TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                  \
-            CAT(kinematicFunction_,NAME));                                     \
-        process.channelList.push_back(CAT(channel_,NAME));                     \
-        annFinalStates.insert(STRINGIFY(P1));                                  \
-        annFinalStates.insert(STRINGIFY(P2));                                  \
-      }
+      #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                  \
+        /* Check if process is kinematically allowed */                          \
+        m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
+        m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                   \
+        if(m_1 + m_2 < 2*M_DM)                                                   \
+        {                                                                        \
+          /* Set cross-section */                                                \
+          index = PARTCH;                                                        \
+          double CAT(sigma_,NAME) = BEreq::dssigmav(index);                      \
+          /* Create associated kinematical functions (just dependent on vrel)    \
+           *  here: s-wave, vrel independent 1-dim constant function */          \
+          daFunk::Funk CAT(kinematicFunction_,NAME) =                            \
+                daFunk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                   \
+          /* Create channel identifier string */                                 \
+          std::vector<std::string> CAT(finalStates_,NAME);                       \
+          CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                       \
+          CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                       \
+          /* Create channel and push it into channel list of process */          \
+          TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                  \
+              CAT(kinematicFunction_,NAME));                                     \
+          process.channelList.push_back(CAT(channel_,NAME));                     \
+          annFinalStates.insert(STRINGIFY(P1));                                  \
+          annFinalStates.insert(STRINGIFY(P2));                                  \
+        }
 
       SETUP_DS_PROCESS(H1H1,      1 , h0_2,   h0_2,   1   )
       SETUP_DS_PROCESS(H1H2,      2 , h0_2,   h0_1,   1   )
@@ -464,7 +462,7 @@ namespace Gambit {
         index = SV_IDX;                                                      \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
         daFunk::Funk CAT(kinematicFunction_,NAME) = daFunk::cnst(sv,"v")*daFunk::func(DSgamma3bdy, \
-            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
+            STRIP_PARENS(IBFUNC), IBCH, daFunk::var("E"), daFunk::var("E1"),     \
             M_DM, m_1, m_2);                                                 \
         /* Create channel identifier string */                               \
         std::vector<std::string> CAT(finalStates_,NAME);                     \

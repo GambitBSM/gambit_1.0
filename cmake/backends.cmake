@@ -105,8 +105,8 @@ add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
-set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")
-set(md5 "0a5735490046c5f63b3e82c4f7efa3b6")
+set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}beta.tgz")  # Note "beta" suffix!
+set(md5 "0e1278a88dc2a7838e737edd53525978")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
@@ -115,10 +115,10 @@ ExternalProject_Add(${name}_${ver}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND sed ${dashi} -e "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" Makefile
         COMMAND sed ${dashi} -e "s#rcsU#rcs#g" src/Makefile
-        COMMAND sed ${dashi} -e "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" Makefile
+        COMMAND sed ${dashi} -e "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -fPIC ${GAMBIT_C_FLAGS}/g" Makefile
         COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ar x src/libisospin.a
-        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm -o ${lib}.so *.o" > make_so.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -o ${lib}.so *.o" > make_so.sh
         COMMAND chmod u+x make_so.sh
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
@@ -131,7 +131,7 @@ set_as_default_version("backend" ${name} ${ver})
 set(name "ddcalc")
 set(ver "1.0.0")
 set(lib "libDDCalc")
-#set(dl "http://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+#set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
 set(dl "null")
 set(md5 "FIXME")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
@@ -153,7 +153,7 @@ set_as_default_version("backend" ${name} ${ver})
 # Gamlike
 set(name "gamlike")
 set(ver "1.0.0")
-#set(dl "http://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+#set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
 set(dl "null")
 set(md5 "FIXME")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
@@ -363,7 +363,7 @@ add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 set(name "nulike")
 set(ver "1.0.3")
 set(lib "libnulike")
-set(dl "http://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
 set(md5 "2e77fe4b18891e4838f8af8d861c341b")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
@@ -384,7 +384,7 @@ set_as_default_version("backend" ${name} ${ver})
 set(name "susyhit")
 set(ver "1.5")
 set(lib "libsusyhit")
-set(dl "http://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz")
+set(dl "https://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz")
 set(md5 "493c7ba3a07e192918d3412875fb386a")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
@@ -400,6 +400,36 @@ ExternalProject_Add(${name}_${ver}
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
+
+# FeynHiggs
+set(name "feynhiggs")
+set(ver "2.12.0")
+set(lib "libFH")
+set(dl "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${ver}.tar.gz")
+set(md5 "da2d0787311525213cd4721da9946b86")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+#set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+#set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
+#set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
+set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
+set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
+ExternalProject_Add(${name}_${ver}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+  SOURCE_DIR ${dir}
+  BUILD_IN_SOURCE 1
+  # Fix bug preventing the use of array bounds checking.
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" src/Decays/VecSet.F
+            COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND ${CMAKE_COMMAND} -E make_directory lib
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_Fortran_COMPILER} -shared -o lib/${lib}.so build/*.o" > make_so.sh
+        COMMAND chmod u+x make_so.sh
+        COMMAND ./make_so.sh
+  INSTALL_COMMAND ""
+)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
 set(name "feynhiggs")
@@ -429,7 +459,6 @@ ExternalProject_Add(${name}_${ver}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
 set(name "feynhiggs")
@@ -464,7 +493,7 @@ add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 # HiggsBounds tables
 set(name "higgsbounds_tables")
 set(ver "0.0")
-set(dl "http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz")
+set(dl "https://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz")
 set(md5 "004decca30335ddad95654a04dd034a6")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
@@ -481,10 +510,10 @@ set_as_default_version("backend" ${name} ${ver})
 
 # HiggsBounds
 set(name "higgsbounds")
-set(ver "4.2.1")
+set(ver "4.3.1")
 set(lib "libhiggsbounds")
-set(dl "http://www.hepforge.org/archive/higgsbounds/HiggsBounds-${ver}.tar.gz")
-set(md5 "47b93330d4e0fddcc23b381548db355b")
+set(dl "https://www.hepforge.org/archive/higgsbounds/HiggsBounds-${ver}.tar.gz")
+set(md5 "baedc05601cae27cef4d10a8086fdd7b")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(hb_tab_name "higgsbounds_tables")
 set(hb_tab_ver "0.0")
@@ -510,16 +539,45 @@ ExternalProject_Add(${name}_${ver}
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
+# HiggsBounds
+set(name "higgsbounds")
+set(ver "4.2.1")
+set(lib "libhiggsbounds")
+set(dl "https://www.hepforge.org/archive/higgsbounds/HiggsBounds-${ver}.tar.gz")
+set(md5 "47b93330d4e0fddcc23b381548db355b")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(hb_tab_name "higgsbounds_tables")
+set(hb_tab_ver "0.0")
+set(hb_tab_dir "${PROJECT_SOURCE_DIR}/Backends/installed/${hb_tab_name}/${hb_tab_ver}")
+ExternalProject_Add(${name}_${ver}
+  DEPENDS ${hb_tab_name}_${hb_tab_ver}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+  SOURCE_DIR ${dir}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy configure-with-chisq my_configure
+            COMMAND sed ${dashi} -e "s|clsbtablesdir=.*|clsbtablesdir=\"${hb_tab_dir}/\"|" my_configure
+            COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" my_configure
+            COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
+            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" my_configure
+            COMMAND ./my_configure
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND ${CMAKE_COMMAND} -E make_directory lib
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_Fortran_COMPILER} -shared -o lib/${lib}.so *.o" > make_so.sh
+        COMMAND chmod u+x make_so.sh
+        COMMAND ./make_so.sh
+  INSTALL_COMMAND ""
+)
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 
 # HiggsSignals
 set(name "higgssignals")
 set(ver "1.4.0")
 set(lib "libhiggssignals")
-set(dl "http://www.hepforge.org/archive/higgsbounds/HiggsSignals-${ver}.tar.gz")
+set(dl "https://www.hepforge.org/archive/higgsbounds/HiggsSignals-${ver}.tar.gz")
 set(md5 "00b8ac655e357c7cba9ca786f8f2ddee")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(hb_name "higgsbounds")
-set(hb_ver "4.2.1")
+set(hb_ver "4.3.1")
 ExternalProject_Add(${name}_${ver}
   DEPENDS higgsbounds_${hb_ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
@@ -565,13 +623,37 @@ set_as_default_version("backend" ${name} ${ver})
 
 # gm2calc
 set(name "gm2calc")
+set(ver "1.3.0")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(md5 "1bddab5a411a895edd382a1f8a991c15")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
+# - Silence the deprecated-declarations warnings coming from Eigen3
+set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
+endif()
+ExternalProject_Add(${name}_${ver}
+  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+  SOURCE_DIR ${dir}
+  BUILD_IN_SOURCE 1
+  PATCH_COMMAND patch -p1 < ${patch}_error.dif
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} alllib
+  INSTALL_COMMAND ""
+)
+BOSS_backend(${name} ${ver})
+add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+set_as_default_version("backend" ${name} ${ver})
+
+# gm2calc
+set(name "gm2calc")
 set(ver "1.2.0")
-set(dl "http://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
 set(md5 "07d55bbbd648b8ef9b2d69ad1dfd8326")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-# - Silence the deprecated-declarations warnings comming from Eigen3
+# - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
@@ -589,4 +671,4 @@ ExternalProject_Add(${name}_${ver}
 )
 BOSS_backend(${name} ${ver})
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-set_as_default_version("backend" ${name} ${ver})
+

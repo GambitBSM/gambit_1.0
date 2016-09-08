@@ -538,7 +538,9 @@ namespace Gambit
     void lnL_Z_mass_chi2(double &result)
     {
       using namespace Pipes::lnL_Z_mass_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mZ, 91.1876, 0.0, 0.0021);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mZ, 91.1876, 0.0, 0.0021, profile);
     }
 
     /// t quark mass likelihood
@@ -547,7 +549,9 @@ namespace Gambit
     void lnL_t_mass_chi2(double &result)
     {
       using namespace Pipes::lnL_t_mass_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mT, 173.34, 0.0, 0.76);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mT, 173.34, 0.0, 0.76, profile);
     }
 
     /// b quark mass likelihood
@@ -556,7 +560,9 @@ namespace Gambit
     void lnL_mbmb_chi2(double &result)
     {
       using namespace Pipes::lnL_mbmb_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mBmB, 4.18, 0.0, 0.03);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mBmB, 4.18, 0.0, 0.03, profile);
     }
 
     /// c quark mass likelihood
@@ -565,7 +571,9 @@ namespace Gambit
     void lnL_mcmc_chi2(double &result)
     {
       using namespace Pipes::lnL_mcmc_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mCmC, 1.275, 0.0, 0.025);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mCmC, 1.275, 0.0, 0.025, profile);
     }
 
     /// \brief Likelihoods for light quark mass ratios. At the moment, all are just gaussians.
@@ -586,9 +594,12 @@ namespace Gambit
         double ms_central = runOptions->getValueOrDef<double>(95.E-03, "ms_central");
         double ms_error = runOptions->getValueOrDef<double>(5.E-03, "ms_error");
 
-        result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error)
-            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error)
-            + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error);
+        /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+        bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+
+        result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error, profile)
+            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error, profile)
+            + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error, profile);
         logger() << LogTags::debug << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
     }
 
@@ -598,7 +609,9 @@ namespace Gambit
     void lnL_alpha_em_chi2(double &result)
     {
       using namespace Pipes::lnL_alpha_em_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->alphainv, 127.94, 0.0, 0.014);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->alphainv, 127.94, 0.0, 0.014, profile);
     }
 
     /// alpha_s(mZ)^MSbar likelihood
@@ -607,7 +620,9 @@ namespace Gambit
     void lnL_alpha_s_chi2(double &result)
     {
       using namespace Pipes::lnL_alpha_s_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->alphaS, 0.1185, 0.0, 0.0006);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->alphaS, 0.1185, 0.0, 0.0006, profile);
     }
 
     /// G_Fermi likelihood
@@ -616,7 +631,9 @@ namespace Gambit
     void lnL_GF_chi2(double &result)
     {
       using namespace Pipes::lnL_GF_chi2;
-      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->GF, 1.1663787E-05, 0.0, 0.0000006E-05);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->GF, 1.1663787E-05, 0.0, 0.0000006E-05, profile);
     }
 
     /// W boson mass likelihood
@@ -624,7 +641,9 @@ namespace Gambit
     {
       using namespace Pipes::lnL_W_mass_chi2;
       double theory_uncert = std::max(Dep::mw->upper, Dep::mw->lower);
-      result = Stats::gaussian_loglikelihood(Dep::mw->central, mw_central_observed, theory_uncert, mw_err_observed);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::mw->central, mw_central_observed, theory_uncert, mw_err_observed, profile);
     }
 
     /// Simple, naive h boson mass likelihood
@@ -633,7 +652,9 @@ namespace Gambit
     {
       using namespace Pipes::lnL_h_mass_chi2;
       double theory_uncert = std::max(Dep::mh->upper, Dep::mh->lower);
-      result = Stats::gaussian_loglikelihood(Dep::mh->central, 125.09, theory_uncert, 0.24);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::mh->central, 125.09, theory_uncert, 0.24, profile);
     }
 
     /// Effective leptonic sin^2(theta_W) likelihood
@@ -643,7 +664,9 @@ namespace Gambit
     {
       using namespace Pipes::lnL_sinW2_eff_chi2;
       double theory_uncert = std::max(Dep::prec_sinW2_eff->upper, Dep::prec_sinW2_eff->lower);
-      result = Stats::gaussian_loglikelihood(Dep::prec_sinW2_eff->central, 0.23155, theory_uncert, 0.00005);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::prec_sinW2_eff->central, 0.23155, theory_uncert, 0.00005, profile);
     }
 
     /// Delta rho likelihood
@@ -653,33 +676,47 @@ namespace Gambit
     {
       using namespace Pipes::lnL_deltarho_chi2;
       double theory_uncert = std::max(Dep::deltarho->upper, Dep::deltarho->lower);
-      result = Stats::gaussian_loglikelihood(Dep::deltarho->central, 0.00040, theory_uncert, 0.00024);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(Dep::deltarho->central, 0.00040, theory_uncert, 0.00024, profile);
     }
 
-    
 
+    /// g-2 in SM from e+e- data
+    void gm2_SM_ee(triplet<double> &result)
+    {
+      /// Values taken from prediction in arXiv:1010.4180 (Eq 22)
+      result.central = 2.0 * 11659180.2e-10;
+      result.upper = 2.0 * 4.9e-10;
+      result.lower = result.upper;
+    }
     
+    /// g-2 in SM from tau+tau- data
+    void gm2_SM_tautau(triplet<double> &result)
+    {
+      /// Values taken from prediction in arXiv:1010.4180, based on tau data
+      result.central = 2.0 * 11659189.4e-10;
+      result.upper = 2.0 * 5.4e-10;
+      result.lower = result.upper;
+    }
+
     /// g-2 likelihood
     void lnL_gm2_chi2(double &result)
     {
       using namespace Pipes::lnL_gm2_chi2;
+      double amu_sm  = 0.5*Dep::muon_gm2_SM->central;
+      double amu_sm_error = 0.5*std::max(Dep::muon_gm2_SM->upper, Dep::muon_gm2_SM->lower);
       double amu_bsm = 0.5*Dep::muon_gm2->central; 
-      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper,
-               Dep::muon_gm2->lower); 
-      /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
-      double amu_sm  = 11659180.2e-10;
-      double amu_sm_error = 4.9e-10;
-      // From hep-ex/0602035.
-      double amu_exp = 11659208.9e-10;
-      // Combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.  
-      double amu_exp_error = 6.3e-10;
+      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper, Dep::muon_gm2->lower); 
       double amu_theory = amu_sm + amu_bsm;
-      double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
-             + Gambit::Utils::sqr(amu_bsm_error) );
-      result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
-                     amu_theory_err, amu_exp_error);
+      double amu_theory_err = sqrt(Gambit::Utils::sqr(amu_sm_error) + Gambit::Utils::sqr(amu_bsm_error));
+      // From hep-ex/0602035.  Error combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.
+      double amu_exp = 11659208.9e-10;
+      double amu_exp_error = 6.3e-10;
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      result = Stats::gaussian_loglikelihood(amu_theory, amu_exp, amu_theory_err, amu_exp_error, profile);
     }
-
 
     /// Calculate a_mu_SUSY using the gm2calc backend.
     void GM2C_SUSY(triplet<double> &result)
@@ -794,7 +831,6 @@ namespace Gambit
           std::ostringstream err;
           err << "gm2calc routine convert_to_onshell raised warning: "
               << model.get_problems().get_warnings() << ".";
-          logger() << err.str() << EOM;
           // Maybe you would argue that we want to invalidate such points, but the DRbar-->OS
           // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
           PrecisionBit_warning().raise(LOCAL_INFO, err.str());          
@@ -804,7 +840,14 @@ namespace Gambit
       catch (const gm2calc_1_2_0::gm2calc::Abstract_Error& e) 
       {
         std::ostringstream err;
-        err << "gm2calc routine convert_to_onshell raised error: " 
+        err << "gm2calc 1.2.0 routine convert_to_onshell raised error: " 
+        << e.what() << ".";
+        invalid_point().raise(err.str());
+      }  
+      catch (const gm2calc_1_3_0::gm2calc::Abstract_Error& e) 
+      {
+        std::ostringstream err;
+        err << "gm2calc 1.3.0 routine convert_to_onshell raised error: " 
         << e.what() << ".";
         invalid_point().raise(err.str());
       }  

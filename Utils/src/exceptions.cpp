@@ -20,6 +20,8 @@
 #include <string>
 #include <iostream>
 #include <omp.h>
+
+#include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
@@ -171,7 +173,7 @@ namespace Gambit
     /// Setter for the fatal flag.
     void exception::set_fatal(bool fatal)
     {
-      #pragma omp critical (GABMIT_exception)
+      #pragma omp critical (GAMBIT_exception)
       {
         isFatal = fatal;
       }
@@ -189,7 +191,7 @@ namespace Gambit
     void exception::raise(const std::string& origin, const std::string& specific_message)
     {
       str full_message = isFatal ? specific_message+parameters : specific_message;
-      #pragma omp critical (GABMIT_exception)
+      #pragma omp critical (GAMBIT_exception)
       {
         log_exception(origin, full_message);
       }
@@ -199,7 +201,7 @@ namespace Gambit
     /// Log the exception and throw it regardless of whether is is fatal or not.
     void exception::forced_throw(const std::string& origin, const std::string& specific_message)
     {
-      #pragma omp critical (GABMIT_exception)
+      #pragma omp critical (GAMBIT_exception)
       {
         log_exception(origin, specific_message+parameters);
       }
@@ -272,13 +274,21 @@ namespace Gambit
     /// Cause the code to print the exception and abort.
     void exception::abort_here_and_now()
     {
-      #pragma omp critical (GABMIT_exception)
+      #pragma omp critical (GAMBIT_exception)
       {
-        cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
-        cout << "GAMBIT has exited with fatal exception: " << what() << endl;
-        cout << "Please note: this error occurred inside an OpenMP parallel region and so caused a hard stop. If you are running in MPI mode, other processes were not informed of this error and may have to be killed manually (though your MPI implementation may automatically kill them)." << endl;
-        cout << "For more 'gentle' handling of errors in OpenMP loops, please raise errors using the Piped_exceptions system." << endl;
-        abort();
+        cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl
+             << "GAMBIT has exited with fatal exception: " << what() << endl
+             << "Please note: this error occurred inside an OpenMP parallel " << endl
+             << "region and so caused a hard stop. If you are running in MPI " << endl
+             << "mode, other processes were not informed of this error and " << endl
+             << "may have to be killed manually (though your MPI implementation " << endl
+             << "may automatically kill them).  For more 'gentle' handling of " << endl
+             << "errors in OpenMP loops, please raise errors using the Piped_exceptions system." << endl;
+        #ifdef WITH_MPI
+          GMPI::Comm().Abort();
+        #else
+          abort();
+        #endif
       }
     }
 
@@ -363,7 +373,7 @@ namespace Gambit
     std::string special_exception::message()
     {
       std::string temp;
-      #pragma omp critical (GABMIT_exception)
+      #pragma omp critical (GAMBIT_exception)
       {
         temp = myMessage;
       }
@@ -436,11 +446,15 @@ namespace Gambit
     /// Cause the code to print the exception and abort.
     void invalid_point_exception::abort_here_and_now()
     {
-      #pragma omp critical (GABMIT_invalid_pt_exception)
+      #pragma omp critical (GAMBIT_invalid_pt_exception)
       {
         cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
         cout << "An invalid_point exception is fatal inside an OpenMP block. " << endl << what() << endl << message() << endl;
-        abort();
+        #ifdef WITH_MPI
+          GMPI::Comm().Abort();
+        #else
+          abort();
+        #endif
       }
     }
 
@@ -467,7 +481,7 @@ namespace Gambit
       }
       else
       {
-        #pragma omp critical (GABMIT_invalid_point)
+        #pragma omp critical (GAMBIT_invalid_point)
         {        
           cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;          
           cout << "GAMBIT has exited with fatal exception: Piped_invalid_point::check() called inside an OpenMP block." << endl
@@ -475,7 +489,11 @@ namespace Gambit
           if (this->flag)
             cout << "Invalid point message requested: " << endl << this->message;
           else cout << "No invalid point requested." << endl;
-          abort();
+          #ifdef WITH_MPI
+            GMPI::Comm().Abort();
+          #else
+            abort();
+          #endif
         }     
       }
     }
@@ -494,6 +512,11 @@ namespace Gambit
     /// @{ HardShutdownException member functions 
     HardShutdownException::HardShutdownException(const std::string& message) : myWhat(message) {}
     const char* HardShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
+
+    /// @{ MPIShutdownException member functions 
+    MPIShutdownException::MPIShutdownException(const std::string& message) : myWhat(message) {}
+    const char* MPIShutdownException::what() const throw() { return myWhat.c_str(); }
     /// @}
 
     /// Global instance of piped invalid point class.
@@ -535,7 +558,7 @@ namespace Gambit
       }
       else
       {
-        #pragma omp critical (GABMIT_exception)
+        #pragma omp critical (GAMBIT_exception)
         {        
           cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;          
           cout << "GAMBIT has exited with fatal exception: Piped_exceptions::check() called inside an OpenMP block." << endl
@@ -550,7 +573,11 @@ namespace Gambit
             }
           }
           else cout << "No exceptions stored." << endl;
-          abort();
+          #ifdef WITH_MPI
+            GMPI::Comm().Abort();
+          #else
+            abort();
+          #endif
         }     
       }
     }

@@ -25,7 +25,7 @@
   value: 343.e-6
   exp_stat_error: 21.e-6
   exp_sys_error: 7.e-6
-  th_error: 23e-6
+  th_error: 23.e-6
   source: HFAG
   error_type: M
   correlation:

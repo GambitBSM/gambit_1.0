@@ -206,6 +206,38 @@ namespace Gambit
        return result;  
     }
 
+    /// Delete all files in a directory (does not act recursively)
+    int remove_all_files_in(const str& dirname, bool error_if_absent)
+    {
+      struct dirent *pDirent;
+      DIR *pDir;
+      pDir = opendir(dirname.c_str());
+      if (pDir == NULL)
+      {
+        if (error_if_absent)
+        {
+          utils_error().raise(LOCAL_INFO, "Directory "+dirname+" not found.");
+        }
+        else
+        {
+          return 1;
+        }
+      }
+      while ( (pDirent = readdir(pDir)) != NULL )
+      {
+        // Delete the contents
+        if ( strcmp(pDirent->d_name, ".") and strcmp(pDirent->d_name, "..") )
+        {
+          std::ostringstream ss; 
+          ss << dirname << pDirent->d_name;
+          cout << "Deleting " << ss.str() << endl;
+          remove(ss.str().c_str());
+        }
+      }
+      closedir (pDir);
+      return 0;
+    }
+
     /// Get current system clock time
     time_point get_clock_now()
     {

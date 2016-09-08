@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas: #43.0 
-      range:  [19, 67]
-    sigmal: #58.0 
+    sigmas:
+      range:  [19, 67] 
+    sigmal:
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -204,14 +204,14 @@ ObsLikes:
     - capability: lnL_rho0
       purpose: LogLike
 
-    - capability: lnL_vrot
-      purpose: LogLike
+    #- capability: lnL_vrot
+    #  purpose: LogLike
 
-    - capability: lnL_v0
-      purpose: LogLike
+    #- capability: lnL_v0
+    #  purpose: LogLike
 
-    - capability: lnL_vesc
-      purpose: LogLike
+    #- capability: lnL_vesc
+    #  purpose: LogLike
 
     # SM nuisance parameter likelihoods
     - capability: lnL_t_mass
@@ -220,11 +220,11 @@ ObsLikes:
     - capability: lnL_mbmb
       purpose:    LogLike
 
-    - capability: lnL_light_quark_masses
-      purpose:    LogLike
+    #- capability: lnL_light_quark_masses
+    #  purpose:    LogLike
 
-    - capability: lnL_alpha_em
-      purpose:    LogLike
+    #- capability: lnL_alpha_em
+    #  purpose:    LogLike
 
     - capability: lnL_alpha_s
       purpose:    LogLike
@@ -269,6 +269,10 @@ Rules:
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
     function: GM2C_SUSY
+
+  # Choose to base the SM prediction for g-2 on e+e- data
+  - capability: muon_gm2_SM
+    function: gm2_SM_ee
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
@@ -331,27 +335,28 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
+  # Make sure to use the latest version (2.12.0) of FeynHiggs for everything.
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: prec_HiggsMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: Higgs_Couplings
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_HiggsProd
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_MSSMMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
-  #  version: 2.11.3
+  #  version: 2.12.0
   # In practice, the easiest option is just to not install / nuke the versions you don't want to use, e.g.
+  #  make nuke-feynhiggs_2_11_3  
   #  make nuke-feynhiggs_2_11_2  
 
   # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).

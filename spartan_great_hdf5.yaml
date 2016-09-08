@@ -60,9 +60,11 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_great"
+  default_output_path: "runs/spartan_great_hdf5"
 
   rng: ranlux48
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
+
+  debug: false

@@ -1467,9 +1467,11 @@ namespace Gambit
     void b2sgamma_likelihood(double &result)
     {
       using namespace Pipes::b2sgamma_likelihood;
-      if(flav_debug)  cout<<"Starting b2sgamma_measurements"<<endl;
+      if (flav_debug) cout<<"Starting b2sgamma_measurements"<<endl;
 
       double theory_prediction= *Dep::bsgamma;
+      
+      if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
       red.debug_mode(flav_debug);
@@ -1481,13 +1483,17 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
-
+      
+      if (flav_debug) cout<<"Experiment: "<<M_exp<<" "<<sqrt(M_cov(0,0))<<" "<<th_err<<endl;
+      
       double exp_meas=M_exp(0,0);
+      double exp_b2sgamma_err=sqrt(M_cov(0,0));
+      double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
 
-      double exp_b2sgamma_err=M_cov(0,0);
-      double theory_b2sgamma_err=th_err(0,0)*theory_prediction;
-
-      result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err);
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      
+      result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
 
     }
 

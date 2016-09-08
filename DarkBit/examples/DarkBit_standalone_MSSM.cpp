@@ -47,7 +47,6 @@ namespace Gambit
     void createSpectrum(Spectrum& outSpec)
     {
       using namespace Pipes::createSpectrum;
-      static Spectrum mySpec;
       /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
@@ -223,7 +222,6 @@ int main(int argc, char* argv[])
     TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBwhdxdy);
     TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBwwdxdy);
     TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::IBintvars);
-    TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::setMassesForIB);
     TH_ProcessCatalog_MSSM.reset_and_calculate();
 
     // Assume for direct and indirect detection likelihoods that dark matter

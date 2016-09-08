@@ -944,7 +944,10 @@ edm_hg : |
    The electric dipole moment of mercury.
 
 muon_gm2: |
-   The MSSM contribution to g−2 of the muon.
+   The BSM contribution to g−2 of the muon.
+
+muon_gm2_SM: |
+   The SM contribution to g−2 of the muon.
 
 lnL_sinW2_eff : |
    Log-likelihood of the effective leptonic weak mixing angle sin^2 θ_W,eff.

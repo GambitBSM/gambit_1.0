@@ -336,7 +336,7 @@ namespace Gambit
       th_err= boost::numeric::ublas::matrix<double> (number_measurements,1);
       for(int i=0; i<number_measurements;++i)       
 	{                                           
-	  th_err(i,0)=measurements[i].value; 
+	  th_err(i,0)=measurements[i].th_error; 
 	}                                           
 
       

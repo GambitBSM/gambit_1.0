@@ -22,8 +22,10 @@
 
 #include "gambit/Utils/yaml_parser_base.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logmaster.hpp"
+
 
 namespace Gambit
 {
@@ -39,9 +41,14 @@ namespace Gambit
       {
         if ( node.Tag() == "!import" )
         {
+          #ifdef WITH_MPI
+            int rank = GMPI::Comm().Get_rank();
+          #else
+            rank = 0;
+          #endif
           YAML::Node import;
           std::string filename = node.as<std::string>();
-          std::cout << "Importing: " << filename << std::endl;
+          if (rank == 0) std::cout << "Importing: " << filename << std::endl;
           try
           { 
             import = YAML::LoadFile(filename);
@@ -89,8 +96,16 @@ namespace Gambit
       }
       if (last_import_counter > 0)
       {
-        std::cout << last_import_counter << std::endl;
-        std::cout << "WARNING: YAML imports were truncated after 10 recursions." << std::endl;
+        #ifdef WITH_MPI
+          int rank = GMPI::Comm().Get_rank();
+        #else
+          rank = 0;
+        #endif
+        if (rank == 0)
+        {
+          std::cout << last_import_counter << std::endl;
+          std::cout << "WARNING: YAML imports were truncated after 10 recursions." << std::endl;
+        }
       }
     }
 
