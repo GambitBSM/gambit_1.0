@@ -587,19 +587,19 @@ namespace Gambit
         using namespace Pipes::lnL_light_quark_masses_chi2;
         const SMInputs& SM = *Dep::SMINPUTS;
 
-        double mud_central = runOptions->getValueOrDef<double>(0.48, "mud_central");
-        double mud_error = runOptions->getValueOrDef<double>(0.10, "mud_error");
-        double msud_central = runOptions->getValueOrDef<double>(27.5, "msud_central");
-        double msud_error = runOptions->getValueOrDef<double>(1.0, "msud_error");
-        double ms_central = runOptions->getValueOrDef<double>(95.E-03, "ms_central");
-        double ms_error = runOptions->getValueOrDef<double>(5.E-03, "ms_error");
+        double mud_obs = runOptions->getValueOrDef<double>(0.48, "mud_obs");
+        double mud_obserror = runOptions->getValueOrDef<double>(0.10, "mud_obserr");
+        double msud_obs = runOptions->getValueOrDef<double>(27.5, "msud_obs");
+        double msud_obserror = runOptions->getValueOrDef<double>(1.0, "msud_obserr");
+        double ms_obs = runOptions->getValueOrDef<double>(95.E-03, "ms_obs");
+        double ms_obserror = runOptions->getValueOrDef<double>(5.E-03, "ms_obserr");
 
         /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
         bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
 
-        result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error, profile)
-            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error, profile)
-            + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error, profile);
+        result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_obs, 0., mud_obserror, profile)
+            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_obs, 0., msud_obserror, profile)
+            + Stats::gaussian_loglikelihood(SM.mS, ms_obs, 0., ms_obserror, profile);
         logger() << LogTags::debug << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
     }
 
