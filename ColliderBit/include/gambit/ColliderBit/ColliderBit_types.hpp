@@ -39,6 +39,8 @@
 #include "gambit/ColliderBit/limits/L3GauginoLimits.hpp"
 #include "gambit/ColliderBit/limits/L3SleptonLimits.hpp"
 #include "gambit/ColliderBit/limits/OPALGauginoLimits.hpp"
+#include "gambit/ColliderBit/higgslike.hpp"
+//#include "gambit/ColliderBit/higgslike.hpp"
 /// TODO: see if we can use this one:
 //#include "gambit/ColliderBit/limits/L3SmallDeltaMGauginoLimits.hpp"
 

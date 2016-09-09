@@ -157,7 +157,7 @@ ObsLikes:
 
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
-      function: calc_combined_LHC_LogLike
+      function: calc_gambit_LHC_LogLike
 
 
 
@@ -177,6 +177,12 @@ Rules:
     - capability: Lilith_1_1_3_init
       options:
         Lilith_data: latestCMS.list
+
+    - capability: calc_gambit_LHC_LogLike_func
+      function: calc_gambit_LHC_LogLike_func
+      options:
+        data_path: /Users/jamesmckay/Documents/Programs/gambit/ColliderBit/data/Higgs_data/
+
 
 #########################
 # Logging setup

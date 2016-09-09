@@ -41,6 +41,7 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
+#include "gambit/ColliderBit/higgslike.hpp"
 
 //#define COLLIDERBIT_DEBUG
 
@@ -621,7 +622,7 @@ namespace Gambit
       char XMLinputstring[6000];
       
       char buffer[100];
-      double mh = ModelParam.mh;
+      double mh = ModelParam.mh; // should come from spectrum!
       double CU = ModelParam.CU;
       double CD = ModelParam.CD;
       double CV = ModelParam.CV;
@@ -773,6 +774,13 @@ namespace Gambit
       double logL = *Dep::calc_Lilith_LHC_LogLike_func;
       result = logL;
     }
+    void calc_gambit_LHC_LogLike(double &result)
+    {
+      using namespace Pipes::calc_gambit_LHC_LogLike;
+      
+      double logL = *Dep::calc_gambit_LHC_LogLike_func;
+      result = logL;
+    }
     
         
     void calc_combined_LHC_LogLike(double &result)
@@ -791,7 +799,137 @@ namespace Gambit
     }
     
     
-    
+
+    double comptue_theory_signal(Gambit::ColliderBit::Decays decays, Signal_strength ss)
+    {
+
+    Gambit::ColliderBit::Decays decays_sm;
+    decays_sm.set_BF(decays._mh);
+    // we have arbitrary number of channels to consider, so we could use a map
+
+    // don't include HH -> invisible here, otherwise the weight would be infinite when there is a non-zero decay
+
+    std::map <std::pair <std::string,std::string>, double> C;
+    std::map <std::pair <std::string,std::string>, double> weight;
+
+    std::vector<std::string> prod = ss.prod;
+    std::vector<std::string> decay = ss.decay;
+
+    std::map <std::string,double> BR = decays.get_BR_map();
+    std::map <std::string,double> sig = decays.get_sig_map();
+
+    std::map <std::string,double> BR_sm = decays_sm.get_BR_map();
+    std::map <std::string,double> sig_sm = decays_sm.get_sig_map();
+
+
+    // sum off efficieny (currently just 1)*BR*sig for all SM channels
+    double sum_sm = 0.0;
+    double epsilon = 1.0; // TODO set this a map with efficiency for each channel
+    for (unsigned int i = 0; i < prod.size() ; i++)
+    {
+    for (unsigned int j = 0; j < decay.size() ; j++)
+    {
+    sum_sm = sum_sm + epsilon*( BR_sm[decay[j]]*sig_sm[prod[i]] );
+    }
+    }
+
+
+
+    std::pair <std::string,std::string> channel;
+    double mu_total = 0;
+    for (unsigned int i = 0; i < prod.size() ; i++)
+    {
+    for (unsigned int j = 0; j < decay.size() ; j++)
+    {
+    channel = std::make_pair(prod[i],decay[j]);
+    C[channel] = BR[decay[j]]*sig[prod[i]] / ( BR_sm[decay[j]]*sig_sm[prod[i]] );
+    weight[channel] = epsilon * ( BR_sm[decay[j]]*sig_sm[prod[i]] ) / sum_sm;
+
+    mu_total = mu_total + C[channel] * weight[channel];
+    #ifdef DEBUG
+    cout << "C = " << C[channel] << " prod sm = " << sig_sm[prod[i]]<< " decay sm = " <<   BR_sm[decay[j]] << endl;
+    cout << "C = " << C[channel] << " prod = " << sig[prod[i]]<< " decay = " <<   BR[decay[j]] << endl;
+    cout << "channel = " << prod[i] << " -> " << decay[j] << endl;
+    #endif
+
+    }
+    }
+
+    #ifdef DEBUG
+    cout << "mu_total = " << mu_total << endl;
+    #endif
+    return mu_total;
+    return 0;
+    }
+        
+    void Higgslike_decays(Gambit::ColliderBit::Decays &result)
+    {
+      using namespace Pipes::Higgslike_decays;
+      //Decays decays = *Dep::Higgslike_decays; // get mh value from spectrum
+      double mh =125.0;
+      Gambit::ColliderBit::Decays decays;
+      decays.set_BF(mh);
+      result = decays;
+      //decays.add_SS_decay(ms,lambda_hs); // make this more like "add invisible"
+    }
+
+        
+    void calc_gambit_LHC_LogLike_func(double &result)
+    {
+      using namespace Pipes::calc_gambit_LHC_LogLike_func;
+      
+      cout << "GAMBIT internal Higgs likelihood started" << endl;
+ 
+      std::string path = runOptions->getValueOrDef<std::string>("", "data_path");
+      cout << "reading data from " << path << endl;
+      if (path == "") {ColliderBit_error().raise(LOCAL_INFO,"no input data path specified");}
+      
+      
+      std::map <int, ColliderBit::Signal_strength> expt_data = read_expt_data(path);
+
+      Gambit::ColliderBit::Decays decays = *Dep::Higgslike_decays;
+
+      double chisq_tot = 0;
+
+
+      for (unsigned int i = 0; i < expt_data.size() ; i++)
+      {
+      Signal_strength ss;
+      ss= expt_data[i];
+
+      double mu_exp = comptue_theory_signal(decays,ss);
+
+      double mu = ss.mu;
+
+      double mh =125.0;// decays._mh;
+      double mh_exp = ss.mh;
+
+      double Cmu = pow(ss.sig_mu,2); // need to add other uncertainties here, luminosity will be easiest
+
+      double Cmh = pow(ss.sig_mh,2);
+      double chisq = 0;
+      if ( abs(mh-mh_exp) <= 1.0*ss.sig_mh )
+      {
+      chisq = (mu_exp-mu) * (1.0/Cmu) * (mu_exp - mu);
+      chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);
+      }
+      else {
+      chisq = (0.0-mu) * (1.0/(Cmu)) * (0.0 - mu);
+      //chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);  // gives massive decrease in likelihood, doesn't seem right
+      //chisq = chisq + (ss.sig_mh) * (1.0/Cmh) * (ss.sig_mh); // gives constant that is shifted a bit below HS likelihood
+      }
+
+
+      chisq_tot = chisq_tot + chisq;
+
+      }
+
+
+      result =  -0.5*chisq_tot;
+
+
+    }
+
 
   }
 }
