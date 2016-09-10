@@ -149,7 +149,7 @@ namespace Gambit
     }
     void FH_precision_deltarho(triplet<double> &result)
     {
-      double mw = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;
+      double mw = Pipes::FH_precision_deltarho::Dep::FH_Precision->MW_MSSM;
       double sintw2eff = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;      
       result.central = Pipes::FH_precision_deltarho::Dep::FH_Precision->deltaRho;
       //Follows approximately from tree level relations, where delta{M_W, sintthetaW^2} go as deltarho
@@ -170,24 +170,55 @@ namespace Gambit
     }
     /// @}
 
-    /// Precision MSSM spectrum manufacturer
-    void make_MSSM_precision_spectrum(Spectrum& improved_spec /*(result)*/)
+    /// Helper function to drop SLHA file
+    void drop_SLHA_if_requested(safe_ptr<Options>& runOptions, Spectrum& improved_spectrum)
     {
-      using namespace Pipes::make_MSSM_precision_spectrum;
+      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        // Spit out the full spectrum as an SLHA file.
+        str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
+        improved_spectrum.getSLHA(filename,true);
+      }
+    }
+
+    /// Helper function to set W masses
+    void update_W_masses(SubSpectrum& HE, SubSpectrum& LE, const triplet<double>& prec_mw)
+    {
+      HE.set_override(Par::Pole_Mass, prec_mw.central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
+      HE.set_override(Par::Pole_Mass_1srd_high, prec_mw.upper, "W+", true);
+      HE.set_override(Par::Pole_Mass_1srd_low, prec_mw.lower, "W+", true);
+      LE.set_override(Par::Pole_Mass, prec_mw.central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
+      LE.set_override(Par::Pole_Mass_1srd_high, prec_mw.upper, "W+", true); //FIXME these should contain some default error, no?
+      LE.set_override(Par::Pole_Mass_1srd_low, prec_mw.lower, "W+", true);  //FIXME these should contain some default error, no?
+    }      
+
+    /// Precision MSSM spectrum manufacturer that does nothing but relabel the unimproved spectrum
+    void make_MSSM_precision_spectrum_none(Spectrum& improved_spec /*(result)*/)
+    {
+      using namespace Pipes::make_MSSM_precision_spectrum_none;
+      improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
+      drop_SLHA_if_requested(runOptions, improved_spec);
+    }
+
+    /// Precision MSSM spectrum manufacturer with precision W mass only
+    void make_MSSM_precision_spectrum_W(Spectrum& improved_spec /*(result)*/)
+    {
+      using namespace Pipes::make_MSSM_precision_spectrum_W;
+      improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
+      update_W_masses(improved_spec.get_HE(), improved_spec.get_LE(), *Dep::prec_mw);
+      drop_SLHA_if_requested(runOptions, improved_spec);
+    }
+
+    /// Precision MSSM spectrum manufacturer with precision H and W masses
+    void make_MSSM_precision_spectrum_H_W(Spectrum& improved_spec /*(result)*/)
+    {
+      using namespace Pipes::make_MSSM_precision_spectrum_H_W;
       improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
       SubSpectrum& HE = improved_spec.get_HE();
       SubSpectrum& LE = improved_spec.get_LE();
 
       // W mass
-      //-------
-
-      HE.set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
-      HE.set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
-      HE.set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
-
-      LE.set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
-      LE.set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true); //FIXME these should contain some default error, no?
-      LE.set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);  //FIXME these should contain some default error, no?
+      update_W_masses(HE, LE, *Dep::prec_mw);
 
       // Higgs masses
       //-------------
@@ -463,21 +494,19 @@ namespace Gambit
         msg << "Unrecognised Higgs_predictions_error_method specified for make_MSSM_precision_spectrum: " << central;
         PrecisionBit_error().raise(LOCAL_INFO,msg.str());
       }
+
       for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true); // TODO: Ben: I changed the flags here to "false", because that means the uncertainties don't already have to exist. This is the case if e.g. the spectrum comes from an SLHA file.
       for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
+
       #ifdef PRECISIONBIT_DEBUG
         for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE.get(Par::Pole_Mass, higgses[i])<< endl;
         for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE.get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
         for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE.get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
       #endif
 
-      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        improved_spec.getSLHA(filename,true);
-      }
-
+      // Check if an SLHA file needs to be excreted.
+      drop_SLHA_if_requested(runOptions, improved_spec);
+      
     }
 
     /// Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.

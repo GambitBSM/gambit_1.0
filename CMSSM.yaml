@@ -349,13 +349,18 @@ Rules:
   #  make nuke-feynhiggs_2_11_3  
   #  make nuke-feynhiggs_2_11_2  
 
-  # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
-  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
-  # with the FH error estimate, to estimate the theoretical error on the prediction.
   - capability: MSSM_spectrum
-    options:
-      Higgs_predictions_source: 1
-      Higgs_predictions_error_method: 4
+    type: Spectrum
+    #function: make_MSSM_precision_spectrum_none
+    function: make_MSSM_precision_spectrum_W
+    #function: make_MSSM_precision_spectrum_H_W
+    # Choose to take FeynHiggs' prediction for the Higgs mass (rather then FlexibleSUSY's).
+    # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
+    # with the FH error estimate, to estimate the theoretical error on the prediction.
+    # These options only have an impact when using make_MSSM_precision_spectrum_H_W.
+    #options:
+    #  Higgs_predictions_source: 1
+    #  Higgs_predictions_error_method: 4
 
   # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
   - capability: A0_decay_rates
