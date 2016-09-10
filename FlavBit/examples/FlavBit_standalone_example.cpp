@@ -30,10 +30,10 @@ using namespace FlavBit::Accessors;     // Helper functions that provide some in
 using namespace FlavBit::Functown;      // Functors wrapping the module's actual module functions
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
-QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+// Default SLHA file for input, if not given on the command line.
+std::string inputfile("FlavBit/data/example.slha");
 
-// SLHA file for input: user can change name here
-const std::string inputFileName = "FlavBit/data/example.slha";
+QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
 
 namespace Gambit
 {
@@ -43,20 +43,29 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
-      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputfile);     
     }
     
   }
 }
 
-int main()
+int main(int argc, char** argv)
 {
+
+  cout << "starting" << endl;
 
   try
   {
-    
+      
+    cout << "starting" << endl;
+    // Get the SLHA filename from the command line, if it has been given.
+    if (argc >= 2) inputfile = argv[1];
+
+    cout << "starting" << endl;
+
     // Make a logging object
     std::map<std::string, std::string> loggerinfo;
+    cout << "starting" << endl;
     
     // Define where the logs will end up
     std::string prefix("runs/FlavBit_standalone/logs/");
@@ -85,7 +94,6 @@ int main()
     // Have to resolve dependencies by hand
     // b2sll_likelihood depends on:
     //    - b2sll_M
-
     b2sll_likelihood.resolveDependency(&b2sll_measurements);
 
     //SI_fill depends on:
@@ -93,7 +101,6 @@ int main()
     //   - BEreq slha_adjust
     //   - BEopt SuperIso, 3.4
     //   - MSSM_spectrum
-    
     SI_fill.resolveDependency(&createSpectrum);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Init_param);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::slha_adjust);
@@ -105,7 +112,6 @@ int main()
     //   - BRBKstarmumu_60_80
     //   - BRBKstarmumu_15_17
     //   - BRBKstarmumu_17_19
-
     b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_11_25);
     b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_25_40);
     b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_40_60);
