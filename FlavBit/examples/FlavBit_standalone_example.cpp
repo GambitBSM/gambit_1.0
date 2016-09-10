@@ -8,16 +8,22 @@
 ///
 ///  Authors (add name and date if you modify):
 ///   
-///  Martin White (martin.white@adelaide.edu.au)
-///  January 2016
+///  \author Martin White
+///          (martin.white@adelaide.edu.au)
+///  \date Jan 2016
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date Sep 2016
 ///
 ///  *********************************************
 
 // Always required in any standalone module main file
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
+
+// Just required in this one
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 using namespace FlavBit::Accessors;     // Helper functions that provide some info about the module
@@ -27,9 +33,7 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
 
 // SLHA file for input: user can change name here
-// Note that it must contain the decay table for the LEP likelihoods to function properly
-// Will need to put a suitable file in FlavBit somewhere
-const std::string inputFileName = "ColliderBit/data/standalone.slha";
+const std::string inputFileName = "FlavBit/data/example.slha";
 
 namespace Gambit
 {
