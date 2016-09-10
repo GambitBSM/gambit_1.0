@@ -37,15 +37,16 @@
 #include <chrono>
 
 #include "gambit/Elements/functors.hpp"
+#include "gambit/Elements/functor_definitions.hpp"
+#include "gambit/Elements/type_equivalency.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logging.hpp"
 #include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
-
+#include <boost/io/ios_state.hpp>
 
 namespace Gambit
 {
@@ -98,7 +99,13 @@ namespace Gambit
     /// Acquire ID for timing 'vertex' (used in printer system)
     void functor::setTimingVertexID(int ID) { if (this == NULL) failBigTime("setTimingVertexID"); myTimingVertexID = ID; }
 
-    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Setter for status: -4 = required backend absent (backend ini functions)
+    ///                    -3 = required classes absent
+    ///                    -2 = function absent
+    ///                    -1 = origin absent
+    ///                     0 = model incompatibility (default)
+    ///                     1 = available
+    ///                     2 = active
     void functor::setStatus(int stat)
     {
       if (this == NULL) failBigTime("setStatus");
@@ -118,7 +125,14 @@ namespace Gambit
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
-    /// Getter for the wrapped function current status (-3 = required classes absent, -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Getter for the wrapped function current status:
+    ///                    -4 = required backend absent (backend ini functions)
+    ///                    -3 = required classes absent
+    ///                    -2 = function absent
+    ///                    -1 = origin absent
+    ///                     0 = model incompatibility (default)
+    ///                     1 = available
+    ///                     2 = active
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
@@ -163,7 +177,7 @@ namespace Gambit
     }
 
     /// Set the iteration number in a loop in which this functor runs
-    void functor::setIteration (int)
+    void functor::setIteration (long long)
     {
       utils_error().raise(LOCAL_INFO,"The setIteration method has not been defined in this class.");
     }
@@ -516,16 +530,28 @@ namespace Gambit
     }
 
     /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+    /// Preferentially returns the 'least removed' parent or friend, i.e. less steps back in the model lineage.
     str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::set<sspair> > karta)
     {
+      std::vector<str> candidates;
       for (std::map< str, std::set<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->downstream_of(model, it->first)) return it->first;
+          if (myClaw->downstream_of(model, it->first)) candidates.push_back(it->first);
         }
       }
-      return "";
+      // If found no candidates, return the empty string.
+      if (candidates.empty()) return "";
+      // If found just one, return it with no further questions.
+      if (candidates.size() == 1) return candidates[0];
+      // If found more than one, choose the one closest to the model passed in. 
+      str result = candidates.front();
+      for (std::vector<str>::iterator it = candidates.begin()+1; it != candidates.end(); ++it)
+      {
+        if (myClaw->downstream_of(*it, result)) result = *it;
+      }
+      return result;
     }
 
     /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
@@ -690,7 +716,7 @@ namespace Gambit
     }
 
     /// Execute a single iteration in the loop managed by this functor.
-    void module_functor_common::iterate(int iteration)
+    void module_functor_common::iterate(long long iteration)
     {
       if (not myNestedFunctorList.empty())
       {
@@ -723,7 +749,7 @@ namespace Gambit
             // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
             int nslots = (iRunNested ? globlMaxThreads : 1);
             // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-            myCurrentIteration = new int[nslots];
+            myCurrentIteration = new long long[nslots];
             // Zero them to start off
             std::fill(myCurrentIteration, myCurrentIteration+nslots, 0);
           }
@@ -773,18 +799,18 @@ namespace Gambit
     }
 
     /// Setter for setting the iteration number in the loop in which this functor runs
-    void module_functor_common::setIteration (int iteration)
+    void module_functor_common::setIteration (long long iteration)
     {
       init_myCurrentIteration_if_NULL(); // Init memory if this is the first run through.
       myCurrentIteration[omp_get_thread_num()] = iteration;
     }
 
     /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-    omp_safe_ptr<int> module_functor_common::iterationPtr()
+    omp_safe_ptr<long long> module_functor_common::iterationPtr()
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
       init_myCurrentIteration_if_NULL();  // Init memory if this is the first run through.
-      return omp_safe_ptr<int>(myCurrentIteration);
+      return omp_safe_ptr<long long>(myCurrentIteration);
     }
 
     /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
@@ -1192,6 +1218,7 @@ namespace Gambit
     /// Indicate to the functor which backends are actually loaded and working
     void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
     {
+      missing_backends.clear();
       // Loop over all the backends that are needed for this functor to work.
       for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)
       {
@@ -1199,6 +1226,7 @@ namespace Gambit
         if (be_ver_map.find(it->first) == be_ver_map.end())
         {
           this->myStatus = -3;
+          missing_backends.push_back(it->first);
         }
         else
         {  // Loop over all the versions of the backend that are needed for this functor to work.
@@ -1206,7 +1234,11 @@ namespace Gambit
           {
             std::set<str> versions = be_ver_map.at(it->first);
             // Check that the specific version needed is connected.
-            if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+            if (versions.find(*jt) == versions.end())
+            {
+              this->myStatus = -3;
+              missing_backends.push_back(it->first + ", v" + *jt);
+            }
           }
         }
       }
@@ -1359,8 +1391,8 @@ namespace Gambit
 
     }
 
-    /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
-    void module_functor_common::notifyOfModel(str model)
+    /// Construct the list of known models only if it doesn't yet exist
+    void module_functor_common::fill_activeModelFlags()
     {
       // Construct the list of known models only if it doesn't yet exist
       if (activeModelFlags.empty())
@@ -1374,13 +1406,45 @@ namespace Gambit
         for (auto it = myModelConditionalDependencies.begin(); it != myModelConditionalDependencies.end(); ++it) { activeModelFlags[it->first] = false; }
         for (auto it = myModelConditionalBackendReqs.begin();  it != myModelConditionalBackendReqs.end();  ++it) { activeModelFlags[it->first] = false; }
       }
+    }
+
+    /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
+    void module_functor_common::notifyOfModel(str model)
+    {
+      // If activeModels hasn't been populated yet, make sure it is.
+      fill_activeModelFlags();
 
       // Now activate the flags for the models that are being used.
       for (auto it = activeModelFlags.begin(); it != activeModelFlags.end(); ++it)
       {
-        if (myClaw->model_exists(it->first))
+        str activation_candidate = it->first;
+        if (myClaw->model_exists(activation_candidate))
         {
-          if (myClaw->downstream_of(model, it->first)) it->second = true;
+          if (myClaw->downstream_of(model, activation_candidate))
+          {
+            // Found an activation candidate that the model being scanned can be cast to.
+            // Assume for now that the candidate will indeed be activated. 
+            it->second = true;
+            // Compare with models that have already been activated, to avoid activating multiple models of the same lineage.
+            for (auto jt = activeModelFlags.begin(); jt != activeModelFlags.end(); ++jt)
+            {
+              str active_model = jt->first;
+              if (activation_candidate != active_model and myClaw->model_exists(active_model) and jt->second)
+              {
+                // If the already active model can be upcast to the activation candidate, abort the activiation of the candidate.
+                if (myClaw->downstream_of(active_model, activation_candidate)) it->second = false;
+                // If the candidate can be upcast to the already active model, activate the candidate instead of the already active model.
+                if (myClaw->downstream_of(activation_candidate, active_model)) jt->second = false;
+                if (verbose)
+                {
+                  cout << "model: " << model << " " << "model to be activated: " << activation_candidate << "(" << it->second << ") active model: " << active_model << "(" << jt->second << ")" << endl;
+                  cout << "active model lives below:" << myClaw->downstream_of(active_model, activation_candidate) << endl;
+                  cout << "activation candidate lives below:" << myClaw->downstream_of(activation_candidate, active_model) << endl;
+                }
+              }
+            }
+            if (verbose) cout << "Activate candidate " << activation_candidate << "?" << it->second << endl;
+          }
         }
       }
 
@@ -1474,71 +1538,74 @@ namespace Gambit
       needs_recalculating[thread_num] = false;
     }
 
-    /// @{ Some helper functions for interacting with signals in the calculate() routine
-    void module_functor_common::check_for_shutdown_signal()
+  /// Class methods for actual module functors for TYPE=void.
+
+    /// Constructor
+    module_functor<void>::module_functor(void (*inputFunction)(),
+                                         str func_name,
+                                         str func_capability,
+                                         str result_type,
+                                         str origin_name,
+                                         Models::ModelFunctorClaw &claw)
+    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
+      myFunction (inputFunction) {}
+
+    /// Calculate method
+    /// The "void" specialisation can potentially manage loops,
+    /// so there are some extra switches in here to let the signal
+    /// handler know that it needs to run in threadsafe mode during
+    /// execution of this functor.
+    void module_functor<void>::calculate()
     {
-      /* Check if shutdown signal received, and either throw Shutdown exception or break out of loop */
-      if(signaldata().shutdown_begun())
+      if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
       {
-        #pragma omp critical (module_functor_calculate)
+        std::ostringstream ss;
+        ss << "Sorry, the function " << origin() << "::" << name()
+         << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
+         << endl << "Missing backends: ";
+        for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
+        backend_error().raise(LOCAL_INFO, ss.str());
+      }
+      else if (myStatus == -4)
+      {
+        std::ostringstream ss;
+        ss << "Sorry, the backend initialisation function " << name()
+        << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";                 
+        backend_error().raise(LOCAL_INFO, ss.str());    
+      }
+      boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
+      int thread_num = omp_get_thread_num();
+      fill_activeModelFlags();                     // If activeModels hasn't been populated yet, make sure it is.
+      init_memory();                               // Init memory if this is the first run through.
+      if (needs_recalculating[thread_num])
+      {
+        entering_multithreaded_region();
+
+        logger().entering_module(myLogTag);
+        this->startTiming(thread_num);
+        try
         {
-          std::ostringstream ss;
-          ss << "Shutdown signal detected while computing functor "<<myName<<"! (omp_get_level()==" << omp_get_level() << ", thread="<<omp_get_thread_num()<<")";
-          std::cerr << ss.str() << std::endl;
-          logger() << ss.str() << EOM;
+          this->myFunction();
         }
-        if(omp_get_level()==0)                               /* If shutdown signal received and we are not in an */
-        {                                                    /* OpenMP parallel block, perform the shutdown.     */
-          logger() << "Checking for emergency shutdown..." << EOM;
-          signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency; soft shutdown   */
-          logger() << "No emergency; will wait for whole scanner function loop to end before performing shutdown..." << EOM;
-        }                                                    /* to perform shutdown)                             */
-        else if(iCanManageLoops)
+        catch (invalid_point_exception& e)
         {
-          breakLoop();
-          logger() << "breakLoop triggered (iCanManageLoops==1) in functor " << myName << EOM;
+          if (not point_exception_raised) acknowledgeInvalidation(e);
+          if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
+          {
+            this->finishTiming(thread_num);
+            leaving_multithreaded_region();
+            throw(e);
+          } 
         }
-        else /* Must be a managed functor (since type is not void, cannot be a loop manager) */
-        {
-          breakLoopFromManagedFunctor();
-          breakLoop(); /* Set this as well anyway in case I didn't understand the logic correctly. */
-          logger() << "breakLoop triggered while computing functor "<<myName<<" (thread="<<omp_get_thread_num()<<")" << EOM;
-        }
+        this->finishTiming(thread_num);
+        logger().leaving_module();         
+        leaving_multithreaded_region();
       }
     }
 
-    void module_functor_common::entering_multithreaded_region()
-    {
-      if(iCanManageLoops and not signaldata().inside_multithreaded_region())
-      {
-         /* Debugging */
-         if(omp_get_level()!=0)
-         {
-           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=1 (in "<<myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;
-           exit(EXIT_FAILURE);
-         } \
-         /* end debugging */
-         signaldata().entering_multithreaded_region(); /* Switch signal handler to threadsafe mode */
-         signal_mode_locked = false;                  /* We are allowed to switch off sighandler threadsafe mode */
-      }
-    }
-
-    void module_functor_common::leaving_multithreaded_region()
-    {
-      if(iCanManageLoops and not signal_mode_locked)
-      {
-         /* Debugging */
-         if(omp_get_level()!=0)
-         {
-           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=0 (in "<<myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;
-           exit(EXIT_FAILURE);
-         }
-         /* end debugging */
-         signaldata().leaving_multithreaded_region(); /* Switch signal handler back to normal mode */
-      }
-    }
-    /// @}
-
+    /// Blank print methods
+    void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
+    void module_functor<void>::print(Printers::BasePrinter*, const int) {}
 
 
     /// @{ Model functor class method definitions

@@ -5,17 +5,17 @@
 ###################################
 
 Parameters:
-    StandardModel_SLHA2: !import StandardModel_SLHA2_SingletDM_scan.yaml
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
       mH:
-            #fixed_value: 125.7
-            range: [124.9, 126.5] # 2-sigma range PDG 2015
-            prior_type: flat
+            fixed_value: 125.7
+            #range: [124.9, 126.5] # 2-sigma range PDG 2015
+            #prior_type: flat
 
     SingletDM:
         mS:
-            range: [10., 10000.]
+            range: [45., 1000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
@@ -60,12 +60,12 @@ Parameters:
 
     nuclear_params_sigmas_sigmal:
       sigmas:
-        #fixed_value: 42.0 # From MicrOmegas?
-        range: [27.0, 59.0] # 2 sigma range from Cline et. al.
+        fixed_value: 42.0 # From MicrOmegas?
+        #range: [27.0, 59.0] # 2 sigma range from Cline et. al.
         prior_type: flat
       sigmal:
-        #fixed_value: 34.0 # From MicrOmegas?
-        range: [40.0, 76.0] # 2 sigma range from Cline et. al.
+        fixed_value: 34.0 # From MicrOmegas?
+        #range: [40.0, 76.0] # 2 sigma range from Cline et. al.
         prior_type: flat
       # proton spin content
       deltad:
@@ -74,6 +74,17 @@ Parameters:
         fixed_value: 0.842
       deltas:
         fixed_value: -0.085
+
+    Halo_gNFW_rho0:
+      rho0: 0.4
+      v0: 235.0
+      vesc: 550.0
+      vrot: 235.0
+      rs: 20.0
+      r_sun: 8.5
+      alpha: 1
+      beta: 3
+      gamma: 1
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
@@ -103,7 +114,7 @@ Printer:
   options:
     # name of output file
     output_file: "gambit_output.hdf5"
-    group: "/sing/let"
+    group: "/singlet"
     delete_file_if_exists: true
 
 
@@ -119,7 +130,7 @@ Scanner:
       plugin: square_grid
       version: ">=1.0"
       like: LogLike
-      grid_pts: 1 #NxN grid
+      grid_pts: 2 #NxN grid
 
     multinest:
       plugin: MultiNest
@@ -159,10 +170,10 @@ ObsLikes:
       purpose: LogLike
       function: lnL_oh2_Simple
 # XENON100 2012 direct detection likelihood
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose: LogLike
 # LUX 2013 direct detection likelihood
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
@@ -177,6 +188,17 @@ ObsLikes:
 # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
       purpose:  LogLike
+
+# DM Local Halo likelihoods
+    - capability: lnL_rho0
+      purpose: LogLike
+    - capability: lnL_vrot
+      purpose: LogLike
+    - capability: lnL_v0
+      purpose: LogLike
+    - capability: lnL_vesc
+      purpose: LogLike
+      
 # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:  LogLike
@@ -187,7 +209,7 @@ ObsLikes:
     - capability: lnL_alpha_s
       purpose:  LogLike
 # HiggsSignals LHC likelihood
-    - capability: HS_LHC_lnL
+    - capability: LHC_Higgs_LogLike
       purpose:  LogLike
 
 Rules:
@@ -226,6 +248,18 @@ Rules:
     options:
         filename: dNdE.dat
 
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum
+
+  - capability: Higgs_decay_rates
+    function: SingletDM_Higgs_decays
+
+  - capability: DD_couplings
+    function: DD_couplings_SingletDM
+
+  - capability: TH_ProcessCatalog
+    function: TH_ProcessCatalog_SingletDM
+
   # Relic density ----------------------
   - capability: RD_oh2
     options:
@@ -247,6 +281,12 @@ Rules:
        #oh2_mean: 0.11
        #oh2_err: 0.07
 
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
+
+
   # Direct detection -------------------
   # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
   # to use must be explicitly specified here (uncomment the desired one).
@@ -263,10 +303,33 @@ Rules:
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_obs: 43.
+      sigmas_obserr: 8.
+      sigmal_obs: 58.
+      sigmal_obserr: 9.
+
+  # DM Halo Model Likelihoods
+  # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
+  - capability: lnL_rho0  # Local dark matter density
+    function: lnL_rho0_lognormal
+    options:
+      rho0_obs: 0.4 # GeV/cm^3
+      rho0_obserr: .15 # GeV/cm^3
+  - capability: lnL_vrot  # Local disk rotation speed
+    function: lnL_vrot_gaussian
+    options:
+      vrot_obs: 235 # km/s
+      vrot_obserr: 20 # km/s
+  - capability: lnL_v0   # Maxwellian most-probable speed
+    function: lnL_v0_gaussian
+    options:
+      v0_obs: 235 # km/s
+      v0_obserr: 20 # km/s
+  - capability: lnL_vesc # Local galactic escape speed
+    function: lnL_vesc_gaussian
+    options:
+      vesc_obs: 550 # km/s
+      vesc_obserr: 35 # km/s
 
   # Decays
   - capability: decay_rates

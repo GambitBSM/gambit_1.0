@@ -12,53 +12,48 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void AlphaEM::init(int orderIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtr)
+        inline void AlphaEM::init(int orderIn, Pythia8::Settings* settingsPtr)
         {
-            wrapperbase::BEptr->init__BOSS(orderIn, (*settingsPtr).BEptr);
+            get_BEptr()->init__BOSS(orderIn, (*settingsPtr).get_BEptr());
         }
         
         inline double AlphaEM::alphaEM(double scale2)
         {
-            return wrapperbase::BEptr->alphaEM(scale2);
+            return get_BEptr()->alphaEM(scale2);
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::AlphaEM::AlphaEM() :
-            WrapperBase<Pythia8::Abstract_AlphaEM>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::AlphaEM::AlphaEM(Pythia8::Abstract_AlphaEM* in) :
-            WrapperBase<Pythia8::Abstract_AlphaEM>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::AlphaEM::AlphaEM(Pythia8::Abstract_AlphaEM* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_AlphaEM>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::AlphaEM::AlphaEM(const AlphaEM& in) :
-            WrapperBase<Pythia8::Abstract_AlphaEM>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::AlphaEM& AlphaEM::operator=(const AlphaEM& in)
         {
-            WrapperBase<Pythia8::Abstract_AlphaEM>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -66,14 +61,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::AlphaEM::~AlphaEM()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::AlphaEM::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_AlphaEM* Pythia8::AlphaEM::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_AlphaEM*>(BEptr);
         }
-        
     }
     
 }

@@ -16,12 +16,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class LHdecayChannel : public WrapperBase<Pythia8::Abstract_LHdecayChannel>
+        class LHdecayChannel : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_LHdecayChannel> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_LHdecayChannel>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -58,7 +54,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 LHdecayChannel(Pythia8::Abstract_LHdecayChannel* in);
-                LHdecayChannel(Pythia8::Abstract_LHdecayChannel* const & in, bool);
         
                 // Copy constructor: 
                 LHdecayChannel(const LHdecayChannel& in);
@@ -69,9 +64,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~LHdecayChannel();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_LHdecayChannel* get_BEptr() const;
         
         };
     }

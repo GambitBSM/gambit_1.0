@@ -98,7 +98,7 @@ Scanner:
       like:  LogLike
 
     random:
-      plugin: random_sampler
+      plugin: random
       point_number: 20
       output_file:  output
       like:  LogLike
@@ -110,7 +110,7 @@ Scanner:
       nlive: 500
       tol: 0.1
       like:  LogLike
-     output_file:  output
+      output_file:  output
 
     twalk_beta:
       plugin: twalk
@@ -193,10 +193,6 @@ ObsLikes:
   # Uncomment to test DD likelihoods
 #  - purpose:      LogLike
 #    capability:   lnL_LUX_2013
-
-  # Uncomment to test FastSim
-#- purpose:      LogLike
-#   capability:   fast_sim
 
   # Uncomment to test array and -> operators in safety buckets.
   - purpose:      Observable
@@ -302,7 +298,7 @@ ObsLikes:
   ## Test DarkBit DD couplings with micrOMEGAs and DarkSUSY
   #- purpose:      Observable
   #  capability:   DD_couplings
-  #  type:         DarkBit::DD_couplings
+  #  type:         DM_nucleon_couplings
   #  function:     DD_couplings_micrOMEGAs
   #  function:     DD_couplings_DarkSUSY
 
@@ -316,8 +312,8 @@ Rules:
     function: A0_decays
   - capability: Higgs_decay_rates
     function: MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: Hplus_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
   - capability: h0_2_decay_rates
     function: h0_2_decays
   - capability: t_decay_rates
@@ -354,7 +350,7 @@ Rules:
   - capability:  GambitColliderEvent
     function:    reconstructDelphesEvent
     options:
-      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl"
+      delphesConfigFile: "ColliderBit/data/delphes_card_ATLAS.tcl"
 
   - capability:  hardScatteringEvent
     function:    generatePythia8Event

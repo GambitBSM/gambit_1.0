@@ -26,7 +26,7 @@ Printer:
   options:
     output_file: "results.hdf5"
     group: "/gambit_data"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 #======== Scanner setup ========
 Scanner:
@@ -37,20 +37,15 @@ Scanner:
       plugin: MultiNest
       like:  LogLike
       nlive: 1000
-      tol: 0.01
+      updInt: 100
+      tol: 0.5
       mmodal: 0
-      # write native MultiNest ascii output files?
-      outfile: 1 # yes, need them for resuming
-      # No options to set, but still need the nodes at the moment...
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
+
     de:
       plugin: Diver
       like: LogLike
       NP: 1000
-      #path: "diver_native"
-      verbosity: 1
+      verbosity: 2
                     
 #======== Observables of interest ========
 ObsLikes:
@@ -72,12 +67,11 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
-  separate_file_per_process: false #true  # Default is "true"
 
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_multinest_hdf5///"
+  default_output_path: "runs/spartan_multinest_hdf5/"
 
   print_timing_data: true  #default: false
 
@@ -85,7 +79,7 @@ KeyValues:
 
   # Customise shutdown behaviour on receiving OS signals
   signal_handling:
-    SIGINT : "emergency_shutdown"    # default: emergency_shutdown
+    SIGINT : "soft_shutdown" #"emergency_shutdown"    # default: emergency_shutdown
     SIGTERM: "emergency_shutdown_longjmp"    # default: emergency_shutdown
     SIGUSR1: "soft_shutdown"    # default: soft_shutdown
     SIGUSR2: "soft_shutdown"    # default: soft_shutdown
@@ -102,7 +96,8 @@ KeyValues:
   use_mpi_abort: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e6
+    model_invalid_for_lnlike_below: -1e6     # Multinest will use this as its logzero value by default
+    model_invalid_for_lnlike_below_alt: -1e5 # And it will switch to this after live point generation
 
   # NOTES REGARDING SIGNAL HANDLING
   #---------------------------------------------

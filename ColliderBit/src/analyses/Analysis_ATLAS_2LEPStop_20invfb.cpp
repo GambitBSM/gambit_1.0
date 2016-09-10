@@ -71,16 +71,17 @@ namespace Gambit {
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
         for (HEPUtils::Particle* electron : event->electrons()) {
-          if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> baselineMuons;
         for (HEPUtils::Particle* muon : event->muons()) {
-          if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
         vector<HEPUtils::Particle*> baselineTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
-          if (tau->pT() > 10. && fabs(tau->eta()) < 2.47) baselineTaus.push_back(tau);
+          if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(baselineTaus);
 
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::Jet*> bJets;
@@ -152,7 +153,7 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
-        applyTightIDElectronSelection(signalElectrons);
+        ATLAS::applyTightIDElectronSelection(signalElectrons);
 
         //int nElectrons = signalElectrons.size();
         //int nMuons = signalMuons.size();
@@ -372,40 +373,40 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_SRM90;
-        results_SRM90.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
-        results_SRM90.set_sr_label("SRM90");
-        results_SRM90.set_observation(274.);
-        results_SRM90.set_background(300.);
-        results_SRM90.set_backgroundsys(50.);
-        results_SRM90.set_signalsys(0.);
-        results_SRM90.set_signal(_numSRM90SF+_numSRM90DF);
+        results_SRM90.analysis_name = "Analysis_ATLAS_2LEPStop_20invfb";
+        results_SRM90.sr_label = "SRM90";
+        results_SRM90.n_observed = 274.;
+        results_SRM90.n_background = 300.;
+        results_SRM90.background_sys = 50.;
+        results_SRM90.signal_sys = 0.;
+        results_SRM90.n_signal = _numSRM90SF+_numSRM90DF;
 
         SignalRegionData results_SRM100;
-        results_SRM100.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
-        results_SRM100.set_sr_label("SRM100");
-        results_SRM100.set_observation(3.);
-        results_SRM100.set_background(5.2);
-        results_SRM100.set_backgroundsys(2.2);
-        results_SRM100.set_signalsys(0.);
-        results_SRM100.set_signal(_numSRM100SF+_numSRM100DF);
+        results_SRM100.analysis_name = "Analysis_ATLAS_2LEPStop_20invfb";
+        results_SRM100.sr_label = "SRM100";
+        results_SRM100.n_observed = 3.;
+        results_SRM100.n_background = 5.2;
+        results_SRM100.background_sys = 2.2;
+        results_SRM100.signal_sys = 0.;
+        results_SRM100.n_signal = _numSRM100SF+_numSRM100DF;
 
         SignalRegionData results_SRM110;
-        results_SRM110.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
-        results_SRM110.set_sr_label("SRM110");
-        results_SRM110.set_observation(8.);
-        results_SRM110.set_background(9.3);
-        results_SRM110.set_backgroundsys(3.5);
-        results_SRM110.set_signalsys(0.);
-        results_SRM110.set_signal(_numSRM110SF+_numSRM110DF);
+        results_SRM110.analysis_name = "Analysis_ATLAS_2LEPStop_20invfb";
+        results_SRM110.sr_label = "SRM110";
+        results_SRM110.n_observed = 8.;
+        results_SRM110.n_background = 9.3;
+        results_SRM110.background_sys = 3.5;
+        results_SRM110.signal_sys = 0.;
+        results_SRM110.n_signal = _numSRM110SF+_numSRM110DF;
 
         SignalRegionData results_SRM120;
-        results_SRM120.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
-        results_SRM120.set_sr_label("SRM120");
-        results_SRM120.set_observation(18.);
-        results_SRM120.set_background(19.);
-        results_SRM120.set_backgroundsys(9.);
-        results_SRM120.set_signalsys(0.);
-        results_SRM120.set_signal(_numSRM120SF+_numSRM120DF);
+        results_SRM120.analysis_name = "Analysis_ATLAS_2LEPStop_20invfb";
+        results_SRM120.sr_label = "SRM120";
+        results_SRM120.n_observed = 18.;
+        results_SRM120.n_background = 19.;
+        results_SRM120.background_sys = 9.;
+        results_SRM120.signal_sys = 0.;
+        results_SRM120.n_signal = _numSRM120SF+_numSRM120DF;
 
         add_result(results_SRM90);
         add_result(results_SRM100);

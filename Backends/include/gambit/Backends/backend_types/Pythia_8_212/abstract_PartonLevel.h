@@ -11,17 +11,13 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
-#include "wrapper_UserHooks_decl.h"
 #include "wrapper_Event_decl.h"
 #include <vector>
 #include "wrapper_ResonanceDecays_decl.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::PartonLevel*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -29,7 +25,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_PartonLevel : virtual public AbstractBase
+        class Abstract_PartonLevel : public virtual AbstractBase
         {
             public:
     
@@ -60,36 +56,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual int typeLastInShower() =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_PartonLevel*) =0;
-                virtual Abstract_PartonLevel* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_PartonLevel*) =0;
+                virtual Abstract_PartonLevel* pointer_copy__BOSS() =0;
     
             private:
-                mutable PartonLevel* wptr;
+                PartonLevel* wptr;
+                bool delete_wrapper;
+            public:
+                PartonLevel* get_wptr() { return wptr; }
+                void set_wptr(PartonLevel* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_PartonLevel()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(PartonLevel* wptr_in)
+                Abstract_PartonLevel(const Abstract_PartonLevel&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                PartonLevel* wrapper__BOSS()
+                Abstract_PartonLevel& operator=(const Abstract_PartonLevel&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::PartonLevel from backend Pythia_8_212. The function Abstract_PartonLevel::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                PartonLevel* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                PartonLevel& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_PartonLevel()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::PartonLevel from backend Pythia_8_212. The function Abstract_PartonLevel::~Abstract_PartonLevel in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

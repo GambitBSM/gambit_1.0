@@ -27,7 +27,7 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMHiggsContainer.hpp"
+#include "gambit/Models/SimpleSpectra/SMHiggsSimpleSpec.hpp"
 
 // QedQcd header from SoftSUSY (via FlexibleSUSY)
 #include "flexiblesusy/src/lowe.h"
@@ -73,7 +73,7 @@ namespace Gambit
     }
 
     /// Get a Spectrum object wrapper for Standard-Model-only information
-    void get_SM_spectrum(const Spectrum* &result)
+    void get_SM_spectrum(Spectrum &result)
     {
       namespace myPipe = Pipes::get_SM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
@@ -99,14 +99,11 @@ namespace Gambit
       higgsmodel.HiggsVEV      = 1. / sqrt(sqrt(2.)*sminputs.GF);
 
       // Create a SubSpectrum object to wrap the EW sector information
-      SMHiggsContainer higgsspec(higgsmodel);
+      SMHiggsSimpleSpec higgsspec(higgsmodel);
 
       // Create full Spectrum object from components above
       // (SubSpectrum objects will be "cloned" into the Spectrum object)
-      static Spectrum full_spectrum;
-      full_spectrum = Spectrum(qedqcdspec,higgsspec,sminputs,&myPipe::Param);
-
-      result = &full_spectrum;
+      result = Spectrum(qedqcdspec,higgsspec,sminputs,&myPipe::Param);
     }
 
     /// @} End Gambit module functions

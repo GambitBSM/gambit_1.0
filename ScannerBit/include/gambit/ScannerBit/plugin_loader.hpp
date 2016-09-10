@@ -17,6 +17,10 @@
 ///          (p.scott@imperial.ac.uk)   
 ///  \date 2014 Dec
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #ifndef __PLUGIN_LOADER_HPP
@@ -31,9 +35,13 @@
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/ScannerBit/base_prior.hpp"
 
 namespace Gambit
 {
+    /// Forward declare MPI class
+    namespace GMPI { class Comm; } 
 
     namespace Scanner
     {
@@ -54,12 +62,13 @@ namespace Gambit
             struct Plugin_Interface_Details
             {
                 Plugin_Details &details;
-                const printer_interface *printer;
+                printer_interface *printer;
+                Priors::BasePrior *prior;
                 YAML::Node flags;
                 YAML::Node node;
                 
-                Plugin_Interface_Details(Plugin_Details &details, printer_interface *printer, const YAML::Node &node) 
-                        : details(details), printer(printer), flags(details.flags), node(node) {}
+                Plugin_Interface_Details(Plugin_Details &details, printer_interface *printer, Priors::BasePrior *prior, const YAML::Node &node) 
+                        : details(details), printer(printer), prior(prior), flags(details.flags), node(node) {}
             };
     
             ///container class for the actual plugins detected my ScannerBit
@@ -87,7 +96,8 @@ namespace Gambit
                 int print_all_to_screen (const std::string &plug_type = "") const;
                 std::string print_plugin (const std::string &) const;
                 std::string print_plugin (const std::string &, const std::string &) const;
-                std::string print_priors () const;
+                std::vector<std::string> list_prior_groups() const;
+                std::string print_priors (const std::string &prior_group = "priors") const;
                 int print_plugin_to_screen (const std::string &) const;
                 int print_plugin_to_screen (const std::string &, const std::string &) const;
                 int print_plugin_to_screen (const std::vector<std::string> &) const;
@@ -130,8 +140,17 @@ namespace Gambit
                 std::map<std::string, std::vector<__plugin_resume_base__ *>> resume_data;
                 std::map<std::string, std::ifstream *> resume_streams;
                 printer_interface *printer;
+                Priors::BasePrior *prior;
                 Options options;
-                
+                std::string def_out_path;
+                int MPIrank;
+                #ifdef WITH_MPI
+                GMPI::Comm* scannerComm;
+                bool MPIdata_is_init;  
+                #endif
+                /// Flag to indicate if early shutdown is in progess (e.g. due to intercepted OS signal). When set to 'true' scanners should at minimum close off their output files, and if possible they should stop scanning and return control to GAMBIT (or whatever the host code might be).
+                bool earlyShutdownInProgress;
+
                 inline void set_resume(std::vector<__plugin_resume_base__ *> &){}
                                 
                 template<typename U, typename... T>
@@ -159,30 +178,47 @@ namespace Gambit
                 }
                 
             public:
-                pluginInfo() : keepRunning(true), funcCalculating(false) {}
+                pluginInfo();
+
                 ///Enter plugin inifile
-                void iniFile(const Options &, printer_interface &);
-                
+                void iniFile(const Options &);
+                void printer_prior(printer_interface &, Priors::BasePrior &);
                 bool keep_running() const {return keepRunning;}
                 void set_running(bool b){keepRunning = b;}
                 bool func_calculating() const {return funcCalculating;}
                 void set_calculating(bool b){funcCalculating = b;}
-                
+                void set_early_shutdown_in_progress(){earlyShutdownInProgress=true;}
+                bool early_shutdown_in_progress() const {return earlyShutdownInProgress;}
+                bool resume_mode() const { return printer->resume_mode(); }
+
+                #ifdef WITH_MPI
+                // tags for messages sent via scannerComm
+                static const int MIN_LOGL_MSG = 0; 
+                ///Initialise any MPI functionality (currently just used to provide a communicator object to ScannerBit)
+                void initMPIdata(GMPI::Comm* newcomm); 
+                GMPI::Comm& scanComm();
+                #endif
+                int getRank() { return MPIrank; }
+
                 ///resume function
                 template <typename... T>
                 void resume(const std::string &name, T&... data)
                 {
-                    if (printer->resume_mode())
+                    if (resume_mode())
                     {
-                        if (resume_streams.find(name) != resume_streams.end())
-                            resume_streams[name] = new std::ifstream((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
+                        if (resume_streams.find(name) == resume_streams.end())
+                        {
+                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
+                            resume_streams[name] = new std::ifstream((path + "/" + name).c_str(), std::ifstream::binary);
+                        }
                         if (resume_streams[name]->is_open())
                         {
-                            get_resume(*resume_streams[name], data...);
+                           get_resume(*resume_streams[name], data...);
                         }
                         else
                         {
-                            scan_err << "Could not load resume data." << scan_end;
+                            std::cerr << "Could not load resume data." << std::endl;
+                            //scan_err << "Could not load resume data." << scan_end;
                         }
                     }
                     
@@ -191,6 +227,16 @@ namespace Gambit
                 
                 ///Dump contains for resume.
                 void dump();
+
+                ///Save persistence file to record that the alternative min_LogL value is in use for this scan
+                void save_alt_min_LogL_state() const;
+
+                ///Delete the persistence file if it exists (e.g. when starting a new run)
+                void clear_alt_min_LogL_state() const;
+
+                ///Check persistence file to see if we should be using the alternative min_LogL value
+                bool check_alt_min_LogL_state() const;
+
                 ///Retrieve plugin data.
                 const Plugin_Loader &operator()() {return plugins;}
                 ///Get plugin data for single plugin.

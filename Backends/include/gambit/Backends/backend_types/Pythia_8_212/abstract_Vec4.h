@@ -5,12 +5,9 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Vec4*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -18,13 +15,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_Vec4 : virtual public AbstractBase
+        class Abstract_Vec4 : public virtual AbstractBase
         {
             public:
     
-                virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
+                virtual Pythia8::Abstract_Vec4& operator_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Vec4& operator_equal__BOSS(double) =0;
     
                 virtual void reset() =0;
     
@@ -108,45 +105,62 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual Pythia8::Abstract_Vec4* operator_minus__BOSS() =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_plus_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
+                virtual Pythia8::Abstract_Vec4& operator_plus_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_minus_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
+                virtual Pythia8::Abstract_Vec4& operator_minus_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_asterix_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Vec4& operator_asterix_equal__BOSS(double) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_slash_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Vec4& operator_slash_equal__BOSS(double) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_Vec4*) =0;
-                virtual Abstract_Vec4* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_Vec4*) =0;
+                virtual Abstract_Vec4* pointer_copy__BOSS() =0;
     
             private:
-                mutable Vec4* wptr;
+                Vec4* wptr;
+                bool delete_wrapper;
+            public:
+                Vec4* get_wptr() { return wptr; }
+                void set_wptr(Vec4* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_Vec4()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(Vec4* wptr_in)
+                Abstract_Vec4(const Abstract_Vec4&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                Vec4* wrapper__BOSS()
+                Abstract_Vec4& operator=(const Abstract_Vec4&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Vec4 from backend Pythia_8_212. The function Abstract_Vec4::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                Vec4* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                Vec4& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_Vec4()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Vec4 from backend Pythia_8_212. The function Abstract_Vec4::~Abstract_Vec4 in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

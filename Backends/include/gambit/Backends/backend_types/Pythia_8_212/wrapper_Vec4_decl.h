@@ -14,12 +14,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Vec4 : public WrapperBase<Pythia8::Abstract_Vec4>
+        class Vec4 : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Vec4> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Vec4>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -37,7 +33,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void p(double xIn, double yIn, double zIn, double tIn);
         
-                void p(WrapperBase< Pythia8::Abstract_Vec4 > pIn);
+                void p(Pythia8::Vec4 pIn);
         
                 void px(double xIn);
         
@@ -99,19 +95,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void rotaxis(double phiIn, double nx, double ny, double nz);
         
-                void rotaxis(double phiIn, const WrapperBase< Pythia8::Abstract_Vec4 >& n);
+                void rotaxis(double phiIn, const Pythia8::Vec4& n);
         
                 void bst(double betaX, double betaY, double betaZ);
         
                 void bst(double betaX, double betaY, double betaZ, double gamma);
         
-                void bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn);
+                void bst(const Pythia8::Vec4& pIn);
         
-                void bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn, double mIn);
+                void bst(const Pythia8::Vec4& pIn, double mIn);
         
-                void bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn);
+                void bstback(const Pythia8::Vec4& pIn);
         
-                void bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn, double mIn);
+                void bstback(const Pythia8::Vec4& pIn, double mIn);
         
                 Pythia8::Vec4 operator-();
         
@@ -134,7 +130,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Vec4(Pythia8::Abstract_Vec4* in);
-                Vec4(Pythia8::Abstract_Vec4* const & in, bool);
         
                 // Copy constructor: 
                 Vec4(const Vec4& in);
@@ -145,9 +140,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~Vec4();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Vec4* get_BEptr() const;
         
         };
     }

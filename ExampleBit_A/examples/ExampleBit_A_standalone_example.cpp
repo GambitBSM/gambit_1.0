@@ -49,47 +49,24 @@ int main()
   try
   {
 
-    std::cout << std::endl << "Start ExampleBit_A standalone example" << std::endl;
+    std::cout << std::endl << "Starting ExampleBit_A standalone example" << std::endl;
     std::cout << "----------" << std::endl;
 
-
-    //------- Initialise (or disable) logging -------------
-
-    // Uncomment to completely silence logger (initialisation will still create output files though, so remove it if you don't want files created)
-    //logger().disable();
-
-    // Make a logging object
-    std::map<std::string, std::string> loggerinfo;
-    //(you can use a std::map<std::set<std::string>, std::string> instead, but it is more "wordy" to fill)
-
-    // Define where the logs will end up
-    std::string prefix("runs/ExampleBit_A_standalone/logs/");
-
-    // Ensure that the above directory exists
-    Utils::ensure_path_exists(prefix);
-
-    // Add entries to the loggerinfo map
-    loggerinfo["Core, Error"] = prefix+"core_errors.log";
-    loggerinfo["Default"]     = prefix+"default.log";
-    loggerinfo["Warning"]     = prefix+"warnings.log";
-    loggerinfo["ExampleBit_A, Info"] = prefix+"ExampleBit_A_info.log";
-
-    // Initialise global LogMaster object
-    logger().initialise(loggerinfo);
+    //Initialise logging (just comment out if you want no logfiles)
+    initialise_standalone_logs("runs/ExampleBit_A_standalone/logs/");
 
     // Change the fatality of different errors and warnings from the defaults, if desired.
     model_warning().set_fatal(true);
-    ExampleBit_A::ExampleBit_A_error().set_fatal(false);
+    ExampleBit_A::ExampleBit_A_error().set_fatal(true);
 
     // Initialise the random number generator.
     Random::create_rng_engine("default");
 
-    // Test message
-    // Note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag.
+    // Test message (note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag).
     logger()<<"Running ExampleBit_A standalone example"<<LogTags::info<<EOM;
 
-    //-----------------------------------------------------
-
+    // Check that required backends are present
+    if (not Backends::backendInfo().works["LibFortran1.0"]) backend_error().raise(LOCAL_INFO, "LibFortran 1.0 is missing!");
 
     // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
     ModelParameters* CMSSM_primary_parameters = Models::CMSSM::Functown::primary_parameters.getcontentsPtr();
@@ -164,7 +141,7 @@ int main()
     std::cout << ExampleBit_A::Pipes::exampleCut::Dep::event.name() << std::endl;
 
     // Set some module function options
-    nevents_pred_rounded.setOption<double>("probability_of_validity", 0.1);
+    nevents_pred_rounded.setOption<double>("probability_of_validity", 0.8);
 
     // Start a loop over some low-E points in the primary model parameter space
     std::cout << "Starting model scan..." << std::endl << std::endl;

@@ -10,23 +10,25 @@
 ///  S. Dawson, E. Eichten and C. Quigg, Phys. Rev. D31 (1985) 1581
 ///  A. Bartl, H. Fraas, W. Majerotto, Z. Phys. C34 (1987) 411
 ///
-///  The Bartl, Fraas and Majerotto (BFM) papers are based on a convention for the neutralino decomposed
-///  into photino, zino and two higgsinos a and b:
-///  \tilde\chi_i^0 = N_{i1} \tilde\gamma + N_{i2} \tilde Z + N_{i3} \tilde H_a + N_{i4} \tilde H_b
-///  where \tilde H_a = \tilde H_1^0 \sin\beta - \tilde H_2^0 \cos\beta
-///  and \tilde H_b = \tilde H_1^0 \cos\beta + \tilde H_2^0 \sin\beta
+///  The Bartl, Fraas and Majerotto (BFM) papers are based on a convention for
+///  the neutralino decomposed into photino, zino and two higgsinos a and b:
+///  \f$\tilde\chi_i^0 = N_{i1} \tilde\gamma + N_{i2} \tilde Z + N_{i3} \tilde H_a + N_{i4} \tilde H_b\f$
+///  where \f$\tilde H_a = \tilde H_1^0 \sin\beta - \tilde H_2^0 \cos\beta\f$
+///  and \f$\tilde H_b = \tilde H_1^0 \cos\beta + \tilde H_2^0 \sin\beta\f$
 ///
-///  This corresponds to the conventions for N' in Haber & Kane (HK). Haber & Kane in turn have similar
-///  conventions to Gunion & Haber which is used in SLHA, however, \tan\beta is upside down in HK.
+///  This corresponds to the conventions for N' in Haber & Kane (HK).
+///  Haber & Kane in turn have similar conventions to Gunion & Haber which is used
+///  in SLHA, however, \f$\tan\beta\f$ is upside down in HK.
 ///  A conversion routine SLHA2BFM_NN from SLHA to these conventions is included.
 ///
-///  For the charginos a convention similar to HK is followed, which has almost the same mixing matrices
-///  V and U as in SLHA, however, BFM uses \sigma_3 V as the mixing matrix for negative charged states.
-///  HK refines this to be dependent on the mass matrix determinant so as to always get positive masses.
+///  For the charginos a convention similar to HK is followed, which has almost
+///  the same mixing matrices V and U as in SLHA, however, BFM uses \f$\sigma_3 V\f$
+///  as the mixing matrix for negative charged states. HK refines this to be
+///  dependent on the mass matrix determinant so as to always get positive masses.
 ///  For conversion from SLHA to BFM use SLHA2BFM_VV.
 ///
-///  For sleptons the SLHA convention is followed. Thus F_{11}=\cos\phi, F_{12}=\sin\phi, etc.
-///  For \phi = 0 we have ~l_1 = ~l_L and ~l_2 = ~l_R.
+///  For sleptons the SLHA convention is followed. Thus \f$F_{11}=\cos\phi\f$, \f$F_{12}=\sin\phi\f$, etc.
+///  For \f$\phi = 0\f$ we have \f$\tilde l_1 = \tilde l_L\f$ and \f$\tilde l_2 = \tilde l_R\f$.
 ///
 ///  *********************************************
 ///
@@ -61,14 +63,14 @@ namespace Gambit
     ///  If l_are_gauge_es = F, then l(bar)_chirality = 1 => (anti-)slepton is lightest family state
     ///                                               = 2 => (anti-)slepton is heaviest family state
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
-                         const int lbar_chirality, const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ,
-                         const bool l_are_gauge_es);
+                         const int lbar_chirality, const double gtol, const double ftol, const bool gpt_error,
+                         const bool fpt_error, const Spectrum& spec, const double gammaZ, const bool l_are_gauge_es);
     /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
     void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
-                            const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ);
+                            const double tol, const bool pt_error, const Spectrum& spec, const double gammaZ);
     /// Retrieve the production cross-section at an e+e- collider for chargino pairs
     void get_sigma_ee_chipm(triplet<double>& result, const double sqrts, const int chi_plus, const int chi_minus,
-                            const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ);    
+                            const double tol, const bool pt_error, const Spectrum& spec, const double gammaZ);    
     /// @}
 
     /// Low-level cross section routines.

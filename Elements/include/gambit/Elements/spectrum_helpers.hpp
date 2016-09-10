@@ -23,12 +23,14 @@
 #ifndef __spectrum_helpers_hpp__
 #define __spectrum_helpers_hpp__
 
-#include <map>
 #include <string>
 #include <set>
+#include <vector>
+#include <map>
 
 namespace Gambit
 {
+   typedef std::string str;
 
    /// Helper function for checking if indices are valid
    inline bool within_bounds(const int i, const std::set<int> allowed)
@@ -73,9 +75,9 @@ namespace Gambit
       }
 
       /// Map from enum value to string, for error messages
-      static std::map<int,std::string> fill_map()
+      static std::map<Tags,std::string> fill_map()
       {
-         std::map<int,std::string> name;
+         std::map<Tags,std::string> name;
          name[Pole_Mass]       = "Pole_Mass";
          name[Pole_Mass_1srd_high] = "Pole_Mass_1srd_high";
          name[Pole_Mass_1srd_low]  = "Pole_Mass_1srd_low";
@@ -88,8 +90,23 @@ namespace Gambit
          name[mass_eigenstate] = "mass4";
          return name;
       }
-      static const std::map<int,std::string> toString = fill_map();
+      static const std::map<Tags,std::string> toString = fill_map();
    }
+
+   /// Mini helper class to specify behaviour of getters w.r.t. overrides in a type-safe way
+   class SpecOverrideOptions
+   {
+     private:
+      int my_value;
+     public:
+      int value() const { return my_value; }
+      SpecOverrideOptions(int i) : my_value(i) {}
+   };
+   inline static bool operator==(const SpecOverrideOptions& lhs, const SpecOverrideOptions& rhs) 
+   { return lhs.value() == rhs.value(); }
+   static const SpecOverrideOptions use_overrides(0);
+   static const SpecOverrideOptions overrides_only(1);
+   static const SpecOverrideOptions ignore_overrides(2);
 
    /// Structs to hold function pointers and valid index sets
    /// @{
@@ -152,6 +169,9 @@ namespace Gambit
       typedef double(Model::*FSptr)(void) const; /* Function pointer signature for Model object member functions with no arguments */
       typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */
       typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */
+      typedef double(DerivedSpec::*FSptrW)(void) const; /* Function pointer signature for DerivedSpec member functions with no arguments */
+      typedef double(DerivedSpec::*FSptr1W)(int) const; /* Function pointer signature for DerivedSpec member functions with one argument */
+      typedef double(DerivedSpec::*FSptr2W)(int,int) const; /* Function pointer signature for DerivedSpec member functions with two arguments */
       typedef double(*plainfptrM)(const Model&); /* Function pointer for plain functions; used for custom functions */
       typedef double(*plainfptrM1)(const Model&,int); /* ... with one index */
       typedef double(*plainfptrM2)(const Model&,int,int); /* ... with two indices */
@@ -160,13 +180,18 @@ namespace Gambit
       typedef double(*plainfptrI2)(const Input&,int,int); /* with two indices */
       typedef FcnInfo1<FSptr1> FInfo1; // Structs to help specify valid indices for functions
       typedef FcnInfo2<FSptr2> FInfo2; //    "              " 
+      typedef FcnInfo1<FSptr1W> FInfo1W; //    "              "
+      typedef FcnInfo2<FSptr2W> FInfo2W; //    "              " 
       typedef FcnInfo1<plainfptrM1> FInfo1M; //    "              " 
       typedef FcnInfo2<plainfptrM2> FInfo2M; //    "              " 
       typedef FcnInfo1<plainfptrI1> FInfo1I; //    "              " 
       typedef FcnInfo2<plainfptrI2> FInfo2I; //    "              " 
-      typedef std::map<str, FSptr> fmap0; /* Typedef for map of strings to function pointers */
+      typedef std::map<str, FSptr> fmap0; /* Typedef for map of strings to Model function pointers */
       typedef std::map<str, FInfo1> fmap1;/*with an index*/
       typedef std::map<str, FInfo2> fmap2; /*with 2 indices */
+      typedef std::map<str, FSptrW> fmap0W; /* Typedef for map of strings to DerivedSpec function pointers */
+      typedef std::map<str, FInfo1W> fmap1W;/* with an index*/
+      typedef std::map<str, FInfo2W> fmap2W; /*with 2 indices */
       typedef std::map<str, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
       typedef std::map<str, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
       typedef std::map<str, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
@@ -186,7 +211,10 @@ namespace Gambit
       typedef void(Model::*FSptr)(double); /* Function pointer signature for Model object member functions with no arguments */
       typedef void(Model::*FSptr1)(int,double); /* Function pointer signature for Model object member functions with one argument */
       typedef void(Model::*FSptr2)(int,int,double); /* Function pointer signature for Model object member functions with two arguments */
-      typedef void(*plainfptrM)(Model&, double); /* Function pointer for plain functions; used for custom functions */
+      typedef void(DerivedSpec::*FSptrW)(double); /* Function pointer signature for DerivedSpec member functions with no arguments */
+      typedef void(DerivedSpec::*FSptr1W)(double,int); /* Function pointer signature for DerivedSpec member functions with one argument */
+      typedef void(DerivedSpec::*FSptr2W)(double,int,int); /* Function pointer signature for DerivedSpec object member functions with two arguments */
+       typedef void(*plainfptrM)(Model&, double); /* Function pointer for plain functions; used for custom functions */
       typedef void(*plainfptrM1)(Model&, double, int); /* Function pointer for plain functions; used for custom functions */
       typedef void(*plainfptrM2)(Model&, double, int, int); /* Function pointer for plain functions; used for custom functions */
       typedef void(*plainfptrI)(Input&, double); /* Function pointer for plain functions; used for custom functions */
@@ -194,6 +222,8 @@ namespace Gambit
       typedef void(*plainfptrI2)(Input&, double, int, int); /* Function pointer for plain functions; used for custom functions */
       typedef FcnInfo1<FSptr1> FInfo1; // Structs to help specify valid indices for functions
       typedef FcnInfo2<FSptr2> FInfo2; //    "              " 
+      typedef FcnInfo1<FSptr1W> FInfo1W; //    "              "
+      typedef FcnInfo2<FSptr2W> FInfo2W; //    "              " 
       typedef FcnInfo1<plainfptrM1> FInfo1M; //    "              " 
       typedef FcnInfo2<plainfptrM2> FInfo2M; //    "              " 
       typedef FcnInfo1<plainfptrI1> FInfo1I; //    "              " 
@@ -201,6 +231,9 @@ namespace Gambit
       typedef std::map<str, FSptr> fmap0; /* Typedef for map of strings to function pointers */
       typedef std::map<str, FInfo1> fmap1;/*with an index*/
       typedef std::map<str, FInfo2> fmap2; /*with 2 indices */
+      typedef std::map<str, FSptrW> fmap0W; /* Typedef for map of strings to DerivedSpec function pointers */
+      typedef std::map<str, FInfo1W> fmap1W;/* with an index*/
+      typedef std::map<str, FInfo2W> fmap2W; /*with 2 indices */
       typedef std::map<str, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
       typedef std::map<str, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
       typedef std::map<str, FInfo2M> fmap2_extraM;  /* map of plain function pointers */

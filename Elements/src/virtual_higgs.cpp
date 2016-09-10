@@ -40,7 +40,7 @@ namespace Gambit
 
     // Initialise, reading in the data table and setting up the interpolators.
     static ASCIItableReader table(virtualH_tabfile);  
-    static std::map<std::string, Funk::Funk> f_vs_mass;
+    static std::map<std::string, daFunk::Funk> f_vs_mass;
     static bool initialised = false;
     static double minmass, maxmass;
     const static std::vector<str> colnames = initVector<std::string>("mass",
@@ -51,7 +51,7 @@ namespace Gambit
       table.setcolnames(colnames);
       for (auto it = colnames.begin(); it != colnames.end(); it++)
       {
-        f_vs_mass[*it] = Funk::interp("mass", table["mass"], table[*it]);
+        f_vs_mass[*it] = daFunk::interp("mass", table["mass"], table[*it]);
       }
       minmass = table["mass"][0];
       maxmass = table["mass"][table.getnrow()-1];
@@ -74,6 +74,7 @@ namespace Gambit
       msg << "Requested Higgs virtuality is " << mh << "; allowed range is " << minmass << "--" << maxmass << " GeV!";
       utils_error().raise(LOCAL_INFO, msg.str());
     }
+    
 
     // Retrieve the interpolated result.     
     return f_vs_mass[channel]->bind("mass")->eval(mh);

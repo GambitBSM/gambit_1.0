@@ -4,7 +4,6 @@
 #include <string>
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_DecayChannel_decl.h"
-#include "wrapper_ResonanceWidths_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_Couplings_decl.h"
@@ -20,739 +19,724 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline void ParticleDataEntry::setDefaults()
         {
-            wrapperbase::BEptr->setDefaults();
+            get_BEptr()->setDefaults();
         }
         
-        inline void ParticleDataEntry::initPtr(WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn)
+        inline void ParticleDataEntry::initPtr(Pythia8::ParticleData* particleDataPtrIn)
         {
-            wrapperbase::BEptr->initPtr__BOSS((*particleDataPtrIn).BEptr);
+            get_BEptr()->initPtr__BOSS((*particleDataPtrIn).get_BEptr());
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In)
         {
-            wrapperbase::BEptr->setAll(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In);
+            get_BEptr()->setAll(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn, spinTypeIn);
         }
         
         inline void ParticleDataEntry::setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn)
         {
-            wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn);
+            get_BEptr()->setAll__BOSS(nameIn, antiNameIn);
         }
         
         inline void ParticleDataEntry::setName(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn)
         {
-            wrapperbase::BEptr->setName(nameIn);
+            get_BEptr()->setName(nameIn);
         }
         
         inline void ParticleDataEntry::setAntiName(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn)
         {
-            wrapperbase::BEptr->setAntiName(antiNameIn);
+            get_BEptr()->setAntiName(antiNameIn);
         }
         
         inline void ParticleDataEntry::setNames(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn)
         {
-            wrapperbase::BEptr->setNames(nameIn, antiNameIn);
+            get_BEptr()->setNames(nameIn, antiNameIn);
         }
         
         inline void ParticleDataEntry::setSpinType(int spinTypeIn)
         {
-            wrapperbase::BEptr->setSpinType(spinTypeIn);
+            get_BEptr()->setSpinType(spinTypeIn);
         }
         
         inline void ParticleDataEntry::setChargeType(int chargeTypeIn)
         {
-            wrapperbase::BEptr->setChargeType(chargeTypeIn);
+            get_BEptr()->setChargeType(chargeTypeIn);
         }
         
         inline void ParticleDataEntry::setColType(int colTypeIn)
         {
-            wrapperbase::BEptr->setColType(colTypeIn);
+            get_BEptr()->setColType(colTypeIn);
         }
         
         inline void ParticleDataEntry::setM0(double m0In)
         {
-            wrapperbase::BEptr->setM0(m0In);
+            get_BEptr()->setM0(m0In);
         }
         
         inline void ParticleDataEntry::setMWidth(double mWidthIn, bool countAsChanged)
         {
-            wrapperbase::BEptr->setMWidth(mWidthIn, countAsChanged);
+            get_BEptr()->setMWidth(mWidthIn, countAsChanged);
         }
         
         inline void ParticleDataEntry::setMWidth(double mWidthIn)
         {
-            wrapperbase::BEptr->setMWidth__BOSS(mWidthIn);
+            get_BEptr()->setMWidth__BOSS(mWidthIn);
         }
         
         inline void ParticleDataEntry::setMMin(double mMinIn)
         {
-            wrapperbase::BEptr->setMMin(mMinIn);
+            get_BEptr()->setMMin(mMinIn);
         }
         
         inline void ParticleDataEntry::setMMax(double mMaxIn)
         {
-            wrapperbase::BEptr->setMMax(mMaxIn);
+            get_BEptr()->setMMax(mMaxIn);
         }
         
         inline void ParticleDataEntry::setMMinNoChange(double mMinIn)
         {
-            wrapperbase::BEptr->setMMinNoChange(mMinIn);
+            get_BEptr()->setMMinNoChange(mMinIn);
         }
         
         inline void ParticleDataEntry::setMMaxNoChange(double mMaxIn)
         {
-            wrapperbase::BEptr->setMMaxNoChange(mMaxIn);
+            get_BEptr()->setMMaxNoChange(mMaxIn);
         }
         
         inline void ParticleDataEntry::setTau0(double tau0In)
         {
-            wrapperbase::BEptr->setTau0(tau0In);
+            get_BEptr()->setTau0(tau0In);
         }
         
         inline void ParticleDataEntry::setIsResonance(bool isResonanceIn)
         {
-            wrapperbase::BEptr->setIsResonance(isResonanceIn);
+            get_BEptr()->setIsResonance(isResonanceIn);
         }
         
         inline void ParticleDataEntry::setMayDecay(bool mayDecayIn, bool countAsChanged)
         {
-            wrapperbase::BEptr->setMayDecay(mayDecayIn, countAsChanged);
+            get_BEptr()->setMayDecay(mayDecayIn, countAsChanged);
         }
         
         inline void ParticleDataEntry::setMayDecay(bool mayDecayIn)
         {
-            wrapperbase::BEptr->setMayDecay__BOSS(mayDecayIn);
+            get_BEptr()->setMayDecay__BOSS(mayDecayIn);
         }
         
         inline void ParticleDataEntry::setDoExternalDecay(bool doExternalDecayIn)
         {
-            wrapperbase::BEptr->setDoExternalDecay(doExternalDecayIn);
+            get_BEptr()->setDoExternalDecay(doExternalDecayIn);
         }
         
         inline void ParticleDataEntry::setIsVisible(bool isVisibleIn)
         {
-            wrapperbase::BEptr->setIsVisible(isVisibleIn);
+            get_BEptr()->setIsVisible(isVisibleIn);
         }
         
         inline void ParticleDataEntry::setDoForceWidth(bool doForceWidthIn)
         {
-            wrapperbase::BEptr->setDoForceWidth(doForceWidthIn);
+            get_BEptr()->setDoForceWidth(doForceWidthIn);
         }
         
         inline void ParticleDataEntry::setHasChanged(bool hasChangedIn)
         {
-            wrapperbase::BEptr->setHasChanged(hasChangedIn);
+            get_BEptr()->setHasChanged(hasChangedIn);
         }
         
         inline int ParticleDataEntry::id() const
         {
-            return wrapperbase::BEptr->id();
+            return get_BEptr()->id();
         }
         
         inline bool ParticleDataEntry::hasAnti() const
         {
-            return wrapperbase::BEptr->hasAnti();
+            return get_BEptr()->hasAnti();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > ParticleDataEntry::name(int idIn) const
         {
-            return wrapperbase::BEptr->name(idIn);
+            return get_BEptr()->name(idIn);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > ParticleDataEntry::name() const
         {
-            return wrapperbase::BEptr->name__BOSS();
+            return get_BEptr()->name__BOSS();
         }
         
         inline int ParticleDataEntry::spinType() const
         {
-            return wrapperbase::BEptr->spinType();
+            return get_BEptr()->spinType();
         }
         
         inline int ParticleDataEntry::chargeType(int idIn) const
         {
-            return wrapperbase::BEptr->chargeType(idIn);
+            return get_BEptr()->chargeType(idIn);
         }
         
         inline int ParticleDataEntry::chargeType() const
         {
-            return wrapperbase::BEptr->chargeType__BOSS();
+            return get_BEptr()->chargeType__BOSS();
         }
         
         inline double ParticleDataEntry::charge(int idIn) const
         {
-            return wrapperbase::BEptr->charge(idIn);
+            return get_BEptr()->charge(idIn);
         }
         
         inline double ParticleDataEntry::charge() const
         {
-            return wrapperbase::BEptr->charge__BOSS();
+            return get_BEptr()->charge__BOSS();
         }
         
         inline int ParticleDataEntry::colType(int idIn) const
         {
-            return wrapperbase::BEptr->colType(idIn);
+            return get_BEptr()->colType(idIn);
         }
         
         inline int ParticleDataEntry::colType() const
         {
-            return wrapperbase::BEptr->colType__BOSS();
+            return get_BEptr()->colType__BOSS();
         }
         
         inline double ParticleDataEntry::m0() const
         {
-            return wrapperbase::BEptr->m0();
+            return get_BEptr()->m0();
         }
         
         inline double ParticleDataEntry::mWidth() const
         {
-            return wrapperbase::BEptr->mWidth();
+            return get_BEptr()->mWidth();
         }
         
         inline double ParticleDataEntry::mMin() const
         {
-            return wrapperbase::BEptr->mMin();
+            return get_BEptr()->mMin();
         }
         
         inline double ParticleDataEntry::mMax() const
         {
-            return wrapperbase::BEptr->mMax();
+            return get_BEptr()->mMax();
         }
         
         inline double ParticleDataEntry::m0Min() const
         {
-            return wrapperbase::BEptr->m0Min();
+            return get_BEptr()->m0Min();
         }
         
         inline double ParticleDataEntry::m0Max() const
         {
-            return wrapperbase::BEptr->m0Max();
+            return get_BEptr()->m0Max();
         }
         
         inline double ParticleDataEntry::tau0() const
         {
-            return wrapperbase::BEptr->tau0();
+            return get_BEptr()->tau0();
         }
         
         inline bool ParticleDataEntry::isResonance() const
         {
-            return wrapperbase::BEptr->isResonance();
+            return get_BEptr()->isResonance();
         }
         
         inline bool ParticleDataEntry::mayDecay() const
         {
-            return wrapperbase::BEptr->mayDecay();
+            return get_BEptr()->mayDecay();
         }
         
         inline bool ParticleDataEntry::doExternalDecay() const
         {
-            return wrapperbase::BEptr->doExternalDecay();
+            return get_BEptr()->doExternalDecay();
         }
         
         inline bool ParticleDataEntry::isVisible() const
         {
-            return wrapperbase::BEptr->isVisible();
+            return get_BEptr()->isVisible();
         }
         
         inline bool ParticleDataEntry::doForceWidth() const
         {
-            return wrapperbase::BEptr->doForceWidth();
+            return get_BEptr()->doForceWidth();
         }
         
         inline bool ParticleDataEntry::hasChanged() const
         {
-            return wrapperbase::BEptr->hasChanged();
+            return get_BEptr()->hasChanged();
         }
         
         inline void ParticleDataEntry::initBWmass()
         {
-            wrapperbase::BEptr->initBWmass();
+            get_BEptr()->initBWmass();
         }
         
         inline double ParticleDataEntry::constituentMass() const
         {
-            return wrapperbase::BEptr->constituentMass();
+            return get_BEptr()->constituentMass();
         }
         
         inline double ParticleDataEntry::mSel()
         {
-            return wrapperbase::BEptr->mSel();
+            return get_BEptr()->mSel();
         }
         
         inline double ParticleDataEntry::mRun(double mH)
         {
-            return wrapperbase::BEptr->mRun(mH);
+            return get_BEptr()->mRun(mH);
         }
         
         inline bool ParticleDataEntry::useBreitWigner() const
         {
-            return wrapperbase::BEptr->useBreitWigner();
+            return get_BEptr()->useBreitWigner();
         }
         
         inline bool ParticleDataEntry::canDecay() const
         {
-            return wrapperbase::BEptr->canDecay();
+            return get_BEptr()->canDecay();
         }
         
         inline bool ParticleDataEntry::isLepton() const
         {
-            return wrapperbase::BEptr->isLepton();
+            return get_BEptr()->isLepton();
         }
         
         inline bool ParticleDataEntry::isQuark() const
         {
-            return wrapperbase::BEptr->isQuark();
+            return get_BEptr()->isQuark();
         }
         
         inline bool ParticleDataEntry::isGluon() const
         {
-            return wrapperbase::BEptr->isGluon();
+            return get_BEptr()->isGluon();
         }
         
         inline bool ParticleDataEntry::isDiquark() const
         {
-            return wrapperbase::BEptr->isDiquark();
+            return get_BEptr()->isDiquark();
         }
         
         inline bool ParticleDataEntry::isParton() const
         {
-            return wrapperbase::BEptr->isParton();
+            return get_BEptr()->isParton();
         }
         
         inline bool ParticleDataEntry::isHadron() const
         {
-            return wrapperbase::BEptr->isHadron();
+            return get_BEptr()->isHadron();
         }
         
         inline bool ParticleDataEntry::isMeson() const
         {
-            return wrapperbase::BEptr->isMeson();
+            return get_BEptr()->isMeson();
         }
         
         inline bool ParticleDataEntry::isBaryon() const
         {
-            return wrapperbase::BEptr->isBaryon();
+            return get_BEptr()->isBaryon();
         }
         
         inline bool ParticleDataEntry::isOctetHadron() const
         {
-            return wrapperbase::BEptr->isOctetHadron();
+            return get_BEptr()->isOctetHadron();
         }
         
         inline int ParticleDataEntry::heaviestQuark(int idIn) const
         {
-            return wrapperbase::BEptr->heaviestQuark(idIn);
+            return get_BEptr()->heaviestQuark(idIn);
         }
         
         inline int ParticleDataEntry::heaviestQuark() const
         {
-            return wrapperbase::BEptr->heaviestQuark__BOSS();
+            return get_BEptr()->heaviestQuark__BOSS();
         }
         
         inline int ParticleDataEntry::baryonNumberType(int idIn) const
         {
-            return wrapperbase::BEptr->baryonNumberType(idIn);
+            return get_BEptr()->baryonNumberType(idIn);
         }
         
         inline int ParticleDataEntry::baryonNumberType() const
         {
-            return wrapperbase::BEptr->baryonNumberType__BOSS();
+            return get_BEptr()->baryonNumberType__BOSS();
         }
         
         inline void ParticleDataEntry::clearChannels()
         {
-            wrapperbase::BEptr->clearChannels();
+            get_BEptr()->clearChannels();
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1, int prod2, int prod3, int prod4, int prod5, int prod6, int prod7)
         {
-            wrapperbase::BEptr->addChannel(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4, prod5, prod6, prod7);
+            get_BEptr()->addChannel(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4, prod5, prod6, prod7);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1, int prod2, int prod3, int prod4, int prod5, int prod6)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4, prod5, prod6);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4, prod5, prod6);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1, int prod2, int prod3, int prod4, int prod5)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4, prod5);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4, prod5);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1, int prod2, int prod3, int prod4)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3, prod4);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1, int prod2, int prod3)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2, prod3);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1, int prod2)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1, prod2);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0, int prod1)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0, prod1);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode, int prod0)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode, prod0);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode, prod0);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio, int meMode)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio, meMode);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio, meMode);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode, double bRatio)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode, bRatio);
+            get_BEptr()->addChannel__BOSS(onMode, bRatio);
         }
         
         inline void ParticleDataEntry::addChannel(int onMode)
         {
-            wrapperbase::BEptr->addChannel__BOSS(onMode);
+            get_BEptr()->addChannel__BOSS(onMode);
         }
         
         inline void ParticleDataEntry::addChannel()
         {
-            wrapperbase::BEptr->addChannel__BOSS();
+            get_BEptr()->addChannel__BOSS();
         }
         
         inline int ParticleDataEntry::sizeChannels() const
         {
-            return wrapperbase::BEptr->sizeChannels();
+            return get_BEptr()->sizeChannels();
         }
         
         inline Pythia8::DecayChannel& ParticleDataEntry::channel(int i)
         {
-            return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( wrapperbase::BEptr->channel__BOSS(i) );
+            return get_BEptr()->channel__BOSS(i).get_init_wref();
         }
         
         inline const Pythia8::DecayChannel& ParticleDataEntry::channel(int i) const
         {
-            return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( const_cast<Pythia8::Abstract_DecayChannel*>(wrapperbase::BEptr->channel__BOSS(i)) );
+            return const_cast<Pythia8::Abstract_DecayChannel&>(const_cast<const Abstract_ParticleDataEntry*>(get_BEptr())->channel__BOSS(i)).get_init_wref();
         }
         
         inline void ParticleDataEntry::rescaleBR(double newSumBR)
         {
-            wrapperbase::BEptr->rescaleBR(newSumBR);
+            get_BEptr()->rescaleBR(newSumBR);
         }
         
         inline void ParticleDataEntry::rescaleBR()
         {
-            wrapperbase::BEptr->rescaleBR__BOSS();
+            get_BEptr()->rescaleBR__BOSS();
         }
         
         inline bool ParticleDataEntry::preparePick(int idSgn, double mHat, int idInFlav)
         {
-            return wrapperbase::BEptr->preparePick(idSgn, mHat, idInFlav);
+            return get_BEptr()->preparePick(idSgn, mHat, idInFlav);
         }
         
         inline bool ParticleDataEntry::preparePick(int idSgn, double mHat)
         {
-            return wrapperbase::BEptr->preparePick__BOSS(idSgn, mHat);
+            return get_BEptr()->preparePick__BOSS(idSgn, mHat);
         }
         
         inline bool ParticleDataEntry::preparePick(int idSgn)
         {
-            return wrapperbase::BEptr->preparePick__BOSS(idSgn);
+            return get_BEptr()->preparePick__BOSS(idSgn);
         }
         
         inline Pythia8::DecayChannel& ParticleDataEntry::pickChannel()
         {
-            return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( wrapperbase::BEptr->pickChannel__BOSS() );
+            return get_BEptr()->pickChannel__BOSS().get_init_wref();
         }
         
-        inline void ParticleDataEntry::setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn)
+        inline void ParticleDataEntry::resInit(Pythia8::Info* infoPtrIn, Pythia8::Settings* settingsPtrIn, Pythia8::ParticleData* particleDataPtrIn, Pythia8::Couplings* couplingsPtrIn)
         {
-            wrapperbase::BEptr->setResonancePtr__BOSS((*resonancePtrIn).BEptr);
-        }
-        
-        inline Pythia8::ResonanceWidths* ParticleDataEntry::getResonancePtr()
-        {
-            return wrapperbase::pointer_returner< Pythia8::ResonanceWidths, Pythia8::Abstract_ResonanceWidths >( wrapperbase::BEptr->getResonancePtr__BOSS() );
-        }
-        
-        inline void ParticleDataEntry::resInit(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn)
-        {
-            wrapperbase::BEptr->resInit__BOSS((*infoPtrIn).BEptr, (*settingsPtrIn).BEptr, (*particleDataPtrIn).BEptr, (*couplingsPtrIn).BEptr);
+            get_BEptr()->resInit__BOSS((*infoPtrIn).get_BEptr(), (*settingsPtrIn).get_BEptr(), (*particleDataPtrIn).get_BEptr(), (*couplingsPtrIn).get_BEptr());
         }
         
         inline double ParticleDataEntry::resWidth(int idSgn, double mHat, int idIn, bool openOnly, bool setBR)
         {
-            return wrapperbase::BEptr->resWidth(idSgn, mHat, idIn, openOnly, setBR);
+            return get_BEptr()->resWidth(idSgn, mHat, idIn, openOnly, setBR);
         }
         
         inline double ParticleDataEntry::resWidth(int idSgn, double mHat, int idIn, bool openOnly)
         {
-            return wrapperbase::BEptr->resWidth__BOSS(idSgn, mHat, idIn, openOnly);
+            return get_BEptr()->resWidth__BOSS(idSgn, mHat, idIn, openOnly);
         }
         
         inline double ParticleDataEntry::resWidth(int idSgn, double mHat, int idIn)
         {
-            return wrapperbase::BEptr->resWidth__BOSS(idSgn, mHat, idIn);
+            return get_BEptr()->resWidth__BOSS(idSgn, mHat, idIn);
         }
         
         inline double ParticleDataEntry::resWidth(int idSgn, double mHat)
         {
-            return wrapperbase::BEptr->resWidth__BOSS(idSgn, mHat);
+            return get_BEptr()->resWidth__BOSS(idSgn, mHat);
         }
         
         inline double ParticleDataEntry::resWidthOpen(int idSgn, double mHat, int idIn)
         {
-            return wrapperbase::BEptr->resWidthOpen(idSgn, mHat, idIn);
+            return get_BEptr()->resWidthOpen(idSgn, mHat, idIn);
         }
         
         inline double ParticleDataEntry::resWidthOpen(int idSgn, double mHat)
         {
-            return wrapperbase::BEptr->resWidthOpen__BOSS(idSgn, mHat);
+            return get_BEptr()->resWidthOpen__BOSS(idSgn, mHat);
         }
         
         inline double ParticleDataEntry::resWidthStore(int idSgn, double mHat, int idIn)
         {
-            return wrapperbase::BEptr->resWidthStore(idSgn, mHat, idIn);
+            return get_BEptr()->resWidthStore(idSgn, mHat, idIn);
         }
         
         inline double ParticleDataEntry::resWidthStore(int idSgn, double mHat)
         {
-            return wrapperbase::BEptr->resWidthStore__BOSS(idSgn, mHat);
+            return get_BEptr()->resWidthStore__BOSS(idSgn, mHat);
         }
         
         inline double ParticleDataEntry::resOpenFrac(int idSgn)
         {
-            return wrapperbase::BEptr->resOpenFrac(idSgn);
+            return get_BEptr()->resOpenFrac(idSgn);
         }
         
         inline double ParticleDataEntry::resWidthRescaleFactor()
         {
-            return wrapperbase::BEptr->resWidthRescaleFactor();
+            return get_BEptr()->resWidthRescaleFactor();
         }
         
         inline double ParticleDataEntry::resWidthChan(double mHat, int idAbs1, int idAbs2)
         {
-            return wrapperbase::BEptr->resWidthChan(mHat, idAbs1, idAbs2);
+            return get_BEptr()->resWidthChan(mHat, idAbs1, idAbs2);
         }
         
         inline double ParticleDataEntry::resWidthChan(double mHat, int idAbs1)
         {
-            return wrapperbase::BEptr->resWidthChan__BOSS(mHat, idAbs1);
+            return get_BEptr()->resWidthChan__BOSS(mHat, idAbs1);
         }
         
         inline double ParticleDataEntry::resWidthChan(double mHat)
         {
-            return wrapperbase::BEptr->resWidthChan__BOSS(mHat);
+            return get_BEptr()->resWidthChan__BOSS(mHat);
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory0(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In))
+            WrapperBase(__factory0(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory1(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn))
+            WrapperBase(__factory1(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory2(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn))
+            WrapperBase(__factory2(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory3(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn))
+            WrapperBase(__factory3(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory4(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In))
+            WrapperBase(__factory4(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory5(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn))
+            WrapperBase(__factory5(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory6(idIn, nameIn, spinTypeIn, chargeTypeIn))
+            WrapperBase(__factory6(idIn, nameIn, spinTypeIn, chargeTypeIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory7(idIn, nameIn, spinTypeIn))
+            WrapperBase(__factory7(idIn, nameIn, spinTypeIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory8(idIn, nameIn))
+            WrapperBase(__factory8(idIn, nameIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory9(idIn))
+            WrapperBase(__factory9(idIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry() :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory10())
+            WrapperBase(__factory10())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory11(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In))
+            WrapperBase(__factory11(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory12(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn))
+            WrapperBase(__factory12(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory13(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn))
+            WrapperBase(__factory13(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory14(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn))
+            WrapperBase(__factory14(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory15(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In))
+            WrapperBase(__factory15(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory16(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn))
+            WrapperBase(__factory16(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory17(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn))
+            WrapperBase(__factory17(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory18(idIn, nameIn, antiNameIn, spinTypeIn))
+            WrapperBase(__factory18(idIn, nameIn, antiNameIn, spinTypeIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory19(idIn, nameIn, antiNameIn))
+            WrapperBase(__factory19(idIn, nameIn, antiNameIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(Pythia8::Abstract_ParticleDataEntry* in) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(Pythia8::Abstract_ParticleDataEntry* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::ParticleDataEntry::ParticleDataEntry(const ParticleDataEntry& in) :
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::ParticleDataEntry& ParticleDataEntry::operator=(const ParticleDataEntry& in)
         {
-            WrapperBase<Pythia8::Abstract_ParticleDataEntry>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -760,14 +744,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::ParticleDataEntry::~ParticleDataEntry()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::ParticleDataEntry::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_ParticleDataEntry* Pythia8::ParticleDataEntry::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_ParticleDataEntry*>(BEptr);
         }
-        
     }
     
 }

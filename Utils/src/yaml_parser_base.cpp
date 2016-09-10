@@ -22,8 +22,10 @@
 
 #include "gambit/Utils/yaml_parser_base.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logmaster.hpp"
+
 
 namespace Gambit
 {
@@ -39,9 +41,14 @@ namespace Gambit
       {
         if ( node.Tag() == "!import" )
         {
+          #ifdef WITH_MPI
+            int rank = GMPI::Comm().Get_rank();
+          #else
+            rank = 0;
+          #endif
           YAML::Node import;
           std::string filename = node.as<std::string>();
-          std::cout << "Importing: " << filename << std::endl;
+          if (rank == 0) std::cout << "Importing: " << filename << std::endl;
           try
           { 
             import = YAML::LoadFile(filename);
@@ -89,8 +96,16 @@ namespace Gambit
       }
       if (last_import_counter > 0)
       {
-        std::cout << last_import_counter << std::endl;
-        std::cout << "WARNING: YAML imports were truncated after 10 recursions." << std::endl;
+        #ifdef WITH_MPI
+          int rank = GMPI::Comm().Get_rank();
+        #else
+          rank = 0;
+        #endif
+        if (rank == 0)
+        {
+          std::cout << last_import_counter << std::endl;
+          std::cout << "WARNING: YAML imports were truncated after 10 recursions." << std::endl;
+        }
       }
     }
 
@@ -239,10 +254,9 @@ namespace Gambit
          loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
      }
       // Initialise global LogMaster object
-      if(logNode["separate_file_per_process"])
-         logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
-      if(logNode["log_debug_messages"])
-         logger().set_log_debug_messages(logNode["log_debug_messages"].as<bool>());
+      bool master_debug = (keyValuePairNode["debug"]) ? keyValuePairNode["debug"].as<bool>() : false; 
+      bool logger_debug = (logNode["debug"])          ? logNode["debug"].as<bool>()          : false; 
+      logger().set_log_debug_messages(master_debug or logger_debug);
       logger().initialise(loggerinfo);
 
       // Parse the Parameters node and expand out some shorthand syntax
@@ -254,28 +268,6 @@ namespace Gambit
       //    param1:
       //      fixed_value: 5.678
       // Parameter must have no entries besides the value for this syntax to be valid
-
-      // loop through models
-      /*for (YAML::const_iterator itm = parametersNode.begin(); itm!=parametersNode.end(); ++itm)
-      {
-        std::string model = itm->first.as<std::string>();
-        // loop through parameters  
-        for (YAML::const_iterator itp = parametersNode[model].begin(); itp!=parametersNode[model].end(); ++itp)
-        {
-          std::string param = itp->first.as<std::string>();
-          const YAML::Node& param_entry = itp->second;
-          if(param_entry.IsScalar())
-          {
-            // if the entry is just a scalar, delete the parameter node and replace it with the expansion
-            double value = param_entry.as<double>();
-            //parametersNode[model].remove(param);
-            // Overwrite
-            YAML::Node newparam;
-            newparam["fixed_value"] = value;
-            parametersNode[model][param] = newparam;
-          }
-        }
-      }*/
     }
 
     /// Getters for key/value section

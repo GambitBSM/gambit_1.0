@@ -1,17 +1,21 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Cmake configuration script to arrange warning
-#  options when compiling GAMBIT.  
-#    
+#  options when compiling GAMBIT.
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
+#
+#  \author Andy Buckley
+#          (andy.buckley@cern.ch)
+#  \date 2016 Feb
 #
 #************************************************
 
@@ -48,7 +52,13 @@ if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 endif()
 
-# supress additional warnings when using clang and ccache
+# suppress complaints from OpenMPI library with C++11 (on Ubuntu 15.10, at least)
+CHECK_CXX_COMPILER_FLAG("-Wno-literal-suffix" CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
+if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-literal-suffix")
+endif()
+
+# suppress additional warnings when using clang and ccache
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   EXEC_PROGRAM(sh
                ARGS ${CMAKE_SOURCE_DIR}/cmake/check_for_ccache.sh ${CMAKE_CXX_COMPILER}

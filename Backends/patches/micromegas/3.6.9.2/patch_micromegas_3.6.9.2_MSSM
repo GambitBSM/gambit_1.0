@@ -1,0 +1,119 @@
+diff -rupN ./MSSM/main.c ../../installed/micromegas/3.6.9.2/MSSM/main.c
+--- ./MSSM/main.c	2014-05-14 10:23:37.000000000 +0100
++++ ../../installed/micromegas/3.6.9.2/MSSM/main.c	2016-07-21 15:45:04.678005183 +0100
+@@ -10,10 +10,10 @@
+   One can define SUGRA, AMSB, EWSB (for low scale input). 
+   By default the program reads SLHA data file 
+ =======================================*/
+-//#define SUGRA 
++#define SUGRA 
+ //#define SUGRANUH
+ //#define AMSB 
+-#define EWSB 
++//#define EWSB 
+ 
+ /*====== Modules ===============
+    Keys to switch on 
+@@ -110,7 +110,7 @@ int main(int argc,char** argv)
+    int spin2, charge3,cdim;
+ 
+ // sysTimeLim=1000; 
+-  ForceUG=0;  /* to Force Unitary Gauge assign 1 */
++  ForceUG=1;  /* to Force Unitary Gauge assign 1 */
+ /*
+    if you would like to work with superIso
+     setenv("superIso","./superiso_v3.1",1);  
+@@ -261,7 +261,7 @@ int main(int argc,char** argv)
+ 
+    err=EWSBMODEL(RGE)();
+ }
+-#else
++#endif
+ {
+    printf("\n========= SLHA file input =========\n");
+ 
+@@ -275,7 +275,6 @@ int main(int argc,char** argv)
+    err=lesHinput(argv[1]);
+    if(err) exit(2);
+ }
+-#endif
+           
+     if(err==-1)     { printf("Can not open the file\n"); exit(2);}
+     else if(err>0)  { printf("Wrong file contents at line %d\n",err);exit(3);}
+@@ -334,10 +333,10 @@ int main(int argc,char** argv)
+ 
+ #ifdef HIGGSBOUNDS
+    if(access(HIGGSBOUNDS "/HiggsBounds",X_OK )) system( "cd " HIGGSBOUNDS "; ./configure; make ");
+-   slhaWrite("HB.in");
+-   HBblocks("HB.in");
+-   system(HIGGSBOUNDS "/HiggsBounds  LandH SLHA 3 1 HB.in HB.out > hb.stdout");
+-   slhaRead("HB.out",1+4);
++   slhaWrite("HBslha.in");
++   HBblocks("HBslha.in");
++   System("%s/HiggsBounds  LandH SLHA 3 1 HBslha.in HBslha.out",HIGGSBOUNDS);
++   slhaRead("HBslha.out",1+4);
+     printf("HB result= %.0E  obsratio=%.2E\n",slhaValFormat("HiggsBoundsResults",0.,"1 2 %lf"), slhaValFormat("HiggsBoundsResults",0.,"1 3 %lf" )  );
+    { char hbInfo[100];
+     if(0==slhaSTRFormat("HiggsBoundsResults","1 5 ||%[^|]||",hbInfo)) printf("Channel: %s\n",hbInfo);
+@@ -374,8 +373,8 @@ int main(int argc,char** argv)
+                              
+ 
+ #ifdef OMEGA
+-{ int fast=1;
+-  double Beps=1.E-5, cut=0.01;
++{ int fast=0;
++  double Beps=1.E-6, cut=0.00000001;
+   double Omega,Xf; 
+   
+ // to exclude processes with virtual W/Z in DM   annihilation      
+@@ -417,7 +416,10 @@ if(omegaCh){
+   double SpNe[NZ],SpNm[NZ],SpNl[NZ];  
+ //  double * SpNe=NULL,*SpNm=NULL,*SpNl=NULL;
+   double Etest=Mcdm/2;
+- 
++
++  readSpectra();
++  mInterp(3., 3, 3, SpP);
++
+ /* default DarkSUSY parameters */
+ 
+ /*
+@@ -719,7 +721,7 @@ printf(" e^+, e^- annihilation\n");
+ 
+     Pcm=4000;
+ 
+-    for(i=0;i<25;i++) for(j=i;j<25;j++)
++    for(i=0;i<25;i++) for(j=0;j<25;j++)
+     {double dcs=hCollider(Pcm,1,0,sq[i],sq[j]);
+         stot+=dcs;
+         printf("p,p -> %s %s %E\n", sq[i],sq[j],dcs);
+@@ -732,8 +734,8 @@ printf(" e^+, e^- annihilation\n");
+ 
+ #ifdef CLEAN
+   killPlots();
+-  system("rm -f suspect2_lha.in suspect2_lha.out suspect2.out  Key.dat nngg.in  nngg.out output.flha ");
+-  system("rm -f HB.in HB.out HS.in HS.out hb.stdout hs.stdout  debug_channels.txt debug_predratio.txt");
++  system("rm -f suspect2_lha.in suspect2_lha.out suspect2.out HB.slha Key.dat nngg.in nngg.out output.flha HBslha.in HBslha.out debug_channels.txt debug_predratio.txt");
++
+ #endif 
+ 
+ return 0;
+diff -rupN ./MSSM/Makefile ../../installed/micromegas/3.6.9.2/MSSM/Makefile
+--- ./MSSM/Makefile	2016-07-21 15:59:50.514026631 +0100
++++ ../../installed/micromegas/3.6.9.2/MSSM/Makefile	2016-07-21 16:06:46.826036710 +0100
+@@ -45,7 +45,15 @@ libs:
+ 	$(MAKE) -C work
+ 	$(MAKE) -C lib
+ 
++sharedlib: all
++ifeq (,$(main)) 
++	@echo Main program is not specified. Use gmake main='<code of main program>'
++else  
++	$(CXX) -shared -fPIC -o libmicromegas.so $(main) $(SSS) $(lDL)
++endif
++
+ clean: 
++	rm -rf libmicromegas.so
+ 	rm -fr calchep/tmp/* calchep/results/*  lanhep/*.mdl 
+ 	rm -f suspect2_lha.in suspect2_lha.out HB.in HB.slha nngg.out nngg.in Key.dat output.flha
+ 	../sources/cleanexe

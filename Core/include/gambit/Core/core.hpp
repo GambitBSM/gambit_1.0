@@ -89,11 +89,11 @@ namespace Gambit
       const str report_file;
       std::ofstream report;
 
+      /// Precision to use for cout
+      const int outprec;
+
       /// Flag specifying whether command line options have been processed yet.
       bool processed_options;
-
-      /// Compute the status of a given backend
-      str backend_status(str, str, bool&);
 
       /// Basic diagnostic functions
       /// @{
@@ -113,8 +113,12 @@ namespace Gambit
       void ff_model_diagnostic(str&);
       void ff_scanner_diagnostic(str&);
       void ff_test_function_diagnostic(str&);
+      void ff_prior_diagnostic(str&);
       /// @}
  
+      /// Compute the status of a given backend
+      str backend_status(str, str, bool&);
+
       /// Launch MPI and return the rank, for limiting diagnostic output to master node.
       int launch_diagnostic_MPI();
   
@@ -201,6 +205,9 @@ namespace Gambit
       /// Get the description (and other info) of the named item from the model database
       const model_info get_model_info(const str&) const;
  
+      /// Getter for precision to use for cout
+      int get_outprec() const; 
+
       /// Check the named database for conflicts and missing descriptions
       /// Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts.
       void check_databases();

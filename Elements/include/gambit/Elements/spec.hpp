@@ -29,74 +29,89 @@
 
 namespace Gambit {
 
-   /// @{ CommonTemplateFuncs member function definitions
+   /// @{ Spec member function definitions
 
    /// @{ No indices
-   template <class HostSpec>
-   bool CommonTemplateFuncs<HostSpec>::has(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
+   template <class DerivedSpec>
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename HostSpec::MTget MTget;
+      //typedef typename DerivedSpec::MTget MTget;
       /// TODO: Could avoid dismantling the MapCollection struct by just letting the
       ///       SetMaps class do it, but one step at a time...
       ///       Could also reduce duplication between getter and checker functions by making the 
       ///       'has' function take an optional argument to return an FptrFinder, which can then
       ///       just be used to call the found function.
 
-      /// Need to access members of the derived class, so cast "this" pointer to the derived type
-      const HostSpec* derivedthis = static_cast<const HostSpec*>(this); 
-
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+      
       /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Get> finder =                                
-                       SetMaps<HostSpec,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps         overridecoll = override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap0(  overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
+			      .map0I( mapcoll.map0_extraI )
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       return finder.find(name,true,check_antiparticle);                                             
    }                                                                        
 
-   template <class HostSpec>
-   double CommonTemplateFuncs<HostSpec>::get(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
+   template <class DerivedSpec>
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename HostSpec::MTget MTget;
-      const HostSpec* derivedthis = static_cast<const HostSpec*>(this); 
+      //typedef typename DerivedSpec::MTget MTget;
 
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Get> finder =                                
-                       SetMaps<HostSpec,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+  
+     /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap0(  overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
+                              .map0I( mapcoll.map0_extraI )
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       if( finder.find(name,true,check_antiparticle) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
       return 0;
    }                                                                        
  
-   template <class HostSpec>
-   void CommonTemplateFuncs<HostSpec>::set(const Par::Tags partype, const double set_value, const str& name, SafeBool check_antiparticle)
+   template <class DerivedSpec>
+   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, const SafeBool check_antiparticle)
    {
-      typedef typename HostSpec::MTset MTset;
-      HostSpec* derivedthis = static_cast<HostSpec*>(this); // Non-const pointer for setter!
+      typedef typename DerivedSpec::MTset MTset;
 
       /* Before trying to set parameter, check if there is an override defined
          for it, so that we can warn people that the value they are trying to
          set will be masked by the override */
-      const OverrideMaps overridecoll = derivedthis->override_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Set> override_finder =                                
-                       SetMaps<HostSpec,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps overridecoll = override_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Set> override_finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .override_only(true); // switch to permit search of only override maps
@@ -110,78 +125,97 @@ namespace Gambit {
       // else no problem
 
       /* Create finder object, tell it what maps to search, and do the search */
-      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Set> finder =                                
-                       SetMaps<HostSpec,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      const MapCollection<MTset> mapcoll = setter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Set> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
       if( finder.find(name,true,check_antiparticle) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
    }                                                                        
    /// @}
    /// @{ One index
-   template <class HostSpec>
-   bool CommonTemplateFuncs<HostSpec>::has(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
+   template <class DerivedSpec>
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, const int i, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename HostSpec::MTget MTget;
-      const HostSpec* derivedthis = static_cast<const HostSpec*>(this); 
+      //typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Get> finder =                                
-                       SetMaps<HostSpec,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps         overridecoll = override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
+                              .map0I( mapcoll.map0_extraI )
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       return finder.find(name,i,true,check_antiparticle);                                             
    }                                                                        
 
-   template <class HostSpec>
-   double CommonTemplateFuncs<HostSpec>::get(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
+   template <class DerivedSpec>
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, const int i, const SpecOverrideOptions check_overrides, const SafeBool check_antiparticle) const
    {
-      typedef typename HostSpec::MTget MTget;
-      const HostSpec* derivedthis = static_cast<const HostSpec*>(this); 
+      //typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Get> finder =                                
-                       SetMaps<HostSpec,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps         overridecoll = override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 )
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W )
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
+                              .map0I( mapcoll.map0_extraI )
+                              .map1I( mapcoll.map1_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
      if( finder.find(name,i,true,check_antiparticle) ){ return finder.callfcn(); }
      finder.raise_error(LOCAL_INFO);
      return 0;
    }                                                                        
  
-   template <class HostSpec>
-   void CommonTemplateFuncs<HostSpec>::set(const Par::Tags partype, const double set_value, const str& name, int i, SafeBool check_antiparticle)
+   template <class DerivedSpec>
+   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, const int i, const SafeBool check_antiparticle)
    {
-      typedef typename HostSpec::MTset MTset;
-      HostSpec* derivedthis = static_cast<HostSpec*>(this); // Non-const pointer for setter!
+      typedef typename DerivedSpec::MTset MTset;
 
       /* Before trying to set parameter, check if there is an override defined
          for it, so that we can warn people that the value they are trying to
          set will be masked by the override */
-      const OverrideMaps overridecoll = derivedthis->override_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Set> override_finder =                                
-                       SetMaps<HostSpec,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps overridecoll = override_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Set> override_finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .override_only(true); // switch to permit search of only override maps
@@ -195,14 +229,16 @@ namespace Gambit {
       // else no problem
 
       /* Create finder object, tell it what maps to search, and do the search */
-      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Set> finder =                                
-                       SetMaps<HostSpec,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      const MapCollection<MTset> mapcoll = setter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Set> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
                               .map1(  mapcoll.map1 ) 
+                              .map0W( mapcoll.map0W )       
+                              .map1W( mapcoll.map1W ) 
+                              .map0M( mapcoll.map0_extraM )
                               .map1M( mapcoll.map1_extraM )
+                              .map0I( mapcoll.map0_extraI )
                               .map1I( mapcoll.map1_extraI );
      if( finder.find(name,i,true,check_antiparticle) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
@@ -211,55 +247,71 @@ namespace Gambit {
    /// @}
    /// @{ Two indices
 
-   template <class HostSpec>
-   bool CommonTemplateFuncs<HostSpec>::has(const Par::Tags partype, const str& name, int i, int j) const
+   template <class DerivedSpec>
+   bool Spec<DerivedSpec>::has(const Par::Tags partype, const str& name, const int i, const int j, const SpecOverrideOptions check_overrides) const
    {
-      typedef typename HostSpec::MTget MTget;
-      const HostSpec* derivedthis = static_cast<const HostSpec*>(this); 
+      //typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Get> finder =                                
-                       SetMaps<HostSpec,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps         overridecoll = override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap2( overridecoll.m2 )
                               .map2(  mapcoll.map2 )
+                              .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
+                              .map2I( mapcoll.map2_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
      return finder.find(name,i,j);
    }                                                                        
 
-   template <class HostSpec>
-   double CommonTemplateFuncs<HostSpec>::get(const Par::Tags partype, const str& name, int i, int j) const
+   template <class DerivedSpec>
+   double Spec<DerivedSpec>::get(const Par::Tags partype, const str& name, const int i, const int j, const SpecOverrideOptions check_overrides) const
    {
-      typedef typename HostSpec::MTget MTget;
-      const HostSpec* derivedthis = static_cast<const HostSpec*>(this); 
+      //typedef typename DerivedSpec::MTget MTget;
 
+      bool overrides=true;
+      bool override_only=false;
+      if     (check_overrides == use_overrides) {  overrides=true;  override_only=false; }
+      else if(check_overrides == overrides_only){  overrides=true;  override_only=true; }
+      else if(check_overrides == ignore_overrides){overrides=false; override_only=false;}
+ 
       /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Get> finder =                                
-                       SetMaps<HostSpec,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      const OverrideMaps         overridecoll = override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = getter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Get> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Get>(Par::toString.at(partype),this)
                               .omap2( overridecoll.m2 )
                               .map2(  mapcoll.map2 )
+                              .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
+                              .map2I( mapcoll.map2_extraI )
+                              .override_only(override_only)
+                              .no_overrides(not overrides);
       if( finder.find(name,i,j) ){ return finder.callfcn(); }
       finder.raise_error(LOCAL_INFO);
       return 0;
    }                                                                        
  
-   template <class HostSpec>
-   void CommonTemplateFuncs<HostSpec>::set(const Par::Tags partype, const double set_value, const str& name, int i, int j)
+   template <class DerivedSpec>
+   void Spec<DerivedSpec>::set(const Par::Tags partype, const double set_value, const str& name, const int i, const int j)
    {
-      typedef typename HostSpec::MTset MTset;
-      HostSpec* derivedthis = static_cast<HostSpec*>(this); // Non-const pointer for setter!
+      typedef typename DerivedSpec::MTset MTset;
 
       /* Create finder object, tell it what maps to search, and do the search */
-      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<HostSpec,MapTag::Set> finder =                                
-                       SetMaps<HostSpec,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      const MapCollection<MTset> mapcoll = setter_maps.at(partype);
+      FptrFinder<Spec<DerivedSpec>,MapTag::Set> finder =                                
+                       SetMaps<Spec<DerivedSpec>,MapTag::Set>(Par::toString.at(partype),this)
                               .map2(  mapcoll.map2 )
+                              .map2W( mapcoll.map2W )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
       if( finder.find(name,i,j) ){ finder.callfcn(set_value); }

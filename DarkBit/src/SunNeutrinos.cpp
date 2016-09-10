@@ -12,6 +12,10 @@
 ///          (pscott@imperial.ac.uk)
 ///  \date 2015 Apr
 ///
+///  \author Sebastian Wild
+///          (sebastian.wild@ph.tum.de)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -34,12 +38,18 @@ namespace Gambit
     /*! \brief Capture rate of regular dark matter in the Sun (no v-dependent
      *         or q-dependent cross-sections) (s^-1).
      */
-    void capture_rate_Sun_constant_xsec(double &result)
+    void capture_rate_Sun_const_xsec(double &result)
     {
-      using namespace Pipes::capture_rate_Sun_constant_xsec;
-      // Here we assume that the proton and neutron scattering cross-sections
-      // are the same.
-      result = BEreq::capture_rate_Sun(
+      using namespace Pipes::capture_rate_Sun_const_xsec;
+
+      if (BEreq::cap_Sun_v0q0_isoscalar.origin()=="DarkSUSY")
+        if(!(*Dep::DarkSUSY_PointInit_LocalHalo))
+          DarkBit_error().raise(LOCAL_INFO,"DarkSUSY halo model not initialized!");
+
+      // When calculating the solar capture rate, DarkSUSY assumes that the
+      // proton and neutron scattering cross-sections are the same; we
+      // assume that whichever backend has been hooked up here does so too.
+      result = BEreq::cap_Sun_v0q0_isoscalar(
           *Dep::mwimp, *Dep::sigma_SI_p, *Dep::sigma_SD_p);
     }
 
@@ -95,7 +105,7 @@ namespace Gambit
           {
             channel = annProc.find(adhoc_chan);
             if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
-                "W+H- exists in process catalogue but not W-H+."
+                "W+H- exists in process catalog but not W-H+."
                 " That's some suspiciously severe CP violation yo.");
             annihilation_bf[i] += channel->genRate->bind("v")->eval(0.);
           }
@@ -121,22 +131,22 @@ namespace Gambit
       }
 
       // Set Higgs masses
-      std::map<str, TH_ParticleProperty>::const_iterator its[4];
-      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
-      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
-      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("A0");
-      its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
-      Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[0]->second.mass : 0.;
-      Higgs_masses_neutral[1] = (its[1] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[1]->second.mass : 0.;
-      Higgs_masses_neutral[2] = (its[2] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[2]->second.mass : 0.;
-      Higgs_mass_charged      = (its[3] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[3]->second.mass : 0.;
+      if (Dep::TH_ProcessCatalog->hasParticleProperty("h0_1"))
+        Higgs_masses_neutral[1] = Dep::TH_ProcessCatalog->getParticleProperty("h0_1").mass;
+      else
+        DarkBit_error().raise(LOCAL_INFO, "No SM-like Higgs in ProcessCatalog!");
+      Higgs_masses_neutral[0] =
+        Dep::TH_ProcessCatalog->hasParticleProperty("h0_2") ?
+        Dep::TH_ProcessCatalog->getParticleProperty("h0_2").mass : 0.;
+      Higgs_masses_neutral[2] =
+        Dep::TH_ProcessCatalog->hasParticleProperty("A0") ?
+        Dep::TH_ProcessCatalog->getParticleProperty("A0").mass : 0.;
+      Higgs_mass_charged =
+        Dep::TH_ProcessCatalog->hasParticleProperty("H+") ?
+        Dep::TH_ProcessCatalog->getParticleProperty("H+").mass : 0.;
 
       // Find out which Higgs exist and have decay data in the process
-      // catalogue.
+      // catalog.
       const TH_Process* h0_decays[3];
       h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_2");
       h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_1");
@@ -144,9 +154,9 @@ namespace Gambit
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
       if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H+ decays exist in process catalogue but not H-.");
+          LOCAL_INFO, "H+ decays exist in process catalog but not H-.");
       if (Hplus_decays == NULL and Hminus_decays != NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H- decays exist in process catalogue but not H+.");
+          LOCAL_INFO, "H- decays exist in process catalog but not H+.");
 
       // Set the neutral Higgs decay branching fractions
       // FIXME needs to be fixed once BFs are available directly from TH_Process
@@ -181,7 +191,7 @@ namespace Gambit
               {
                 channel = h0_decays[i]->find(adhoc_chan);
                 if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
-                    "W+H- exists in process catalogue but not W-H+."
+                    "W+H- exists in process catalog but not W-H+."
                     " That's some suspiciously severe CP violation yo.");
                 Higgs_decay_BFs_neutral[j][i]
                   += channel->genRate->bind()->eval();
@@ -307,12 +317,12 @@ namespace Gambit
     }
 
     /// \brief Likelihood calculators for different IceCube event samples
-    /// These functions all include the likelihood of the background-only model for the respective sameple.
+    /// These functions all include the likelihood of the background-only model for the respective sample.
     /// We define the final log-likelihood as delta = sum over analyses of (lnL_model - lnL_BG), conservatively
     /// forbidding delta > 0 in order to always just use the neutrino likelihood as a limit.  This ignores small
     /// low-E excesses caused by impending breakdown of approximations used in IceCube response data and the nulike
     /// likelihood at very low E. This implies conditioning on all but one parameter (e.g. the cross-section),
-    /// such that including any combination of IC data adds just *one* additional degree of freedom to the fit.
+    /// such that including any particular IC analysis adds just *one* additional degree of freedom to the fit.
     /// @{
 
     /// \brief 22-string IceCube sample: predicted signal and background
@@ -327,6 +337,7 @@ namespace Gambit
       char experiment[300] = "IC-22";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -358,6 +369,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -389,6 +401,7 @@ namespace Gambit
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -420,6 +433,7 @@ namespace Gambit
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      /// Option nulike_speed<int>: Speed setting for nulike backend (default 3)
       int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
@@ -523,11 +537,55 @@ namespace Gambit
                *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike +
                *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike;
       if (result > 0.0) result = 0.0;
-      //cout << "IC likelihood: " << result << endl;
-      //cout << "IC79SL contribution: " << *Dep::IC79SL_loglike - *Dep::IC79SL_bgloglike << endl;
-      //cout << "IC79WL contribution: " << *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike << endl;
-      //cout << "IC79WH contribution: " << *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike << endl;
-      //cout << "IC22   contribution: " << *Dep::IC22_loglike   - *Dep::IC22_bgloglike   << endl;
+#ifdef DARKBIT_DEBUG
+      cout << "IC likelihood: " << result << endl;
+      cout << "IC79SL contribution: " << *Dep::IC79SL_loglike - *Dep::IC79SL_bgloglike << endl;
+      cout << "IC79WL contribution: " << *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike << endl;
+      cout << "IC79WH contribution: " << *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike << endl;
+      cout << "IC22   contribution: " << *Dep::IC22_loglike   - *Dep::IC22_bgloglike   << endl;
+#endif
+    }
+
+    /// Function to set Local Halo Parameters in DarkSUSY
+    void DarkSUSY_PointInit_LocalHalo_func(bool &result)
+    {
+        using namespace Pipes::DarkSUSY_PointInit_LocalHalo_func;
+
+          LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+
+          double rho0 = LocalHaloParameters.rho0;
+          double rho0_eff = (*Dep::RD_fraction)*rho0;
+          double vrot = LocalHaloParameters.vrot;
+          double vd_3d = sqrt(3./2.)*LocalHaloParameters.v0;
+          double vesc = LocalHaloParameters.vesc;
+          /// Option v_earth<double>: Keplerian velocity of the Earth around the Sun in km/s (default 29.78)
+          double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
+
+          BEreq::dshmcom->rho0 = rho0;
+          BEreq::dshmcom->rhox = rho0;
+          BEreq::dshmcom->v_sun = vrot;
+          BEreq::dshmcom->v_earth = v_earth;
+          BEreq::dshmcom->rhox = rho0_eff;
+
+          BEreq::dshmframevelcom->v_obs = vrot;
+
+          BEreq::dshmisodf->vd_3d = vd_3d;
+          BEreq::dshmisodf->vgalesc = vesc;
+
+          BEreq::dshmnoclue->vobs = vrot;
+
+          logger() << "Updating DarkSUSY halo parameters:" << EOM;
+          logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
+          logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+          logger() << "    v_sun [km/s]  = " << vrot<< EOM;
+          logger() << "    v_earth [km/s]  = " << v_earth << EOM;
+          logger() << "    v_obs [km/s]  = " << vrot << EOM;
+          logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
+          logger() << "    v_esc [km/s]  = " << vesc << EOM;
+
+          result = true;
+
+          return;
     }
   }
 }

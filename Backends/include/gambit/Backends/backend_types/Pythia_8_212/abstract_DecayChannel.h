@@ -5,12 +5,9 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::DecayChannel*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -18,7 +15,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_DecayChannel : virtual public AbstractBase
+        class Abstract_DecayChannel : public virtual AbstractBase
         {
             public:
     
@@ -71,36 +68,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double openSec(int) const =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_DecayChannel*) =0;
-                virtual Abstract_DecayChannel* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_DecayChannel*) =0;
+                virtual Abstract_DecayChannel* pointer_copy__BOSS() =0;
     
             private:
-                mutable DecayChannel* wptr;
+                DecayChannel* wptr;
+                bool delete_wrapper;
+            public:
+                DecayChannel* get_wptr() { return wptr; }
+                void set_wptr(DecayChannel* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_DecayChannel()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(DecayChannel* wptr_in)
+                Abstract_DecayChannel(const Abstract_DecayChannel&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                DecayChannel* wrapper__BOSS()
+                Abstract_DecayChannel& operator=(const Abstract_DecayChannel&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::DecayChannel from backend Pythia_8_212. The function Abstract_DecayChannel::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                DecayChannel* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                DecayChannel& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_DecayChannel()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::DecayChannel from backend Pythia_8_212. The function Abstract_DecayChannel::~Abstract_DecayChannel in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

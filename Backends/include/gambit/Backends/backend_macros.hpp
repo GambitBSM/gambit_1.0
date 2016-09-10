@@ -34,6 +34,16 @@
 #ifndef __BACKEND_MACROS_HPP__
 #define __BACKEND_MACROS_HPP__
 
+/// Suppress unused variable warnings in GCC (and do nothing for other compilers)
+#ifndef VARIABLE_IS_NOT_USED
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+#endif
+
+
 #include <iostream>
 #include <string>
 #include <dlfcn.h>
@@ -77,7 +87,7 @@ BE_NAMESPACE                                                                \
 {                                                                           \
   namespace                                                                 \
   {                                                                         \
-    const int CAT(MODEL,_OK) =                                              \
+    const int VARIABLE_IS_NOT_USED CAT(MODEL,_OK) =                         \
      vectorstr_push_back(allowed_models,STRINGIFY(MODEL));                  \
   }                                                                         \
 }                                                                           \
@@ -115,7 +125,6 @@ namespace Gambit                                                            \
   {                                                                         \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
-                                                                            \
       void * pHandle;                                                       \
       void_voidFptr pSym;                                                   \
       std::vector<str> allowed_models;                                      \
@@ -146,6 +155,21 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
  CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
  void,2)                                                                    \
+                                                                            \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace Backends                                                        \
+  {                                                                         \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
+    {                                                                       \
+      /* Disable the initialisation function if the backend is missing */   \
+      int ini_status = set_BackendIniBit_functor_status(                    \
+       BackendIniBit::Functown::CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),    \
+       STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                         \
+    }                                                                       \
+  }                                                                         \
+}                                                                           \
+    
 
 /// Register this backend with the Core if not running in standalone mode.
 #ifndef STANDALONE
@@ -276,17 +300,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                     
 
 // Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag 
 #ifdef STANDALONE
-  #define BE_VARIABLE_I(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)           \
-          BE_VARIABLE_I_MAIN(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)
+  #define BE_VARIABLE_I(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)           \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)
 #else
-  #define BE_VARIABLE_I(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)           \
-          BE_VARIABLE_I_MAIN(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)      \
+  #define BE_VARIABLE_I(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)           \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)      \
           BE_VARIABLE_I_SUPP(NAME)
 #endif
 
 
 /// Main actual backend variable macro
-#define BE_VARIABLE_I_MAIN(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)        \
+#define BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)        \
 namespace Gambit                                                              \
 {                                                                             \
   namespace Backends                                                          \

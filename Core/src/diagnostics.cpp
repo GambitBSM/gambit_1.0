@@ -117,7 +117,7 @@ namespace Gambit
     //cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
     std::stringstream out;
     out << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
-    if (all_good) out << endl << "All your backend are belong to us." << endl;
+    if (all_good) out << endl << endl << "\033[032m" << "All your backend are belong to us." << "\033[0m" << endl;
     out << endl;
     out << table.str();
     if (out.str().size() > 0)
@@ -231,9 +231,19 @@ namespace Gambit
   
   void gambit_core::prior_diagnostic()
   {
-    std::string output = Scanner::Plugins::plugin_info().print_priors();
+    std::string output = Scanner::Plugins::plugin_info().print_priors("priors");
     if (output.length() > 0)
         print_to_screen(output, "priors"); 
+  }
+  
+  void gambit_core::ff_prior_diagnostic(str& command)
+  {
+    if (command != "priors")
+    {
+        std::string output = Scanner::Plugins::plugin_info().print_priors(command);
+        if (output.length() > 0)
+            print_to_screen(output, command); 
+    }
   }
   
   /// Free-form module diagnostic function
@@ -341,7 +351,7 @@ namespace Gambit
           // Loop over all the backend functions and variables
           for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
           {
-            if ((*kt)->origin() == it->first) 
+            if (((*kt)->origin() == it->first) and ((*kt)->version() == (*jt))) 
             {
               //if (first)
               //{
@@ -407,7 +417,7 @@ namespace Gambit
         // Tell the user what the default version is for classes of this backend (if there are any).
         if (has_classloader)
         {
-          const std::map<str, str> defs = backendData->defaults;
+          const std::map<str, str> defs = backendData->default_safe_versions;
           const str my_def = (defs.find(it->first) != defs.end() ? backendData->version_from_safe_version(it->first,defs.at(it->first)) : "none");
           out << std::endl << "Default version for loaded classes: "  << my_def << std::endl << std::endl;
         }

@@ -33,11 +33,13 @@
 ///
 ///  *********************************************
 
+#ifndef __functor_definitions_hpp__
+#define __functor_definitions_hpp__
+
 #include <chrono>
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Printers/baseprinter.hpp"
@@ -92,36 +94,37 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
+      if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
       {
-        boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
-        int thread_num = omp_get_thread_num();
-        init_memory();                               // Init memory if this is the first run through.
-        if (needs_recalculating[thread_num])         // Do the actual calculation if required.
-        {
-          logger().entering_module(myLogTag);
-          this->startTiming(thread_num);             //Begin timing function evaluation
-          try
-          {
-            this->myFunction(myValue[thread_num]);   //Run and place result in the appropriate slot in myValue
-          }
-          catch (invalid_point_exception& e)
-          {
-            if (not point_exception_raised) acknowledgeInvalidation(e);
-            if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
-            {
-              this->finishTiming(thread_num);        //Stop timing function evaluation
-              throw(e);
-            } 
-          }
-          this->finishTiming(thread_num);            //Stop timing function evaluation
-          logger().leaving_module();
-        }
-        check_for_shutdown_signal();
+        std::ostringstream ss;
+        ss << "Sorry, the function " << origin() << "::" << name()
+         << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
+         << endl << "Missing backends: ";
+        for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
+        backend_error().raise(LOCAL_INFO, ss.str());
       }
-      else
+      boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
+      int thread_num = omp_get_thread_num();
+      init_memory();                               // Init memory if this is the first run through.
+      if (needs_recalculating[thread_num])         // Do the actual calculation if required.
       {
-        logger() << "Shutdown in progress! Skipping evaluation of functor " << myName << EOM;
+        logger().entering_module(myLogTag);
+        this->startTiming(thread_num);             //Begin timing function evaluation
+        try
+        {
+          this->myFunction(myValue[thread_num]);   //Run and place result in the appropriate slot in myValue
+        }
+        catch (invalid_point_exception& e)
+        {
+          if (not point_exception_raised) acknowledgeInvalidation(e);
+          if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
+          {
+            this->finishTiming(thread_num);        //Stop timing function evaluation
+            throw(e);
+          } 
+        }
+        this->finishTiming(thread_num);            //Stop timing function evaluation
+        logger().leaving_module();
       }
     }
 
@@ -142,7 +145,7 @@ namespace Gambit
 
     /// Operation (return value)
     template <typename TYPE>
-    TYPE module_functor<TYPE>::operator()(int index)
+    const TYPE& module_functor<TYPE>::operator()(int index)
     {
       if (this == NULL) functor::failBigTime("operator()");
       init_memory(); // Init memory if this is the first run through.
@@ -162,100 +165,35 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int thread_num)
     {
-      if(not signaldata().shutdown_begun()) // Don't print anything if we are shutting down,
-      {                                     // since this calculation has been interrupted.
-        // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
-        // TODO: though actually the printer system will probably cark it if printing from multiple threads is
-        // attempted, because it uses the VertexID to differentiate print streams, and this is shared among threads.
-        // Can fix by requiring a VertexID+thread_num pair, but I am leaving this for later.
-        init_memory();                 // Init memory if this is the first run through.
-        if(myPrintFlag and not already_printed[thread_num] and type()!="void") // myPrintFlag should anyway not be true for void result types
-        {
-          if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
-          int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
-                                              // In the auxilliary printing system we may tell the printer to overwrite
-                                              // the output of other ranks.
-          printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
-          already_printed[thread_num] = true;
-        }
+      // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
+      // TODO: though actually the printer system will probably cark it if printing from multiple threads is
+      // attempted, because it uses the VertexID to differentiate print streams, and this is shared among threads.
+      // Can fix by requiring a VertexID+thread_num pair, but I am leaving this for later.
+      init_memory();                 // Init memory if this is the first run through.
+      if(myPrintFlag and not already_printed[thread_num] and type()!="void") // myPrintFlag should anyway not be true for void result types
+      {
+        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
+        int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
+                                            // In the auxilliary printing system we may tell the printer to overwrite
+                                            // the output of other ranks.
+        printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
+        already_printed[thread_num] = true;
+      }
 
-        // Print timing info if requested (independent of whether printing actual result)
-        if(myTimingPrintFlag and not already_printed_timing[thread_num])
-        {
-          if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
-          int rank = printer->getRank();
-          std::chrono::duration<double> runtime = end[thread_num] - start[thread_num]; 
-          printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
-          already_printed_timing[thread_num] = true;
-        }
-
+      // Print timing info if requested (independent of whether printing actual result)
+      if(myTimingPrintFlag and not already_printed_timing[thread_num])
+      {
+        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
+        int rank = printer->getRank();
+        std::chrono::duration<double> runtime = end[thread_num] - start[thread_num]; 
+        printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
+        already_printed_timing[thread_num] = true;
       }
     }
 
     /// Printer function (no-thread-index short-circuit)
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
-
-  /// Class methods for actual module functors for TYPE=void
-
-    /// Constructor
-    module_functor<void>::module_functor(void (*inputFunction)(),
-                                         str func_name,
-                                         str func_capability,
-                                         str result_type,
-                                         str origin_name,
-                                         Models::ModelFunctorClaw &claw)
-    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
-      myFunction (inputFunction) {}
-
-    /// Calculate method
-    /// The "void" specialisation can potentially manage loops,
-    /// so there are some extra switches in here to let the signal
-    /// handler know that it needs to run in threadsafe mode during
-    /// execution of this functor.
-    void module_functor<void>::calculate()
-    {
-      if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
-      {
-        boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
-        int thread_num = omp_get_thread_num();
-        init_memory();                               // Init memory if this is the first run through.
-        if (needs_recalculating[thread_num])
-        {
-          entering_multithreaded_region();
-
-          logger().entering_module(myLogTag);
-          this->startTiming(thread_num);
-          try
-          {
-            this->myFunction();
-          }
-          catch (invalid_point_exception& e)
-          {
-            if (not point_exception_raised) acknowledgeInvalidation(e);
-            if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
-            {
-              this->finishTiming(thread_num);
-              leaving_multithreaded_region();
-              throw(e);
-            } 
-          }
-          this->finishTiming(thread_num);
-          logger().leaving_module();         
-          leaving_multithreaded_region();
-        }
-        check_for_shutdown_signal();
-      }
-      else
-      {
-        logger() << "Shutdown in progress! Skipping evaluation of functor " << myName << EOM;
-      }
-    }
-
-    /// Blank print methods
-    void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
-    void module_functor<void>::print(Printers::BasePrinter*, const int) {}
-
 
   // Backend_functor_common class method definitions
 
@@ -409,3 +347,4 @@ namespace Gambit                                                  \
   template class backend_functor<STRIP_PARENS(TYPE_PACK)>;        \
 }
 
+#endif /* defined(__functor_definitions_hpp__) */

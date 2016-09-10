@@ -31,8 +31,8 @@
 
 #include <memory>
 
-#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
@@ -53,24 +53,24 @@ namespace Gambit
       // file. It is nice to keep them seperate from the class declaration though.
       //
 
+      // Set index offset from interface class
+      template <class MI>
+      const int MSSMSpec<MI>::_index_offset = MI::index_offset;
+
       // NOTE!! mi is COPIED into the object, so when we get the reference to the
       // actual Model object to store in 'model', we need to use the copy inside
       // the object. So also need to make sure 'model_interface' is initialised first
       // (i.e. it should be declared first)
       template <class MI>
-      MSSMSpec<MI>::MSSMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
+      MSSMSpec<MI>::MSSMSpec(MI mi, str be_name, str be_version)
          : backend_name(be_name)
          , backend_version(be_version)
-         , index_offset(-1)
          , model_interface(mi)
-      {
-         if (switch_index_convention) index_offset = 0;
-      }
+      {}
 
       // Default constructor
       template <class MI>
-      MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-         : index_offset(switch_index_convention ? 0 : -1)
+      MSSMSpec<MI>::MSSMSpec()
       {}
 
       template <class MI>
@@ -79,7 +79,7 @@ namespace Gambit
 
       // Fill an SLHAea object with spectrum information
       template <class MI>
-      void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha) const
+      void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha, bool include_SLHA1_blocks) const
       {
 
         // Here we assume that all SM input info comes from the SMINPUT object,
@@ -209,6 +209,17 @@ namespace Gambit
         {
           comment.str(""); comment << "# " << N.second << " mixing matrix (" << i << "," << j << ")";
           SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
+        }
+
+        // Here we add some SLHA1 legacy stuff, for backwards compatibility with backwards backends.
+        if (include_SLHA1_blocks)
+        {
+          slha.push_back("# The following are SLHA1 blocks, provided for backwards compatibility with");
+          slha.push_back("# codes that are not SLHA2 compliant.");
+          str s1, s2;
+          slhahelp::attempt_to_add_SLHA1_mixing("STOPMIX", slha, "~u", *this, 1.0, s1, s2, true);
+          slhahelp::attempt_to_add_SLHA1_mixing("SBOTMIX", slha, "~d", *this, 1.0, s1, s2, true);
+          slhahelp::attempt_to_add_SLHA1_mixing("STAUMIX", slha, "~e-", *this, 1.0, s1, s2, true);
         }
 
       }

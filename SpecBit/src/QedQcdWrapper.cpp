@@ -61,8 +61,8 @@ namespace Gambit
       QedQcdWrapper::QedQcdWrapper(const softsusy::QedQcd& model, const SMInputs& input)
          : qedqcd(model)
          , sminputs(input)        /***/
-         , hardup(get(Par::Pole_Mass,"t")) // QedQcd object will throw an error if we try to run above this, so set this as the limit /***/
-         , softup(get(Par::Pole_Mass,"t")) // Set top quark pole mass as soft upper limit of  /***/
+         , hardup(get(Par::Pole_Mass,"u_3")) // QedQcd object will throw an error if we try to run above this, so set this as the limit /***/
+         , softup(get(Par::Pole_Mass,"u_3")) // Set top quark pole mass as soft upper limit of  /***/
          , softlow(2) // (GeV) QedQcd object sets beta functions to zero below here anyway
          , hardlow(2) // (GeV) QedQcd object sets beta functions to zero below here anyway
       {}
@@ -74,12 +74,11 @@ namespace Gambit
 
       /// Currently unused virtual functions
       ///     @{
-      int QedQcdWrapper::get_index_offset() const {return 0;}   
       int QedQcdWrapper::get_numbers_stable_particles() const {return -1;} 
       ///     @}
 
       /// Add QED x QCD information to an SLHAea object
-      void QedQcdWrapper::add_to_SLHAea(SLHAstruct& slha) const
+      void QedQcdWrapper::add_to_SLHAea(SLHAstruct& slha, bool) const
       {
         // Here we assume that all SMINPUTS defined in SLHA2 are provided by the
         // SMINPUTS object, so we don't bother repeating them here.  We also assume
@@ -88,7 +87,7 @@ namespace Gambit
         
         // Add the b pole mass
         SLHAea_add_block(slha, "MASS");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass,"b","MASS",5,"# mb (pole)");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass,"d_3","MASS",5,"# mb (pole)");
       }
 
       /// Run masses and couplings to end_scale
@@ -180,15 +179,15 @@ namespace Gambit
             // could make a better macro, or an actual function, but I'm in a hurry
             MTget::fmap0_extraM tmp_map;
 
-            addtomap(("u", "ubar", "u_1", "ubar_1"), &get_mUp);
-            addtomap(("c", "cbar", "u_2", "ubar_2"), &get_mCharm);
-            addtomap(("t", "tbar", "u_3", "ubar_3"), &get_mTop);
-            addtomap(("d", "dbar", "d_1", "dbar_1"), &get_mDown);
-            addtomap(("s", "sbar", "d_2", "dbar_2"), &get_mStrange);
-            addtomap(("b", "bbar", "d_3", "dbar_3"), &get_mBottom);
-            addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &get_mElectron);
-            addtomap(("mu-",  "mu+",  "mu",  "e-_2", "e+_2", "e_2"), &get_mMuon);
-            addtomap(("tau-", "tau+", "tau", "e-_3", "e+_3", "e_3"), &get_mTau);
+            tmp_map["u_1"] = &get_mUp; // u
+            tmp_map["u_2"] = &get_mCharm; // c
+            tmp_map["u_3"] = &get_mTop; // t
+            tmp_map["d_1"] = &get_mDown; // d
+            tmp_map["d_2"] = &get_mStrange; // s
+            tmp_map["d_3"] = &get_mBottom; // b
+            tmp_map["e-_1"]  = &get_mElectron; // e-
+            tmp_map["e-_2"] = &get_mMuon; // mu-
+            tmp_map["e-_3"]= &get_mTau; // tau-
 
             tmp_map["gamma"] = &get_mPhoton;
             tmp_map["g"]     = &get_mGluon;
@@ -220,13 +219,18 @@ namespace Gambit
             // there is a mismatch, please change the ones here!
             MTget::fmap0 tmp_map;
       
-            addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
-            addtomap(("W+", "W-", "W"), &softsusy::QedQcd::displayPoleMW);
-            addtomap(("t", "tbar", "u_3", "ubar_3"), &softsusy::QedQcd::displayPoleMt);
+            tmp_map["Z0"]  = &softsusy::QedQcd::displayPoleMZ;
+            tmp_map["W+"]  = &softsusy::QedQcd::displayPoleMW;
+            tmp_map["u_3"] = &softsusy::QedQcd::displayPoleMt; // t
             // "Pole" for b quark is quoted in SoftSUSY (lowe.h) documentation, so I guess this is an approximation; need to check details.
-            addtomap(("b", "bbar", "d_3", "dbar_3"), &softsusy::QedQcd::displayPoleMb);
-            addtomap(("tau+","tau-","tau","e+_3","e-_3"), &softsusy::QedQcd::displayPoleMtau);
-   
+            tmp_map["d_3"] = &softsusy::QedQcd::displayPoleMb; // b
+            tmp_map["e-_3"]= &softsusy::QedQcd::displayPoleMtau; // tau
+ 
+            // Nearest flavour 'aliases' for the SM mass eigenstates
+            tmp_map["t"] = &softsusy::QedQcd::displayPoleMt;
+            tmp_map["b"] = &softsusy::QedQcd::displayPoleMb;
+            tmp_map["tau-"]= &softsusy::QedQcd::displayPoleMtau;
+  
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
@@ -239,11 +243,15 @@ namespace Gambit
          {
             MTget::fmap0_extraI tmp_map;
 
-            addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &get_Pole_mElectron);
-            addtomap(("mu-",  "mu+",  "mu",  "e-_2", "e+_2", "e_2"), &get_Pole_mMuon);
-            addtomap(("nu_1", "nubar_1"), &get_Pole_mNu1);
-            addtomap(("nu_2", "nubar_2"), &get_Pole_mNu2);
-            addtomap(("nu_3", "nubar_3"), &get_Pole_mNu3);
+            tmp_map["e-_1"] = &get_Pole_mElectron; // e-
+            tmp_map["e-_2"] = &get_Pole_mMuon; // mu-
+            tmp_map["nu_1"] = &get_Pole_mNu1;
+            tmp_map["nu_2"] = &get_Pole_mNu2;
+            tmp_map["nu_3"] = &get_Pole_mNu3;
+
+            // Nearest flavour 'aliases' for the SM mass eigenstates
+            tmp_map["e-"]  = &get_Pole_mElectron; // e-
+            tmp_map["mu-"] = &get_Pole_mMuon; // mu-
 
             tmp_map["gamma"] = &get_Pole_mPhoton;
             tmp_map["g"]     = &get_Pole_mGluon;
@@ -290,9 +298,8 @@ namespace Gambit
             // otherwise need to use one of the "extra" map fillers, see e.g.
             // below (there is also one that takes the model object as an
             // input, as in the getter case)
-            //addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
-            addtomap(("Z0", "Z"),       &softsusy::QedQcd::setPoleMZ);
-            addtomap(("W+", "W-"),      &softsusy::QedQcd::setPoleMW);  
+            tmp_map["Z0"] = &softsusy::QedQcd::setPoleMZ;
+            tmp_map["W+"] = &softsusy::QedQcd::setPoleMW;  
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
@@ -301,7 +308,7 @@ namespace Gambit
          {
             MTset::fmap0_extraI tmp_map;
 
-            addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &set_Pole_mElectron);
+            tmp_map["e-_1"] = &set_Pole_mElectron;
          
             map_collection[Par::Pole_Mass].map0_extraI = tmp_map; 
          }

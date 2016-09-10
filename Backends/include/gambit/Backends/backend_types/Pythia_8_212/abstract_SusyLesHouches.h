@@ -10,12 +10,9 @@
 #include <map>
 #include <vector>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::SusyLesHouches*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -23,7 +20,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_SusyLesHouches : virtual public AbstractBase
+        class Abstract_SusyLesHouches : public virtual AbstractBase
         {
             public:
     
@@ -78,36 +75,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual void toLower(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_SusyLesHouches*) =0;
-                virtual Abstract_SusyLesHouches* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_SusyLesHouches*) =0;
+                virtual Abstract_SusyLesHouches* pointer_copy__BOSS() =0;
     
             private:
-                mutable SusyLesHouches* wptr;
+                SusyLesHouches* wptr;
+                bool delete_wrapper;
+            public:
+                SusyLesHouches* get_wptr() { return wptr; }
+                void set_wptr(SusyLesHouches* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_SusyLesHouches()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(SusyLesHouches* wptr_in)
+                Abstract_SusyLesHouches(const Abstract_SusyLesHouches&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                SusyLesHouches* wrapper__BOSS()
+                Abstract_SusyLesHouches& operator=(const Abstract_SusyLesHouches&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SusyLesHouches from backend Pythia_8_212. The function Abstract_SusyLesHouches::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                SusyLesHouches* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                SusyLesHouches& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_SusyLesHouches()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SusyLesHouches from backend Pythia_8_212. The function Abstract_SusyLesHouches::~Abstract_SusyLesHouches in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

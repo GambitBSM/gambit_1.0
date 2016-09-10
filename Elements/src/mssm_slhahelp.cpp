@@ -41,11 +41,36 @@ namespace Gambit
       std::map<str,std::vector<str> > type_to_vec_of_mass_es = init_type_to_vec_of_mass_es();
       std::map<str,std::vector<str> > type_to_vec_of_gauge_es = init_type_to_vec_of_gauge_es();
 
+      /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
+      void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object)
+      {
+        slha.push_front("# depend on which calculator you intend this object or file to be used with.");
+        slha.push_front("# Note that block MODSEL is not automatically emitted, as its contents");
+        slha.push_front("# This SLHA(ea) object was created from a GAMBIT "+object+" object.");
+      }
+
+      /// Simple helper function for for adding missing SLHA1 2x2 family mixing matrices to an SLHAea object.
+      void attempt_to_add_SLHA1_mixing(const str& block, SLHAstruct& slha, const str& type,
+                                       const SubSpectrum& spec, double tol, str& s1, str& s2, bool pterror)
+      {
+        if (slha.find(block) == slha.end())
+        {
+          std::vector<double> matmix = slhahelp::family_state_mix_matrix(type, 3, s1, s2, spec, tol, LOCAL_INFO, pterror);
+          SLHAea_add_matrix(slha, block, matmix, 2, 2);
+        }
+        else
+        {
+          s1 = slhahelp::mass_es_closest_to_family(s1, spec, tol, LOCAL_INFO, pterror);
+          s2 = slhahelp::mass_es_closest_to_family(s2, spec, tol, LOCAL_INFO, pterror);
+        }
+      }
+
+
       // FIXME: these two should be switched over to members of the sectrum object itself
       /// This will simplify things.
       std::vector<double> get_Pole_Mixing_col(str type, 
                                               int gauge_index, 
-                                              const SubSpectrum* mssm)
+                                              const SubSpectrum& mssm)
       {
          //extract info about indices for type using map
          std::vector<str> mass_es_strs = type_to_vec_of_mass_es[type];
@@ -57,14 +82,14 @@ namespace Gambit
                //Mix_{row, col}
                /// iterate through row indice with column indice fixed
                mass_state_content[i - 1] =  
-                  mssm->get(Par::Pole_Mixing,type, i, gauge_index); /// fill 
+                  mssm.get(Par::Pole_Mixing,type, i, gauge_index); /// fill 
            }
          return mass_state_content;
       }
 
       /// This will simplify things.
       std::vector<double> get_Pole_Mixing_row(str type, int mass_index, 
-                                              const SubSpectrum* mssm) 
+                                              const SubSpectrum& mssm) 
       {
          std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
          double row_length = gauge_es_strs.size();
@@ -74,7 +99,7 @@ namespace Gambit
                /// Mix_{row, col}
                /// iterate through column indice with row indice fixed
                gauge_state_content[i - 1] =  
-                  mssm->get(Par::Pole_Mixing,type, mass_index, i); /// fill
+                  mssm.get(Par::Pole_Mixing,type, mass_index, i); /// fill
             }
          return gauge_state_content;
       }
@@ -86,7 +111,7 @@ namespace Gambit
       /// in terms of the slha2 mass eigenstates (~u_1 ...~u_6 etc)
       /// which is just a column in the mixing matrix 
       std::vector<double> get_mass_comp_for_gauge(str gauge_es, 
-                                                  const SubSpectrum* mssm)
+                                                  const SubSpectrum& mssm)
       {   
          /// extract info from string via map
          p_int_string index_type = gauge_label_to_index_type[gauge_es];        
@@ -101,7 +126,7 @@ namespace Gambit
       
       ///routine to return mass state admixure for given gauge state
       /// in the end this is a trival routine but may help
-      double get_mixing_element(str gauge_es, str mass_es, const SubSpectrum* mssm)
+      double get_mixing_element(str gauge_es, str mass_es, const SubSpectrum& mssm)
       { 
          ///extract info from maps
          p_int_string mass_es_index_type = mass_label_to_index_type[mass_es]; 
@@ -118,7 +143,7 @@ namespace Gambit
                "called with types for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
-         double admix = mssm->get(Par::Pole_Mixing,type, mass_index, 
+         double admix = mssm.get(Par::Pole_Mixing,type, mass_index, 
                                                    gauge_index);
          return admix;
       }
@@ -127,7 +152,7 @@ namespace Gambit
       /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
       /// which is just a row in the mixing matrix 
       /// just wraps get_Pole_Mixing_row after extracting info from string
-      std::vector<double> get_gauge_comp_for_mass(str mass_es, const SubSpectrum* mssm)
+      std::vector<double> get_gauge_comp_for_mass(str mass_es, const SubSpectrum& mssm)
       {   
          /// extract info using map
          p_int_string index_type = mass_label_to_index_type[mass_es];
@@ -144,7 +169,7 @@ namespace Gambit
       /// also fills largest max_mixing and full gauge_composition 
       str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
                                 std::vector<double> & gauge_composition, 
-                                const SubSpectrum* mssm)
+                                const SubSpectrum& mssm)
       {
          /// passed in massstate to be set
          double temp_admix = 0.0;
@@ -177,7 +202,7 @@ namespace Gambit
       /// avoided skipped gauge_composition entirely but at the cost of a lot of
       /// code duplication
       str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
-                                const SubSpectrum* mssm) 
+                                const SubSpectrum& mssm) 
       {
          std::vector<double> gauge_composition;
          str mass_es = mass_es_from_gauge_es(gauge_es, max_mixing, 
@@ -192,7 +217,7 @@ namespace Gambit
       /// code duplication
       str mass_es_from_gauge_es(str gauge_es, 
                                 std::vector<double> & gauge_composition, 
-                                const SubSpectrum* mssm)
+                                const SubSpectrum& mssm)
       {
          double max_mixing = 0;
          str mass_es =  mass_es_from_gauge_es(gauge_es, max_mixing, 
@@ -206,7 +231,7 @@ namespace Gambit
       /// avoided skipped max_mixing entirely but at the cost of a lot of
       /// code duplication
       str mass_es_from_gauge_es(str gauge_es, 
-                                const SubSpectrum* mssm)
+                                const SubSpectrum& mssm)
       {
          double max_mixing = 0;
          std::vector<double> gauge_composition;
@@ -216,7 +241,7 @@ namespace Gambit
       }
 
       /// as above but do test against tol internally
-      str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, 
+      str mass_es_from_gauge_es(str gauge_es, const SubSpectrum& mssm, 
                                 double tol, str context, bool pterror)
       {
          double max_mixing = 0;
@@ -244,7 +269,7 @@ namespace Gambit
       /// also fills largest max_mixing and full mass_composition 
       str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
                                 std::vector<double> & mass_composition,
-                                const SubSpectrum* mssm)
+                                const SubSpectrum& mssm)
       {
          /// passed in massstate to be set
          double temp_admix = 0.0;
@@ -278,7 +303,7 @@ namespace Gambit
       /// avoided skipped gauge_composition entirely but at the cost of a lot of
       /// code duplication
       str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
-                                const SubSpectrum* mssm) 
+                                const SubSpectrum& mssm) 
       {
          std::vector<double> mass_composition;
          str gauge_es = gauge_es_from_mass_es(mass_es, max_mixing, 
@@ -293,7 +318,7 @@ namespace Gambit
       /// code duplication
       str gauge_es_from_mass_es(str mass_es, 
                                 std::vector<double> & mass_composition, 
-                                const SubSpectrum* mssm)
+                                const SubSpectrum& mssm)
       {
          double max_mixing;
          str gauge_es =  gauge_es_from_mass_es(mass_es, max_mixing, 
@@ -307,7 +332,7 @@ namespace Gambit
       /// avoided skipped max_mixing entirely but at the cost of a lot of
       /// code duplication
       str gauge_es_from_mass_es(str mass_es, 
-                                const SubSpectrum* mssm)
+                                const SubSpectrum& mssm)
       {
          double max_mixing;
          std::vector<double> mass_composition;
@@ -318,7 +343,7 @@ namespace Gambit
       }
 
       /// as above but do test against tol internally
-      str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm, 
+      str gauge_es_from_mass_es(str mass_es, const SubSpectrum& mssm, 
                                 double tol, str context, bool pterror)
       {
          double max_mixing;
@@ -353,7 +378,7 @@ namespace Gambit
       /// returns a pair of strings labling the lighter one first 
       sspair identify_mass_ess_for_family(str type,
                                           int family,
-                                          const SubSpectrum* mssm)
+                                          const SubSpectrum& mssm)
       {
          /// need to turn type and family into a string
          /// need to simplify the number of translations we do.
@@ -382,7 +407,7 @@ namespace Gambit
       /// takes string and returns only requested state
       /// I suspect this is the more useful one
       str mass_es_closest_to_family(str familystate,
-                                    const SubSpectrum* mssm)
+                                    const SubSpectrum& mssm)
       {
          std::vector<str> family_gauge_states = family_state_to_gauge_state[familystate];
          str gauge_esL = family_gauge_states[0];
@@ -415,7 +440,7 @@ namespace Gambit
       /// mass eigenstate in mass_es
       std::vector<double> get_gauge_comp_for_family_state(str familystate,
                                                           str & mass_es,
-                                                          const SubSpectrum* mssm)
+                                                          const SubSpectrum& mssm)
       {   
          //get mass_es using one of our routines
          mass_es = mass_es_closest_to_family(familystate, mssm);
@@ -437,7 +462,7 @@ namespace Gambit
       str mass_es_closest_to_family(str familystate,
                                     std::vector<double> & gauge_composition,
                                     std::vector<double> & off_family_mixing,
-                                    const SubSpectrum* mssm)
+                                    const SubSpectrum& mssm)
       {   
          //get mass_es using one of our routines
          str mass_es = mass_es_closest_to_family(familystate, mssm);
@@ -457,7 +482,7 @@ namespace Gambit
          double row_length = gauge_es_strs.size(); 
          for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
             {
-               double temp = mssm->get(Par::Pole_Mixing,type, mass_index, i); 
+               double temp = mssm.get(Par::Pole_Mixing,type, mass_index, i); 
                if(i == gauge_L_index || i == gauge_R_index) 
                   gauge_composition.push_back(temp);
                else off_family_mixing.push_back(temp);
@@ -472,7 +497,7 @@ namespace Gambit
       /// std::vector gauge_composition 
       str mass_es_closest_to_family(str familystate,
                                     std::vector<double> & gauge_composition,
-                                    const SubSpectrum* mssm)
+                                    const SubSpectrum& mssm)
       {   
          std::vector<double> off_family_mixing;
          str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
@@ -486,7 +511,7 @@ namespace Gambit
       /// into gauge_es of that family
       str mass_es_closest_to_family(str familystate,
                                     double & sqr_sum_mix,
-                                    const SubSpectrum* mssm)
+                                    const SubSpectrum& mssm)
       {   
          std::vector<double> off_family_mixing;
          std::vector<double>  gauge_composition;
@@ -500,7 +525,7 @@ namespace Gambit
 
       /// identifies the mass_es that is closest match to specified family
       /// does tol-test internally to check correctness of assumptions
-      str mass_es_closest_to_family(str familystate, const SubSpectrum* mssm,
+      str mass_es_closest_to_family(str familystate, const SubSpectrum& mssm,
                                     double tol, str context, bool pterror)
       {   
         std::vector<double> off_family_mixing;
@@ -530,7 +555,7 @@ namespace Gambit
 
       /// Get the family mixing matrix and corresponding mass eigenstates, then check for interfamily mixing.
       std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e-"*/, int generation,
-                                                  str & mass_es1, str & mass_es2, const SubSpectrum* mssm,
+                                                  str & mass_es1, str & mass_es2, const SubSpectrum& mssm,
                                                   double tol, str context, bool pterror)
       {
         std::vector<double> m = family_state_mix_matrix(type, generation, mass_es1, mass_es2, mssm);
@@ -563,7 +588,7 @@ namespace Gambit
                                                   int family,
                                                   str & mass_es1,
                                                   str & mass_es2,
-                                                  const SubSpectrum* mssm) 
+                                                  const SubSpectrum& mssm) 
       {
          /// get mass_es using one of our routines
          sspair mass_ess = identify_mass_ess_for_family(type, family, mssm);
@@ -593,8 +618,8 @@ namespace Gambit
          double row_length = gauge_es_strs.size(); 
          for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
             {   
-               double temp1 = mssm->get(Par::Pole_Mixing,type, mass_index1, i);
-               double temp2 = mssm->get(Par::Pole_Mixing,type, mass_index2, i);
+               double temp1 = mssm.get(Par::Pole_Mixing,type, mass_index1, i);
+               double temp2 = mssm.get(Par::Pole_Mixing,type, mass_index2, i);
                if(i == gauge_L_index || i == gauge_R_index) 
                   {
                      mix_row_1.push_back(temp1);
@@ -614,7 +639,7 @@ namespace Gambit
       double get_gauge_admix_for_family_state(str familystate, 
                                               str gauge_es,
                                               str & mass_es,
-                                              const SubSpectrum* mssm) 
+                                              const SubSpectrum& mssm) 
       {
          pair_string_ints type_family_massorder 
             = familystate_label[familystate];
@@ -632,7 +657,7 @@ namespace Gambit
          mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
-         double admix = mssm->get(Par::Pole_Mixing,type_gauge, mass_index, 
+         double admix = mssm.get(Par::Pole_Mixing,type_gauge, mass_index, 
                                                    gauge_index);      
          return admix;      
       }
@@ -643,7 +668,7 @@ namespace Gambit
       /// and fills the mixing of the matching gauge_es into mass eigenstates 
       str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
                                           std::vector<double> & mass_comp,
-                                          const SubSpectrum* mssm)
+                                          const SubSpectrum& mssm)
       {
          /// get gauge_es with largest mixing to this mass_es  
          str gauge_es = gauge_es_from_mass_es(mass_es, mass_comp, mssm);
@@ -682,7 +707,7 @@ namespace Gambit
       /// fills a double with the sum of the square mixings to gauge_es
       /// of the matching family
       str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
-                                           const SubSpectrum* mssm)
+                                           const SubSpectrum& mssm)
       {
          std::vector<double> mass_comp;
          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, 
@@ -695,7 +720,7 @@ namespace Gambit
       /// and fills the mixing of the matching mass_es into gauge eigenstates 
       str family_state_closest_to_mass_es(str mass_es, 
                                            std::vector<double> & mass_comp,
-                                           const SubSpectrum* mssm)
+                                           const SubSpectrum& mssm)
       {
          double sum_sq_mix;
          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, mass_comp,
@@ -706,7 +731,7 @@ namespace Gambit
       /// wrapper for overloaded version
       /// returns family state that best matches the given mass_es
       /// and fills the mixing of the matching mass_es into gauge eigenstates 
-      str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
+      str family_state_closest_to_mass_es(str mass_es, const SubSpectrum& mssm,
                                           double tol, str context, bool pterror)
       {
          double sum_sq_mix;

@@ -13,7 +13,6 @@ import warnings
 import subprocess
 import copy
 
-# import modules.cfg as cfg
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
 
@@ -77,17 +76,20 @@ def isLoadable(class_el, print_warning=False, check_pure_virtual_members=True):
             infomsg.ClassNotLoadable(class_name['long_templ'], reason).printMessage()
         return is_loadable
 
+    # - Check that class has at least one public constructor.
+    constructor_elements = classutils.getAcceptableConstructors(class_el, skip_copy_constructors=True)
+    if len(constructor_elements) == 0:
+        is_loadable = False
+        if print_warning:
+            reason = "No (acceptable) public constructors identified."
+            infomsg.ClassNotLoadable(class_name['long_templ'], reason).printMessage()
+        return is_loadable
+
     # - Check for pure virtual members.
     if check_pure_virtual_members:
         pure_virtual_members = classutils.pureVirtualMembers(class_el)
         if len(pure_virtual_members) > 0:
             gb.contains_pure_virtual_members.append(class_name['long_templ'])
-
-            # is_loadable = False
-            # if print_warning:
-            #     reason = "Pure virtual member functions: %s." % ', '.join(pure_virtual_members)
-            #     infomsg.ClassNotLoadable(class_name['long_templ'], reason).printMessage()
-            # return is_loadable
 
     return is_loadable
 
@@ -136,8 +138,9 @@ def isKnownClass(el, class_name=None):
         return is_known
 
     # Check if listed among the user-specified known types
-    full_name = class_name['long_templ']
-    if (full_name in cfg.known_classes.keys()) or (full_name.replace(' ','') in cfg.known_classes.keys()):
+    if isInList(class_name['long_templ'], cfg.known_classes.keys(), return_index=False, ignore_whitespace=True):
+        is_known = True
+    elif isInList(class_name['long'], cfg.known_classes.keys(), return_index=False, ignore_whitespace=True):
         is_known = True
 
     return is_known
@@ -336,7 +339,7 @@ def getTemplateBracket(el):
     else:
         template_bracket = '<>'
 
-    print 'TEMPLATE BRACKET: ', template_bracket
+    # print 'TEMPLATE BRACKET: ', template_bracket
 
     # Isolate only the template variable names (last word in each entry)
     if template_bracket == '<>':
@@ -674,11 +677,6 @@ def findType(el_input):
     name_and_namespaces = getNamespaces(el, include_self=True)
     typename = '::'.join(name_and_namespaces)
 
-    # if check_function_pointer:
-    #     return typename, additional_keywords, type_id, found_function_pointer
-    # else:
-    #     return typename, additional_keywords, type_id
-
 
     type_dict = OrderedDict([])
     type_dict['name']                = typename
@@ -790,50 +788,6 @@ def addIndentation(content, indent):
 
 
 
-# # ====== getNamespaces ========
-
-# def getNamespaces(xml_el, include_self=False):
-
-#     namespaces = []
-
-#     if include_self:
-
-#         if 'demangled' in xml_el.keys():
-#             short_name = removeNamespace( xml_el.get('demangled') )
-#             namespaces.append(short_name)
-#         elif 'name' in xml_el.keys():
-#             namespaces.append(xml_el.get('name'))
-#         else:
-#             namespaces.append('')
-
-#     current_xml_el = xml_el
-#     while 'context' in current_xml_el.keys():
-#         context_id = current_xml_el.get('context')
-#         context_xml_el = gb.id_dict[context_id]
-
-#         if 'demangled' in current_xml_el.keys():
-#             short_context_name = removeNamespace( current_xml_el.get('demangled') )
-#             namespaces.append(short_context_name)
-#         elif 'name' in current_xml_el.keys():
-#             namespaces.append(current_xml_el.get('name'))
-#         else:
-#             # If no name is found we can't build a longer namespace
-#             break
-
-#         current_xml_el = context_xml_el
-
-#     namespaces.reverse()
-
-#     # If present, remove the first, default namespace in the XML file from the list (with name='::')
-#     if (len(namespaces) > 0) and (namespaces[0] == '::'):
-#         namespaces = namespaces[1:]
-
-#     return namespaces
-
-# # ====== END: getNamespaces ========
-
-
-
 # ====== getNamespaces ========
 
 def getNamespaces(xml_el, include_self=False, xml_file_name=''):
@@ -858,7 +812,6 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
         if 'name' in context_xml_el.keys():
             context_name = context_xml_el.get('name')
             namespaces.append(context_name)
-            # print "HERE2: Appended name: ", context_name, context_xml_el.get("id") 
         else:
             break
             #continue
@@ -881,7 +834,7 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
 
 def removeTemplateBracket(type_name, return_bracket=False):
     
-    if '>' in type_name:
+    if ('<' in type_name) and ('>' in type_name):
 
         r_pos = type_name.rfind('>')
 
@@ -1058,12 +1011,6 @@ def isLoadedClass(input_type, byname=False, class_name=None):
                 if type_dict['name'] in cfg.load_classes:
                     is_loaded_class = True
 
-                # namespaces_list = getNamespaces(type_el, include_self=True)
-                # full_name = '::'.join(namespaces_list)
-                # if full_name in cfg.load_classes:
-                #     is_loaded_class = True
-
-
     return is_loaded_class
 
 # ====== END: isLoadedClass ========
@@ -1216,78 +1163,6 @@ def constrWrpForwardDeclHeader(file_output_path):
 
 
 
-# # ====== constrWrpForwardDeclHeader ========
-
-# def constrWrpForwardDeclHeader():
-
-#     import modules.classutils as classutils
-
-#     code = ''
-#     insert_pos = 0
-
-#     for class_name in cfg.load_classes:
-
-#         namespace, class_name_short = removeNamespace(class_name, return_namespace=True)
-
-#         if namespace == '':
-#             namespace_list = []
-#         else:
-#             namespace_list = namespace.split('::')
-
-#         n_indents = len(namespace_list)
-        
-
-#         # - Open namespace
-#         code += constrNamespace(namespace_list, 'open')
-
-#         # - Forward declaration
-#         code += ' '*n_indents*cfg.indent + 'class ' + class_name_short + ';\n'
-
-#         # - Close namespace
-#         code += constrNamespace(namespace_list, 'close')
-
-
-
-#     # Insert tags for the GAMBIT namespace
-#     code = '\n__START_GAMBIT_NAMESPACE__\n\n' + code + '\n__END_GAMBIT_NAMESPACE__\n'
-
-
-#     # Insert include statements needed by GAMBIT
-#     code = '\n' + '#include "identification.hpp"\n' + code + '\n#include "backend_undefs.hpp"\n'
-
-
-#     code_tuple = (insert_pos, code)
-
-#     return code_tuple
-
-# # ====== END: constrWrpForwardDeclHeader ========
-
-
-
-# # ====== constrTypedefHeader ========
-
-# def constrTypedefHeader():
-
-#     typedef_code = ''
-#     insert_pos   = 0
-
-#     # - Typedefs
-#     typedef_code += '// Typedefs:\n'
-#     for typedef_name, typedef_el in gb.typedef_dict.items():
-
-#         type_dict = findType(typedef_el)
-#         type_name = type_dict['name'] + '*'*type_dict['pointerness'] + '&'*type_dict['is_reference']
-
-#         typedef_code += 'typedef ' + type_name + ' ' + typedef_name + ';\n'
-
-#     code_tuple = (insert_pos, typedef_code)
-
-#     return code_tuple
-
-# # ====== END: constrTypedefHeader ========
-
-
-
 # ====== getParentClasses ========
 
 def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=False):
@@ -1344,9 +1219,12 @@ def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=Fa
 
 # ====== getAllParentClasses ========
 
-def getAllParentClasses(class_el, only_native_classes=True, only_loaded_classes=False):
+def getAllParentClasses(class_el, only_native_classes=True, only_loaded_classes=False, return_dicts=False, reverse_order=False):
+
+    import modules.classutils as classutils
 
     parent_classes = []
+    done_parent_classes = []
 
     temp_class_list = [class_el]
     while len(temp_class_list) > 0:
@@ -1364,10 +1242,40 @@ def getAllParentClasses(class_el, only_native_classes=True, only_loaded_classes=
                 elif only_native_classes and not isNative(parent_class_el):
                     continue
                 else:
-                    parent_classes.append(parent_class_el)
-                    temp_class_list.append(parent_class_el)
+                    if parent_class_el not in done_parent_classes:
+                        temp_class_list.append(parent_class_el)
+                        if return_dicts:
+                            base_name_dict       = classutils.getClassNameDict(parent_class_el)
+                            abstr_base_name_dict = classutils.getClassNameDict(parent_class_el, abstract=True)
 
-    return parent_classes
+                            is_accepted_type = isAcceptedType(parent_class_el)
+                            is_native        = isNative(parent_class_el)
+                            is_fundamental   = isFundamental(parent_class_el)
+                            is_std           = isStdType(parent_class_el)
+                            is_loaded_class  = isLoadedClass(parent_class_el)
+
+                            temp_dict = OrderedDict([])
+                            temp_dict['class_name']       = base_name_dict
+                            temp_dict['abstr_class_name'] = abstr_base_name_dict
+                            temp_dict['wrapper_name']     = classutils.toWrapperType(base_name_dict['long'])
+                            temp_dict['id']               = parent_class_id
+
+                            temp_dict['accepted']         = is_accepted_type
+                            temp_dict['native']           = is_native
+                            temp_dict['fundamental']      = is_fundamental
+                            temp_dict['std']              = is_std
+                            temp_dict['loaded']           = is_loaded_class
+
+                            parent_classes.append(temp_dict)
+                            done_parent_classes.append(parent_class_el)
+                        else:
+                            parent_classes.append(parent_class_el)
+                            done_parent_classes.append(parent_class_el)
+
+    if reverse_order:
+        return parent_classes[::-1]
+    else:
+        return parent_classes
 
 # ====== END: getAllParentClasses ========
 
@@ -1476,16 +1384,6 @@ def getMemberFunctions(class_el, include_artificial=False, include_inherited=Fal
     if include_inherited:
         parent_classes = getAllParentClasses(class_el, only_loaded_classes=True)
         all_classes = all_classes + parent_classes
-
-        # temp_class_list = list(all_classes)
-        # while len(temp_class_list) > 0:
-        #     current_class = temp_class_list.pop()
-        #     if 'bases' in current_class.keys():
-        #         for parent_class_id in current_class.get('bases').split():
-        #             parent_class_el = gb.id_dict[parent_class_id]
-        #             if isLoadedClass(parent_class_el):
-        #                 all_classes.append(parent_class_el)
-        #                 temp_class_list.append(parent_class_el)
 
     # Get all member elements
     for el in all_classes:
@@ -1627,11 +1525,7 @@ def pointerAndRefCheck(input_type, byname=False):
 
 def addIncludeGuard(code, file_name, prefix='', suffix='', uppercase=False):
 
-    # if suffix == '':
-    #     guard_var = '__' + file_name.replace('.','_') + '__'
-    # else:
-    #     file_name_no_ext, file_ext = os.path.splitext(file_name)
-    #     guard_var = '__' + file_name_no_ext.replace('.','_') + '_' + suffix + file_ext.replace('.','_')  + '__'
+    file_name = file_name.rstrip('.FOR_GAMBIT')
 
     if suffix == '':
         guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name.replace('.','_') + '__'
@@ -1639,7 +1533,8 @@ def addIncludeGuard(code, file_name, prefix='', suffix='', uppercase=False):
         file_name_no_ext, file_ext = os.path.splitext(file_name)
         guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name_no_ext.replace('.','_') + '_' + suffix + file_ext.replace('.','_')  + '__'
 
-
+    # file_name_no_ext, file_ext = os.path.splitext(os.path.basename(file_name))
+    # guard_var = '__' + (prefix + '__')*bool(len(prefix)) + file_name_no_ext.replace('.','_') + ('__' + suffix)*bool(len(suffix)) + '__'
 
 
     if uppercase:
@@ -1901,12 +1796,16 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
 
             else:
-                if type_name['long'] in cfg.known_classes.keys():
-                    header_name = cfg.known_classes[type_name['long']].strip()
+                is_known, index = isInList(type_name['long_templ'], cfg.known_classes.keys(), return_index=True, ignore_whitespace=True)
+                if not is_known:
+                    is_known, index = isInList(type_name['long'], cfg.known_classes.keys(), return_index=True, ignore_whitespace=True)
+
+                if is_known:
+                    header_name = cfg.known_classes.values()[index]
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
-                        include_statements.append('#include ' + cfg.known_classes[type_name['long']])
+                        include_statements.append('#include ' + header_name)
                     else:
-                        include_statements.append('#include "' + cfg.known_classes[type_name['long']] + '"')
+                        include_statements.append('#include "' + header_name + '"')
                 else:
                     reason = "The type '%s' has no specified header file. Please update the 'known_classes' dictionary in the config file." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
@@ -2038,8 +1937,8 @@ def replaceCodeTags(input, file_input=False, write_file=False):
     new_content = new_content.replace('__BACKEND_SAFE_VERSION__' ,  gb.gambit_backend_safeversion)
     new_content = new_content.replace('__CODE_SUFFIX__'          ,  gb.code_suffix)
     
-    new_content = new_content.replace('__PATH_TO_FRWD_DECLS_ABS_CLASSES_HEADER__', os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_abs_fname + cfg.header_extension))
-    new_content = new_content.replace('__PATH_TO_IDENTIFICATION_HEADER__'        , os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp'))
+    new_content = new_content.replace('__PATH_TO_FRWD_DECLS_ABS_CLASSES_HEADER__', os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_abs_fname + cfg.header_extension))
+    new_content = new_content.replace('__PATH_TO_IDENTIFICATION_HEADER__'        , os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp'))
     new_content = new_content.replace('__PATH_TO_BACKEND_UNDEFS_HEADER__'        , os.path.join(gb.gambit_backend_incl_dir, "backend_undefs.hpp"))
 
 
@@ -2107,11 +2006,7 @@ def constrLoadedTypesHeaderContent():
 
             class_line += '    /*constructors*/'
 
-            # for factory_name, args_bracket, symbol in factory_dict[class_name['long']]:
-            #     class_line += '(("' + symbol + '",' + args_bracket + ')) '
-
             for info_dict in gb.factory_info[ class_name['long'] ]:
-                # class_line += '(("' + info_dict['symbol'] + '",' + info_dict['args_bracket'] + ')) '
                 class_line += '(("' + info_dict['name'] + '",' + info_dict['args_bracket'] + ')) '
 
             class_line += ')) \\'
@@ -2125,7 +2020,6 @@ def constrLoadedTypesHeaderContent():
     #
     # Construct include guards with additional  ' 1' appended to the line starting with #define 
     #
-    # incl_guard = addIncludeGuard('', 'loaded_types.hpp', extra_string=gb.gambit_backend_name_full)
     incl_guard = addIncludeGuard('', 'loaded_types.hpp', prefix='', suffix=gb.gambit_backend_name_full)
     incl_guard_lines = incl_guard.split('\n')
 
@@ -2134,15 +2028,21 @@ def constrLoadedTypesHeaderContent():
 
 
     #
-    # Construct include statements
+    # Construct include statements, surrounded by pragma directives
     #
     incl_statements_code = ''
+
+    for pragma_directive in cfg.pragmas_begin:
+        incl_statements_code += pragma_directive.strip() + '\n'
+
     for class_name in gb.classes_done:
         if class_name['long'] in gb.factory_info.keys():
             namespace, class_name_short = removeNamespace(class_name['long'], return_namespace=True)
-            incl_statements_code += '#include "' + cfg.wrapper_header_prefix + class_name['short'] + cfg.header_extension + '"\n'
+            incl_statements_code += '#include "' + gb.wrapper_header_prefix + class_name['short'] + cfg.header_extension + '"\n'
     incl_statements_code += '#include "identification.hpp"\n'
-    # incl_statements_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
+
+    for pragma_directive in cfg.pragmas_end:
+        incl_statements_code += pragma_directive.strip() + '\n'
 
 
     #
@@ -2299,38 +2199,34 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     # Check for timeout or error
     did_fail = False
     if timed_out:
-        print '  ERROR: CastXML timed out.'
+        print '  ' + modifyText('ERROR: CastXML timed out.','red')
         did_fail = True
-    elif proc.returncode != 0:        
-        print '  ERROR: CastXML failed.'
-	did_fail = True
+    elif (proc.returncode != 0) or ('error: ' in output.lower()):
+        print '  ' + modifyText('ERROR: CastXML failed.','red')
+        did_fail = True
+
+    if did_fail:
         # Get error message
-        for line in output.splitlines():
-            if 'error:' in line:
-                print '  ERROR: ' + line
-                break
+        print
+        print modifyText('START CASTXML OUTPUT','underline')
+        print
+        print output
+        print modifyText('END CASTXML OUTPUT','underline')
+        print
 
     # If it fails with icpc, try again with g++.
     if ("gnu" in cfg.castxml_cc_id) and ("icpc" in cfg.castxml_cc) and did_fail:
         print
-        print '  Will retry with --castxml-cc=g++'
+        print '  ' + modifyText('Will retry with --castxml-cc=g++','yellow')
         print
         cfg.castxml_cc = 'g++'
         castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=timeout_limit, poll_interval=poll_interval)
     # Print error report
     elif did_fail:
-        print
-        print 'START CASTXML OUTPUT'
-        print '--------------------'
-        print
-        print output
-        print 'END CASTXML OUTPUT'
-        print '------------------'
-        print
         raise Exception('castxml failed')
     
     else:
-        print '  Command finished successfully.'
+        print '  ' + modifyText('Command finished successfully.','green')
     print
 
 # ====== END: castxmlRunner ========
@@ -2389,11 +2285,6 @@ def fillAcceptedTypesList():
     for xml_file in gb.all_id_dict.keys():
 
         # Reset some variables for each new xml file
-        # new_fundamental_types   = set()
-        # new_std_types           = set()
-        # new_known_classes       = set()
-        # # new_enumeration_types   = set()
-        # new_loaded_classes      = set()
         new_fundamental_types   = []
         new_std_types           = []
         new_known_classes       = []
@@ -2417,7 +2308,7 @@ def fillAcceptedTypesList():
 
             type_counter += 1
             if type_counter%500 == 0:
-                print '  %i types classified...' % (type_counter)    
+                print '  - %i types classified...' % (type_counter)    
 
 
             # To save a bit of time, construct class name dict once and pass to remaining checks
@@ -2484,7 +2375,7 @@ def fillAcceptedTypesList():
 
 
     # Print final number of types classified
-    print '  %i types classified.' % (type_counter)    
+    print '  - %i types classified.' % (type_counter)    
 
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
@@ -2593,6 +2484,8 @@ def fillParentsOfLoadedClassesList():
 
     import modules.classutils as classutils
 
+    messages = []
+
     for xml_file in gb.all_id_dict.keys():
 
         # If new xml file, initialise global dicts
@@ -2618,9 +2511,14 @@ def fillParentsOfLoadedClassesList():
                         class_name = classutils.getClassNameDict(parent_el)
 
                         # Append to gb.parents_of_loaded_classes
-                        print '  %s is parent of %s.' % (class_name['long_templ'], full_name)
                         if class_name['long_templ'] not in gb.parents_of_loaded_classes:
                             gb.parents_of_loaded_classes.append(class_name['long_templ'])
+
+                        # Print info
+                        msg = '  - %s is parent of %s.' % (class_name['long_templ'], full_name) 
+                        if msg not in messages:
+                            print msg
+                            messages.append(msg)
 
 # ====== END: fillParentsOfLoadedClassesList ========
 
@@ -2651,29 +2549,16 @@ def xmlFilesToDicts(xml_files):
             # Fill id-based dict
             gb.all_id_dict[xml_file][el.get('id')] = el
 
-        # TAG:castxml_in
         for el in root.getchildren():
 
-            # TAG:castxml_in
             # Determine name
             if 'name' in el.keys():
                 namespaces_list = getNamespaces(el, include_self=True, xml_file_name=xml_file)
-                # print "HERE: ", el.get("id"), el.tag, namespaces_list
                 full_name = '::'.join(namespaces_list)
             else:
                 # Skip elements that don't have a name
                 continue
 
-            # TAG:castxml_out
-            # # Determine name
-            # if 'demangled' in el.keys():
-            #     full_name = el.get('demangled')
-            # elif 'name' in el.keys():
-            #     full_name = el.get('name')
-            # else:
-            #     # Skip elements that don't have a name
-            #     continue
-            
             # Fill name-based dict
             gb.all_name_dict[xml_file][full_name] = el
 
@@ -2729,7 +2614,6 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
         # Update global dict: file name --> file xml element
         if el.tag == 'File':
             gb.file_dict[el.get('name')] = el
-        # gb.file_dict = OrderedDict([ (el.get('name'), el) for el in root.findall('File') ])
 
 
         # Update global dict: std type --> type xml element
@@ -2797,6 +2681,11 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
             except KeyError:
                 continue
 
+            # Check if we have done this function already
+            if func_name in gb.functions_done:
+                infomsg.FunctionAlreadyDone( func_name['long_templ_args'] ).printMessage()
+                continue
+
             if func_name['long_templ_args'] in cfg.load_functions:
                 gb.func_dict[func_name['long_templ_args']] = el
 
@@ -2812,15 +2701,15 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
 
             if class_name_long not in gb.new_header_files.keys():
               
-                abstract_header_name     = cfg.abstr_header_prefix + class_name_short + cfg.header_extension
-                wrapper_header_name      = cfg.wrapper_header_prefix + class_name_short + cfg.header_extension
-                wrapper_decl_header_name = cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
-                wrapper_def_header_name  = cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
+                abstract_header_name     = gb.abstr_header_prefix + class_name_short + cfg.header_extension
+                wrapper_header_name      = gb.wrapper_header_prefix + class_name_short + cfg.header_extension
+                wrapper_decl_header_name = gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
+                wrapper_def_header_name  = gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
 
-                abstract_header_fullpath     = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.abstr_header_prefix + class_name_short + cfg.header_extension )
-                wrapper_header_fullpath      = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + cfg.header_extension )
-                wrapper_decl_header_fullpath = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
-                wrapper_def_header_fullpath  = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
+                abstract_header_fullpath     = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.abstr_header_prefix + class_name_short + cfg.header_extension )
+                wrapper_header_fullpath      = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + cfg.header_extension )
+                wrapper_decl_header_fullpath = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
+                wrapper_def_header_fullpath  = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
                 
                 gb.new_header_files[class_name_long] = {    'abstract': abstract_header_name, 
                                                             'wrapper': wrapper_header_name, 
@@ -2856,26 +2745,24 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
     # Check for timeout or error
     did_fail = False
     if timed_out:
-        print '  ERROR: Shell command timed out.'
+        print '  ' + modifyText('ERROR: Shell command timed out.','red')
         did_fail = True
     elif proc.returncode != 0:        
-        print '  ERROR: Shell command failed.'
+        print '  ' + modifyText('ERROR: Shell command failed.','red')
         did_fail = True
 
     # Print error report
     if did_fail:
         print
-        print 'START SHELL COMMAND OUTPUT'
-        print '--------------------------'
+        print modifyText('START SHELL COMMAND OUTPUT','underline')
         print
         print output
-        print 'END SHELL COMMAND OUTPUT'
-        print '------------------------'
+        print modifyText('END SHELL COMMAND OUTPUT','red')
         print
         raise Exception('Shell command failed')
     
     else:
-        print '  Command finished successfully.'
+        print '  ' + modifyText('Command finished successfully.','green')
     print
 
 
@@ -2886,17 +2773,11 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
         start_i = output_lines.index("#include <...> search starts here:")
         end_i   = output_lines.index("End of search list.")
     except ValueError:
-        print '  WARNING: Could not identify standard include paths.'
-        print '  Add them manually in the config file if necessary.'
+        print '  ' + modifyText('WARNING: Could not identify standard include paths.\n  Add them manually in the config file if necessary.','yellow')
         print
     else:
         for line in output_lines[start_i+1:end_i]:
             std_include_paths.append( line.strip().split()[0] )
-
-        # print '  Identified %i standard include paths:' % len(std_include_paths)
-        # for path in std_include_paths:
-        #     print '  - ' + path
-        # print
 
         # Filter out Intel-specific paths to avoid conflict with gnu headers
         if (cfg.castxml_cc_id == 'gnu') or (cfg.castxml_cc_id == 'gnu-c'):
@@ -2922,37 +2803,54 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
 
 
 
-# # ====== fillNewHeaderFilesDict ========
+# ====== isInList ========
 
-# def fillNewHeaderFilesDict():
+def isInList(search_entry, search_list, return_index=True, ignore_whitespace=True):
 
-#     # Update global dict: new header files
-#     for class_name_long_templ in cfg.load_classes:
-        
-#         class_name_short = class_name.split('<',1)[0].split('::')[-1]
-#         class_name_long  = class_name.split('<',1)[0]
+    # Search for entry
+    try:
+        i = search_list.index(search_entry)
+        if return_index:
+            return True, i
+        else:
+            return True
+    except ValueError:
+        pass    
 
-#         if class_name_long not in gb.new_header_files.keys():
-          
-#             abstract_header_name     = cfg.abstr_header_prefix + class_name_short + cfg.header_extension
-#             wrapper_header_name      = cfg.wrapper_header_prefix + class_name_short + cfg.header_extension
-#             wrapper_decl_header_name = cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
-#             wrapper_def_header_name  = cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
+    # Search for entry after removing all whitespace
+    if ignore_whitespace:
+        search_entry_no_ws = "".join(search_entry.split())
+        search_list_no_ws = ["".join(e.split()) for e in search_list]
+        try: 
+            i = search_list_no_ws.index(search_entry_no_ws)
+            if return_index:
+                return True, i
+            else:
+                return True
+        except ValueError:
+            pass    
 
-#             abstract_header_fullpath     = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.abstr_header_prefix + class_name_short + cfg.header_extension )
-#             wrapper_header_fullpath      = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + cfg.header_extension )
-#             wrapper_decl_header_fullpath = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
-#             wrapper_def_header_fullpath  = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
-            
-#             gb.new_header_files[class_name_long] = {    'abstract': abstract_header_name, 
-#                                                         'wrapper': wrapper_header_name, 
-#                                                         'wrapper_decl': wrapper_decl_header_name,
-#                                                         'wrapper_def': wrapper_def_header_name,
-#                                                         'abstract_fullpath': abstract_header_fullpath, 
-#                                                         'wrapper_fullpath': wrapper_header_fullpath, 
-#                                                         'wrapper_decl_fullpath': wrapper_decl_header_fullpath,
-#                                                         'wrapper_def_fullpath': wrapper_def_header_fullpath    }
+    # Entry not found
+    if return_index:
+        return False, -1
+    else:
+        return False
 
-# # ====== END: fillNewHeaderFilesDict ========
+# ====== END: isInList ========
 
+
+
+
+# ====== modifyText ========
+
+def modifyText(msg, mod):
+
+    if mod not in gb.textmods.keys():
+        return msg
+
+    msg = gb.textmods[mod] + msg + gb.textmods['end']
+
+    return msg
+
+# ====== END: modifyText ========
 

@@ -84,21 +84,13 @@ def constrTemplForwDecl(class_name_short, namespaces, template_bracket, indent=4
 
 # ====== constrAbstractClassDecl ========
 
-def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namespaces, indent=4, template_types=[], 
-                            has_copy_constructor=True,  construct_assignment_operator=True):
+def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, indent=4, file_for_gambit=False, template_types=[], construct_assignment_operator=True):
 
     n_indents = len(namespaces)
-
-    # if len(namespaces) > 0:
-    #     class_name_long = '::'.join(namespaces) + '::' + class_name_short
-    # else:
-    #     class_name_long = class_name_short
-
 
     # Check template_types argument:
     if len(template_types) > 0:
         is_template = True
-        print '--> This is a template class'
 
     else:
         is_template = False
@@ -126,7 +118,7 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
         class_decl += ' '*n_indents*indent + 'template <>\n'
 
     # - Construct the declaration line, with inheritance of abstract classes
-    inheritance_line = ' : virtual public AbstractBase, '
+    inheritance_line = ''
     for parent_dict in parent_classes:
 
         if parent_dict['loaded']:
@@ -135,20 +127,27 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
         elif parent_dict['fundamental'] or parent_dict['std']:
             # inheritance_line += 'virtual ' + parent_dict['access'] + ' ' + parent_dict['class_name']['long_templ'] + ', '
             reason = 'Avoid inheritance ambiguity.'
-            infomsg.ParentClassIgnored(abstr_class_name_short, parent_dict['class_name']['long_templ'], reason).printMessage()
+            infomsg.ParentClassIgnored(abstr_class_name['short'], parent_dict['class_name']['long_templ'], reason).printMessage()
 
         else:
             reason = 'Not loaded or accepted type.'
-            infomsg.ParentClassIgnored(abstr_class_name_short, parent_dict['class_name']['long_templ'], reason).printMessage()
+            infomsg.ParentClassIgnored(abstr_class_name['short'], parent_dict['class_name']['long_templ'], reason).printMessage()
             continue
-
     inheritance_line = inheritance_line.rstrip(', ')
+
+    # If no other parent classes, add AbstractBase
+    if inheritance_line == '':
+        inheritance_line = ' : public virtual AbstractBase'
+    else:
+        inheritance_line = ' : ' + inheritance_line
+
+
 
     class_decl += ' '*n_indents*indent
     if is_template:
-        class_decl += 'class ' + abstr_class_name_short + '<' + ','.join(template_types) + '>' + inheritance_line + '\n'
+        class_decl += 'class ' + abstr_class_name['short'] + '<' + ','.join(template_types) + '>' + inheritance_line + '\n'
     else:
-        class_decl += 'class ' + abstr_class_name_short + inheritance_line + '\n'
+        class_decl += 'class ' + abstr_class_name['short'] + inheritance_line + '\n'
 
     # - Construct body of class declaration
     current_access = ''
@@ -208,14 +207,6 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
             if (not return_is_loaded) and utils.isKnownClass(return_el):
                 return_type = '::' + return_type 
 
-            # # If this is a function returning a reference to a loaded type, 
-            # # we must remove the const keyword from the return type
-            # if return_is_loaded and is_ref:
-            #     try:
-            #         return_kw.remove('const')
-            #     except ValueError:
-            #         pass
-
 
             # Check constness
             if ('const' in el.keys()) and (el.get('const')=='1'):
@@ -264,7 +255,10 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
                     #
 
                     if return_is_loaded:
-                        if pointerness > 0:
+                        if is_ref:
+                            # w_return_type = toWrapperType(return_type, include_namespace=True, include_global_namespace=True)
+                            w_return_type = toAbstractType(return_type, include_namespace=True)
+                        elif (not is_ref) and (pointerness > 0):
                             w_return_type = toAbstractType(return_type, include_namespace=True)
                         else:
                             w_return_type = toAbstractType(return_type, include_namespace=True, add_pointer=True, remove_reference=True)
@@ -273,7 +267,6 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
 
                     class_decl += '\n'
                     class_decl += ' '*(n_indents+2)*indent
-                    # class_decl += 'virtual ' + return_kw_str + w_return_type + ' ' + w_func_name + w_args_bracket_nonames + is_const*' const' + ' {std::cout << "Called virtual function" << std::endl;};' + '\n'
                     class_decl += 'virtual ' + return_kw_str + w_return_type + ' ' + w_func_name + w_args_bracket_nonames + is_const*' const' + ' =0;' + '\n'
 
 
@@ -283,7 +276,6 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
                 else:
                     class_decl += '\n'
                     class_decl += ' '*(n_indents+2)*indent
-                    # class_decl += 'virtual ' + return_kw_str + return_type + ' ' + w_func_name + w_args_bracket_nonames + is_const*' const' + ' {std::cout << "Called virtual function" << std::endl;};' + '\n'
                     class_decl += 'virtual ' + return_kw_str + return_type + ' ' + w_func_name + w_args_bracket_nonames + is_const*' const' + ' =0;' + '\n'
 
 
@@ -317,15 +309,11 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
         #
         else:
             pass
-            # class_decl += ' '*(n_indents+2)*indent
-            # if 'name' in el.keys():
-            #     class_decl += '// IGNORED: ' + el.tag + '  -- Name: ' + el.get('name') + '  -- XML id: ' + el.get('id') + '\n'
-            # else:
-            #     class_decl += '// IGNORED: ' + el.tag + '  -- XML id: ' + el.get('id') + '\n'
-
     
+    # - Member functions of the abstract class living in GAMBIT should never be called. If that happens, something is very wrong. 
+    general_boss_warning = 'BOSS WARNING: Problem detected with the BOSSed class %s from backend %s. The function %s::%s in GAMBIT should never have been called...'
 
-    # - Construct 'pointerAssign' and 'pointerCopy' functions
+    # - Construct 'pointer_assign' and 'pointer_copy' functions
     if class_name['long_templ'] in gb.contains_pure_virtual_members:
         reason = "Contains pure virtual member functions."
         infomsg.NoPointerCopyAndAssignmentFunctions(class_name['long_templ'], reason).printMessage()
@@ -333,44 +321,131 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
         class_decl += '\n'
         class_decl += ' '*(n_indents+1)*indent + 'public:\n'
         for parent_dict in parent_classes:
-            if parent_dict['loaded']:
-                class_decl += ' '*(n_indents+2)*indent + 'using ' + parent_dict['abstr_class_name']['long_templ'] + '::pointerAssign' + gb.code_suffix + ';\n'
-        class_decl += constrPtrAssignFunc(class_el, abstr_class_name_short, class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
-        class_decl += constrPtrCopyFunc(class_el, abstr_class_name_short, class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
+            if (parent_dict['loaded']) and (parent_dict['class_name']['long_templ'] not in gb.contains_pure_virtual_members):
+                class_decl += ' '*(n_indents+2)*indent + 'using ' + parent_dict['abstr_class_name']['long_templ'] + '::pointer_assign' + gb.code_suffix + ';\n'
+        class_decl += constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
+        class_decl += constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
 
     # - Construct code needed for 'destructor pattern' (abstract class and wrapper class must can delete each other)
     class_decl += '\n'
     class_decl += ' '*(n_indents+1)*indent + 'private:\n'
-    class_decl += ' '*(n_indents+2)*indent + 'mutable ' + class_name['short'] + '* wptr;\n'
+    class_decl += ' '*(n_indents+2)*indent +  class_name['short'] + '* wptr;\n'
+    class_decl += ' '*(n_indents+2)*indent + 'bool delete_wrapper;\n'
+    class_decl += ' '*(n_indents+1)*indent + 'public:\n'
+    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '* get_wptr() { return wptr; }\n'
+    class_decl += ' '*(n_indents+2)*indent + 'void set_wptr(' + class_name['short'] + '* wptr_in) { wptr = wptr_in; }\n'
+    class_decl += ' '*(n_indents+2)*indent + 'bool get_delete_wrapper() { return delete_wrapper; }\n'
+    class_decl += ' '*(n_indents+2)*indent + 'void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }\n'
 
+
+    # - Constructor
     class_decl += '\n'
     class_decl += ' '*(n_indents+1)*indent + 'public:\n'
-    class_decl += ' '*(n_indents+2)*indent + abstr_class_name_short + '()\n' 
+    class_decl += ' '*(n_indents+2)*indent +  abstr_class_name['short'] + '()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
-    for var_name in ptr_members_for_init:
-        class_decl += ' '*(n_indents+3)*indent + var_name + ' = NULL;\n'
+    if gb.debug_mode:
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' ctor" << std::endl;\n' 
+    class_decl += ' '*(n_indents+3)*indent + 'wptr = 0;\n'
+    class_decl += ' '*(n_indents+3)*indent + 'delete_wrapper = false;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+
+    # - Copy constructor
+    # -- Construct code for calling copy constructors of *all* parent classes.
+    #    (Required because this is the copy ctor of an abstract base class.)
+    all_parent_classes = utils.getAllParentClasses(class_el, only_loaded_classes=True, return_dicts=True, reverse_order=True)
+    parent_cctors_line = ''
+    for parent_dict in all_parent_classes:
+        if parent_dict['loaded']:
+            parent_cctors_line += parent_dict['abstr_class_name']['long_templ'] + '(in), '
+        elif parent_dict['fundamental'] or parent_dict['std']:
+            reason = 'Avoid inheritance ambiguity.'
+            infomsg.ParentClassIgnored(abstr_class_name['short'], parent_dict['class_name']['long_templ'], reason).printMessage()
+        else:
+            reason = 'Not loaded or accepted type.'
+            infomsg.ParentClassIgnored(abstr_class_name['short'], parent_dict['class_name']['long_templ'], reason).printMessage()
+            continue
+    parent_cctors_line = parent_cctors_line.rstrip(', ')
+
     class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + 'void wrapper' + gb.code_suffix + '(' + class_name['short'] + '* wptr_in)\n'
+    if parent_cctors_line == '':
+        class_decl += ' '*(n_indents+2)*indent + abstr_class_name['short'] + '(const ' + abstr_class_name['short'] + '&)\n'
+    else:
+        parent_cctors_line = parent_cctors_line.rstrip(',\n') + '\n'
+        class_decl += ' '*(n_indents+2)*indent + abstr_class_name['short'] + '(const ' + abstr_class_name['short'] + '& in) : \n'
+        class_decl += ' '*(n_indents+3)*indent + parent_cctors_line
     class_decl += ' '*(n_indents+2)*indent + '{\n'
-    class_decl += ' '*(n_indents+3)*indent + 'wptr = wptr_in;\n'
-    class_decl += ' '*(n_indents+3)*indent + 'is_wrapped(true);\n'
-    class_decl += ' '*(n_indents+3)*indent + 'can_delete_wrapper(true);\n'
+    if gb.debug_mode:
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' copy ctor" << std::endl;\n' 
+    class_decl += ' '*(n_indents+3)*indent + 'wptr = 0;\n'
+    class_decl += ' '*(n_indents+3)*indent + 'delete_wrapper = false;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+    
+    # - Assignment operator. (Actually, no copying should be done. It only returns *this.)
     class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '* wrapper' + gb.code_suffix + '()\n'
+    class_decl += ' '*(n_indents+2)*indent + abstr_class_name['short'] + '& operator=(const ' + abstr_class_name['short'] + '&) { return *this; }\n'
+
+    # - Function init_wrapper() 
+    class_decl += '\n'
+    class_decl += ' '*(n_indents+2)*indent + 'virtual void init_wrapper()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
+    if file_for_gambit:
+        boss_warning = general_boss_warning % (class_name['long'], gb.gambit_backend_name_full, abstr_class_name['short'], 'init_wrapper()')
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "' + boss_warning + '" << std::endl;\n'
+    else:
+        class_decl += ' '*(n_indents+3)*indent + 'if (wptr == 0)\n'
+        class_decl += ' '*(n_indents+3)*indent + '{\n'
+        class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
+        # class_decl += ' '*(n_indents+4)*indent + 'wrapper_creator(this);\n'
+        class_decl += ' '*(n_indents+4)*indent + 'delete_wrapper = true;\n'
+        class_decl += ' '*(n_indents+3)*indent + '}\n'
+    class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+    # - Function get_init_wptr()
+    class_decl += '\n'
+    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '* get_init_wptr()\n'
+    class_decl += ' '*(n_indents+2)*indent + '{\n'
+    class_decl += ' '*(n_indents+3)*indent + 'init_wrapper();\n'
     class_decl += ' '*(n_indents+3)*indent + 'return wptr;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+    # - Function get_init_wref()
     class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name_short + '()\n' 
+    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '& get_init_wref()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
-    class_decl += ' '*(n_indents+3)*indent + 'if (can_delete_wrapper())\n' 
-    class_decl += ' '*(n_indents+3)*indent + '{\n'
-    class_decl += ' '*(n_indents+4)*indent + 'can_delete_me(false);\n'
-    class_decl += ' '*(n_indents+4)*indent + 'wrapper_deleter(wptr);\n'
-    class_decl += ' '*(n_indents+3)*indent + '}\n'
+    class_decl += ' '*(n_indents+3)*indent + 'init_wrapper();\n'
+    class_decl += ' '*(n_indents+3)*indent + 'return *wptr;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+    # - Destructor
+    class_decl += '\n'
+    class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name['short'] + '()\n'
+    class_decl += ' '*(n_indents+2)*indent + '{\n'
+    if file_for_gambit:
+        boss_warning = general_boss_warning % (class_name['long'], gb.gambit_backend_name_full, abstr_class_name['short'], '~'+abstr_class_name['short'] )
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "' + boss_warning + '" << std::endl;\n'
+    else:
+        if gb.debug_mode:
+            class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (BEGIN)" << std::endl;\n' 
+        class_decl += ' '*(n_indents+3)*indent + 'if (wptr != 0)\n'
+        class_decl += ' '*(n_indents+3)*indent + '{\n'
+        class_decl += ' '*(n_indents+4)*indent + 'set_delete_BEptr(wptr, false);\n'
+        class_decl += ' '*(n_indents+4)*indent + 'if (delete_wrapper == true)\n'
+        class_decl += ' '*(n_indents+4)*indent + '{\n'
+        class_decl += ' '*(n_indents+5)*indent + 'wrapper_deleter(wptr);\n'
+        class_decl += ' '*(n_indents+5)*indent + 'wptr = 0;\n'
+        # Set wptr = 0 in all parent classes as well
+        for parent_dict in all_parent_classes:
+            if parent_dict['loaded']:
+                class_decl += ' '*(n_indents+5)*indent + parent_dict['abstr_class_name']['long_templ'] + '::set_wptr(0);\n'
+        class_decl += ' '*(n_indents+5)*indent + 'delete_wrapper = false;\n'
+        class_decl += ' '*(n_indents+4)*indent + '}\n'
+        class_decl += ' '*(n_indents+3)*indent + '}\n'
+        if gb.debug_mode:
+            class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (END)" << std::endl;\n' 
+    class_decl += ' '*(n_indents+2)*indent + '}\n'
+
 
     # - Close the class body
     class_decl += ' '*n_indents*indent + '};' + '\n'
@@ -383,19 +458,39 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     class_decl = '\n__START_GAMBIT_NAMESPACE__\n\n' + class_decl + '\n__END_GAMBIT_NAMESPACE__\n'
 
 
-    # - Add forward declaration of wrapper_deleter function (needed by the 'destructor pattern')
-    frwd_decl_deleter  = '\n'
-    frwd_decl_deleter += '// Forward declaration needed by the destructor pattern.\n'
-    frwd_decl_deleter += 'void wrapper_deleter(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*);\n'
-    frwd_decl_deleter += '\n'
+    # - Add forward declaration of wrapper_creator function (needed by the 'destructor pattern')
+    if not file_for_gambit:
+        frwd_decl_creator  = '\n'
+        frwd_decl_creator += '// Forward declaration for wrapper_creator.\n'
+        frwd_decl_creator += gb.gambit_backend_namespace + '::' + class_name['long'] + '* wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
+        # frwd_decl_creator += 'void wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
+        frwd_decl_creator += '\n'
 
-    class_decl = frwd_decl_deleter + class_decl
+        class_decl = frwd_decl_creator + class_decl
+
+
+    # - Add forward declaration of wrapper_deleter function (needed by the 'destructor pattern')
+    if not file_for_gambit:
+        frwd_decl_deleter  = '\n'
+        frwd_decl_deleter += '// Forward declaration needed by the destructor pattern.\n'
+        frwd_decl_deleter += 'void wrapper_deleter(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*);\n'
+        frwd_decl_deleter += '\n'
+
+        class_decl = frwd_decl_deleter + class_decl
+
+    # - Add forward declaration of set_delete_BEptr function (needed by the 'destructor pattern')
+    if not file_for_gambit:
+        frwd_decl_setdel  = '\n'
+        frwd_decl_setdel += '// Forward declaration needed by the destructor pattern.\n'
+        frwd_decl_setdel += 'void set_delete_BEptr(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*, bool);\n'
+        frwd_decl_setdel += '\n'
+
+        class_decl = frwd_decl_setdel + class_decl
 
 
     # Insert include statements needed by GAMBIT
     backend_undef_incl_statement  = '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
     identification_incl_statement = '#include "' + 'identification.hpp' + '"\n'
-    # identification_incl_statement = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
 
     class_decl = identification_incl_statement + class_decl + '\n' + backend_undef_incl_statement
 
@@ -406,14 +501,11 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
 
 
 
-# ====== constrFactoryFunctionCode ========
+# ====== getAcceptableConstructors ========
 
-def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[], skip_copy_constructors=False, use_wrapper_return=False, use_wrapper_args=False, add_include_statements=True, add_signatures_comment=True):
+def getAcceptableConstructors(class_el, skip_copy_constructors=False):
 
-    # Replace '*' and '&' in list of template types
-    template_types = [e.replace('*','P').replace('&','R') for e in template_types]
-
-    # Check for copy constructor. (We do not generate factory functions for copy constructors)
+    # Check for copy constructor?
     if skip_copy_constructors:
         has_copy_constructor, copy_constr_id = checkCopyConstructor(class_el, return_id=True)
 
@@ -427,7 +519,21 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
                     pass
                 else:
                     constructor_elements.append(el)
-                    
+
+    return constructor_elements
+
+# ====== END: getAcceptableConstructors ========
+
+
+
+# ====== constrFactoryFunctionCode ========
+
+def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[], skip_copy_constructors=False, use_wrapper_return=False, use_wrapper_args=False, add_include_statements=True, add_signatures_comment=True):
+
+    # Replace '*' and '&' in list of template types
+    template_types = [e.replace('*','P').replace('&','R') for e in template_types]
+
+    constructor_elements = getAcceptableConstructors(class_el, skip_copy_constructors=skip_copy_constructors)
 
     # If no public constructors are found, return nothing
     if len(constructor_elements) == 0:
@@ -481,7 +587,7 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
             factory_name = 'Factory_' + class_name['short'] + '_' + str(counter)
             if len(template_types) > 0:
                 factory_name += '_' + '_'.join(template_types)
-            factory_name += gb.code_suffix + str(gb.symbol_name_counter)
+            factory_name += gb.code_suffix + '_' + str(gb.symbol_name_counter)
             gb.symbol_name_counter += 1
 
             if remove_n_args == 0:
@@ -631,17 +737,12 @@ def constrWrapperFunction(method_el, indent=cfg.indent, n_indents=0, remove_n_ar
 
     # Choose wrapper return type
     if return_is_loaded_class:
-        if pointerness == 0:
+        if (pointerness == 0) and (is_ref):
+            w_return_type = toAbstractType(return_type, include_namespace=True)
+        elif (pointerness == 0) and (not is_ref):
             w_return_type = toAbstractType(return_type, include_namespace=True, add_pointer=True, remove_reference=True)
         else:
             w_return_type = toAbstractType(return_type, include_namespace=True)
-
-        # # If this is a function returning a reference to a loaded type, we must remove the const keyword from the return type
-        # if is_ref:
-        #     try:
-        #         return_kw.remove('const')
-        #     except ValueError:
-        #         pass
 
     else:
         w_return_type = return_type
@@ -752,13 +853,11 @@ def constrVariableRefFunction(var_el, virtual=False, indent=cfg.indent, n_indent
             func_code += ';\n'
         else:
             if (var_is_loaded_class) and (pointerness > 0):
-                # func_code += ' { return (' + return_type +') ' + var_name  +'; }\n'
 
                 wrapper_var_name = var_name + gb.code_suffix
 
                 func_code += '\n'
                 func_code += ' '*n_indents*indent + '{\n'
-                # func_code += ' '*(n_indents+1)*indent + 'if (not ' + wrapper_var_name + ') { ' + wrapper_var_name + ' = new ' + var_type_name + '(' + var_name + '); }\n'
                 func_code += ' '*(n_indents+1)*indent + 'if (not ' + wrapper_var_name + ') { ' + wrapper_var_name + ' = new ' + var_type_name + '(' + var_name + ', true); }\n'
                 func_code += ' '*(n_indents+1)*indent + 'return ' + wrapper_var_name + ';\n'
                 func_code += ' '*n_indents*indent + '}\n'
@@ -776,7 +875,7 @@ def constrVariableRefFunction(var_el, virtual=False, indent=cfg.indent, n_indent
 
 def constrPtrCopyFunc(class_el, abstr_class_name_short, class_name_short, virtual=False, indent=cfg.indent, n_indents=0, only_declaration=False, include_full_namespace=False):
 
-    func_name = 'pointerCopy' + gb.code_suffix
+    func_name = 'pointer_copy' + gb.code_suffix
     class_name = class_name_short
     abstr_class_name = abstr_class_name_short
 
@@ -800,7 +899,6 @@ def constrPtrCopyFunc(class_el, abstr_class_name_short, class_name_short, virtua
             ptr_code += '\n'
             ptr_code += ' '*cfg.indent*n_indents + '{\n'
             ptr_code += ' '*cfg.indent*(n_indents+1) + abstr_class_name + '* new_ptr = new ' + class_name + '(*this);\n'
-            ptr_code += ' '*cfg.indent*(n_indents+1) + 'new_ptr->can_delete_wrapper(true);\n'
             ptr_code += ' '*cfg.indent*(n_indents+1) + 'return new_ptr;\n'
             ptr_code += ' '*cfg.indent*n_indents + '}\n'
 
@@ -814,7 +912,7 @@ def constrPtrCopyFunc(class_el, abstr_class_name_short, class_name_short, virtua
 
 def constrPtrAssignFunc(class_el, abstr_class_name_short, class_name_short, virtual=False, indent=cfg.indent, n_indents=0, only_declaration=False, include_full_namespace=False):
 
-    func_name  = 'pointerAssign' + gb.code_suffix
+    func_name  = 'pointer_assign' + gb.code_suffix
     class_name = class_name_short
     abstr_class_name = abstr_class_name_short
 
@@ -828,7 +926,6 @@ def constrPtrAssignFunc(class_el, abstr_class_name_short, class_name_short, virt
             class_name = '::'.join(namespaces) + '::' + class_name
 
     ptr_code = ''
-    # ptr_code += ' '*cfg.indent*n_indents
     
     if virtual:
         ptr_code += ' '*cfg.indent*n_indents + 'virtual void ' + func_name + '(' + abstr_class_name + '*) =0;\n'
@@ -839,12 +936,10 @@ def constrPtrAssignFunc(class_el, abstr_class_name_short, class_name_short, virt
         else:
             ptr_code += '\n'
             ptr_code += ' '*cfg.indent*n_indents + '{\n'
-            ptr_code += ' '*cfg.indent*(n_indents+1) + gb.gambit_backend_namespace + '::' + class_name + '* wptr_temp = wrapper' + gb.code_suffix + '();\n'
+            ptr_code += ' '*cfg.indent*(n_indents+1) + gb.gambit_backend_namespace + '::' + class_name + '* wptr_temp = ' + abstr_class_name_short + '::get_wptr();\n'
             ptr_code += ' '*cfg.indent*(n_indents+1) + '*this = *dynamic_cast<' + class_name_short + '*>(in);\n'
-            ptr_code += ' '*cfg.indent*(n_indents+1) + 'wrapper' + gb.code_suffix + '(wptr_temp);\n'
+            ptr_code += ' '*cfg.indent*(n_indents+1) + abstr_class_name_short + '::set_wptr(wptr_temp);\n'
             ptr_code += ' '*cfg.indent*n_indents + '}\n'
-
-            # ptr_code += ' ' + '{ *this = *dynamic_cast<' + class_name_short + '*>(in); }\n'        
 
     return ptr_code
 
@@ -920,7 +1015,7 @@ def checkCopyConstructor(class_el, return_id=False):
 
 # ====== toWrapperType ========
 
-def toWrapperType(input_type_name, remove_reference=False, remove_pointers=False, use_base_type=False, include_namespace=False):
+def toWrapperType(input_type_name, remove_reference=False, remove_pointers=False, include_namespace=False, include_global_namespace=False ):
 
     type_name = input_type_name
 
@@ -934,21 +1029,11 @@ def toWrapperType(input_type_name, remove_reference=False, remove_pointers=False
     # Split into namespace, short_type_name 
     namespace, short_type_name = utils.removeNamespace(type_name, return_namespace=True)
 
+    if include_global_namespace:
+        namespace = '::' + namespace
 
-    if use_base_type:
-        abstr_type_name = toAbstractType(input_type_name, include_namespace=True).replace('*','').replace('&','')
-        short_type_name = 'WrapperBase< ' + abstr_type_name + ' >'
-
-    else:
-        # Insert wrapper class prefix
-        short_type_name = gb.wrapper_class_prefix + short_type_name
-
-        # # Insert wrapper class suffix
-        # if '<' in type_name:
-        #     short_type_name_part_one, short_type_name_part_two = short_type_name.split('<',1)
-        #     short_type_name = short_type_name_part_one + gb.code_suffix + '<' + short_type_name_part_two
-        # else:
-        #     short_type_name = short_type_name + gb.code_suffix
+    # Insert wrapper class prefix
+    short_type_name = gb.wrapper_class_prefix + short_type_name
 
     # Add '*' and '&'
     if remove_pointers:
@@ -962,7 +1047,7 @@ def toWrapperType(input_type_name, remove_reference=False, remove_pointers=False
         short_type_name = short_type_name + '&'*is_ref
 
     # Return result
-    if include_namespace and namespace != '' and not use_base_type:
+    if (include_namespace) and (namespace != ''):
         return namespace + '::' + short_type_name
     else:
         return short_type_name
@@ -1026,18 +1111,8 @@ def getClassNameDict(class_el, abstract=False):
     if 'name' not in class_el.keys():
         raise KeyError('XML element %s does not contain the key "name".' % (xml_id))
 
-
-    # TAG:castxml_in
     namespaces_list = utils.getNamespaces(class_el, include_self=True)
     class_name['long_templ'] = '::'.join(namespaces_list)
-
-    # TAG:castxml_out
-    # if 'demangled' in class_el.keys():
-    #     class_name['long_templ']  = class_el.get('demangled')
-    # elif 'name' in class_el.keys():
-    #     class_name['long_templ']  = class_el.get('name')
-    # else:
-    #     raise KeyError('XML element %s contains neither "name" nor "demangled".' % (xml_id))
 
     class_name['long']        = class_name['long_templ'].split('<',1)[0]
     class_name['short_templ'] = class_el.get('name')
@@ -1065,18 +1140,21 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
 
     decl_code = ''
 
-    wrapper_base_class_name = 'WrapperBase<' + abstr_class_name['long'] + '>'
     short_wrapper_class_name = toWrapperType(class_name['short'])
     wrapper_class_name = toWrapperType(class_name['long'], include_namespace=True)
 
-    # Construct line declaring inheritance from the wrapper base class (WrapperBase)
-    # and from other wrapper classes
-    inheritance_line = 'public ' + wrapper_base_class_name
+    # Construct inheritance line 
+    inheritance_line = ''
     for parent_dict in loaded_parent_classes:
-        inheritance_line += ', ' + 'virtual '*parent_dict['virtual'] + parent_dict['access'] + ' ' + parent_dict['class_name']['short']
+        inheritance_line += 'virtual '*parent_dict['virtual'] + parent_dict['access'] + ' ' + parent_dict['class_name']['short'] + ', '
+    inheritance_line = inheritance_line.rstrip(', ')
 
-    if inheritance_line != '':
-        inheritance_line = ' : ' + inheritance_line.rstrip(', ')
+    # If no other parent classes, add WrapperBase
+    if inheritance_line == '':
+        # inheritance_line = ' : public virtual WrapperBase'
+        inheritance_line = ' : public WrapperBase'
+    else:
+        inheritance_line = ' : ' + inheritance_line
 
     # Class declaration line
     decl_code += '\n'
@@ -1084,13 +1162,6 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
 
     # Class body
     decl_code += '{\n'
-
-
-    # Add typedef for the wrapper base class, and a 'using' statement for BEptr (to avoid ambiguity).
-    decl_code += indent + 'public:\n'
-    decl_code += 2*indent + 'typedef '+ wrapper_base_class_name + ' wrapperbase;\n'
-    decl_code += 2*indent + 'using ' + wrapper_base_class_name + '::BEptr;\n'
-    decl_code += '\n'    
 
     #
     # Variables:
@@ -1110,7 +1181,6 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
         # Identify arguments, translate argument type of loaded classes
         # and construct the argument bracket
         args = funcutils.getArgs(constr_el)
-        # w_args = funcutils.constrWrapperArgs(args, add_ref=True)
 
         # One factory function pointer for each set of default arguments
         for remove_n_args in range(n_overloads+1):
@@ -1174,10 +1244,14 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
         #     continue
 
 
-
-
         if var_is_loaded_class:
-            decl_code += 2*indent + var_kw_str + var_type + ' ' + var_name + var_array_limits_str  + ';\n'
+            
+            use_var_type = var_type
+            
+            if not is_ref:
+                use_var_type = var_type + '&'
+
+            decl_code += 2*indent + var_kw_str + use_var_type + ' ' + var_name + var_array_limits_str  + ';\n'
     
         else:
             if var_is_known_class:
@@ -1197,13 +1271,12 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
                 decl_code += 2*indent + var_kw_str + use_var_type + ' ' + var_name + ';\n'
 
 
-
-
     #
     # Functions:
     #
     decl_code += '\n'
     decl_code += 2*indent + '// Member functions: \n'
+
     # Add wrappers for all member functions, including operator functions
     # and overloaded versions of functions with default value arguments
 
@@ -1255,17 +1328,13 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
         if (not return_is_loaded) and utils.isKnownClass(return_type_el):
             return_type = '::' + return_type 
 
-
         # If return-by-value, then a const qualifier on the return value is meaningless
         # (will result in a compiler warning)
-        if (pointerness == 0) and (is_ref == False):
-            if 'const' in return_type_kw:
-                return_type_kw.remove('const')
-
+        if (pointerness == 0) and (is_ref == False) and ('const' in return_type_kw):
+            return_kw_str = return_kw_str.replace('const', '')
 
         # Arguments
         args = funcutils.getArgs(func_el)
-
 
         # One function for each set of default arguments
         n_overloads = funcutils.numberOfDefaultArgs(func_el)
@@ -1275,17 +1344,13 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
             if funcutils.ignoreFunction(func_el, remove_n_args=remove_n_args):
                 continue
 
-
             if remove_n_args == 0:
                 use_args = args
             else:
                 use_args = args[:-remove_n_args]
 
-            # For operators, take wrapper class types as input. For functions, take WrapperBase as input.
-            if is_operator:
-                args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True)
-            else:
-                args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True, use_wrapper_base_class=True)                
+            # Argument bracket
+            args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True)
 
             # Name of function to call (in abstract class)
             if is_operator:
@@ -1357,10 +1422,10 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
         decl_code += indent + 'public:\n'
 
 
-    # Add special constructor based on abstract pointer (This is needed to allow return-by-value with the wrapper classes.)
+    # Add special constructor based on abstract pointer
     decl_code += 2*indent + '// Special pointer-based constructor: \n'
     decl_code += 2*indent + class_name['short'] + '(' + abstr_class_name['long'] +'* in);\n'
-    decl_code += 2*indent + class_name['short'] + '(' + abstr_class_name['long'] +'* const & in, bool);\n'
+    # decl_code += 2*indent + class_name['short'] + '(const ' + abstr_class_name['long'] +'* in);\n'
 
 
     # Add copy constructor
@@ -1382,16 +1447,17 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
     #
     decl_code += '\n'
     decl_code += 2*indent + '// Destructor: \n'
+    # decl_code += 2*indent + 'virtual ~' + class_name['short'] + '();\n'
     decl_code += 2*indent + '~' + class_name['short'] + '();\n'
 
 
     #
-    # Add private member function for initialising member variables
+    # Add get_BEptr function
     #
     decl_code += '\n'
-    decl_code += indent + 'private:\n'
-    decl_code += 2*indent + '// Member variable initialiser: \n'
-    decl_code += 2*indent + 'void _memberVariablesInit();\n'
+    # decl_code += indent + 'private:\n'
+    decl_code += 2*indent + '// Returns correctly casted pointer to Abstract class: \n'
+    decl_code += 2*indent + abstr_class_name['long'] +'* get_BEptr() const;\n'
 
 
     # Close class body
@@ -1428,7 +1494,6 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
 
     def_code = ''
 
-    wrapper_base_class_name  = 'WrapperBase<' + abstr_class_name['long'] + '>'
     short_wrapper_class_name = toWrapperType(class_name['short'])
     wrapper_class_name = toWrapperType(class_name['long'], include_namespace=True)
 
@@ -1484,10 +1549,8 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
 
         # If return-by-value, then a const qualifier on the return value is meaningless
         # (will result in a compiler warning)
-        if (pointerness == 0) and (is_ref == False):
-            if 'const' in return_type_kw:
-                return_type_kw.remove('const')
-
+        if (pointerness == 0) and (is_ref == False) and ('const' in return_type_kw):
+            return_kw_str = return_kw_str.replace('const', '')
 
         # Arguments
         args = funcutils.getArgs(func_el)
@@ -1506,11 +1569,8 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
             else:
                 use_args = args[:-remove_n_args]
 
-            # For operators, take wrapper class types as input. For functions, take WrapperBase as input.
-            if is_operator:
-                args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True)
-            else:
-                args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True, use_wrapper_base_class=True)                
+            # Arguments bracket
+            args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True)
 
             # Name of function to call (in abstract class)
             if is_operator:
@@ -1519,7 +1579,6 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 else:
                     call_func_name = 'operator' + func_el.get('name')    
             else:
-                # call_func_name = func_name + gb.code_suffix
                 if uses_loaded_type or (remove_n_args>0):
                     call_func_name = func_name + gb.code_suffix 
                 else:
@@ -1544,27 +1603,36 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 abs_return_type_simple = toAbstractType(return_type, include_namespace=True, remove_reference=True, remove_pointers=True)
                 return_type_simple     = return_type.replace('*','').replace('&','')
 
-                if is_ref:  # Return-by-pointer
-                    # return wrapperbase::reference_returner<X_GAMBIT, Abstract_X>( wrapperbase::BEptr->return_ref_this_GAMBIT() );
-                    if is_const:
-                        def_code += 'wrapperbase::reference_returner< ' + return_type_simple + ', ' + abs_return_type_simple +  ' >( const_cast<' + abs_return_type_simple + '*>(wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ') );\n'
-                    else:
-                        def_code += 'wrapperbase::reference_returner< ' + return_type_simple + ', ' + abs_return_type_simple +  ' >( wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ' );\n'
+                if is_const:
+                    get_BEptr_call = 'const_cast<const ' + abstr_class_name['short'] +'*>(get_BEptr())'
+                else:
+                    get_BEptr_call = 'get_BEptr()'
 
-                elif (not is_ref) and (pointerness > 0):  # Return-by-pointer
-                    if is_const:
-                        def_code += 'wrapperbase::pointer_returner< ' + return_type_simple + ', ' + abs_return_type_simple +  ' >( const_cast<' + abs_return_type_simple + '*>(wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ') );\n'
+                # Return-by-reference
+                if is_ref:
+                    if 'const' in return_type_kw:
+                        def_code += 'const_cast<' + abs_return_type_simple + '&>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ').get_init_wref();\n'
                     else:
-                        def_code += 'wrapperbase::pointer_returner< ' + return_type_simple + ', ' + abs_return_type_simple +  ' >( wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ' );\n'
+                        def_code += get_BEptr_call + '->' + call_func_name + args_bracket_notypes + '.get_init_wref();\n'
                 
-                else:  # Return-by-value
-                    if is_const:                        
-                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ') );\n'
+                # Return-by-pointer
+                elif (not is_ref) and (pointerness > 0):  
+                    if 'const' in return_type_kw:
+                        def_code += 'const_cast<' + abs_return_type_simple + '*>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ')->get_init_wptr();\n'
                     else:
-                        def_code += return_type + '( wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ' );\n'
-            
+                        def_code += get_BEptr_call + '->' + call_func_name + args_bracket_notypes + '->get_init_wptr();\n'
+                
+                # Return-by-value
+                else:
+                    if 'const' in return_type_kw:
+                        # def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
+                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ') );\n'
+                    else:
+                        # def_code += return_type + '( ' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + '->get_init_wref() );\n'
+                        def_code += return_type + '( ' + get_BEptr_call + '->' + call_func_name + args_bracket_notypes + ' );\n'
+           
             else:                
-                def_code += 'wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ';\n'
+                def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + ';\n'
 
             def_code += '}\n'
             def_code += '\n'
@@ -1579,11 +1647,12 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     common_init_list_code   = ''
 
     common_constructor_body = ''
-    # common_constructor_body += '{\n'
-    common_constructor_body += indent + 'wrapperbase::BEptr->wrapper' + gb.code_suffix + '(this);\n'
-    common_constructor_body += indent + 'wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS\n'
+    if gb.debug_mode:
+        common_constructor_body += indent + 'std::cerr << "DEBUG: " << this << " ' + short_wrapper_class_name + ' ctor" << std::endl;\n'
+    common_constructor_body += indent + 'get_BEptr()->set_wptr(this);\n'
+    common_constructor_body += indent + 'get_BEptr()->set_delete_wrapper(false);\n'
 
-    mem_var_init_body = ''
+    # mem_var_init_body = ''
     has_loaded_class_mem_var = False
     
     for var_el in class_variables:
@@ -1603,7 +1672,7 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
 
         # wrapper_type_name = toWrapperType(var_type, remove_reference=True, remove_pointers=True, include_namespace=True)
         var_abstr_class_name = getClassNameDict(var_type_el, abstract=True)
-        var_wrapper_base_class_name = 'WrapperBase<' + var_abstr_class_name['long'] + '>'
+        # var_wrapper_base_class_name = 'WrapperBase<' + var_abstr_class_name['long'] + '>'
 
         # # FIXME: At the moment there are problems with member variables that are pointer-to-loaded-class. For now, skip them:
         # if var_is_loaded_class and pointerness > 0:
@@ -1613,35 +1682,19 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
         # Construct common initialization list
         if var_is_loaded_class:
             if pointerness == 0:
-                common_init_list_code += indent + var_name + '(&(wrapperbase::BEptr->' + var_name + '_ref' + gb.code_suffix + '())),\n'
+                common_init_list_code += indent + var_name + '( get_BEptr()->' + var_name + '_ref' + gb.code_suffix + '().get_init_wref()),\n'
             elif pointerness == 1:
-                # common_init_list_code += indent + var_name + '(new ' + var_type_name + '(wrapperbase::BEptr->' + var_name + '_ref' + gb.code_suffix + '())),\n'
-                common_init_list_code += indent + var_name + '(wrapperbase::BEptr->' + var_name + '_ref' + gb.code_suffix + '()),\n'
+                common_init_list_code += indent + var_name + '( get_BEptr()->' + var_name + '_ref' + gb.code_suffix + '()->get_init_wptr()),\n'
+                # common_init_list_code += indent + var_name + '(wrapperbase::BEptr->' + var_name + '_ref' + gb.code_suffix + '()),\n'
             else:
                 raise Exception('The BOSS wrapper class system cannot presently handle member variables that have a pointerness > 1')
         else:
-            common_init_list_code += indent + var_name + '(wrapperbase::BEptr->' + var_name + '_ref' + gb.code_suffix + '()),\n'
-
-        # Add line to the body of the _memberVariablesInit function
-        if var_is_loaded_class:
-            has_loaded_class_mem_var = True
-            if pointerness > 0:
-                mem_var_init_body += indent + '(' + '*'*pointerness + var_name + ')' + '.' + var_wrapper_base_class_name + '::BEptr->can_delete_wrapper(true);\n'
-            else:
-                mem_var_init_body += indent + '(' + '*'*pointerness + var_name + ')' + '.' + var_wrapper_base_class_name + '::BEptr->can_delete_wrapper(false);\n'
-            mem_var_init_body += indent + '(' + '*'*pointerness + var_name + ')' + '.' + var_wrapper_base_class_name + '::BEptr->can_delete_me(false);\n'
-
-    # If the class has member variables of loaded type, add a call to _memberVariablesInit in the common_constructor_body
-    if has_loaded_class_mem_var:
-        common_constructor_body += indent + '_memberVariablesInit();\n'
+            common_init_list_code += indent + var_name + '( get_BEptr()->' + var_name + '_ref' + gb.code_suffix + '()),\n'
 
 
     # Clean up initialization list
     if common_init_list_code != '':
         common_init_list_code = common_init_list_code.rstrip(',\n') + '\n'
-
-    # Close common constructor body
-    # common_constructor_body += '}\n'
 
 
     # Add wrappers for all original constructors except the copy constructor
@@ -1680,16 +1733,17 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
 
             temp_code += 'inline ' + class_name['long'] + '::' + class_name['short'] + args_bracket + ' :\n'
 
-            temp_code += indent + wrapper_base_class_name + '(' + factory_ptr_name + args_bracket_notypes + ')'
+            parent_class_init_list = ''
+            # parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
             for parent_dict in loaded_parent_classes:
-                temp_code +=',\n'
-                temp_code += indent + parent_dict['class_name']['short'] + '(wrapperbase::BEptr)'
-
+                parent_class_init_list += indent + parent_dict['class_name']['short'] + '(' + factory_ptr_name + args_bracket_notypes + '),\n'
+            if parent_class_init_list == '':
+                parent_class_init_list += indent + 'WrapperBase(' + factory_ptr_name + args_bracket_notypes + '),\n'
 
             if common_init_list_code != '':
-                temp_code += ',\n' + common_init_list_code
+                temp_code += parent_class_init_list + common_init_list_code
             else:
-                temp_code += '\n'
+                temp_code += parent_class_init_list.rstrip(',\n') + '\n'
             temp_code += '{\n'
             temp_code += common_constructor_body
             temp_code += '}\n'
@@ -1705,41 +1759,41 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
         def_code += temp_code
 
 
-    # Add special constructor based on abstract pointer (This is needed to allow return-by-value with the wrapper classes.)
+    # Add special constructor based on abstract class pointer.
     def_code += '// Special pointer-based constructor: \n'
     def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(' + abstr_class_name['long'] +'* in) :\n'
-    # def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(' + abstr_class_name['long'] +'* const & in) :\n'
-    def_code += indent + wrapper_base_class_name + '(in)'  # FIXME: This is not general. Fix argument list.
+
+    parent_class_init_list = ''
+    # parent_class_init_list += indent + 'WrapperBase(in),\n'
     for parent_dict in loaded_parent_classes:
-        def_code +=',\n'
-        def_code += indent + parent_dict['class_name']['short'] + '(wrapperbase::BEptr)'
+        parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in),\n'
+    if parent_class_init_list == '':
+        parent_class_init_list += indent + 'WrapperBase(in),\n'
 
     if common_init_list_code != '':
-        def_code += ',\n' + common_init_list_code
+        def_code += parent_class_init_list + common_init_list_code
     else:
-        def_code += '\n'
+        def_code += parent_class_init_list.rstrip(',\n') + '\n'
     def_code += '{\n'
     def_code += common_constructor_body
     def_code += '}\n'
 
-    # reference-to-ptr version...
-    def_code += '\n'
-    # def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(' + abstr_class_name['long'] +'* in) :\n'
-    def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(' + abstr_class_name['long'] +'* const & in, bool) :\n'
-    def_code += indent + wrapper_base_class_name + '(in, true)'  # FIXME: This is not general. Fix argument list.
-    for parent_dict in loaded_parent_classes:
-        def_code +=',\n'
-        def_code += indent + parent_dict['class_name']['short'] + '(wrapperbase::BEptr)'
+    # # Const version of constructor from abstract class pointer
+    # def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(const ' + abstr_class_name['long'] +'* in) :\n'
 
-    if common_init_list_code != '':
-        def_code += ',\n' + common_init_list_code
-    else:
-        def_code += '\n'
-    def_code += '{\n'
-    def_code += common_constructor_body
-    def_code += '}\n'
+    # parent_class_init_list = ''
+    # for parent_dict in loaded_parent_classes:
+    #     parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in),\n'
+    # if parent_class_init_list == '':
+    #     parent_class_init_list += indent + 'WrapperBase(in),\n'
 
-
+    # if common_init_list_code != '':
+    #     def_code += parent_class_init_list + common_init_list_code
+    # else:
+    #     def_code += parent_class_init_list.rstrip(',\n') + '\n'
+    # def_code += '{\n'
+    # def_code += common_constructor_body
+    # def_code += '}\n'
 
 
 
@@ -1748,17 +1802,19 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
         def_code += '\n'
         def_code += '// Copy constructor: \n'
         def_code += do_inline*'inline ' + class_name['long'] + '::' + class_name['short'] + '(const ' + class_name['short'] +'& in) :\n'
-        def_code += indent + wrapper_base_class_name + '(in)'  # FIXME: This is not general. Fix argument list.
+
+        parent_class_init_list = ''
+        # parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
         for parent_dict in loaded_parent_classes:
-            def_code +=',\n'
-            def_code += indent + parent_dict['class_name']['short'] + '(wrapperbase::BEptr)'
+            parent_class_init_list += indent + parent_dict['class_name']['short'] + '(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
+        if parent_class_init_list == '':
+            parent_class_init_list += indent + 'WrapperBase(in.get_BEptr()->pointer_copy' + gb.code_suffix + '()),\n'
 
         if common_init_list_code != '':
-            def_code += ',\n' + common_init_list_code
+            def_code += parent_class_init_list + common_init_list_code
         else:
-            def_code += '\n'
+            def_code += parent_class_init_list.rstrip(',\n') + '\n'
         def_code += '{\n'
-        def_code += indent + 'wrapperbase::BEptr->can_delete_me(true);\n'
         def_code += common_constructor_body
         def_code += '}\n'
 
@@ -1770,12 +1826,13 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += '// Assignment operator: \n'
     def_code += do_inline*'inline ' + class_name['long'] + '& ' + class_name['short'] + '::operator=(const ' + class_name['short'] +'& in)\n'
     def_code += '{\n'
-    def_code += indent +  wrapper_base_class_name + '::operator=(in);\n'
-    for parent_dict in loaded_parent_classes:
-        def_code += indent + parent_dict['class_name']['short'] + '::operator=(in);\n'
-    def_code += indent + 'return *this;\n'
+    def_code +=   indent + 'if (this != &in)\n'
+    def_code +=   indent + '{\n'
+    def_code += 2*indent + 'get_BEptr()->pointer_assign' + gb.code_suffix + '(in.get_BEptr());\n'
+    def_code +=   indent + '}\n'
+    def_code +=   indent + 'return *this;\n'
     def_code += '}\n\n'
-
+    
 
     # 
     # Add destructor
@@ -1784,23 +1841,34 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += '// Destructor: \n'
     def_code += do_inline*'inline ' + class_name['long'] + '::~' + class_name['short'] + '()\n'
     def_code += '{\n'
-    for parent_dict in loaded_parent_classes:
-        # def_code += indent + parent_dict['class_name']['short'] + '::skip_delete = true;\n'
-        def_code += indent + 'WrapperBase<' + parent_dict['abstr_class_name']['long'] + '>'  + '::skip_delete = true;\n'
-    def_code += '}\n\n'
+    if gb.debug_mode:
+        def_code += indent + 'std::cerr << "DEBUG: " << this << " ' + short_wrapper_class_name + ' dtor (BEGIN)" << std::endl;\n'
+    def_code +=   indent + 'if (get_BEptr() != 0)\n'
+    def_code +=   indent + '{\n'
+    def_code += 2*indent + 'get_BEptr()->set_delete_wrapper(false);\n'
+    def_code += 2*indent + 'if (can_delete_BEptr())\n'
+    def_code += 2*indent + '{\n'
+    def_code += 3*indent + 'delete BEptr;\n'
+    def_code += 3*indent + 'BEptr = 0;\n'
+    def_code += 2*indent + '}\n'
+    def_code +=   indent + '}\n'
+    def_code +=   indent + 'set_delete_BEptr(false);\n'
+    if gb.debug_mode:
+        def_code += indent + 'std::cerr << "DEBUG: " << this << " ' + short_wrapper_class_name + ' dtor (END)" << std::endl;\n'
+    def_code += '}\n'
 
 
     #
-    # Add private member function for initialising member variables
+    # Add get_BEptr function
     #
     def_code += '\n'
-    def_code += '// Member variable initialiser: \n'
-    def_code += do_inline*'inline ' + 'void ' + class_name['long'] + '::_memberVariablesInit()\n'
+    def_code += '// Returns correctly casted pointer to Abstract class: \n'
+    def_code += do_inline*'inline ' + abstr_class_name['long'] +'* ' + class_name['long'] + '::get_BEptr() const\n'
     def_code += '{\n'
-    if has_loaded_class_mem_var:
-        def_code += mem_var_init_body
-    def_code += '}\n\n'
+    def_code += indent + 'return dynamic_cast<' + abstr_class_name['long'] + '*>(BEptr);\n'
+    def_code += '}\n'
 
+    
     # Add namespace
     namespace, class_name_short = utils.removeNamespace(class_name['long'], return_namespace=True)
 
@@ -1878,7 +1946,6 @@ def generateWrapperHeaderCode(class_el, class_name, abstr_class_name, namespaces
             continue
 
         # Store constructor if acceptable
-        # if (mem_el.tag == 'Constructor') and (mem_el.get('access') in ['public', 'protected']):
         if (mem_el.tag == 'Constructor') and (mem_el.get('access') == 'public'):
             class_constructors.append(mem_el)
 
@@ -1900,7 +1967,6 @@ def generateWrapperHeaderCode(class_el, class_name, abstr_class_name, namespaces
     # Insert include statements needed by GAMBIT 
     backend_undef_incl_statement  = '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
     identification_incl_statement = '#include "' + 'identification.hpp' + '"\n'
-    # identification_incl_statement = '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
 
     decl_code = identification_incl_statement + decl_code + '\n' + backend_undef_incl_statement
     def_code  = identification_incl_statement + def_code + '\n' + backend_undef_incl_statement
@@ -1916,12 +1982,12 @@ def generateWrapperHeaderCode(class_el, class_name, abstr_class_name, namespaces
     # - Header where NULL is defined
     decl_code_include_statements.append( '#include <cstddef>' )
 
-    # - Header where the function nullptr_check is defined
-    # decl_code_include_statements.append( '#include "nullptr_check' + cfg.header_extension + '"')
+    # - If debug_mode, include <iostream> for some output
+    if gb.debug_mode:
+        decl_code_include_statements.append( '#include <iostream>' )        
 
     # - Header with forward declarations to all wrapper classes
     decl_code_include_statements.append( '#include "' + gb.frwd_decls_wrp_fname + cfg.header_extension + '"')
-    # decl_code_include_statements.append( '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_wrp_fname + cfg.header_extension) + '"')
 
     # - Base class for all wrapper classes
     decl_code_include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'wrapperbase.hpp') + '"')

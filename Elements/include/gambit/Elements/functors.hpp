@@ -72,6 +72,14 @@ namespace Gambit
   template <typename TYPE, typename... ARGS>
   struct variadic_ptr { typedef TYPE(*type)(ARGS..., ...); };
 
+  /// Forward declare helper friend functions
+  class module_functor_common;
+  namespace FunctorHelp {
+    // void check_for_shutdown_signal(module_functor_common&);
+    // bool emergency_shutdown_begun();
+    void entering_multithreaded_region(module_functor_common&);
+    void leaving_multithreaded_region(module_functor_common&);
+  }
 
   // ======================== Base Functor =====================================
 
@@ -105,7 +113,13 @@ namespace Gambit
       /// Reset-then-recalculate method
       virtual void reset_and_calculate();
 
-      /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+      /// Setter for status: -4 = required backend absent (backend ini functions)
+      ///                    -3 = required classes absent
+      ///                    -2 = function absent
+      ///                    -1 = origin absent
+      ///                     0 = model incompatibility (default)
+      ///                     1 = available
+      ///                     2 = active
       void setStatus(int);
       /// Set the inUse flag (must be overridden in derived class to have any effect).
       virtual void setInUse(bool){};
@@ -127,7 +141,14 @@ namespace Gambit
       str version() const;
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
-      /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+      /// Getter for the wrapped function current status:
+      ///                    -4 = required backend absent (backend ini functions)
+      ///                    -3 = required classes absent
+      ///                    -2 = function absent
+      ///                    -1 = origin absent
+      ///                     0 = model incompatibility (default)
+      ///                     1 = available
+      ///                     2 = active
       int status() const;
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() const;
@@ -157,7 +178,7 @@ namespace Gambit
       virtual void setNestedList (std::vector<functor*>&);
 
       /// Set the iteration number in a loop in which this functor runs
-      virtual void setIteration (int);
+      virtual void setIteration (long long);
 
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager();
@@ -282,7 +303,14 @@ namespace Gambit
       const str myLabel;
       /// String label, used to label functor timing data for printer system
       const str myTimingLabel;
-      /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
+      /// Status:
+      ///                    -4 = required backend absent (backend ini functions)
+      ///                    -3 = required classes absent
+      ///                    -2 = function absent
+      ///                    -1 = origin absent
+      ///                     0 = model incompatibility (default)
+      ///                     1 = available
+      ///                     2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
@@ -363,14 +391,14 @@ namespace Gambit
       safe_ptr<str> getChosenReqFromGroup(str);
 
       /// Execute a single iteration in the loop managed by this functor.
-      virtual void iterate(int iteration);
+      virtual void iterate(long long iteration);
 
       /// Initialise the array holding the current iteration(s) of this functor.
       virtual void init_myCurrentIteration_if_NULL();
       /// Setter for setting the iteration number in the loop in which this functor runs
-      virtual void setIteration (int iteration);
+      virtual void setIteration (long long iteration);
       /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-      virtual omp_safe_ptr<int> iterationPtr();
+      virtual omp_safe_ptr<long long> iterationPtr();
 
       /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
       virtual void setCanBeLoopManager (bool canManage);
@@ -504,6 +532,9 @@ namespace Gambit
       /// Initialise the memory of this functor.
       virtual void init_memory();
 
+      /// Construct the list of known models only if it doesn't yet exist
+      void fill_activeModelFlags();
+
       /// Beginning and end timing points
       std::chrono::time_point<std::chrono::system_clock> *start, *end;
 
@@ -549,7 +580,7 @@ namespace Gambit
       std::vector<functor*> myNestedFunctorList;
 
       /// Pointer to counters for iterations of nested functor loop.
-      int* myCurrentIteration;
+      long long* myCurrentIteration;
 
       /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
       const int globlMaxThreads;
@@ -610,6 +641,9 @@ namespace Gambit
       /// Map from required classloading backends to their versions
       std::map< str, std::set<str> > required_classloading_backends;
 
+      /// Vector of required backends currently missing
+      std::vector<str> missing_backends;
+
       /// Internal timespec object
       timespec tp;
 
@@ -619,16 +653,22 @@ namespace Gambit
       /// Check if an appropriate LogTag for this functor is missing from the logging system.
       void check_missing_LogTag();
 
-      /// @{ Some helper functions for interacting with signals in the calculate() routine
-      void check_for_shutdown_signal();
-      void entering_multithreaded_region();
-      void leaving_multithreaded_region();
       /// While locked, prevent this function switching off threadsafe* emergency signal handling.
       /// *The emergency signal handling cannot be made completely threadsafe; it can still cause
       /// lockups and memory corruption if it occurs at an inopportune time. "soft" shutdown is
       /// always preferable.
       bool signal_mode_locked = true; 
       /// @}
+
+      /// Connectors to external helper functions (to decouple signal handling from this class)
+      // friend void FunctorHelp::check_for_shutdown_signal(module_functor_common&);
+      // friend bool FunctorHelp::emergency_shutdown_begun();
+      friend void FunctorHelp::entering_multithreaded_region(module_functor_common&);
+      friend void FunctorHelp::leaving_multithreaded_region(module_functor_common&);
+      // void check_for_shutdown_signal(){ FunctorHelp::check_for_shutdown_signal(*this); }
+      // bool emergency_shutdown_begun(){ return FunctorHelp::emergency_shutdown_begun(); }
+      void entering_multithreaded_region(){ FunctorHelp::entering_multithreaded_region(*this); }
+      void leaving_multithreaded_region(){ FunctorHelp::leaving_multithreaded_region(*this); }
 
   };
 
@@ -662,7 +702,7 @@ namespace Gambit
       void calculate();
 
       /// Operation (return value)
-      TYPE operator()(int index);
+      const TYPE& operator()(int index);
 
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr();

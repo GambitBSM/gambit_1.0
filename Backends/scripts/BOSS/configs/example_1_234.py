@@ -61,10 +61,6 @@ source_extension = '.cpp'
 indent = 4
 
 extra_output_dir       = 'BOSS_output'
-abstr_header_prefix    = 'abstract_'
-wrapper_header_prefix  = 'wrapper_'
-factory_file_prefix    = 'factory_'
-function_files_prefix  = 'function_'
 
 
 # ~~~~~ Information about other known types ~~~~~
@@ -77,3 +73,23 @@ function_files_prefix  = 'function_'
 #                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
 known_classes = {}
+
+
+# ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
+
+# The listed pragma directives will be added before/after including the 
+# the BOSS-generated headers in GAMBIT.
+#
+# Example:
+#   pragmas_begin = [
+#       '#pragma GCC diagnostic push',
+#       '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"',
+#   ]
+# 
+#   pragmas_end = [
+#       '#pragma GCC diagnostic pop'
+#   ]
+
+pragmas_begin = []
+pragmas_end = []
+

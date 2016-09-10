@@ -26,6 +26,7 @@
 #define __spec_hpp__
 
 #include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Models/SpectrumContents/subspectrum_contents.hpp"
 
 // Particle database access
 #define PDB Models::ParticleDB()        
@@ -33,38 +34,17 @@
 namespace Gambit
 {
 
-   /// Implementations (overrides) of the virtual getters/setters found in CommonAbstract.
-   /// These now need to be templated so that they know details of the derived spectrum object.
-   template <class HostSpec>
-   class CommonTemplateFuncs: public virtual CommonFuncs
-   {
-      public:
-
-        /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-        bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-        double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-        bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-        double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-        bool   has(const Par::Tags, const str&, int, int) const;
-        double get(const Par::Tags, const str&, int, int) const;
-
-        /* Setter declarations, for setting parameters in a derived model object,
-           and for overriding model object values with values stored outside
-           the model object (for when values cannot be inserted back into the
-           model object)
-           Note; these are NON-CONST */
-        void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
-        void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
-        void set(const Par::Tags, const double, const str&, int, int);
-   };
- 
-   /// =====================================================
-   
-     
    /// Need to forward declare Spec class
    template <class>
    class Spec;
 
+   /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
+   /// are not needed by the getters.
+   /// @{
+   class DummyModel {};
+   class DummyInput {};
+   /// @}
+ 
    /// Helper for the static_assert below
    template< typename T >
    struct always_false { 
@@ -81,31 +61,72 @@ namespace Gambit
       static_assert(always_false<T>::value, "Failed to find appropriate specialisation of SpecTraits! Did you define one along with your SubSpectrum wrapper? If so, please be sure that the template parameter matches the name of your wrapper class.");
    };
 
+   /// Default values for traits. Specialisations of SpecTraits should inherit from this, and then override the traits that they want to customise.
+   struct DefaultTraits
+   {
+      typedef DummyModel Model;
+      typedef DummyInput Input;
+   };
+
    /// Forward declarations related to FptrFinder class
    template<class,class> class SetMaps;
    template<class,class> class FptrFinder;  
-   template<class,class> class CallFcn;  
-  
-         
+   template<class,class> class CallFcn; 
+
+   /// Simpler helper class to run the verify_contents function only
+   /// once, the first time a particular wrapper class is constructed.
+   template<class Contents>
+   class VerifyContents
+   {
+      public:
+        VerifyContents(const SubSpectrum& spec)
+        {
+          Contents contents;
+          contents.verify_contents(spec); 
+        }
+   };
+
    // CRTP used to allow access to some special data members of the derived class.
    // Various inherited classes are just used to factor out code, some of which
    // doesn't need to be templated.
    template <class DerivedSpec>
-   class Spec : public SubSpectrum,
-                public CommonTemplateFuncs<Spec<DerivedSpec>>
+   class Spec : public SubSpectrum
    { 
-      public:
+     template <class,class>
+     friend class FptrFinder;
+ 
+     public:
          typedef DerivedSpec D;
          typedef Spec<D> Self;
 
          /// Note: Wrapper need to define a specialisation of 
          /// SpecTraits, which typedefs Model and Input.
          /// "Grab" these typedefs here to simplify notation
-         typedef typename SpecTraits<D>::Model Model;
-         typedef typename SpecTraits<D>::Input Input;
+         typedef typename SpecTraits<D>::Contents Contents;
+         typedef typename SpecTraits<D>::Model    Model;
+         typedef typename SpecTraits<D>::Input    Input;
 
          typedef MapTypes<D,MapTag::Get> MTget; 
          typedef MapTypes<D,MapTag::Set> MTset; 
+
+         std::string getName() const { return SpecTraits<D>::name(); };
+
+         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
+         bool   has(const Par::Tags, const str&, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, const int, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         double get(const Par::Tags, const str&, const int, const SpecOverrideOptions=use_overrides, const SafeBool=SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, const int, const int, const SpecOverrideOptions=use_overrides) const;
+         double get(const Par::Tags, const str&, const int, const int, const SpecOverrideOptions=use_overrides) const;
+
+         /* Setter declarations, for setting parameters in a derived model object,
+            and for overriding model object values with values stored outside
+            the model object (for when values cannot be inserted back into the
+            model object)
+            Note; these are NON-CONST */
+         void set(const Par::Tags, const double, const str&, const SafeBool=SafeBool(true));
+         void set(const Par::Tags, const double, const str&, const int, const SafeBool=SafeBool(true));
+         void set(const Par::Tags, const double, const str&, const int, const int);
 
          /// @{ Default (empty) map filler functions
          /// Override as needed in derived classes
@@ -119,9 +140,16 @@ namespace Gambit
             std::map<Par::Tags,MapCollection<MTset>> tmp;
             return tmp;
          }
-         /// @}
+
+         /// Get integer offset convention used by internal model class (needed by getters which take indices) 
+         /// By default assume no offset. Overrride as needed in derived class.
+         static int index_offset() { return 0; } 
+
 
       private:
+         /// Function to retrieve the possibly overridden index offset from the derived class via CRTP
+         static int get_index_offset() { return D::index_offset(); }
+
          /// @{ Functions to ensure that all the possible tags exist in the final map, 
          ///    even if no getters/setters are stored under those tags.
        
@@ -170,7 +198,11 @@ namespace Gambit
          
       public: 
 
-         /// Using default constructors
+         /// Constructor
+         /// This uses the "Contents" class to verify (once, not every construction)
+         /// that this wrapper provides all the basic functionality that it is
+         /// supposed to.
+         Spec() { static VerifyContents<Contents> runonce(*this); };
        
          /// Virtual destructor
          virtual ~Spec() {};
@@ -188,6 +220,15 @@ namespace Gambit
          ///    'get_Input' functions in the wrappers (with public access)
          ///    Might as well use static polymorphism rather than virtual functions,
          ///    since we are using the CRTP already anyway.
+
+         /// Default "null" versions of get_Model and get_Input, to be used if
+         /// wrapper does not override them.
+         DummyModel dummymodel;
+         DummyInput dummyinput;
+         Model& get_Model() { return dummymodel; }
+         Input& get_Input() { return dummyinput; }
+         const Model& get_Model() const { return dummymodel; }
+         const Input& get_Input() const { return dummyinput; }
 
          /// Get model object on which to call function pointers
          Model& model() { return static_cast<DerivedSpec*>(this)->get_Model(); }
@@ -217,15 +258,7 @@ namespace Gambit
 
    template <class D>
    const typename Spec<D>::SetterMaps Spec<D>::setter_maps(Spec<D>::final_fill_setter_maps());
-
-
-   /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
-   /// are not needed by the getters.
-   /// @{
-   class DummyModel {};
-   class DummyInput {};
-   /// @}
-  
+ 
 } // end namespace Gambit
 
 // Undef the various helper macros to avoid contaminating other files

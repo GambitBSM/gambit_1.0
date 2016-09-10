@@ -17,16 +17,29 @@
 ///          (p.scott@imperial.ac.uk)   
 ///  \date 2014 Dec
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include <cstdlib>
 #include <iomanip>
+#include <unistd.h>
+#include <iostream>
+#include <fstream> 
+#include <stdio.h>
+#include <sys/types.h> // for 'stat' function
+#include <sys/stat.h>  //    "         "
+
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Utils/table_formatter.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/ScannerBit/priors_rollcall.hpp"
 
 namespace Gambit
 {
@@ -65,26 +78,40 @@ namespace Gambit
             Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
             {
                 std::string p_str;
-                if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                std::ifstream lib_list(path + "plugin_libraries.list");
+                //if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                if (lib_list.is_open())
                 {
-                    char path_buffer[1024];
+                    /*char path_buffer[1024];
                     int p_n;
+                    std::stringstream p_ss;
+
                     while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
                     {
-                        std::stringstream p_ss(std::string(path_buffer, p_n));
-                        while (p_ss >> p_str)
-                        {
-                            if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
-                                loadLibrary (path + p_str);
-                        }
+                        p_ss << std::string(path_buffer, p_n);
+                    }*/
+
+                    //while (p_ss >> p_str)
+                    while (lib_list >> p_str)
+                    {
+                        //if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
+                        p_str = path + p_str;
+                        if(access(p_str.c_str(), F_OK) != -1) //can use R_OK|W_OK|X_OK also
+                            loadLibrary (p_str);
+                        else
+                            scan_warn << "Could not find plugin library \"" << p_str << "\"." << scan_end;
                     }
                     
-                    pclose(p_f);
+                    //pclose(p_f);
                     
                     loadExcluded(GAMBIT_DIR "/scratch/scanbit_excluded_libs.yaml");
                     
                     flags_node = YAML::LoadFile(GAMBIT_DIR "/scratch/scanbit_flags.yaml");
                     process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml", GAMBIT_DIR "/scratch/scanbit_flags.yaml");
+                }
+                else
+                {
+                    scan_err << "Cannot open ./ScannerBit/lib/plugin_libraries.list" << scan_end;
                 }
             }
 
@@ -113,7 +140,7 @@ namespace Gambit
             
             void Plugin_Loader::loadExcluded (const std::string& file)
             {
-                    YAML::Node node = YAML::LoadFile(file);
+                YAML::Node node = YAML::LoadFile(file);
                     
                 if (node.IsMap())
                 {
@@ -173,25 +200,27 @@ namespace Gambit
                 {
                     char buffer[1024];
                     int n;
+                    std::stringstream ss;
                     
                     while ((n = fread(buffer, 1, sizeof buffer, f)) > 0)
                     {
-                        std::stringstream ss(std::string(buffer, n));
-                        while(std::getline(ss, str))
-                        {
-                            std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
+                        ss << std::string(buffer, n);
+                    }
+
+                    while(std::getline(ss, str))
+                    {
+                        std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
                             
-                            if (pos != std::string::npos && 
-                                    (str.rfind(" T ", pos) != std::string::npos || str.rfind(" t ", pos) != std::string::npos))
-                            {
-                                Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
+                        if (pos != std::string::npos && 
+                                (str.rfind(" T ", pos) != std::string::npos || str.rfind(" t ", pos) != std::string::npos))
+                        {
+                            Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                 
-                                if (plug == "" || temp.plugin == plug)
-                                {
-                                    temp.path = p_str;
-                                    plugins.push_back(temp);
-                                    total_plugins.push_back(temp);
-                                }
+                            if (plug == "" || temp.plugin == plug)
+                            {
+                                temp.path = p_str;
+                                plugins.push_back(temp);
+                                total_plugins.push_back(temp);
                             }
                         }
                     }
@@ -233,17 +262,87 @@ namespace Gambit
                 return vec;
             }
             
-            std::string Plugin_Loader::print_priors() const
+            std::vector<std::string> Plugin_Loader::list_prior_groups() const
             {
-                std::string path = GAMBIT_DIR "/config/priors.dat";
-                YAML::Node node = YAML::LoadFile(path);
-                std::stringstream out;
-                if (node.IsMap())
+                YAML::Node node = YAML::LoadFile(GAMBIT_DIR "/config/priors.dat");
+                std::vector<std::string> vec;
+                
+                for(auto &&n : node)
                 {
-                    for (auto it = node.begin(), end = node.end(); it != end; ++it)
+                    if (n.second.IsSequence())
+                        vec.push_back(n.first.as<std::string>());
+                }
+                
+                vec.push_back("priors");
+                
+                return vec;
+            }
+            
+            std::string Plugin_Loader::print_priors(const std::string &prior_group) const
+            {
+                YAML::Node node = YAML::LoadFile(GAMBIT_DIR "/config/priors.dat");
+                std::stringstream out;
+                
+                if (prior_group == "priors")
+                {
+                    table_formatter table("Prior Name", "Prior Group");
+                    //table.top_line(true);
+                    table.bottom_line(true);
+                    std::unordered_set<std::string> prior_set;
+                    for(auto &&n : node)
                     {
-                        out << "\x1b[01m\x1b[04m" << it->first.as<std::string>() << "\x1b[0m\n" << std::endl;
-                        out << it->second.as<std::string>() << "\n" << std::endl;
+                        if (n.second.IsSequence())
+                        {
+                            for(auto &&v : n.second.as<std::vector<std::string>>())
+                            {
+                                prior_set.insert(v);
+                                if (Gambit::Priors::prior_creators.find(v) != Gambit::Priors::prior_creators.end())
+                                table.no_newline() << v << n.first.as<std::string>();
+                            }
+                        }
+                    }
+                    
+                    for (auto &&v : Gambit::Priors::prior_creators)
+                    {
+                        if (prior_set.find(v.first) == prior_set.end())
+                        {
+                            table.no_newline() << v.first << "none";
+                        }
+                    }
+                    
+                    table.no_newline() << "" << "";
+                    out << "\x1b[01m\x1b[04mPRIOR LIST\x1b[0m\n" << std::endl;
+                    out << format_for_screen("For information in a specific prior, see its prior group's dianostic via \"./gambit group_name\".");
+                    out << table.str() << std::endl;
+                    out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
+                    if (node["priors"])
+                        out << format_for_screen(node["priors"].as<std::string>()) << std::endl;
+                }
+                else
+                {
+                    std::vector<std::string> prior_names;
+                    std::string description;
+                    for(auto &&n : node)
+                    {
+                        if (n.first.as<std::string>() == prior_group)
+                        {
+                            if (n.second.IsSequence())
+                            {
+                                prior_names = n.second.as<decltype(prior_names)>();
+                            }
+                            else if (n.second.IsScalar())
+                            {
+                                description = n.second.as<std::string>();
+                            }
+                        }
+                    }
+                    
+                    if (prior_names.size() >0 || description != "")
+                    {
+                        out << "\x1b[01m\x1b[04mPRIORS INFO\x1b[0m\n" << std::endl;
+                        out << "\x1b[01mprior group name:  \x1b[0m" << prior_group << std::endl;
+                        out << "\x1b[01mpriors:  \x1b[0m" << prior_names << "\n" << std::endl;
+                        out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n\n" << description << std::endl;
                     }
                 }
                 
@@ -421,12 +520,17 @@ namespace Gambit
                 return plugins[0];
             }
 
-            void pluginInfo::iniFile(const Options &options_in, printer_interface &printerIn)
+            void pluginInfo::iniFile(const Options &options_in)
             {
                 options = options_in;
-                printer = &printerIn;
+            
                 if (options.getNode().IsMap())
                 {
+                    if (options.hasKey("default_output_path"))
+                        def_out_path = options.getValue<std::string>("default_output_path");
+                    else
+                        scan_err << "\"default output path\" must be specified in KeyValues section." << scan_end;
+                    
                     for (auto it = options.getNode().begin(), end = options.getNode().end(); it != end; it++)
                     {
                         std::string plug_type = it->first.as<std::string>();
@@ -471,23 +575,36 @@ namespace Gambit
                 }
             }
             
+            void pluginInfo::printer_prior(printer_interface &printerIn, Priors::BasePrior &prior_in)
+            {
+                printer = &printerIn;
+                prior = &prior_in;
+            }
+            
             Plugins::Plugin_Interface_Details pluginInfo::operator()(const std::string &type, const std::string &tag)
             {
                 if (selectedPlugins.find(type) != selectedPlugins.end() && selectedPlugins[type].find(tag) != selectedPlugins[type].end())
                 {
                     Proto_Plugin_Details &detail = selectedPlugins[type][tag];
                     YAML::Node plugin_options = options.getNode(type + "s", tag);
-                    plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
-                    plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
-                    plugin_options["model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
-                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, plugin_options);
+                    
+                    //if (!plugin_options["default_output_path"])
+                        plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
+                    
+                    if (!plugin_options["likelihood: model_invalid_for_lnlike_below"])
+                        plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
+                    
+                    if (!plugin_options["model_invalid_for_lnlike_below"])
+                        plugin_options["model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
+                    
+                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, prior, plugin_options);
                 }
                 else
                 {
                     scan_err << "Plugin \"" << tag << "\" of type \"" << type << "\" is not defined under the \"Scanner\""
                             << " subsection in the inifile" << scan_end;
                                 
-                    return Plugin_Interface_Details(plugins.find(type, "", "", ""), printer, options.getOptions(type + "s", tag).getNode());
+                    return Plugin_Interface_Details(plugins.find(type, "", "", ""), printer, prior, options.getOptions(type + "s", tag).getNode());
                 }
             }
             
@@ -495,18 +612,47 @@ namespace Gambit
             {
                 for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
                 {
-                    std::ofstream out((std::string(GAMBIT_DIR) + "/scratch/" + it->first).c_str(), std::ofstream::binary);
+                    std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files/" + it->first);
+                    std::ofstream out((path).c_str(), std::ofstream::binary);
                     for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
                     {
                         (*v_it)->print(out);
                     }
                 }
                 
-                printer->finalise(true);
-                #ifdef WITH_MPI 
-                  std::cout << "rank " << printer->getRank() <<": ";
-                #endif
-                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
+                printer->finalise(true); //"true" flag for "abnormal" stop; i.e. run is not completely finished
+                // Debugging output
+                // #ifdef WITH_MPI 
+                //   std::cout << "rank " << getRank() <<": ";
+                // #endif
+                // std::cout << "Gambit has written resume data to disk, preparing to stop!" << std::endl;
+            }
+
+            /// Save persistence file to record that the alternative min_LogL value is in use for this scan
+            void pluginInfo::save_alt_min_LogL_state() const
+            {
+                std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                std::ofstream outfile(state_fname);
+                outfile.close();
+            }
+
+            /// Delete the persistence file if it exists (e.g. when starting a new run)
+            void pluginInfo::clear_alt_min_LogL_state() const
+            {
+                if(check_alt_min_LogL_state())
+                {
+                    std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                    // Persistence file exists: delete it
+                    if (remove(state_fname.c_str())) scan_err << "Failed to delete alternative min_LogL persistence file '" << state_fname << "'! Error was: " << strerror(errno) << scan_end;
+                }
+            }
+
+            /// Check persistence file to see if we should be using the alternative min_LogL value
+            bool pluginInfo::check_alt_min_LogL_state() const
+            {
+                std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                struct stat buffer;   
+                return (stat(state_fname.c_str(), &buffer) == 0); 
             }
             
             pluginInfo::~pluginInfo()
@@ -525,6 +671,34 @@ namespace Gambit
                 }
             }
             
+            pluginInfo::pluginInfo()
+              : keepRunning(true), funcCalculating(false), MPIrank(0) 
+              #ifdef WITH_MPI
+              , scannerComm(NULL), MPIdata_is_init(false)
+              #endif
+              , earlyShutdownInProgress(false) 
+            {}
+
+            #ifdef WITH_MPI
+            ///Initialise any MPI functionality (currently just used to provide a communicator object to ScannerBit)
+            void pluginInfo::initMPIdata(GMPI::Comm* newcomm) 
+            { 
+               scannerComm = newcomm; 
+               MPIdata_is_init = true;
+               MPIrank = scanComm().Get_rank();     
+            }
+
+            GMPI::Comm& pluginInfo::scanComm() 
+            {
+               if(not MPIdata_is_init)
+               {
+                  std::cerr << "Tried to retrieve scanComm MPI communicator (in ScannerBit), but it has not been initialised! Please be sure to call 'initMPIdata' and provide a communicator before allowing any scans to commence." << std::endl;
+                  exit(1); //TODO not sure if this should be a standard GAMBIT error or not. Going with 'not' for now. 
+               } 
+               return *scannerComm; 
+            }
+            #endif
+ 
             pluginInfo plugin_info;
         }
     }

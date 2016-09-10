@@ -7,20 +7,34 @@ namespace Gambit {
   namespace ColliderBit {
 
 
+    /// Return a random true/false at a success rate given by a number
+    // inline
+    bool random_bool(double eff);
+    // {
+    //   /// @todo Handle out-of-range eff values
+    //   return HEPUtils::rand01() < eff;
+    // }
+
+
     /// Return a random true/false at a success rate given by a 1D efficiency map
     inline bool random_bool(const HEPUtils::BinnedFn1D<double>& effmap, double x) {
-      const double eff = effmap.get_at(x);
-      /// @todo Handle out-of-range x and eff values
-      return HEPUtils::rand01() < eff;
+      return random_bool( effmap.get_at(x) );
     }
 
 
     /// Return a random true/false at a success rate given by a 2D efficiency map
     inline bool random_bool(const HEPUtils::BinnedFn2D<double>& effmap, double x, double y) {
-      const double eff = effmap.get_at(x, y);
-      /// @todo Handle out-of-range x,y and eff values
-      return HEPUtils::rand01() < eff;
+      return random_bool( effmap.get_at(x, y) );
     }
+
+
+
+    /// Utility function for filtering a supplied particle vector by sampling wrt an efficiency scalar
+    void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff, bool do_delete=true);
+
+
+    /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
+    void filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt, bool do_delete=true);
 
 
     /// Randomly get a tag result (can be anything) from a 2D |eta|-pT efficiency map

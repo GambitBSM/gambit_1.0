@@ -16,9 +16,19 @@ Parameters:
         range: [100, 1000]
         prior_type: flat
       A0: 0
-      tanb: 10
-      signmu: 1
+      TanBeta: 10
+      SignMu: 1
 
+   Halo_gNFW_rho0:
+    rho0: 0.4
+    v0: 235.0
+    vesc: 550.0
+    vrot: 235.0
+    rs: 20.0
+    r_sun: 8.5
+    alpha: 1
+    beta: 3
+    gamma: 1
 
 
 ##############################
@@ -43,7 +53,7 @@ Printer:
     # name of output file
     output_file: "runs/CMSSM_multinest_hdf5/samples/gambit_output.hdf5"
     group: "/CMSSM"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 
 ##############################
@@ -92,9 +102,9 @@ ObsLikes:
 #   - capability: lnL_FermiGC
 #     purpose:  LogLike
 #
-    - capability: lnL_XENON100_2012
+    - capability: XENON100_2012_LogLikelihood
       purpose:  LogLike
-    - capability: lnL_LUX_2013
+    - capability: LUX_2013_LogLikelihood
       purpose:  LogLike
 #    - capability: lnL_DARWIN_Ar_2015
 #      purpose:  Observable
@@ -103,6 +113,13 @@ ObsLikes:
 
 # Complete list of likelihoods in DarkBit as of 2015-05-10
 Rules:
+
+  # Choose to rescale signals in direct and indirect detection by the relic density fraction
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
+      
   - function: get_mass_es_pseudonyms
     options:
       hard_error_on_mixing_failure: false
@@ -114,8 +131,8 @@ Rules:
     function: A0_decays
   - capability: Higgs_decay_rates
     function: MSSM_h0_1_decays
-  - capability: Hplus_decay_rates
-    function: Hplus_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
   - capability: h0_2_decay_rates
     function: h0_2_decays
   - capability: t_decay_rates

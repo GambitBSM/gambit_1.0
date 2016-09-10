@@ -34,6 +34,7 @@
 // Gambit
 #include "gambit/Logs/logger.hpp" // Minimal declarations needed to use logger -- most code should only need to include this.
 #include "gambit/Logs/log_tags.hpp"
+#include "gambit/Utils/file_lock.hpp"
 //#include "gambit/Utils/util_functions.hpp"
 
 
@@ -59,6 +60,9 @@ namespace Gambit
     // Function to retrieve the 'flags' set
     const std::set<LogTag>& flags();
  
+    // Function to retrieve the 'echoes' set
+    const std::set<LogTag>& echoes();
+
     // Function to return the next unused tag index
     // (needed by module and backend macros so they can determine what tag they are allowed to use)
     int getfreetag();
@@ -91,6 +95,7 @@ namespace Gambit
         std::set<LogTag> type_tags;      //message types
         std::set<int> component_tags;    //gambit components, modules, and backends
         std::set<LogTag> flag_tags;      //extra message flags      
+        std::set<LogTag> echo_tags;      //message echo flags      
         // Constructor (does the sorting of the tags)
         SortedMessage(const Message& mail);
     };

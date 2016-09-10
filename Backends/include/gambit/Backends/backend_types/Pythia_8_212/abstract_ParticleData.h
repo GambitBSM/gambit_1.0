@@ -11,15 +11,11 @@
 #include <string>
 #include <ostream>
 #include <vector>
-#include "wrapper_ResonanceWidths_decl.h"
 #include "wrapper_ParticleDataEntry_decl.h"
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::ParticleData*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -27,7 +23,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_ParticleData : virtual public AbstractBase
+        class Abstract_ParticleData : public virtual AbstractBase
         {
             public:
     
@@ -277,8 +273,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void rescaleBR__BOSS(int) =0;
     
-                virtual void setResonancePtr__BOSS(int, Pythia8::Abstract_ResonanceWidths*) =0;
-    
                 virtual void resInit(int) =0;
     
                 virtual double resWidth(int, double, int, bool, bool) =0;
@@ -316,36 +310,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual bool getIsInit() =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_ParticleData*) =0;
-                virtual Abstract_ParticleData* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_ParticleData*) =0;
+                virtual Abstract_ParticleData* pointer_copy__BOSS() =0;
     
             private:
-                mutable ParticleData* wptr;
+                ParticleData* wptr;
+                bool delete_wrapper;
+            public:
+                ParticleData* get_wptr() { return wptr; }
+                void set_wptr(ParticleData* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_ParticleData()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(ParticleData* wptr_in)
+                Abstract_ParticleData(const Abstract_ParticleData&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                ParticleData* wrapper__BOSS()
+                Abstract_ParticleData& operator=(const Abstract_ParticleData&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ParticleData from backend Pythia_8_212. The function Abstract_ParticleData::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                ParticleData* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                ParticleData& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_ParticleData()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ParticleData from backend Pythia_8_212. The function Abstract_ParticleData::~Abstract_ParticleData in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

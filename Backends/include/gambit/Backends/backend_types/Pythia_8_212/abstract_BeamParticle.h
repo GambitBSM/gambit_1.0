@@ -14,12 +14,9 @@
 #include <vector>
 #include <utility>
 #include <cstddef>
+#include <iostream>
 
 #include "identification.hpp"
-
-// Forward declaration needed by the destructor pattern.
-void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::BeamParticle*);
-
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -27,7 +24,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_BeamParticle : virtual public AbstractBase
+        class Abstract_BeamParticle : public virtual AbstractBase
         {
             public:
     
@@ -142,36 +139,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual ::std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > getColUpdates() =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_BeamParticle*) =0;
-                virtual Abstract_BeamParticle* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_BeamParticle*) =0;
+                virtual Abstract_BeamParticle* pointer_copy__BOSS() =0;
     
             private:
-                mutable BeamParticle* wptr;
+                BeamParticle* wptr;
+                bool delete_wrapper;
+            public:
+                BeamParticle* get_wptr() { return wptr; }
+                void set_wptr(BeamParticle* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_BeamParticle()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(BeamParticle* wptr_in)
+                Abstract_BeamParticle(const Abstract_BeamParticle&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                BeamParticle* wrapper__BOSS()
+                Abstract_BeamParticle& operator=(const Abstract_BeamParticle&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::BeamParticle from backend Pythia_8_212. The function Abstract_BeamParticle::init_wrapper() in GAMBIT should never have been called..." << std::endl;
+                }
+    
+                BeamParticle* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                BeamParticle& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_BeamParticle()
                 {
-                    if (can_delete_wrapper())
-                    {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
-                    }
+                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::BeamParticle from backend Pythia_8_212. The function Abstract_BeamParticle::~Abstract_BeamParticle in GAMBIT should never have been called..." << std::endl;
                 }
         };
     }

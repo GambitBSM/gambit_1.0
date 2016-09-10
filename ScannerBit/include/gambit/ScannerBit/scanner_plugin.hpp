@@ -17,6 +17,10 @@
 ///          (p.scott@imperial.ac.uk)   
 ///  \date 2014 Dec
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2016 Jul
+///
 ///  *********************************************
 
 #ifndef SCANNER_PLUGIN_HPP
@@ -26,6 +30,10 @@
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/plugin_macros.hpp"
 #include "gambit/ScannerBit/factory_defs.hpp"
+
+// Needed for plugin_info access. If there is a better way to call the "early_shutdown_in_progress"
+// function then feel free to change this.
+#include "gambit/ScannerBit/plugin_loader.hpp"
 
 ///\name Scanner Plugin Macros 
 ///Macros used by the scanner plugin
@@ -42,6 +50,7 @@ void *get_purpose(const std::string &purpose)                                   
     void *ptr = (get_input_value<Factory_Base>(1))(purpose);                                \
     static_cast <Function_Base<void(void)>*>(ptr)->setPurpose(purpose);                     \
     static_cast <Function_Base<void(void)>*>(ptr)->setPrinter(get_printer().get_stream());  \
+    static_cast <Function_Base<void(void)>*>(ptr)->setPrior(&get_prior());                  \
     assign_aux_numbers(purpose, "pointID", "MPIrank");                                      \
                                                                                             \
     return ptr;                                                                             \

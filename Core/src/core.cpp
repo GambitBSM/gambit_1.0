@@ -39,10 +39,12 @@
 
 // MPI
 #ifdef WITH_MPI
-  #include <mpi.h>
+  #include "gambit/Utils/mpiwrapper.hpp"
   #define GET_RANK GMPI::Comm().Get_rank()
+  #define GET_SIZE GMPI::Comm().Get_size()
 #else
   #define GET_RANK 0
+  #define GET_SIZE 1
 #endif
 
 
@@ -60,13 +62,17 @@ namespace Gambit
      , input_model_descriptions(GAMBIT_DIR "/config/models.dat")
      , report_file(GAMBIT_DIR "/config/report.txt")
      , report(report_file.c_str())
+     , outprec(8)
      /* command line flags */ 
      , processed_options(false)
      , show_runorder(false)
-     , resume(false)
+     , resume(true)
      , verbose_flag(false)
      , found_inifile(false)
     {}
+
+    /// Getter for precision to use for cout
+    int gambit_core::get_outprec() const { return outprec; }
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail(int mpirank)
@@ -102,7 +108,11 @@ namespace Gambit
                 "\n   -v/--verbose          Turn on verbose mode                              "
                 "\n   -d/--dryrun           List the function evaluation order computed based " 
                 "\n                           on inifile                                      "
-                "\n   -r/--resume           Resume a previously initiated scan                "
+                "\n   -r/--restart          Restart the scan defined by <inifile>. Existing   "
+                "\n                         output files for the run will be overwritten.     "
+                "\n                         Default behaviour in the absence of this option is"
+                "\n                         to attempt to resume the scan from any existing   "
+                "\n                         output.                                           "
                 "\n" << endl << endl; 
       }
       logger().disable();
@@ -125,8 +135,8 @@ namespace Gambit
         {"version", no_argument, 0, 10}, /*10 is just a unique integer key to identify this argument*/
         {"verbose", no_argument, 0, 'v'},
         {"help",    no_argument, 0, 'h'},
-        {"dryrun",  no_argument,0, 'd'},
-        {"resume",  no_argument,0, 'r'},
+        {"dryrun",  no_argument, 0, 'd'},
+        {"restart", no_argument, 0, 'r'},
         {0,0,0,0},
       };
 
@@ -142,8 +152,7 @@ namespace Gambit
           case 10:
           {
             // Display version number and shutdown.
-            int mpirank = GET_RANK;
-            if (mpirank == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
+            if (GET_RANK == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
             logger().disable();
             throw SilentShutdownException();
           }
@@ -159,10 +168,18 @@ namespace Gambit
           case 'd':
             // Display proposed functor evaluation order and quit
             show_runorder = true; // Sorted out in dependency resolver
+            // Should not allow this on multiple processes, just produces
+            // mixed up junk output.
+            if(GET_SIZE>1)
+            {
+               cout << "Tried to run GAMBIT dry-run mode in parallel! This is not allowed, please use only one process when performing dry-runs." << endl;
+               logger().disable();
+               throw SilentShutdownException();
+            }
             break;
           case 'r':
-            // Turn on "resume" mode
-            resume = true;
+            // Restart scan (turn off "resume" mode, activate output overwrite)
+            resume = false;
             break;
           case 'f':
             // Argument must contain the ini-filename 
@@ -346,7 +363,7 @@ namespace Gambit
       {
         // Warn user of missing descriptions
         std::ostringstream msg;
-        msg << "Warning! Descriptions are missing for the following capabilities:" <<endl;
+        msg << "WARNING" << endl << "Descriptions are missing for the following capabilities:" <<endl;
         for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
         {
           if(not it->has_description)
@@ -359,7 +376,7 @@ namespace Gambit
         // Send to a hardcoded file for now
         report << msg.str() << endl;
         // Also make user directly aware of this problem
-        cout << "Warning! Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
+        if (GET_RANK == 0) cout << "WARNING: Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
       }
 
       // Write out the centralised database file containing all this information
@@ -449,7 +466,7 @@ namespace Gambit
       {
         // Warn user of missing descriptions
         std::ostringstream msg;
-        msg << "Warning! Descriptions are missing for the following models:" <<endl;
+        msg << "WARNING" << endl << "Descriptions are missing for the following models:" <<endl;
         for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
         {
           if(not it->has_description)
@@ -460,7 +477,7 @@ namespace Gambit
         msg << "Please add descriptions of these to "<< input_model_descriptions <<endl;
         report << msg.str() << endl;
         // Also make user directly aware of this problem
-        cout << "Warning! Descriptions missing for some models! See "<<report_file<<" for details." << endl;
+        if (GET_RANK == 0) cout << "WARNING: Descriptions missing for some models! See "<<report_file<<" for details." << endl;
       }
 
       // Write out the centralised database file containing all this information
@@ -590,9 +607,11 @@ namespace Gambit
         for (auto it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it) valid_commands.push_back((*it)->origin());
         std::vector<std::string> scanner_names = Scanner::Plugins::plugin_info().print_plugin_names("scanner");
         std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");
+        std::vector<std::string> prior_groups = Scanner::Plugins::plugin_info().list_prior_groups();
         valid_commands.insert(valid_commands.end(), scanner_names.begin(), scanner_names.end());
         valid_commands.insert(valid_commands.end(), objective_names.begin(), objective_names.end());
-        valid_commands.push_back("priors");
+        valid_commands.insert(valid_commands.end(), prior_groups.begin(), prior_groups.end());
+        //valid_commands.push_back("priors");
 
         // If the user hasn't asked for a diagnostic at all, process the command line options for the standard run mode and get out.
         if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -665,6 +684,7 @@ namespace Gambit
         ff_capability_diagnostic(command);
         ff_scanner_diagnostic(command);
         ff_test_function_diagnostic(command);
+        ff_prior_diagnostic(command);
         cout << endl;
       }
    

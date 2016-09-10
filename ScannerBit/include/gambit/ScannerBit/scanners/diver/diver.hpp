@@ -25,8 +25,7 @@
 extern "C" void cdiver(double (*)(double[], const int, int&, bool&, const bool, void*&), int, const double[], const double[], 
                        const char[], int, int, const int[], bool, const int, const int, int, int, const double[], double, 
                        double, bool, bool, int, bool, bool, double, int, bool, bool, double(*)(const double[], const int, void*&), 
-                       double, double, int, bool, bool, void*&, int);
-
+                       double, double, int, bool, bool, int, int, double, void*&, int);
 
 namespace Gambit
 {
@@ -37,7 +36,7 @@ namespace Gambit
     /// Structure for passing likelihood and printer data through Diver to the objective function.
     struct diverScanData
     {
-      Scanner::scan_ptr<double (const std::vector<double>&)> likelihood_function;
+      Scanner::like_ptr likelihood_function;
       Scanner::printer_interface* printer;
     };
 

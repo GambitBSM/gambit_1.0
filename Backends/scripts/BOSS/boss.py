@@ -12,7 +12,7 @@
 # BOSS makes use of CastXML to parse the C++ source code.
 #
 # Default usage:
-# ./boss [list of class header files]
+# ./boss configs/some_config_file.py
 # 
 
 import xml.etree.ElementTree as ET
@@ -27,30 +27,20 @@ import copy
 from collections import OrderedDict
 from optparse import OptionParser
 
-# import modules.cfg as cfg
-# import modules.gb as gb
-# import modules.classutils as classutils
-# import modules.classparse as classparse
-# import modules.funcparse as funcparse
-# import modules.funcutils as funcutils
-# import modules.utils as utils
-# import modules.filehandling as filehandling
-# import modules.infomsg as infomsg
-
 
 # ====== main ========
 
 def main():
 
-    print
-    print
-    print '  ========================================'
-    print '  ||                                    ||'
-    print '  ||  BOSS - Backend-On-a-Stick-Script  ||'
-    print '  ||                                    ||'
-    print '  ========================================'
-    print 
-    print 
+    # print
+    # print
+    # print '  ========================================'
+    # print '  ||                                    ||'
+    # print '  ||  BOSS - Backend-On-a-Stick-Script  ||'
+    # print '  ||                                    ||'
+    # print '  ========================================'
+    # print 
+    # print 
 
 
     # Parse command line arguments and options
@@ -170,6 +160,18 @@ def main():
     import modules.infomsg as infomsg
 
 
+    # Print banner
+    msg = '''
+
+  ========================================
+  ||                                    ||
+  ||  BOSS - Backend-On-a-Stick-Script  ||
+  ||                                    ||
+  ========================================
+    '''
+    msg = utils.modifyText(msg,'bold')
+    print msg
+
 
 
     # If castxml compiler setting are given as command line input, 
@@ -196,23 +198,20 @@ def main():
         print '(Continuing from saved state.)'
         print 
         print 
-        print 'Parsing the generated factory function source files:'
-        print '----------------------------------------------------'
+        print utils.modifyText('Parsing the generated factory function source files:','underline')
         print 
 
         factory_xml_files = filehandling.parseFactoryFunctionFiles()
 
         print
         print
-        print 'Generating file loaded_types.hpp:'
-        print '---------------------------------'
+        print utils.modifyText('Generating file loaded_types.hpp:','underline')
         print 
 
         filehandling.createLoadedTypesHeader(factory_xml_files)
 
         print
-        print 'Done!'
-        print '-----' 
+        print utils.modifyText('Done!','bold')
         print
 
         sys.exit()
@@ -223,8 +222,7 @@ def main():
     if options.reset_info_file_name != '':
         print
         print
-        print 'Reset source code:'
-        print '------------------'
+        print utils.modifyText('Reset source code:','underline')
         print 
         print '  Input file: ' + options.reset_info_file_name
         print 
@@ -252,8 +250,7 @@ def main():
     #
     if cfg.auto_detect_stdlib_paths:
         print
-        print 'Identifying standard include paths:'
-        print '-----------------------------------'
+        print utils.modifyText('Identifying standard include paths:','underline')
         print 
 
         utils.identifyStdIncludePaths()
@@ -265,8 +262,7 @@ def main():
     #
 
     print
-    print 'Parsing the input files:'
-    print '------------------------'
+    print utils.modifyText('Parsing the input files:','underline')
     print 
 
     # Create the temp output dir if it does not exist
@@ -289,7 +285,7 @@ def main():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 100.
+        timeout = 600.
         poll = 0.2
 
         # Run castxml
@@ -358,13 +354,13 @@ def main():
         all_function_names = list(OrderedDict.fromkeys(all_function_names))
         
         # Output lists
-        print 'Classes:'
-        print '--------'
+        print utils.modifyText('Classes:','underline')
+        print
         for demangled_class_name in all_class_names:
             print '  - ' + demangled_class_name
         print
-        print 'Functions:'
-        print '----------'
+        print utils.modifyText('Functions:','underline')
+        print
         for demangled_func_name in all_function_names:
             print '  - ' + demangled_func_name
         print
@@ -377,8 +373,7 @@ def main():
     # Analyse types and functions
     #
 
-    print 'Analysing types and functions:'
-    print '------------------------------'
+    print utils.modifyText('Analysing types and functions:','underline')
     print
     print '  (This may take a little while.)'
     print
@@ -414,10 +409,6 @@ def main():
         # Initialise global dicts
         gb.xml_file_name = xml_file
         utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
-
-        # # Set the global dicts for the current xml file
-        # gb.id_dict   = gb.all_id_dict[xml_file]
-        # gb.name_dict = gb.all_name_dict[xml_file]
 
         # Loop over all named elements in the xml file
         for full_name, el in gb.name_dict.items():
@@ -489,10 +480,6 @@ def main():
         gb.xml_file_name = xml_file
         utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
 
-        # # Set the global dicts for the current xml file
-        # gb.id_dict   = gb.all_id_dict[xml_file]
-        # gb.name_dict = gb.all_name_dict[xml_file]
-
         # Loop over all named elements in the xml file
         for full_name, el in gb.name_dict.items():
 
@@ -527,8 +514,7 @@ def main():
         print
         print '  - No classes or functions to load!'
         print
-        print 'Done!'
-        print '-----' 
+        print utils.modifyText('Done!','bold')
 
         sys.exit()
 
@@ -536,16 +522,14 @@ def main():
 
     print
     print
-    print 'Generating code:'
-    print '----------------'
+    print utils.modifyText('Generating code:','underline')
 
     for xml_file in xml_files:
 
         # Output xml file name
         print 
         print
-        print '  Current XML file: %s' % xml_file
-        print '  ------------------' + '-'*len(xml_file)
+        print '  ' + utils.modifyText('Current XML file:', 'underline') + ' ' + xml_file
         print 
 
         #
@@ -604,8 +588,7 @@ def main():
         print
         print '  - No classes or functions loaded!'
         print
-        print 'Done!'
-        print '-----' 
+        print utils.modifyText('Done!','bold')
         print 
 
         sys.exit()
@@ -706,7 +689,7 @@ def main():
     # the correct namespace.
     #
 
-    construct_namespace_in_files = glob.glob( os.path.join(gb.gambit_backend_dir_complete, '*') )
+    construct_namespace_in_files = glob.glob(os.path.join(gb.backend_types_dir_complete,'*')) + glob.glob(os.path.join(gb.for_gambit_backend_types_dir_complete,'*'))
 
     filehandling.replaceNamespaceTags(construct_namespace_in_files, gb.gambit_backend_namespace, '__START_GAMBIT_NAMESPACE__', '__END_GAMBIT_NAMESPACE__')
 
@@ -715,12 +698,13 @@ def main():
     # Run through all the generated files and remove tags that are no longer needed
     #
 
-    all_generated_files = glob.glob( os.path.join(cfg.extra_output_dir, '*') ) + glob.glob( os.path.join(gb.gambit_backend_dir_complete, '*') )
+    all_generated_files = glob.glob(os.path.join(cfg.extra_output_dir,'*')) + glob.glob(os.path.join(gb.backend_types_dir_complete, '*')) + glob.glob(os.path.join(gb.for_gambit_backend_types_dir_complete,'*'))
     remove_tags_list = [ '__START_GAMBIT_NAMESPACE__', 
                          '__END_GAMBIT_NAMESPACE__', 
                          '__INSERT_CODE_HERE__' ]
 
     filehandling.removeCodeTagsFromFiles(all_generated_files, remove_tags_list)
+
 
 
     #
@@ -729,8 +713,7 @@ def main():
 
     print
     print
-    print 'Copying generated files to original source tree:'
-    print '------------------------------------------------'
+    print utils.modifyText('Copying generated files to original source tree:','underline')
     print 
 
     manipulated_files, new_files, new_dirs = filehandling.copyFilesToSourceTree(verbose=True)
@@ -763,8 +746,7 @@ def main():
 
     print 
     print 
-    print 'Parsing the generated factory function source files:'
-    print '----------------------------------------------------'
+    print utils.modifyText('Parsing the generated factory function source files:','underline')
     print 
 
     factory_xml_files = filehandling.parseFactoryFunctionFiles()
@@ -777,8 +759,7 @@ def main():
 
     print
     print
-    print 'Generating file loaded_types.hpp:'
-    print '---------------------------------'
+    print utils.modifyText('Generating file loaded_types.hpp:','underline')
     print 
 
     filehandling.createLoadedTypesHeader(factory_xml_files)
@@ -790,8 +771,7 @@ def main():
 
     print 
     print 
-    print 'Parsing the generated function source files:'
-    print '--------------------------------------------'
+    print utils.modifyText('Parsing the generated function source files:','underline')
     print 
 
     function_xml_files = filehandling.parseFunctionSourceFiles()
@@ -803,8 +783,7 @@ def main():
 
     print
     print
-    print 'Generating GAMBIT frontend header file:'
-    print '---------------------------------------'
+    print utils.modifyText('Generating GAMBIT frontend header file:','underline')
     print 
 
     filehandling.createFrontendHeader(function_xml_files)
@@ -815,8 +794,7 @@ def main():
     #
 
     print
-    print 'Done!'
-    print '-----' 
+    print utils.modifyText('Done!','bold')
     print
     print "  To prepare this backend for use with GAMBIT, do the following:"
     print 
@@ -824,7 +802,7 @@ def main():
     print "       Make sure that these are included when building '%s'." % (cfg.gambit_backend_name)
     print "    2. Build a shared library (.so) from the '%s' source code that BOSS has edited." % (cfg.gambit_backend_name)
     print "    3. Set the correct path to this library in the 'backends_locations.yaml' file in GAMBIT."
-    print "    4. Copy the '%s' directory from '%s' to the 'backend_types' directory within GAMBIT." % (gb.gambit_backend_name_full, gb.gambit_backend_dir_complete)
+    print "    4. Copy the '%s' directory from '%s' to the 'backend_types' directory within GAMBIT." % (gb.gambit_backend_name_full, gb.for_gambit_backend_types_dir_complete)
     print "    5. Copy the file '%s' from '%s' to the GAMBIT 'frontends' directory." % (gb.frontend_fname, gb.frontend_path)
     print 
     print 

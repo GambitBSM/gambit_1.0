@@ -59,8 +59,8 @@ namespace Gambit
         /// Key: backend name + version
         std::map<str,str> dlerrors;
 
-        /// Key: backend name
-        std::map<str,str> defaults;
+        /// Key: backend name (map from BOSSed backend names to their default safe versions)
+        std::map<str, str> default_safe_versions;
 
         /// Key: backend name + version
         std::map<str,bool> works;
@@ -91,6 +91,16 @@ namespace Gambit
 
         /// Override a backend's config file location
         void override_path(str&, str&, str);
+
+        /// Get the default version of a BOSSed backend.
+        str default_version(const str& be) const;
+
+        /// Get all versions of a given backend that are successfully loaded.
+        std::vector<str> working_versions(const str&);
+
+        /// Get all safe versions of a given backend that are successfully loaded.
+        std::vector<str> working_safe_versions(const str&);
+
 
       private:
 
