@@ -44,6 +44,7 @@
 #include "gambit/ColliderBit/higgslike.hpp"
 
 //#define COLLIDERBIT_DEBUG
+#define DEBUG
 
 namespace Gambit
 {
@@ -218,8 +219,8 @@ namespace Gambit
       result.CV=1;
       result.CGa=1;
       result.Cg=1;
-      result.BRinv=0;
-      result.BRund=0;
+      result.BRinv=0; // gets set later by set_invisible_width
+      result.BRund=0; // not sure what to do with this one
     }
     
     

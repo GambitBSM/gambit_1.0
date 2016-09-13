@@ -157,7 +157,7 @@ ObsLikes:
 
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
-      function: calc_HS_LHC_LogLike
+      function: calc_gambit_LHC_LogLike
 
 
 
