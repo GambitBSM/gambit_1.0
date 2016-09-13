@@ -705,7 +705,7 @@ namespace Gambit
     
  
     
-    void calc_HS_LHC_LogLike_func(double &result)
+    void calc_HS_LHC_LogLike_func(ddpair &result)
     {
       using namespace Pipes::calc_HS_LHC_LogLike_func;
     
@@ -755,7 +755,8 @@ namespace Gambit
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
-      result = -0.5*csqtot;
+      //result = -0.5*csqtot;
+      result = std::pair<double, double>(-0.5*csqtot,-0.5*csqmh);
     }
 
     
@@ -763,8 +764,10 @@ namespace Gambit
     {
       using namespace Pipes::calc_HS_LHC_LogLike;
       
-      double logL = *Dep::calc_HS_LHC_LogLike_func;
-      result = logL;
+      std::pair<double, double> logL = *Dep::calc_HS_LHC_LogLike_func;
+      bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
+      if (HS_mass_only) {result = logL.second;}
+      else {result = logL.first;}
     }
     
     void calc_Lilith_LHC_LogLike(double &result)
@@ -786,14 +789,16 @@ namespace Gambit
     void calc_combined_LHC_LogLike(double &result)
     {
       using namespace Pipes::calc_combined_LHC_LogLike;
-      double HSlogL = *Dep::calc_HS_LHC_LogLike_func;
+      std::pair<double, double> HSlogL = *Dep::calc_HS_LHC_LogLike_func;
       
       
       double LilithlogL = *Dep::calc_Lilith_LHC_LogLike_func;
       
       
+      bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
       
-      result = HSlogL +LilithlogL;
+      if (HS_mass_only) {result = HSlogL.second +LilithlogL;}
+      else {result = HSlogL.first +LilithlogL;}
     
     
     }
