@@ -119,7 +119,7 @@ BE_INI_FUNCTION
 
       HS_path = backendDir;
       
-      if (HS_data != "latestresults"){
+      if (HS_data == "fully_config_"){
       std::vector <std::string> channels;
       std::vector <std::string> null;
       

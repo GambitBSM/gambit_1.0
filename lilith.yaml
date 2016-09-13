@@ -157,7 +157,7 @@ ObsLikes:
 
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
-      function: calc_combined_LHC_LogLike
+      function: calc_HS_LHC_LogLike
 
 
 
@@ -171,8 +171,8 @@ Rules:
 
     - capability: HiggsSignals_1_4_init
       options:
-        HS_data: combineddata2
-        channels: [Hgaga]
+        HS_data: HS_data______
+        #channels: [Hgaga]
 
     - capability: Lilith_1_1_3_init
       options:
