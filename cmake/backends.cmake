@@ -619,21 +619,7 @@ ExternalProject_Add(${name}_${ver}
             COMMAND ./my_configure
             COMMAND sed ${dashi} -e "s|.*intent(in) :: Expt_string.*| character(LEN=13), intent(in) :: Expt_string |" HiggsSignals_subroutines.f90
             COMMAND ${CMAKE_COMMAND} -E echo "echo \"Available pre-configured data sets are, with corresponding directory names\" " > config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "availdatasets=\"$(ls ../../../../ColliderBit/extras/ |grep HS_)\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "for dataset in $availdatasets " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "do " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "dataset=\"\${dataset%.*}\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "datasetlong=\"\${dataset}__________\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "datasetlong=\${datasetlong:0:13} " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "echo $dataset \" = \" $datasetlong " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "mkdir Expt_tables/$datasetlong " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "for i in {1..99} " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "do " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "srcfile=\"$(head -\"$i\"  ../../../../ColliderBit/extras/\"$dataset\".txt | tail -1)\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "cp Expt_tables/latestresults/$srcfile Expt_tables/$datasetlong/$srcfile " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "done " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "done " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "availdatasets_channels=\"$(ls ../../../../ColliderBit/extras/ |grep HSc_)\" " >> config_data.sh
+            COMMAND ${CMAKE_COMMAND} -E echo "availdatasets_channels=\"$(ls ../../../../ColliderBit/extras/ |grep HS_)\" " >> config_data.sh
             COMMAND ${CMAKE_COMMAND} -E echo "for dataset in $availdatasets_channels " >> config_data.sh
             COMMAND ${CMAKE_COMMAND} -E echo "do " >> config_data.sh
             COMMAND ${CMAKE_COMMAND} -E echo "dataset=\"\${dataset%.*}\" " >> config_data.sh

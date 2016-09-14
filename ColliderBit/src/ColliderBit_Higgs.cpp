@@ -679,10 +679,10 @@ namespace Gambit
 
 
     
-    void calc_Lilith_LHC_LogLike_func(double &result)
+    void calc_Lilith_LHC_LogLike(double &result)
     {
       
-      using namespace Pipes::calc_Lilith_LHC_LogLike_func;
+      using namespace Pipes::calc_Lilith_LHC_LogLike;
       
       // Lilith call //
       lilith_ModelParameters ModelParam_lilith = *Dep::Lilith_ModelParameters;
@@ -706,9 +706,9 @@ namespace Gambit
     
  
     
-    void calc_HS_LHC_LogLike_func(ddpair &result)
+    void calc_HS_LHC_LogLike(ddpair &result)
     {
-      using namespace Pipes::calc_HS_LHC_LogLike_func;
+      using namespace Pipes::calc_HS_LHC_LogLike;
     
      hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
@@ -761,39 +761,39 @@ namespace Gambit
     }
 
     
-    void calc_HS_LHC_LogLike(double &result)
+    void HS_LHC_LogLike(double &result)
     {
-      using namespace Pipes::calc_HS_LHC_LogLike;
+      using namespace Pipes::HS_LHC_LogLike;
       
-      std::pair<double, double> logL = *Dep::calc_HS_LHC_LogLike_func;
+      std::pair<double, double> logL = *Dep::calc_HS_LHC_LogLike;
       bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
       if (HS_mass_only) {result = logL.second;}
       else {result = logL.first;}
     }
     
-    void calc_Lilith_LHC_LogLike(double &result)
+    void Lilith_LHC_LogLike(double &result)
     {
-      using namespace Pipes::calc_Lilith_LHC_LogLike;
+      using namespace Pipes::Lilith_LHC_LogLike;
       
-      double logL = *Dep::calc_Lilith_LHC_LogLike_func;
+      double logL = *Dep::calc_Lilith_LHC_LogLike;
       result = logL;
     }
-    void calc_gambit_LHC_LogLike(double &result)
+    void gambit_LHC_LogLike(double &result)
     {
-      using namespace Pipes::calc_gambit_LHC_LogLike;
+      using namespace Pipes::gambit_LHC_LogLike;
       
-      double logL = *Dep::calc_gambit_LHC_LogLike_func;
+      double logL = *Dep::calc_gambit_LHC_LogLike;
       result = logL;
     }
     
         
-    void calc_combined_LHC_LogLike(double &result)
+    void combined_LHC_LogLike(double &result)
     {
-      using namespace Pipes::calc_combined_LHC_LogLike;
-      std::pair<double, double> HSlogL = *Dep::calc_HS_LHC_LogLike_func;
+      using namespace Pipes::combined_LHC_LogLike;
+      std::pair<double, double> HSlogL = *Dep::calc_HS_LHC_LogLike;
       
       
-      double LilithlogL = *Dep::calc_Lilith_LHC_LogLike_func;
+      double LilithlogL = *Dep::calc_Lilith_LHC_LogLike;
       
       
       bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
@@ -880,9 +880,9 @@ namespace Gambit
     }
 
         
-    void calc_gambit_LHC_LogLike_func(double &result)
+    void calc_gambit_LHC_LogLike(double &result)
     {
-      using namespace Pipes::calc_gambit_LHC_LogLike_func;
+      using namespace Pipes::calc_gambit_LHC_LogLike;
       
       cout << "GAMBIT internal Higgs likelihood started" << endl;
  

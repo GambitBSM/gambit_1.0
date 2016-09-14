@@ -131,9 +131,9 @@
   #undef CAPABILITY
 
 
-  #define CAPABILITY calc_HS_LHC_LogLike_func
+  #define CAPABILITY calc_HS_LHC_LogLike
     START_CAPABILITY
-      #define FUNCTION calc_HS_LHC_LogLike_func
+      #define FUNCTION calc_HS_LHC_LogLike
       START_FUNCTION(ddpair)
       DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
          BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
@@ -155,9 +155,9 @@
   #undef CAPABILITY
 
 
-  #define CAPABILITY calc_Lilith_LHC_LogLike_func
+  #define CAPABILITY calc_Lilith_LHC_LogLike
     START_CAPABILITY
-     #define FUNCTION calc_Lilith_LHC_LogLike_func
+     #define FUNCTION calc_Lilith_LHC_LogLike
       START_FUNCTION(double)
       DEPENDENCY(Lilith_ModelParameters, lilith_ModelParameters)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
@@ -186,9 +186,9 @@
   #undef CAPABILITY 
 
 
-  #define CAPABILITY calc_gambit_LHC_LogLike_func
+  #define CAPABILITY calc_gambit_LHC_LogLike
     START_CAPABILITY
-     #define FUNCTION calc_gambit_LHC_LogLike_func
+     #define FUNCTION calc_gambit_LHC_LogLike
       START_FUNCTION(double)
       DEPENDENCY(SMINPUTS, SMInputs)
       DEPENDENCY(SM_spectrum,  Spectrum)
@@ -204,24 +204,24 @@
 
   #define CAPABILITY LHC_Higgs_LogLike
     START_CAPABILITY
-    #define FUNCTION calc_HS_LHC_LogLike
+    #define FUNCTION HS_LHC_LogLike
       START_FUNCTION(double)
-      DEPENDENCY(calc_HS_LHC_LogLike_func, ddpair)
+      DEPENDENCY(calc_HS_LHC_LogLike, ddpair)
     #undef FUNCTION
-    #define FUNCTION calc_Lilith_LHC_LogLike
+    #define FUNCTION Lilith_LHC_LogLike
       START_FUNCTION(double)
-      DEPENDENCY(calc_Lilith_LHC_LogLike_func, double)
+      DEPENDENCY(calc_Lilith_LHC_LogLike, double)
     #undef FUNCTION
-    #define FUNCTION calc_gambit_LHC_LogLike
+    #define FUNCTION gambit_LHC_LogLike
       START_FUNCTION(double)
-      DEPENDENCY(calc_gambit_LHC_LogLike_func, double)
+      DEPENDENCY(calc_gambit_LHC_LogLike, double)
     #undef FUNCTION
-     #define FUNCTION calc_combined_LHC_LogLike
+     #define FUNCTION combined_LHC_LogLike
       START_FUNCTION(double)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
-      DEPENDENCY(calc_HS_LHC_LogLike_func, ddpair)
-      DEPENDENCY(calc_Lilith_LHC_LogLike_func, double)
-      DEPENDENCY(calc_gambit_LHC_LogLike_func, double)
+      DEPENDENCY(calc_HS_LHC_LogLike, ddpair)
+      DEPENDENCY(calc_Lilith_LHC_LogLike, double)
+      DEPENDENCY(calc_gambit_LHC_LogLike, double)
      #undef FUNCTION
   #undef CAPABILITY
 
