@@ -275,7 +275,7 @@ def spokePlots():
     #MSSM1_2=genfromtxt("DarkBit/examples/runs/MSSM9/JE56C_003717/samples/TanBeta.out_0")
     #MSSM1_2=genfromtxt("DarkBit/examples/runs/MSSM9/JE56C_003717/samples/M1.out_0")
     #MSSM1_2=genfromtxt("DarkBit/examples/runs/MSSM9/JE56C_003717/samples/mf2.out_0")
-    MSSM1_2=genfromtxt("runs/MSSM7_spoke/samples/Mhd2.txt_0")
+    MSSM1_2=genfromtxt("runs/MSSM7_spoke/samples/mHd2.txt_0")
     #MSSM1_2_param = r'$M_1$'
     MSSM1_2_param = r'${M_{H_d}}^2$'
 
