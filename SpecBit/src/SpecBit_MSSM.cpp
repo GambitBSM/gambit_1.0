@@ -213,7 +213,7 @@ namespace Gambit
       /// seems like an underestimate if the stop masses are heavy enough.
       /// (TODO: are we happy assigning the same for both higgses?)
       /// FIXME this does not work for the second higgs
-      double rd_mh = 3.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
+      double rd_mh = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, true);
 

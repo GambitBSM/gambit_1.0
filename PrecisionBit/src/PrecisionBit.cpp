@@ -35,10 +35,10 @@ const double mw_central_observed = 80.385;
 const double mw_err_observed = 0.015;
 /// @}
 
-/// EWPO theoretical uncertainties on FeynHiggs calculations; based on hep-ph/0412214 Eq 3.1. 
+/// EWPO theoretical uncertainties on FeynHiggs calculations; based on hep-ph/0412214 Eq 3.1.
 /// @{
 const double abserr_mw = 1e-2; //10 MeV
-const double abserr_sinW2eff = 12e-5; 
+const double abserr_sinW2eff = 12e-5;
 /// @}
 
 namespace Gambit
@@ -149,11 +149,11 @@ namespace Gambit
     }
     void FH_precision_deltarho(triplet<double> &result)
     {
-      double mw = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;
-      double sintw2eff = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;      
+      double mw = Pipes::FH_precision_deltarho::Dep::FH_Precision->MW_MSSM;
+      double sintw2eff = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;
       result.central = Pipes::FH_precision_deltarho::Dep::FH_Precision->deltaRho;
       //Follows approximately from tree level relations, where delta{M_W, sintthetaW^2} go as deltarho
-      result.upper = std::max(abserr_mw/mw, abserr_sinW2eff/sintw2eff); 
+      result.upper = std::max(abserr_mw/mw, abserr_sinW2eff/sintw2eff);
       result.lower = result.upper;
     }
     void FH_precision_mw(triplet<double> &result)
@@ -170,24 +170,55 @@ namespace Gambit
     }
     /// @}
 
-    /// Precision MSSM spectrum manufacturer
-    void make_MSSM_precision_spectrum(Spectrum& improved_spec /*(result)*/)
+    /// Helper function to drop SLHA file
+    void drop_SLHA_if_requested(safe_ptr<Options>& runOptions, Spectrum& improved_spectrum)
     {
-      using namespace Pipes::make_MSSM_precision_spectrum;
+      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        // Spit out the full spectrum as an SLHA file.
+        str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
+        improved_spectrum.getSLHA(filename,true);
+      }
+    }
+
+    /// Helper function to set W masses
+    void update_W_masses(SubSpectrum& HE, SubSpectrum& LE, const triplet<double>& prec_mw)
+    {
+      HE.set_override(Par::Pole_Mass, prec_mw.central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
+      HE.set_override(Par::Pole_Mass_1srd_high, prec_mw.upper, "W+", true);
+      HE.set_override(Par::Pole_Mass_1srd_low, prec_mw.lower, "W+", true);
+      LE.set_override(Par::Pole_Mass, prec_mw.central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
+      LE.set_override(Par::Pole_Mass_1srd_high, prec_mw.upper, "W+", true); //FIXME these should contain some default error, no?
+      LE.set_override(Par::Pole_Mass_1srd_low, prec_mw.lower, "W+", true);  //FIXME these should contain some default error, no?
+    }
+
+    /// Precision MSSM spectrum manufacturer that does nothing but relabel the unimproved spectrum
+    void make_MSSM_precision_spectrum_none(Spectrum& improved_spec /*(result)*/)
+    {
+      using namespace Pipes::make_MSSM_precision_spectrum_none;
+      improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
+      drop_SLHA_if_requested(runOptions, improved_spec);
+    }
+
+    /// Precision MSSM spectrum manufacturer with precision W mass only
+    void make_MSSM_precision_spectrum_W(Spectrum& improved_spec /*(result)*/)
+    {
+      using namespace Pipes::make_MSSM_precision_spectrum_W;
+      improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
+      update_W_masses(improved_spec.get_HE(), improved_spec.get_LE(), *Dep::prec_mw);
+      drop_SLHA_if_requested(runOptions, improved_spec);
+    }
+
+    /// Precision MSSM spectrum manufacturer with precision H and W masses
+    void make_MSSM_precision_spectrum_H_W(Spectrum& improved_spec /*(result)*/)
+    {
+      using namespace Pipes::make_MSSM_precision_spectrum_H_W;
       improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
       SubSpectrum& HE = improved_spec.get_HE();
       SubSpectrum& LE = improved_spec.get_LE();
 
       // W mass
-      //-------
-
-      HE.set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+", true); // "true" flag causes overrides to be written even if no native quantity exists to override.
-      HE.set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
-      HE.set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
-
-      LE.set_override(Par::Pole_Mass, Dep::prec_mw->central, "W+");  // No flag; W mass should definitely already exist in the LE spectrum.
-      LE.set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true); //FIXME these should contain some default error, no?
-      LE.set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);  //FIXME these should contain some default error, no?
+      update_W_masses(HE, LE, *Dep::prec_mw);
 
       // Higgs masses
       //-------------
@@ -463,20 +494,18 @@ namespace Gambit
         msg << "Unrecognised Higgs_predictions_error_method specified for make_MSSM_precision_spectrum: " << central;
         PrecisionBit_error().raise(LOCAL_INFO,msg.str());
       }
+
       for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true); // TODO: Ben: I changed the flags here to "false", because that means the uncertainties don't already have to exist. This is the case if e.g. the spectrum comes from an SLHA file.
       for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
+
       #ifdef PRECISIONBIT_DEBUG
         for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE.get(Par::Pole_Mass, higgses[i])<< endl;
         for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE.get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
         for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE.get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
       #endif
 
-      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        improved_spec.getSLHA(filename,true);
-      }
+      // Check if an SLHA file needs to be excreted.
+      drop_SLHA_if_requested(runOptions, improved_spec);
 
     }
 
@@ -579,7 +608,7 @@ namespace Gambit
     /// \brief Likelihoods for light quark mass ratios. At the moment, all are just gaussians.
     /// Default data from PDG http://PDG.LBL.GOV 10/6/2015.
     /// Likelihoods apply to MSbar masses at the scale mu = 2 GeV.
-    /// m_u/m_d = 0.38-0.58 
+    /// m_u/m_d = 0.38-0.58
     /// m_s / ((m_u + m_d)/2) = 27.5 +/- 1.0
     /// m_s = 95 +/- 5 GeV
     void lnL_light_quark_masses_chi2 (double &result)
@@ -587,19 +616,19 @@ namespace Gambit
         using namespace Pipes::lnL_light_quark_masses_chi2;
         const SMInputs& SM = *Dep::SMINPUTS;
 
-        double mud_central = runOptions->getValueOrDef<double>(0.48, "mud_central");
-        double mud_error = runOptions->getValueOrDef<double>(0.10, "mud_error");
-        double msud_central = runOptions->getValueOrDef<double>(27.5, "msud_central");
-        double msud_error = runOptions->getValueOrDef<double>(1.0, "msud_error");
-        double ms_central = runOptions->getValueOrDef<double>(95.E-03, "ms_central");
-        double ms_error = runOptions->getValueOrDef<double>(5.E-03, "ms_error");
+        double mud_obs = runOptions->getValueOrDef<double>(0.48, "mud_obs");
+        double mud_obserror = runOptions->getValueOrDef<double>(0.10, "mud_obserr");
+        double msud_obs = runOptions->getValueOrDef<double>(27.5, "msud_obs");
+        double msud_obserror = runOptions->getValueOrDef<double>(1.0, "msud_obserr");
+        double ms_obs = runOptions->getValueOrDef<double>(95.E-03, "ms_obs");
+        double ms_obserror = runOptions->getValueOrDef<double>(5.E-03, "ms_obserr");
 
         /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
         bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
 
-        result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error, profile)
-            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error, profile)
-            + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error, profile);
+        result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_obs, 0., mud_obserror, profile)
+            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_obs, 0., msud_obserror, profile)
+            + Stats::gaussian_loglikelihood(SM.mS, ms_obs, 0., ms_obserror, profile);
         logger() << LogTags::debug << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
     }
 
@@ -690,7 +719,7 @@ namespace Gambit
       result.upper = 2.0 * 4.9e-10;
       result.lower = result.upper;
     }
-    
+
     /// g-2 in SM from tau+tau- data
     void gm2_SM_tautau(triplet<double> &result)
     {
@@ -706,8 +735,8 @@ namespace Gambit
       using namespace Pipes::lnL_gm2_chi2;
       double amu_sm  = 0.5*Dep::muon_gm2_SM->central;
       double amu_sm_error = 0.5*std::max(Dep::muon_gm2_SM->upper, Dep::muon_gm2_SM->lower);
-      double amu_bsm = 0.5*Dep::muon_gm2->central; 
-      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper, Dep::muon_gm2->lower); 
+      double amu_bsm = 0.5*Dep::muon_gm2->central;
+      double amu_bsm_error = 0.5*std::max(Dep::muon_gm2->upper, Dep::muon_gm2->lower);
       double amu_theory = amu_sm + amu_bsm;
       double amu_theory_err = sqrt(Gambit::Utils::sqr(amu_sm_error) + Gambit::Utils::sqr(amu_bsm_error));
       // From hep-ex/0602035.  Error combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.
@@ -723,9 +752,9 @@ namespace Gambit
     {
       using namespace Pipes::GM2C_SUSY;
       const SubSpectrum& mssm = Dep::MSSM_spectrum->get_HE();
-      
+
       gm2calc::MSSMNoFV_onshell model;
-  
+
       try
       {
         /// fill pole masses.
@@ -734,33 +763,35 @@ namespace Gambit
         model.get_physical().MSvmL = mssm.get(Par::Pole_Mass, "~nu", 2); // 1L
         str msm1, msm2;
         // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
-        // If we get a successful convergence to the pole mass scheme in the end it's OK  
+        // If we get a successful convergence to the pole mass scheme in the end it's OK
         const static double tol = runOptions->getValueOrDef<double>(1e-1, "family_mixing_tolerance");
         const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
         slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
         model.get_physical().MSm(0)  =  mssm.get(Par::Pole_Mass, msm1); // 1L
         model.get_physical().MSm(1)  =  mssm.get(Par::Pole_Mass, msm2); // 1L
-        
+
         model.get_physical().MChi(0) = mssm.get(Par::Pole_Mass, "~chi0", 1); // 1L
         model.get_physical().MChi(1) =  mssm.get(Par::Pole_Mass, "~chi0", 2); // 1L
         model.get_physical().MChi(2) = mssm.get(Par::Pole_Mass, "~chi0", 3); // 1L
         model.get_physical().MChi(3) = mssm.get(Par::Pole_Mass, "~chi0", 4); // 1L
-        
+
         model.get_physical().MCha(0) =  mssm.get(Par::Pole_Mass, "~chi+", 1); // 1L
         model.get_physical().MCha(1) =  mssm.get(Par::Pole_Mass, "~chi+", 2); // 1L
         model.get_physical().MAh(1)  = mssm.get(Par::Pole_Mass, "A0"); // 2L
-        
+
         model.set_TB(mssm.get(Par::dimensionless,"tanbeta"));
         model.set_Mu(mssm.get(Par::mass1, "Mu"));
         model.set_MassB(mssm.get(Par::mass1, "M1"));
         model.set_MassWB(mssm.get(Par::mass1, "M2"));
         model.set_MassG(mssm.get(Par::mass1, "M3"));
-        for(int i = 1; i<=3; i++) {
-          for(int j = 1; j<=3; j++) { 
-            model.set_mq2(i-1,j-1, mssm.get(Par::mass2, "mq2", i, j)); 
-            model.set_ml2(i-1,j-1, mssm.get(Par::mass2, "ml2", i, j)); 
-            model.set_md2(i-1,j-1, mssm.get(Par::mass2, "md2", i, j)); 
-            model.set_mu2(i-1,j-1, mssm.get(Par::mass2, "mu2", i, j)); 
+        for(int i = 1; i<=3; i++)
+        {
+          for(int j = 1; j<=3; j++)
+          {
+            model.set_mq2(i-1,j-1, mssm.get(Par::mass2, "mq2", i, j));
+            model.set_ml2(i-1,j-1, mssm.get(Par::mass2, "ml2", i, j));
+            model.set_md2(i-1,j-1, mssm.get(Par::mass2, "md2", i, j));
+            model.set_mu2(i-1,j-1, mssm.get(Par::mass2, "mu2", i, j));
             model.set_me2(i-1,j-1, mssm.get(Par::mass2, "me2", i, j));
             double Au = 0.0, Ad = 0.0, Ae = 0.0;
             if(mssm.get(Par::dimensionless, "Yu", i, j) > 1e-14){
@@ -775,26 +806,26 @@ namespace Gambit
               Ad = mssm.get(Par::mass1, "TYd", i, j)
               / mssm.get(Par::dimensionless, "Yd", i, j);
             }
-       
+
             model.set_Au(i-1, j-1, Au);
             model.set_Ad(i-1, j-1, Ad);
             model.set_Ae(i-1, j-1, Ae);
           }
         }
-        
+
         const SMInputs& smin = Dep::MSSM_spectrum->get_SMInputs();
 
         model.get_physical().MVZ =smin.mZ;
         model.get_physical().MFb =smin.mBmB;
-        model.get_physical().MFt =smin.mT; 
-        model.get_physical().MFtau =smin.mTau; 
-        model.get_physical().MVWm =mssm.get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion 
-        model.get_physical().MFm =smin.mMu; 
-        //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop 
-        // (it is used for correctuions to yb and DRbar --> MS bar conversion)  
+        model.get_physical().MFt =smin.mT;
+        model.get_physical().MFtau =smin.mTau;
+        model.get_physical().MVWm =mssm.get(Par::Pole_Mass, "W+");  //GAMBIT can get the pole mas but it may have been improved by FeynHiggs calcualtion
+        model.get_physical().MFm =smin.mMu;
+        //use SM alphaS(MZ) instead of MSSM g3(MSUSY) -- appears at two-loop so difference should be three-loop
+        // (it is used for correctuions to yb and DRbar --> MS bar conversion)
         model.set_g3(std::sqrt(4*M_PI*smin.alphaS));
-        // these are not currently used but may be in future updates so set them anyway 
-        model.get_physical().MFe =smin.mE; 
+        // these are not currently used but may be in future updates so set them anyway
+        model.get_physical().MFe =smin.mE;
         model.get_physical().MFd =smin.mD; //MSbar
         model.get_physical().MFs =smin.mS; //MSbar
         model.get_physical().MFu =smin.mU; //MSbar
@@ -806,20 +837,20 @@ namespace Gambit
         <double>(0.00729735, "GM2Calc_extra_alpha_e_MZ");
         double alpha_thompson = runOptions->getValueOrDef
         <double>(0.00775531, "GM2Calc_extra_alpha_e_thompson_limit");
-        
+
         if (alpha_MZ > std::numeric_limits<double>::epsilon())
           model.set_alpha_MZ(alpha_MZ);
 
         if (alpha_thompson > std::numeric_limits<double>::epsilon())
           model.set_alpha_thompson(alpha_thompson);
-        
+
         model.set_scale(mssm.GetScale());                   // 2L
-       
+
         /// convert DR-bar parameters to on-shell
         model.convert_to_onshell();
 
         /// need to hook up errors properly
-        /// check for problems 
+        /// check for problems
         if( model.get_problems().have_problem() == true) {
           std::ostringstream err;
           err << "gm2calc routine convert_to_onshell raised error: "
@@ -833,35 +864,35 @@ namespace Gambit
               << model.get_problems().get_warnings() << ".";
           // Maybe you would argue that we want to invalidate such points, but the DRbar-->OS
           // conversion seems to fail to converge extremely often for general weak-scale SUSY models.
-          PrecisionBit_warning().raise(LOCAL_INFO, err.str());          
+          PrecisionBit_warning().raise(LOCAL_INFO, err.str());
         }
-        
-      } 
-      catch (const gm2calc_1_2_0::gm2calc::Abstract_Error& e) 
+
+      }
+      catch (const gm2calc_1_2_0::gm2calc::Abstract_Error& e)
       {
         std::ostringstream err;
-        err << "gm2calc 1.2.0 routine convert_to_onshell raised error: " 
+        err << "gm2calc 1.2.0 routine convert_to_onshell raised error: "
         << e.what() << ".";
         invalid_point().raise(err.str());
-      }  
-      catch (const gm2calc_1_3_0::gm2calc::Abstract_Error& e) 
+      }
+      catch (const gm2calc_1_3_0::gm2calc::Abstract_Error& e)
       {
         std::ostringstream err;
-        err << "gm2calc 1.3.0 routine convert_to_onshell raised error: " 
+        err << "gm2calc 1.3.0 routine convert_to_onshell raised error: "
         << e.what() << ".";
         invalid_point().raise(err.str());
-      }  
+      }
 
       double error = BEreq::calculate_uncertainty_amu_2loop(model);
-      
-      double amumssm = BEreq::calculate_amu_1loop(model) 
+
+      double amumssm = BEreq::calculate_amu_1loop(model)
                        + BEreq::calculate_amu_2loop(model);
 
       // Convert from a_mu to g-2
       result.central = 2.0*amumssm;
       result.upper = 2.0*error;
       result.lower = 2.0*error;
-      
+
       return;
     }
 
@@ -896,7 +927,7 @@ namespace Gambit
       #endif
     }
 
- 
+
     /// Precision observables from SUSY-POPE
     /// This function is unfinished because SUSY-POPE is buggy.
     void SP_PrecisionObs(double &result)

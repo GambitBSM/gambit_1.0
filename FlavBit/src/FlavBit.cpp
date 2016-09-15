@@ -476,7 +476,7 @@ namespace Gambit
 
       if(param.model<0) result=0.;
       double E_cut=1.6;
-      result=BEreq::SI_bsgamma_CONV(&param, byVal(E_cut));
+      result=BEreq::bsgamma_CONV(&param, byVal(E_cut));
 
       if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
@@ -501,7 +501,7 @@ namespace Gambit
       }
       else
       {
-        result=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
+        result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
       }
     
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
@@ -527,7 +527,7 @@ namespace Gambit
       }
       else
       {
-        result=BEreq::SI_Bsll_untag_CONV(&param, byVal(flav));
+        result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
       }
 
       if(flav_debug) printf("BR(Bs->ee)_untag=%.3e\n",result);
@@ -553,7 +553,7 @@ namespace Gambit
       }
       else
       {
-        result=BEreq::SI_Bdll_CONV(&param, byVal(flav));
+        result=BEreq::Bdll_CONV(&param, byVal(flav));
       }
 
       if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
@@ -589,7 +589,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_RD;
 
-      if(flav_debug)  cout<<"Starting SI_BDtaunu_BDenu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_RD"<<endl;
 
        struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -597,7 +597,7 @@ namespace Gambit
       else result = BEreq::BDtaunu_BDenu(&param);
 
       if(flav_debug) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_BDtaunu_BDenu"<<endl;
+      if(flav_debug)  cout<<"Finished SI_RD"<<endl;
     }
 
     // *************************************************
@@ -1093,7 +1093,7 @@ namespace Gambit
 
       double q2min=1.1;
       double q2max=2.5;
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
@@ -1112,7 +1112,7 @@ namespace Gambit
 
       double q2min=2.5;
       double q2max=4.0;
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
@@ -1131,7 +1131,7 @@ namespace Gambit
 
       double q2min=4.0;
       double q2max=6.0;
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
 
@@ -1151,7 +1151,7 @@ namespace Gambit
 
       double q2min=6.0;
       double q2max=8.0;
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
     }
 
@@ -1169,7 +1169,7 @@ namespace Gambit
 
       double q2min=15.0;
       double q2max=17.0;
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_15_17 "<<endl;
 
@@ -1189,16 +1189,14 @@ namespace Gambit
 
       double q2min=17.0;
       double q2max=19.0;
-      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
-
     }
 
 
-
     // *************************************************
-    /// Calculating Cp assymetries in B-> K* mu mu
+    /// Calculating CP asymmetries in B-> K* mu mu
     // *************************************************
 
     void SI_AI_BKstarmumu(double &result)
@@ -1328,7 +1326,7 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
-      // we assert if the exrimental size and the observables are differnt size
+      // We assert that the experiments and the observables are the same size
       assert(! ( M_exp.size1() != observables.size()  ));
 
       Flav_KstarMuMu_obs obs_out_11_25= *Dep::BRBKstarmumu_11_25;
@@ -1649,7 +1647,7 @@ namespace Gambit
 
       red.create_global_corr();
 
-      // the R(D) is calculated assuming isosping symmetry
+      // the R(D) is calculated assuming isospin symmetry
 
       // B-> tau nu SI
       double theory_Btaunu=*Dep::Btaunu;
@@ -1681,8 +1679,7 @@ namespace Gambit
       M_th(6,0)=theory_Dsmunu;
       M_th(7,0)=theory_Dmunu;
 
-      // hardoceded errors :( move it to include later
-
+      // hardcoded errors :( move it to include later
 
       double theory_Btaunu_error=th_err(0,0);
       double theory_BDtaunu_error=th_err(1,0);
@@ -1761,7 +1758,7 @@ namespace Gambit
       // calculating the chi2:
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
-      // adding theory and experimenta covariance
+      // adding theory and experimental covariance
       cov+=measurement_assym.cov_th;
 
       //calculating a diff

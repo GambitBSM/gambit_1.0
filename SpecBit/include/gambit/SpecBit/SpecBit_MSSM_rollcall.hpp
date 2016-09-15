@@ -179,7 +179,6 @@
   START_CAPABILITY
     #define FUNCTION FH_Couplings
     START_FUNCTION(fh_Couplings)
-    DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     BACKEND_REQ(FHSelectUZ, (libfeynhiggs), void, (int&,int&,int&,int&))
     BACKEND_REQ(FHCouplings, (libfeynhiggs), void, (int&, Farray< fh_complex,1,681>&,
                                                     Farray< fh_complex,1,231>&,

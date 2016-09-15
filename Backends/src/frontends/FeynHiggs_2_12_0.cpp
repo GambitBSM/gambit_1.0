@@ -41,7 +41,7 @@ BE_INI_FUNCTION
     int higgsmix = 2;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
     int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended) -> HB says 0
     int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
-    int loglevel = 3;  // resum logs? (1 -> NLL, large MSUSY; 2 -> NLL, large MCha,MNeu,MGlu,MSUSY 3 -> NNLL, large MCha,MNeu,MGlu,MSUSY) -> FH recommend 1 or 2
+    int loglevel = 3;  // resum logs? (1 -> NLL, large MSUSY; 2 -> NLL, large MCha,MNeu,MGlu,MSUSY 3 -> NNLL, large MCha,MNeu,MGlu,MSUSY) -> FH recommend 1 or 2, but anything except 0 is buggy in this version.
     int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
     int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
     int tlCplxApprox = 0; // determines how 2-loop corr. are treated with complex param (0 for rMSSM, > 0 for cMSSM)

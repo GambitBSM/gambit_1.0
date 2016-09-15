@@ -64,15 +64,28 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
 
-  // Precision MSSM spectrum manufacturer
+  // Precision MSSM spectrum manufacturers
   #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
-    #define FUNCTION make_MSSM_precision_spectrum
+
+    #define FUNCTION make_MSSM_precision_spectrum_H_W
     START_FUNCTION(Spectrum)
     DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
     DEPENDENCY(prec_mw, triplet<double>)
     DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     #undef FUNCTION
+
+    #define FUNCTION make_MSSM_precision_spectrum_W
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    DEPENDENCY(prec_mw, triplet<double>)
+    #undef FUNCTION
+
+    #define FUNCTION make_MSSM_precision_spectrum_none
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+
   #undef CAPABILITY
   
   // Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
