@@ -306,7 +306,8 @@ Rules:
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
-
+      allow_yield_extrapolation: true
+      
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
     function: all_decays
