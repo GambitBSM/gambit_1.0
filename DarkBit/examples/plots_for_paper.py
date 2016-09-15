@@ -162,12 +162,13 @@ def plotLUX():
     plt.clf()
     plt.figure(figsize=(5, 4))
 
-    lux2013_lim = genfromtxt("./DarkBit/examples/limits/LUX_2013_85d_118kg_SI_95CL.txt")
+    lux2013_lim = concatenate((genfromtxt("./DarkBit/examples/limits/LUX_2013_85d_118kg_SI_90CL_lowM.csv",delimiter = ","),
+        genfromtxt("./DarkBit/examples/limits/LUX_2013_85d_118kg_SI_90CL_highM.csv",delimiter = ",")))
     lux2016_lim = genfromtxt("./DarkBit/examples/limits/LUX_2016_IDM_332d.txt")
     pandaX_lim = genfromtxt("./DarkBit/examples/limits/PandaX_2016_98d_SI_90CL.csv",delimiter = ",")
-    xenon100_lim = genfromtxt("./DarkBit/examples/limits/Xenon100_2012_225d_SI_90CL.csv",delimiter = ",")\
+    xenon100_lim = genfromtxt("./DarkBit/examples/limits/Xenon100_2012_225d_SI_90CL.csv",delimiter = ",")
 
-    lux2013_plt = plt.contour(m_LUX2013, s_LUX2013, lnL_LUX2013, levels = [3.84/2], colors='r')
+    lux2013_plt = plt.contour(m_LUX2013, s_LUX2013, lnL_LUX2013, levels = [2.71/2], colors='r')
     lux2013_plt.collections[0].set_label("LUX 2013")
     lux2016_plt = plt.contour(m_LUX2016, s_LUX2016, lnL_LUX2016, levels = [2.71/2], colors='g')
     lux2016_plt.collections[0].set_label("LUX 2016")
@@ -176,7 +177,7 @@ def plotLUX():
     #xenon100_plt = plt.contour(m_XENON100, s_XENON100, lnL_XENON100, levels = [2.71/2], colors='k')
     #xenon100_plt.collections[0].set_label("XENON100 2012")
 
-    plt.plot(lux2013_lim[:,0],lux2013_lim[:,1]*10**-36,ls="--", color='r')
+    plt.plot(lux2013_lim[:,0],lux2013_lim[:,1]*10**-44,ls="--", color='r')
     plt.plot(lux2016_lim[:,0],lux2016_lim[:,1]*10**-45,ls="--", color='g')
     plt.plot(pandaX_lim[:,0],pandaX_lim[:,1]*10**-44,ls="--", color='b')
     #plt.plot(xenon100_lim[:,0],xenon100_lim[:,1]*10**-44,ls="--", color='k')
@@ -237,7 +238,7 @@ def plotLUX():
 
     plt.xlabel(r'$m_\chi$ [GeV]')
     plt.ylabel(r'$\sigma_{{\rm SD},p}$ [${\rm cm^2}$]')
-    plt.legend(loc='upper center',frameon=False,fontsize='medium')
+    plt.legend(loc='best',frameon=False,fontsize='medium')
 
     #plt.show()
     plt.savefig("DarkBit_SD_sigma_m.eps",bbox_inches="tight")
