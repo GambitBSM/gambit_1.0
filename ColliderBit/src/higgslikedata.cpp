@@ -301,7 +301,8 @@ map_set = 0; // since values have changed need to reset map if called again
 
 
 
-void Effective_couplings::compute_scaling_factors(gambit_Higgs_ModelParameters data)
+void Effective_couplings::compute_scaling_factors(gambit_Higgs_ModelParameters data,
+ lilith_ModelParameters &result)
 {
 // set up object with SM branching ratios and width
 if (!SM_decays_set)
@@ -328,58 +329,26 @@ C_mumu2 = ratio * data.BR_hjmumu/ SM_decays.BR_hjmumu;
 
 
 // following equation (10) of Lilith manual we can, at tree-level, set the following
-/*double C_t = pow(C_tt2,0.5);
-double C_b = pow(C_bb2,0.5);
-double C_c = pow(C_cc2,0.5);
-double C_W = pow(C_WW2,0.5);
-double C_tau = pow(C_tautau2,0.5);*/
-
-//double sum_a = C_t*C_t
+result.C_tt = pow(C_tt2,0.5);
+result.C_cc = pow(C_cc2,0.5);
+result.C_bb = pow(C_bb2,0.5);
+result.C_tautau = pow(C_tautau2,0.5);
+result.C_ZZ = pow(C_ZZ2,0.5);
+result.C_WW= pow(C_WW2,0.5);
+ 
 
 // these should be corrected for loop contributions
 
-C_gg2 = ratio * data.BR_hjgg/ SM_decays.BR_hjgg;// sum_a / sum_b;
+C_gg2 = ratio * data.BR_hjgg/ SM_decays.BR_hjgg;
 
 C_gaga2 = ratio * data.BR_hjgaga/ SM_decays.BR_hjgaga;
 
 C_Zga2 = ratio * data.BR_hjZga/ SM_decays.BR_hjZga;
 
 //C_hiZ2 = Gamma * data.BR_hjhiZ/ SM_decays.BR_hjhiZ;
-
-
-
-
-//C_W =
-
-ofstream myfile;
-myfile.open ("../data/temp/model_data_effC.txt");
-
-myfile<< data._mh << endl;
-
-myfile << data.width_in_GeV << endl;
-
-myfile << SM_decays.width_in_GeV << endl;
-
-myfile << C_ss2 << endl;
-myfile << C_cc2 << endl;
-myfile << C_bb2 << endl;
-myfile << 1 << endl; // fix later, gives nan since tt channel zero at 125 GeV
-myfile << C_mumu2 << endl;
-myfile << C_tautau2 << endl;
-
-myfile << C_WW2 << endl;
-myfile <<  C_ZZ2 << endl;
-
-myfile << C_Zga2 << endl;
-myfile << C_gg2 << endl;
-
-myfile << C_gaga2 << endl;
-
-//myfile << C_hiZ2 << endl;
-
-myfile << data.BR_invisible << endl;
-
-myfile.close();
+result.C_gammagamma = pow(C_gaga2,0.5);
+result.C_gg = pow(C_gg2,0.5);
+result.C_Zgamma = pow(C_Zga2,0.5);
 
 
 

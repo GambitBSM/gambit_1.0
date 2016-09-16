@@ -281,7 +281,7 @@ namespace Gambit
     }
 
 
-   void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, lilith_ModelParameters &result)
+ /*  void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, lilith_ModelParameters &result)
     {
       const SubSpectrum& spec = fullspectrum.get_HE();
       result.mh = spec.get(Par::Pole_Mass,25,0);
@@ -294,11 +294,7 @@ namespace Gambit
       result.BRund=0; // not sure what to do with this one
       
       // use effective couplings routine
-      
-      
-      
-      
-    }
+    }*/
     
     // set model parameters for GAMBIT LHC likelihood
     void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, gambit_Higgs_ModelParameters &result)
@@ -357,7 +353,35 @@ namespace Gambit
       using namespace Pipes::SMHiggs_Lilith_ModelParameters;
       const Spectrum& fullspectrum = *Dep::SM_spectrum;
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      //set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      // set signal strengths
+      const SubSpectrum& spec = fullspectrum.get_HE();
+      result.mh = spec.get(Par::Pole_Mass,25,0);
+      
+      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
+      decays_sm.set_sm(125.6);
+      gambit_Higgs_ModelParameters gambit_modelparams = *Dep::Higgslike_ModelParameters;
+      std::vector<std::string> prod = result.prod;
+      std::vector<std::string> decay = result.decay;
+      std::map<std::pair<std::string,std::string>, double> mu;
+      
+      for (unsigned int i = 0; i < prod.size();i++)
+      {
+      for (unsigned int j = 0; j < decay.size();j++)
+      {
+      std::pair <std::string,std::string> key (prod[i],decay[j]);
+      std::vector<std::string> p = {prod[i]};
+      std::vector<std::string> d = {decay[j]};
+      mu[key] = compute_theory_signal(gambit_modelparams,decays_sm,p,d);
+      }
+      }
+      
+      result.mu = mu;
+      
+      //  set effective couplings
+      
+      Effective_couplings ec(125.6);
+      ec.compute_scaling_factors(gambit_modelparams,result);
     }
     void SMlikeHiggs_Lilith_ModelParameters(lilith_ModelParameters &result)
     {
@@ -375,13 +399,16 @@ namespace Gambit
       }
       
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      //set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      const SubSpectrum& spec = fullspectrum.get_HE();
+      result.mh = spec.get(Par::Pole_Mass,25,0);
       set_invisible_width(decays,result,invisible_particle);
       
-      // set signal strengths as well
+      
+      // set signal strengths
       
       Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
-      decays_sm.set_sm(result.mh);
+      decays_sm.set_sm(125.6);
       gambit_Higgs_ModelParameters gambit_modelparams = *Dep::Higgslike_ModelParameters;
       std::vector<std::string> prod = result.prod;
       std::vector<std::string> decay = result.decay;
@@ -401,6 +428,13 @@ namespace Gambit
       }
       
       result.mu = mu;
+      
+      //  set effective couplings
+      
+      
+      Effective_couplings ec(125.6);
+      ec.compute_scaling_factors(gambit_modelparams,result);
+      
       
      }
   
@@ -785,21 +819,23 @@ namespace Gambit
       
       char buffer[100];
       double mh = ModelParam.mh;
-      double CU = ModelParam.CU;
-      double CD = ModelParam.CD;
-      double CV = ModelParam.CV;
-      double CGa = ModelParam.CGa;
-      double Cg = ModelParam.Cg;
       double BRinv = ModelParam.BRinv;
       double BRund = ModelParam.BRund;
       
+      
+      
+      double C_tt = ModelParam.C_tt;
+      double C_cc = ModelParam.C_cc;
+      double C_bb = ModelParam.C_bb;
+      double C_tautau = ModelParam.C_tautau;
+      double C_ZZ = ModelParam.C_ZZ;
+      double C_WW = ModelParam.C_WW;
+      double C_gammagamma = ModelParam.C_gammagamma;
+      double C_Zgamma = ModelParam.C_Zgamma;
+      double C_gg = ModelParam.C_gg;
+      
       char precision[] = "BEST-QCD";
       
-      
-
-
-    
-
       sprintf(buffer,"<?xml version=\"1.0\"?>\n");
       strcat(XMLinputstring, buffer);
       sprintf(buffer,"<lilithinput>\n");
@@ -811,8 +847,8 @@ namespace Gambit
       cout << "using signal strength mode" << endl;
       sprintf(buffer,"<signalstrengths>\n");
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<mass>%f</mass>\n", mh);
-      strcat(XMLinputstring, buffer);
+      //sprintf(buffer,"<mass>%f</mass>\n", mh);
+      //strcat(XMLinputstring, buffer);
       
       std::vector<std::string> prod = ModelParam.prod;
       std::vector<std::string> decay = ModelParam.decay;
@@ -853,21 +889,23 @@ namespace Gambit
       strcat(XMLinputstring, buffer);
       sprintf(buffer,"<mass>%f</mass>\n", mh);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"tt\">%f</C>\n", CU);
+      sprintf(buffer,"<C to=\"tt\">%f</C>\n", C_tt);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"cc\">%f</C>\n", CU);
+      sprintf(buffer,"<C to=\"cc\">%f</C>\n", C_cc);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"bb\">%f</C>\n", CD);
+      sprintf(buffer,"<C to=\"bb\">%f</C>\n", C_bb);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"tautau\">%f</C>\n", CD);
+      sprintf(buffer,"<C to=\"tautau\">%f</C>\n", C_tautau);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"ZZ\">%f</C>\n", CV);
+      sprintf(buffer,"<C to=\"ZZ\">%f</C>\n", C_ZZ);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"WW\">%f</C>\n", CV);
+      sprintf(buffer,"<C to=\"WW\">%f</C>\n", C_WW);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"gammagamma\">%f</C>\n", CGa);
+      sprintf(buffer,"<C to=\"gammagamma\">%f</C>\n", C_gammagamma);
       strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"gg\">%f</C>\n", Cg);
+      sprintf(buffer,"<C to=\"Zgamma\">%f</C>\n", C_Zgamma);
+      strcat(XMLinputstring, buffer);
+      sprintf(buffer,"<C to=\"gg\">%f</C>\n", C_gg);
       strcat(XMLinputstring, buffer);
       sprintf(buffer,"<extraBR>\n");
       strcat(XMLinputstring, buffer);

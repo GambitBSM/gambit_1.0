@@ -60,16 +60,14 @@ Parameters:
       alpha2  :  0       # second CP-violating Majorana phase
 
     StandardModel_Higgs:
-      mH: 125.9
+      mH:
+        range: [123,128]
       #QEWSB: 173
 
 
     SingletDM:
-      mS:
-        range: [40,40]
-      lambda_hS:
-        range: [0.1, 0.1]  #0.30
-        prior: log
+      mS: 0
+      lambda_hS: 0.0001
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -111,7 +109,7 @@ Scanner:
       plugin: grid
       version: ">=1.0"
       like:  LogLike
-      grid_pts: [1,1]
+      grid_pts: [50]
 
     multinest:
       plugin: MultiNest
@@ -169,6 +167,10 @@ Rules:
     - capability: calc_Lilith_LHC_LogLike
       options:
         use_signal_strengths: false
+
+    - capability: LHC_Higgs_LogLike
+      options:
+        HS_mass_only: true
 
     - capability: HiggsSignals_1_4_init
       options:

@@ -11,6 +11,10 @@
 //#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/virtual_higgs.hpp"
 
+#include "gambit/Elements/shared_types.hpp"
+
+
+
 using namespace std;
 namespace Gambit {
 namespace ColliderBit {
@@ -249,7 +253,7 @@ class Effective_couplings{
   
   Effective_couplings(){};
   
-  void compute_scaling_factors(gambit_Higgs_ModelParameters deays);
+  void compute_scaling_factors(gambit_Higgs_ModelParameters deays,lilith_ModelParameters &result);
 
 };
 

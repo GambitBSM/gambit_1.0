@@ -27,11 +27,17 @@ namespace Gambit
   {
     
       double mh;
-      double CU;
-      double CD;
-      double CV;
-      double CGa;
-      double Cg;
+    
+      double C_tt;
+      double C_cc;
+      double C_bb;
+      double C_tautau;
+      double C_ZZ;
+      double C_WW;
+      double C_gammagamma;
+      double C_Zgamma;
+      double C_gg;
+    
       double BRinv;
       double BRund;
     

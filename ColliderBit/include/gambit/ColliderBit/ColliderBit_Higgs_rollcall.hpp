@@ -91,6 +91,7 @@
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SM_spectrum, /*TAG*/ Spectrum)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    DEPENDENCY(Higgslike_ModelParameters, Gambit::ColliderBit::gambit_Higgs_ModelParameters)
     #undef FUNCTION
 
     #define FUNCTION SMlikeHiggs_Lilith_ModelParameters
