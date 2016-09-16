@@ -18,10 +18,7 @@
 
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
-      mT:
-         #range: [160.071,160.071]
-         range: [170,170]
-         #prior_type: flat
+      mT: 170
 
       # SLHA1
       alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
@@ -63,16 +60,16 @@ Parameters:
       alpha2  :  0       # second CP-violating Majorana phase
 
     StandardModel_Higgs:
-      mH:
-        #range: [100.098,100.098]
-        range: [125,125]
-        #prior_type: flat
+      mH: 125.9
       #QEWSB: 173
 
 
     SingletDM:
-      mS: 62
-      lambda_hS: 0.01 #0.30
+      mS:
+        range: [40,40]
+      lambda_hS:
+        range: [0.1, 0.1]  #0.30
+        prior: log
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -88,10 +85,10 @@ Parameters:
 ##############################
 
 Printer:
-  printer: ascii
+  printer: hdf5
   options:
     output_file: "gambit_output.hdf5"
-   # group: "/lilith"
+    group: "/lilith"
     delete_file_if_exists: true
     delete_file_on_restart: true
 
@@ -157,7 +154,7 @@ ObsLikes:
 
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
-      function: HS_LHC_LogLike
+      function: Lilith_LHC_LogLike
 
 
 
@@ -169,17 +166,22 @@ Rules:
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum
 
+    - capability: calc_Lilith_LHC_LogLike
+      options:
+        use_signal_strengths: false
+
     - capability: HiggsSignals_1_4_init
       options:
-        HS_data: HS_data______
+        HS_data: latestresults
         #channels: [Hgaga]
 
     - capability: Lilith_1_1_3_init
       options:
         Lilith_data: latestCMS.list
 
-    - capability: calc_gambit_LHC_LogLike_func
-      function: calc_gambit_LHC_LogLike_func
+
+    - capability: calc_gambit_LHC_LogLike
+      function: calc_gambit_LHC_LogLike
       options:
         data_path: /Users/jamesmckay/Documents/Programs/gambit/ColliderBit/data/Higgs_data/
 

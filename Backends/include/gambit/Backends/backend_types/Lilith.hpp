@@ -34,6 +34,15 @@ namespace Gambit
       double Cg;
       double BRinv;
       double BRund;
+    
+      // signal strengths
+    
+      // allowed production and decay channels (page 31 ArXiv:1502.04138)
+      std::vector<std::string> prod = {"ggH","WH","ZH","VBF","ttH"};
+      std::vector<std::string> decay = {"gammagamma","Zgamma","WW","ZZ","bb","cc","tautau"};
+    
+      // map to store each combination in
+      std::map<std::pair<std::string,std::string>, double> mu;
   };
   
   

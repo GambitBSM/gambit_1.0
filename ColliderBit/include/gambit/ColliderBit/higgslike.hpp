@@ -36,7 +36,7 @@ Signal_strength(){}
 Signal_strength(std::string filename,std::string path){
 set_data_from_file(filename,path);
 compute_uncertainty();
-set_all_channels(); // TODO make this set only required channels
+//set_all_channels(); // TODO make this set only required channels
 }
 
 Signal_strength(double _mu, double _ub,double _lb,double _mh, double _sig_mh){
@@ -89,6 +89,16 @@ void set_all_channels()
   prod.push_back("all");
 }
 
+
+void set_decay(std::string c)
+{
+if (c == "1"){ decay.push_back("gaga");}
+if (c == "2"){ decay.push_back("WW");}
+if (c == "3"){ decay.push_back("ZZ");}
+if (c == "4"){ decay.push_back("tautau");}
+if (c == "5"){ decay.push_back("bb");}
+}
+
 void set_data_from_file(std::string filename,std::string path);
   
   
@@ -101,7 +111,7 @@ std::map <int, Signal_strength> read_expt_data(std::string);
 
 
 
-class Decays
+class gambit_Higgs_ModelParameters
 {
   private:
   
@@ -117,7 +127,7 @@ class Decays
   
   
   // constructor
-  Decays (){};
+  gambit_Higgs_ModelParameters (){};
   
   double  width_in_GeV;
   double _mh; // Higgs mass
@@ -164,8 +174,8 @@ class Decays
   double CS_lhc8_vbf_ratio = 1;
   double CS_lhc8_tthj_ratio = 1;
   
-  
-  void set_BF(double mh);
+  // set the SM BRs for computation of theory signal strength
+  void set_sm(double mh);
   
   
   double total_BF()
@@ -176,6 +186,7 @@ class Decays
   
   
   void add_SS_decay(double ms, double lambda_hs);
+  // add an invisible width for the scalar singlet model (not required in GAMBIT)
   
   
   std::map <std::string,double> get_BR_map()
@@ -191,7 +202,11 @@ class Decays
   
   void set_maps()
   {
-  
+  sig["ggH"] = 1.0;
+  sig["WH"] = 1.0;
+  sig["ZH"] = 1.0;
+  sig["VBF"] = 1.0;
+  sig["ttH"] = 1.0;
   
   BR["ss"] = BR_hjss;
   BR["cc"] = BR_hjcc;
@@ -201,20 +216,15 @@ class Decays
   BR["WW"] = BR_hjWW;
   BR["ZZ"] = BR_hjZZ;
   BR["Zga"] = BR_hjZga;
+  BR["Zgamma"] = BR_hjZga;
   BR["gaga"] = BR_hjgaga;
-  
+  BR["gammagamma"] = BR_hjgaga;
   BR["gg"] = BR_hjgg;
   BR["tt"] = BR_hjtt;
   BR["inv"] = BR_invisible;
-  sig["all"] = 1;
+  sig["all"] = 1.0;
   map_set = 1;
-  
-  
   }
-
-  
-
-  
 };
 
 
@@ -223,28 +233,23 @@ class Effective_couplings{
 
   public:
   
-  Decays SM_decays;
+  gambit_Higgs_ModelParameters SM_decays;
   bool SM_decays_set = 0;
   
   double C_WW2, C_ZZ2 ,C_tt2, C_bb2, C_cc2, C_tautau2 ,C_gaga2;
   double C_gg2, C_mumu2,C_Zga2, C_hiZ2,C_ss2;
   
-  
-  
   // constructor
   Effective_couplings (double mh){
-  Decays sm;
-  sm.set_BF(mh);
+  gambit_Higgs_ModelParameters sm;
+  sm.set_sm(mh);
   SM_decays = sm;
   SM_decays_set = 1;
   }; // initilise with a particular mass
   
   Effective_couplings(){};
   
-  void compute_scaling_factors(Decays deays);
-
-
-
+  void compute_scaling_factors(gambit_Higgs_ModelParameters deays);
 
 };
 

@@ -98,7 +98,26 @@
     ALLOW_MODELS(SingletDM, SingletDMZ3)
     MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    DEPENDENCY(Higgslike_ModelParameters, Gambit::ColliderBit::gambit_Higgs_ModelParameters)
     #undef FUNCTION
+
+  #undef CAPABILITY
+
+  
+  #define CAPABILITY Higgslike_ModelParameters
+    START_CAPABILITY
+     #define FUNCTION SMHiggs_gambit_ModelParameters
+     START_FUNCTION(Gambit::ColliderBit::gambit_Higgs_ModelParameters)
+     DEPENDENCY(SMINPUTS, SMInputs)
+     DEPENDENCY(SM_spectrum, /*TAG*/ Spectrum)
+     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+     #undef FUNCTION
+     #define FUNCTION SMlikeHiggs_gambit_ModelParameters
+     START_FUNCTION(Gambit::ColliderBit::gambit_Higgs_ModelParameters)
+     ALLOW_MODELS(SingletDM, SingletDMZ3)
+     MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
+     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+     #undef FUNCTION
 
   #undef CAPABILITY
 
@@ -172,18 +191,6 @@
      #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY Higgslike_decays
-    START_CAPABILITY
-     #define FUNCTION Higgslike_decays
-      START_FUNCTION(Gambit::ColliderBit::Decays)
-      DEPENDENCY(SMINPUTS, SMInputs)
-      DEPENDENCY(SM_spectrum,  Spectrum)
-      DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-      ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
-//      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
-//      MODEL_GROUP(singlet_running, (SingletDM_running))
-     #undef FUNCTION
-  #undef CAPABILITY 
 
 
   #define CAPABILITY calc_gambit_LHC_LogLike
@@ -193,7 +200,7 @@
       DEPENDENCY(SMINPUTS, SMInputs)
       DEPENDENCY(SM_spectrum,  Spectrum)
       DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-      DEPENDENCY(Higgslike_decays, Gambit::ColliderBit::Decays)
+      DEPENDENCY(Higgslike_ModelParameters, Gambit::ColliderBit::gambit_Higgs_ModelParameters)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
 //      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
 //      MODEL_GROUP(singlet_running, (SingletDM_running))

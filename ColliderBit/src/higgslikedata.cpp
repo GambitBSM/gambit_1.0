@@ -25,7 +25,7 @@
 
 #include "gambit/ColliderBit/higgslike.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 using namespace std;
 
@@ -86,8 +86,6 @@ int nd = 0; // number of signal strengths to import
 string c_file_names = path + "list.txt";//"../data/expt_data_list.txt";
 const char *file_names_list = c_file_names.c_str();
 
-cout << "here " << endl;
-
 get_data(filenames,nd,file_names_list);
 
 
@@ -110,7 +108,7 @@ void Signal_strength::set_data_from_file(std::string file,std::string path)
 
 // need to extract Higgs mass, sig_mh, mu, ub, lb at least
 // can add more quantites later
-const char *ext = ".txt";
+const char *ext = ""; // removed extension
 const char* file_tmp = path.c_str(); // vector containing file names
 string c_file =  file_tmp + file + ext;
 const char *filename = c_file.c_str();
@@ -120,7 +118,7 @@ cout << "reading file = " << filename << endl;
 #endif
 
 int n=0;
-std::vector <std::string> col1, col2, col3, col4;
+std::vector <std::string> col1, col2, col3, col4, col5;
 std::ifstream input(filename);
 std::string line;
 while(getline(input, line)) {
@@ -134,6 +132,7 @@ col1.resize(n);
 col2.resize(n);
 col3.resize(n);
 col4.resize(n);
+col5.resize(n);
 input.close();
 
 n=0;
@@ -145,20 +144,41 @@ while(getline(input2, line2)) {
     std::istringstream iss2(line2);
   
   
-  iss2>> col1[n] >> col2[n] >> col3[n] >> col4[n];
+  iss2>> col1[n] >> col2[n] >> col3[n] >> col4[n] >> col5[n];
     n=n+1;
  }
 
  input2.close();
+int use_line = 11;
+if (col2[8] == "-1"){ use_line = 10;}
 
-
-
-mh =  std::stod(col1[11]);
-lb = std::stod(col2[11]);
-mu = std::stod(col3[11]);
-ub = std::stod(col4[11]);
+mh =  std::stod(col1[use_line]);
+lb = std::stod(col2[use_line]);
+mu = std::stod(col3[use_line]);
+ub = std::stod(col4[use_line]);
 
 sig_mh = std::stod(col1[6]);
+
+std::string channel_1 = col1[9];
+std::string channel_2 = col2[9];
+std::string channel_3 = col3[9];
+std::string channel_4 = col4[9];
+std::string channel_5 = col5[9];
+
+prod.push_back("all");
+// not currently considering production channels, need theory input for this from somewhere
+if (channel_1!=""){ std::string c; c.push_back(channel_1[1]); set_decay(c);}
+if (channel_2!=""){ std::string c; c.push_back(channel_2[1]); set_decay(c);}
+if (channel_3!=""){ std::string c; c.push_back(channel_3[1]); set_decay(c);}
+if (channel_4!=""){ std::string c; c.push_back(channel_4[1]); set_decay(c);}
+if (channel_5!=""){ std::string c; c.push_back(channel_5[1]); set_decay(c);}
+
+
+
+
+  sort(decay.begin(),decay.end());
+  decay.erase( unique( decay.begin(), decay.end() ), decay.end() );
+
 
 
 
@@ -166,7 +186,7 @@ sig_mh = std::stod(col1[6]);
 
 }
 
-void Decays::set_BF(double mh)
+void gambit_Higgs_ModelParameters::set_sm(double mh)
 {
       
       _mh = mh;
@@ -220,7 +240,7 @@ void Decays::set_BF(double mh)
 
 
 
-void Decays::add_SS_decay(double ms, double lambda_hs)
+void gambit_Higgs_ModelParameters::add_SS_decay(double ms, double lambda_hs)
 {
 
 // add invisible width from H -> SS decay channel and rescale
@@ -281,13 +301,13 @@ map_set = 0; // since values have changed need to reset map if called again
 
 
 
-void Effective_couplings::compute_scaling_factors(Decays data)
+void Effective_couplings::compute_scaling_factors(gambit_Higgs_ModelParameters data)
 {
 // set up object with SM branching ratios and width
 if (!SM_decays_set)
 {
-Decays sm;
-sm.set_BF(data._mh);
+gambit_Higgs_ModelParameters sm;
+sm.set_sm(data._mh);
 SM_decays = sm;
 SM_decays_set = 1;
 }
