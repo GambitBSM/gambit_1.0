@@ -1,15 +1,7 @@
-# Ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A and ExampleBit_B,
-# plus example backends libfirst and libFortran.
+# Implementation of the Lilith backend and other LHC likelihoods for testing and comparison
 #
-# Don't commit modified versions of this file!
-# If you want to change it in order to test
-# your own modifications to the code, copy
-# it to spartan_personal.yaml, which will be
-# ignored by git.
-#
-# Pat Scott <p.scott@imperial.ac.uk>
-# Oct 2014
+# James McKay <j.mckay14@imperial.ac.uk>
+# Sep 2016
 #
 
 ###################################
@@ -152,7 +144,8 @@ ObsLikes:
 
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
-      function: Lilith_LHC_LogLike
+      function: HS_LHC_LogLike
+
 
 
 
@@ -168,9 +161,10 @@ Rules:
       options:
         use_signal_strengths: false
 
-    - capability: LHC_Higgs_LogLike
-      options:
-        HS_mass_only: true
+    - capability: calc_HS_LHC_LogLike
+      function: calc_HS_LHC_LogLike_effC
+      #options:
+        #HS_mass_only: true
 
     - capability: HiggsSignals_1_4_init
       options:

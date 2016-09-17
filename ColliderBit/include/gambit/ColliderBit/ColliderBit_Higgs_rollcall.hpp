@@ -48,6 +48,22 @@
     #undef FUNCTION
   #undef CAPABILITY
 
+
+
+  // HiggsBounds input model parameters
+  #define CAPABILITY HB_ModelParameters_effC
+  START_CAPABILITY
+  
+    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
+    #define FUNCTION SMlikeHiggs_HS_ModelParameters_effC
+    START_FUNCTION(hb_ModelParameters_effC)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
+    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    DEPENDENCY(Higgslike_ModelParameters, Gambit::ColliderBit::gambit_Higgs_ModelParameters)
+    #undef FUNCTION
+   #undef CAPABILITY
+
   // HiggsBounds input model parameters
   #define CAPABILITY HB_ModelParameters
   START_CAPABILITY
@@ -66,6 +82,7 @@
     MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
+
 
     // MSSM Higgs model parameters
     #define FUNCTION MSSMHiggs_ModelParameters
@@ -170,6 +187,19 @@
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
         BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
+     #undef FUNCTION
+     #define FUNCTION calc_HS_LHC_LogLike_effC
+      START_FUNCTION(ddpair)
+      DEPENDENCY(HB_ModelParameters_effC, hb_ModelParameters_effC)
+      BACKEND_REQ(HiggsBounds_neutral_input_effC_HS, (libhiggssignals), void,(double*, double*, double*,
+      double*, double*, double*, double*, double*, double*, double*,
+      double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+      double*, Farray<double, 1,3, 1,3>&))
+      BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,(double*, double*, double*, double*,
+      double*, double*, double*, double*))
+      BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))
+      BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
+      BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
      #undef FUNCTION
 
   #undef CAPABILITY

@@ -77,6 +77,33 @@ namespace Gambit
     double BR_Hptaunu[1];
   };
   
+  struct hb_ModelParameters_effC
+  {
+   double Mh[3];
+   double hGammaTot[3];
+   double g2hjss_s[3];
+   double g2hjss_p[3];
+   double g2hjcc_s[3];
+   double g2hjcc_p[3];
+   double g2hjbb_s[3];
+   double g2hjbb_p[3];
+   double g2hjtt_s[3];
+   double g2hjtt_p[3];
+   double g2hjmumu_s[3];
+   double g2hjmumu_p[3];
+   double g2hjtautau_s[3];
+   double g2hjtautau_p[3];
+   double g2hjWW[3];
+   double g2hjZZ[3];
+   double g2hjZga[3];
+   double g2hjgaga[3];
+   double g2hjgg[3];
+   double g2hjggZ[3];
+   double g2hjhiZ[3];
+   double BR_hjinvisible[3];
+   double BR_hjhihi[3][3];
+  };
+  
   
 }
 

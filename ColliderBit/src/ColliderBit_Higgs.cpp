@@ -327,6 +327,13 @@ namespace Gambit
     result.BR_hjinvisible[0] = decays.BF(P, P);
     }
     
+    void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters_effC &result,str P)
+    {
+    result.BR_hjinvisible[0] = decays.BF(P, P);
+    result.BR_hjinvisible[1] = 0.0;
+    result.BR_hjinvisible[2] = 0.0;
+    }
+    
     void set_invisible_width(const DecayTable::Entry& decays, lilith_ModelParameters &result,str P)
     {
     result.BRinv = decays.BF(P, P);
@@ -428,6 +435,44 @@ namespace Gambit
       }
       
       result.mu = mu;
+      
+      //  set effective couplings
+      
+      
+      Effective_couplings ec(125.6);
+      ec.compute_scaling_factors(gambit_modelparams,result);
+      
+      
+     }
+    
+    
+     void SMlikeHiggs_HS_ModelParameters_effC(hb_ModelParameters_effC &result)
+    {
+      using namespace Pipes::SMlikeHiggs_HS_ModelParameters_effC;
+      const Spectrum& fullspectrum = *Dep::SingletDM_spectrum;
+      str invisible_particle;
+      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
+      {
+       //fullspectrum = *Dep::SingletDM_spectrum;
+       invisible_particle = "S";
+      }
+      else
+      {
+       ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
+      }
+      
+      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
+      //set_SMHiggs_ModelParameters(fullspectrum,decays,result);
+      const SubSpectrum& spec = fullspectrum.get_HE();
+      result.Mh[0] = spec.get(Par::Pole_Mass,25,0);
+      result.Mh[1] = 0; result.Mh[2] = 0;
+      set_invisible_width(decays,result,invisible_particle);
+      
+      
+      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
+      decays_sm.set_sm(125.6);
+      gambit_Higgs_ModelParameters gambit_modelparams = *Dep::Higgslike_ModelParameters;
+
       
       //  set effective couplings
       
@@ -1008,6 +1053,47 @@ namespace Gambit
       //result = -0.5*csqtot;
       result = std::pair<double, double>(-0.5*csqtot,-0.5*csqmh);
     }
+
+    void calc_HS_LHC_LogLike_effC(ddpair &result) // currently only supports SM and SingletDM
+    {
+      using namespace Pipes::calc_HS_LHC_LogLike_effC;
+    
+      hb_ModelParameters_effC ModelParam = *Dep::HB_ModelParameters_effC;
+      Farray<double, 1,3, 1,3> BR_hjhihi, identity;
+      for(int i = 0; i < 3; i++)
+      {
+      identity(i+1,i+1) = 1.0;
+      for(int j = 0; j < 3; j++)
+      {
+        BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
+        
+      }
+      }
+
+      BEreq::HiggsBounds_neutral_input_effC_HS(&ModelParam.Mh[0],&ModelParam.hGammaTot[0],
+      &ModelParam.g2hjss_s[0],   &ModelParam.g2hjss_p[0],   &ModelParam.g2hjcc_s[0],     &ModelParam.g2hjcc_p[0],
+      &ModelParam.g2hjbb_s[0],   &ModelParam.g2hjbb_p[0],   &ModelParam.g2hjtt_s[0],     &ModelParam.g2hjtt_p[0],
+      &ModelParam.g2hjmumu_s[0], &ModelParam.g2hjmumu_p[0], &ModelParam.g2hjtautau_s[0], &ModelParam.g2hjtautau_p[0],
+      &ModelParam.g2hjWW[0],     &ModelParam.g2hjZZ[0],     &ModelParam.g2hjZga[0],      &ModelParam.g2hjgaga[0],
+      &ModelParam.g2hjgg[0],     &ModelParam.g2hjggZ[0],    identity,      &ModelParam.BR_hjinvisible[0],
+      BR_hjhihi);
+      
+      // will add charged component soon, just a quick fix to get it working
+      double zero = 0.0; // have to pass something by reference
+      BEreq::HiggsBounds_charged_input_HS(&zero,&zero,&zero,&zero,&zero,&zero,&zero,&zero);
+      //&ModelParam.g2hjhiZ[0]
+      
+      
+      int mode = 1; // 1- peak-centered chi2 method (recommended)
+      double csqmu, csqmh, csqtot, Pvalue;
+      int nobs;
+      BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
+
+      //result = -0.5*csqtot;
+      result = std::pair<double, double>(-0.5*csqtot,-0.5*csqmh);
+    }
+
+
 
     
     void HS_LHC_LogLike(double &result)

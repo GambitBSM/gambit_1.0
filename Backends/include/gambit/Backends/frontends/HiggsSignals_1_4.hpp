@@ -62,6 +62,14 @@ BE_FUNCTION(HiggsBounds_neutral_input_part_HS, void, (double*, double*, int*, do
 						      double*, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_part_", "HiggsBounds_neutral_input_part_HS")
 BE_FUNCTION(HiggsBounds_charged_input_HS, void, (double*, double*, double*, double*,
 						 double*, double*, double*, double*), "higgsbounds_charged_input_", "HiggsBounds_charged_input_HS")
+BE_FUNCTION(HiggsBounds_neutral_input_effC_HS, void, (double*, double*,
+      double*, double*, double*, double*,
+      double*, double*, double*, double*,
+      double*, double*, double*, double*,
+      double*, double*, double*, double*,
+      double*, double*, Farray<double, 1,3, 1,3>&, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_effc_", "HiggsBounds_neutral_input_effC_HS")
+
+
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

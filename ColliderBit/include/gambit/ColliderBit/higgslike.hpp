@@ -254,6 +254,8 @@ class Effective_couplings{
   Effective_couplings(){};
   
   void compute_scaling_factors(gambit_Higgs_ModelParameters deays,lilith_ModelParameters &result);
+  
+  void compute_scaling_factors(gambit_Higgs_ModelParameters deays,hb_ModelParameters_effC &result);
 
 };
 

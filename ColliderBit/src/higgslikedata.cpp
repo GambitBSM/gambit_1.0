@@ -356,6 +356,106 @@ result.C_Zgamma = pow(C_Zga2,0.5);
 
 
 
+
+void Effective_couplings::compute_scaling_factors(gambit_Higgs_ModelParameters data,
+ hb_ModelParameters_effC &result)
+{
+// set up object with SM branching ratios and width
+if (!SM_decays_set)
+{
+gambit_Higgs_ModelParameters sm;
+sm.set_sm(data._mh);
+SM_decays = sm;
+SM_decays_set = 1;
+}
+
+// set total width for new model
+
+double Gamma = data.width_in_GeV;
+double ratio = Gamma/SM_decays.width_in_GeV;
+C_WW2 = ratio * data.BR_hjWW / SM_decays.BR_hjWW;
+C_ZZ2 = ratio * data.BR_hjZZ / SM_decays.BR_hjZZ;
+C_tt2 = 1;//ratio * data.BR_hjtt / SM_decays.BR_hjtt;
+C_bb2 = ratio * data.BR_hjbb / SM_decays.BR_hjbb;
+C_cc2 = ratio * data.BR_hjcc / SM_decays.BR_hjcc;
+C_ss2 = ratio * data.BR_hjss / SM_decays.BR_hjss;
+C_tautau2 = ratio * data.BR_hjtautau / SM_decays.BR_hjtautau;
+
+C_mumu2 = ratio * data.BR_hjmumu/ SM_decays.BR_hjmumu;
+
+
+// these should be corrected for loop contributions
+
+C_gg2 = ratio * data.BR_hjgg/ SM_decays.BR_hjgg;
+
+C_gaga2 = ratio * data.BR_hjgaga/ SM_decays.BR_hjgaga;
+
+C_Zga2 = ratio * data.BR_hjZga/ SM_decays.BR_hjZga;
+
+//C_hiZ2 = Gamma * data.BR_hjhiZ/ SM_decays.BR_hjhiZ;
+
+
+
+
+for(int i = 0; i < 3; i++)
+{
+result.hGammaTot[i] = 0.0;
+//result.SMGammaTotal[i] = 0.0;
+result.g2hjss_s[i] = 0.0;
+result.g2hjcc_s[i] = 0.0;
+result.g2hjbb_s[i] = 0.0;
+result.g2hjtt_s[i] = 0.0;
+result.g2hjmumu_s[i] = 0.0;
+result.g2hjtautau_s[i] = 0.0;
+result.g2hjWW[i] = 0.0;
+result.g2hjZZ[i] =  0.0;
+result.g2hjZga[i] = 0.0;
+result.g2hjgg[i] = 0.0;
+result.g2hjgaga[i] = 0.0;
+result.BR_hjinvisible[i] = 0.0;
+result.g2hjss_p[i]=0.0;
+result.g2hjcc_p[i]=0.0;
+result.g2hjbb_p[i]=0.0;
+result.g2hjtt_p[i]=0.0;
+result.g2hjmumu_p[i]=0.0;
+result.g2hjtautau_p[i]=0.0;
+result.g2hjggZ[i]=0.0;
+result.g2hjhiZ[i]=0.0;
+for(int j = 0; j < 3; j++) result.BR_hjhihi[i][j] = 0.0;
+}
+result.hGammaTot[0] = data.width_in_GeV;
+
+//result.SMGammaTotal[0] = SM_decays.width_in_GeV;
+
+result.g2hjss_s[0] = C_ss2;
+result.g2hjcc_s[0] = C_cc2;
+result.g2hjbb_s[0] = C_bb2;
+result.g2hjtt_s[0] = 1.0;  // fix later, gives nan since tt channel zero at 125 GeV
+result.g2hjmumu_s[0] = C_mumu2;
+result.g2hjtautau_s[0] = C_tautau2;
+
+result.g2hjWW[0] = C_WW2;
+result.g2hjZZ[0] =  C_ZZ2;
+
+result.g2hjZga[0] = C_Zga2;
+result.g2hjgg[0] = C_gg2;
+
+result.g2hjgaga[0] = C_gaga2;
+result.BR_hjinvisible[0] = data.BR_invisible;
+result.g2hjss_p[0]=0.0;
+result.g2hjcc_p[0]=0.0;
+result.g2hjbb_p[0]=0.0;
+result.g2hjtt_p[0]=0.0;
+result.g2hjmumu_p[0]=0.0;
+result.g2hjtautau_p[0]=0.0;
+result.g2hjggZ[0]=1.0;
+result.g2hjhiZ[0]=0.0; // needs to be matrix
+result.BR_hjhihi[0][0]=0.0;
+
+}
+
+
+
 }
 
 }
