@@ -495,7 +495,8 @@ namespace Gambit
         PrecisionBit_error().raise(LOCAL_INFO,msg.str());
       }
 
-      for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true); // TODO: Ben: I changed the flags here to "false", because that means the uncertainties don't already have to exist. This is the case if e.g. the spectrum comes from an SLHA file.
+      // Finally, set the errors.
+      for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true);
       for (int i = 0; i < 4; i++) HE.set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
 
       #ifdef PRECISIONBIT_DEBUG
@@ -503,6 +504,15 @@ namespace Gambit
         for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE.get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
         for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE.get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
       #endif
+
+      // Save the identity/identities of the calculator(s) used for the central value.
+      const str& p_calc = Dep::prec_HiggsMasses.name();
+      const str& p_orig = Dep::prec_HiggsMasses.origin();
+      const str& s_calc = Dep::unimproved_MSSM_spectrum.name();
+      const str& s_orig = Dep::unimproved_MSSM_spectrum.origin();
+      if (central == 1) HE.set_override(Par::dimensionless, 1.0, "h mass from: "+p_orig+"::"+p_calc, true);
+      if (central == 2) HE.set_override(Par::dimensionless, 1.0, "h mass from: "+s_orig+"::"+s_calc, true);
+      if (central == 3) HE.set_override(Par::dimensionless, 1.0, "h mass from: "+p_orig+"::"+p_calc+", "+s_orig+"::"+s_calc, true);
 
       // Check if an SLHA file needs to be excreted.
       drop_SLHA_if_requested(runOptions, improved_spec);

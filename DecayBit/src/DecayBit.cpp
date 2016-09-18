@@ -2526,12 +2526,26 @@ namespace Gambit
       // MSSM-specific
       if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
       {
-        mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
+        // Make sure that if the user has elected to take Higgs decays from FeynHiggs that
+        // they have elected to take the Higgs mass from FeynHiggs alone.
+        if (Dep::Higgs_decay_rates->calculator == "FeynHiggs" or
+            Dep::h0_2_decay_rates->calculator == "FeynHiggs" or
+            Dep::A0_decay_rates->calculator == "FeynHiggs" or
+            Dep::H_plus_decay_rates->calculator == "FeynHiggs" or
+            Dep::t_decay_rates->calculator == "FeynHiggs")
+        {
+          if (not Dep::MSSM_spectrum->get_HE().has(Par::dimensionless, "h mass from: SpecBit::FH_HiggsMasses"))
+           DecayBit_error().raise(LOCAL_INFO, "You must use Higgs masses from FeynHiggs if you choose to use FeynHiggs "
+                                              "to calculate h or t decays.\nPlease modify your yaml file accordingly.");
+        }
+
+        mass_es_pseudonyms psn = *Dep::SLHA_pseudonyms;
 
         decays("h0_2") = *Dep::h0_2_decay_rates;                 // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                     // Add the A0 decays.
         decays("H+") = *Dep::H_plus_decay_rates;                 // Add the H+ decays.
-        decays("H-") = *Dep::H_minus_decay_rates;                // Add the H+ decays.
+        decays("H-") = *Dep::H_minus_decay_rates;                // Add the H- decays.
 
         decays("~g") = *Dep::gluino_decay_rates;                 // Add the gluino decays.
 
