@@ -14,6 +14,10 @@
 ///
 ///  *********************************************
 
+#ifdef WITH_MPI
+#include "mpi.h"
+#endif
+
 #include <vector>
 #include <string>
 #include <cmath>
@@ -27,32 +31,36 @@ scanner_plugin(square_grid, version(1, 0, 0))
 {
     int plugin_main()
     {
+        int rank, numtasks;
         int N = std::abs(get_inifile_value<int>("grid_pts", 2));
         if (N == 0) N = 1;
         int ma = get_dimension();
+        
+#ifdef WITH_MPI
+        MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#else
+        numtasks = 1;
+        rank = 0;
+#endif
+        
         like_ptr LogLike = get_purpose(get_inifile_value<std::string>("like"));
         std::vector<double> vec(ma, 0.0);
 
-        if (N == 1)
+        for (int i = rank, end = std::pow(N, ma); i < end; i+=numtasks)
         {
-            for (int i = 0; i < ma; i++)
-                vec[i] = 0.5;
+            int n = i;
+            for (int j = 0; j < ma; j++)
+            {
+                if (N == 1)
+                    vec[j] = 0.5;
+                else
+                    vec[j] = double(n%N)/double(N-1);
+                
+                n /= N;
+            }
 
             LogLike(vec);
-        }
-        else
-        {
-            for (int i = 0, end = std::pow(N, ma); i < end; i++)
-            {
-                int n = i;
-                for (int j = 0; j < ma; j++)
-                {
-                    vec[j] = double(n%N)/double(N-1);
-                    n /= N;
-                }
-
-                LogLike(vec);
-            }
         }
 
         return 0;

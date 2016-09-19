@@ -25,10 +25,10 @@
 ///  \author Pat Scott
 ///  \date 2015 May
 ///  \date 2016 Aug
+///
 ///  \author Marcin Chrzaszcz
 ///  \date 2015 May
 ///  \date 2016 Aug
-///
 ///
 ///  *********************************************
 
@@ -41,7 +41,6 @@
 #define MODULE FlavBit
 START_MODULE
 
-
   // Initialization capability (fill the SuperIso structure)
   #define CAPABILITY SuperIso_modelinfo
   START_CAPABILITY
@@ -50,7 +49,7 @@ START_MODULE
     BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -60,7 +59,7 @@ START_MODULE
     #define FUNCTION SI_bsgamma
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_bsgamma_CONV, (libsuperiso), double,(struct parameters*, double))
+    BACKEND_REQ(bsgamma_CONV, (libsuperiso), double,(struct parameters*, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -71,7 +70,7 @@ START_MODULE
     #define FUNCTION SI_Bsmumu_untag
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -82,7 +81,7 @@ START_MODULE
     #define FUNCTION SI_Bsee_untag
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -93,7 +92,7 @@ START_MODULE
     #define FUNCTION SI_Bdmumu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_Bdll_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_REQ(Bdll_CONV, (libsuperiso),  double, (struct parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -344,7 +343,7 @@ START_MODULE
     #define FUNCTION SI_BRBKstarmumu_11_25
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -355,7 +354,7 @@ START_MODULE
     #define FUNCTION SI_BRBKstarmumu_25_40
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -366,7 +365,7 @@ START_MODULE
     #define FUNCTION SI_BRBKstarmumu_40_60
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -377,7 +376,7 @@ START_MODULE
     #define FUNCTION SI_BRBKstarmumu_60_80
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -388,7 +387,7 @@ START_MODULE
     #define FUNCTION SI_BRBKstarmumu_15_17
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -399,7 +398,7 @@ START_MODULE
     #define FUNCTION SI_BRBKstarmumu_17_19
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY

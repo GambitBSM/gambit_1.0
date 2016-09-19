@@ -64,15 +64,28 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
 
-  // Precision MSSM spectrum manufacturer
+  // Precision MSSM spectrum manufacturers
   #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
-    #define FUNCTION make_MSSM_precision_spectrum
+
+    #define FUNCTION make_MSSM_precision_spectrum_H_W
     START_FUNCTION(Spectrum)
     DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
     DEPENDENCY(prec_mw, triplet<double>)
     DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     #undef FUNCTION
+
+    #define FUNCTION make_MSSM_precision_spectrum_W
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    DEPENDENCY(prec_mw, triplet<double>)
+    #undef FUNCTION
+
+    #define FUNCTION make_MSSM_precision_spectrum_none
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+
   #undef CAPABILITY
   
   // Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
@@ -130,6 +143,7 @@ START_MODULE
     #define FUNCTION lnL_gm2_chi2
     START_FUNCTION(double)
     DEPENDENCY(muon_gm2, triplet<double>)
+    DEPENDENCY(muon_gm2_SM, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
   
@@ -155,7 +169,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-  // Observable: (g-2)_mu
+
+  // Observable: BSM contribution to (g-2)_mu
   #define CAPABILITY muon_gm2
 
     // Muon g-2 -- Using SuperIso
@@ -179,6 +194,23 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY 
+
+
+  // Observable: SM contribution to (g-2)_mu
+  #define CAPABILITY muon_gm2_SM
+
+    // SM muon g-2, based on e+e- data
+    #define FUNCTION gm2_SM_ee
+    START_FUNCTION(triplet<double>)
+    #undef FUNCTION
+
+    // SM muon g-2, based on tau+tau- data
+    #define FUNCTION gm2_SM_tautau
+    START_FUNCTION(triplet<double>)
+    #undef FUNCTION
+
+  #undef CAPABILITY 
+
 
 #undef MODULE
 

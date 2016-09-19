@@ -150,25 +150,12 @@ else()
 endif()
 
 # Check for Boost
-set(Boost_NO_BOOST_CMAKE ON)
-set(required_boost_libs "system" "filesystem")  # Don't need these anymore: system filesystem
-find_package(Boost 1.41 REQUIRED ${required_boost_libs})
+set(Boost_NO_BOOST_CMAKE ON) #PS: what is this needed for?
+find_package(Boost 1.41)
 if(Boost_FOUND)
-  if (NOT Boost_INCLUDE_DIR STREQUAL "")
-    include_directories("${Boost_INCLUDE_DIR}")
-  endif()
+  include_directories("${Boost_INCLUDE_DIR}")
 else()
-  set(err "GAMBIT requires Boost v1.41 or greater")
-  if (NOT "${required_boost_libs}" STREQUAL "")
-    set(err "${err} and compiled libraries:\n")
-    foreach(lib ${required_boost_libs})
-      set(err "${err} boost_${lib}\n")
-    endforeach()
-    set(err "${err}Please install these and rerun cmake.")
-  else()
-    set(err "${err}.\nPlease install a suitable version of Boost and rerun cmake.")
-  endif()
-  message(FATAL_ERROR ${err})
+  message(FATAL_ERROR "GAMBIT requires Boost v1.41 or greater.\nPlease install a suitable version of Boost and rerun cmake.")
 endif()
 
 # Check for OpenMP
@@ -342,10 +329,6 @@ foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
-
-# MJW adds this to get ColliderBit_standalone compiled
-# It is probably naughty
-set(SPEC_BIT_OBJECTS "$<TARGET_OBJECTS:SpecBit>")
 
 # Add the executables
 include(cmake/executables.cmake)

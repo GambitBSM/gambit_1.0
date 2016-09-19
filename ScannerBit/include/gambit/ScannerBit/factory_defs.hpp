@@ -92,6 +92,17 @@ namespace Gambit
                 GMPI::Comm world;
                 rank = world.Get_rank();
 #endif
+                // Check if we should be using the alternative min_LogL from the very beginning
+                // (for example if we are resuming from a run where we already switched to this)
+                if (Gambit::Scanner::Plugins::plugin_info.resume_mode())
+                {
+                   use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
+                }
+                else
+                {
+                   // New scan; delete any old persistence file
+                   Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
+                }
             }
             
             virtual ret main(const args&...) = 0;
@@ -145,22 +156,35 @@ namespace Gambit
               int nullmsg = 0; // Don't need message content, the message itself is the signal.
               myComm.IsendToAll(&nullmsg, 1, TAG, &req_null);
               #endif
+              Gambit::Scanner::Plugins::plugin_info.save_alt_min_LogL_state(); // Write a file to disk so that upon startup we can check if the alternate min LogL is supposed to be used.
             }
 
             /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function 
             bool check_for_switch_to_alternate_min_LogL()
             {
-              #ifdef WITH_MPI
-              GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
-              static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
-              if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+              if(not use_alternate_min_LogL)
               {
-                int nullmsg;
-                MPI_Status msg_status;
-                myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
-                use_alternate_min_LogL = true;
+                #ifdef WITH_MPI
+                GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
+                static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
+                if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+                {
+                  int nullmsg;
+                  MPI_Status msg_status;
+                  myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
+                  use_alternate_min_LogL = true;
+                }
+                #endif
               }
-              #endif
+              // If we didn't decide to switch yet, check for the existence of
+              // the persistence file. This is not necessary for proper functioning
+              // of this system, but it allows users to manually create the persistence file 
+              // as a 'hack' to force the likelihood to switch to the alternate min LogL
+              // value.
+              if(not use_alternate_min_LogL)
+              {
+                use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
+              }
               return use_alternate_min_LogL;
             }
             /// @}

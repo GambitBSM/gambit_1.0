@@ -65,7 +65,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
 {
     std::vector<double> chisq(NThreads);
     std::vector<double> aNext(ma);
-    std::vector<std::vector<double>> a0 = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma));
+    std::vector<std::vector<double>> a0(NThreads, std::vector<double>(ma));
     double ans, chisqnext;
     std::vector<int> mult(NThreads, 1);
     std::vector<int> totN(NThreads, 0);
@@ -137,7 +137,6 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
 #endif
                 for (int j = 0; j < ma; j++)
                     a0[t][j] = (gDev[t]->Doub());
-                a0[t][ma] = -1;
                 chisq[t] = -LogLike(a0[t]);
                 ids[t] = LogLike->getPtID();
                 ranks[t] = rank;

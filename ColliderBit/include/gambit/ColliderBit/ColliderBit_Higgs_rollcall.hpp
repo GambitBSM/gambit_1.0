@@ -37,6 +37,7 @@
 
   ///////////// Higgs physics /////////////////////
 
+
   // FeynHiggs Higgs production cross-sections
   #define CAPABILITY FH_HiggsProd            
   START_CAPABILITY
@@ -49,8 +50,7 @@
   #undef CAPABILITY
 
 
-
-  // HiggsBounds input model parameters
+  // HiggsBounds input model parameters as effective couplings
   #define CAPABILITY HB_ModelParameters_effC
   START_CAPABILITY
   
@@ -64,6 +64,7 @@
     #undef FUNCTION
    #undef CAPABILITY
 
+
   // HiggsBounds input model parameters
   #define CAPABILITY HB_ModelParameters
   START_CAPABILITY
@@ -71,7 +72,7 @@
     // SM Higgs model parameters
     #define FUNCTION SMHiggs_ModelParameters  
     START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SM_spectrum, /*TAG*/ Spectrum)
+    DEPENDENCY(SM_spectrum, Spectrum)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 
@@ -79,16 +80,15 @@
     #define FUNCTION SMlikeHiggs_ModelParameters
     START_FUNCTION(hb_ModelParameters)
     ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum, SingletDM, SingletDMZ3)
+    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, Spectrum, SingletDM, SingletDMZ3)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
-
 
     // MSSM Higgs model parameters
     #define FUNCTION MSSMHiggs_ModelParameters
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(MSSM_spectrum, /*TAG*/ Spectrum)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
     DEPENDENCY(decay_rates, DecayTable)
     DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
     DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
@@ -98,7 +98,7 @@
   #undef CAPABILITY 
 
 
-  // HiggsBounds input model parameters
+  // Lilith input model parameters
   #define CAPABILITY Lilith_ModelParameters
   START_CAPABILITY
 
@@ -138,10 +138,6 @@
      #undef FUNCTION
 
   #undef CAPABILITY
-
-
-
-
 
 
   // Get a LEP chisq from HiggsBounds

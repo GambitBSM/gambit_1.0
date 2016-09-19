@@ -39,10 +39,11 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/DarkSUSY_5_1_3.hpp"
 #include "gambit/Utils/file_lock.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 
 #define square(x) ((x) * (x))  // square a number
 
-#define DARKSUSY_DEBUG
+//#define DARKSUSY_DEBUG
 
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
@@ -719,9 +720,14 @@ BE_NAMESPACE
     }
 
     #ifdef DARKSUSY_DEBUG
-      // Spit out spectrum and width files for debug purposes
-      int u1 = 49;
-      int u2 = 50;
+      // Spit out spectrum and width files for debug purposes. 
+      int u1 = 50;
+      int u2 = 100050;
+      #ifdef WITH_MPI
+        int rank = GMPI::Comm().Get_rank();
+        u1 += rank;
+        u2 += rank;
+      #endif
       dswspectrum(u1);
       dswwidth(u2);
     #endif

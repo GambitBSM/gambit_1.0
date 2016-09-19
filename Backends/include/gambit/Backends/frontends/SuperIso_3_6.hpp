@@ -23,7 +23,7 @@
 
 LOAD_LIBRARY
 
-// Can't do anything non-MSSM with SuperIso
+// Can't do anything non-MSSM with SuperIso (yet)
 BE_ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
 
 BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
@@ -66,25 +66,14 @@ BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, s
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 
 BE_FUNCTION(Bdll, double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double), "Bdll", "Bdll")
-
-
 BE_FUNCTION(BRBDlnu, double, (int, int, double,  double, double*, struct parameters*), "BRBDlnu", "BRBDlnu")
 BE_FUNCTION(BRBDstarlnu, double, (int, int, double,  double, double*, struct parameters*), "BRBDstarlnu", "BRBDstarlnu")
 
-
 // Convenience functions:
-
-BE_CONV_FUNCTION(SI_BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "SI_BRBKstarmumu_CONV")    
-BE_CONV_FUNCTION(SI_bsgamma_CONV, double, (struct parameters*, double), "SI_bsgamma_CONV")
-BE_CONV_FUNCTION(SI_Bsll_untag_CONV, double, (struct parameters*, int), "SI_Bsll_untag_CONV")
-BE_CONV_FUNCTION(SI_Bdll_CONV, double, (struct parameters*, int), "SI_Bdll_CONV")
-
-
-
-
-// moved to SuperIso.cpp
-//BE_INI_FUNCTION{}
-//END_BE_INI_FUNCTION
+BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "BRBKstarmumu_CONV")    
+BE_CONV_FUNCTION(bsgamma_CONV, double, (struct parameters*, double), "bsgamma_CONV")
+BE_CONV_FUNCTION(Bsll_untag_CONV, double, (struct parameters*, int), "Bsll_untag_CONV")
+BE_CONV_FUNCTION(Bdll_CONV, double, (struct parameters*, int), "Bdll_CONV")
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

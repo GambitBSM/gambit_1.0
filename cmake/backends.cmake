@@ -132,8 +132,8 @@ add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
-set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")
-set(md5 "0a5735490046c5f63b3e82c4f7efa3b6")
+set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}beta.tgz")  # Note "beta" suffix!
+set(md5 "0e1278a88dc2a7838e737edd53525978")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
@@ -142,10 +142,10 @@ ExternalProject_Add(${name}_${ver}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND sed ${dashi} -e "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" Makefile
         COMMAND sed ${dashi} -e "s#rcsU#rcs#g" src/Makefile
-        COMMAND sed ${dashi} -e "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" Makefile
+        COMMAND sed ${dashi} -e "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -fPIC ${GAMBIT_C_FLAGS}/g" Makefile
         COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ar x src/libisospin.a
-        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm -o ${lib}.so *.o" > make_so.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -o ${lib}.so *.o" > make_so.sh
         COMMAND chmod u+x make_so.sh
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
@@ -456,7 +456,6 @@ ExternalProject_Add(${name}_${ver}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
 set(name "feynhiggs")
@@ -486,6 +485,7 @@ ExternalProject_Add(${name}_${ver}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+set_as_default_version("backend" ${name} ${ver})
 
 # FeynHiggs
 set(name "feynhiggs")
