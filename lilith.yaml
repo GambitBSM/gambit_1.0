@@ -52,14 +52,16 @@ Parameters:
       alpha2  :  0       # second CP-violating Majorana phase
 
     StandardModel_Higgs:
-      mH:
-        range: [123,128]
+      mH: 125.4
       #QEWSB: 173
 
 
     SingletDM:
-      mS: 0
-      lambda_hS: 0.0001
+      mS:
+        range: [50,80]
+      lambda_hS:
+        range: [0.0001, 1]
+        prior_type: log
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -101,7 +103,7 @@ Scanner:
       plugin: grid
       version: ">=1.0"
       like:  LogLike
-      grid_pts: [50]
+      grid_pts: [50,50]
 
     multinest:
       plugin: MultiNest
@@ -145,6 +147,8 @@ ObsLikes:
     - capability: LHC_Higgs_LogLike
       purpose:  LogLike
       function: HS_LHC_LogLike
+      #options:
+      #  use_mass: false
 
 
 
@@ -161,10 +165,15 @@ Rules:
       options:
         use_signal_strengths: false
 
+  #  - capability: calc_HS_LHC_LogLike
+  #    function: calc_HS_LHC_LogLike
+  #    options:
+  #      HS_mass_only: true
+
     - capability: calc_HS_LHC_LogLike
-      function: calc_HS_LHC_LogLike_effC
+      function: calc_HS_LHC_LogLike
       #options:
-        #HS_mass_only: true
+      #  HS_mass_only: true
 
     - capability: HiggsSignals_1_4_init
       options:
@@ -219,7 +228,7 @@ KeyValues:
 
   # Some example keys and subkeys
   my_key: 123
-  debug: true
+  debug: false
   another_key:
     subkey3:
       subsubkey1: value2

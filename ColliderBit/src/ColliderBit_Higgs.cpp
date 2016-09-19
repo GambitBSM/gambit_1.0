@@ -1127,14 +1127,30 @@ namespace Gambit
       using namespace Pipes::combined_LHC_LogLike;
       std::pair<double, double> HSlogL = *Dep::calc_HS_LHC_LogLike;
       
-      
-      double LilithlogL = *Dep::calc_Lilith_LHC_LogLike;
-      
+      bool HS = runOptions->getValueOrDef<bool>(true, "use_HS");
+      bool Lilith = runOptions->getValueOrDef<bool>(true, "use_Lilith");
+      bool HL = runOptions->getValueOrDef<bool>(true, "use_HL");
       
       bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
       
-      if (HS_mass_only) {result = HSlogL.second +LilithlogL;}
-      else {result = HSlogL.first +LilithlogL;}
+      double Lilith_logL=0.0;
+      double HL_logL=0.0;
+      double HS_logL=0.0;
+      
+      if (Lilith) Lilith_logL = *Dep::calc_Lilith_LHC_LogLike;
+      if (HL) HL_logL = *Dep::calc_gambit_LHC_LogLike;
+      
+      
+      if (HS)
+      {
+      ddpair HSlogL_pair = *Dep::calc_HS_LHC_LogLike;
+      
+      if (HS_mass_only) {HS_logL = HSlogL_pair.second;}
+      else {HS_logL = HSlogL_pair.first;}
+      }
+      
+      result = Lilith_logL + HS_logL + HL_logL;
+    
     
     
     }
@@ -1150,6 +1166,11 @@ namespace Gambit
       //cout << "GAMBIT internal Higgs likelihood started" << endl;
  
       std::string path = runOptions->getValueOrDef<std::string>("", "data_path");
+      
+      bool use_mass = runOptions->getValueOrDef<bool>(true, "use_mass");
+      bool use_ss = runOptions->getValueOrDef<bool>(true, "use_ss");
+      
+      
       //cout << "reading data from " << path << endl;
       if (path == "") {ColliderBit_error().raise(LOCAL_INFO,"no input data path specified");}
       
@@ -1161,7 +1182,7 @@ namespace Gambit
 
       double mh = decays._mh;
       Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
-      decays_sm.set_sm(mh);
+      decays_sm.set_sm(125.6);
       
       for (unsigned int i = 0; i < expt_data.size() ; i++)
       {
@@ -1181,16 +1202,19 @@ namespace Gambit
 
       double Cmh = pow(ss.sig_mh,2);
       double chisq = 0;
-      if ( abs(mh-mh_exp) <= 1.0*ss.sig_mh )
-      {
+     // if ( abs(mh-mh_exp) <= 1.0*ss.sig_mh )
+     // {
+     
+      if (use_ss) {chisq = chisq + (mu_exp-mu) * (1.0/Cmu) * (mu_exp - mu);}
+      if (use_mass) {chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);}
+     // }
+     /* else {
       chisq = (mu_exp-mu) * (1.0/Cmu) * (mu_exp - mu);
-      chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);
-      }
-      else {
-      chisq = (0.0-mu_exp) * (1.0/(Cmu)) * (0.0 - mu_exp);
-      //chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);  // gives massive decrease in likelihood, doesn't seem right
+      //chisq = (0.0-mu_exp) * (1.0/(Cmu)) * (0.0 - mu_exp);
+      chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);  // gives massive decrease in likelihood, doesn't seem right
       //chisq = chisq + (ss.sig_mh) * (1.0/Cmh) * (ss.sig_mh); // gives constant that is shifted a bit below HS likelihood
       }
+      */
 
 
       chisq_tot = chisq_tot + chisq;

@@ -229,6 +229,7 @@
       DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
       DEPENDENCY(Higgslike_ModelParameters, Gambit::ColliderBit::gambit_Higgs_ModelParameters)
       ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs)
+      ALLOW_MODELS(SingletDM, SingletDMZ3)
 //      MODEL_GROUP(higgs_running,   (StandardModel_Higgs_running))
 //      MODEL_GROUP(singlet_running, (SingletDM_running))
      #undef FUNCTION
