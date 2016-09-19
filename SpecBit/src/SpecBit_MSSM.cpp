@@ -189,7 +189,7 @@ namespace Gambit
       mssmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
       mssmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
 
-      /// add theory errors
+      // Add theory errors
       static const MSSM_strs ms;
 
       static const std::vector<int> i12     = initVector(1,2);
@@ -197,8 +197,9 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, true); // 3% theory "error"
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, true); // 3% theory "error"
+      // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, true);
@@ -208,16 +209,13 @@ namespace Gambit
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12,  true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12,  true);
 
-      /// do the Higgs mass seperately
-      /// Default in most codes is 3 GeV,
-      /// seems like an underestimate if the stop masses are heavy enough.
-      /// (TODO: are we happy assigning the same for both higgses?)
-      /// FIXME this does not work for the second higgs
-      double rd_mh = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, true);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, true);
+      // Do the lightest Higgs mass seperately.  The default in most codes is 3 GeV. That seems like
+      // an underestimate if the stop masses are heavy enough, but an overestimate for most points.
+      double rd_mh1 = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
+      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, "h0", 1, true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, "h0", 1, true);
 
-      /// Save the input value of TanBeta
+      // Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())
       {
         mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", true);
@@ -625,7 +623,7 @@ namespace Gambit
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
-      // In order to translate from e.g. MSSM63atMGUT to MSSM63atQ, we need 
+      // In order to translate from e.g. MSSM63atMGUT to MSSM63atQ, we need
       // to know that input scale Q. This is generally not stored in SLHA format,
       // but we need it, so if you want to produce a Spectrum object this way you
       // will need to add this information to your SLHAstruct:
@@ -633,7 +631,7 @@ namespace Gambit
       //   1     <high_scale>    # Input scale of (upper) boundary conditions, e.g. GUT scale
 
       // Need to check if this information exists:
-      SLHAstruct::const_iterator block = input_slha.find("GAMBIT"); 
+      SLHAstruct::const_iterator block = input_slha.find("GAMBIT");
       std::vector<std::string> key(1, "1");
       if(block == input_slha.end() or block->find(key) == block->end())
       {
@@ -647,11 +645,11 @@ namespace Gambit
                << "that you want to use, please add code that adds the following         " << endl
                << "information to the SLHAstruct (SLHAea::Coll):                         " << endl
                << "  BLOCK GAMBIT                                                        " << endl
-               << " 1	<high_scale>	# Input scale of (upper) boundary conditions, e.g. GUT scale\n";
+               << " 1 <high_scale>  # Input scale of (upper) boundary conditions, e.g. GUT scale\n";
         SpecBit_error().raise(LOCAL_INFO,errmsg.str());
       }
 
-      // OK the GAMBIT block exists, add the data to the MSSM SubSpectrum object.  
+      // OK the GAMBIT block exists, add the data to the MSSM SubSpectrum object.
       result.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
     }
 
@@ -942,7 +940,7 @@ namespace Gambit
       slhahelp::family_state_mix_matrix("~u", 3, mst1, mst2, mssm, tol, LOCAL_INFO, pt_error);
       specmap["mstop1"] =  mssm.get(Par::Pole_Mass, mst1);
       specmap["mstop2"] =  mssm.get(Par::Pole_Mass, mst2);
-      
+
     }
     void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
@@ -958,7 +956,7 @@ namespace Gambit
       /// Add everything... use spectrum contents routines to automate task
       static const SpectrumContents::MSSM contents;
       static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
-      
+
       for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
            it != required_parameters.end(); ++it)
       {
@@ -980,7 +978,7 @@ namespace Gambit
               mssmspec.get_HE().has(tag,name,ignore_overrides))
            {
              label << " (unimproved)";
-             specmap[label.str()] = mssmspec.get_HE().get(tag,name,ignore_overrides);          
+             specmap[label.str()] = mssmspec.get_HE().get(tag,name,ignore_overrides);
              //std::cout << label.str() << ": " << specmap[label.str()];
            }
          }
@@ -997,7 +995,7 @@ namespace Gambit
                 mssmspec.get_HE().has(tag,name,i,ignore_overrides))
              {
                label << " (unimproved)";
-               specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,ignore_overrides);          
+               specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,ignore_overrides);
                //std::cout << label.str() << ": " << specmap[label.str()];
              }
            }
@@ -1015,18 +1013,18 @@ namespace Gambit
                   mssmspec.get_HE().has(tag,name,i,j,ignore_overrides))
                {
                  label << " (unimproved)";
-                 specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,j,ignore_overrides);          
+                 specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,j,ignore_overrides);
                }
-             }  
+             }
            }
          }
          // Deal with all other cases
          else
          {
            // ERROR
-           std::ostringstream errmsg;           
+           std::ostringstream errmsg;
            errmsg << "Error, invalid parameter received while converting MSSMspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
-           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape; 
+           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape;
            SpecBit_error().forced_throw(LOCAL_INFO,errmsg.str());
          }
       }
