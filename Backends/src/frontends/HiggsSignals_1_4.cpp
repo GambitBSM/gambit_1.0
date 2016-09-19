@@ -9,7 +9,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christopher S. Rogan
 ///          (crogan@cern.ch)
 ///  \date 2015 Sept
@@ -39,18 +39,18 @@ BE_INI_FUNCTION
 
     // Find all the versions of HiggsBounds that have been successfully loaded, and get
     // their locks.
-    std::vector<str> hbversions = Backends::backendInfo().working_safe_versions("HiggsBounds");    
+    std::vector<str> hbversions = Backends::backendInfo().working_safe_versions("HiggsBounds");
     std::vector<Utils::FileLock*> mylocks;
     for (auto it = hbversions.begin(); it != hbversions.end(); ++it)
     {
       mylocks.push_back(new Utils::FileLock("HiggsBounds_" + *it + "_init"));
       mylocks.back()->get_lock();
     }
-    {
-      // initialize HiggsSignals with the latest results and set pdf shape
-      initialize_HiggsSignals_latestresults(nHneut,nHplus);
-      setup_pdf(pdf);
-    }
+
+    // initialize HiggsSignals with the latest results and set pdf shape
+    initialize_HiggsSignals_latestresults(nHneut,nHplus);
+    setup_pdf(pdf);
+
     for (auto it = mylocks.begin(); it != mylocks.end(); ++it)
     {
       (*it)->release_lock();

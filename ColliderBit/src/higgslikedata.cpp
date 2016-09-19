@@ -49,11 +49,11 @@ namespace Gambit
         std::istringstream iss(line);
         n=n+1;
       }
-        
+
       A.resize(n);
-      
+
       input.close();
-      
+
       n=0;
       std::ifstream input2(filename);
       std::string line2;
@@ -64,34 +64,34 @@ namespace Gambit
         iss2>> A[n];
         n=n+1;
       }
-      
+
       input2.close();
-          
+
     }
 
 
     std::map <int, Signal_strength> read_expt_data(std::string path)
-    {      
+    {
       std::map <int, Signal_strength> input_data;
-      
+
       std::vector <std::string> filenames;
       int nd = 0; // number of signal strengths to import
-      
+
       string c_file_names = path + "list.txt";//"../data/expt_data_list.txt";
       const char *file_names_list = c_file_names.c_str();
-      
+
       get_data(filenames,nd,file_names_list);
-      
+
       for ( int i = 0; i<nd ; i++)
       {
         // read from some file line i
         Signal_strength ss1(filenames[i],path);
         input_data[i] = ss1;
       }
-      
+
       return input_data;
     }
-  
+
 
 
 void Signal_strength::set_data_from_file(std::string file,std::string path)
@@ -118,7 +118,7 @@ while(getline(input, line)) {
       std::istringstream iss(line);
       n=n+1;
    }
-  
+
 col1.resize(n);
 col2.resize(n);
 col3.resize(n);
@@ -133,8 +133,8 @@ while(getline(input2, line2)) {
     if (!line2.length() || line2[0] == '#')
        continue;
     std::istringstream iss2(line2);
-  
-  
+
+
   iss2>> col1[n] >> col2[n] >> col3[n] >> col4[n] >> col5[n];
     n=n+1;
  }
@@ -179,37 +179,37 @@ if (channel_5!=""){ std::string c; c.push_back(channel_5[1]); set_decay(c);}
 
 void gambit_Higgs_ModelParameters::set_sm(double mh)
 {
-      
+
       _mh = mh;
-  
+
       width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
       BR_hjbb= virtual_SMHiggs_widths("bb",mh);
-  
+
       BR_hjtautau = virtual_SMHiggs_widths("tautau",mh);
 
 
       BR_hjmumu = virtual_SMHiggs_widths("mumu",mh);
-  
+
       BR_hjss = virtual_SMHiggs_widths("ss",mh);
 
       BR_hjcc = virtual_SMHiggs_widths("cc",mh);
-  
+
       BR_hjtt = virtual_SMHiggs_widths("tt",mh);
-  
+
       //cout << "BR_hjtt = " << BR_hjtt << endl;
-  
+
       BR_hjgg = virtual_SMHiggs_widths("gg",mh);
-  
+
       BR_hjgaga = virtual_SMHiggs_widths("gammagamma",mh);
-  
+
       BR_hjZga = virtual_SMHiggs_widths("Zgamma",mh);
-  
+
       BR_hjWW = virtual_SMHiggs_widths("WW",mh);
-  
+
       BR_hjZZ = virtual_SMHiggs_widths("ZZ",mh);
-  
-  
-  
+
+
+
       #ifdef DEBUG
       cout << "BR_hjbb = " << BR_hjbb << endl;
       cout << "BR_hjtautau = " << BR_hjtautau << endl;
@@ -223,9 +223,9 @@ void gambit_Higgs_ModelParameters::set_sm(double mh)
       cout << "BR_hjWW = " << BR_hjWW << endl;
       cout << "BR_hjZZ = " << BR_hjZZ << endl;
       #endif
-  
+
       map_set = 0; // since values have changed need to reset map if called again
-  
+
 }
 
 
@@ -260,7 +260,7 @@ BR_hjZZ = BR_hjZZ * wscaling;
 BR_hjZga = BR_hjZga * wscaling;
 BR_hjgaga = BR_hjgaga * wscaling;
 BR_hjgg = BR_hjgg * wscaling;
-  
+
 BR_invisible = gamma/new_width_in_GeV;  // set invisible width from H-> SS
 
 

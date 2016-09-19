@@ -39,33 +39,6 @@
 #************************************************
 
 
-# Lilith
-set(name "lilith")
-set(ver "1.1.3")
-set(dl "https://launchpad.net/lilith/lilith/1.1.3/+download/Lilith-1.1.3_DB-15.09.tgz")
-set(md5 "8976d1e7563b926cd4b09b4966ccb061")
-set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(LILITHCAPI "${dir}/lilith/c-api")
-set(lib "lilith")
-ExternalProject_Add(${name}_${ver}
-  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
-  SOURCE_DIR ${dir}
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "CFLAGS=$(python2-config --cflags)" > make_so.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "LFLAGS=$(python2-config --ldflags)" >> make_so.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "INCLUDES=\"-I${LILITHCAPI}\" " >> make_so.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} -shared -lm $CFLAGS $INCLUDES  -o ${lib}.so ${GAMBIT_C_FLAGS} ${LILITHCAPI}/lilith.c $LFLAGS"  >> make_so.sh
-            COMMAND chmod u+x make_so.sh
-  BUILD_COMMAND ./make_so.sh
-  INSTALL_COMMAND ""
-)
-add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-set_as_default_version("backend" ${name} ${ver})
-
-
-
-
-
 # DarkSUSY
 set(name "darksusy")
 set(ver "5.1.3")
@@ -80,7 +53,7 @@ ExternalProject_Add(${name}_${ver}
   PATCH_COMMAND patch -p1 < ${patch}/patchDS_sharedlib_+_threadsafety.dif
         COMMAND patch -p1 -d src < ${patch}/patchDS.dif
         COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${patch}/patchISA.dif
-        # FIXME parallel relic density routines don't work yet.  
+        # FIXME parallel relic density routines don't work yet.
         #COMMAND patch -b -p2 -d src < ${patch}/patchDS_OMP_src.dif
         #COMMAND patch -b -p2 -d include < ${patch}/patchDS_OMP_include.dif
  # FIXME DarkSUSY segfaults with -O2 setting
@@ -617,28 +590,6 @@ ExternalProject_Add(${name}_${ver}
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" my_configure
             COMMAND ./my_configure
-            COMMAND sed ${dashi} -e "s|.*intent(in) :: Expt_string.*| character(LEN=13), intent(in) :: Expt_string |" HiggsSignals_subroutines.f90
-            COMMAND ${CMAKE_COMMAND} -E echo "echo \"Available pre-configured data sets are, with corresponding directory names\" " > config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "availdatasets_channels=\"$(ls ../../../../ColliderBit/extras/ |grep HS_)\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "for dataset in $availdatasets_channels " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "do " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "dataset=\"\${dataset%.*}\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "datasetlong=\"\${dataset}__________\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "datasetlong=\${datasetlong:0:13} " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "echo $dataset \" = \" $datasetlong " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "mkdir Expt_tables/$datasetlong " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "for i in {1..99} " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "do " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "channel=\"$(head -\"$i\"  ../../../../ColliderBit/extras/\"$dataset\".txt | tail -1)\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "srcfiles=\"$(ls Expt_tables/latestresults |grep \"$channel\")\" " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "for file in $srcfiles " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "do " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "cp Expt_tables/latestresults/$file Expt_tables/$datasetlong/$file " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "done " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "done " >> config_data.sh
-            COMMAND ${CMAKE_COMMAND} -E echo "done " >> config_data.sh
-            COMMAND chmod u+x config_data.sh
-            COMMAND ./config_data.sh
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ${CMAKE_COMMAND} -E make_directory lib
         COMMAND ${CMAKE_COMMAND} -E remove HiggsSignals.o
