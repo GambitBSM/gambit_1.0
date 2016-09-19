@@ -28,13 +28,6 @@
 
 //#define PRECISIONBIT_DEBUG
 
-/// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
-/// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
-/// @{
-const double mw_central_observed = 80.385;
-const double mw_err_observed = 0.015;
-/// @}
-
 /// EWPO theoretical uncertainties on FeynHiggs calculations; based on hep-ph/0412214 Eq 3.1.
 /// @{
 const double abserr_mw = 1e-2; //10 MeV

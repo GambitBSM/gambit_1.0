@@ -120,25 +120,60 @@ namespace Gambit
     return false;
   }
 
+  /// Check if a line exists in an SLHAea block, then overwrite it if it does.  Otherwise add the line.
+  template <class T>
+  void SLHAea_overwrite_block(SLHAstruct& slha /*modify*/, const str& block, int index,
+   T value, const str& comment)
+  {
+    try
+    {
+      slha.at(block).at(index).at(1);
+      auto& line = slha[block][index];
+      line.clear();
+      line << index << value << comment;
+    }
+    catch (const std::out_of_range& e)
+    {
+      slha[block][""] << index << value << comment;
+    }
+  }
+
+  /// Check if a line exists in an SLHAea block, then overwrite it if it does.  Otherwise add the line.
+  template <class T>
+  void SLHAea_overwrite_block(SLHAstruct& slha /*modify*/, const str& block, int index1, int index2,
+   T value, const str& comment)
+  {
+    std::vector<int> indices = initVector<int>(index1, index2);
+    try
+    {
+      slha.at(block).at(indices).at(1);
+      auto& line = slha[block][indices];
+      line.clear();
+      line << index1 << index2 << value << comment;
+    }
+    catch (const std::out_of_range& e) {}
+    slha[block][""] << index1 << index2 << value << comment;
+  }
+
   /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
   /// @{
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const double value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
-    slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
+    SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const str& value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
-    slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
+    SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const int value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
-    slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
+    SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
   /// @}
 
@@ -149,7 +184,7 @@ namespace Gambit
   {
      if(subspec.has(partype,pdg_pair))
      {
-        slha[block][""] << pdg_pair.first << subspec.get(partype,pdg_pair)*rescale << comment;
+       SLHAea_overwrite_block(slha, block, pdg_pair.first, subspec.get(partype,pdg_pair)*rescale, comment);
      }
      else if(error_if_missing)
      {
@@ -169,7 +204,7 @@ namespace Gambit
   {
      if(subspec.has(partype,name))
      {
-        slha[block][""] << slha_index << subspec.get(partype,name)*rescale << comment;
+       SLHAea_overwrite_block(slha, block, slha_index, subspec.get(partype,name)*rescale, comment);
      }
      else if(error_if_missing)
      {
@@ -188,7 +223,7 @@ namespace Gambit
   {
     if(subspec.has(partype,name,index1,index2))
     {
-      slha[block][""] << slha_index1 << slha_index2 << subspec.get(partype,name,index1,index2)*rescale << comment;
+      SLHAea_overwrite_block(slha, block, slha_index1, slha_index2, subspec.get(partype,name,index1,index2)*rescale, comment);
     }
     else if(error_if_missing)
     {

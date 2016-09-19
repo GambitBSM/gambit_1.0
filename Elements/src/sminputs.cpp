@@ -59,8 +59,8 @@ namespace Gambit
 
       // W boson mass
       // This is an output according to SLHA, however in cases where a spectrum generator doesn't run we
-      // will still need it, for example in the SMSimpleSpec wrapper.
-      mW       = SLHAea_get(data,"MASS", 24, 80.387); // default is world average experimental result
+      // will still need it, for example in the SMSimpleSpec wrapper.  Default from numerical-constants.hpp.
+      mW       = SLHAea_get(data,"MASS", 24, mw_central_observed);
 
       // CKM parameters
       // from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-ckm-matrix.pdf
