@@ -41,89 +41,14 @@
 #include <vector>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
-#include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
-#include "HEPUtils/FastJet.h"
-#include "gambit/ColliderBit/higgslike.hpp"
 
-//#define COLLIDERBIT_DEBUG
-//#define DEBUG
 
 namespace Gambit
 {
 
   namespace ColliderBit
   {
-
-
-      // *** Higgs physics ***
-    
-    double compute_theory_signal(Gambit::ColliderBit::gambit_Higgs_ModelParameters decays,
-    Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm ,
-    std::vector<std::string> prod,
-    std::vector<std::string> decay)
-    {
-    
-    
-
-    // we have arbitrary number of channels to consider, so we could use a map
-
-    // don't include HH -> invisible here, otherwise the weight would be infinite when there is a non-zero decay
-
-    std::map <std::pair <std::string,std::string>, double> C;
-    std::map <std::pair <std::string,std::string>, double> weight;
-
-
-    std::map <std::string,double> BR = decays.get_BR_map();
-    std::map <std::string,double> sig = decays.get_sig_map();
-
-    std::map <std::string,double> BR_sm = decays_sm.get_BR_map();
-    std::map <std::string,double> sig_sm = decays_sm.get_sig_map();
-    
-   // cout << "dealing with channel " << prod[0] << " = " << sig[prod[0]] << " " << sig_sm[prod[0]] <<   endl;
-
-
-    // sum off efficieny (currently just 1)*BR*sig for all SM channels
-    double sum_sm = 0.0;
-    double epsilon = 1.0; // TODO set this a map with efficiency for each channel
-    for (unsigned int i = 0; i < prod.size() ; i++)
-    {
-    for (unsigned int j = 0; j < decay.size() ; j++)
-    {
-    sum_sm = sum_sm + epsilon*( BR_sm[decay[j]]*sig_sm[prod[i]] );
-    }
-    }
-
-
-
-    std::pair <std::string,std::string> channel;
-    double mu_total = 0;
-    for (unsigned int i = 0; i < prod.size() ; i++)
-    {
-    for (unsigned int j = 0; j < decay.size() ; j++)
-    {
-    channel = std::make_pair(prod[i],decay[j]);
-    C[channel] = BR[decay[j]]*sig[prod[i]] / ( BR_sm[decay[j]]*sig_sm[prod[i]] );
-    weight[channel] = epsilon * ( BR_sm[decay[j]]*sig_sm[prod[i]] ) / sum_sm;
-
-    mu_total = mu_total + C[channel] * weight[channel];
-    #ifdef DEBUG
-    cout << "C = " << C[channel] << " prod sm = " << sig_sm[prod[i]]<< " decay sm = " <<   BR_sm[decay[j]] << endl;
-    cout << "C = " << C[channel] << " prod = " << sig[prod[i]]<< " decay = " <<   BR[decay[j]] << endl;
-    cout << "channel = " << prod[i] << " -> " << decay[j] << endl;
-    #endif
-
-    }
-    }
-
-    #ifdef DEBUG
-    cout << "mu_total = " << mu_total << endl;
-    #endif
-    return mu_total;
-    return 0;
-    }
-    
 
 
     /// FeynHiggs Higgs production cross-sections
@@ -280,21 +205,6 @@ namespace Gambit
       result.BR_hjgg[0] = decays.BF("g", "g");
     }
 
-
- /*  void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, lilith_ModelParameters &result)
-    {
-      const SubSpectrum& spec = fullspectrum.get_HE();
-      result.mh = spec.get(Par::Pole_Mass,25,0);
-      result.CU=1;
-      result.CD=1;
-      result.CV=1;
-      result.CGa=1;
-      result.Cg=1;
-      result.BRinv=0; // gets set later by set_invisible_width
-      result.BRund=0; // not sure what to do with this one
-      
-      // use effective couplings routine
-    }*/
     
     // set model parameters for GAMBIT LHC likelihood
     void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, gambit_Higgs_ModelParameters &result)
@@ -324,24 +234,19 @@ namespace Gambit
     
     void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters &result,str P)
     {
-    result.BR_hjinvisible[0] = decays.BF(P, P);
+      result.BR_hjinvisible[0] = decays.BF(P, P);
     }
     
     void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters_effC &result,str P)
     {
-    result.BR_hjinvisible[0] = decays.BF(P, P);
-    result.BR_hjinvisible[1] = 0.0;
-    result.BR_hjinvisible[2] = 0.0;
-    }
-    
-    void set_invisible_width(const DecayTable::Entry& decays, lilith_ModelParameters &result,str P)
-    {
-    result.BRinv = decays.BF(P, P);
+      result.BR_hjinvisible[0] = decays.BF(P, P);
+      result.BR_hjinvisible[1] = 0.0;
+      result.BR_hjinvisible[2] = 0.0;
     }
     
     void set_invisible_width(const DecayTable::Entry& decays, gambit_Higgs_ModelParameters &result,str P)
     {
-    result.BR_invisible = decays.BF(P, P);
+      result.BR_invisible = decays.BF(P, P);
     }
 
 
@@ -353,98 +258,7 @@ namespace Gambit
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
       set_SMHiggs_ModelParameters(fullspectrum,decays,result);
     }
-    
-    /// SM Higgs model parameters for Lilith
-    void SMHiggs_Lilith_ModelParameters(lilith_ModelParameters &result)
-    {
-      using namespace Pipes::SMHiggs_Lilith_ModelParameters;
-      const Spectrum& fullspectrum = *Dep::SM_spectrum;
-      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      //set_SMHiggs_ModelParameters(fullspectrum,decays,result);
-      // set signal strengths
-      const SubSpectrum& spec = fullspectrum.get_HE();
-      result.mh = spec.get(Par::Pole_Mass,25,0);
-      
-      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
-      decays_sm.set_sm(125.6);
-      gambit_Higgs_ModelParameters gambit_modelparams = *Dep::Higgslike_ModelParameters;
-      std::vector<std::string> prod = result.prod;
-      std::vector<std::string> decay = result.decay;
-      std::map<std::pair<std::string,std::string>, double> mu;
-      
-      for (unsigned int i = 0; i < prod.size();i++)
-      {
-      for (unsigned int j = 0; j < decay.size();j++)
-      {
-      std::pair <std::string,std::string> key (prod[i],decay[j]);
-      std::vector<std::string> p = {prod[i]};
-      std::vector<std::string> d = {decay[j]};
-      mu[key] = compute_theory_signal(gambit_modelparams,decays_sm,p,d);
-      }
-      }
-      
-      result.mu = mu;
-      
-      //  set effective couplings
-      
-      Effective_couplings ec(125.6);
-      ec.compute_scaling_factors(gambit_modelparams,result);
-    }
-    void SMlikeHiggs_Lilith_ModelParameters(lilith_ModelParameters &result)
-    {
-      using namespace Pipes::SMlikeHiggs_Lilith_ModelParameters;
-      const Spectrum& fullspectrum = *Dep::SingletDM_spectrum;
-      str invisible_particle;
-      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
-      {
-       //fullspectrum = *Dep::SingletDM_spectrum;
-       invisible_particle = "S";
-      }
-      else
-      {
-       ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
-      }
-      
-      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      //set_SMHiggs_ModelParameters(fullspectrum,decays,result);
-      const SubSpectrum& spec = fullspectrum.get_HE();
-      result.mh = spec.get(Par::Pole_Mass,25,0);
-      set_invisible_width(decays,result,invisible_particle);
-      
-      
-      // set signal strengths
-      
-      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
-      decays_sm.set_sm(125.6);
-      gambit_Higgs_ModelParameters gambit_modelparams = *Dep::Higgslike_ModelParameters;
-      std::vector<std::string> prod = result.prod;
-      std::vector<std::string> decay = result.decay;
-      std::map<std::pair<std::string,std::string>, double> mu;
-      
-      
-      
-      for (unsigned int i = 0; i < prod.size();i++)
-      {
-      for (unsigned int j = 0; j < decay.size();j++)
-      {
-      std::pair <std::string,std::string> key (prod[i],decay[j]);
-      std::vector<std::string> p = {prod[i]};
-      std::vector<std::string> d = {decay[j]};
-      mu[key] = compute_theory_signal(gambit_modelparams,decays_sm,p,d);
-      }
-      }
-      
-      result.mu = mu;
-      
-      //  set effective couplings
-      
-      
-      Effective_couplings ec(125.6);
-      ec.compute_scaling_factors(gambit_modelparams,result);
-      
-      
-     }
-    
+        
     
      void SMlikeHiggs_HS_ModelParameters_effC(hb_ModelParameters_effC &result)
     {
@@ -458,7 +272,7 @@ namespace Gambit
       }
       else
       {
-       ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
+        ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
       }
       
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
@@ -475,11 +289,8 @@ namespace Gambit
 
       
       //  set effective couplings
-      
-      
       Effective_couplings ec(125.6);
       ec.compute_scaling_factors(gambit_modelparams,result);
-      
       
      }
   
@@ -853,154 +664,11 @@ namespace Gambit
       BEreq::HB_calc_stats(theor_unc,chisq_withouttheory,chisq_withtheory,chan2);
 
       result = -0.5*chisq_withouttheory;
-      //std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
 
     }
-    
-    void write_lilith_xml_input(lilith_ModelParameters ModelParam, std::string & XMLinputstring2, bool use_ss)
-    {
-    
-      char XMLinputstring[6000];
-      
-      char buffer[100];
-      double mh = ModelParam.mh;
-      double BRinv = ModelParam.BRinv;
-      double BRund = ModelParam.BRund;
-      
-      
-      
-      double C_tt = ModelParam.C_tt;
-      double C_cc = ModelParam.C_cc;
-      double C_bb = ModelParam.C_bb;
-      double C_tautau = ModelParam.C_tautau;
-      double C_ZZ = ModelParam.C_ZZ;
-      double C_WW = ModelParam.C_WW;
-      double C_gammagamma = ModelParam.C_gammagamma;
-      double C_Zgamma = ModelParam.C_Zgamma;
-      double C_gg = ModelParam.C_gg;
-      
-      char precision[] = "BEST-QCD";
-      
-      sprintf(buffer,"<?xml version=\"1.0\"?>\n");
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<lilithinput>\n");
-      strcat(XMLinputstring, buffer);
-      
-      
-      
-      if (use_ss){
-      cout << "using signal strength mode" << endl;
-      sprintf(buffer,"<signalstrengths>\n");
-      strcat(XMLinputstring, buffer);
-      //sprintf(buffer,"<mass>%f</mass>\n", mh);
-      //strcat(XMLinputstring, buffer);
-      
-      std::vector<std::string> prod = ModelParam.prod;
-      std::vector<std::string> decay = ModelParam.decay;
-      std::map<std::pair<std::string,std::string>, double> mu=ModelParam.mu;
-      for (unsigned int i = 0; i < prod.size();i++)
-      {
-      for (unsigned int j = 0; j < decay.size();j++)
-      {
-      std::pair <std::string,std::string> key (prod[i],decay[j]);
-      std::vector<std::string> p = {prod[i]};
-      std::vector<std::string> d = {decay[j]};
-      //cout << "channel = " << prod[i] << " -> " << decay[j] << " has mu = " << mu[key] << endl;
-      const char * p_string = prod[i].c_str();
-      const char * d_string = decay[j].c_str();
-      sprintf(buffer,"<mu prod=\"%s\" decay=\"%s\">%f</mu>\n", p_string,d_string,mu[key]);// prod[i],decay[j],mu[key]);
-      //printf ("%s",buffer);
-      strcat(XMLinputstring, buffer);
-      
-     
-      
-      }
-      }
-      
-      sprintf(buffer,"<redxsBR prod=\"ZH\" decay=\"invisible\">%f</redxsBR>\n", BRinv);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<redxsBR prod=\"VBF\" decay=\"invisible\">%f</redxsBR>\n", BRinv);
-      strcat(XMLinputstring, buffer);
-      
-      sprintf(buffer,"</signalstrengths>\n");
-      strcat(XMLinputstring, buffer);
-      
-      
-      
-      }
-      else
-      {
-      sprintf(buffer,"<reducedcouplings>\n");
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<mass>%f</mass>\n", mh);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"tt\">%f</C>\n", C_tt);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"cc\">%f</C>\n", C_cc);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"bb\">%f</C>\n", C_bb);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"tautau\">%f</C>\n", C_tautau);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"ZZ\">%f</C>\n", C_ZZ);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"WW\">%f</C>\n", C_WW);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"gammagamma\">%f</C>\n", C_gammagamma);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"Zgamma\">%f</C>\n", C_Zgamma);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<C to=\"gg\">%f</C>\n", C_gg);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<extraBR>\n");
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<BR to=\"invisible\">%f</BR>\n", BRinv);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<BR to=\"undetected\">%f</BR>\n", BRund);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"</extraBR>\n");
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"<precision>%s</precision>\n",precision);
-      strcat(XMLinputstring, buffer);
-      sprintf(buffer,"</reducedcouplings>\n");
-      strcat(XMLinputstring, buffer);
-      }
-      sprintf(buffer,"</lilithinput>\n");
-      strcat(XMLinputstring, buffer);
-      XMLinputstring2 = XMLinputstring;
-      
-    }
 
 
-    
-    void calc_Lilith_LHC_LogLike(double &result)
-    {
-      
-      using namespace Pipes::calc_Lilith_LHC_LogLike;
-      
-      // Lilith call //
-      lilith_ModelParameters ModelParam_lilith = *Dep::Lilith_ModelParameters;
-      char XMLinputstring[6000]="";
-      char * buffer;
-      bool use_ss = runOptions->getValueOrDef<bool>(false, "use_signal_strengths");
-      std::string lilith_xml_input;
-      write_lilith_xml_input(ModelParam_lilith,lilith_xml_input,use_ss);
-      buffer = strdup(lilith_xml_input.c_str());
-      strcat(XMLinputstring, buffer);
-      
-      // Reading user input XML string
-      PyObject* lilithcalc = BEreq::get_lilithcalc();
-      
-      lilithcalc = BEreq::internal_lilith_readuserinput(byVal(lilithcalc), XMLinputstring);
-
-      float my_likelihood;
-      my_likelihood = BEreq::internal_lilith_computelikelihood(byVal(lilithcalc));
-      result =  -0.5 * my_likelihood;
-    }
-    
- 
-    
-    void calc_HS_LHC_LogLike(ddpair &result)
+    void calc_HS_LHC_LogLike(double &result)
     {
       using namespace Pipes::calc_HS_LHC_LogLike;
     
@@ -1050,11 +718,10 @@ namespace Gambit
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
-      //result = -0.5*csqtot;
-      result = std::pair<double, double>(-0.5*csqtot,-0.5*csqmh);
+      result = -0.5*csqtot;
     }
 
-    void calc_HS_LHC_LogLike_effC(ddpair &result) // currently only supports SM and SingletDM
+    void calc_HS_LHC_LogLike_effC(double &result) // currently only supports SM and SingletDM
     {
       using namespace Pipes::calc_HS_LHC_LogLike_effC;
     
@@ -1062,12 +729,11 @@ namespace Gambit
       Farray<double, 1,3, 1,3> BR_hjhihi, identity;
       for(int i = 0; i < 3; i++)
       {
-      identity(i+1,i+1) = 1.0;
-      for(int j = 0; j < 3; j++)
-      {
-        BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
-        
-      }
+        identity(i+1,i+1) = 1.0;
+        for(int j = 0; j < 3; j++)
+        {
+          BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];        
+        }
       }
 
       BEreq::HiggsBounds_neutral_input_effC_HS(&ModelParam.Mh[0],&ModelParam.hGammaTot[0],
@@ -1083,152 +749,13 @@ namespace Gambit
       BEreq::HiggsBounds_charged_input_HS(&zero,&zero,&zero,&zero,&zero,&zero,&zero,&zero);
       //&ModelParam.g2hjhiZ[0]
       
-      
       int mode = 1; // 1- peak-centered chi2 method (recommended)
       double csqmu, csqmh, csqtot, Pvalue;
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
-      //result = -0.5*csqtot;
-      result = std::pair<double, double>(-0.5*csqtot,-0.5*csqmh);
+      result = -0.5*csqtot;
     }
-
-
-
-    
-    void HS_LHC_LogLike(double &result)
-    {
-      using namespace Pipes::HS_LHC_LogLike;
-      
-      std::pair<double, double> logL = *Dep::calc_HS_LHC_LogLike;
-      bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
-      if (HS_mass_only) {result = logL.second;}
-      else {result = logL.first;}
-    }
-    
-    void Lilith_LHC_LogLike(double &result)
-    {
-      using namespace Pipes::Lilith_LHC_LogLike;
-      
-      double logL = *Dep::calc_Lilith_LHC_LogLike;
-      result = logL;
-    }
-    void gambit_LHC_LogLike(double &result)
-    {
-      using namespace Pipes::gambit_LHC_LogLike;
-      
-      double logL = *Dep::calc_gambit_LHC_LogLike;
-      result = logL;
-    }
-    
-        
-    void combined_LHC_LogLike(double &result)
-    {
-      using namespace Pipes::combined_LHC_LogLike;
-      std::pair<double, double> HSlogL = *Dep::calc_HS_LHC_LogLike;
-      
-      bool HS = runOptions->getValueOrDef<bool>(true, "use_HS");
-      bool Lilith = runOptions->getValueOrDef<bool>(true, "use_Lilith");
-      bool HL = runOptions->getValueOrDef<bool>(true, "use_HL");
-      
-      bool HS_mass_only = runOptions->getValueOrDef<bool>(false, "HS_mass_only");
-      
-      double Lilith_logL=0.0;
-      double HL_logL=0.0;
-      double HS_logL=0.0;
-      
-      if (Lilith) Lilith_logL = *Dep::calc_Lilith_LHC_LogLike;
-      if (HL) HL_logL = *Dep::calc_gambit_LHC_LogLike;
-      
-      
-      if (HS)
-      {
-      ddpair HSlogL_pair = *Dep::calc_HS_LHC_LogLike;
-      
-      if (HS_mass_only) {HS_logL = HSlogL_pair.second;}
-      else {HS_logL = HSlogL_pair.first;}
-      }
-      
-      result = Lilith_logL + HS_logL + HL_logL;
-    
-    
-    
-    }
-    
-    
-
-    
-        
-    void calc_gambit_LHC_LogLike(double &result)
-    {
-      using namespace Pipes::calc_gambit_LHC_LogLike;
-      
-      //cout << "GAMBIT internal Higgs likelihood started" << endl;
- 
-      std::string path = runOptions->getValueOrDef<std::string>("", "data_path");
-      
-      bool use_mass = runOptions->getValueOrDef<bool>(true, "use_mass");
-      bool use_ss = runOptions->getValueOrDef<bool>(true, "use_ss");
-      
-      
-      //cout << "reading data from " << path << endl;
-      if (path == "") {ColliderBit_error().raise(LOCAL_INFO,"no input data path specified");}
-      
-      std::map <int, ColliderBit::Signal_strength> expt_data = read_expt_data(path);
-
-      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays = *Dep::Higgslike_ModelParameters;
-
-      double chisq_tot = 0;
-
-      double mh = decays._mh;
-      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
-      decays_sm.set_sm(125.6);
-      
-      for (unsigned int i = 0; i < expt_data.size() ; i++)
-      {
-      Signal_strength ss;
-      ss= expt_data[i];
-      
-      // compute corresponding theory signal strength for this signal strength observable
-      
-      std::vector<std::string> prod = ss.prod;
-      std::vector<std::string> decay = ss.decay;
-      double mu = compute_theory_signal(decays,decays_sm,prod,decay);
-
-      double mu_exp = ss.mu;
-      double mh_exp = ss.mh;
-
-      double Cmu = pow(ss.sig_mu,2); // need to add other uncertainties here, luminosity will be easiest
-
-      double Cmh = pow(ss.sig_mh,2);
-      double chisq = 0;
-     // if ( abs(mh-mh_exp) <= 1.0*ss.sig_mh )
-     // {
-     
-      if (use_ss) {chisq = chisq + (mu_exp-mu) * (1.0/Cmu) * (mu_exp - mu);}
-      if (use_mass) {chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);}
-     // }
-     /* else {
-      chisq = (mu_exp-mu) * (1.0/Cmu) * (mu_exp - mu);
-      //chisq = (0.0-mu_exp) * (1.0/(Cmu)) * (0.0 - mu_exp);
-      chisq = chisq + (mh_exp-mh) * (1.0/Cmh) * (mh_exp-mh);  // gives massive decrease in likelihood, doesn't seem right
-      //chisq = chisq + (ss.sig_mh) * (1.0/Cmh) * (ss.sig_mh); // gives constant that is shifted a bit below HS likelihood
-      }
-      */
-
-
-      chisq_tot = chisq_tot + chisq;
-
-      }
-
-
-      result =  -0.5*chisq_tot;
-
-
-    }
-    
-
-
 
   }
 }

@@ -37,8 +37,8 @@
 #include <vector>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 

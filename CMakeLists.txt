@@ -150,7 +150,7 @@ else()
 endif()
 
 # Check for Boost
-set(Boost_NO_BOOST_CMAKE ON) #PS: what is this needed for?
+set(Boost_NO_BOOST_CMAKE ON)
 find_package(Boost 1.41)
 if(Boost_FOUND)
   include_directories("${Boost_INCLUDE_DIR}")

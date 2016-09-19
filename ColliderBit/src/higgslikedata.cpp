@@ -29,78 +29,69 @@
 
 using namespace std;
 
-namespace Gambit {
-
-namespace ColliderBit{
-
-void get_data(vector<std::string> &A,int &n,const char *filename)
-{
-#ifdef DEBUG
-cout << "reading file = " << filename << endl;
-#endif
-n=0;
-std::ifstream input(filename);
-std::string line;
-while(getline(input, line)) {
-      if (!line.length() || line[0] == '#')
-         continue;
-      std::istringstream iss(line);
-      n=n+1;
-   }
-  
-A.resize(n);
-
- input.close();
-
-n=0;
-std::ifstream input2(filename);
-std::string line2;
-while(getline(input2, line2)) {
-    if (!line2.length() || line2[0] == '#')
-       continue;
-    std::istringstream iss2(line2);
-  
-  
-  iss2>> A[n];
-    n=n+1;
- }
-
- input2.close();
-
-
-}
-
-
-
-
-std::map <int, Signal_strength> read_expt_data(std::string path)
+namespace Gambit
 {
 
-std::map <int, Signal_strength> input_data;
+  namespace ColliderBit
+  {
+
+    void get_data(vector<std::string> &A,int &n,const char *filename)
+    {
+      #ifdef DEBUG
+        cout << "reading file = " << filename << endl;
+      #endif
+      n=0;
+      std::ifstream input(filename);
+      std::string line;
+      while(getline(input, line))
+      {
+        if (!line.length() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        n=n+1;
+      }
+        
+      A.resize(n);
+      
+      input.close();
+      
+      n=0;
+      std::ifstream input2(filename);
+      std::string line2;
+      while(getline(input2, line2))
+      {
+        if (!line2.length() || line2[0] == '#') continue;
+        std::istringstream iss2(line2);
+        iss2>> A[n];
+        n=n+1;
+      }
+      
+      input2.close();
+          
+    }
 
 
-std::vector <std::string> filenames;
-int nd = 0; // number of signal strengths to import
-
-
-string c_file_names = path + "list.txt";//"../data/expt_data_list.txt";
-const char *file_names_list = c_file_names.c_str();
-
-get_data(filenames,nd,file_names_list);
-
-
-for ( int i = 0; i<nd ; i++)
-{
-// read from some file line i
-Signal_strength ss1(filenames[i],path);
-input_data[i] = ss1;
-}
-
-
-
-return input_data;
-}
-
+    std::map <int, Signal_strength> read_expt_data(std::string path)
+    {      
+      std::map <int, Signal_strength> input_data;
+      
+      std::vector <std::string> filenames;
+      int nd = 0; // number of signal strengths to import
+      
+      string c_file_names = path + "list.txt";//"../data/expt_data_list.txt";
+      const char *file_names_list = c_file_names.c_str();
+      
+      get_data(filenames,nd,file_names_list);
+      
+      for ( int i = 0; i<nd ; i++)
+      {
+        // read from some file line i
+        Signal_strength ss1(filenames[i],path);
+        input_data[i] = ss1;
+      }
+      
+      return input_data;
+    }
+  
 
 
 void Signal_strength::set_data_from_file(std::string file,std::string path)
@@ -235,9 +226,7 @@ void gambit_Higgs_ModelParameters::set_sm(double mh)
   
       map_set = 0; // since values have changed need to reset map if called again
   
-  
 }
-
 
 
 void gambit_Higgs_ModelParameters::add_SS_decay(double ms, double lambda_hs)
@@ -295,62 +284,6 @@ cout << "BR_hjZZ = " << BR_hjZZ << endl;
 #endif
 
 map_set = 0; // since values have changed need to reset map if called again
-
-}
-
-
-
-
-void Effective_couplings::compute_scaling_factors(gambit_Higgs_ModelParameters data,
- lilith_ModelParameters &result)
-{
-// set up object with SM branching ratios and width
-if (!SM_decays_set)
-{
-gambit_Higgs_ModelParameters sm;
-sm.set_sm(data._mh);
-SM_decays = sm;
-SM_decays_set = 1;
-}
-
-// set total width for new model
-
-double Gamma = data.width_in_GeV;
-double ratio = Gamma/SM_decays.width_in_GeV;
-C_WW2 = ratio * data.BR_hjWW / SM_decays.BR_hjWW;
-C_ZZ2 = ratio * data.BR_hjZZ / SM_decays.BR_hjZZ;
-C_tt2 = 1;//ratio * data.BR_hjtt / SM_decays.BR_hjtt;
-C_bb2 = ratio * data.BR_hjbb / SM_decays.BR_hjbb;
-C_cc2 = ratio * data.BR_hjcc / SM_decays.BR_hjcc;
-C_ss2 = ratio * data.BR_hjss / SM_decays.BR_hjss;
-C_tautau2 = ratio * data.BR_hjtautau / SM_decays.BR_hjtautau;
-
-C_mumu2 = ratio * data.BR_hjmumu/ SM_decays.BR_hjmumu;
-
-
-// following equation (10) of Lilith manual we can, at tree-level, set the following
-result.C_tt = pow(C_tt2,0.5);
-result.C_cc = pow(C_cc2,0.5);
-result.C_bb = pow(C_bb2,0.5);
-result.C_tautau = pow(C_tautau2,0.5);
-result.C_ZZ = pow(C_ZZ2,0.5);
-result.C_WW= pow(C_WW2,0.5);
- 
-
-// these should be corrected for loop contributions
-
-C_gg2 = ratio * data.BR_hjgg/ SM_decays.BR_hjgg;
-
-C_gaga2 = ratio * data.BR_hjgaga/ SM_decays.BR_hjgaga;
-
-C_Zga2 = ratio * data.BR_hjZga/ SM_decays.BR_hjZga;
-
-//C_hiZ2 = Gamma * data.BR_hjhiZ/ SM_decays.BR_hjhiZ;
-result.C_gammagamma = pow(C_gaga2,0.5);
-result.C_gg = pow(C_gg2,0.5);
-result.C_Zgamma = pow(C_Zga2,0.5);
-
-
 
 }
 
