@@ -664,12 +664,12 @@ namespace Gambit
 
     }
 
-
+    /// Get an LHC chisq from HiggsSignals
     void calc_HS_LHC_LogLike(double &result)
     {
       using namespace Pipes::calc_HS_LHC_LogLike;
 
-     hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
+      hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
       Farray<double, 1,3, 1,3> CS_lep_hjhi_ratio;
       Farray<double, 1,3, 1,3> BR_hjhihi;
