@@ -4,18 +4,18 @@
 ///
 ///  This class is used to wrap the QedQcd object used by SoftSUSY
 ///  and FlexibleSUSY in a Gambit SubSpectrum object. This is to enable
-///  access to the parameters of the SM defined as a low-energy effective theory 
-///  (as opposed to correspending information defined in a UV model). 
+///  access to the parameters of the SM defined as a low-energy effective theory
+///  (as opposed to correspending information defined in a UV model).
 ///  Parameters defined this way are often used as input to a physics calculator.
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Mar 
+///  \date 2015 Mar
 ///
 ///  *********************************************
 
@@ -51,9 +51,9 @@ namespace Gambit
    {
 
       /// @{ QedQcdWrapper member functions
-      
+
       ///   @{ Constructors
-      QedQcdWrapper::QedQcdWrapper() 
+      QedQcdWrapper::QedQcdWrapper()
          : qedqcd()
          , sminputs()
       {}
@@ -74,7 +74,7 @@ namespace Gambit
 
       /// Currently unused virtual functions
       ///     @{
-      int QedQcdWrapper::get_numbers_stable_particles() const {return -1;} 
+      int QedQcdWrapper::get_numbers_stable_particles() const {return -1;}
       ///     @}
 
       /// Add QED x QCD information to an SLHAea object
@@ -84,14 +84,13 @@ namespace Gambit
         // SMINPUTS object, so we don't bother repeating them here.  We also assume
         // that the HE spectrum is going to provide the gauge couplings, so we don't
         // bother with those either.
-        
+
         // Add the b pole mass
-        SLHAea_add_block(slha, "MASS");
         SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass,"d_3","MASS",5,"# mb (pole)");
       }
 
       /// Run masses and couplings to end_scale
-      void QedQcdWrapper::RunToScaleOverride(double end_scale) 
+      void QedQcdWrapper::RunToScaleOverride(double end_scale)
       {
         const double tol = 1.0e-5; // Value used internally in QedQcd methods
         double begin_scale = GetScale();
@@ -103,7 +102,7 @@ namespace Gambit
 
       /// Manually define the current renormalisation scale (do this at own risk!)
       void QedQcdWrapper::SetScale(double scale) { qedqcd.setMu(scale); }
-      
+
       /// @}
 
       /// Plain C-function wrappers for QedQcd running mass getters
@@ -126,7 +125,7 @@ namespace Gambit
       double get_alpha  (const softsusy::QedQcd& model) { return model.displayAlpha(softsusy::ALPHA); }
       double get_alphaS (const softsusy::QedQcd& model) { return model.displayAlpha(softsusy::ALPHAS); }
 
-      /// All 3 SM gauge couplings. 
+      /// All 3 SM gauge couplings.
       /// The QedQcd documenation has the following to say about this calculations:
       /// {
       /// This will calculate the three gauge couplings of the Standard Model at
@@ -165,12 +164,12 @@ namespace Gambit
       {
         return (1 - Utils::sqr(qedqcd.displayPoleMW()) / Utils::sqr(qedqcd.displayPoleMZ()));
       }
-    
+
       // Filler function for getter function pointer maps
       QedQcdWrapper::GetterMaps QedQcdWrapper::fill_getter_maps()
       {
-         GetterMaps map_collection; 
-         
+         GetterMaps map_collection;
+
          /// @{ mass1 - mass dimension 1 parameters
          //
          // Functions utilising the "extraM" function signature
@@ -197,7 +196,7 @@ namespace Gambit
          /// @}
 
          /// @{ dimensionless - mass dimension 0 parameters
-         {  
+         {
             // Functions utilising the "extraM" function signature
             // (Zero index, model object as argument)
 
@@ -208,7 +207,7 @@ namespace Gambit
 
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
-         /// @}  
+         /// @}
 
          /// @{ Pole_Mass - Pole mass parameters
          //
@@ -218,19 +217,19 @@ namespace Gambit
             // String names correspond to those defined in particle_database.cpp. If
             // there is a mismatch, please change the ones here!
             MTget::fmap0 tmp_map;
-      
+
             tmp_map["Z0"]  = &softsusy::QedQcd::displayPoleMZ;
             tmp_map["W+"]  = &softsusy::QedQcd::displayPoleMW;
             tmp_map["u_3"] = &softsusy::QedQcd::displayPoleMt; // t
             // "Pole" for b quark is quoted in SoftSUSY (lowe.h) documentation, so I guess this is an approximation; need to check details.
             tmp_map["d_3"] = &softsusy::QedQcd::displayPoleMb; // b
             tmp_map["e-_3"]= &softsusy::QedQcd::displayPoleMtau; // tau
- 
+
             // Nearest flavour 'aliases' for the SM mass eigenstates
             tmp_map["t"] = &softsusy::QedQcd::displayPoleMt;
             tmp_map["b"] = &softsusy::QedQcd::displayPoleMb;
             tmp_map["tau-"]= &softsusy::QedQcd::displayPoleMtau;
-  
+
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
@@ -261,10 +260,10 @@ namespace Gambit
 
          // Functions utilising the "extraM" function signature
          // (Zero index, model object as argument)
-         {  
+         {
 
             MTget::fmap0_extraM tmp_map;
-      
+
             tmp_map["sinW2"] = &get_sinthW2_pole;
 
             map_collection[Par::Pole_Mixing].map0_extraM = tmp_map;
@@ -283,15 +282,15 @@ namespace Gambit
       // Filler function for setter function pointer maps
       QedQcdWrapper::SetterMaps QedQcdWrapper::fill_setter_maps()
       {
-         SetterMaps map_collection; 
-         
+         SetterMaps map_collection;
+
          /// @{ Pole_Mass - Pole mass parameters
          //
          // Functions utilising the plain-vanilla function signature ("fmap")
          // (Zero-argument member functions of model object)
          {
             MTset::fmap0 tmp_map;
-     
+
             // Do something like this, though the demo function here is a getter
             // not a setter so you can't use that one of course :). If the
             // function signature doesn't match what you need I can change it,
@@ -299,7 +298,7 @@ namespace Gambit
             // below (there is also one that takes the model object as an
             // input, as in the getter case)
             tmp_map["Z0"] = &softsusy::QedQcd::setPoleMZ;
-            tmp_map["W+"] = &softsusy::QedQcd::setPoleMW;  
+            tmp_map["W+"] = &softsusy::QedQcd::setPoleMW;
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
@@ -309,13 +308,13 @@ namespace Gambit
             MTset::fmap0_extraI tmp_map;
 
             tmp_map["e-_1"] = &set_Pole_mElectron;
-         
-            map_collection[Par::Pole_Mass].map0_extraI = tmp_map; 
+
+            map_collection[Par::Pole_Mass].map0_extraI = tmp_map;
          }
          /// @}
          return map_collection;
       }
 
-   } // end SpecBit namespace    
+   } // end SpecBit namespace
 } // end Gambit namespace
 
