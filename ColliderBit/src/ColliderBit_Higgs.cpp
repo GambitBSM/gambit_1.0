@@ -411,9 +411,9 @@ namespace Gambit
         }
       }
 
+      // Loop over all neutral Higgses, setting their branching fractions and total widths.
       for(int i = 0; i < 3; i++)
       {
-        // Branching ratios and total widths
         Hneut_decays[i] = &(decaytable(sHneut[i]));
 
         result.hGammaTot[i] = Hneut_decays[i]->width_in_GeV;
@@ -428,9 +428,9 @@ namespace Gambit
         result.BR_hjZga[i] = Hneut_decays[i]->BF("gamma", "Z0");
         result.BR_hjgaga[i] = Hneut_decays[i]->BF("gamma", "gamma");
         result.BR_hjgg[i] = Hneut_decays[i]->BF("g", "g");
-        for(int j = 0; j < 3; j++)
+        for (int j = 0; j < 3; j++)
         {
-          if(2.*result.Mh[j] < result.Mh[i])
+          if (2.*result.Mh[j] < result.Mh[i] and Hneut_decays[i]->has_channel(sHneut[j],sHneut[j]))
           {
             result.BR_hjhihi[i][j] = Hneut_decays[i]->BF(sHneut[j],sHneut[j]);
           }
@@ -440,15 +440,17 @@ namespace Gambit
           }
         }
         result.BR_hjinvisible[i] = 0.;
-        if(inv_lsp)
+        if (inv_lsp)
         {
-          // sneutrino is LSP - need to figure out how to get correct invisible BF...
-          if(i_snu > 0)
+          // Set BF for decays to invisible LSP
+          if (i_snu > 0)
           {
-            result.BR_hjinvisible[i] += Hneut_decays[i]->BF(PDB.long_name("~nu",i_snu),PDB.long_name("~nubar",i_snu));
+            // sneutrino LSP
+            result.BR_hjinvisible[i] = Hneut_decays[i]->BF("~nu",i_snu,"~nubar",i_snu);
           }
           else
           {
+            // neutralino LSP
             result.BR_hjinvisible[i] = Hneut_decays[i]->BF("~chi0_1","~chi0_1");
           }
         }
