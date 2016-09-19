@@ -3532,7 +3532,7 @@ namespace Gambit
         result.BR_hjgg[i] = Hneut_decays[i]->BF("g", "g");
         for(int j = 0; j < 3; j++)
         {
-          if(2.*result.Mh[j] < result.Mh[i])
+          if(2.*result.Mh[j] < result.Mh[i] and Hneut_decays[i]->has_channel(sHneut[j],sHneut[j]))
           {
             result.BR_hjhihi[i][j] = Hneut_decays[i]->BF(sHneut[j],sHneut[j]);
           }
