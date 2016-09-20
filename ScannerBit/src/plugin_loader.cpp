@@ -650,9 +650,8 @@ namespace Gambit
             /// Check persistence file to see if we should be using the alternative min_LogL value
             bool pluginInfo::check_alt_min_LogL_state() const
             {
-                std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
-                struct stat buffer;   
-                return (stat(state_fname.c_str(), &buffer) == 0); 
+                std::ifstream file(def_out_path+"/ALT_MIN_LOGL_IN_USE");
+                return file!=0; // file=0 if file not found. 
             }
             
             pluginInfo::~pluginInfo()
