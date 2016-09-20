@@ -9,13 +9,6 @@
 ///
 ///  Authors (add name and date if you modify):
 ///
-///  \author Abram Krislock
-///          (a.m.b.krislock@fys.uio.no)
-///
-///  \author Aldo Saavedra
-///
-///  \author Andy Buckley
-///
 ///  \author Chris Rogan
 ///          (crogan@cern.ch)
 ///  \date 2014 Aug
@@ -24,6 +17,7 @@
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Jul
+///  \date 2016 Sep
 ///
 ///  \author James McKay
 ///          (j.mckay14@imperial.ac.uk)
@@ -100,7 +94,7 @@ namespace Gambit
     }
 
     /// Local function returning a HiggsBounds/Signals ModelParameters object for SM-like Higgs.
-    void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, hb_ModelParameters &result)
+    void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, hb_ModelParameters &result, str invisible_particle = "")
     {
       const SubSpectrum& spec = fullspectrum.get_HE();
 
@@ -203,48 +197,10 @@ namespace Gambit
       result.BR_hjZga[0] = decays.BF("gamma", "Z0");
       result.BR_hjgaga[0] = decays.BF("gamma", "gamma");
       result.BR_hjgg[0] = decays.BF("g", "g");
+
+      if (invisible_particle != "") result.BR_hjinvisible[0] = decays.BF(invisible_particle, invisible_particle);
+
     }
-
-
-    // set model parameters for GAMBIT LHC likelihood
-    void set_SMHiggs_ModelParameters(const Spectrum& fullspectrum, const DecayTable::Entry& decays, gambit_Higgs_ModelParameters &result)
-    {
-      const SubSpectrum& spec = fullspectrum.get_HE();
-      result._mh = spec.get(Par::Pole_Mass,25,0);
-      result.width_in_GeV = decays.width_in_GeV;
-      //    BR_hjtt = virtual_SMHiggs_widths("tt",mh);
-      //cout << "BR_hjtt = " << BR_hjtt << endl;
-      result.BR_hjss = decays.BF("s", "sbar");
-      result.BR_hjcc = decays.BF("c", "cbar");
-      result.BR_hjbb = decays.BF("b", "bbar");
-      result.BR_hjmumu = decays.BF("mu+", "mu-");
-      result.BR_hjtautau = decays.BF("tau+", "tau-");
-      result.BR_hjWW = decays.BF("W+", "W-");
-      result.BR_hjZZ = decays.BF("Z0", "Z0");
-      result.BR_hjZga = decays.BF("gamma", "Z0");
-      result.BR_hjgaga = decays.BF("gamma", "gamma");
-      result.BR_hjgg = decays.BF("g", "g");
-      result.BR_invisible=0; // gets set later by set_invisible_width
-    }
-
-
-    void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters &result,str P)
-    {
-      result.BR_hjinvisible[0] = decays.BF(P, P);
-    }
-
-    void set_invisible_width(const DecayTable::Entry& decays, hb_ModelParameters_effC &result,str P)
-    {
-      result.BR_hjinvisible[0] = decays.BF(P, P);
-      result.BR_hjinvisible[1] = 0.0;
-      result.BR_hjinvisible[2] = 0.0;
-    }
-
-    void set_invisible_width(const DecayTable::Entry& decays, gambit_Higgs_ModelParameters &result,str P)
-    {
-      result.BR_invisible = decays.BF(P, P);
-    }
-
 
     /// SM Higgs model parameters for HiggsBounds/Signals
     void SMHiggs_ModelParameters(hb_ModelParameters &result)
@@ -255,73 +211,7 @@ namespace Gambit
       set_SMHiggs_ModelParameters(fullspectrum,decays,result);
     }
 
-
-     void SMlikeHiggs_HS_ModelParameters_effC(hb_ModelParameters_effC &result)
-    {
-      using namespace Pipes::SMlikeHiggs_HS_ModelParameters_effC;
-      const Spectrum& fullspectrum = *Dep::SingletDM_spectrum;
-      str invisible_particle;
-      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
-      {
-       //fullspectrum = *Dep::SingletDM_spectrum;
-       invisible_particle = "S";
-      }
-      else
-      {
-        ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
-      }
-
-      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      //set_SMHiggs_ModelParameters(fullspectrum,decays,result);
-      const SubSpectrum& spec = fullspectrum.get_HE();
-      result.Mh[0] = spec.get(Par::Pole_Mass,25,0);
-      result.Mh[1] = 0; result.Mh[2] = 0;
-      set_invisible_width(decays,result,invisible_particle);
-
-
-      Gambit::ColliderBit::gambit_Higgs_ModelParameters decays_sm;
-      decays_sm.set_sm(125.6);
-      gambit_Higgs_ModelParameters gambit_modelparams = *Dep::Higgslike_ModelParameters;
-
-
-      //  set effective couplings
-      Effective_couplings ec(125.6);
-      ec.compute_scaling_factors(gambit_modelparams,result);
-
-     }
-
-
-
-    /// SM and SM-like Higgs model parameters for GAMBIT LHC likelihood
-     void SMHiggs_gambit_ModelParameters(gambit_Higgs_ModelParameters &result)
-    {
-      using namespace Pipes::SMHiggs_gambit_ModelParameters;
-      const Spectrum& fullspectrum = *Dep::SM_spectrum;
-      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
-    }
-
-    void SMlikeHiggs_gambit_ModelParameters(gambit_Higgs_ModelParameters &result)
-    {
-      using namespace Pipes::SMlikeHiggs_gambit_ModelParameters;
-      dep_bucket<Spectrum>* spec;
-      str invisible_particle;
-      if (ModelInUse("SingletDM") or ModelInUse("SingletDMZ3"))
-      {
-       spec = &Dep::SingletDM_spectrum;
-       invisible_particle = "S";
-      }
-      else
-      {
-        ColliderBit_error().raise(LOCAL_INFO,"model in use not valid with SMlikeHiggs_ModelParameters function");
-      }
-      const Spectrum& fullspectrum = **spec;
-      const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
-      set_invisible_width(decays,result,invisible_particle);
-    }
-
-    /// SM-like Higgs model parameters for HiggsBounds/Signals
+    /// SM-like (SM+invisible) Higgs model parameters for HiggsBounds/Signals
     void SMlikeHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::SMlikeHiggs_ModelParameters;
@@ -338,8 +228,7 @@ namespace Gambit
       }
       const Spectrum& fullspectrum = **spec;
       const DecayTable::Entry& decays = *Dep::Higgs_decay_rates;
-      set_SMHiggs_ModelParameters(fullspectrum,decays,result);
-      set_invisible_width(decays,result,invisible_particle);
+      set_SMHiggs_ModelParameters(fullspectrum,decays,result,invisible_particle);
     }
 
     /// MSSM Higgs model parameters
@@ -710,42 +599,6 @@ namespace Gambit
       // BEreq::setup_rate_uncertainties(dCS,dBR);
 
       // run HiggsSignals
-      int mode = 1; // 1- peak-centered chi2 method (recommended)
-      double csqmu, csqmh, csqtot, Pvalue;
-      int nobs;
-      BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
-
-      result = -0.5*csqtot;
-    }
-
-    void calc_HS_LHC_LogLike_effC(double &result) // currently only supports SM and SingletDM
-    {
-      using namespace Pipes::calc_HS_LHC_LogLike_effC;
-
-      hb_ModelParameters_effC ModelParam = *Dep::HB_ModelParameters_effC;
-      Farray<double, 1,3, 1,3> BR_hjhihi, identity;
-      for(int i = 0; i < 3; i++)
-      {
-        identity(i+1,i+1) = 1.0;
-        for(int j = 0; j < 3; j++)
-        {
-          BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
-        }
-      }
-
-      BEreq::HiggsBounds_neutral_input_effC_HS(&ModelParam.Mh[0],&ModelParam.hGammaTot[0],
-      &ModelParam.g2hjss_s[0],   &ModelParam.g2hjss_p[0],   &ModelParam.g2hjcc_s[0],     &ModelParam.g2hjcc_p[0],
-      &ModelParam.g2hjbb_s[0],   &ModelParam.g2hjbb_p[0],   &ModelParam.g2hjtt_s[0],     &ModelParam.g2hjtt_p[0],
-      &ModelParam.g2hjmumu_s[0], &ModelParam.g2hjmumu_p[0], &ModelParam.g2hjtautau_s[0], &ModelParam.g2hjtautau_p[0],
-      &ModelParam.g2hjWW[0],     &ModelParam.g2hjZZ[0],     &ModelParam.g2hjZga[0],      &ModelParam.g2hjgaga[0],
-      &ModelParam.g2hjgg[0],     &ModelParam.g2hjggZ[0],    identity,      &ModelParam.BR_hjinvisible[0],
-      BR_hjhihi);
-
-      // will add charged component soon, just a quick fix to get it working
-      double zero = 0.0; // have to pass something by reference
-      BEreq::HiggsBounds_charged_input_HS(&zero,&zero,&zero,&zero,&zero,&zero,&zero,&zero);
-      //&ModelParam.g2hjhiZ[0]
-
       int mode = 1; // 1- peak-centered chi2 method (recommended)
       double csqmu, csqmh, csqtot, Pvalue;
       int nobs;

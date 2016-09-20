@@ -39,42 +39,6 @@
   #undef CAPABILITY
 
 
-  // Gambit native Higgs model parameters (?)
-  #define CAPABILITY Higgslike_ModelParameters
-  START_CAPABILITY
-
-    #define FUNCTION SMHiggs_gambit_ModelParameters
-    START_FUNCTION(ColliderBit::gambit_Higgs_ModelParameters)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SM_spectrum, Spectrum)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    #define FUNCTION SMlikeHiggs_gambit_ModelParameters
-    START_FUNCTION(ColliderBit::gambit_Higgs_ModelParameters)
-    ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, Spectrum, SingletDM, SingletDMZ3)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-
-  // HiggsBounds input model parameters as effective couplings
-  #define CAPABILITY HB_ModelParameters_effC
-  START_CAPABILITY
-
-    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
-    #define FUNCTION SMlikeHiggs_HS_ModelParameters_effC
-    START_FUNCTION(hb_ModelParameters_effC)
-    ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, Spectrum, SingletDM, SingletDMZ3)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(Higgslike_ModelParameters, ColliderBit::gambit_Higgs_ModelParameters)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
   // HiggsBounds input model parameters
   #define CAPABILITY HB_ModelParameters
   START_CAPABILITY
@@ -153,20 +117,6 @@
      double*, double*, double*, double*))
     BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))
     BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
-    BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-    BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
-    #undef FUNCTION
-
-    #define FUNCTION calc_HS_LHC_LogLike_effC
-    START_FUNCTION(double)
-    DEPENDENCY(HB_ModelParameters_effC, hb_ModelParameters_effC)
-    BACKEND_REQ(HiggsBounds_neutral_input_effC_HS, (libhiggssignals), void,(double*, double*, double*,
-    double*, double*, double*, double*, double*, double*, double*,
-    double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-    double*, Farray<double, 1,3, 1,3>&))
-    BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,(double*, double*, double*, double*,
-    double*, double*, double*, double*))
-    BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))
     BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
     BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
     #undef FUNCTION
