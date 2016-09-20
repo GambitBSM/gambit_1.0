@@ -311,7 +311,7 @@ namespace Gambit
                double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
 
                double fraction = time_waited_d/total_timeout; 
-               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
+               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"%% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
                
                if(not timedout)
                {

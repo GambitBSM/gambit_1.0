@@ -271,7 +271,7 @@ namespace Gambit {
       /// logZerr                                              = error on log evidence value
       /// context                                              = void pointer, any additional information
       void LogLikeWrapper::dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double* /*paramConstr*/, 
-       double maxLogLike, double logZ, double logZerr)
+       double /*maxLogLike*/, double /*logZ*/, double /*logZerr*/)
       {
           int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
           if(thisrank!=0)

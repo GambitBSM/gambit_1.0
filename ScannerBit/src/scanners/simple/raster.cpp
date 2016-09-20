@@ -67,9 +67,9 @@ scanner_plugin(raster, version(1, 0, 0))
                 map[it->first] = it->second[i%it->second.size()];
             }
             
-            for (int i = 0; i < ma; i++)
+            for (int j = 0; j < ma; j++)
             {
-                a[i] = Gambit::Random::draw();
+                a[j] = Gambit::Random::draw();
             }
 
             LogLike(map, a);

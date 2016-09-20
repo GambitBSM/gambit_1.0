@@ -187,7 +187,7 @@ namespace Gambit
  
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
-    void asciiPrinter::initialise(const std::vector<int>& printmevec)
+    void asciiPrinter::initialise(const std::vector<int>& /*printmevec*/)
     {
       // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
       // //std::cout << "Initialising asciiprinter..." << std::endl;
@@ -204,7 +204,7 @@ namespace Gambit
     }
 
     /// Do final buffer dumps
-    void asciiPrinter::finalise(bool abnormal)
+    void asciiPrinter::finalise(bool /*abnormal*/)
     {
       dump_buffer(true);
       DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
@@ -448,7 +448,7 @@ is a unique record for every rank/pointID pair.";
       for (Buffer::iterator 
         bufentry = buffer.begin(); bufentry != buffer.end(); /* Will increment in loop */ )
       {
-        std::pair<int,int> bkey = bufentry->first;
+        DBUG( std::pair<int,int> bkey = bufentry->first; )
         Record& record = bufentry->second; 
         DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bkey.first<<", pointID="<<bkey.second<<">"<< std::endl; )
         if(force or record.readyToPrint)
