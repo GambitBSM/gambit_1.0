@@ -23,7 +23,7 @@
  * This will declare a 3 column table with each column title being                *
  * "file", "locate", "status":                                                    *
  *                                                                                *
- *   table formatter table("file", "locate", "status");                           *
+ *   table_formatter table("file", "locate", "status");                           *
  *                                                                                *
  * If you add another line to the column titles, you can by:                      *
  *                                                                                *

@@ -213,7 +213,7 @@ namespace Gambit
       /// seems like an underestimate if the stop masses are heavy enough.
       /// (TODO: are we happy assigning the same for both higgses?)
       /// FIXME this does not work for the second higgs
-      double rd_mh = 3.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
+      double rd_mh = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, true);
 
@@ -923,6 +923,26 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSM_spectrum_as_map;
       const Spectrum& mssmspec(*myPipe::Dep::MSSM_spectrum);
       fill_map_from_MSSMspectrum(specmap, mssmspec);
+      /// Add additional information from interesting combinations of parameters
+      double At = 0;
+      double Yt = mssmspec.get_HE().get(Par::dimensionless, "Yu", 3, 3);
+      if(std::abs(Yt) > 1e-12)
+      {
+        At = mssmspec.get_HE().get(Par::mass1, "TYu", 3, 3) / Yt;
+      }
+      double MuSUSY = mssmspec.get_HE().get(Par::mass1, "Mu");
+      double tb = mssmspec.get_HE().get(Par::dimensionless, "tanbeta");
+      specmap["Xt"] = At - MuSUSY / tb;
+      /// Determine which states are the stops then add them for printing
+      const SubSpectrum& mssm = mssmspec.get_HE();
+      str mst1, mst2;
+      /// Since this is for printing I only want to invalidate the point if this is completely wrong.  We can also plot the mixing if we are suspicious.
+      const static double tol = 0.5;
+      const static bool pt_error = true;
+      slhahelp::family_state_mix_matrix("~u", 3, mst1, mst2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["mstop1"] =  mssm.get(Par::Pole_Mass, mst1);
+      specmap["mstop2"] =  mssm.get(Par::Pole_Mass, mst2);
+      
     }
     void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {

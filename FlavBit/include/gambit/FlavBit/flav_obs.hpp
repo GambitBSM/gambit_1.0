@@ -86,7 +86,7 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> get_cov(){return M_glob_cov;};
       boost::numeric::ublas::matrix<double> get_exp_value(){return M_measurement;};
       boost::numeric::ublas::matrix<double> get_th_err(){return th_err;};   
-
+      
 
       
     };

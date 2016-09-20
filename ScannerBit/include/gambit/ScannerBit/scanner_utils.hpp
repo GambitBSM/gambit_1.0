@@ -42,7 +42,7 @@
 
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/local_info.hpp"
-#include "gambit/Logs/logger.hpp"
+//#include "gambit/Logs/logger.hpp" // Not used?
 #include "gambit/Utils/factory_registry.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -577,16 +577,16 @@ namespace Gambit
             if (in.size() == 0)
                 return out << "[]";
             
-            out << "[";
+            
             auto it = in.begin();
             auto end = in.end();
-            end--;
-            for (; it != end; it++)
+            out << "[" << *it;
+            for (++it; it != end; ++it)
             {
-                out << *it << ", ";
+                out << ", " << *it;
             }
             
-            return out << *it << "]";
+            return out << "]";
         }
         
         template <typename T>

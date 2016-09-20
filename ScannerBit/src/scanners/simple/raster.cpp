@@ -13,6 +13,11 @@
 ///  \date 2013 August
 ///
 ///  *********************************************
+
+#ifdef WITH_MPI
+#include "mpi.h"
+#endif
+
 #include <vector>
 #include <string>
 #include <cmath>
@@ -26,7 +31,7 @@
 scanner_plugin(raster, version(1, 0, 0))
 {
     std::map<std::string, std::vector<double>> param_map;
-    int N = 0;
+    int N = 0, numtasks, rank;
     
     plugin_constructor
     {
@@ -49,6 +54,14 @@ scanner_plugin(raster, version(1, 0, 0))
             if (temp > N)
                 N = temp;
         }
+        
+#ifdef WITH_MPI
+        MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#else
+        numtasks = 1;
+        rank = 0;
+#endif
     }
 
     int plugin_main (void)
@@ -59,7 +72,7 @@ scanner_plugin(raster, version(1, 0, 0))
 
         std::cout << "Starting Raster Scanner over " << N << " points." << ma << std::endl;
 
-        for (int i = 0; i < N; i++)
+        for (int i = rank; i < N; i+=numtasks)
         {
             std::unordered_map<std::string, double> map;
             for (auto it = param_map.begin(), end = param_map.end(); it != end; ++it)
