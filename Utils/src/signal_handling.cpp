@@ -194,7 +194,7 @@ namespace Gambit
 
    void SignalData::attempt_soft_shutdown()
    {
-     const int max_attempts=2000; // Number of extra likelihood evaluations allowed for sync attempts before we declare failure 
+     const int max_attempts=-1; // Number of extra likelihood evaluations allowed for sync attempts before we declare failure. -1 means "unlimited"
      const int attempts_before_ff=10; // Number of times to attempt synchronisation before entering a "fast forward" period
      const int ff_loops=1000; // Number of "fast-forward" loops to perform in a fast-forward period
 
@@ -208,7 +208,7 @@ namespace Gambit
         logger() << "Beginning GAMBIT soft shutdown procedure. Control will be returned to the scanner plugin so "
                  << "that it can get its affairs in order in preparation for shutdown (it may cease iterating if "
                  << "it has that capability), and next iteration we will attempt to synchronise all processes and "
-                 << "shut them down. If sync fails, we will loop up to "<<max_attempts<<" times, attempting to "
+                 << "shut them down. If sync fails, we will loop up to "<<max_attempts<<" times (-1 means infinite), attempting to "
                  << "synchronise each time. If sync fails, an emergency shutdown will be attempted." << EOM;
         ++shutdown_attempts;
      }  
@@ -257,7 +257,7 @@ namespace Gambit
         std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
         std::chrono::duration<double> time_waited = current - start;
 
-        if (shutdown_attempts>=max_attempts) 
+        if(max_attempts!=-1 and shutdown_attempts>=max_attempts) 
         {
           logger() << "Failed to synchronise for soft shutdown! Attempting cleanup anyway, but cannot guarantee safety of the scan output." << EOM;
           call_cleanup();
@@ -273,7 +273,7 @@ namespace Gambit
         } 
         else
         {
-          logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<"; "
+          logger() << "Attempt to sync for soft shutdown failed (this was attempt "<<shutdown_attempts<<" of "<<max_attempts<<" (-1 means infinite)); "
                    <<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds have elapsed since "
                    <<"shutdown attempts began). Will allow evaluation to continue and attempt to sync again next iteration." << EOM;
         }

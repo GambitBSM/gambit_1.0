@@ -651,7 +651,7 @@ namespace Gambit
             bool pluginInfo::check_alt_min_LogL_state() const
             {
                 std::ifstream file(def_out_path+"/ALT_MIN_LOGL_IN_USE");
-                return file!=0; // file=0 if file not found. 
+                return not file.fail();
             }
             
             pluginInfo::~pluginInfo()

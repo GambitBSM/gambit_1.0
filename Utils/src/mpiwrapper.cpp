@@ -699,9 +699,9 @@ namespace Gambit
             // Doh timed out
             if(use_mpi_abort)
             { 
-              #ifdef MPI_DEBUG_OUTPUT
+              //#ifdef MPI_DEBUG_OUTPUT
               std::cerr << "rank " << COMM_WORLD.Get_rank() << ": FinalizeWithTimeout failed to sync for clean MPI shutdown, calling MPI_Abort..." << std::endl;
-              #endif
+              //#endif
               COMM_WORLD.Abort();
             }
           }

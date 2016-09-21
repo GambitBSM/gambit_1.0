@@ -142,6 +142,25 @@ namespace Gambit
                     scan_err << "\"use_scanner:\" input value not usable in the inifile." << scan_end;
             }
 
+            // Before allowing scan to begin, add a barrier so that some don't start without others
+            // Otherwise, attempting to shut down with only some processes begun will screw up the
+            // output.
+            #ifdef WITH_MPI
+              GMPI::Comm comm;
+              int rank = comm.Get_rank();
+              if(rank==0)
+              {
+                cout << "ScannerBit is waiting for all MPI processes to join the scan..." << endl;
+              }
+              comm.Barrier();
+              if(rank==0)
+              {
+                cout << "  All processes ready!" << endl;
+              }
+            #else
+              int rank = 0;
+            #endif
+
             unsigned int dim = prior->size();
             
             for(auto &&pluginName : pluginNames)
@@ -150,11 +169,6 @@ namespace Gambit
                 plugin_interface();
                 if(Plugins::plugin_info.early_shutdown_in_progress())
                 {
-                  #ifdef WITH_MPI
-                    int rank = GMPI::Comm().Get_rank();
-                  #else
-                    int rank = 0;
-                  #endif
                   if (rank == 0) cout << "ScannerBit has received a shutdown signal and will terminate early. Finalising resume data..." << endl;
                   printerInterface->finalise(true); // abnormal (early) termination
                 }
