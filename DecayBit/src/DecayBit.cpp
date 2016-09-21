@@ -48,7 +48,7 @@ namespace Gambit
 
     /// Helper function to check if a width is negative and raise an error.
     void check_negative_width(const str& info, double& w, bool raise_invalid_pt)
-    { 
+    {
       if (w < 0)
       {
         if (raise_invalid_pt)
@@ -60,7 +60,7 @@ namespace Gambit
 
     /// @}
 
-    
+
 
     /// \name DecayBit module functions
     /// @{
@@ -249,11 +249,11 @@ namespace Gambit
     void Ref_SM_Higgs_decays_table(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_Higgs_decays_table;
-    
+
       // Get the Higgs pole mass.  Forget about the uncertainties for now.
       double mh = Dep::mh->central;
-      
-      // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al. 
+
+      // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al.
       double minmass = runOptions->getValueOrDef
                        <double>(90.0, "higgs_minmass");
       double maxmass = runOptions->getValueOrDef
@@ -265,8 +265,8 @@ namespace Gambit
             << "; This is outside of the allowed range for tables from Dittmaier et al, which is " << minmass << "--"
             << maxmass << " GeV.";
         invalid_point().raise(msg.str());
-      } 
-    
+      }
+
       // Set the contents of the Entry
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
@@ -297,7 +297,7 @@ namespace Gambit
     void FH_t_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_t_decays;
-      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::Higgs_Couplings;
+      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings_ouput;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       result.calculator = FH_input.calculator;
@@ -388,7 +388,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_Couplings;
+      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_1
@@ -575,7 +575,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_Couplings;
+      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_2
@@ -742,7 +742,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_Couplings;
+      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about A0
@@ -897,7 +897,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_Couplings;
+      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about H+
@@ -2481,7 +2481,7 @@ namespace Gambit
 
       // Add the h->SS branching fraction
       result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S");
-      
+
       // Make sure the width is sensible.
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
    }

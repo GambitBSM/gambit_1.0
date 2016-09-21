@@ -54,6 +54,9 @@ namespace Gambit
       const max_charged_higgses = 1;
       /// @}
 
+      /// CP of neutral higgses
+      double CP[max_neutral_higgses];
+
       /// Effective couplings for neutral higgses
       /// @{
       double C_WW2[max_neutral_higgses];

@@ -237,7 +237,7 @@ namespace Gambit
       using namespace Pipes::MSSMHiggs_ModelParameters;
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_Couplings;
+      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");
@@ -506,16 +506,13 @@ namespace Gambit
       // Set up neutral Higgses
       std::vector<str> sHneut = initVector<str>{"h0_1", "h0_2", "A0");
 
-      // Set the CP of the Higgs states.  Note that this would need to be more sophisticated to deal with the complex MSSM!
-      result.CP[0] = 1;  //h0_1
-      result.CP[1] = 1;  //h0_2
-      result.CP[2] = -1; //A0
+      // Set the CP of the Higgs states.
+      for (int i = 0; i < 3; i++) result.CP[i] = Dep::Higgs_Couplings->CP[i];
 
       // Retrieve higgs partial widths
-      const DecayTable::Entry& h0_widths_SM[3] = Dep::higgs_couplings->get_neutral_decays_SM_array(3);
-      const DecayTable::Entry& h0_widths[3] = Dep::higgs_couplings->get_neutral_decays_array(3);
-      const DecayTable::Entry& H_plus_widths = Dep::higgs_couplings->get_charged_decays(0);
-      const DecayTable::Entry& t_widths = Dep::higgs_couplings->get_t_decays();
+      const DecayTable::Entry& h0_widths[3] = Dep::Higgs_Couplings->get_neutral_decays_array(3);
+      const DecayTable::Entry& H_plus_widths = Dep::Higgs_Couplings->get_charged_decays(0);
+      const DecayTable::Entry& t_widths = Dep::Higgs_Couplings->get_t_decays();
 
       // Retrieve masses
       const Spectrum& fullspectrum = *Dep::MSSM_spectrum;
@@ -623,144 +620,47 @@ namespace Gambit
       result.BR_Hpjcb[0]   = H_plus_widths.BF("c", "bbar");
       result.BR_Hptaunu[0] = H_plus_widths.BF("tau+", "nu_tau");
 
-      // Check SM partial width for neutral higgs -> b bbar.  Should not be zero.
-      double g2hjbb[3];
+      // Retrieve cross-section ratios from the HiggsCouplingsTable
       for(int i = 0; i < 3; i++)
       {
-        double smwid = h0_widths_SM[i].width_in_GeV*h0_widths_SM[i].BF("b", "bbar");
-        if (smwid <= 0.)
-          g2hjbb[i] = 0.;
-        else
-          g2hjbb[i] = h0_widths[i].width_in_GeV*h0_widths[i].BF("b", "bbar")/smwid;
-      }
+        result.CS_bg_hjb_ratio[i] = Dep::Higgs_Couplings->C_bb2[i];
+        result.CS_bb_hj_ratio[i]  = Dep::Higgs_Couplings->C_bb2[i];
+        result.CS_lep_bbhj_ratio[i] = Dep::Higgs_Couplings->C_bb2[i];
 
-      // Use partial width ratio approximation for h -> b bbar and h -> tautau CS ratios
-      for(int i = 0; i < 3; i++)
-      {
-        result.CS_bg_hjb_ratio[i] = g2hjbb[i];
-        result.CS_bb_hj_ratio[i]  = g2hjbb[i];
-        result.CS_lep_bbhj_ratio[i] = g2hjbb[i];
-        smwid = h0_widths_SM[i].width_in_GeV*h0_widths_SM[i].BF("tau+", "tau-");
-        result.CS_lep_tautauhj_ratio[i] = h0_widths[i].width_in_GeV*result.BR_hjtautau[i]/smwid;
-      }
+        result.CS_lep_tautauhj_ratio[i] = Dep::Higgs_Couplings->C_tautau2[i];
 
-      // Calculate cross-section ratios for di-boson final states, using partial width approximation.
-      for(int i = 0; i < 3; i++)
-      {
-        double smwid_W = h0_widths_SM[i].width_in_GeV*h0_widths_SM[i].BF("W+", "W-");
-        double smwid_Z = h0_widths_SM[i].width_in_GeV*h0_widths_SM[i].BF("Z0", "Z0");
-        double g2hjWW = h0_widths[i].width_in_GeV*result.BR_hjWW[i]/smwid_W
-        double g2hjZZ = h0_widths[i].width_in_GeV*result.BR_hjZZ[i]/smwid_Z
-
-        result.CS_lep_hjZ_ratio[i] = g2hjZZ;
-
+        result.CS_lep_hjZ_ratio[i] = Dep::Higgs_Couplings->C_ZZ2[i];
         result.CS_gg_hjZ_ratio[i] = 0.;
-        result.CS_dd_hjZ_ratio[i] = g2hjZZ;
-        result.CS_uu_hjZ_ratio[i] = g2hjZZ;
-        result.CS_ss_hjZ_ratio[i] = g2hjZZ;
-        result.CS_cc_hjZ_ratio[i] = g2hjZZ;
-        result.CS_bb_hjZ_ratio[i] = g2hjZZ;
+        result.CS_dd_hjZ_ratio[i] = Dep::Higgs_Couplings->C_ZZ2[i];
+        result.CS_uu_hjZ_ratio[i] = Dep::Higgs_Couplings->C_ZZ2[i];
+        result.CS_ss_hjZ_ratio[i] = Dep::Higgs_Couplings->C_ZZ2[i];
+        result.CS_cc_hjZ_ratio[i] = Dep::Higgs_Couplings->C_ZZ2[i];
+        result.CS_bb_hjZ_ratio[i] = Dep::Higgs_Couplings->C_ZZ2[i];
 
-        result.CS_ud_hjWp_ratio[i] = g2hjWW;
-        result.CS_cs_hjWp_ratio[i] = g2hjWW;
-        result.CS_ud_hjWm_ratio[i] = g2hjWW;
-        result.CS_cs_hjWm_ratio[i] = g2hjWW;
+        result.CS_ud_hjWp_ratio[i] = Dep::Higgs_Couplings->C_WW2[i];
+        result.CS_cs_hjWp_ratio[i] = Dep::Higgs_Couplings->C_WW2[i];
+        result.CS_ud_hjWm_ratio[i] = Dep::Higgs_Couplings->C_WW2[i];
+        result.CS_cs_hjWm_ratio[i] = Dep::Higgs_Couplings->C_WW2[i];
 
-        result.CS_tev_vbf_ratio[i]  = g2hjWW;
-        result.CS_lhc7_vbf_ratio[i] = g2hjWW;
-        result.CS_lhc8_vbf_ratio[i] = g2hjWW;
-      }
+        result.CS_tev_vbf_ratio[i]  = Dep::Higgs_Couplings->C_WW2[i];
+        result.CS_lhc7_vbf_ratio[i] = Dep::Higgs_Couplings->C_WW2[i];
+        result.CS_lhc8_vbf_ratio[i] = Dep::Higgs_Couplings->C_WW2[i];
 
-      // Calculate higgs to higgs + V xsection ratios.  Here we scale out the kinematic
-      // prefactor of the decay width assuming we are well above threshold if the channel is open.
-      const double GF = Dep::SMINPUTS->GF;
-      const double mZ = fullspectrum.get(Par::Pole_Mass,23,0);
-      const double g2 = spec.get(Par::dimensionless,"g2");
-      const double sinW2 = spec.get(Par::dimensionless,"sinW2");
-      const double scaling = sinW2*pow(g2,4)/(2.*(1.-sinW2)*GF*GF*mZ*mZ);
-      for(int i = 0; i < 3; i++)
-      for(int j = 0; j < 3; j++)
-      {
-        double mhi = result.Mh[i]
-        double mhj = result.Mh[j]
-        if (mhi > mhj + mZ and h0_widths_SM[i].has_channel(sHneut[j], "Z0")
+        result.CS_gg_hj_ratio[i] = Dep::Higgs_Couplings->C_gg2[i];
+
+        result.CS_tev_tthj_ratio[i] = Dep::Higgs_Couplings->C_tt2[i];
+        result.CS_lhc7_tthj_ratio[i] = Dep::Higgs_Couplings->C_tt2[i];
+        result.CS_lhc8_tthj_ratio[i] = Dep::Higgs_Couplings->C_tt2[i];
+
+        for(int j = 0; j < 3; j++)
         {
-          double K = (mhi - mhj - mZ)*(mhi - mhj - mZ) - 4.*mhj*mZ;
-          double gamma = h0_widths_SM[i].width_in_GeV*h0_widths_SM[i].BF(sHneut[j], "Z0");
-          result.CS_lep_hjhi_ratio[i][j] = scaling / (mhi*mhi*K*K*K) * gamma;
+          result.CS_lep_hjhi_ratio[i][j] = Dep::Higgs_Couplings->C_hiZ2[i];
         }
-        else result.CS_lep_hjhi_ratio[i][j] = 0.;
-      }
-
-      // Calculate gluon fusion x-section ratio
-      for(int i = 0; i < 3; i++)
-      {
-        double smwid = h0_widths_SM[i].width_in_GeV*h0_widths_SM[i].BF("g", "g")
-        if (smwid <= 0.)
-          result.CS_gg_hj_ratio[i] = 0.;
-        else
-          result.CS_gg_hj_ratio[i] = h0_widths[i].width_in_GeV*h0_widths[i].BF("g", "g")/smwid;
-      }
-
-      // unpack FeynHiggs x-sections
-      fh_HiggsProd FH_prod = *Dep::FH_HiggsProd;
-
-      // h t tbar xsection ratios
-      for(int i = 0; i < 3; i++)
-      {
-        result.CS_tev_tthj_ratio[i] = 0.;
-        result.CS_lhc7_tthj_ratio[i] = 0.;
-        result.CS_lhc8_tthj_ratio[i] = 0.;
-        if(FH_prod.prodxs_Tev[i+30] > 0.)
-          result.CS_tev_tthj_ratio[i]  = FH_prod.prodxs_Tev[i+27]/FH_prod.prodxs_Tev[i+30];
-        if(FH_prod.prodxs_Tev[i+30] > 0.)
-          result.CS_lhc7_tthj_ratio[i] = FH_prod.prodxs_LHC7[i+27]/FH_prod.prodxs_LHC7[i+30];
-        if(FH_prod.prodxs_Tev[i+30] > 0.)
-          result.CS_lhc8_tthj_ratio[i] = FH_prod.prodxs_LHC8[i+27]/FH_prod.prodxs_LHC8[i+30];
       }
       // LEP H+ H- x-section ratio
       result.CS_lep_HpjHmi_ratio[0] = 1.;
     }
 
-
-    /// Put together the Higgs couplings for the MSSM from partial widths only
-    void MSSM_h_couplings_pwid(HiggsCouplingsTable &result)
-    {
-      // Set up neutral Higgses
-      std::vector<str> sHneut = initVector<str>{"h0_1", "h0_2", "A0");
-
-      // Set the decays
-      result.set_neutral_decays_SM(0, sHneut[0], *Dep::Reference_SM_Higgs_decay_rates);
-      result.set_neutral_decays_SM(1, sHneut[1], *Dep::Reference_SM_h02_decay_rates);
-      result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
-      result.set_neutral_decays(0, sHneut[0],, *Dep::Reference_Higgs_decay_rates);
-      result.set_neutral_decays(1, sHneut[1], *Dep::Reference_h02_decay_rates);
-      result.set_neutral_decays(2, sHneut[2], *Dep::Reference_A0_decay_rates);
-      result.set_charged_decays(0, "H+", *Dep::Reference_H_plus_decay_rates);
-      result.set_t_decays(*Dep::H_plus_decay_rates);
-
-      // Use them to compute effective couplings for all neutral higgses
-      for (int i = 0; i < 3; i++)
-      {
-        result.C_WW2[i] = result.compute_effective_coupling(i, std::pair<int>(24, 0), std::pair<int>(-24, 0));
-        result.C_ZZ2[i] = result.compute_effective_coupling(i, std::pair<int>(23, 0), std::pair<int>(23, 0));
-        result.C_tt2[i] = result.compute_effective_coupling(i, std::pair<int>(6, 1), std::pair<int>(-6, 1));
-        result.C_bb2[i] = result.compute_effective_coupling(i, std::pair<int>(5, 1), std::pair<int>(-5, 1));
-        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int>(4, 1), std::pair<int>(-4, 1));
-        result.C_tautau2[i] = result.compute_effective_coupling(i, std::pair<int>(15, 1), std::pair<int>(-15, 1));
-        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int>(22, 0), std::pair<int>(22, 0));
-        result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int>(21, 0), std::pair<int>(21, 0));
-        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int>(13, 1), std::pair<int>(-13, 1));
-        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int>(23, 0), std::pair<int>(21, 0));
-        result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int>(3, 1), std::pair<int>(-3, 1));
-        for (int j = 0; j < 3; j++)
-        {
-          result.C_hiZ2[i][j] = result.compute_effective_coupling(sHneut[i], sHneut[j], "Z0");
-        }
-      }
-      // fix h->ZH
-
-    }
 
     /// Get a LEP chisq from HiggsBounds
     void calc_HB_LEP_LogLike(double &result)

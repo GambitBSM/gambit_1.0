@@ -843,8 +843,11 @@ namespace Gambit
       result = HiggsMassObs;
     }
 
+////////////////////////
+//// Higgs routines ////
+////////////////////////
 
-    /// FeynHiggs Higgs couplings
+    /// Call FH_Couplings from FeynHiggs and collect the output
     void FH_Couplings(fh_Couplings &result)
     {
       using namespace Pipes::FH_Couplings;
@@ -913,6 +916,174 @@ namespace Gambit
 
       result = Couplings;
     }
+
+    /// Put together the Higgs couplings for the MSSM, using FeynHiggs
+    void MSSM_h_couplings_FH(HiggsCouplingsTable &result)
+    {
+      // Set up neutral Higgses
+      std::vector<str> sHneut = initVector<str>{"h0_1", "h0_2", "A0"};
+
+      // Set the decays
+      result.set_neutral_decays_SM(0, sHneut[0], *Dep::Reference_SM_Higgs_decay_rates);
+      result.set_neutral_decays_SM(1, sHneut[1], *Dep::Reference_SM_h02_decay_rates);
+      result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
+      result.set_neutral_decays(0, sHneut[0],, *Dep::Reference_Higgs_decay_rates);
+      result.set_neutral_decays(1, sHneut[1], *Dep::Reference_h02_decay_rates);
+      result.set_neutral_decays(2, sHneut[2], *Dep::Reference_A0_decay_rates);
+      result.set_charged_decays(0, "H+", *Dep::Reference_H_plus_decay_rates);
+      result.set_t_decays(*Dep::H_plus_decay_rates);
+
+      // Use the couplings from FH to compute effective couplings
+      for (int i = 0; i < 3; i++)
+      {
+        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int>(4, 1), std::pair<int>(-4, 1));
+        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int>(22, 0), std::pair<int>(22, 0));
+        result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int>(21, 0), std::pair<int>(21, 0));
+        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int>(13, 1), std::pair<int>(-13, 1));
+        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int>(23, 0), std::pair<int>(21, 0));
+        result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int>(3, 1), std::pair<int>(-3, 1));
+      }
+
+      // Use couplings to get effective third-generation couplings
+      for(int i = 0; i < 3; i++)
+      {
+        fh_complex c_g2hjbb_L = FH_input.couplings[H0FF(i,4,3,3)];
+        fh_complex c_g2hjbb_R = FH_input.couplings[H0FF(i,4,3,3)+Roffset];
+        fh_complex c_g2hjbb_SM_L = FH_input.couplings_sm[H0FF(i,4,3,3)];
+        fh_complex c_g2hjbb_SM_R = FH_input.couplings_sm[H0FF(i,4,3,3)+RSMoffset];
+
+        fh_complex c_g2hjtautau_L = FH_input.couplings[H0FF(i,2,3,3)];
+        fh_complex c_g2hjtautau_R = FH_input.couplings[H0FF(i,2,3,3)+Roffset];
+        fh_complex c_g2hjtautau_SM_L = FH_input.couplings_sm[H0FF(i,2,3,3)];
+        fh_complex c_g2hjtautau_SM_R = FH_input.couplings_sm[H0FF(i,2,3,3)+RSMoffset];
+
+        double R_g2hjbb_L = sqrt(c_g2hjbb_L.re*c_g2hjbb_L.re+
+               c_g2hjbb_L.im*c_g2hjbb_L.im)/
+          sqrt(c_g2hjbb_SM_L.re*c_g2hjbb_SM_L.re+
+               c_g2hjbb_SM_L.im*c_g2hjbb_SM_L.im);
+        double R_g2hjbb_R = sqrt(c_g2hjbb_R.re*c_g2hjbb_R.re+
+               c_g2hjbb_R.im*c_g2hjbb_R.im)/
+          sqrt(c_g2hjbb_SM_R.re*c_g2hjbb_SM_R.re+
+               c_g2hjbb_SM_R.im*c_g2hjbb_SM_R.im);
+
+        double R_g2hjtautau_L = sqrt(c_g2hjtautau_L.re*c_g2hjtautau_L.re+
+                   c_g2hjtautau_L.im*c_g2hjtautau_L.im)/
+          sqrt(c_g2hjtautau_SM_L.re*c_g2hjtautau_SM_L.re+
+               c_g2hjtautau_SM_L.im*c_g2hjtautau_SM_L.im);
+        double R_g2hjtautau_R = sqrt(c_g2hjtautau_R.re*c_g2hjtautau_R.re+
+                   c_g2hjtautau_R.im*c_g2hjtautau_R.im)/
+          sqrt(c_g2hjtautau_SM_R.re*c_g2hjtautau_SM_R.re+
+               c_g2hjtautau_SM_R.im*c_g2hjtautau_SM_R.im);
+
+        double g2hjbb_s = (R_g2hjbb_L+R_g2hjbb_R)*(R_g2hjbb_L+R_g2hjbb_R)/4.;
+        double g2hjbb_p = (R_g2hjbb_L-R_g2hjbb_R)*(R_g2hjbb_L-R_g2hjbb_R)/4.;
+        double g2hjtautau_s = (R_g2hjtautau_L+R_g2hjtautau_R)*(R_g2hjtautau_L+R_g2hjtautau_R)/4.;
+        double g2hjtautau_p = (R_g2hjtautau_L-R_g2hjtautau_R)*(R_g2hjtautau_L-R_g2hjtautau_R)/4.;
+
+        result.C_bb2[i]     = g2hjbb_s + g2hjbb_p;
+        result.C_tautau2[i] = g2hjtautau_s + g2hjtautau_p;
+
+        // Calculate CP of state
+        if(g2hjbb_p < 1e-10)
+          result.CP[i] = 1;
+        else if(g2hjbb_s < 1e-10)
+          result.CP[i] = -1;
+        else
+          result.CP[i] = 0.;
+      }
+
+      // Use couplings to get di-boson effective couplings
+      for(int i = 0; i < 3; i++)
+      {
+        fh_complex c_gWW = FH_input.couplings[H0VV(i,4)];
+        fh_complex c_gWW_SM = FH_input.couplings_sm[H0VV(i,4)];
+        fh_complex c_gZZ = FH_input.couplings[H0VV(i,3)];
+        fh_complex c_gZZ_SM = FH_input.couplings_sm[H0VV(i,3)];
+        result.C_WW2 = (c_gWW.re*c_gWW.re+c_gWW.im*c_gWW.im)/
+          (c_gWW_SM.re*c_gWW_SM.re+c_gWW_SM.im*c_gWW_SM.im);
+        result.C_ZZ2 = (c_gZZ.re*c_gZZ.re+c_gZZ.im*c_gZZ.im)/
+          (c_gZZ_SM.re*c_gZZ_SM.re+c_gZZ_SM.im*c_gZZ_SM.im);
+      }
+
+      // Use couplings to get hhZ effective couplings
+      const SMInputs& sminputs = *Dep::SMINPUTS;
+      double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
+      for(int i = 0; i < 3; i++)
+      for(int j = 0; j < 3; j++)
+      {
+        fh_complex c_gHV = FH_input.couplings[H0HV(i,j)];
+        double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
+        result.C_hiZ2[i][j] = g2HV/norm;
+      }
+
+
+        result.C_tt2[i] = result.compute_effective_coupling(i, std::pair<int>(6, 1), std::pair<int>(-6, 1));
+
+    }
+
+    /// Put together the Higgs couplings for the MSSM, from partial widths only
+    void MSSM_h_couplings_pwid(HiggsCouplingsTable &result)
+    {
+      // Set up neutral Higgses
+      std::vector<str> sHneut = initVector<str>{"h0_1", "h0_2", "A0"};
+
+      // Set the CP of the Higgs states.  Note that this would need to be more sophisticated to deal with the complex MSSM!
+      result.CP[0] = 1;  //h0_1
+      result.CP[1] = 1;  //h0_2
+      result.CP[2] = -1; //A0
+
+      // Set the decays
+      result.set_neutral_decays_SM(0, sHneut[0], *Dep::Reference_SM_Higgs_decay_rates);
+      result.set_neutral_decays_SM(1, sHneut[1], *Dep::Reference_SM_h02_decay_rates);
+      result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
+      result.set_neutral_decays(0, sHneut[0],, *Dep::Reference_Higgs_decay_rates);
+      result.set_neutral_decays(1, sHneut[1], *Dep::Reference_h02_decay_rates);
+      result.set_neutral_decays(2, sHneut[2], *Dep::Reference_A0_decay_rates);
+      result.set_charged_decays(0, "H+", *Dep::Reference_H_plus_decay_rates);
+      result.set_t_decays(*Dep::t_decay_rates);
+
+      // Use them to compute effective couplings for all neutral higgses, except for hhZ.
+      for (int i = 0; i < 3; i++)
+      {
+        result.C_WW2[i] = result.compute_effective_coupling(i, std::pair<int>(24, 0), std::pair<int>(-24, 0));
+        result.C_ZZ2[i] = result.compute_effective_coupling(i, std::pair<int>(23, 0), std::pair<int>(23, 0));
+        result.C_tt2[i] = result.compute_effective_coupling(i, std::pair<int>(6, 1), std::pair<int>(-6, 1));
+        result.C_bb2[i] = result.compute_effective_coupling(i, std::pair<int>(5, 1), std::pair<int>(-5, 1));
+        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int>(4, 1), std::pair<int>(-4, 1));
+        result.C_tautau2[i] = result.compute_effective_coupling(i, std::pair<int>(15, 1), std::pair<int>(-15, 1));
+        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int>(22, 0), std::pair<int>(22, 0));
+        result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int>(21, 0), std::pair<int>(21, 0));
+        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int>(13, 1), std::pair<int>(-13, 1));
+        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int>(23, 0), std::pair<int>(21, 0));
+        result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int>(3, 1), std::pair<int>(-3, 1));
+      }
+
+      // Calculate hhZ effective couplings.  Here we scale out the kinematic prefactor
+      // of the decay width, assuming we are well above threshold if the channel is open.
+      const double GF = Dep::SMINPUTS->GF;
+      const double mZ = fullspectrum.get(Par::Pole_Mass,23,0);
+      const double g2 = spec.get(Par::dimensionless,"g2");
+      const double sinW2 = spec.get(Par::dimensionless,"sinW2");
+      const double scaling = sinW2*pow(g2,4)/(2.*(1.-sinW2)*GF*GF*mZ*mZ);
+      for(int i = 0; i < 3; i++)
+      for(int j = 0; j < 3; j++)
+      {
+        double mhi = Dep::MSSM_spectrum->get_HE().get(Par::Pole_Mass, sHneut[i]);
+        double mhj = Dep::MSSM_spectrum->get_HE().get(Par::Pole_Mass, sHneut[j]);
+        if (mhi > mhj + mZ and get_neutral_decays_SM[i].has_channel(sHneut[j], "Z0")
+        {
+          double K = (mhi - mhj - mZ)*(mhi - mhj - mZ) - 4.*mhj*mZ;
+          double gamma = get_neutral_decays_SM[i].width_in_GeV*get_neutral_decays_SM[i].BF(sHneut[j], "Z0");
+          result.C_hiZ2[i][j] = scaling / (mhi*mhi*K*K*K) * gamma;
+        }
+        else result.C_hiZ2[i][j] = 0.;
+      }
+
+    }
+
+/////////////////////////////
+//// Map output routines ////
+/////////////////////////////
 
     /// @{ Convert MSSM type Spectrum object into a map, so it can be printed
     void fill_map_from_MSSMspectrum(std::map<std::string,double>&, const Spectrum&);

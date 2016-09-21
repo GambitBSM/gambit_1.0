@@ -47,6 +47,7 @@
 #include "gambit/Elements/sminputs.hpp"                // Struct carrying SMINPUTS block (SLHA2)
 #include "gambit/Elements/spectrum.hpp"                // Carries BSM plus Standard Model spectrum info
 #include "gambit/Elements/decay_table.hpp"             // Decay table class (carries particle decay info)
+#include "gambit/Elements/higgs_couplings_table.hpp"   // Higgs couplings table class (carries couplings info for entire Higgs sector)
 #include "gambit/Elements/slhaea_helpers.hpp"          // Contains SLHAea reader/writer class alias
 #include "gambit/Elements/halo_types.hpp"              // data types for DM halo properties
 

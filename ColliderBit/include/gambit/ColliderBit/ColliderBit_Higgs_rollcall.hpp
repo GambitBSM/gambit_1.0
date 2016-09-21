@@ -64,7 +64,7 @@
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(MSSM_spectrum, Spectrum)
     DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency
+    DEPENDENCY(FH_Couplings_ouput, fh_Couplings) // temporary dependency
     DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
@@ -74,31 +74,8 @@
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(MSSM_spectrum, Spectrum)
-    DEPENDENCY(higgs_couplings, HiggsCouplingsTable)
+    DEPENDENCY(Higgs_Couplings, HiggsCouplingsTable)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) //temp
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-
-  #define CAPABILITY higgs_couplings
-  START_CAPABILITY
-
-    #define FUNCTION MSSM_higgs_couplings
-    START_FUNCTION(HiggsCouplingsTable)
-    DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(Reference_SM_h02_decay_rates, DecayTable::Entry)
-    DEPENDENCY(Reference_SM_A0_decay_rates, DecayTable::Entry)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(h02_decay_rates, DecayTable::Entry)
-    DEPENDENCY(A0_decay_rates, DecayTable::Entry)
-    DEPENDENCY(H_plus_decay_rates, DecayTable::Entry)
-    DEPENDENCY(t_decay_rates, DecayTable::Entry)
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) //temp
-    #undef FUNCTION
-
     #undef FUNCTION
 
   #undef CAPABILITY
