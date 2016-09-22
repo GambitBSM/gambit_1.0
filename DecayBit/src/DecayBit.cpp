@@ -242,32 +242,9 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs
     }
 
-    /// Reference SM Higgs decays from Dittmaier tables.
-    /// This function is given a different capability to regular decay
-    /// functions, to allow other module functions to specifically depend
-    /// on the SM values for reference, even when scanning another model.
-    void Ref_SM_Higgs_decays_table(DecayTable::Entry& result)
+    /// Populate SM Higgs decay channels for a higgs mass of m_h
+    void compute_SM_higgs_decays(DecayTable::Entry& result, double mh)
     {
-      using namespace Pipes::Ref_SM_Higgs_decays_table;
-
-      // Get the Higgs pole mass.  Forget about the uncertainties for now.
-      double mh = Dep::mh->central;
-
-      // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al.
-      double minmass = runOptions->getValueOrDef
-                       <double>(90.0, "higgs_minmass");
-      double maxmass = runOptions->getValueOrDef
-                       <double>(160.0, "higgs_maxmass");
-      if (mh < minmass or mh > maxmass)
-      {
-        std::stringstream msg;
-        msg << "Computed Higgs mass is " << mh
-            << "; This is outside of the allowed range for tables from Dittmaier et al, which is " << minmass << "--"
-            << maxmass << " GeV.";
-        invalid_point().raise(msg.str());
-      }
-
-      // Set the contents of the Entry
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
@@ -283,6 +260,42 @@ namespace Gambit
       result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
       result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
     }
+
+    /// Reference SM Higgs decays from Dittmaier tables.
+    /// These functions are given a different capability to regular decay
+    /// functions, to allow other module functions to specifically depend
+    /// on the SM values for reference, even when scanning another model.
+    /// @{
+    void Ref_SM_Higgs_decays_table(DecayTable::Entry& result)
+    {
+      double mh = Pipes::Ref_SM_Higgs_decays_table::Dep::mh->central;
+      // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al.
+      double minmass = Pipes::Ref_SM_Higgs_decays_table::runOptions->getValueOrDef
+                       <double>(90.0, "higgs_minmass");
+      double maxmass = Pipes::Ref_SM_Higgs_decays_table::runOptions->getValueOrDef
+                       <double>(160.0, "higgs_maxmass");
+      if (mh < minmass or mh > maxmass)
+      {
+        std::stringstream msg;
+        msg << "Computed Higgs mass is " << mh
+            << "; This is outside of the allowed range for tables from Dittmaier et al, which is " << minmass << "--"
+            << maxmass << " GeV.";
+        invalid_point().raise(msg.str());
+      }
+      compute_SM_higgs_decays(result, mh);
+    }
+    void Ref_SM_h0_2_decays_table(DecayTable::Entry& result)
+    {
+      double mh02 = Pipes::Ref_SM_h0_2_decays_table::Dep::MSSM_spectrum->get(Par::Pole_Mass, "h0_2");
+      compute_SM_higgs_decays(result, mh02);
+    }
+    void Ref_SM_A0_decays_table(DecayTable::Entry& result)
+    {
+      double mA0 = Pipes::Ref_SM_A0_decays_table::Dep::MSSM_spectrum->get(Par::Pole_Mass, "A0");
+      compute_SM_higgs_decays(result, mA0);
+    }
+    /// @}
+
 
     /// SM decays: Higgs
     void SM_Higgs_decays (DecayTable::Entry& result)

@@ -4,7 +4,7 @@
 ///
 ///  Simple function for returning SM Higgs partial
 ///  and total widths as a function of virtuality,
-///  as read from data files from CERN Yellow 
+///  as read from data files from CERN Yellow
 ///  Paper arXiv:1101.0593.
 ///
 ///  *********************************************
@@ -31,7 +31,7 @@
 
 namespace Gambit
 {
-    
+
   /// Higgs branching ratios and total width Gamma [GeV], as function of mass [GeV] (90 - 300 GeV)
   double virtual_SMHiggs_widths(str channel, double mh)
   {
@@ -39,7 +39,7 @@ namespace Gambit
     const str virtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1101.0593.dat";
 
     // Initialise, reading in the data table and setting up the interpolators.
-    static ASCIItableReader table(virtualH_tabfile);  
+    static ASCIItableReader table(virtualH_tabfile);
     static std::map<std::string, daFunk::Funk> f_vs_mass;
     static bool initialised = false;
     static double minmass, maxmass;
@@ -72,13 +72,16 @@ namespace Gambit
     {
       std::stringstream msg;
       msg << "Requested Higgs virtuality is " << mh << "; allowed range is " << minmass << "--" << maxmass << " GeV!";
-      utils_error().raise(LOCAL_INFO, msg.str());
+      //utils_error().raise(LOCAL_INFO, msg.str());
+      //FIXME
+      if (mh > maxmass) mh = maxmass;
+      if (mh < minmass) mh = minmass;
     }
-    
 
-    // Retrieve the interpolated result.     
+
+    // Retrieve the interpolated result.
     return f_vs_mass[channel]->bind("mass")->eval(mh);
-    
+
   }
-  
+
 }

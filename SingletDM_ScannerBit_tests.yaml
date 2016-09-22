@@ -13,7 +13,7 @@ Parameters:
     #  * from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-standard-model.pdf
     # ** from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-phys-constants.pdf
     #  § from http://pdg.lbl.gov/2014/tables/rpp2014-sum-leptons.pdf
-    #  @ from http://pdg.lbl.gov/2014/tables/rpp2014-sum-quarks.pdf 
+    #  @ from http://pdg.lbl.gov/2014/tables/rpp2014-sum-quarks.pdf
     #    (for reference: http://pdg.lbl.gov/2014/reviews/rpp2014-rev-quark-masses.pdf)
     #  $ from http://arxiv.org/abs/1403.4427
     #  ! from http://pdg.lbl.gov/2014/listings/rpp2014-list-z-boson.pdf
@@ -22,7 +22,7 @@ Parameters:
     #  ^ from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-qcd.pdf
     # If more than one source listed, values are equal in both sources.
     # Values in GeV where units apply.
-    
+
     # SLHA1
     # All ranges on parameters are 3 sigma range from PDG 2014
     alphainv:  #1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
@@ -32,10 +32,10 @@ Parameters:
     mBmB    :  #4.18000000E+00 # mb(mb)^MSbar &
                range: [4.09, 4.27]
     mT      :  #1.73340000E+02 # mtop(pole) $
-               range: [171.06,175.62] 
+               range: [171.06,175.62]
     GF      :  #1.16637870E-05 # G_Fermi **
                range: [1.1663769E-05, 1.1663805E-05]
-    mZ      :  9.11876000E+01 # mZ(pole) !   
+    mZ      :  9.11876000E+01 # mZ(pole) !
     mTau    :  1.77682000E+00 # mtau(pole) §
     mNu3    :               0 # mnu3(pole)
     mD      :  #4.80000000E-03 # md(2 GeV)^MSbar @
@@ -50,7 +50,7 @@ Parameters:
     mMu     :  1.05658372E-01 # mmuon(pole) §
     mNu1    :               0 # mnu1(pole)
     mNu2    :               0 # mnu2(pole)
-    
+
     # CKM
     # Wolfenstein parameterisation (matches SLHA2 VCKMIN block)
     # from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-ckm-matrix.pdf
@@ -58,24 +58,24 @@ Parameters:
     CKM_A       :  0.814
     CKM_rhobar  :  0.117
     CKM_etabar  :  0.353
-    
+
     # PMNS
     # from     http://pdg.lbl.gov/2014/tables/rpp2014-sum-leptons.pdf
     # see also http://pdg.lbl.gov/2014/reviews/rpp2014-rev-neutrino-mixing.pdf
     # Note: angles given as x = sin^2(2*theta), so I have converted them as:
     # theta = 0.5*arcsin(sqrt(x))
-    # CP-violating phases not measured, so I set them to zero. 
+    # CP-violating phases not measured, so I set them to zero.
     theta12 :  0.58376 # solar angle
     theta23 :  0.76958 # atmospheric mixing angle
-    theta13 :  0.15495 #                                    
+    theta13 :  0.15495 #
     delta13 :  0       # Dirac CP-violating phase
     alpha1  :  0       # first Majorana CP-violating phase
     alpha2  :  0       # second CP-violating Majorana phase
-   
+
   StandardModel_Higgs:
     mH: #125.7
-      # 4-sigma range PDG 2015    
-      range: [124.1, 127.3] 
+      # 4-sigma range PDG 2015
+      range: [124.1, 127.3]
 
   SingletDM:
     mS:
@@ -88,7 +88,7 @@ Parameters:
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas: #43.0
-      range:  [19, 67] 
+      range:  [19, 67]
     sigmal: #58.0
       range:  [31, 85]
     deltau:
@@ -163,7 +163,7 @@ Scanner:
       like: LogLike
       NP: 1000
       verbosity: 1
-      
+
     twalk:
       plugin: twalk
       tolerance: 1.001
@@ -176,7 +176,7 @@ Scanner:
       nTrials: 40000
       like: Likelihood
       aux_printer_ind_samples_options:
-    
+
 #twalk:
 #      plugin: twalk
 #      tolerance: 1.001

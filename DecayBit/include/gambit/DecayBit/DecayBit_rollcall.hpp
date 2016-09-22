@@ -70,6 +70,42 @@ START_MODULE
   #undef CAPABILITY
 
 
+  #define CAPABILITY Reference_SM_h0_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION Ref_SM_h0_2_decays_table
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+
+    //#define FUNCTION Ref_SM_h0_2_decays_FH
+    //START_FUNCTION(DecayTable::Entry)
+    //DEPENDENCY(mh, triplet<double>)
+    //BACKEND_REQ(xxx, (fh_reqd), xxx)
+    //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
+    //#undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY Reference_SM_A0_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION Ref_SM_A0_decays_table
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+
+    //#define FUNCTION Ref_SM_A0_decays_FH
+    //START_FUNCTION(DecayTable::Entry)
+    //DEPENDENCY(mh, triplet<double>)
+    //BACKEND_REQ(xxx, (fh_reqd), xxx)
+    //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
+    //#undef FUNCTION
+
+  #undef CAPABILITY
+
+
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
 

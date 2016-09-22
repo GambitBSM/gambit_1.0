@@ -39,25 +39,34 @@ namespace Gambit
 
       /// SM neutral higgs decays
       /// @{
-      DecayTable::Entry* neutral_decays_SM_array[max_neutral_higgses];
-      std::map<str, DecayTable::Entry&> neutral_decays_SM_map;
+      const DecayTable::Entry* neutral_decays_SM_array[max_neutral_higgses];
+      std::map<str, const DecayTable::Entry&> neutral_decays_SM_map;
       /// @}
 
       /// BSM higgs decays
       /// @{
-      DecayTable::Entry* neutral_decays_array[max_neutral_higgses];
-      DecayTable::Entry* charged_decays_array[max_charged_higgses];
-      std::map<str, DecayTable::Entry&> neutral_decays_map;
-      std::map<str, DecayTable::Entry&> charged_decays_map;
+      const DecayTable::Entry* neutral_decays_array[max_neutral_higgses];
+      const DecayTable::Entry* charged_decays_array[max_charged_higgses];
+      std::map<str, const DecayTable::Entry&> neutral_decays_map;
+      std::map<str, const DecayTable::Entry&> charged_decays_map;
       /// @}
 
       /// t decays (as t can decay to h)
-      DecayTable::Entry* t_decays;
+      const DecayTable::Entry* t_decays;
 
     public:
 
+      /// Types to make returning decay arrays easier
+      /// @{
+      typedef const DecayTable::Entry* h0_decay_array_type[max_neutral_higgses];
+      typedef const DecayTable::Entry* hp_decay_array_type[max_charged_higgses];
+      /// @}
+
       /// CP of neutral higgses
       double CP[max_neutral_higgses];
+
+      /// Particles that higgses can decay invisibly to
+      std::vector<str> invisibles;
 
       /// Effective couplings for neutral higgses
       /// @{
@@ -75,10 +84,13 @@ namespace Gambit
       double C_hiZ2[max_neutral_higgses][max_neutral_higgses];
       /// @}
 
+      /// Constructor
+      HiggsCouplingsTable();
+
       /// Compute a neutral higgs effective coupling from the current two-body neutral higgs decays
       /// @{
       template <typename T>
-      double compute_effective_coupling(int index, T& p1, T& p2)
+      double compute_effective_coupling(int index, const T& p1, const T& p2)
       {
         if (index > max_neutral_higgses - 1) utils_error().raise(LOCAL_INFO, "Requested index beyond max_neutral_higgses.");
         // If channel is missing from either SM or BSM decays, return unity.
@@ -90,7 +102,7 @@ namespace Gambit
         return total_width_ratio * BF_ratio;
       }
       template <typename T>
-      double compute_effective_coupling(str name, T& p1, T& p2)
+      double compute_effective_coupling(str name, const T& p1, const T& p2)
       {
         if (neutral_decays_SM_map.find(name) == neutral_decays_SM_map.end()) utils_error().raise(LOCAL_INFO, "Requested higgs not found.");
         // If channel is missing from either SM or BSM decays, return unity.
@@ -107,21 +119,21 @@ namespace Gambit
 
       /// Assign decay entries to the various table components
       /// @{
-      void set_neutral_decays_SM(int, const str&, DecayTable::Entry&);
-      void set_neutral_decays(int, const str&, DecayTable::Entry&);
-      void set_charged_decays(int, const str&, DecayTable::Entry&);
-      void set_t_decays(DecayTable::Entry&);
+      void set_neutral_decays_SM(int, const str&, const DecayTable::Entry&);
+      void set_neutral_decays(int, const str&, const DecayTable::Entry&);
+      void set_charged_decays(int, const str&, const DecayTable::Entry&);
+      void set_t_decays(const DecayTable::Entry&);
       /// @}
 
       /// Retrieve decay sets
       /// @{
-      const DecayTable::Entry* get_neutral_decays_SM_array(int) const;
+      const h0_decay_array_type& get_neutral_decays_SM_array(int) const;
       const DecayTable::Entry& get_neutral_decays_SM(int) const;
       const DecayTable::Entry& get_neutral_decays_SM(const str&) const;
-      const DecayTable::Entry* get_neutral_decays_array(int) const;
+      const h0_decay_array_type& get_neutral_decays_array(int) const;
       const DecayTable::Entry& get_neutral_decays(int) const;
       const DecayTable::Entry& get_neutral_decays(const str&) const;
-      const DecayTable::Entry* get_charged_decays_array(int) const;
+      const hp_decay_array_type& get_charged_decays_array(int) const;
       const DecayTable::Entry& get_charged_decays(int) const;
       const DecayTable::Entry& get_charged_decays(const str&) const;
       const DecayTable::Entry& get_t_decays() const;

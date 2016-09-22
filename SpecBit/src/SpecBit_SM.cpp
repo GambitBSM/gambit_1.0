@@ -106,6 +106,18 @@ namespace Gambit
       result = Spectrum(qedqcdspec,higgsspec,sminputs,&myPipe::Param);
     }
 
+    /// Put together the SM Higgs couplings
+    void SM_higgs_couplings(HiggsCouplingsTable &result)
+    {
+      using namespace Pipes::SM_higgs_couplings;
+      // Set the CP of the Higgs.
+      result.CP[0] = 1;
+      // Set the decays
+      result.set_neutral_decays_SM(0, "h0_1", *Dep::Higgs_decay_rates);
+      result.set_neutral_decays(0, "h0_1", *Dep::Higgs_decay_rates);
+      // Leave all the effective couplings for all neutral higgses set to unity (done at construction).
+    }
+
     /// @} End Gambit module functions
 
   } // end namespace SpecBit

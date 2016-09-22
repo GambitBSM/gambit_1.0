@@ -6,7 +6,7 @@ Parameters:
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
-      range:  [19, 67] 
+      range:  [19, 67]
     sigmal:
       range:  [31, 85]
     deltau:
@@ -80,13 +80,11 @@ Scanner:
 ObsLikes:
 
     # LHC likelihoods
-    - purpose:    LogLike
-      capability: LHC_Combined_LogLike
+    #- purpose:    LogLike
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
-      function:   HS_LHC_LogLike
-
 
     # LEP likelihoods
     - purpose:    LogLike
@@ -138,7 +136,7 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    - purpose:    LogLike 
+    - purpose:    LogLike
       capability: b2sgamma_LL
 
     # Precision physics likelihoods
@@ -343,22 +341,22 @@ Rules:
   # Make sure to use the next-to-latest version (2.11.3) of FeynHiggs for things that need it,
   # as the latest version (2.12.0) is buggy.
   # In practice, the easiest way to do this is just to not install / nuke the versions you don't want to use, e.g.
-  #  make nuke-feynhiggs_2_12_0  
-  #  make nuke-feynhiggs_2_11_2  
+  #  make nuke-feynhiggs_2_12_0
+  #  make nuke-feynhiggs_2_11_2
   # In a future version of GAMBIT, it will possible to just do this here in the yaml file:
   #- backend: FeynHiggs
   #  version: 2.11.3
   # If you want to do it from the yaml file now, you need to do this:
-  - capability: FH_Precision
+  - capability: FH_Couplings_ouput
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
-  - capability: Higgs_Couplings
+  - capability: FH_Precision
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
   - capability: FH_HiggsProd
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
-  # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W 
+  # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W
   #- capability: prec_HiggsMasses
   #  backends:
   #  - {backend: FeynHiggs, version: 2.11.3}
@@ -377,6 +375,16 @@ Rules:
     function: h0_2_decays
   - capability: t_decay_rates
     function: t_decays
+
+  # Choose where to get the Higgs couplings from
+  - capability: Higgs_Couplings
+    function: MSSM_higgs_couplings_pwid
+    #function: MSSM_higgs_couplings_FH
+
+  # Temporary
+  - capability: HB_ModelParameters
+    function: MSSMHiggs_ModelParameters
+    #function: MSSMHiggs_ModelParameters_old
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
@@ -443,7 +451,7 @@ Rules:
 
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
-    options:  
+    options:
       #This defaults to true; set it false to ignore all these analyses
       useATLAS: true
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
@@ -453,7 +461,7 @@ Rules:
 
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
-    options:  
+    options:
       #This defaults to true; set it false to ignore all these analyses
       useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
