@@ -921,7 +921,7 @@ namespace Gambit
     void MSSM_h_couplings_FH(HiggsCouplingsTable &result)
     {
       // Set up neutral Higgses
-      std::vector<str> sHneut = initVector<str>{"h0_1", "h0_2", "A0"};
+      std::vector<str> sHneut = initVector("h0_1", "h0_2", "A0");
 
       // Set the decays
       result.set_neutral_decays_SM(0, sHneut[0], *Dep::Reference_SM_Higgs_decay_rates);
@@ -1025,7 +1025,7 @@ namespace Gambit
     void MSSM_h_couplings_pwid(HiggsCouplingsTable &result)
     {
       // Set up neutral Higgses
-      std::vector<str> sHneut = initVector<str>{"h0_1", "h0_2", "A0"};
+      std::vector<str> sHneut = initVector("h0_1", "h0_2", "A0");
 
       // Set the CP of the Higgs states.  Note that this would need to be more sophisticated to deal with the complex MSSM!
       result.CP[0] = 1;  //h0_1

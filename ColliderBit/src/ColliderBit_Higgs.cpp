@@ -510,7 +510,7 @@ namespace Gambit
       for (int i = 0; i < 3; i++) result.CP[i] = Dep::Higgs_Couplings->CP[i];
 
       // Retrieve higgs partial widths
-      const DecayTable::Entry& h0_widths[3] = Dep::Higgs_Couplings->get_neutral_decays_array(3);
+      const DecayTable::Entry* h0_widths[3] = Dep::Higgs_Couplings->get_neutral_decays_array(3);
       const DecayTable::Entry& H_plus_widths = Dep::Higgs_Couplings->get_charged_decays(0);
       const DecayTable::Entry& t_widths = Dep::Higgs_Couplings->get_t_decays();
 
@@ -567,22 +567,22 @@ namespace Gambit
       // Loop over all neutral Higgses, setting their branching fractions and total widths.
       for(int i = 0; i < 3; i++)
       {
-        result.hGammaTot[i] = h0_widths[i].width_in_GeV;
-        result.BR_hjss[i] = h0_widths[i].BF("s", "sbar");
-        result.BR_hjcc[i] = h0_widths[i].BF("c", "cbar");
-        result.BR_hjbb[i] = h0_widths[i].BF("b", "bbar");
-        result.BR_hjmumu[i] = h0_widths[i].BF("mu+", "mu-");
-        result.BR_hjtautau[i] = h0_widths[i].BF("tau+", "tau-");
-        result.BR_hjWW[i] = h0_widths[i].BF("W+", "W-");
-        result.BR_hjZZ[i] = h0_widths[i].BF("Z0", "Z0");
-        result.BR_hjZga[i] = h0_widths[i].BF("gamma", "Z0");
-        result.BR_hjgaga[i] = h0_widths[i].BF("gamma", "gamma");
-        result.BR_hjgg[i] = h0_widths[i].BF("g", "g");
+        result.hGammaTot[i] = h0_widths[i]->width_in_GeV;
+        result.BR_hjss[i] = h0_widths[i]->BF("s", "sbar");
+        result.BR_hjcc[i] = h0_widths[i]->BF("c", "cbar");
+        result.BR_hjbb[i] = h0_widths[i]->BF("b", "bbar");
+        result.BR_hjmumu[i] = h0_widths[i]->BF("mu+", "mu-");
+        result.BR_hjtautau[i] = h0_widths[i]->BF("tau+", "tau-");
+        result.BR_hjWW[i] = h0_widths[i]->BF("W+", "W-");
+        result.BR_hjZZ[i] = h0_widths[i]->BF("Z0", "Z0");
+        result.BR_hjZga[i] = h0_widths[i]->BF("gamma", "Z0");
+        result.BR_hjgaga[i] = h0_widths[i]->BF("gamma", "gamma");
+        result.BR_hjgg[i] = h0_widths[i]->BF("g", "g");
         for (int j = 0; j < 3; j++)
         {
-          if (2.*result.Mh[j] < result.Mh[i] and h0_widths[i].has_channel(sHneut[j],sHneut[j]))
+          if (2.*result.Mh[j] < result.Mh[i] and h0_widths[i]->has_channel(sHneut[j],sHneut[j]))
           {
-            result.BR_hjhihi[i][j] = h0_widths[i].BF(sHneut[j],sHneut[j]);
+            result.BR_hjhihi[i][j] = h0_widths[i]->BF(sHneut[j],sHneut[j]);
           }
           else
           {
@@ -596,12 +596,12 @@ namespace Gambit
           if (i_snu > 0)
           {
             // sneutrino LSP
-            result.BR_hjinvisible[i] = h0_widths[i].BF("~nu",i_snu,"~nubar",i_snu);
+            result.BR_hjinvisible[i] = h0_widths[i]->BF("~nu",i_snu,"~nubar",i_snu);
           }
           else
           {
             // neutralino LSP
-            result.BR_hjinvisible[i] = h0_widths[i].BF("~chi0_1","~chi0_1");
+            result.BR_hjinvisible[i] = h0_widths[i]->BF("~chi0_1","~chi0_1");
           }
         }
       }
