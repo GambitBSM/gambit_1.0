@@ -60,12 +60,12 @@ START_MODULE
     DEPENDENCY(mh, triplet<double>)
     #undef FUNCTION
 
-    //#define FUNCTION Ref_SM_Higgs_decays_FH
-    //START_FUNCTION(DecayTable::Entry)
-    //DEPENDENCY(mh, triplet<double>)
-    //BACKEND_REQ(xxx, (fh_reqd), xxx)
-    //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
-    //#undef FUNCTION
+    #define FUNCTION Ref_SM_Higgs_decays_FH
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings_ouput, fh_Couplings)
+    DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
+    #undef FUNCTION
 
   #undef CAPABILITY
 
@@ -78,12 +78,12 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
 
-    //#define FUNCTION Ref_SM_h0_2_decays_FH
-    //START_FUNCTION(DecayTable::Entry)
-    //DEPENDENCY(mh, triplet<double>)
-    //BACKEND_REQ(xxx, (fh_reqd), xxx)
-    //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
-    //#undef FUNCTION
+    #define FUNCTION Ref_SM_h0_2_decays_FH
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings_ouput, fh_Couplings)
+    DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
+    #undef FUNCTION
 
   #undef CAPABILITY
 
@@ -96,12 +96,12 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
 
-    //#define FUNCTION Ref_SM_A0_decays_FH
-    //START_FUNCTION(DecayTable::Entry)
-    //DEPENDENCY(mh, triplet<double>)
-    //BACKEND_REQ(xxx, (fh_reqd), xxx)
-    //BACKEND_OPTION( (FeynHiggs), (fh_reqd) )
-    //#undef FUNCTION
+    #define FUNCTION Ref_SM_A0_decays_FH
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings_ouput, fh_Couplings)
+    DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
+    #undef FUNCTION
 
   #undef CAPABILITY
 
