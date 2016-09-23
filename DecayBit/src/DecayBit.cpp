@@ -269,16 +269,16 @@ namespace Gambit
     void Ref_SM_Higgs_decays_table(DecayTable::Entry& result)
     {
       double mh = Pipes::Ref_SM_Higgs_decays_table::Dep::mh->central;
-      // Invalidate the point if m_h is outside the range of the tables of Dittmaier et al.
       double minmass = Pipes::Ref_SM_Higgs_decays_table::runOptions->getValueOrDef
                        <double>(90.0, "higgs_minmass");
       double maxmass = Pipes::Ref_SM_Higgs_decays_table::runOptions->getValueOrDef
                        <double>(160.0, "higgs_maxmass");
+      // Invalidate the point if m_h0_1 is outside the range over which the tables of the LHCHiggsXSWG are most reliable.
       if (mh < minmass or mh > maxmass)
       {
         std::stringstream msg;
         msg << "Computed Higgs mass is " << mh
-            << "; This is outside of the allowed range for tables from Dittmaier et al, which is " << minmass << "--"
+            << "; This is outside of the accurate range for tables from the LHCHiggsXSWG, which is " << minmass << "--"
             << maxmass << " GeV.";
         invalid_point().raise(msg.str());
       }

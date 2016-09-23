@@ -383,8 +383,8 @@ Rules:
 
   # Temporary
   - capability: HB_ModelParameters
-    #function: MSSMHiggs_ModelParameters
-    function: MSSMHiggs_ModelParameters_old
+    function: MSSMHiggs_ModelParameters
+    #function: MSSMHiggs_ModelParameters_old
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
