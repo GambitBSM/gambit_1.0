@@ -2713,7 +2713,7 @@ namespace Gambit
     {
       using namespace Pipes::lnL_Higgs_invWidth_SMonly;
       double BF = Dep::Higgs_decay_rates->BF("S","S");
-      static daFunk::Funk chi2 = get_Higgs_invWidth_chi2("Elements/data/GammaInv_SM_higgs_DeltaChi2.dat");
+      static daFunk::Funk chi2 = get_Higgs_invWidth_chi2("DecayBit/data/GammaInv_SM_higgs_DeltaChi2.dat");
       result = (BF > 0.0) ? -chi2->bind("BR")->eval(BF)*0.5 : -0.0;
     }
 

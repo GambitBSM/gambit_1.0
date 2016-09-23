@@ -353,7 +353,7 @@ Rules:
   - capability: FH_Precision
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
-  - capability: FH_HiggsProd
+  - capability: Higgs_Production_Xsecs
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
   # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W
@@ -383,8 +383,8 @@ Rules:
 
   # Temporary
   - capability: HB_ModelParameters
-    function: MSSMHiggs_ModelParameters
-    #function: MSSMHiggs_ModelParameters_old
+    #function: MSSMHiggs_ModelParameters
+    function: MSSMHiggs_ModelParameters_old
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
