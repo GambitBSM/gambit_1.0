@@ -27,18 +27,6 @@
 #define __ColliderBit_Higgs_rollcall_hpp__
 
 
-  // FeynHiggs Higgs production cross-sections
-  #define CAPABILITY FH_HiggsProd
-  START_CAPABILITY
-    #define FUNCTION FH_HiggsProd
-    START_FUNCTION(fh_HiggsProd)
-    BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
   // HiggsBounds input model parameters
   #define CAPABILITY HB_ModelParameters
   START_CAPABILITY
@@ -64,8 +52,8 @@
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(MSSM_spectrum, Spectrum)
     DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(FH_Couplings_ouput, fh_Couplings) // temporary dependency
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency
+    DEPENDENCY(FH_Couplings_ouput, fh_Couplings)
+    DEPENDENCY(Higgs_Production_Xsecs, fh_HiggsProd)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
 
@@ -143,6 +131,17 @@
     BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
     #undef FUNCTION
 
+  #undef CAPABILITY
+
+
+  // Higgs production cross-sections from FeynHiggs.  Not presently used by anything, but maybe useful in the future.
+  #define CAPABILITY Higgs_Production_Xsecs
+  START_CAPABILITY
+    #define FUNCTION FH_HiggsProd
+    START_FUNCTION(fh_HiggsProd)
+    BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
+    #undef FUNCTION
   #undef CAPABILITY
 
 

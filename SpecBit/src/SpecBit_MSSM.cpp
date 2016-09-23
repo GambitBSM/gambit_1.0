@@ -1034,15 +1034,15 @@ namespace Gambit
       result.set_charged_decays(0, "H+", *Dep::H_plus_decay_rates);
       result.set_t_decays(*Dep::H_plus_decay_rates);
 
-      // Use the couplings from FH to compute effective couplings
+      // Use the branching fractions to compute gluon, gamma/Z and second generation fermionic effective couplings
       for (int i = 0; i < 3; i++)
       {
-        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int,int>(4, 1), std::pair<int,int>(-4, 1));
-        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(22, 0), std::pair<int,int>(22, 0));
         result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int,int>(21, 0), std::pair<int,int>(21, 0));
-        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int,int>(13, 1), std::pair<int,int>(-13, 1));
+        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(22, 0), std::pair<int,int>(22, 0));
         result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(23, 0), std::pair<int,int>(21, 0));
+        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int,int>(13, 1), std::pair<int,int>(-13, 1));
         result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int,int>(3, 1), std::pair<int,int>(-3, 1));
+        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int,int>(4, 1), std::pair<int,int>(-4, 1));
       }
 
       // Use couplings to get effective third-generation couplings
@@ -1057,6 +1057,11 @@ namespace Gambit
         fh_complex c_g2hjtautau_R = Dep::FH_Couplings_output->couplings[H0FF(i,2,3,3)+Roffset];
         fh_complex c_g2hjtautau_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i,2,3,3)];
         fh_complex c_g2hjtautau_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i,2,3,3)+RSMoffset];
+
+        fh_complex c_g2hjtt_L = Dep::FH_Couplings_output->couplings[H0FF(i,3,3,3)];
+        fh_complex c_g2hjtt_R = Dep::FH_Couplings_output->couplings[H0FF(i,3,3,3)+Roffset];
+        fh_complex c_g2hjtt_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i,3,3,3)];
+        fh_complex c_g2hjtt_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i,3,3,3)+RSMoffset];
 
         double R_g2hjbb_L = sqrt(c_g2hjbb_L.re*c_g2hjbb_L.re+
                c_g2hjbb_L.im*c_g2hjbb_L.im)/
@@ -1076,13 +1081,25 @@ namespace Gambit
           sqrt(c_g2hjtautau_SM_R.re*c_g2hjtautau_SM_R.re+
                c_g2hjtautau_SM_R.im*c_g2hjtautau_SM_R.im);
 
+        double R_g2hjtt_L = sqrt(c_g2hjtt_L.re*c_g2hjtt_L.re+
+                   c_g2hjtt_L.im*c_g2hjtt_L.im)/
+          sqrt(c_g2hjtt_SM_L.re*c_g2hjtt_SM_L.re+
+               c_g2hjtt_SM_L.im*c_g2hjtt_SM_L.im);
+        double R_g2hjtt_R = sqrt(c_g2hjtt_R.re*c_g2hjtt_R.re+
+                   c_g2hjtt_R.im*c_g2hjtt_R.im)/
+          sqrt(c_g2hjtt_SM_R.re*c_g2hjtt_SM_R.re+
+               c_g2hjtt_SM_R.im*c_g2hjtt_SM_R.im);
+
         double g2hjbb_s = (R_g2hjbb_L+R_g2hjbb_R)*(R_g2hjbb_L+R_g2hjbb_R)/4.;
         double g2hjbb_p = (R_g2hjbb_L-R_g2hjbb_R)*(R_g2hjbb_L-R_g2hjbb_R)/4.;
         double g2hjtautau_s = (R_g2hjtautau_L+R_g2hjtautau_R)*(R_g2hjtautau_L+R_g2hjtautau_R)/4.;
         double g2hjtautau_p = (R_g2hjtautau_L-R_g2hjtautau_R)*(R_g2hjtautau_L-R_g2hjtautau_R)/4.;
+        double g2hjtt_s = (R_g2hjtt_L+R_g2hjtt_R)*(R_g2hjtt_L+R_g2hjtt_R)/4.;
+        double g2hjtt_p = (R_g2hjtt_L-R_g2hjtt_R)*(R_g2hjtt_L-R_g2hjtt_R)/4.;
 
         result.C_bb2[i]     = g2hjbb_s + g2hjbb_p;
         result.C_tautau2[i] = g2hjtautau_s + g2hjtautau_p;
+        result.C_tt2[i]     = g2hjtt_s + g2hjtt_p;
 
         // Calculate CP of state
         if(g2hjbb_p < 1e-10)
@@ -1115,8 +1132,6 @@ namespace Gambit
         double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
         result.C_hiZ2[i][j] = g2HV/norm;
       }
-
-      // FIXME do tt couplings!!!
 
       // Work out which invisible decays are possible
       result.invisibles = get_invisibles(spec);

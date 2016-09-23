@@ -45,55 +45,6 @@ namespace Gambit
   {
 
 
-    /// FeynHiggs Higgs production cross-sections
-    void FH_HiggsProd(fh_HiggsProd &result)
-    {
-      using namespace Pipes::FH_HiggsProd;
-
-      Farray<fh_real, 1,52> prodxs;
-
-      fh_HiggsProd HiggsProd;
-      int error;
-      fh_real sqrts;
-
-      // Tevatron
-      sqrts = 2.;
-      error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-      if (error != 0)
-      {
-        std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for Tevatron: " << error << ".";
-        invalid_point().raise(err.str());
-      }
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs_Tev[i] = prodxs(i+1);
-      // LHC7
-      sqrts = 7.;
-      error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-      if (error != 0)
-      {
-        std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << ".";
-        invalid_point().raise(err.str());
-      }
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
-      // LHC8
-      sqrts = 8.;
-      error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-      if (error != 0)
-      {
-        std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << ".";
-        invalid_point().raise(err.str());
-      }
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
-
-      result = HiggsProd;
-    }
-
-
 /////// %< snip here when testing complete, discard below
 
     /// Local function returning a HiggsBounds/Signals ModelParameters object for SM-like Higgs.
@@ -480,7 +431,7 @@ namespace Gambit
       }
 
       // unpack FeynHiggs x-sections
-      fh_HiggsProd FH_prod = *Dep::FH_HiggsProd;
+      fh_HiggsProd FH_prod = *Dep::Higgs_Production_Xsecs;
 
       // h t tbar xsection ratios
       for(int i = 0; i < 3; i++)
@@ -857,6 +808,58 @@ namespace Gambit
 
       result = -0.5*csqtot;
     }
+
+    /// Higgs production cross-sections from FeynHiggs.
+    void FH_HiggsProd(fh_HiggsProd &result)
+    {
+      using namespace Pipes::FH_HiggsProd;
+
+      Farray<fh_real, 1,52> prodxs;
+
+      fh_HiggsProd HiggsProd;
+      int error;
+      fh_real sqrts;
+
+      // Tevatron
+      sqrts = 2.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsProd raised error flag for Tevatron: " << error << ".";
+        invalid_point().raise(err.str());
+      }
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_Tev[i] = prodxs(i+1);
+      // LHC7
+      sqrts = 7.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << ".";
+        invalid_point().raise(err.str());
+      }
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
+      // LHC8
+      sqrts = 8.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << ".";
+        invalid_point().raise(err.str());
+      }
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
+
+      // The ttbar production cross-sections for the (BSM,SM) model can be found at (prodxs_X[h+27], prodxs_X[h+30]),
+      // where h is the higgs index (0 = h0_1, 1 = h0_2, 2 = A0) and X is one of Tev, LHC7 or LHC8.
+      result = HiggsProd;
+
+    }
+
 
   }
 }
