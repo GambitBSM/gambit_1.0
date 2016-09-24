@@ -80,111 +80,115 @@ namespace Gambit
     /// Set neutral h decays computed by FeynHiggs
     void set_FH_neutral_h_decay(DecayTable::Entry& result, int iH, const fh_Couplings& FH_input, const mass_es_pseudonyms& psn, bool invalidate, bool SM)
     {
-      // Set the array offset according to whether we want the SM or BSM decays
-      int local_offset = SM ? BRSMoffset : BRoffset;
+      // Set the array and its offset according to whether we want the SM or BSM decays
+      const fh_real* widths = SM ? FH_input.gammas_sm : FH_input.gammas;
+      const int local_offset = SM ? BRSMoffset : BRoffset;
 
       // Set the calculator info (presumably FeynHiggs...)
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
 
       // Set the total Higgs width
-      result.width_in_GeV = FH_input.gammas[iH];
+      result.width_in_GeV = widths[iH];
 
       // vector-boson pair decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0VV(iH,1)+local_offset] : 0.0), 0.0, "gamma", "gamma");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0VV(iH,2)+local_offset] : 0.0), 0.0, "gamma", "Z0");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0VV(iH,3)+local_offset] : 0.0), 0.0, "Z0", "Z0");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0VV(iH,4)+local_offset] : 0.0), 0.0, "W+", "W-");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0VV(iH,5)+local_offset] : 0.0), 0.0, "g", "g");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0VV(iH,1)+local_offset] : 0.0), 0.0, "gamma", "gamma");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0VV(iH,2)+local_offset] : 0.0), 0.0, "gamma", "Z0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0VV(iH,3)+local_offset] : 0.0), 0.0, "Z0", "Z0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0VV(iH,4)+local_offset] : 0.0), 0.0, "W+", "W-");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0VV(iH,5)+local_offset] : 0.0), 0.0, "g", "g");
 
       // SM fermion decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,1,1,1)+local_offset] : 0.0), 0.0, "nu_e", "nubar_e");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,1,2,2)+local_offset] : 0.0), 0.0, "nu_mu", "nubar_mu");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,1,3,3)+local_offset] : 0.0), 0.0, "nu_tau", "nubar_tau");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,2,1,1)+local_offset] : 0.0), 0.0, "e+", "e-");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,2,2,2)+local_offset] : 0.0), 0.0, "mu+", "mu-");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,2,3,3)+local_offset] : 0.0), 0.0, "tau+", "tau-");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,3,1,1)+local_offset] : 0.0), 0.0, "u", "ubar");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,3,2,2)+local_offset] : 0.0), 0.0, "c", "cbar");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,3,3,3)+local_offset] : 0.0), 0.0, "t", "tbar");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,4,1,1)+local_offset] : 0.0), 0.0, "d", "dbar");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,4,2,2)+local_offset] : 0.0), 0.0, "s", "sbar");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0FF(iH,4,3,3)+local_offset] : 0.0), 0.0, "b", "bbar");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,1,1,1)+local_offset] : 0.0), 0.0, "nu_e", "nubar_e");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,1,2,2)+local_offset] : 0.0), 0.0, "nu_mu", "nubar_mu");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,1,3,3)+local_offset] : 0.0), 0.0, "nu_tau", "nubar_tau");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,2,1,1)+local_offset] : 0.0), 0.0, "e+", "e-");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,2,2,2)+local_offset] : 0.0), 0.0, "mu+", "mu-");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,2,3,3)+local_offset] : 0.0), 0.0, "tau+", "tau-");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,3,1,1)+local_offset] : 0.0), 0.0, "u", "ubar");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,3,2,2)+local_offset] : 0.0), 0.0, "c", "cbar");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,3,3,3)+local_offset] : 0.0), 0.0, "t", "tbar");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,4,1,1)+local_offset] : 0.0), 0.0, "d", "dbar");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,4,2,2)+local_offset] : 0.0), 0.0, "s", "sbar");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,4,3,3)+local_offset] : 0.0), 0.0, "b", "bbar");
 
       // chargino decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0ChaCha(iH,1,1)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_1");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0ChaCha(iH,1,2)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_2");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0ChaCha(iH,2,1)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_1");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0ChaCha(iH,2,2)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_2");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,1,1)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_1");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,1,2)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_2");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,2,1)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_1");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,2,2)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_2");
 
       // neutralino decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,1,1)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_1");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,2,2)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_2");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,3,3)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_3");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,4,4)+local_offset] : 0.0), 0.0, "~chi0_4", "~chi0_4");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,1,2)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_2");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,1,3)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_3");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,1,4)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_4");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,2,3)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_3");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,2,4)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_4");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0NeuNeu(iH,3,4)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_4");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,1)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,2)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,3,3)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,4,4)+local_offset] : 0.0), 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,2)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,3)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,4)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,3)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,4)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,3,4)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_4");
 
       // higgs + Z0 decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HV(iH,1)+local_offset] : 0.0), 0.0, "h0_1", "Z0");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HV(iH,2)+local_offset] : 0.0), 0.0, "h0_2", "Z0");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HV(iH,3)+local_offset] : 0.0), 0.0, "A0", "Z0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,1)+local_offset] : 0.0), 0.0, "h0_1", "Z0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,2)+local_offset] : 0.0), 0.0, "h0_2", "Z0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,3)+local_offset] : 0.0), 0.0, "A0", "Z0");
 
       // higgs+higgs decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,1,1)+local_offset] : 0.0), 0.0, "h0_1", "h0_1");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,2,2)+local_offset] : 0.0), 0.0, "h0_2", "h0_2");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,3,3)+local_offset] : 0.0), 0.0, "A0", "A0");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,4,4)+local_offset] : 0.0), 0.0, "H+", "H-");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,1,2)+local_offset] : 0.0), 0.0, "h0_1", "h0_2");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,1,3)+local_offset] : 0.0), 0.0, "h0_1", "A0");
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0HH(iH,2,3)+local_offset] : 0.0), 0.0, "h0_2", "A0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,1)+local_offset] : 0.0), 0.0, "h0_1", "h0_1");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,2,2)+local_offset] : 0.0), 0.0, "h0_2", "h0_2");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,3,3)+local_offset] : 0.0), 0.0, "A0", "A0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,4,4)+local_offset] : 0.0), 0.0, "H+", "H-");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,2)+local_offset] : 0.0), 0.0, "h0_1", "h0_2");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,3)+local_offset] : 0.0), 0.0, "h0_1", "A0");
+      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,2,3)+local_offset] : 0.0), 0.0, "h0_2", "A0");
 
       // FH does not compute h0_1/h0_2/A0 --> H+W- / H-W+
 
       // sfermion decays
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,1,1)+local_offset] : 0.0), 0.0, psn.isnel, psn.isnelbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,1,2)+local_offset] : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,1,3)+local_offset] : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,2,1)+local_offset] : 0.0), 0.0, psn.isell, psn.isellbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,2,1)+local_offset] : 0.0), 0.0, psn.isell, psn.iselrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,2,1)+local_offset] : 0.0), 0.0, psn.iselr, psn.isellbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,2,1)+local_offset] : 0.0), 0.0, psn.iselr, psn.iselrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,2,2)+local_offset] : 0.0), 0.0, psn.ismul, psn.ismulbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,2,2)+local_offset] : 0.0), 0.0, psn.ismul, psn.ismurbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,2,2)+local_offset] : 0.0), 0.0, psn.ismur, psn.ismulbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,2,2)+local_offset] : 0.0), 0.0, psn.ismur, psn.ismurbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,2,3)+local_offset] : 0.0), 0.0, psn.istau1, psn.istau1bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,2,3)+local_offset] : 0.0), 0.0, psn.istau1, psn.istau2bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,2,3)+local_offset] : 0.0), 0.0, psn.istau2, psn.istau1bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,2,3)+local_offset] : 0.0), 0.0, psn.istau2, psn.istau2bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,3,1)+local_offset] : 0.0), 0.0, psn.isul, psn.isulbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,3,1)+local_offset] : 0.0), 0.0, psn.isul, psn.isurbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,1)+local_offset] : 0.0), 0.0, psn.isur, psn.isulbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,1)+local_offset] : 0.0), 0.0, psn.isur, psn.isurbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,3,2)+local_offset] : 0.0), 0.0, psn.iscl, psn.isclbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,3,2)+local_offset] : 0.0), 0.0, psn.iscl, psn.iscrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,2)+local_offset] : 0.0), 0.0, psn.iscr, psn.isclbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,2)+local_offset] : 0.0), 0.0, psn.iscr, psn.iscrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,3,3)+local_offset] : 0.0), 0.0, psn.ist1, psn.ist1bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,3,3)+local_offset] : 0.0), 0.0, psn.ist1, psn.ist2bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+local_offset] : 0.0), 0.0, psn.ist2, psn.ist1bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+local_offset] : 0.0), 0.0, psn.ist2, psn.ist2bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,3,1)+local_offset] : 0.0), 0.0, psn.isdl, psn.isdlbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,3,1)+local_offset] : 0.0), 0.0, psn.isdl, psn.isdrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,1)+local_offset] : 0.0), 0.0, psn.isdr, psn.isdlbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,1)+local_offset] : 0.0), 0.0, psn.isdr, psn.isdrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,3,2)+local_offset] : 0.0), 0.0, psn.issl, psn.isslbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,3,2)+local_offset] : 0.0), 0.0, psn.issl, psn.issrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,2)+local_offset] : 0.0), 0.0, psn.issr, psn.isslbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,2)+local_offset] : 0.0), 0.0, psn.issr, psn.issrbar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,1,3,3)+local_offset] : 0.0), 0.0, psn.isb1, psn.isb1bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,1,2,3,3)+local_offset] : 0.0), 0.0, psn.isb1, psn.isb2bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+local_offset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
-      result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+local_offset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
+      if (not SM)
+      {
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,1,1)+local_offset] : 0.0), 0.0, psn.isnel, psn.isnelbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,1,2)+local_offset] : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,1,3)+local_offset] : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,2,1)+local_offset] : 0.0), 0.0, psn.isell, psn.isellbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,2,1)+local_offset] : 0.0), 0.0, psn.isell, psn.iselrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,2,1)+local_offset] : 0.0), 0.0, psn.iselr, psn.isellbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,2,1)+local_offset] : 0.0), 0.0, psn.iselr, psn.iselrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,2,2)+local_offset] : 0.0), 0.0, psn.ismul, psn.ismulbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,2,2)+local_offset] : 0.0), 0.0, psn.ismul, psn.ismurbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,2,2)+local_offset] : 0.0), 0.0, psn.ismur, psn.ismulbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,2,2)+local_offset] : 0.0), 0.0, psn.ismur, psn.ismurbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,2,3)+local_offset] : 0.0), 0.0, psn.istau1, psn.istau1bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,2,3)+local_offset] : 0.0), 0.0, psn.istau1, psn.istau2bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,2,3)+local_offset] : 0.0), 0.0, psn.istau2, psn.istau1bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,2,3)+local_offset] : 0.0), 0.0, psn.istau2, psn.istau2bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,3,1)+local_offset] : 0.0), 0.0, psn.isul, psn.isulbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,3,1)+local_offset] : 0.0), 0.0, psn.isul, psn.isurbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,3,1)+local_offset] : 0.0), 0.0, psn.isur, psn.isulbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,3,1)+local_offset] : 0.0), 0.0, psn.isur, psn.isurbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,3,2)+local_offset] : 0.0), 0.0, psn.iscl, psn.isclbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,3,2)+local_offset] : 0.0), 0.0, psn.iscl, psn.iscrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,3,2)+local_offset] : 0.0), 0.0, psn.iscr, psn.isclbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,3,2)+local_offset] : 0.0), 0.0, psn.iscr, psn.iscrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,3,3)+local_offset] : 0.0), 0.0, psn.ist1, psn.ist1bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,3,3)+local_offset] : 0.0), 0.0, psn.ist1, psn.ist2bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,3,3)+local_offset] : 0.0), 0.0, psn.ist2, psn.ist1bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,3,3)+local_offset] : 0.0), 0.0, psn.ist2, psn.ist2bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,3,1)+local_offset] : 0.0), 0.0, psn.isdl, psn.isdlbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,3,1)+local_offset] : 0.0), 0.0, psn.isdl, psn.isdrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,3,1)+local_offset] : 0.0), 0.0, psn.isdr, psn.isdlbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,3,1)+local_offset] : 0.0), 0.0, psn.isdr, psn.isdrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,3,2)+local_offset] : 0.0), 0.0, psn.issl, psn.isslbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,3,2)+local_offset] : 0.0), 0.0, psn.issl, psn.issrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,3,2)+local_offset] : 0.0), 0.0, psn.issr, psn.isslbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,3,2)+local_offset] : 0.0), 0.0, psn.issr, psn.issrbar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,3,3)+local_offset] : 0.0), 0.0, psn.isb1, psn.isb1bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,2,3,3)+local_offset] : 0.0), 0.0, psn.isb1, psn.isb2bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,1,3,3)+local_offset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,2,2,3,3)+local_offset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
+      }
 
       check_negative_width(LOCAL_INFO, result.width_in_GeV, invalidate);
     }
@@ -387,21 +391,21 @@ namespace Gambit
     {
       using namespace Pipes::Ref_SM_Higgs_decays_FH;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 0, *Dep::FH_Couplings_ouput, *(Dep::SLHA_pseudonyms), invalidate, true);
+      set_FH_neutral_h_decay(result, 0, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
     /// Reference SM Higgs decays from FeynHiggs: h0_2
     void Ref_SM_h0_2_decays_FH(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_h0_2_decays_FH;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_ouput, *(Dep::SLHA_pseudonyms), invalidate, true);
+      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
     /// Reference SM Higgs decays from FeynHiggs: A0
     void Ref_SM_A0_decays_FH(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_A0_decays_FH;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_ouput, *(Dep::SLHA_pseudonyms), invalidate, true);
+      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
     /// @}
 
@@ -419,7 +423,7 @@ namespace Gambit
     void FH_t_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_t_decays;
-      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings_ouput;
+      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings_output;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       result.calculator = FH_input.calculator;
@@ -437,7 +441,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_MSSM_h0_1_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 0, *Dep::FH_Couplings_ouput, *(Dep::SLHA_pseudonyms), invalidate, false);
+      set_FH_neutral_h_decay(result, 0, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: h0_2
@@ -445,7 +449,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_h0_2_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_ouput, *(Dep::SLHA_pseudonyms), invalidate, false);
+      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: A0
@@ -453,7 +457,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_A0_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_ouput, *(Dep::SLHA_pseudonyms), invalidate, false);
+      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: H+
@@ -465,7 +469,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
+      fh_Couplings FH_input = *Dep::FH_Couplings_output;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about H+

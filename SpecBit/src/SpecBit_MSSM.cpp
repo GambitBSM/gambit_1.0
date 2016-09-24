@@ -1032,14 +1032,14 @@ namespace Gambit
       result.set_neutral_decays(1, sHneut[1], *Dep::h0_2_decay_rates);
       result.set_neutral_decays(2, sHneut[2], *Dep::A0_decay_rates);
       result.set_charged_decays(0, "H+", *Dep::H_plus_decay_rates);
-      result.set_t_decays(*Dep::H_plus_decay_rates);
+      result.set_t_decays(*Dep::t_decay_rates);
 
       // Use the branching fractions to compute gluon, gamma/Z and second generation fermionic effective couplings
       for (int i = 0; i < 3; i++)
       {
         result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int,int>(21, 0), std::pair<int,int>(21, 0));
         result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(22, 0), std::pair<int,int>(22, 0));
-        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(23, 0), std::pair<int,int>(21, 0));
+        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(23, 0), std::pair<int,int>(22, 0));
         result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int,int>(13, 1), std::pair<int,int>(-13, 1));
         result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int,int>(3, 1), std::pair<int,int>(-3, 1));
         result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int,int>(4, 1), std::pair<int,int>(-4, 1));

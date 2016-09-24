@@ -191,7 +191,7 @@ namespace Gambit
       using namespace Pipes::MSSMHiggs_ModelParameters_old;
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings_ouput;
+      fh_Couplings FH_input = *Dep::FH_Couplings_output;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");
@@ -423,11 +423,11 @@ namespace Gambit
       // gluon fusion x-section ratio
       for(int i = 0; i < 3; i++)
       {
-        if(FH_input.gammas_sm[H0VV(i,5)] <= 0.)
+        if(FH_input.gammas_sm[H0VV(i,5)+4] <= 0.)
           result.CS_gg_hj_ratio[i] = 0.;
         else
-          result.CS_gg_hj_ratio[i] = FH_input.gammas[H0VV(i,5)]/
-            FH_input.gammas_sm[H0VV(i,5)];
+          result.CS_gg_hj_ratio[i] = FH_input.gammas[H0VV(i,5)+4]/
+            FH_input.gammas_sm[H0VV(i,5)+4];
       }
 
       // unpack FeynHiggs x-sections
@@ -689,11 +689,13 @@ namespace Gambit
 
       // Set charged Higgs branching fractions and total width.
       result.HpGammaTot[0] = H_plus_widths.width_in_GeV;
-      result.BR_tWpb       = t_widths.BF("W+", "b");
-      result.BR_tHpjb[0]   = t_widths.has_channel("H+", "b") ? t_widths.BF("H+", "b") : 0.0;
       result.BR_Hpjcs[0]   = H_plus_widths.BF("c", "sbar");
       result.BR_Hpjcb[0]   = H_plus_widths.BF("c", "bbar");
       result.BR_Hptaunu[0] = H_plus_widths.BF("tau+", "nu_tau");
+
+      // Set top branching fractions
+      result.BR_tWpb       = t_widths.BF("W+", "b");
+      result.BR_tHpjb[0]   = t_widths.has_channel("H+", "b") ? t_widths.BF("H+", "b") : 0.0;
 
       // Retrieve cross-section ratios from the HiggsCouplingsTable
       set_CS(result, *Dep::Higgs_Couplings, 3);
@@ -807,6 +809,92 @@ namespace Gambit
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
       result = -0.5*csqtot;
+
+      std::ofstream f;
+      f.open ("HB_ModelParameters_contents.dat");
+      f<<"LHC log-likleihood";
+      for (int i = 0; i < 3; i++) f<<
+       "             higgs index"      <<
+       "                    "<<i<<":CP"<<
+       "                    "<<i<<":Mh"<<
+       "             "<<i<<":hGammaTot"<<
+       "      "<<i<<":CS_lep_hjZ_ratio"<<
+       "      "<<i<<":CS_tev_vbf_ratio"<<
+       "     "<<i<<":CS_lep_bbhj_ratio"<<
+       " "<<i<<":CS_lep_tautauhj_ratio"<<
+       "        "<<i<<":CS_gg_hj_ratio"<<
+       "     "<<i<<":CS_tev_tthj_ratio"<<
+       "    "<<i<<":CS_lhc7_tthj_ratio"<<
+       "    "<<i<<":CS_lhc8_tthj_ratio"<<
+       "  "<<i<<":CS_lep_hjhi_ratio[0]"<<
+       "  "<<i<<":CS_lep_hjhi_ratio[1]"<<
+       "  "<<i<<":CS_lep_hjhi_ratio[2]"<<
+       "                 "<<i<<":BR_ss"<<
+       "                 "<<i<<":BR_cc"<<
+       "                 "<<i<<":BR_bb"<<
+       "               "<<i<<":BR_mumu"<<
+       "             "<<i<<":BR_tautau"<<
+       "                 "<<i<<":BR_WW"<<
+       "                 "<<i<<":BR_ZZ"<<
+       "                "<<i<<":BR_Zga"<<
+       "             "<<i<<":BR_gamgam"<<
+       "                 "<<i<<":BR_gg"<<
+       "          "<<i<<":BR_invisible"<<
+       "            "<<i<<":BR_hihi[0]"<<
+       "            "<<i<<":BR_hihi[1]"<<
+       "            "<<i<<":BR_hihi[2]";
+      f<<
+       "             higgs index"      <<
+       "                 "<<4<<"MHplus"<<
+       "            "<<4<<":HpGammaTot"<<
+       "   "<<4<<":CS_lep_HpjHmi_ratio"<<
+       "             "<<4<<":BR_H+->cs"<<
+       "             "<<4<<":BR_H+->cb"<<
+       "          "<<4<<":BR_H+->taunu"<<
+       "             "<<4<<":BR_t->W+b"<<
+       "             "<<4<<":BR_t->H+b";
+      f << endl << std::setw(18) << result;
+      const int w = 24;
+      for (int i = 0; i < 3; i++)
+      {
+        f << std::setw(w) << i << std::setw(w) <<
+         ModelParam.CP[i] << std::setw(w) <<
+         ModelParam.Mh[i] << std::setw(w) <<
+         ModelParam.hGammaTot[i] << std::setw(w) <<
+         ModelParam.CS_lep_hjZ_ratio[i] << std::setw(w) <<
+         ModelParam.CS_tev_vbf_ratio[i] << std::setw(w) <<
+         ModelParam.CS_lep_bbhj_ratio[i] << std::setw(w) <<
+         ModelParam.CS_lep_tautauhj_ratio[i] << std::setw(w) <<
+         ModelParam.CS_gg_hj_ratio[i] << std::setw(w) <<
+         ModelParam.CS_tev_tthj_ratio[i] << std::setw(w) <<
+         ModelParam.CS_lhc7_tthj_ratio[i] << std::setw(w) <<
+         ModelParam.CS_lhc8_tthj_ratio[i];
+        for (int j = 0; j < 3; j++) f << std::setw(w) << ModelParam.CS_lep_hjhi_ratio[i][j];
+        f << std::setw(w) <<
+         ModelParam.BR_hjss[i] << std::setw(w) <<
+         ModelParam.BR_hjcc[i] << std::setw(w) <<
+         ModelParam.BR_hjbb[i] << std::setw(w) <<
+         ModelParam.BR_hjmumu[i] << std::setw(w) <<
+         ModelParam.BR_hjtautau[i] << std::setw(w) <<
+         ModelParam.BR_hjWW[i] << std::setw(w) <<
+         ModelParam.BR_hjZZ[i] << std::setw(w) <<
+         ModelParam.BR_hjZga[i] << std::setw(w) <<
+         ModelParam.BR_hjgaga[i] << std::setw(w) <<
+         ModelParam.BR_hjgg[i] << std::setw(w) <<
+         ModelParam.BR_hjinvisible[i];
+        for (int j = 0; j < 3; j++) f << std::setw(w) << ModelParam.BR_hjhihi[i][j];
+      }
+      f << std::setw(w) << 4 << std::setw(w) <<
+       ModelParam.MHplus[0] << std::setw(w) <<
+       ModelParam.HpGammaTot[0] << std::setw(w) <<
+       ModelParam.CS_lep_HpjHmi_ratio[0] << std::setw(w) <<
+       ModelParam.BR_Hpjcs[0] << std::setw(w) <<
+       ModelParam.BR_Hpjcb[0] << std::setw(w) <<
+       ModelParam.BR_Hptaunu[0] << std::setw(w) <<
+       ModelParam.BR_tWpb << std::setw(w) <<
+       ModelParam.BR_tHpjb[0];
+      f.close();
+
     }
 
     /// Higgs production cross-sections from FeynHiggs.

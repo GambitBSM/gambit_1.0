@@ -52,7 +52,7 @@
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(MSSM_spectrum, Spectrum)
     DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(FH_Couplings_ouput, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings)
     DEPENDENCY(Higgs_Production_Xsecs, fh_HiggsProd)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION

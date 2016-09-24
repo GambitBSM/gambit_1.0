@@ -86,6 +86,7 @@
     DEPENDENCY(SingletDM_spectrum, Spectrum)
     DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    ALLOW_MODELS(SingletDM, SingletDMZ3)
     #undef FUNCTION
 
   #undef CAPABILITY

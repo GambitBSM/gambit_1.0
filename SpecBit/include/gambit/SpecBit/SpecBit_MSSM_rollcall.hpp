@@ -175,7 +175,7 @@
   #undef CAPABILITY
 
   // Higgs couplings information directly computed by FeynHiggs
-  #define CAPABILITY FH_Couplings_ouput
+  #define CAPABILITY FH_Couplings_output
   START_CAPABILITY
     #define FUNCTION FH_Couplings
     START_FUNCTION(fh_Couplings)
@@ -203,6 +203,7 @@
     DEPENDENCY(A0_decay_rates, DecayTable::Entry)
     DEPENDENCY(H_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(t_decay_rates, DecayTable::Entry)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
 
     #define FUNCTION MSSM_higgs_couplings_FH
@@ -217,6 +218,7 @@
     DEPENDENCY(H_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(t_decay_rates, DecayTable::Entry)
     DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY

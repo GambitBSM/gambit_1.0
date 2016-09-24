@@ -46,7 +46,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION FH_PrecisionObs
     START_FUNCTION(fh_PrecisionObs)
-    DEPENDENCY(FH_Couplings_ouput, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings)
     BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
                 fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
     BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )

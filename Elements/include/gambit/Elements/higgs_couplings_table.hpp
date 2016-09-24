@@ -95,22 +95,25 @@ namespace Gambit
         if (index > max_neutral_higgses - 1) utils_error().raise(LOCAL_INFO, "Requested index beyond max_neutral_higgses.");
         // If channel is missing from either SM or BSM decays, return unity.
         if (!neutral_decays_SM_array[index]->has_channel(p1, p2) or !neutral_decays_array[index]->has_channel(p1, p2)) return 1.;
-        double total_width_ratio = neutral_decays_array[index]->width_in_GeV/neutral_decays_SM_array[index]->width_in_GeV;
+        double smwidth = neutral_decays_SM_array[index]->width_in_GeV;
         double smbf = neutral_decays_SM_array[index]->BF(p1, p2);
-        if (smbf <= 0.) return 0.;
+        if (smwidth <= 0. or smbf <= 0.) return 0.;
+        double total_width_ratio = neutral_decays_array[index]->width_in_GeV / smwidth;
         double BF_ratio = neutral_decays_array[index]->BF(p1, p2) / smbf;
         return total_width_ratio * BF_ratio;
       }
       template <typename T>
       double compute_effective_coupling(str name, const T& p1, const T& p2)
       {
-        if (neutral_decays_SM_map.find(name) == neutral_decays_SM_map.end()) utils_error().raise(LOCAL_INFO, "Requested higgs not found.");
+        if (neutral_decays_SM_map.find(name) == neutral_decays_SM_map.end() or
+            neutral_decays_map.find(name) == neutral_decays_map.end())
+         utils_error().raise(LOCAL_INFO, "Requested higgs not found.");
         // If channel is missing from either SM or BSM decays, return unity.
         if (!neutral_decays_SM_map.at(name).has_channel(p1, p2) or !neutral_decays_map.at(name).has_channel(p1, p2)) return 1.;
-        if (neutral_decays_map.find(name) == neutral_decays_map.end()) utils_error().raise(LOCAL_INFO, "Requested higgs not found.");
-        double total_width_ratio = neutral_decays_map.at(name).width_in_GeV/neutral_decays_SM_map.at(name).width_in_GeV;
+        double smwidth = neutral_decays_SM_map.at(name).width_in_GeV;
         double smbf = neutral_decays_SM_map.at(name).BF(p1, p2);
-        if (smbf <= 0.) return 0.;
+        if (smwidth <= 0. or smbf <= 0.) return 0.;
+        double total_width_ratio = neutral_decays_map.at(name).width_in_GeV / smwidth;
         double BF_ratio = neutral_decays_map.at(name).BF(p1, p2) / smbf;
         return total_width_ratio * BF_ratio;
       }
