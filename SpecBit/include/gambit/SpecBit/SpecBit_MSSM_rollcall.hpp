@@ -162,7 +162,6 @@
   START_CAPABILITY
     #define FUNCTION FH_HiggsMasses
     START_FUNCTION(fh_HiggsMassObs)
-    DEPENDENCY(FH_MSSMMasses, fh_MSSMMassObs)
     BACKEND_REQ(FHHiggsCorr, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&,
                 Farray<fh_complex, 1,3, 1,3>&,
                 Farray<fh_complex, 1,3, 1,3>&))

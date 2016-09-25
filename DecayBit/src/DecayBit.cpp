@@ -82,14 +82,14 @@ namespace Gambit
     {
       // Set the array and its offset according to whether we want the SM or BSM decays
       const fh_real* widths = SM ? FH_input.gammas_sm : FH_input.gammas;
-      const int local_offset = SM ? BRSMoffset : BRoffset;
+      const int local_offset = SM ? BRSMoffset-1 : BRoffset-1;
 
       // Set the calculator info (presumably FeynHiggs...)
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
 
       // Set the total Higgs width
-      result.width_in_GeV = widths[iH];
+      result.width_in_GeV = widths[iH-1];
 
       // vector-boson pair decays
       result.set_BF((result.width_in_GeV > 0 ? widths[H0VV(iH,1)+local_offset] : 0.0), 0.0, "gamma", "gamma");
@@ -112,43 +112,43 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,4,2,2)+local_offset] : 0.0), 0.0, "s", "sbar");
       result.set_BF((result.width_in_GeV > 0 ? widths[H0FF(iH,4,3,3)+local_offset] : 0.0), 0.0, "b", "bbar");
 
-      // chargino decays
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,1,1)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_1");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,1,2)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_2");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,2,1)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_1");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,2,2)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_2");
-
-      // neutralino decays
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,1)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_1");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,2)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_2");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,3,3)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_3");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,4,4)+local_offset] : 0.0), 0.0, "~chi0_4", "~chi0_4");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,2)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_2");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,3)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_3");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,4)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_4");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,3)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_3");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,4)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_4");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,3,4)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_4");
-
-      // higgs + Z0 decays
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,1)+local_offset] : 0.0), 0.0, "h0_1", "Z0");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,2)+local_offset] : 0.0), 0.0, "h0_2", "Z0");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,3)+local_offset] : 0.0), 0.0, "A0", "Z0");
-
-      // higgs+higgs decays
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,1)+local_offset] : 0.0), 0.0, "h0_1", "h0_1");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,2,2)+local_offset] : 0.0), 0.0, "h0_2", "h0_2");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,3,3)+local_offset] : 0.0), 0.0, "A0", "A0");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,4,4)+local_offset] : 0.0), 0.0, "H+", "H-");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,2)+local_offset] : 0.0), 0.0, "h0_1", "h0_2");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,3)+local_offset] : 0.0), 0.0, "h0_1", "A0");
-      result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,2,3)+local_offset] : 0.0), 0.0, "h0_2", "A0");
-
-      // FH does not compute h0_1/h0_2/A0 --> H+W- / H-W+
-
-      // sfermion decays
       if (not SM)
       {
+        // chargino decays
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,1,1)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_1");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,1,2)+local_offset] : 0.0), 0.0, "~chi-_1", "~chi+_2");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,2,1)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_1");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0ChaCha(iH,2,2)+local_offset] : 0.0), 0.0, "~chi-_2", "~chi+_2");
+
+        // neutralino decays
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,1)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_1");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,2)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_2");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,3,3)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_3");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,4,4)+local_offset] : 0.0), 0.0, "~chi0_4", "~chi0_4");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,2)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_2");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,3)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_3");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,1,4)+local_offset] : 0.0), 0.0, "~chi0_1", "~chi0_4");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,3)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_3");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,2,4)+local_offset] : 0.0), 0.0, "~chi0_2", "~chi0_4");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0NeuNeu(iH,3,4)+local_offset] : 0.0), 0.0, "~chi0_3", "~chi0_4");
+
+        // higgs + Z0 decays
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,1)+local_offset] : 0.0), 0.0, "h0_1", "Z0");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,2)+local_offset] : 0.0), 0.0, "h0_2", "Z0");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HV(iH,3)+local_offset] : 0.0), 0.0, "A0", "Z0");
+
+        // higgs+higgs decays
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,1)+local_offset] : 0.0), 0.0, "h0_1", "h0_1");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,2,2)+local_offset] : 0.0), 0.0, "h0_2", "h0_2");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,3,3)+local_offset] : 0.0), 0.0, "A0", "A0");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,4,4)+local_offset] : 0.0), 0.0, "H+", "H-");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,2)+local_offset] : 0.0), 0.0, "h0_1", "h0_2");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,1,3)+local_offset] : 0.0), 0.0, "h0_1", "A0");
+        result.set_BF((result.width_in_GeV > 0 ? widths[H0HH(iH,2,3)+local_offset] : 0.0), 0.0, "h0_2", "A0");
+
+        // FH does not compute h0_1/h0_2/A0 --> H+W- / H-W+
+
+        // sfermion decays
         result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,1,1)+local_offset] : 0.0), 0.0, psn.isnel, psn.isnelbar);
         result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,1,2)+local_offset] : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
         result.set_BF((result.width_in_GeV > 0 ? widths[H0SfSf(iH,1,1,1,3)+local_offset] : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
@@ -391,21 +391,21 @@ namespace Gambit
     {
       using namespace Pipes::Ref_SM_Higgs_decays_FH;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 0, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
+      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
     /// Reference SM Higgs decays from FeynHiggs: h0_2
     void Ref_SM_h0_2_decays_FH(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_h0_2_decays_FH;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
+      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
     /// Reference SM Higgs decays from FeynHiggs: A0
     void Ref_SM_A0_decays_FH(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_A0_decays_FH;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
+      set_FH_neutral_h_decay(result, 3, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
     /// @}
 
@@ -426,13 +426,11 @@ namespace Gambit
       fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings_output;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
-      result.calculator = FH_input.calculator;
-      result.calculator_version = FH_input.calculator_version;
       result.width_in_GeV = 2.0;
       result.positive_error = 4.7e-01;
       result.negative_error = 4.3e-01;
-      result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b");
-      result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
+      result.set_BF(FH_input.gammas[tBF(1)+BRoffset-1], 0.0, "W+", "b");
+      result.set_BF(FH_input.gammas[tBF(2)+BRoffset-1], 0.0, "H+", "b");
       check_negative_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
@@ -441,7 +439,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_MSSM_h0_1_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 0, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
+      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: h0_2
@@ -449,7 +447,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_h0_2_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
+      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: A0
@@ -457,7 +455,7 @@ namespace Gambit
     {
       using namespace Pipes::FH_A0_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
-      set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
+      set_FH_neutral_h_decay(result, 3, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: H+
@@ -472,11 +470,9 @@ namespace Gambit
       fh_Couplings FH_input = *Dep::FH_Couplings_output;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
-      // Specify that we're talking about H+
-      int iH = 3;
       // Set the total charged Higgs width
-      result.width_in_GeV = FH_input.gammas[iH];
-
+      result.width_in_GeV = FH_input.gammas[3];
+      // Set the branching ratio offset, subtracting 1 for C array access instead of Fortran (as defined in FH header).
       int offset = BRoffset-1;
 
       // SM fermion decays

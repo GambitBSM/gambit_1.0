@@ -25,6 +25,7 @@
 #include <string>
 #include <sstream>
 #include <cmath>
+#include <complex>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
@@ -947,7 +948,6 @@ namespace Gambit
 
       // Retrieve spectrum contents
       const SubSpectrum& spec = Dep::MSSM_spectrum->get_HE();
-      const SMInputs& sminputs = Dep::MSSM_spectrum->get_SMInputs();
 
       // Set up neutral Higgses
       static const std::vector<str> sHneut = initVector<str>("h0_1", "h0_2", "A0");
@@ -986,20 +986,19 @@ namespace Gambit
       // Calculate hhZ effective couplings.  Here we scale out the kinematic prefactor
       // of the decay width, assuming we are well above threshold if the channel is open.
       const double mZ = Dep::MSSM_spectrum->get(Par::Pole_Mass,23,0);
-      const double GF = sminputs.GF;
-      const double g2 = spec.get(Par::dimensionless,"g2");
-      const double sinW2 = spec.get(Par::dimensionless,"sinW2");
-      const double scaling = sinW2*pow(g2,4)/(2.*(1.-sinW2)*GF*GF*mZ*mZ);
+      const double scaling = 8.*sqrt(2.)*pi/Dep::MSSM_spectrum->get_SMInputs().GF;
       for(int i = 0; i < 3; i++)
       for(int j = 0; j < 3; j++)
       {
         double mhi = spec.get(Par::Pole_Mass, sHneut[i]);
         double mhj = spec.get(Par::Pole_Mass, sHneut[j]);
-        if (mhi > mhj + mZ and result.get_neutral_decays_SM(i).has_channel(sHneut[j], "Z0"))
+        if (mhi > mhj + mZ and result.get_neutral_decays(i).has_channel(sHneut[j], "Z0"))
         {
-          double gamma = result.get_neutral_decays_SM(i).width_in_GeV*result.get_neutral_decays_SM(i).BF(sHneut[j], "Z0");
-          double K = (mhi - mhj - mZ)*(mhi - mhj - mZ) - 4.*mhj*mZ;
-          result.C_hiZ2[i][j] = scaling / (mhi*mhi*K*K*K) * gamma;
+          double gamma = result.get_neutral_decays(i).width_in_GeV*result.get_neutral_decays(i).BF(sHneut[j], "Z0");
+          double k[2] = {(mhj + mZ)/mhi, (mhj - mZ)/mhi};
+	        for (int i = 0; i < 2; i++) k[i] = (1.0 - k[i]) * (1.0 + k[i]);
+          double K = mhi*sqrt(k[0]*k[1]);
+          result.C_hiZ2[i][j] = scaling / (K*K*K) * gamma;
         }
         else
         {
@@ -1048,63 +1047,29 @@ namespace Gambit
       // Use couplings to get effective third-generation couplings
       for(int i = 0; i < 3; i++)
       {
-        fh_complex c_g2hjbb_L = Dep::FH_Couplings_output->couplings[H0FF(i,4,3,3)];
-        fh_complex c_g2hjbb_R = Dep::FH_Couplings_output->couplings[H0FF(i,4,3,3)+Roffset];
-        fh_complex c_g2hjbb_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i,4,3,3)];
-        fh_complex c_g2hjbb_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i,4,3,3)+RSMoffset];
-
-        fh_complex c_g2hjtautau_L = Dep::FH_Couplings_output->couplings[H0FF(i,2,3,3)];
-        fh_complex c_g2hjtautau_R = Dep::FH_Couplings_output->couplings[H0FF(i,2,3,3)+Roffset];
-        fh_complex c_g2hjtautau_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i,2,3,3)];
-        fh_complex c_g2hjtautau_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i,2,3,3)+RSMoffset];
-
-        fh_complex c_g2hjtt_L = Dep::FH_Couplings_output->couplings[H0FF(i,3,3,3)];
-        fh_complex c_g2hjtt_R = Dep::FH_Couplings_output->couplings[H0FF(i,3,3,3)+Roffset];
-        fh_complex c_g2hjtt_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i,3,3,3)];
-        fh_complex c_g2hjtt_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i,3,3,3)+RSMoffset];
-
-        double R_g2hjbb_L = sqrt(c_g2hjbb_L.re*c_g2hjbb_L.re+
-               c_g2hjbb_L.im*c_g2hjbb_L.im)/
-          sqrt(c_g2hjbb_SM_L.re*c_g2hjbb_SM_L.re+
-               c_g2hjbb_SM_L.im*c_g2hjbb_SM_L.im);
-        double R_g2hjbb_R = sqrt(c_g2hjbb_R.re*c_g2hjbb_R.re+
-               c_g2hjbb_R.im*c_g2hjbb_R.im)/
-          sqrt(c_g2hjbb_SM_R.re*c_g2hjbb_SM_R.re+
-               c_g2hjbb_SM_R.im*c_g2hjbb_SM_R.im);
-
-        double R_g2hjtautau_L = sqrt(c_g2hjtautau_L.re*c_g2hjtautau_L.re+
-                   c_g2hjtautau_L.im*c_g2hjtautau_L.im)/
-          sqrt(c_g2hjtautau_SM_L.re*c_g2hjtautau_SM_L.re+
-               c_g2hjtautau_SM_L.im*c_g2hjtautau_SM_L.im);
-        double R_g2hjtautau_R = sqrt(c_g2hjtautau_R.re*c_g2hjtautau_R.re+
-                   c_g2hjtautau_R.im*c_g2hjtautau_R.im)/
-          sqrt(c_g2hjtautau_SM_R.re*c_g2hjtautau_SM_R.re+
-               c_g2hjtautau_SM_R.im*c_g2hjtautau_SM_R.im);
-
-        double R_g2hjtt_L = sqrt(c_g2hjtt_L.re*c_g2hjtt_L.re+
-                   c_g2hjtt_L.im*c_g2hjtt_L.im)/
-          sqrt(c_g2hjtt_SM_L.re*c_g2hjtt_SM_L.re+
-               c_g2hjtt_SM_L.im*c_g2hjtt_SM_L.im);
-        double R_g2hjtt_R = sqrt(c_g2hjtt_R.re*c_g2hjtt_R.re+
-                   c_g2hjtt_R.im*c_g2hjtt_R.im)/
-          sqrt(c_g2hjtt_SM_R.re*c_g2hjtt_SM_R.re+
-               c_g2hjtt_SM_R.im*c_g2hjtt_SM_R.im);
-
-        double g2hjbb_s = (R_g2hjbb_L+R_g2hjbb_R)*(R_g2hjbb_L+R_g2hjbb_R)/4.;
-        double g2hjbb_p = (R_g2hjbb_L-R_g2hjbb_R)*(R_g2hjbb_L-R_g2hjbb_R)/4.;
-        double g2hjtautau_s = (R_g2hjtautau_L+R_g2hjtautau_R)*(R_g2hjtautau_L+R_g2hjtautau_R)/4.;
-        double g2hjtautau_p = (R_g2hjtautau_L-R_g2hjtautau_R)*(R_g2hjtautau_L-R_g2hjtautau_R)/4.;
-        double g2hjtt_s = (R_g2hjtt_L+R_g2hjtt_R)*(R_g2hjtt_L+R_g2hjtt_R)/4.;
-        double g2hjtt_p = (R_g2hjtt_L-R_g2hjtt_R)*(R_g2hjtt_L-R_g2hjtt_R)/4.;
-
-        result.C_bb2[i]     = g2hjbb_s + g2hjbb_p;
-        result.C_tautau2[i] = g2hjtautau_s + g2hjtautau_p;
-        result.C_tt2[i]     = g2hjtt_s + g2hjtt_p;
+        // Compute effective couplings
+        double g2_s[3], g2_p[3];
+        for (int j = 0; j < 3; j++) // j=0,1,2 => tau, t, b
+        {
+          fh_complex fh_L = Dep::FH_Couplings_output->couplings[H0FF(i+1,j+2,3,3)-1];
+          fh_complex fh_R = Dep::FH_Couplings_output->couplings[H0FF(i+1,j+2,3,3)+Roffset-1];
+          fh_complex fh_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i+1,j+2,3,3)-1];
+          fh_complex fh_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i+1,j+2,3,3)+RSMoffset-1];
+          std::complex<double> L(fh_L.re,fh_L.im);
+          std::complex<double> R(fh_R.re,fh_R.im);
+          std::complex<double> SM_L(fh_SM_L.re,fh_SM_L.im);
+          std::complex<double> SM_R(fh_SM_R.re,fh_SM_R.im);
+          g2_s[j] = 0.25*pow(std::abs(R/SM_R + L/SM_L), 2.);
+          g2_p[j] = 0.25*pow(std::abs(R/SM_R - L/SM_L), 2.);
+        }
+        result.C_tautau2[i] = g2_s[0] + g2_p[0];
+        result.C_tt2[i]     = g2_s[1] + g2_p[1];
+        result.C_bb2[i]     = g2_s[2] + g2_p[2];
 
         // Calculate CP of state
-        if(g2hjbb_p < 1e-10)
+        if(g2_p[2] < 1e-10)
           result.CP[i] = 1;
-        else if(g2hjbb_s < 1e-10)
+        else if(g2_s[2] < 1e-10)
           result.CP[i] = -1;
         else
           result.CP[i] = 0.;
@@ -1113,14 +1078,16 @@ namespace Gambit
       // Use couplings to get di-boson effective couplings
       for(int i = 0; i < 3; i++)
       {
-        fh_complex c_gWW = Dep::FH_Couplings_output->couplings[H0VV(i,4)];
-        fh_complex c_gWW_SM = Dep::FH_Couplings_output->couplings_sm[H0VV(i,4)];
-        fh_complex c_gZZ = Dep::FH_Couplings_output->couplings[H0VV(i,3)];
-        fh_complex c_gZZ_SM = Dep::FH_Couplings_output->couplings_sm[H0VV(i,3)];
-        result.C_WW2[i] = (c_gWW.re*c_gWW.re+c_gWW.im*c_gWW.im)/
-          (c_gWW_SM.re*c_gWW_SM.re+c_gWW_SM.im*c_gWW_SM.im);
-        result.C_ZZ2[i] = (c_gZZ.re*c_gZZ.re+c_gZZ.im*c_gZZ.im)/
-          (c_gZZ_SM.re*c_gZZ_SM.re+c_gZZ_SM.im*c_gZZ_SM.im);
+        fh_complex c_gWW = Dep::FH_Couplings_output->couplings[H0VV(i+1,4)-1];
+        fh_complex c_gWW_SM = Dep::FH_Couplings_output->couplings_sm[H0VV(i+1,4)-1];
+        fh_complex c_gZZ = Dep::FH_Couplings_output->couplings[H0VV(i+1,3)-1];
+        fh_complex c_gZZ_SM = Dep::FH_Couplings_output->couplings_sm[H0VV(i+1,3)-1];
+        std::complex<double> WW(c_gWW.re,c_gWW.im);
+        std::complex<double> WW_SM(c_gWW_SM.re,c_gWW_SM.im);
+        std::complex<double> ZZ(c_gZZ.re,c_gZZ.im);
+        std::complex<double> ZZ_SM(c_gZZ_SM.re,c_gZZ_SM.im);
+        result.C_WW2[i] = pow(std::abs(WW/WW_SM), 2.);
+        result.C_ZZ2[i] = pow(std::abs(ZZ/ZZ_SM), 2.);
       }
 
       // Use couplings to get hhZ effective couplings
@@ -1128,7 +1095,7 @@ namespace Gambit
       for(int i = 0; i < 3; i++)
       for(int j = 0; j < 3; j++)
       {
-        fh_complex c_gHV = Dep::FH_Couplings_output->couplings[H0HV(i,j)];
+        fh_complex c_gHV = Dep::FH_Couplings_output->couplings[H0HV(i+1,j+1)-1];
         double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
         result.C_hiZ2[i][j] = g2HV/norm;
       }

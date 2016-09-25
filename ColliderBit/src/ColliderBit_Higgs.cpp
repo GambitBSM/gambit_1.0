@@ -315,10 +315,10 @@ namespace Gambit
       double g2hjbb[3];
       for(int i = 0; i < 3; i++)
       {
-        if(FH_input.gammas_sm[H0FF(i,4,3,3)+4] <= 0.)
+        if(FH_input.gammas_sm[H0FF(i+1,4,3,3)+3] <= 0.)
           g2hjbb[i] = 0.;
         else
-          g2hjbb[i] = FH_input.gammas[H0FF(i,4,3,3)+4]/FH_input.gammas_sm[H0FF(i,4,3,3)+4];
+          g2hjbb[i] = FH_input.gammas[H0FF(i+1,4,3,3)+3]/FH_input.gammas_sm[H0FF(i+1,4,3,3)+3];
       }
 
       // using partial width ratio approximation for
@@ -332,64 +332,55 @@ namespace Gambit
       // cross-section ratios for b bbar and tau+ tau- final states
       for(int i = 0; i < 3; i++)
       {
-        fh_complex c_g2hjbb_L = FH_input.couplings[H0FF(i,4,3,3)];
-        fh_complex c_g2hjbb_R = FH_input.couplings[H0FF(i,4,3,3)+Roffset];
-        fh_complex c_g2hjbb_SM_L = FH_input.couplings_sm[H0FF(i,4,3,3)];
-        fh_complex c_g2hjbb_SM_R = FH_input.couplings_sm[H0FF(i,4,3,3)+RSMoffset];
+        fh_complex c_g2hjbb_L = FH_input.couplings[H0FF(i+1,4,3,3)-1];
+        fh_complex c_g2hjbb_R = FH_input.couplings[H0FF(i+1,4,3,3)+Roffset-1];
+        fh_complex c_g2hjbb_SM_L = FH_input.couplings_sm[H0FF(i+1,4,3,3)-1];
+        fh_complex c_g2hjbb_SM_R = FH_input.couplings_sm[H0FF(i+1,4,3,3)+RSMoffset-1];
 
-        fh_complex c_g2hjtautau_L = FH_input.couplings[H0FF(i,2,3,3)];
-        fh_complex c_g2hjtautau_R = FH_input.couplings[H0FF(i,2,3,3)+Roffset];
-        fh_complex c_g2hjtautau_SM_L = FH_input.couplings_sm[H0FF(i,2,3,3)];
-        fh_complex c_g2hjtautau_SM_R = FH_input.couplings_sm[H0FF(i,2,3,3)+RSMoffset];
+        fh_complex c_g2hjtautau_L = FH_input.couplings[H0FF(i+1,2,3,3)-1];
+        fh_complex c_g2hjtautau_R = FH_input.couplings[H0FF(i+1,2,3,3)+Roffset-1];
+        fh_complex c_g2hjtautau_SM_L = FH_input.couplings_sm[H0FF(i+1,2,3,3)-1];
+        fh_complex c_g2hjtautau_SM_R = FH_input.couplings_sm[H0FF(i+1,2,3,3)+RSMoffset-1];
 
-        double R_g2hjbb_L = sqrt(c_g2hjbb_L.re*c_g2hjbb_L.re+
-               c_g2hjbb_L.im*c_g2hjbb_L.im)/
-          sqrt(c_g2hjbb_SM_L.re*c_g2hjbb_SM_L.re+
-               c_g2hjbb_SM_L.im*c_g2hjbb_SM_L.im);
-        double R_g2hjbb_R = sqrt(c_g2hjbb_R.re*c_g2hjbb_R.re+
-               c_g2hjbb_R.im*c_g2hjbb_R.im)/
-          sqrt(c_g2hjbb_SM_R.re*c_g2hjbb_SM_R.re+
-               c_g2hjbb_SM_R.im*c_g2hjbb_SM_R.im);
+        std::complex<double> bb_L(c_g2hjbb_L.re,c_g2hjbb_L.im);
+        std::complex<double> bb_R(c_g2hjbb_R.re,c_g2hjbb_R.im);
+        std::complex<double> bb_SM_L(c_g2hjbb_SM_L.re,c_g2hjbb_SM_L.im);
+        std::complex<double> bb_SM_R(c_g2hjbb_SM_R.re,c_g2hjbb_SM_R.im);
+        double bb_g2_s = 0.25*pow(std::abs(bb_R/bb_SM_R + bb_L/bb_SM_L), 2.);
+        double bb_g2_p = 0.25*pow(std::abs(bb_R/bb_SM_R - bb_L/bb_SM_L), 2.);
 
-        double R_g2hjtautau_L = sqrt(c_g2hjtautau_L.re*c_g2hjtautau_L.re+
-                   c_g2hjtautau_L.im*c_g2hjtautau_L.im)/
-          sqrt(c_g2hjtautau_SM_L.re*c_g2hjtautau_SM_L.re+
-               c_g2hjtautau_SM_L.im*c_g2hjtautau_SM_L.im);
-        double R_g2hjtautau_R = sqrt(c_g2hjtautau_R.re*c_g2hjtautau_R.re+
-                   c_g2hjtautau_R.im*c_g2hjtautau_R.im)/
-          sqrt(c_g2hjtautau_SM_R.re*c_g2hjtautau_SM_R.re+
-               c_g2hjtautau_SM_R.im*c_g2hjtautau_SM_R.im);
-
-        double g2hjbb_s = (R_g2hjbb_L+R_g2hjbb_R)*(R_g2hjbb_L+R_g2hjbb_R)/4.;
-        double g2hjbb_p = (R_g2hjbb_L-R_g2hjbb_R)*(R_g2hjbb_L-R_g2hjbb_R)/4.;
-        double g2hjtautau_s = (R_g2hjtautau_L+R_g2hjtautau_R)*(R_g2hjtautau_L+R_g2hjtautau_R)/4.;
-        double g2hjtautau_p = (R_g2hjtautau_L-R_g2hjtautau_R)*(R_g2hjtautau_L-R_g2hjtautau_R)/4.;
+        std::complex<double> tautau_L(c_g2hjtautau_L.re,c_g2hjtautau_L.im);
+        std::complex<double> tautau_R(c_g2hjtautau_R.re,c_g2hjtautau_R.im);
+        std::complex<double> tautau_SM_L(c_g2hjtautau_SM_L.re,c_g2hjtautau_SM_L.im);
+        std::complex<double> tautau_SM_R(c_g2hjtautau_SM_R.re,c_g2hjtautau_SM_R.im);
+        double tautau_g2_s = 0.25*pow(std::abs(tautau_R/tautau_SM_R + tautau_L/tautau_SM_L), 2.);
+        double tautau_g2_p = 0.25*pow(std::abs(tautau_R/tautau_SM_R - tautau_L/tautau_SM_L), 2.);
 
         // check CP of state
-        if(g2hjbb_p < 1e-10)
+        if(bb_g2_p < 1e-10)
           result.CP[i] = 1;
-        else if(g2hjbb_s < 1e-10)
+        else if(bb_g2_s < 1e-10)
           result.CP[i] = -1;
         else
           result.CP[i] = 0.;
 
-        result.CS_lep_bbhj_ratio[i]     = g2hjbb_s + g2hjbb_p;
-        result.CS_lep_tautauhj_ratio[i] = g2hjtautau_s + g2hjtautau_p;
+        result.CS_lep_bbhj_ratio[i]     = bb_g2_s + bb_g2_p;
+        result.CS_lep_tautauhj_ratio[i] = tautau_g2_s + tautau_g2_p;
       }
 
       // cross-section ratios for di-boson final states
       for(int i = 0; i < 3; i++)
       {
-        fh_complex c_gWW = FH_input.couplings[H0VV(i,4)];
-        fh_complex c_gWW_SM = FH_input.couplings_sm[H0VV(i,4)];
-        fh_complex c_gZZ = FH_input.couplings[H0VV(i,3)];
-        fh_complex c_gZZ_SM = FH_input.couplings_sm[H0VV(i,3)];
-
-        double g2hjWW = (c_gWW.re*c_gWW.re+c_gWW.im*c_gWW.im)/
-          (c_gWW_SM.re*c_gWW_SM.re+c_gWW_SM.im*c_gWW_SM.im);
-
-        double g2hjZZ = (c_gZZ.re*c_gZZ.re+c_gZZ.im*c_gZZ.im)/
-          (c_gZZ_SM.re*c_gZZ_SM.re+c_gZZ_SM.im*c_gZZ_SM.im);
+        fh_complex c_gWW = FH_input.couplings[H0VV(i+1,4)-1];
+        fh_complex c_gWW_SM = FH_input.couplings_sm[H0VV(i+1,4)-1];
+        fh_complex c_gZZ = FH_input.couplings[H0VV(i+1,3)-1];
+        fh_complex c_gZZ_SM = FH_input.couplings_sm[H0VV(i+1,3)-1];
+        std::complex<double> WW(c_gWW.re,c_gWW.im);
+        std::complex<double> WW_SM(c_gWW_SM.re,c_gWW_SM.im);
+        std::complex<double> ZZ(c_gZZ.re,c_gZZ.im);
+        std::complex<double> ZZ_SM(c_gZZ_SM.re,c_gZZ_SM.im);
+        double g2hjWW = pow(std::abs(WW/WW_SM), 2.);
+        double g2hjZZ = pow(std::abs(ZZ/ZZ_SM), 2.);
 
         result.CS_lep_hjZ_ratio[i] = g2hjZZ;
 
@@ -415,7 +406,7 @@ namespace Gambit
       for(int i = 0; i < 3; i++)
       for(int j = 0; j < 3; j++)
       {
-        fh_complex c_gHV = FH_input.couplings[H0HV(i,j)];
+        fh_complex c_gHV = FH_input.couplings[H0HV(i+1,j+1)-1];
         double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
         result.CS_lep_hjhi_ratio[i][j] = g2HV/norm;
       }
@@ -423,11 +414,11 @@ namespace Gambit
       // gluon fusion x-section ratio
       for(int i = 0; i < 3; i++)
       {
-        if(FH_input.gammas_sm[H0VV(i,5)+4] <= 0.)
+        if(FH_input.gammas_sm[H0VV(i+1,5)+3] <= 0.)
           result.CS_gg_hj_ratio[i] = 0.;
         else
-          result.CS_gg_hj_ratio[i] = FH_input.gammas[H0VV(i,5)+4]/
-            FH_input.gammas_sm[H0VV(i,5)+4];
+          result.CS_gg_hj_ratio[i] = FH_input.gammas[H0VV(i+1,5)+3]/
+            FH_input.gammas_sm[H0VV(i+1,5)+3];
       }
 
       // unpack FeynHiggs x-sections

@@ -38,22 +38,25 @@ namespace Gambit
     // Paths to files containing virtual Higgs width tables.
     //const str virtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1101.0593.dat";
     const str virtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1307.1347.dat";
-    const str virtualH_extension = GAMBIT_DIR "/Elements/data/Higgs_decay_multiTeV_supplement.dat";
+    const str virtualH_highmass = GAMBIT_DIR "/Elements/data/Higgs_decay_multiTeV_supplement.dat";
+    const str virtualH_lowmass = GAMBIT_DIR "/Elements/data/Higgs_decay_lowmass_supplement.dat";
 
-    // Initialise, reading in the data table and setting up the interpolators.
+    // Initialise, reading in the data tables and setting up the interpolators.
     static ASCIItableReader table(virtualH_tabfile);
-    static ASCIItableReader table_extension(virtualH_extension);
+    static ASCIItableReader table_highmass(virtualH_highmass);
+    static ASCIItableReader table_lowmass(virtualH_lowmass);
     static std::map<std::string, daFunk::Funk> f_vs_mass;
-    static std::map<std::string, daFunk::Funk> f_vs_mass_extension;
+    static std::map<std::string, daFunk::Funk> f_vs_mass_highmass;
+    static std::map<std::string, daFunk::Funk> f_vs_mass_lowmass;
     static bool initialised = false;
-    static double minmass, midmass, maxmass;
-    const static std::vector<str> non_extended_channels = initVector<std::string>("ss","gg","bb","mumu");
+    static double minmass, midmass_low, midmass_high, maxmass;
+    const static std::vector<str> non_highmass_channels = initVector<std::string>("ss","gg","bb","mumu");
     const static std::vector<str> colnames = initVector<std::string>("mass",
      "bb", "bb+", "bb-", "tautau", "tautau+", "tautau-", "mumu", "mumu+", "mumu-",
      "ss", "ss+", "ss-", "cc", "cc+", "cc-", "tt", "tt+", "tt-", "gg", "gg+", "gg-",
      "gammagamma", "gammagamma+", "gammagamma-", "Zgamma", "Zgamma+", "Zgamma-",
      "WW", "WW+", "WW-", "ZZ", "ZZ+", "ZZ-", "Gamma", "Gamma+", "Gamma-");
-    const static std::vector<str> colnames_extension = initVector<std::string>("mass",
+    const static std::vector<str> colnames_extended = initVector<std::string>("mass",
      "bb", "tautau", "mumu", "ss", "cc", "tt", "gg", "gammagamma", "Zgamma",
      "WW", "ZZ", "Gamma");
     if (not initialised)
@@ -63,16 +66,21 @@ namespace Gambit
       {
         f_vs_mass[*it] = daFunk::interp("mass", table["mass"], table[*it]);
       }
-      table_extension.setcolnames(colnames_extension);
-      for (auto it = colnames_extension.begin(); it != colnames_extension.end(); it++)
+      table_highmass.setcolnames(colnames_extended);
+      table_lowmass.setcolnames(colnames_extended);
+      for (auto it = colnames_extended.begin(); it != colnames_extended.end(); it++)
       {
-        f_vs_mass_extension[*it] = daFunk::interp("mass", table_extension["mass"], table_extension[*it]);
+        f_vs_mass_highmass[*it] = daFunk::interp("mass", table_highmass["mass"], table_highmass[*it]);
+        f_vs_mass_lowmass[*it] = daFunk::interp("mass", table_lowmass["mass"], table_lowmass[*it]);
       }
-      minmass = table["mass"][0];
-      midmass = table["mass"][table.getnrow()-1];
-      maxmass = table_extension["mass"][table_extension.getnrow()-1];
-      if (table_extension["mass"][0] != midmass)
-        utils_error().raise(LOCAL_INFO, "Low-mass and high-mass SM higgs tables do not meet cleanly.");
+      minmass = table_lowmass["mass"][0];
+      midmass_low = table["mass"][0];
+      midmass_high = table_highmass["mass"][0];
+      maxmass = table_highmass["mass"][table_highmass.getnrow()-1];
+      if (table_lowmass["mass"][table_lowmass.getnrow()-1] != midmass_low)
+        utils_error().raise(LOCAL_INFO, "low-mass and intermediate SM higgs tables do not meet cleanly.");
+      if (table["mass"][table.getnrow()-1] != midmass_high)
+        utils_error().raise(LOCAL_INFO, "intermediate and high-mass SM higgs tables do not meet cleanly.");
       initialised = true;
     }
 
@@ -95,14 +103,18 @@ namespace Gambit
 
     // Retrieve the interpolated result.
     double f;
-    if (mh <= midmass)
+    if (mh <= midmass_low)
+    {
+      f = f_vs_mass_lowmass[channel]->bind("mass")->eval(mh);
+    }
+    else if (mh >= midmass_low and mh <= midmass_high)
     {
       f = f_vs_mass[channel]->bind("mass")->eval(mh);
     }
     else
     {
-      if (std::find(non_extended_channels.begin(), non_extended_channels.end(), channel) != non_extended_channels.end()) return 0.;
-      f = f_vs_mass_extension[channel]->bind("mass")->eval(mh);
+      if (std::find(non_highmass_channels.begin(), non_highmass_channels.end(), channel) != non_highmass_channels.end()) return 0.;
+      f = f_vs_mass_highmass[channel]->bind("mass")->eval(mh);
     }
     return f;
 
