@@ -37,6 +37,8 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
+#define COLLIDERBIT_DEBUG
+
 
 namespace Gambit
 {
@@ -801,90 +803,92 @@ namespace Gambit
 
       result = -0.5*csqtot;
 
-      std::ofstream f;
-      f.open ("HB_ModelParameters_contents.dat");
-      f<<"LHC log-likleihood";
-      for (int i = 0; i < 3; i++) f<<
-       "             higgs index"      <<
-       "                    "<<i<<":CP"<<
-       "                    "<<i<<":Mh"<<
-       "             "<<i<<":hGammaTot"<<
-       "      "<<i<<":CS_lep_hjZ_ratio"<<
-       "      "<<i<<":CS_tev_vbf_ratio"<<
-       "     "<<i<<":CS_lep_bbhj_ratio"<<
-       " "<<i<<":CS_lep_tautauhj_ratio"<<
-       "        "<<i<<":CS_gg_hj_ratio"<<
-       "     "<<i<<":CS_tev_tthj_ratio"<<
-       "    "<<i<<":CS_lhc7_tthj_ratio"<<
-       "    "<<i<<":CS_lhc8_tthj_ratio"<<
-       "  "<<i<<":CS_lep_hjhi_ratio[0]"<<
-       "  "<<i<<":CS_lep_hjhi_ratio[1]"<<
-       "  "<<i<<":CS_lep_hjhi_ratio[2]"<<
-       "                 "<<i<<":BR_ss"<<
-       "                 "<<i<<":BR_cc"<<
-       "                 "<<i<<":BR_bb"<<
-       "               "<<i<<":BR_mumu"<<
-       "             "<<i<<":BR_tautau"<<
-       "                 "<<i<<":BR_WW"<<
-       "                 "<<i<<":BR_ZZ"<<
-       "                "<<i<<":BR_Zga"<<
-       "             "<<i<<":BR_gamgam"<<
-       "                 "<<i<<":BR_gg"<<
-       "          "<<i<<":BR_invisible"<<
-       "            "<<i<<":BR_hihi[0]"<<
-       "            "<<i<<":BR_hihi[1]"<<
-       "            "<<i<<":BR_hihi[2]";
-      f<<
-       "             higgs index"      <<
-       "                 "<<4<<"MHplus"<<
-       "            "<<4<<":HpGammaTot"<<
-       "   "<<4<<":CS_lep_HpjHmi_ratio"<<
-       "             "<<4<<":BR_H+->cs"<<
-       "             "<<4<<":BR_H+->cb"<<
-       "          "<<4<<":BR_H+->taunu"<<
-       "             "<<4<<":BR_t->W+b"<<
-       "             "<<4<<":BR_t->H+b";
-      f << endl << std::setw(18) << result;
-      const int w = 24;
-      for (int i = 0; i < 3; i++)
-      {
-        f << std::setw(w) << i << std::setw(w) <<
-         ModelParam.CP[i] << std::setw(w) <<
-         ModelParam.Mh[i] << std::setw(w) <<
-         ModelParam.hGammaTot[i] << std::setw(w) <<
-         ModelParam.CS_lep_hjZ_ratio[i] << std::setw(w) <<
-         ModelParam.CS_tev_vbf_ratio[i] << std::setw(w) <<
-         ModelParam.CS_lep_bbhj_ratio[i] << std::setw(w) <<
-         ModelParam.CS_lep_tautauhj_ratio[i] << std::setw(w) <<
-         ModelParam.CS_gg_hj_ratio[i] << std::setw(w) <<
-         ModelParam.CS_tev_tthj_ratio[i] << std::setw(w) <<
-         ModelParam.CS_lhc7_tthj_ratio[i] << std::setw(w) <<
-         ModelParam.CS_lhc8_tthj_ratio[i];
-        for (int j = 0; j < 3; j++) f << std::setw(w) << ModelParam.CS_lep_hjhi_ratio[i][j];
-        f << std::setw(w) <<
-         ModelParam.BR_hjss[i] << std::setw(w) <<
-         ModelParam.BR_hjcc[i] << std::setw(w) <<
-         ModelParam.BR_hjbb[i] << std::setw(w) <<
-         ModelParam.BR_hjmumu[i] << std::setw(w) <<
-         ModelParam.BR_hjtautau[i] << std::setw(w) <<
-         ModelParam.BR_hjWW[i] << std::setw(w) <<
-         ModelParam.BR_hjZZ[i] << std::setw(w) <<
-         ModelParam.BR_hjZga[i] << std::setw(w) <<
-         ModelParam.BR_hjgaga[i] << std::setw(w) <<
-         ModelParam.BR_hjgg[i] << std::setw(w) <<
-         ModelParam.BR_hjinvisible[i];
-        for (int j = 0; j < 3; j++) f << std::setw(w) << ModelParam.BR_hjhihi[i][j];
-      }
-      f << std::setw(w) << 4 << std::setw(w) <<
-       ModelParam.MHplus[0] << std::setw(w) <<
-       ModelParam.HpGammaTot[0] << std::setw(w) <<
-       ModelParam.CS_lep_HpjHmi_ratio[0] << std::setw(w) <<
-       ModelParam.BR_Hpjcs[0] << std::setw(w) <<
-       ModelParam.BR_Hpjcb[0] << std::setw(w) <<
-       ModelParam.BR_Hptaunu[0] << std::setw(w) <<
-       ModelParam.BR_tWpb << std::setw(w) <<
-       ModelParam.BR_tHpjb[0];
-      f.close();
+      #ifdef COLLIDERBIT_DEBUG
+        std::ofstream f;
+        f.open ("HB_ModelParameters_contents.dat");
+        f<<"LHC log-likleihood";
+        for (int i = 0; i < 3; i++) f<<
+         "             higgs index"      <<
+         "                    "<<i<<":CP"<<
+         "                    "<<i<<":Mh"<<
+         "             "<<i<<":hGammaTot"<<
+         "      "<<i<<":CS_lep_hjZ_ratio"<<
+         "      "<<i<<":CS_tev_vbf_ratio"<<
+         "     "<<i<<":CS_lep_bbhj_ratio"<<
+         " "<<i<<":CS_lep_tautauhj_ratio"<<
+         "        "<<i<<":CS_gg_hj_ratio"<<
+         "     "<<i<<":CS_tev_tthj_ratio"<<
+         "    "<<i<<":CS_lhc7_tthj_ratio"<<
+         "    "<<i<<":CS_lhc8_tthj_ratio"<<
+         "  "<<i<<":CS_lep_hjhi_ratio[0]"<<
+         "  "<<i<<":CS_lep_hjhi_ratio[1]"<<
+         "  "<<i<<":CS_lep_hjhi_ratio[2]"<<
+         "                 "<<i<<":BR_ss"<<
+         "                 "<<i<<":BR_cc"<<
+         "                 "<<i<<":BR_bb"<<
+         "               "<<i<<":BR_mumu"<<
+         "             "<<i<<":BR_tautau"<<
+         "                 "<<i<<":BR_WW"<<
+         "                 "<<i<<":BR_ZZ"<<
+         "                "<<i<<":BR_Zga"<<
+         "             "<<i<<":BR_gamgam"<<
+         "                 "<<i<<":BR_gg"<<
+         "          "<<i<<":BR_invisible"<<
+         "            "<<i<<":BR_hihi[0]"<<
+         "            "<<i<<":BR_hihi[1]"<<
+         "            "<<i<<":BR_hihi[2]";
+        f<<
+         "             higgs index"      <<
+         "                 "<<4<<"MHplus"<<
+         "            "<<4<<":HpGammaTot"<<
+         "   "<<4<<":CS_lep_HpjHmi_ratio"<<
+         "             "<<4<<":BR_H+->cs"<<
+         "             "<<4<<":BR_H+->cb"<<
+         "          "<<4<<":BR_H+->taunu"<<
+         "             "<<4<<":BR_t->W+b"<<
+         "             "<<4<<":BR_t->H+b";
+        f << endl << std::setw(18) << result;
+        const int w = 24;
+        for (int i = 0; i < 3; i++)
+        {
+          f << std::setw(w) << i << std::setw(w) <<
+           ModelParam.CP[i] << std::setw(w) <<
+           ModelParam.Mh[i] << std::setw(w) <<
+           ModelParam.hGammaTot[i] << std::setw(w) <<
+           ModelParam.CS_lep_hjZ_ratio[i] << std::setw(w) <<
+           ModelParam.CS_tev_vbf_ratio[i] << std::setw(w) <<
+           ModelParam.CS_lep_bbhj_ratio[i] << std::setw(w) <<
+           ModelParam.CS_lep_tautauhj_ratio[i] << std::setw(w) <<
+           ModelParam.CS_gg_hj_ratio[i] << std::setw(w) <<
+           ModelParam.CS_tev_tthj_ratio[i] << std::setw(w) <<
+           ModelParam.CS_lhc7_tthj_ratio[i] << std::setw(w) <<
+           ModelParam.CS_lhc8_tthj_ratio[i];
+          for (int j = 0; j < 3; j++) f << std::setw(w) << ModelParam.CS_lep_hjhi_ratio[i][j];
+          f << std::setw(w) <<
+           ModelParam.BR_hjss[i] << std::setw(w) <<
+           ModelParam.BR_hjcc[i] << std::setw(w) <<
+           ModelParam.BR_hjbb[i] << std::setw(w) <<
+           ModelParam.BR_hjmumu[i] << std::setw(w) <<
+           ModelParam.BR_hjtautau[i] << std::setw(w) <<
+           ModelParam.BR_hjWW[i] << std::setw(w) <<
+           ModelParam.BR_hjZZ[i] << std::setw(w) <<
+           ModelParam.BR_hjZga[i] << std::setw(w) <<
+           ModelParam.BR_hjgaga[i] << std::setw(w) <<
+           ModelParam.BR_hjgg[i] << std::setw(w) <<
+           ModelParam.BR_hjinvisible[i];
+          for (int j = 0; j < 3; j++) f << std::setw(w) << ModelParam.BR_hjhihi[i][j];
+        }
+        f << std::setw(w) << 4 << std::setw(w) <<
+         ModelParam.MHplus[0] << std::setw(w) <<
+         ModelParam.HpGammaTot[0] << std::setw(w) <<
+         ModelParam.CS_lep_HpjHmi_ratio[0] << std::setw(w) <<
+         ModelParam.BR_Hpjcs[0] << std::setw(w) <<
+         ModelParam.BR_Hpjcb[0] << std::setw(w) <<
+         ModelParam.BR_Hptaunu[0] << std::setw(w) <<
+         ModelParam.BR_tWpb << std::setw(w) <<
+         ModelParam.BR_tHpjb[0];
+        f.close();
+      #endif
 
     }
 
