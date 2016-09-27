@@ -360,9 +360,10 @@ namespace Gambit
     /// Reference SM Higgs decays from LHCHiggsXSWG: most SM-like Higgs
     void Ref_SM_Higgs_decays_table(DecayTable::Entry& result)
     {
-      double mh = Pipes::Ref_SM_Higgs_decays_table::Dep::mh->central;
-      double minmass = Pipes::Ref_SM_Higgs_decays_table::runOptions->getValueOrDef<double>(90.0, "higgs_minmass");
-      double maxmass = Pipes::Ref_SM_Higgs_decays_table::runOptions->getValueOrDef<double>(160.0, "higgs_maxmass");
+      using namespace Pipes::Ref_SM_Higgs_decays_table;
+      double mh = Dep::mh->central;
+      double minmass = runOptions->getValueOrDef<double>(90.0, "higgs_minmass");
+      double maxmass = runOptions->getValueOrDef<double>(160.0, "higgs_maxmass");
       // Invalidate the point if higgs mass is outside the range over which the tables of the LHCHiggsXSWG are most reliable.
       if (mh < minmass or mh > maxmass)
       {
@@ -376,14 +377,16 @@ namespace Gambit
     /// Reference SM Higgs decays from LHCHiggsXSWG: least SM-like Higgs
     void Ref_SM_other_Higgs_decays_table(DecayTable::Entry& result)
     {
-      int other_higgs = (*Pipes::Ref_SM_other_Higgs_decays_table::Dep::SMlike_Higgs_PDG_code == 25 ? 35 : 25);
-      double m_other = Pipes::Ref_SM_other_Higgs_decays_table::Dep::MSSM_spectrum->get(Par::Pole_Mass, other_higgs, 0);
+      using namespace Pipes::Ref_SM_other_Higgs_decays_table;
+      int other_higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 35 : 25);
+      double m_other = Dep::MSSM_spectrum->get(Par::Pole_Mass, other_higgs, 0);
       compute_SM_higgs_decays(result, m_other);
     }
     /// Reference SM Higgs decays from LHCHiggsXSWG: A0
     void Ref_SM_A0_decays_table(DecayTable::Entry& result)
     {
-      double mA0 = Pipes::Ref_SM_A0_decays_table::Dep::MSSM_spectrum->get(Par::Pole_Mass, "A0");
+      using namespace Pipes::Ref_SM_A0_decays_table;
+      double mA0 = Dep::MSSM_spectrum->get(Par::Pole_Mass, "A0");
       compute_SM_higgs_decays(result, mA0);
     }
 
@@ -391,7 +394,7 @@ namespace Gambit
     void Ref_SM_Higgs_decays_FH(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_Higgs_decays_FH;
-      int higgs = (*Pipes::Ref_SM_other_Higgs_decays_table::Dep::SMlike_Higgs_PDG_code == 25 ? 1 : 2);
+      int higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 1 : 2);
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
       set_FH_neutral_h_decay(result, higgs, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }
@@ -399,7 +402,7 @@ namespace Gambit
     void Ref_SM_other_Higgs_decays_FH(DecayTable::Entry& result)
     {
       using namespace Pipes::Ref_SM_other_Higgs_decays_FH;
-      int other_higgs = (*Pipes::Ref_SM_other_Higgs_decays_table::Dep::SMlike_Higgs_PDG_code == 25 ? 2 : 1);
+      int other_higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 2 : 1);
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
       set_FH_neutral_h_decay(result, other_higgs, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, true);
     }

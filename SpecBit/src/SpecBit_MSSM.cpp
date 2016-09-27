@@ -887,10 +887,10 @@ namespace Gambit
         invalid_point().raise(err.str());
       }
 
-      Farray<fh_complex, 1,681> couplings;     // MSSM Higgs couplings
-      Farray<fh_complex, 1,231> couplings_sm;  // SM Higgs couplings
-      Farray<fh_real, 1,978> gammas;           // Higgs decay widths and BR's (MSSM)
-      Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
+      Farray<fh_complex, 1,ncouplings> couplings;        // MSSM Higgs couplings
+      Farray<fh_complex, 1,ncouplingsms> couplings_sm;  // SM Higgs couplings
+      Farray<fh_real, 1,ngammas> gammas;                // Higgs decay widths and BR's (MSSM)
+      Farray<fh_real, 1,ngammasms> gammas_sm;           // Higgs decay widths and BR's (SM)
       int fast = 1;  // include off-diagonal fermion decays? (1 = no)
 
       #ifdef SPECBIT_DEBUG
@@ -908,10 +908,10 @@ namespace Gambit
       }
 
       fh_Couplings Couplings;
-      for(int i = 0; i < 681; i++) Couplings.couplings[i] = couplings(i+1);
-      for(int i = 0; i < 231; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
-      for(int i = 0; i < 978; i++) Couplings.gammas[i] = gammas(i+1);
-      for(int i = 0; i < 250; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
+      for(int i = 0; i < ncouplings; i++) Couplings.couplings[i] = couplings(i+1);
+      for(int i = 0; i < ncouplingsms; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
+      for(int i = 0; i < ngammas; i++) Couplings.gammas[i] = gammas(i+1);
+      for(int i = 0; i < ngammasms; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
       Couplings.calculator = BEreq::FHCouplings.origin();
       Couplings.calculator_version = BEreq::FHCouplings.version();
 
