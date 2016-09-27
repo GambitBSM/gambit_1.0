@@ -957,9 +957,13 @@ namespace Gambit
       result.CP[1] = 1;  //h0_2
       result.CP[2] = -1; //A0
 
+      // Work out which SM values correspond to which SUSY Higgs
+      int higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 0 : 1);
+      int other_higgs = (higgs == 0 ? 1 : 0);
+
       // Set the decays
-      result.set_neutral_decays_SM(0, sHneut[0], *Dep::Reference_SM_Higgs_decay_rates);
-      result.set_neutral_decays_SM(1, sHneut[1], *Dep::Reference_SM_h0_2_decay_rates);
+      result.set_neutral_decays_SM(higgs, sHneut[higgs], *Dep::Reference_SM_Higgs_decay_rates);
+      result.set_neutral_decays_SM(other_higgs, sHneut[other_higgs], *Dep::Reference_SM_other_Higgs_decay_rates);
       result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
       result.set_neutral_decays(0, sHneut[0],  *Dep::Higgs_decay_rates);
       result.set_neutral_decays(1, sHneut[1], *Dep::h0_2_decay_rates);
@@ -985,6 +989,7 @@ namespace Gambit
 
       // Calculate hhZ effective couplings.  Here we scale out the kinematic prefactor
       // of the decay width, assuming we are well above threshold if the channel is open.
+      // If not, we simply assume SM couplings.
       const double mZ = Dep::MSSM_spectrum->get(Par::Pole_Mass,23,0);
       const double scaling = 8.*sqrt(2.)*pi/Dep::MSSM_spectrum->get_SMInputs().GF;
       for(int i = 0; i < 3; i++)
@@ -1002,7 +1007,7 @@ namespace Gambit
         }
         else
         {
-          result.C_hiZ2[i][j] = 0.;
+          result.C_hiZ2[i][j] = 1.;
         }
       }
 
@@ -1023,9 +1028,13 @@ namespace Gambit
       // Set up neutral Higgses
       static const std::vector<str> sHneut = initVector<str>("h0_1", "h0_2", "A0");
 
+      // Work out which SM values correspond to which SUSY Higgs
+      int higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 0 : 1);
+      int other_higgs = (higgs == 0 ? 1 : 0);
+
       // Set the decays
-      result.set_neutral_decays_SM(0, sHneut[0], *Dep::Reference_SM_Higgs_decay_rates);
-      result.set_neutral_decays_SM(1, sHneut[1], *Dep::Reference_SM_h0_2_decay_rates);
+      result.set_neutral_decays_SM(higgs, sHneut[higgs], *Dep::Reference_SM_Higgs_decay_rates);
+      result.set_neutral_decays_SM(other_higgs, sHneut[other_higgs], *Dep::Reference_SM_other_Higgs_decay_rates);
       result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
       result.set_neutral_decays(0, sHneut[0], *Dep::Higgs_decay_rates);
       result.set_neutral_decays(1, sHneut[1], *Dep::h0_2_decay_rates);

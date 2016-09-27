@@ -97,7 +97,7 @@ namespace Gambit
         if (!neutral_decays_SM_array[index]->has_channel(p1, p2) or !neutral_decays_array[index]->has_channel(p1, p2)) return 1.;
         double smwidth = neutral_decays_SM_array[index]->width_in_GeV;
         double smbf = neutral_decays_SM_array[index]->BF(p1, p2);
-        if (smwidth <= 0. or smbf <= 0.) return 0.;
+        if (smwidth <= 0. or smbf <= 0.) return 1.;
         double total_width_ratio = neutral_decays_array[index]->width_in_GeV / smwidth;
         double BF_ratio = neutral_decays_array[index]->BF(p1, p2) / smbf;
         return total_width_ratio * BF_ratio;
@@ -112,7 +112,7 @@ namespace Gambit
         if (!neutral_decays_SM_map.at(name).has_channel(p1, p2) or !neutral_decays_map.at(name).has_channel(p1, p2)) return 1.;
         double smwidth = neutral_decays_SM_map.at(name).width_in_GeV;
         double smbf = neutral_decays_SM_map.at(name).BF(p1, p2);
-        if (smwidth <= 0. or smbf <= 0.) return 0.;
+        if (smwidth <= 0. or smbf <= 0.) return 1.;
         double total_width_ratio = neutral_decays_map.at(name).width_in_GeV / smwidth;
         double BF_ratio = neutral_decays_map.at(name).BF(p1, p2) / smbf;
         return total_width_ratio * BF_ratio;

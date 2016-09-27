@@ -194,8 +194,9 @@
     #define FUNCTION MSSM_higgs_couplings_pwid
     START_FUNCTION(HiggsCouplingsTable)
     DEPENDENCY(MSSM_spectrum, Spectrum)
+    DEPENDENCY(SMlike_Higgs_PDG_code, int)
     DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(Reference_SM_h0_2_decay_rates, DecayTable::Entry)
+    DEPENDENCY(Reference_SM_other_Higgs_decay_rates, DecayTable::Entry)
     DEPENDENCY(Reference_SM_A0_decay_rates, DecayTable::Entry)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     DEPENDENCY(h0_2_decay_rates, DecayTable::Entry)
@@ -208,8 +209,9 @@
     #define FUNCTION MSSM_higgs_couplings_FH
     START_FUNCTION(HiggsCouplingsTable)
     DEPENDENCY(MSSM_spectrum, Spectrum)
+    DEPENDENCY(SMlike_Higgs_PDG_code, int)
     DEPENDENCY(Reference_SM_Higgs_decay_rates, DecayTable::Entry)
-    DEPENDENCY(Reference_SM_h0_2_decay_rates, DecayTable::Entry)
+    DEPENDENCY(Reference_SM_other_Higgs_decay_rates, DecayTable::Entry)
     DEPENDENCY(Reference_SM_A0_decay_rates, DecayTable::Entry)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     DEPENDENCY(h0_2_decay_rates, DecayTable::Entry)
