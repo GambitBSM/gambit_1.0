@@ -1001,7 +1001,7 @@ namespace Gambit
         {
           double gamma = result.get_neutral_decays(i).width_in_GeV*result.get_neutral_decays(i).BF(sHneut[j], "Z0");
           double k[2] = {(mhj + mZ)/mhi, (mhj - mZ)/mhi};
-          for (int i = 0; i < 2; i++) k[i] = (1.0 - k[i]) * (1.0 + k[i]);
+          for (int l = 0; l < 2; l++) k[l] = (1.0 - k[l]) * (1.0 + k[l]);
           double K = mhi*sqrt(k[0]*k[1]);
           result.C_hiZ2[i][j] = scaling / (K*K*K) * gamma;
         }
