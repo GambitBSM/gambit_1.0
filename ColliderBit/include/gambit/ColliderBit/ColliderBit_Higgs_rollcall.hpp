@@ -50,6 +50,7 @@
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(MSSM_spectrum, Spectrum)
     DEPENDENCY(Higgs_Couplings, HiggsCouplingsTable)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY
