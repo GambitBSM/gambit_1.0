@@ -80,8 +80,8 @@ Scanner:
 ObsLikes:
 
     # LHC likelihoods
-    #- purpose:    LogLike
-    #  capability: LHC_Combined_LogLike
+    - purpose:    LogLike
+      capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
@@ -347,13 +347,10 @@ Rules:
   #- backend: FeynHiggs
   #  version: 2.11.3
   # If you want to do it from the yaml file now, you need to do this:
-  - capability: FH_Couplings_ouput
+  - capability: FH_Couplings_output
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
   - capability: FH_Precision
-    backends:
-    - {backend: FeynHiggs, version: 2.11.3}
-  - capability: Higgs_Production_Xsecs
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
   # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W
@@ -365,14 +362,20 @@ Rules:
   #  - {backend: FeynHiggs, version: 2.11.3}
 
   # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
-  - capability: A0_decay_rates
-    function: A0_decays
+  - capability: Reference_SM_Higgs_decay_rates
+    function: Ref_SM_Higgs_decays_table
+  - capability: Reference_SM_other_Higgs_decay_rates
+    function: Ref_SM_other_Higgs_decays_table
+  - capability: Reference_SM_A0_decay_rates
+    function: Ref_SM_A0_decays_table
   - capability: Higgs_decay_rates
     function: MSSM_h0_1_decays
-  - capability: H_plus_decay_rates
-    function: H_plus_decays
   - capability: h0_2_decay_rates
     function: h0_2_decays
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
   - capability: t_decay_rates
     function: t_decays
 
@@ -380,11 +383,6 @@ Rules:
   - capability: Higgs_Couplings
     function: MSSM_higgs_couplings_pwid
     #function: MSSM_higgs_couplings_FH
-
-  # Temporary
-  - capability: HB_ModelParameters
-    function: MSSMHiggs_ModelParameters
-    #function: MSSMHiggs_ModelParameters_old
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
