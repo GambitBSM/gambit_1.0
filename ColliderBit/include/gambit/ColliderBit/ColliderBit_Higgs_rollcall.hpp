@@ -32,33 +32,6 @@
   START_CAPABILITY
 
     // SM Higgs model parameters
-    #define FUNCTION SMHiggs_ModelParameters_old
-    START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SM_spectrum, Spectrum)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
-    #define FUNCTION SMlikeHiggs_ModelParameters_old
-    START_FUNCTION(hb_ModelParameters)
-    ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, Spectrum, SingletDM, SingletDMZ3)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    // MSSM Higgs model parameters
-    #define FUNCTION MSSMHiggs_ModelParameters_old
-    START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(MSSM_spectrum, Spectrum)
-    DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
-    DEPENDENCY(Higgs_Production_Xsecs, fh_HiggsProd)
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-
-
-    // SM Higgs model parameters
     #define FUNCTION SMHiggs_ModelParameters
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(SM_spectrum, Spectrum)
@@ -134,7 +107,8 @@
   #undef CAPABILITY
 
 
-  // Higgs production cross-sections from FeynHiggs.  Not presently used by anything, but maybe useful in the future.
+  // Higgs production cross-sections from FeynHiggs.
+  // Not presently used by anything, but maybe useful in the future.
   #define CAPABILITY Higgs_Production_Xsecs
   START_CAPABILITY
     #define FUNCTION FH_HiggsProd
