@@ -61,6 +61,7 @@ namespace Gambit
     /// Populate SM Higgs decay channels for a higgs mass of m_h
     void compute_SM_higgs_decays(DecayTable::Entry& result, double mh)
     {
+      if (mh < 1.) invalid_point().raise("Neutral higgs with mass < 1 GeV");
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
