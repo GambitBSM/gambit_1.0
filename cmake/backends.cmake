@@ -384,12 +384,13 @@ set_as_default_version("backend" ${name} ${ver})
 set(name "susyhit")
 set(ver "1.5")
 set(lib "libsusyhit")
-set(dl "https://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz")
+set(dl "http://astro.ic.ac.uk/sites/default/files/susyhit-${ver}.tar_.gz_.txt")
 set(md5 "493c7ba3a07e192918d3412875fb386a")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir}
+           COMMAND ${CMAKE_COMMAND} -E rename ${backend_download}/susyhit-${ver}.tar_.gz_.txt ${backend_download}/susyhit-${ver}.tar.gz
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -p1 < ${patch}
