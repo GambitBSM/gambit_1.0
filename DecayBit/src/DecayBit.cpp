@@ -2382,9 +2382,9 @@ namespace Gambit
     }
 
     /// Implemented: Belanger et al. 2013, arXiv:1306.2941
-    void lnL_Higgs_invWidth_SMonly(double& result)
+    void lnL_Higgs_invWidth_SMlike(double& result)
     {
-      using namespace Pipes::lnL_Higgs_invWidth_SMonly;
+      using namespace Pipes::lnL_Higgs_invWidth_SMlike;
       double BF = Dep::Higgs_decay_rates->BF("S","S");
       static daFunk::Funk chi2 = get_Higgs_invWidth_chi2("DecayBit/data/GammaInv_SM_higgs_DeltaChi2.dat");
       result = (BF > 0.0) ? -chi2->bind("BR")->eval(BF)*0.5 : -0.0;
