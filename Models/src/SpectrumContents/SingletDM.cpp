@@ -49,7 +49,11 @@ namespace Gambit {
      addParameter(Par::dimensionless, "lambda_S");
      addParameter(Par::dimensionless, "lambda_h");
 
-     addParameter(Par::Pole_Mass, "h0");
+     addParameter(Par::Pole_Mass, "h0_1");
+     
+   //  addParameter(Par::Pole_Mass_1srd_high, "h0_1");
+  // addParameter(Par::Pole_Mass_1srd_low,  "h0_1");
+
      addParameter(Par::Pole_Mass, "S" );
     
      addParameter(Par::dimensionless, "g1", scalar);

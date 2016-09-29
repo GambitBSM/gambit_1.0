@@ -264,7 +264,7 @@ namespace Gambit
             int abspdg = abs(pdg);
             // Select SM fermions, including 4th gen, and force gauge eigenstates (context = 1).
             if (abspdg < 19 and abspdg != 9 and abspdg != 10) context_local = 1;
-          }          
+          }
           std::pair<int,int> pdg_pair(pdg, context_local);
           daughter_pdg_codes.push_back(pdg_pair);
         }

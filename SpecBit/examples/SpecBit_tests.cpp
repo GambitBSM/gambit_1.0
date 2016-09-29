@@ -206,7 +206,7 @@ namespace Gambit
       using namespace Pipes::test_Singlet_spectrum;
       /*TAG*/ Spectrum spec = *Dep::SingletDM_spectrum;
       logger() << "Parameters from SingletDM_spectrum:" << std::endl;
-      logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0") << std::endl; 
+      logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0_1") << std::endl; 
       logger() << "Higgs VEV        : " << spec->get_UV()->get_mass_parameter("v0") << std::endl; 
       logger() << "Singlet pole mass: " << spec->get_Pole_Mass("S") << std::endl; 
       logger() << EOM;

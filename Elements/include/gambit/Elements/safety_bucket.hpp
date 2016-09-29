@@ -7,13 +7,13 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Anders Kvellestad
-///          (anders.kvellestad@fys.uio.no) 
+///          (anders.kvellestad@fys.uio.no)
 ///   \date 2013 Apr, Nov
 ///
 ///  \author Pat Scott
-///          (patscott@physics.mcgill.ca) 
+///          (patscott@physics.mcgill.ca)
 ///   \date 2014 Mar, Sep
 ///
 ///  *********************************************
@@ -35,7 +35,7 @@ namespace Gambit
   /// Base class for the interface classes 'dep_bucket', 'BEvariable_bucket' and 'BEfunction_bucket'.
   class safety_bucket_base
   {
-    
+
     public:
 
       /// Master constructor
@@ -43,14 +43,14 @@ namespace Gambit
 
       /// Get capability name.
       str name()
-      { 
+      {
         if (not _initialized) dieGracefully();
         return _functor_base_ptr->name();
       }
 
       /// Get name of origin (module/backend).
       str origin()
-      { 
+      {
         if (not _initialized) dieGracefully();
         return _functor_base_ptr->origin();
       }
@@ -72,7 +72,10 @@ namespace Gambit
                      "Unfortunately this does not yet point to anything, because the dependency\n"
                      "or backend requirement has not been satistified yet.  If using GAMBIT in \n"
                      "full, please check your rollcall declaration of this module function, and\n"
-                     "its source code.  If you are writing a standalone executable using some  \n"
+                     "its source code.  This error often occus because you have written \n"
+                     "  using namespace Pipes::x \n"
+                     "where x is not actually the function being executed.  Don't steal pipes!!\n\n"
+                     "Alternatively, if you are writing a standalone executable using some  \n"
                      "GAMBIT modules, please check that you have correctly filled this dep/req.";
         utils_error().raise(LOCAL_INFO,errmsg);
       }
@@ -100,15 +103,15 @@ namespace Gambit
         _functor_ptr = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
         _dependent_functor_ptr = dependent_functor_ptr_in;
-        
+
         // Extract pointer to dependency from functor and store as a safe_ptr.
-        if (functor_ptr_in == NULL)  
+        if (functor_ptr_in == NULL)
         {
-          _sptr.set(NULL); 
+          _sptr.set(NULL);
           _initialized = false;
         }
-        else 
-        { 
+        else
+        {
           _sptr = _functor_ptr->valuePtr();
           _initialized = true;
         }
@@ -116,7 +119,7 @@ namespace Gambit
 
       /// Get module name.
       str module()
-      { 
+      {
         return origin();
       }
 
@@ -126,7 +129,7 @@ namespace Gambit
         return (f1->loopManagerCapability() != "none" and
           f1->loopManagerCapability() == f2->loopManagerCapability() and
           f1->loopManagerName()       == f2->loopManagerName()       and
-          f1->loopManagerOrigin()     == f2->loopManagerOrigin() );        
+          f1->loopManagerOrigin()     == f2->loopManagerOrigin() );
       }
 
       /// Dereference the dependency pointer stored as a safe_ptr.
@@ -135,18 +138,18 @@ namespace Gambit
         if (not _initialized) dieGracefully();
         //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just access the first element.
         int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
-        return _sptr[index];                 
+        return _sptr[index];
       }
 
 
       /// Access is allowed to const member functions only
       const TYPE* operator->() const
-      { 
+      {
         if (not _initialized) this->dieGracefully();
         //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just choose the first element.
         int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr.operator->() + index;   //Call a const member function of the indexth element of the array pointed to by the safe pointer.
-      }        
+      }
 
       /// Get the safe_ptr.
       safe_ptr<TYPE>& safe_pointer()
@@ -178,13 +181,13 @@ namespace Gambit
 
       /// Get backend name.
       str backend()
-      { 
+      {
         return origin();
       }
 
       /// Get version information.
       str version()
-      { 
+      {
         if (not _initialized) dieGracefully();
         return _functor_base_ptr->version();
       }
@@ -218,14 +221,14 @@ namespace Gambit
         _functor_ptr      = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
 
-        if (functor_ptr_in == NULL)  
+        if (functor_ptr_in == NULL)
         {
-          _svptr.set(NULL); 
+          _svptr.set(NULL);
           _initialized = false;
         }
-        else 
-        { 
-          // Extract variable pointer from functor and store as a safe_variable_ptr 
+        else
+        {
+          // Extract variable pointer from functor and store as a safe_variable_ptr
           _svptr.set( (*_functor_ptr)() );
           _initialized = true;
         }
@@ -240,9 +243,9 @@ namespace Gambit
 
       /// Access member functions
       TYPE* operator->()
-      { 
+      {
         return _svptr.operator->();
-      }        
+      }
 
       /// Get the underlying variable pointer.
       TYPE * pointer()
@@ -280,12 +283,12 @@ namespace Gambit
         _functor_ptr      = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
 
-        if (functor_ptr_in == NULL)  
+        if (functor_ptr_in == NULL)
         {
           _initialized = false;
         }
-        else 
-        { 
+        else
+        {
           _initialized = true;
         }
       }
@@ -304,7 +307,7 @@ namespace Gambit
 
   };
 
-   
+
   /// The actual usable form of the interface class to backend functions
   template <typename PTR_TYPE, typename TYPE, typename... ARGS> class BEfunction_bucket;
 
@@ -352,5 +355,5 @@ namespace Gambit
 
 }
 
-#endif // defined __safety_bucket_hpp__ 
+#endif // defined __safety_bucket_hpp__
 

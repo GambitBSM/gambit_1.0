@@ -107,7 +107,7 @@ macro(add_external_clean package dir dl target)
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
-                                    COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt ${dl} || true
+                                    COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-download-failed ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
 endmacro()
 
@@ -118,8 +118,8 @@ macro(add_chained_external_clean package dir target dependee)
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
   add_custom_target(chained-nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt || true)
-  add_dependencies(clean-${dependee} clean-${package}) 
-  add_dependencies(nuke-${dependee} chained-nuke-${package}) 
+  add_dependencies(clean-${dependee} clean-${package})
+  add_dependencies(nuke-${dependee} chained-nuke-${package})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
@@ -255,6 +255,7 @@ function(add_gambit_executable executablename LIBRARIES)
     endif()
     set(LIBRARIES ${LIBRARIES} ${HDF5_LIBRARIES})
   endif()
+
   target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
   add_dependencies(${executablename} mkpath)
 
@@ -307,7 +308,7 @@ function(add_standalone executablename)
     endforeach()
     list(APPEND STANDALONE_SOURCES ${STANDALONE_FUNCTORS})
 
-    # Set up the target to call the facilitator script to make the functors source file for this standalone. 
+    # Set up the target to call the facilitator script to make the functors source file for this standalone.
     add_custom_command(OUTPUT ${STANDALONE_FUNCTORS}
                        COMMAND python ${STANDALONE_FACILITATOR} ${executablename} -m __not_a_real_name__,${COMMA_SEPARATED_MODULES}
                        COMMAND touch ${STANDALONE_FUNCTORS}
@@ -315,9 +316,9 @@ function(add_standalone executablename)
                        DEPENDS modules_harvested
                                ${STANDALONE_FACILITATOR}
                                ${HARVEST_TOOLS}
-                               ${PROJECT_BINARY_DIR}/CMakeCache.txt)  
-  
-    # Do ad hoc checks for stuff that will eventually be BOSSed and removed from here. 
+                               ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+
+    # Do ad hoc checks for stuff that will eventually be BOSSed and removed from here.
     if (NOT EXCLUDE_FLEXIBLESUSY)
       set(ARG_LIBRARIES ${ARG_LIBRARIES} ${flexiblesusy_LDFLAGS})
     endif()

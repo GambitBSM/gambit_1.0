@@ -4,20 +4,20 @@
 ///
 ///  Rollcall header for PrecisionBit.
 ///
-///  Compile-time registration of available 
-///  observables and likelihoods for (mostly 
+///  Compile-time registration of available
+///  observables and likelihoods for (mostly
 ///  electroweak) precision observables.
 ///
 ///  Don't put typedefs or other type definitions
-///  in this file; see 
+///  in this file; see
 ///  Core/include/types_rollcall.hpp for further
 ///  instructions on how to add new types.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott 
+///
+///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Nov
 ///  \date 2015 Aug
@@ -42,18 +42,17 @@ START_MODULE
 
 
   // FeynHiggs EWK precision observables
-  #define CAPABILITY FH_Precision            
+  #define CAPABILITY FH_Precision
   START_CAPABILITY
     #define FUNCTION FH_PrecisionObs
     START_FUNCTION(fh_PrecisionObs)
-    DEPENDENCY(Higgs_Couplings, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings)
     BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
                 fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
     BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
-
 
   // Extractors for FeynHiggs EWK precision observables
   QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      triplet<double>, (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
@@ -64,17 +63,30 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double,          (MSSM30atQ, MSSM30atMGUT), (FH_Precision, fh_PrecisionObs))
 
-  // Precision MSSM spectrum manufacturer
+  // Precision MSSM spectrum manufacturers
   #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
-    #define FUNCTION make_MSSM_precision_spectrum
+
+    #define FUNCTION make_MSSM_precision_spectrum_H_W
     START_FUNCTION(Spectrum)
     DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
     DEPENDENCY(prec_mw, triplet<double>)
     DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     #undef FUNCTION
+
+    #define FUNCTION make_MSSM_precision_spectrum_W
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    DEPENDENCY(prec_mw, triplet<double>)
+    #undef FUNCTION
+
+    #define FUNCTION make_MSSM_precision_spectrum_none
+    START_FUNCTION(Spectrum)
+    DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+
   #undef CAPABILITY
-  
+
   // Basic mass extractors for different types of spectra, for use with precision likelihoods and other things not needing a whole spectrum object.
   QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   triplet<double>, (), (SM_spectrum, Spectrum))
   QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   triplet<double>, (SingletDM, SingletDMZ3), (SingletDM_spectrum, Spectrum))
@@ -133,7 +145,7 @@ START_MODULE
     DEPENDENCY(muon_gm2_SM, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
-  
+
   // Electroweak precision likelihoods: Delta rho
   #define CAPABILITY lnL_deltarho
   START_CAPABILITY
@@ -154,7 +166,7 @@ START_MODULE
     BACKEND_OPTION( (SUSYPOPE, 0.2), (libSUSYPOPE) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
-  #undef CAPABILITY 
+  #undef CAPABILITY
 
 
   // Observable: BSM contribution to (g-2)_mu
@@ -168,7 +180,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
 
-    // Muon g-2 -- Using the C++ interface to gm2calc
+    // Muon g-2 -- Using gm2calc
     #define FUNCTION GM2C_SUSY
     START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
@@ -180,7 +192,7 @@ START_MODULE
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
 
-  #undef CAPABILITY 
+  #undef CAPABILITY
 
 
   // Observable: SM contribution to (g-2)_mu
@@ -196,7 +208,7 @@ START_MODULE
     START_FUNCTION(triplet<double>)
     #undef FUNCTION
 
-  #undef CAPABILITY 
+  #undef CAPABILITY
 
 
 #undef MODULE

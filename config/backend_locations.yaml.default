@@ -68,4 +68,3 @@ SUSY_HIT:
 
 SPheno:
   3.3.8:	./Backends/installed/spheno/3.3.8/lib/libSPheno.so
-

@@ -5,16 +5,16 @@
 //
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Apr 
+///  \date 2015 Apr
 ///
 ///  *********************************************
 
-#include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp" 
+#include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp"
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -37,9 +37,9 @@ namespace Gambit
 {
 
       /// @{ Member functions for SLHAeaModel class
-           
+
       /// Default Constructor
-      SLHAeaModel::SLHAeaModel() 
+      SLHAeaModel::SLHAeaModel()
         : data()
       {}
 
@@ -73,14 +73,16 @@ namespace Gambit
       double SLHAeaModel::getdata(const std::string& block, int index) const
       {
          double output;
-         try {
+         try
+         {
            output = to<double>(getSLHAea().at(block).at(index).at(1));
          }
-         catch (const std::out_of_range& e) {
+         catch (const std::out_of_range& e)
+         {
            std::ostringstream errmsg;
            errmsg << "Error accessing data at index "<<index<<" of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
            errmsg  << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
-           utils_error().raise(LOCAL_INFO,errmsg.str());    
+           utils_error().raise(LOCAL_INFO,errmsg.str());
          }
          return output;
       }
@@ -89,14 +91,16 @@ namespace Gambit
       double SLHAeaModel::getdata(const std::string& block, int i, int j) const
       {
          double output;
-         try {
+         try
+         {
            output = to<double>(getSLHAea().at(block).at(i,j).at(2));
          }
-         catch (const std::out_of_range& e) {
+         catch (const std::out_of_range& e)
+         {
            std::ostringstream errmsg;
            errmsg << "Error accessing data at index "<<i<<","<<j<<" of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
            errmsg  << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
-           utils_error().raise(LOCAL_INFO,errmsg.str());    
+           utils_error().raise(LOCAL_INFO,errmsg.str());
          }
          return output;
       }

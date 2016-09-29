@@ -29,6 +29,7 @@
 #include <string>
 #include <sstream>
 #include <cmath>
+#include <complex>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
@@ -193,7 +194,7 @@ namespace Gambit
       mssmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
       mssmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
 
-      /// add theory errors
+      // Add theory errors
       static const MSSM_strs ms;
 
       static const std::vector<int> i12     = initVector(1,2);
@@ -201,8 +202,9 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, true); // 3% theory "error"
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, true); // 3% theory "error"
+      // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, true);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, true);
@@ -212,16 +214,13 @@ namespace Gambit
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12,  true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12,  true);
 
-      /// do the Higgs mass seperately
-      /// Default in most codes is 3 GeV,
-      /// seems like an underestimate if the stop masses are heavy enough.
-      /// (TODO: are we happy assigning the same for both higgses?)
-      /// FIXME this does not work for the second higgs
-      double rd_mh = 3.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, true);
-      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, true);
+      // Do the lightest Higgs mass seperately.  The default in most codes is 3 GeV. That seems like
+      // an underestimate if the stop masses are heavy enough, but an overestimate for most points.
+      double rd_mh1 = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
+      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, "h0", 1, true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, "h0", 1, true);
 
-      /// Save the input value of TanBeta
+      // Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())
       {
         mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", true);
@@ -668,7 +667,7 @@ namespace Gambit
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
-      // In order to translate from e.g. MSSM63atMGUT to MSSM63atQ, we need 
+      // In order to translate from e.g. MSSM63atMGUT to MSSM63atQ, we need
       // to know that input scale Q. This is generally not stored in SLHA format,
       // but we need it, so if you want to produce a Spectrum object this way you
       // will need to add this information to your SLHAstruct:
@@ -676,7 +675,7 @@ namespace Gambit
       //   1     <high_scale>    # Input scale of (upper) boundary conditions, e.g. GUT scale
 
       // Need to check if this information exists:
-      SLHAstruct::const_iterator block = input_slha.find("GAMBIT"); 
+      SLHAstruct::const_iterator block = input_slha.find("GAMBIT");
       std::vector<std::string> key(1, "1");
       if(block == input_slha.end() or block->find(key) == block->end())
       {
@@ -690,11 +689,11 @@ namespace Gambit
                << "that you want to use, please add code that adds the following         " << endl
                << "information to the SLHAstruct (SLHAea::Coll):                         " << endl
                << "  BLOCK GAMBIT                                                        " << endl
-               << " 1	<high_scale>	# Input scale of (upper) boundary conditions, e.g. GUT scale\n";
+               << " 1 <high_scale>  # Input scale of (upper) boundary conditions, e.g. GUT scale\n";
         SpecBit_error().raise(LOCAL_INFO,errmsg.str());
       }
 
-      // OK the GAMBIT block exists, add the data to the MSSM SubSpectrum object.  
+      // OK the GAMBIT block exists, add the data to the MSSM SubSpectrum object.
       result.get_HE().set_override(Par::mass1,SLHAea::to<double>(input_slha.at("GAMBIT").at(1).at(1)), "high_scale", false);
     }
 
@@ -888,8 +887,11 @@ namespace Gambit
       result = HiggsMassObs;
     }
 
+////////////////////////
+//// Higgs routines ////
+////////////////////////
 
-    /// FeynHiggs Higgs couplings
+    /// Call FH_Couplings from FeynHiggs and collect the output
     void FH_Couplings(fh_Couplings &result)
     {
       using namespace Pipes::FH_Couplings;
@@ -928,10 +930,10 @@ namespace Gambit
         invalid_point().raise(err.str());
       }
 
-      Farray<fh_complex, 1,681> couplings;     // MSSM Higgs couplings
-      Farray<fh_complex, 1,231> couplings_sm;  // SM Higgs couplings
-      Farray<fh_real, 1,978> gammas;           // Higgs decay widths and BR's (MSSM)
-      Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
+      Farray<fh_complex, 1,ncouplings> couplings;        // MSSM Higgs couplings
+      Farray<fh_complex, 1,ncouplingsms> couplings_sm;  // SM Higgs couplings
+      Farray<fh_real, 1,ngammas> gammas;                // Higgs decay widths and BR's (MSSM)
+      Farray<fh_real, 1,ngammasms> gammas_sm;           // Higgs decay widths and BR's (SM)
       int fast = 1;  // include off-diagonal fermion decays? (1 = no)
 
       #ifdef SPECBIT_DEBUG
@@ -949,15 +951,215 @@ namespace Gambit
       }
 
       fh_Couplings Couplings;
-      for(int i = 0; i < 681; i++) Couplings.couplings[i] = couplings(i+1);
-      for(int i = 0; i < 231; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
-      for(int i = 0; i < 978; i++) Couplings.gammas[i] = gammas(i+1);
-      for(int i = 0; i < 250; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
+      for(int i = 0; i < ncouplings; i++) Couplings.couplings[i] = couplings(i+1);
+      for(int i = 0; i < ncouplingsms; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
+      for(int i = 0; i < ngammas; i++) Couplings.gammas[i] = gammas(i+1);
+      for(int i = 0; i < ngammasms; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
       Couplings.calculator = BEreq::FHCouplings.origin();
       Couplings.calculator_version = BEreq::FHCouplings.version();
 
       result = Couplings;
     }
+
+
+    /// Helper function to work out if the LSP is invisible, and if so, which particle it is.
+    std::vector<str> get_invisibles(const SubSpectrum& spec)
+    {
+      // Get the lighter of the lightest neutralino and the lightest sneutrino
+      std::pair<str,double> neutralino("~chi0_1", spec.get(Par::Pole_Mass,"~chi0",1));
+      std::pair<str,double> sneutrino("~nu_1", spec.get(Par::Pole_Mass,"~nu",1));
+      std::pair<str,double> lnp = (neutralino.second < sneutrino.second ? neutralino : sneutrino);
+
+      // Work out if this is indeed the LSP, and if decays of at least one neutral higgs to it are kinematically possible.
+      bool inv_lsp = spec.get(Par::Pole_Mass,"~chi+",1) > lnp.second and
+                     spec.get(Par::Pole_Mass,"~g") > lnp.second and
+                     spec.get(Par::Pole_Mass,"~d",1) > lnp.second and
+                     spec.get(Par::Pole_Mass,"~u",1) > lnp.second and
+                     spec.get(Par::Pole_Mass,"~e-",1) > lnp.second and
+                     (spec.get(Par::Pole_Mass,"h0",2) > 2.*lnp.second or
+                      spec.get(Par::Pole_Mass,"A0") > 2.*lnp.second);
+
+      // Create a vector containing all invisible products of higgs decays.
+      if (inv_lsp) return initVector<str>(lnp.first);
+      return std::vector<str>();
+    }
+
+    /// Put together the Higgs couplings for the MSSM, from partial widths only
+    void MSSM_higgs_couplings_pwid(HiggsCouplingsTable &result)
+    {
+      using namespace Pipes::MSSM_higgs_couplings_pwid;
+
+      // Retrieve spectrum contents
+      const SubSpectrum& spec = Dep::MSSM_spectrum->get_HE();
+
+      // Set up neutral Higgses
+      static const std::vector<str> sHneut = initVector<str>("h0_1", "h0_2", "A0");
+
+      // Set the CP of the Higgs states.  Note that this would need to be more sophisticated to deal with the complex MSSM!
+      result.CP[0] = 1;  //h0_1
+      result.CP[1] = 1;  //h0_2
+      result.CP[2] = -1; //A0
+
+      // Work out which SM values correspond to which SUSY Higgs
+      int higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 0 : 1);
+      int other_higgs = (higgs == 0 ? 1 : 0);
+
+      // Set the decays
+      result.set_neutral_decays_SM(higgs, sHneut[higgs], *Dep::Reference_SM_Higgs_decay_rates);
+      result.set_neutral_decays_SM(other_higgs, sHneut[other_higgs], *Dep::Reference_SM_other_Higgs_decay_rates);
+      result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
+      result.set_neutral_decays(0, sHneut[0],  *Dep::Higgs_decay_rates);
+      result.set_neutral_decays(1, sHneut[1], *Dep::h0_2_decay_rates);
+      result.set_neutral_decays(2, sHneut[2], *Dep::A0_decay_rates);
+      result.set_charged_decays(0, "H+", *Dep::H_plus_decay_rates);
+      result.set_t_decays(*Dep::t_decay_rates);
+
+      // Use them to compute effective couplings for all neutral higgses, except for hhZ.
+      for (int i = 0; i < 3; i++)
+      {
+        result.C_WW2[i] = result.compute_effective_coupling(i, std::pair<int,int>(24, 0), std::pair<int,int>(-24, 0));
+        result.C_ZZ2[i] = result.compute_effective_coupling(i, std::pair<int,int>(23, 0), std::pair<int,int>(23, 0));
+        result.C_tt2[i] = result.compute_effective_coupling(i, std::pair<int,int>(6, 1), std::pair<int,int>(-6, 1));
+        result.C_bb2[i] = result.compute_effective_coupling(i, std::pair<int,int>(5, 1), std::pair<int,int>(-5, 1));
+        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int,int>(4, 1), std::pair<int,int>(-4, 1));
+        result.C_tautau2[i] = result.compute_effective_coupling(i, std::pair<int,int>(15, 1), std::pair<int,int>(-15, 1));
+        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(22, 0), std::pair<int,int>(22, 0));
+        result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int,int>(21, 0), std::pair<int,int>(21, 0));
+        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int,int>(13, 1), std::pair<int,int>(-13, 1));
+        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(23, 0), std::pair<int,int>(21, 0));
+        result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int,int>(3, 1), std::pair<int,int>(-3, 1));
+      }
+
+      // Calculate hhZ effective couplings.  Here we scale out the kinematic prefactor
+      // of the decay width, assuming we are well above threshold if the channel is open.
+      // If not, we simply assume SM couplings.
+      const double mZ = Dep::MSSM_spectrum->get(Par::Pole_Mass,23,0);
+      const double scaling = 8.*sqrt(2.)*pi/Dep::MSSM_spectrum->get_SMInputs().GF;
+      for(int i = 0; i < 3; i++)
+      for(int j = 0; j < 3; j++)
+      {
+        double mhi = spec.get(Par::Pole_Mass, sHneut[i]);
+        double mhj = spec.get(Par::Pole_Mass, sHneut[j]);
+        if (mhi > mhj + mZ and result.get_neutral_decays(i).has_channel(sHneut[j], "Z0"))
+        {
+          double gamma = result.get_neutral_decays(i).width_in_GeV*result.get_neutral_decays(i).BF(sHneut[j], "Z0");
+          double k[2] = {(mhj + mZ)/mhi, (mhj - mZ)/mhi};
+          for (int l = 0; l < 2; l++) k[l] = (1.0 - k[l]) * (1.0 + k[l]);
+          double K = mhi*sqrt(k[0]*k[1]);
+          result.C_hiZ2[i][j] = scaling / (K*K*K) * gamma;
+        }
+        else // If the channel is missing from the decays or kinematically disallowed, just return the SM result.
+        {
+          result.C_hiZ2[i][j] = 1.;
+        }
+      }
+
+      // Work out which invisible decays are possible
+      result.invisibles = get_invisibles(spec);
+    }
+
+
+    /// Put together the Higgs couplings for the MSSM, using FeynHiggs
+    void MSSM_higgs_couplings_FH(HiggsCouplingsTable &result)
+    {
+      using namespace Pipes::MSSM_higgs_couplings_FH;
+
+      // Retrieve spectrum contents
+      const SubSpectrum& spec = Dep::MSSM_spectrum->get_HE();
+      const SMInputs& sminputs = Dep::MSSM_spectrum->get_SMInputs();
+
+      // Set up neutral Higgses
+      static const std::vector<str> sHneut = initVector<str>("h0_1", "h0_2", "A0");
+
+      // Work out which SM values correspond to which SUSY Higgs
+      int higgs = (*Dep::SMlike_Higgs_PDG_code == 25 ? 0 : 1);
+      int other_higgs = (higgs == 0 ? 1 : 0);
+
+      // Set the decays
+      result.set_neutral_decays_SM(higgs, sHneut[higgs], *Dep::Reference_SM_Higgs_decay_rates);
+      result.set_neutral_decays_SM(other_higgs, sHneut[other_higgs], *Dep::Reference_SM_other_Higgs_decay_rates);
+      result.set_neutral_decays_SM(2, sHneut[2], *Dep::Reference_SM_A0_decay_rates);
+      result.set_neutral_decays(0, sHneut[0], *Dep::Higgs_decay_rates);
+      result.set_neutral_decays(1, sHneut[1], *Dep::h0_2_decay_rates);
+      result.set_neutral_decays(2, sHneut[2], *Dep::A0_decay_rates);
+      result.set_charged_decays(0, "H+", *Dep::H_plus_decay_rates);
+      result.set_t_decays(*Dep::t_decay_rates);
+
+      // Use the branching fractions to compute gluon, gamma/Z and second generation fermionic effective couplings
+      for (int i = 0; i < 3; i++)
+      {
+        result.C_gg2[i] = result.compute_effective_coupling(i, std::pair<int,int>(21, 0), std::pair<int,int>(21, 0));
+        result.C_gaga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(22, 0), std::pair<int,int>(22, 0));
+        result.C_Zga2[i] = result.compute_effective_coupling(i, std::pair<int,int>(23, 0), std::pair<int,int>(22, 0));
+        result.C_mumu2[i] = result.compute_effective_coupling(i, std::pair<int,int>(13, 1), std::pair<int,int>(-13, 1));
+        result.C_ss2[i] = result.compute_effective_coupling(i, std::pair<int,int>(3, 1), std::pair<int,int>(-3, 1));
+        result.C_cc2[i] = result.compute_effective_coupling(i, std::pair<int,int>(4, 1), std::pair<int,int>(-4, 1));
+      }
+
+      // Use couplings to get effective third-generation couplings
+      for(int i = 0; i < 3; i++)
+      {
+        // Compute effective couplings
+        double g2_s[3], g2_p[3];
+        for (int j = 0; j < 3; j++) // j=0,1,2 => tau, t, b
+        {
+          fh_complex fh_L = Dep::FH_Couplings_output->couplings[H0FF(i+1,j+2,3,3)-1];
+          fh_complex fh_R = Dep::FH_Couplings_output->couplings[H0FF(i+1,j+2,3,3)+Roffset-1];
+          fh_complex fh_SM_L = Dep::FH_Couplings_output->couplings_sm[H0FF(i+1,j+2,3,3)-1];
+          fh_complex fh_SM_R = Dep::FH_Couplings_output->couplings_sm[H0FF(i+1,j+2,3,3)+RSMoffset-1];
+          std::complex<double> L(fh_L.re,fh_L.im);
+          std::complex<double> R(fh_R.re,fh_R.im);
+          std::complex<double> SM_L(fh_SM_L.re,fh_SM_L.im);
+          std::complex<double> SM_R(fh_SM_R.re,fh_SM_R.im);
+          g2_s[j] = 0.25*pow(std::abs(R/SM_R + L/SM_L), 2.);
+          g2_p[j] = 0.25*pow(std::abs(R/SM_R - L/SM_L), 2.);
+        }
+        result.C_tautau2[i] = g2_s[0] + g2_p[0];
+        result.C_tt2[i]     = g2_s[1] + g2_p[1];
+        result.C_bb2[i]     = g2_s[2] + g2_p[2];
+
+        // Calculate CP of state
+        if(g2_p[2] < 1e-10)
+          result.CP[i] = 1;
+        else if(g2_s[2] < 1e-10)
+          result.CP[i] = -1;
+        else
+          result.CP[i] = 0.;
+      }
+
+      // Use couplings to get di-boson effective couplings
+      for(int i = 0; i < 3; i++)
+      {
+        fh_complex c_gWW = Dep::FH_Couplings_output->couplings[H0VV(i+1,4)-1];
+        fh_complex c_gWW_SM = Dep::FH_Couplings_output->couplings_sm[H0VV(i+1,4)-1];
+        fh_complex c_gZZ = Dep::FH_Couplings_output->couplings[H0VV(i+1,3)-1];
+        fh_complex c_gZZ_SM = Dep::FH_Couplings_output->couplings_sm[H0VV(i+1,3)-1];
+        std::complex<double> WW(c_gWW.re,c_gWW.im);
+        std::complex<double> WW_SM(c_gWW_SM.re,c_gWW_SM.im);
+        std::complex<double> ZZ(c_gZZ.re,c_gZZ.im);
+        std::complex<double> ZZ_SM(c_gZZ_SM.re,c_gZZ_SM.im);
+        result.C_WW2[i] = pow(std::abs(WW/WW_SM), 2.);
+        result.C_ZZ2[i] = pow(std::abs(ZZ/ZZ_SM), 2.);
+      }
+
+      // Use couplings to get hhZ effective couplings
+      double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
+      for(int i = 0; i < 3; i++)
+      for(int j = 0; j < 3; j++)
+      {
+        fh_complex c_gHV = Dep::FH_Couplings_output->couplings[H0HV(i+1,j+1)-1];
+        double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
+        result.C_hiZ2[i][j] = g2HV/norm;
+      }
+
+      // Work out which invisible decays are possible
+      result.invisibles = get_invisibles(spec);
+    }
+
+
+/////////////////////////////
+//// Map output routines ////
+/////////////////////////////
 
     /// @{ Convert MSSM type Spectrum object into a map, so it can be printed
     void fill_map_from_MSSMspectrum(std::map<std::string,double>&, const Spectrum&);
@@ -985,7 +1187,7 @@ namespace Gambit
       slhahelp::family_state_mix_matrix("~u", 3, mst1, mst2, mssm, tol, LOCAL_INFO, pt_error);
       specmap["mstop1"] =  mssm.get(Par::Pole_Mass, mst1);
       specmap["mstop2"] =  mssm.get(Par::Pole_Mass, mst2);
-      
+
     }
     void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
@@ -1001,7 +1203,7 @@ namespace Gambit
       /// Add everything... use spectrum contents routines to automate task
       static const SpectrumContents::MSSM contents;
       static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
-      
+
       for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
            it != required_parameters.end(); ++it)
       {
@@ -1023,7 +1225,7 @@ namespace Gambit
               mssmspec.get_HE().has(tag,name,ignore_overrides))
            {
              label << " (unimproved)";
-             specmap[label.str()] = mssmspec.get_HE().get(tag,name,ignore_overrides);          
+             specmap[label.str()] = mssmspec.get_HE().get(tag,name,ignore_overrides);
              //std::cout << label.str() << ": " << specmap[label.str()];
            }
          }
@@ -1040,7 +1242,7 @@ namespace Gambit
                 mssmspec.get_HE().has(tag,name,i,ignore_overrides))
              {
                label << " (unimproved)";
-               specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,ignore_overrides);          
+               specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,ignore_overrides);
                //std::cout << label.str() << ": " << specmap[label.str()];
              }
            }
@@ -1058,18 +1260,18 @@ namespace Gambit
                   mssmspec.get_HE().has(tag,name,i,j,ignore_overrides))
                {
                  label << " (unimproved)";
-                 specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,j,ignore_overrides);          
+                 specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,j,ignore_overrides);
                }
-             }  
+             }
            }
          }
          // Deal with all other cases
          else
          {
            // ERROR
-           std::ostringstream errmsg;           
+           std::ostringstream errmsg;
            errmsg << "Error, invalid parameter received while converting MSSMspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
-           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape; 
+           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape;
            SpecBit_error().forced_throw(LOCAL_INFO,errmsg.str());
          }
       }

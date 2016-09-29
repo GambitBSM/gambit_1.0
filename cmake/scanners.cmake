@@ -1,26 +1,26 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Cmake configuration scripts for obtaining,
-#  configuring, compiling and installing 
+#  configuring, compiling and installing
 #  external scanners.
-#  
+#
 #  Note that this is not necessarily the canonical
 #  way to manage the compilation of all scanners,
 #  and GAMBIT support for scanner compilation is
 #  minimal, even with this method -- so please
 #  contact the authors of the respective codes
-#  if they won't compile!  
-#    
+#  if they won't compile!
+#
 #************************************************
-#                                                
+#
 #  Authors (add name and date if you modify):
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#  \date 2015 May  
+#  \date 2015 May
 #
 #  \author Antje Putze (putze@lapth.cnrs.fr)
 #  \date 2016 Jan
@@ -49,8 +49,8 @@ ExternalProject_Add(${name}_${ver}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FF=${CMAKE_Fortran_COMPILER} MODULE=${FMODULE} FOPT=${diverFFLAGS} SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
-  INSTALL_COMMAND "" 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FF=${CMAKE_Fortran_COMPILER} MODULE=${FMODULE} FOPT=${diverFFLAGS} SO_LINK_FLAGS=${diverSO_LINK_FLAGS}
+  INSTALL_COMMAND ""
 )
 add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("scanner" ${name} ${ver})
@@ -77,18 +77,18 @@ if(MPI_Fortran_FOUND)
 else()
   set(mnFFLAGS "${GAMBIT_Fortran_FLAGS}")
 endif()
-ExternalProject_Add(${name}_${ver} 
-  DOWNLOAD_COMMAND ${DL_SCANNER} ${dl} ${md5} ${dir} "null" ${login_data} ${dl2} 
+ExternalProject_Add(${name}_${ver}
+  DOWNLOAD_COMMAND ${DL_SCANNER} ${dl} ${md5} ${dir} ${name} ${ver} "null" ${login_data} ${dl2}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
                                  -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@[[:space:]]*\\$^#-o \\$\\(LIBS\\)\\$@ \\$^ ${mnLAPACK}#g"
-                                 <SOURCE_DIR>/Makefile 
+                                 <SOURCE_DIR>/Makefile
             COMMAND sed ${dashi} -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
                                  -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g"
                                  <SOURCE_DIR>/cwrapper.f90
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${dir}/
-  INSTALL_COMMAND "" 
+  INSTALL_COMMAND ""
 )
 add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("scanner" ${name} ${ver})

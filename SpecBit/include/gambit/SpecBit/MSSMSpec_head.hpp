@@ -8,16 +8,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
-///  \author Peter Athron  
+///
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  *********************************************
 
@@ -31,16 +31,16 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
 
-namespace Gambit 
+namespace Gambit
 {
-   namespace SpecBit 
+   namespace SpecBit
    {
       template <class MI>  // "MI" for "Model_interface"
       class MSSMSpec;
-   } 
+   }
 
    // For example of what kind of class MI needs to be, see
-   // SpecBit/include/model_files_and_boxes.hpp, 
+   // SpecBit/include/model_files_and_boxes.hpp,
    // MODELNAME_interface class
 
    /// Specialisation of "traits" class used to inform Spec<T> class of what
@@ -69,25 +69,25 @@ namespace Gambit
             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
             /// templated wrapper classes, so need to help them along:
             typedef MSSMSpec<MI> Self;
-            typedef typename Self::MTget MTget; 
-            typedef typename Self::MTset MTset; 
+            typedef typename Self::MTget MTget;
+            typedef typename Self::MTset MTset;
             typedef typename Self::GetterMaps GetterMaps;
             typedef typename Self::SetterMaps SetterMaps;
             typedef typename SpecTraits<Self>::Model Model;
             typedef typename SpecTraits<Self>::Input Input;
-           
+
             /// Interface function overrides
             static int index_offset() {return _index_offset;}
             virtual double GetScale() const;
-            virtual void SetScale(double scale);           
+            virtual void SetScale(double scale);
             virtual void RunToScaleOverride(double scale);
 
             //constructors
             MSSMSpec();
             MSSMSpec(MI, str backend_name, str backend_version);
 
-            //Could more constructors to interface with other generators   
-             
+            //Could more constructors to interface with other generators
+
             // These are public for now so that SpecBit_tests.cpp can access them
             MI model_interface;
 
@@ -104,9 +104,9 @@ namespace Gambit
             const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             //some model independent stuff
-            virtual double get_lsp_mass(int & particle_type, 
+            virtual double get_lsp_mass(int & particle_type,
                                         int & row, int & col) const;
-            virtual int get_numbers_stable_particles() const; 
+            virtual int get_numbers_stable_particles() const;
             //may use something like this to pass error to Gambit
             virtual std::string AccessError(std::string state) const;
 
@@ -129,7 +129,7 @@ namespace Gambit
               model.set_scale( othermodel.get_scale() );
               model.set_Yu( othermodel.get_Yu() );
 
-              //model.calculate_DRbar_parameters(); 
+              //model.calculate_DRbar_parameters();
               //model.calculate_pole_masses();
 
               return;
@@ -152,22 +152,23 @@ namespace Gambit
      /// This struct contains all the strings we will use for the MSSM
      /// in the maps.  this allows us to implement the maps in
      /// a safer way if we choose , while still giving the option of
-     /// flexibility.  
-     
-     struct  MSSM_strs {
+     /// flexibility.
+
+     struct  MSSM_strs
+     {
        /// some strings are used in multiple mass
-       /// comments indicate first map they appear 
+       /// comments indicate first map they appear
        /// dimension 2, no index
        const str BMu = "BMu";
        const str mHd2 = "mHd2";
        const str mHu2 = "mHu2";
-       /// dimension 2, 2 indices 
+       /// dimension 2, 2 indices
        const str mq2 =  "mq2";
        const str ml2 =  "ml2";
        const str md2 =  "md2";
        const str mu2 =  "mu2";
        const str me2 =  "me2";
-       /// dimension 1, no index 
+       /// dimension 1, no index
        const str M1 =  "M1";
        const str M2 =  "M2";
        const str M3 =  "M3";
@@ -181,14 +182,14 @@ namespace Gambit
        const str ad  =  "ad";
        const str ae  =  "ae";
        const str au  =  "au";
-       /// dimension 0, no index 
+       /// dimension 0, no index
        const str g1  =  "g1";
        const str g2  =  "g2";
        const str g3  =  "g3";
-       /// dimension 0, no index, special map  
+       /// dimension 0, no index, special map
        const str tanbeta = "tanbeta";
        const str sinW2 = "sinW2";
-       /// dimension 1, no index, special map  
+       /// dimension 1, no index, special map
        const str mA2 = "mA2";
        /// dimension 0, 2 indices
        const str Yd  =  "Yd";
@@ -196,7 +197,7 @@ namespace Gambit
        const str Ye  =  "Ye";
        /// For DRbar mass eigenstates
        /// may remve if / when we get rid of the DRbar mass es
-       /// dimension 1, 1 index 
+       /// dimension 1, 1 index
        // const str Sd   =  "Sd";
        // const str Su   =  "Su";
        // const str Se   =  "Se";
@@ -211,7 +212,7 @@ namespace Gambit
        // const str eminus   =  "e";
        // const str e    =  "e";
        // const str dbar =  "dbar";
-       // const str ubar =	 "ubar";
+       // const str ubar =   "ubar";
        // const str eplus   = "e+";
 
        ///Pole mass
@@ -227,15 +228,15 @@ namespace Gambit
        const str Wminus = "W-";
        const str Z0 = "Z0";
 
-       
+
        /// dimension 1, 1 index , special for setters
        const str su        =   "~u";
-       const str sd	   =   "~d";
-       const str se	   =   "~e-";
-       const str snu	   =   "~nu";
+       const str sd    =   "~d";
+       const str se    =   "~e-";
+       const str snu     =   "~nu";
        const str chiplus   =   "~chi+";
        const str chi0      =   "~chi0";
-       const str h0	   =   "h0";
+       const str h0    =   "h0";
        const str subar     =   "~ubar";
        const str sdbar     =   "~dbar";
        const str seplus    =   "~e+";
@@ -244,36 +245,36 @@ namespace Gambit
 
        /// @{ "Metadata" vectors
        // TODO: replace with a more integrated system
- 
+
        /// @{ Pole_Mass tagged entries
 
        // pole mass strings with no index
        const std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
-						     Hminus, Goldstone0,
-						     Goldstoneplus,
-						     Goldstoneminus,
-						     Wplus, Wminus, Z0 );
+                 Hminus, Goldstone0,
+                 Goldstoneplus,
+                 Goldstoneminus,
+                 Wplus, Wminus, Z0 );
 
        // as above but without Z0 since we do not predict that mass
        const std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
-						     Hminus, Goldstone0,
-						     Goldstoneplus,
-						     Goldstoneminus,
-						     Wplus, Wminus );
+                 Hminus, Goldstone0,
+                 Goldstoneplus,
+                 Goldstoneminus,
+                 Wplus, Wminus );
 
        /// pole mass strings with 1 index
-       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, se, 
+       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, se,
                                                        subar, sdbar, seplus,
-						       chiplus, chiminus, chi0, h0, 
-						       snu, snubar );
+                   chiplus, chiminus, chi0, h0,
+                   snu, snubar );
 
        ///  pole mass strings with 1 index and six entries
        const std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, se,
-							  subar, sdbar, seplus );
+                subar, sdbar, seplus );
 
        ///  pole mass strings with 1 index and four entries
        const std::vector<str> pole_mass_strs_1_4  = initVector( chi0 );
-       
+
        ///  pole mass strings with 1 index and three entries
        const std::vector<str> pole_mass_strs_1_3  = initVector( snu, snubar );
 
@@ -300,7 +301,7 @@ namespace Gambit
 
        /// @{ mass2 tagged entries
 
-       // no index 
+       // no index
        const std::vector<str> mass2_strs = initVector( BMu, mHd2, mHu2, mA2 );
 
        // two-index, 3x3 entries
@@ -309,17 +310,17 @@ namespace Gambit
        /// @}
 
        /// @{ mass1 tagged entries
-   
+
        // no index
        const std::vector<str> mass1_strs = initVector( M1, M2, M3, Mu, vu, vd );
-      
+
        // two-index, 3x3 entries
        const std::vector<str> mass1_strs_2_3x3 = initVector( TYd, TYe, TYu, ad, ae, au );
 
        /// @}
- 
+
        /// @{ dimensionless tagged entries
-   
+
        // no index
        const std::vector<str> dimensionless_strs = initVector( g1, g2, g3, tanbeta, sinW2 );
 
@@ -327,13 +328,13 @@ namespace Gambit
        const std::vector<str> dimensionless_strs_2_3x3 = initVector( Yd, Yu, Ye );
 
        /// @}
-      
+
        /// TODO: left out mass_eigenstate entries for now
-  
+
        /// @}
      };
 
-     
+
    } // end SpecBit namespace
 } // end Gambit namespace
 
