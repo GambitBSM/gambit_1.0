@@ -59,13 +59,13 @@ if [ "${axel_worked}" = "0" ]; then
     if [ -z "$9" ]; then
       wget $3 -O $1/${filename}
     else
-      wget --post-data "$9" $10 -O $1/${filename}
+      wget --post-data "$9" ${10} -O $1/${filename}
     fi
   elif command -v curl >/dev/null; then
     if [ -z "$9" ]; then
       $2 -E chdir $1 curl -O $3
     else
-      $2 -E chdir $1 curl -O -c $cfile --data "$9" $10
+      $2 -E chdir $1 curl -O -c $cfile --data "$9" ${10}
       $2 -E chdir $1 curl -O -b $cfile $3
       $2 -E remove $1/$cfile
     fi
