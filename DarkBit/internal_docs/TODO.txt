@@ -51,7 +51,7 @@ After internal paper review started:
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
 - Check that all SM values are being set by MicrOmegas SLHA reader [JC] [Added by JC]
-- Properly MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
+- Properly compile MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
 - Include proper isnan check in RD_eff_annrate_SUSY [?]
 
 Before release:
