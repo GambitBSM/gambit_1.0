@@ -20,9 +20,11 @@
 #             3. primary URL
 #             4. expected md5 sum
 #             5. install location
-#             6. retain container folder flag
-#             7. http POST data
-#             8. secondary URL
+#             6. backend name
+#             7. backend version
+#             8. retain container folder flag (optional)
+#             9. http POST data (optional)
+#             10. secondary URL (optional)
 #
 #************************************************
 #
@@ -44,26 +46,26 @@ $2 -E make_directory $1 >/dev/null
 # Go to wget/curl if axel is not present
 if command -v axel >/dev/null; then
   # Go to wget/curl if POST data have been provided
-  if [ -z "$7" ]; then
+  if [ -z "$9" ]; then
     if $2 -E chdir $1 axel $3; then
       axel_worked=1
     else
-      $2 -E echo "Axel failed! The link probably redirects to https. Falling back to wget/curl..." 
+      $2 -E echo "Axel failed! The link probably redirects to https. Falling back to wget/curl..."
     fi
   fi
 fi
 if [ "${axel_worked}" = "0" ]; then
   if command -v wget >/dev/null; then
-    if [ -z "$7" ]; then
+    if [ -z "$9" ]; then
       wget $3 -O $1/${filename}
     else
-      wget --post-data "$7" $8 -O $1/${filename}
+      wget --post-data "$9" ${10} -O $1/${filename}
     fi
   elif command -v curl >/dev/null; then
-    if [ -z "$7" ]; then
+    if [ -z "$9" ]; then
       $2 -E chdir $1 curl -O $3
     else
-      $2 -E chdir $1 curl -O -c $cfile --data "$7" $8 
+      $2 -E chdir $1 curl -O -c $cfile --data "$9" ${10}
       $2 -E chdir $1 curl -O -b $cfile $3
       $2 -E remove $1/$cfile
     fi
@@ -75,22 +77,23 @@ fi
 # Check the MD5 sum
 $2 -E md5sum $1/${filename} |
 {
-  read md5 name;  
+  read md5 name;
   if [ "${md5}" != "$4" ]; then
     $2 -E cmake_echo_color --red --bold  "ERROR: MD5 sum of downloaded file $1/${filename} does not match"
     $2 -E cmake_echo_color --red --bold  "Expected: $4"
     $2 -E cmake_echo_color --red --bold  "Found:    ${md5}"
     $2 -E cmake_echo_color --red --bold  "Deleting downloaded file."
-    # Delete the file if the md5 is bad, as cmake does not actually check if DOWNLOAD_COMMAND fails.
+    # Delete the file if the md5 is bad, and make a stamp saying so, as cmake does not actually check if DOWNLOAD_COMMAND fails.
     $2 -E remove $1/${filename}
+    $2 -E touch $6_$7-stamp/$6_$7-download-failed
     exit 1
   fi
 }
 # Do the extraction
 cd $5
 $2 -E tar -xf $1/${filename}
-# Get rid of any internal 'container folder' from tarball, unless $6 has been set
-if [ "retain container folder" != "$6" ]; then
+# Get rid of any internal 'container folder' from tarball, unless $8 has been set
+if [ "retain container folder" != "$8" ]; then
   if [ $(ls -1 | wc -l) = "1" ]; then
     dirname=$(ls)
     if cd ${dirname}; then

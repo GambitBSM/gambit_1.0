@@ -18,10 +18,8 @@
 
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
-      mT:
-         #range: [160.071,160.071]
-         range: [173.34,173.34]
-         #prior_type: flat
+      mT: 1.73340000E+02
+      #prior_type: flat
 
       # SLHA1
       alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
@@ -64,14 +62,18 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [166.499,166.499]
-        #prior_type: flat
+        range: [100,1000]
+        prior_type: log
       QEWSB: 173
 
 
     SingletDM:
-      mS: 1901.14
-      lambda_hS: 0.0573671 #0.30
+      mS:
+        range: [45., 10000.]
+        prior_type: log
+      lambda_hS:
+        range: [0.0001, 10.0]
+        prior_type: log
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -104,12 +106,18 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: grid
+  use_scanner: multinest
 
 # Scanners
 
   scanners:
 
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 10000
+      convthresh: 0.001
+      verbosity: 1
 
     random:
       plugin: random
@@ -134,8 +142,8 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 2000
-      tol: 0.1
+      nlive: 20000
+      tol: 0.001
 
     twalk:
       plugin: twalk
@@ -173,11 +181,14 @@ ObsLikes:
     - capability: check_perturb_min_lambda
       purpose: LogLike
 
- #   - capability: expected_lifetime
+ #   - capability: check_perturb
  #     purpose: Observable
 
-#    - capability: LHC_Higgs_LogLike
-#      purpose:  LogLike
+    - capability: expected_lifetime
+      purpose: Observable
+
+    - capability: LHC_Higgs_LogLike
+      purpose:  LogLike
 
     - capability: SingletDM_spectrum
       purpose: Observable
@@ -185,7 +196,6 @@ ObsLikes:
       dependencies:
          - capability: SingletDM_spectrum
            type: const Spectrum*
-
 
 
 
@@ -199,14 +209,9 @@ Rules:
     - capability: SingletDM_spectrum
       type: const Spectrum*
       function: get_SingletDM_spectrum_pole
-      options:
-        check_perturb: true
-        check_high_scale: 200
-        check_perturb_pts: 10
 
     - capability: Higgs_decay_rates
       function: SingletDM_Higgs_decays
-
 #########################
 # Logging setup
 #########################
@@ -244,7 +249,6 @@ KeyValues:
 
   # Some example keys and subkeys
   my_key: 123
-  debug: true
   another_key:
     subkey3:
       subsubkey1: value2
@@ -266,8 +270,9 @@ KeyValues:
     ExampleBit_A_error: non-fatal
     DecayBit_error: non-fatal
     utils_error: non-fatal
+    invalid_point_fatal: false
 
   enable_testing: false
 
-  default_output_path: "runs/vacuum_stability3/"
+  default_output_path: "/net/scratch/people/plgjamesmckay/runs/vacuum_stability_scan4/"
 

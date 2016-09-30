@@ -38,6 +38,8 @@
 #define MODULE ColliderBit
 START_MODULE
 
+  #include "ColliderBit_Higgs_rollcall.hpp"
+
   /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
@@ -70,16 +72,16 @@ START_MODULE
 
 
   /// Detector sim capabilities
-#ifndef EXCLUDE_DELPHES
-  #define CAPABILITY DetectorSim
-  START_CAPABILITY
-    #define FUNCTION getDelphes
-    START_FUNCTION(Gambit::ColliderBit::DelphesVanilla)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    #undef FUNCTION
-  #undef CAPABILITY
-#endif // not defined EXCLUDE_DELPHES
+  #ifndef EXCLUDE_DELPHES
+    #define CAPABILITY DetectorSim
+    START_CAPABILITY
+      #define FUNCTION getDelphes
+      START_FUNCTION(Gambit::ColliderBit::DelphesVanilla)
+      NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+      NEEDS_CLASSES_FROM(Pythia, default)
+      #undef FUNCTION
+    #undef CAPABILITY
+  #endif
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
@@ -132,34 +134,19 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-/// I still need to see how Aldo's FastSim works... So for now, I'll
-/// comment out this entire CAPABILITY.
-/*
-  #define CAPABILITY detectorReconstructedEvent
-  START_CAPABILITY
-
-    /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
-    #define FUNCTION reconstructFastSimEvent
-    START_FUNCTION(BLAH_AldoDetEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-*/
-
-  /// Detector simulators which directly produce the standard event format
-#ifndef EXCLUDE_DELPHES
-  #define CAPABILITY ReconstructedEvent
-  START_CAPABILITY
-    #define FUNCTION reconstructDelphesEvent
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
-    #undef FUNCTION
-  #undef CAPABILITY
-#endif // not defined EXCLUDE_DELPHES
+  /// Detector simulators that directly produce the standard event format
+  #ifndef EXCLUDE_DELPHES
+    #define CAPABILITY ReconstructedEvent
+    START_CAPABILITY
+      #define FUNCTION reconstructDelphesEvent
+      START_FUNCTION(HEPUtils::Event)
+      NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+      NEEDS_CLASSES_FROM(Pythia, default)
+      DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+      DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
+      #undef FUNCTION
+    #undef CAPABILITY
+  #endif
 
   #define CAPABILITY ATLASSmearedEvent
   START_CAPABILITY
@@ -395,99 +382,6 @@ START_MODULE
   //QUICK_FUNCTION(ColliderBit, L3_Charged_Gaugino_Small_DeltaM_Heavy_Sneutrino_LLike, NEW_CAPABILITY, L3_Charged_Gaugino_Small_DeltaM_Heavy_Sneutrino_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, Spectrum), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
   //QUICK_FUNCTION(ColliderBit, L3_Charged_Gaugino_Small_DeltaM_Any_Sneutrino_LLike, NEW_CAPABILITY, L3_Charged_Gaugino_Small_DeltaM_Any_Sneutrino_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, Spectrum), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
   //QUICK_FUNCTION(ColliderBit, L3_Charged_Higgsino_Small_DeltaM, NEW_CAPABILITY, L3_Charged_Higgsino_Small_DeltaM, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, Spectrum), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
-
-
-  ///////////// Higgs physics /////////////////////
-
-  // FeynHiggs Higgs production cross-sections
-  #define CAPABILITY FH_HiggsProd            
-  START_CAPABILITY
-    #define FUNCTION FH_HiggsProd
-    START_FUNCTION(fh_HiggsProd)
-    BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // HiggsBounds input model parameters
-  #define CAPABILITY HB_ModelParameters
-  START_CAPABILITY
-
-    // SM Higgs model parameters
-    #define FUNCTION SMHiggs_ModelParameters  
-    START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SM_spectrum, Spectrum)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    // SM-like Higgs model parameters, for BSM models with no additional Higgs particles.
-    #define FUNCTION SMlikeHiggs_ModelParameters
-    START_FUNCTION(hb_ModelParameters)
-    ALLOW_MODELS(SingletDM, SingletDMZ3)
-    MODEL_CONDITIONAL_DEPENDENCY(SingletDM_spectrum, Spectrum, SingletDM, SingletDMZ3)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
-    #undef FUNCTION
-
-    // MSSM Higgs model parameters
-    #define FUNCTION MSSMHiggs_ModelParameters
-    START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(MSSM_spectrum, Spectrum)
-    DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
-    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
-    #undef FUNCTION
-
-  #undef CAPABILITY 
-
-  // Get a LEP chisq from HiggsBounds
-  #define CAPABILITY LEP_Higgs_LogLike
-  START_CAPABILITY
-    #define FUNCTION calc_HB_LEP_LogLike
-    START_FUNCTION(double)
-    DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
-       BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
-       (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, double*, double*, double*, double*, double*,
-        double*, double*, Farray<double, 1,3, 1,3>&))
-       BACKEND_REQ(HiggsBounds_charged_input, (libhiggsbounds), void,
-       (double*, double*, double*, double*,
-        double*, double*, double*, double*))
-       BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
-       BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (int&, int&, double&, int&))            
-       BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
-       BACKEND_OPTION( (HiggsBounds), (libhiggsbounds) )
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY LHC_Higgs_LogLike
-    START_CAPABILITY
-      #define FUNCTION calc_HS_LHC_LogLike
-      START_FUNCTION(double)
-      DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
-         BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
-         (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, double*, double*, double*, double*, double*,
-          double*, double*, Farray<double, 1,3, 1,3>&))
-        BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,
-        (double*, double*, double*, double*,
-         double*, double*, double*, double*))
-        BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
-        BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
-        BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-        BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
-     #undef FUNCTION
-  #undef CAPABILITY
-
 
 #undef MODULE
 

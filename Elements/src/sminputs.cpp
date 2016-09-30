@@ -57,6 +57,11 @@ namespace Gambit
       mS       = SLHAea_get(data,"SMINPUTS",23, 9.50000000E-02);   // ms(2 GeV)^MSbar @
       mCmC     = SLHAea_get(data,"SMINPUTS",24, 1.27500000E+00);   // mc(mc)^MSbar %
 
+      // W boson mass
+      // This is an output according to SLHA, however in cases where a spectrum generator doesn't run we
+      // will still need it, for example in the SMSimpleSpec wrapper.  Default from numerical-constants.hpp.
+      mW       = SLHAea_get(data,"MASS", 24, mw_central_observed);
+
       // CKM parameters
       // from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-ckm-matrix.pdf
       CKM.lambda = SLHAea_get(data,"VCKMIN",1, 0.22537);
@@ -122,6 +127,9 @@ namespace Gambit
       SLHAea_add(data,"UPMNSIN",4, PMNS.delta13, "delta13 (Dirac CP-violating phase)");
       SLHAea_add(data,"UPMNSIN",5, PMNS.alpha1 , "alpha1 (first Majorana CP-violating phase)" );
       SLHAea_add(data,"UPMNSIN",6, PMNS.alpha2 , "alpha2 (second CP-violating Majorana phase)");
+
+      // MASS block
+      SLHAea_add(data,"MASS", 24, mW, "mW(pole)");
 
       return;
    }

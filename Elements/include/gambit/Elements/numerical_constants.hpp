@@ -8,8 +8,8 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott 
+///
+///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date   2015 Mar
 ///
@@ -37,7 +37,7 @@ namespace Gambit
   const double m_proton_amu = 1.00727646688;                    // proton mass (amu)
   const double m_neutron_amu = 1.0086649156;                    // neutron mass (amu)
   const double m_proton = m_proton_amu * atomic_mass_unit;      // proton mass (GeV/c^2)
-  const double m_neutron = m_neutron_amu * atomic_mass_unit;    // neutron mass (GeV/c^2)    
+  const double m_neutron = m_neutron_amu * atomic_mass_unit;    // neutron mass (GeV/c^2)
 
   static const struct Mesons_masses
   {
@@ -50,6 +50,14 @@ namespace Gambit
     static constexpr double rho_minus = 0.775;    // charged rho meson mass (GeV/c^2)
     static constexpr double omega = 0.7827;       // omega meson mass (GeV/c^2)
   } meson_masses;
+
+  /// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
+  /// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+  /// @{
+  const double mw_central_observed = 80.385;
+  const double mw_err_observed = 0.015;
+  /// @}
+
 }
 
 #endif //#defined __numerical_constants_hpp__

@@ -39,25 +39,28 @@
 #include "gambit/ColliderBit/limits/L3GauginoLimits.hpp"
 #include "gambit/ColliderBit/limits/L3SleptonLimits.hpp"
 #include "gambit/ColliderBit/limits/OPALGauginoLimits.hpp"
+
 /// TODO: see if we can use this one:
 //#include "gambit/ColliderBit/limits/L3SmallDeltaMGauginoLimits.hpp"
 
 #include "HEPUtils/Event.h"
 
-namespace Gambit {
+namespace Gambit
+{
 
-  namespace ColliderBit {
+  namespace ColliderBit
+  {
 
     /// @brief Container for log likelihoods from multiple Analyses and SRs
     /// @todo If we want to be able to handle correlations between analyses, we need some way to know which analysis number are at which outer-vector indices
     typedef std::vector<std::vector<SignalRegionData>> ColliderLogLikes;
 
-    // typedefs specifically for timing shit (see ColliderBit_macros.hpp)
-    // timing
+    // typedefs specifically for timing (see ColliderBit_macros.hpp)
     typedef std::chrono::milliseconds ms;
     typedef std::chrono::steady_clock steady_clock;
     typedef std::chrono::steady_clock::time_point tp;
     typedef std::map<std::string,double> timer_map_type;
+
   }
 }
 
