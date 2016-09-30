@@ -122,10 +122,10 @@ namespace Gambit
         }
         bool is_auxilliary_printer() { return is_aux; }
 
-         
+
         // Printer dispatch function. This is defined already
         // in the BaseBasePrinter class, but I think I need it
-        // here as well so that that BasePrinter version can 
+        // here as well so that that BasePrinter version can
         // detect the new virtual function overloads which exist
         // in this class.
         template<typename T>
@@ -140,7 +140,7 @@ namespace Gambit
         using BaseBasePrinter::_print; //unhide the default function in the base class
 
         // We need to have a virtual print method for every type that we want to
-        // be able to print. The list of these types is maintained in 
+        // be able to print. The list of these types is maintained in
         // "gambit/Elements/printable_types.hpp"
         // Run the macro; add all the print functions
         ADD_VIRTUAL_PRINTS(PRINTABLE_TYPES)
@@ -152,7 +152,7 @@ namespace Gambit
     {
       public:
         BaseReader() {}
-    
+
         /// Destructor
         virtual ~BaseReader() {}
 
@@ -162,16 +162,16 @@ namespace Gambit
         {
           _retrieve(out, label, rank, pointID);
         }
-    
+
       protected:
         using BaseBaseReader::_retrieve; //unhide the default function in the base class
-    
+
         // We need to have a virtual 'retrieve' method for every type that we want to
-        // be able to retrieve. The list of these types is maintained in 
+        // be able to retrieve. The list of these types is maintained in
         // "gambit/Elements/printable_types.hpp"
         // Run the macro; add all the print functions
-        ADD_VIRTUAL_RETRIEVALS(RETRIEVABLE_TYPES) 
-    
+        ADD_VIRTUAL_RETRIEVALS(RETRIEVABLE_TYPES)
+
     };
 
 
@@ -183,9 +183,9 @@ namespace Gambit
     // (this is set up by the typedef)
     registry
     {
-            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&); 
+            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&);
             reg_elem <create_printer_function> printer_creators;
- 
+
             typedef BaseReader* create_reader_function(const Options&);
             reg_elem <create_reader_function> reader_creators;
     }

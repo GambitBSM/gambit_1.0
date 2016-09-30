@@ -37,10 +37,10 @@ scanner_plugin(Diver, version(1, 0, 0))
 
   // Error thrown if the following entries are not present in the inifile
   reqd_inifile_entries("NP");
-  
+
   // Tell cmake to search for the diver library.
   reqd_libraries("diver");
-  
+
   // Set up the scan data container
   diverScanData data;
 
@@ -57,10 +57,10 @@ scanner_plugin(Diver, version(1, 0, 0))
     // the 'plugin_info.early_shutdown_in_progress()' function.
     data.likelihood_function->disable_external_shutdown();
   }
- 
+
   int plugin_main (void)
-  {   
-    // Path to save Diver samples, resume files, etc 
+  {
+    // Path to save Diver samples, resume files, etc
     str defpath = get_inifile_value<str>("default_output_path");
     str root = Utils::ensure_path_exists(get_inifile_value<str>("path",defpath+"Diver/native"));
 
@@ -92,6 +92,8 @@ scanner_plugin(Diver, version(1, 0, 0))
 
     // Retrieve the global option specifying the minimum interesting likelihood.
     double gl0 = -1.0 * get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
+    // Offset it by any likelihood offset in use
+    gl0 = gl0 - data.likelihood_function->getPurposeOffset();
 
     // Other Diver run parameters
     int    nPar                = get_dimension();                                         // Dimensionality of the parameter space
@@ -116,12 +118,12 @@ scanner_plugin(Diver, version(1, 0, 0))
     double Ztolerance          =                                                 0.1;     // Input tolerance in log-evidence
     int    savecount           = get_inifile_value<int>   ("savecount",          1);      // Save progress every savecount generations
     bool   native_output       = get_inifile_value<bool>  ("full_native_output", true);   // Output .raw file (Diver native sample output format)
-    int    init_pop_strategy   = get_inifile_value<int>   ("init_population_strategy", 2);// Initialisation strategy: 0=one shot, 1=n-shot, 2=n-shot with error if no valid vectors found. 
+    int    init_pop_strategy   = get_inifile_value<int>   ("init_population_strategy", 2);// Initialisation strategy: 0=one shot, 1=n-shot, 2=n-shot with error if no valid vectors found.
     int    max_ini_attempts    = get_inifile_value<int>   ("max_initialisation_attempts", 10000); // Maximum number of times to try to find a valid vector for each slot in the initial population.
-    double max_acceptable_value= get_inifile_value<double>("max_acceptable_value",0.9999*gl0); // Maximum function value to accept for the initial generation if init_population_strategy > 0.   
+    double max_acceptable_value= get_inifile_value<double>("max_acceptable_value",0.9999*gl0); // Maximum function value to accept for the initial generation if init_population_strategy > 0.
     int    verbose             = get_inifile_value<int>   ("verbosity",          0);      // Output verbosity: 0=only error messages, 1=basic info, 2=civ-level info, 3+=population info
-    double (*prior)(const double[], const int, void*&) =                         NULL;    // Pointer to prior function, only used if doBayesian = true.                          
-    void*  context             = &data;                                                   // Pointer to GAMBIT likelihood function and printers, passed through to objective function. 
+    double (*prior)(const double[], const int, void*&) =                         NULL;    // Pointer to prior function, only used if doBayesian = true.
+    void*  context             = &data;                                                   // Pointer to GAMBIT likelihood function and printers, passed through to objective function.
 
     // Copy the contents of root to a char array.
     char path[root.length()+1];
@@ -137,7 +139,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     }
 
     // Scale factors
-    std::vector<double> Fvec = get_inifile_value<std::vector<double> >("F", initVector<double>(0.6));    
+    std::vector<double> Fvec = get_inifile_value<std::vector<double> >("F", initVector<double>(0.6));
     int nF = Fvec.size();                                                                 // Size of the array indicating scale factors
     double F[nF];                                                                         // Scale factor(s).
     std::copy(Fvec.begin(), Fvec.end(), F);
@@ -151,7 +153,7 @@ scanner_plugin(Diver, version(1, 0, 0))
 
     // Run Diver
     if (data.likelihood_function->getRank() == 0) cout << "Starting Diver run..." << std::endl;
-    cdiver(&objective, nPar, lowerbounds, upperbounds, path, nDerived, nDiscrete, 
+    cdiver(&objective, nPar, lowerbounds, upperbounds, path, nDerived, nDiscrete,
            discrete, partitionDiscrete, maxciv, maxgen, NP, nF, F, Cr, lambda, current,
            expon, bndry, jDE, lambdajDE, convthresh, convsteps, removeDuplicates, doBayesian,
            prior, maxNodePop, Ztolerance, savecount, resume, native_output, init_pop_strategy,
@@ -169,7 +171,7 @@ scanner_plugin(Diver, version(1, 0, 0))
 
 namespace Gambit
 {
-   
+
   namespace Diver
   {
 
@@ -191,7 +193,7 @@ namespace Gambit
 
       // Check whether the calling code wants us to shut down early
       quit = Gambit::Scanner::Plugins::plugin_info.early_shutdown_in_progress();
-      
+
       return -lnlike;
 
     }
