@@ -130,6 +130,7 @@ namespace Gambit
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
             double getPurposeOffset() const { return purpose_offset; }
+            void setPurposeOffset(double os) { purpose_offset = os; }
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
             unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
 

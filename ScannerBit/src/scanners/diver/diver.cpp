@@ -91,9 +91,13 @@ scanner_plugin(Diver, version(1, 0, 0))
     }
 
     // Retrieve the global option specifying the minimum interesting likelihood.
-    double gl0 = -1.0 * get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
-    // Offset it by any likelihood offset in use
-    gl0 = gl0 - data.likelihood_function->getPurposeOffset();
+    double gl0 = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
+    // Retrieve the global option specifying the likelihood offset to use
+    double offset = get_inifile_value<double>("likelihood: lnlike_offset", 1e-4*gl0);
+    // Make sure the likleihood functor knows to apply the offset internally in ScannerBit
+    data.likelihood_function->setPurposeOffset(offset);
+    // Offset the minimum interesting likelihood by the offset, and flip it to match diver sign convention.
+    gl0 = -1.0 * (gl0 + offset);
 
     // Other Diver run parameters
     int    nPar                = get_dimension();                                         // Dimensionality of the parameter space

@@ -44,9 +44,7 @@ namespace Gambit
     , GMPI::Comm& comm
   #endif
   )
-  : Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>
-     (iniFile.getValueOrDef<double>(1e-3*iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"), "lnlike_offset")),
-    dependencyResolver (dependencyResolver),
+  : dependencyResolver (dependencyResolver),
     printer            (printer),
     functorMap         (functorMap),
     #ifdef WITH_MPI

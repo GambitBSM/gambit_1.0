@@ -62,7 +62,7 @@ scanner_plugin(MultiNest, version(3, 10))
    {
       // Retrieve the external likelihood calculator
       LogLike = get_purpose(get_inifile_value<std::string>("like"));
-      if(LogLike->getRank() == 0) std::cout << "Loading MultiNest nested sampling plugin for ScannerBit." << std::endl;
+      if (LogLike->getRank() == 0) std::cout << "Loading MultiNest nested sampling plugin for ScannerBit." << std::endl;
    }
 
    /// The main routine to run for the MultiNest scanner.
@@ -78,10 +78,14 @@ scanner_plugin(MultiNest, version(3, 10))
       // Retrieve the dimensionality of the scan.
       int ma = get_dimension();
 
-      // Retrieve the global option specifying the minimum interesting likelihood.
+      // Retrieve the global option specifying the minimum interesting likelihood
       double gl0 = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
-      // Offset it by any likelihood offset in use
-      gl0 = gl0 + LogLike->getPurposeOffset();
+      // Retrieve the global option specifying the likelihood offset to use
+      double offset = get_inifile_value<double>("likelihood: lnlike_offset", 0.);
+      // Make sure the likleihood functor knows to apply the offset internally in ScannerBit
+      LogLike->setPurposeOffset(offset);
+      // Offset the minimum interesting likelihood by the offset
+      gl0 = gl0 + offset;
 
       // MultiNest algorithm options.
       int IS (get_inifile_value<int>("IS", 1) );                // do Nested Importance Sampling?
