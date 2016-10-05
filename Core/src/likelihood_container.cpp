@@ -37,26 +37,26 @@ namespace Gambit
   // Methods for Likelihood_Container class.
 
   /// Constructor
-  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
+  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap,
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile,
    const str &purpose, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
-  ) 
-  : dependencyResolver (dependencyResolver), 
+  )
+  : dependencyResolver (dependencyResolver),
     printer            (printer),
     functorMap         (functorMap),
     #ifdef WITH_MPI
-    errorComm          (comm), 
+      errorComm        (comm),
     #endif
-    min_valid_lnlike    (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
-    alt_min_valid_lnlike(iniFile.getValueOrDef<double>(2*min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")), 
-    active_min_valid_lnlike(min_valid_lnlike), // can be switched to the alternate value by the scanner
-    intralooptime_label("Runtime(ms) intraloop"),
-    interlooptime_label("Runtime(ms) interloop"),
-    totallooptime_label("Runtime(ms) totalloop"),
-    /* Note, likelihood container should be constructed after dependency 
+    min_valid_lnlike        (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    alt_min_valid_lnlike    (iniFile.getValueOrDef<double>(0.5*min_valid_lnlike, "likelihood", "model_invalid_for_lnlike_below_alt")),
+    active_min_valid_lnlike (min_valid_lnlike), // can be switched to the alternate value by the scanner
+    intralooptime_label     ("Runtime(ms) intraloop"),
+    interlooptime_label     ("Runtime(ms) interloop"),
+    totallooptime_label     ("Runtime(ms) totalloop"),
+    /* Note, likelihood container should be constructed after dependency
        resolution, so that new printer IDs can be safely acquired without
        risk of collision with graph vertex IDs */
     intraloopID(Printers::get_main_param_id(intralooptime_label)),
@@ -108,7 +108,7 @@ namespace Gambit
            std::ostringstream err;
            err << "Error! Failed to set parameter '"<<key<<"' following prior transformation! The parameter could not be found in the map returned by the prior. This probably means that the prior you are using contains a bug." << std::endl;
            err << "The parameters and values that *were* returned by the prior were:" <<std::endl;
-           if(parameterMap.size()==0){ err << "None! Size of map was zero." << std::endl; } 
+           if(parameterMap.size()==0){ err << "None! Size of map was zero." << std::endl; }
            else {
              for (auto par_jt = parameterMap.begin(); par_jt != parameterMap.end(); ++par_jt)
              {
@@ -186,7 +186,7 @@ namespace Gambit
 
       // Begin timing of total likelihood evaluation
       std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
-  
+
       // Compute time since the previous likelihood evaluation ended
       std::chrono::duration<double> interloop_time = startL - previous_endL;
 
@@ -281,7 +281,7 @@ namespace Gambit
           str aux_tag = "dditional observable from " + dependencyResolver.get_functor(*it)->origin()
                                + "::" + dependencyResolver.get_functor(*it)->name();
           if (debug) logger() << LogTags::core <<  "Calculating a" << aux_tag << "." << EOM;
-         
+
           try
           {
             dependencyResolver.calcObsLike(*it,getPtID());
@@ -297,7 +297,7 @@ namespace Gambit
 
       // End timing of total likelihood evaluation
       std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
- 
+
       // Compute time since the previous likelihood evaluation ended
       // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
       std::chrono::duration<double> true_total_loop_time = endL - previous_endL;

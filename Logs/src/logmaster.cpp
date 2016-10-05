@@ -47,7 +47,7 @@ namespace Gambit
     using namespace LogTags;
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    /// @{ Logger class member function definitions         
+    /// @{ Logger class member function definitions
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     /// Logging "controller" object
@@ -133,6 +133,36 @@ namespace Gambit
       }
     }
 
+    // Print the backlogs to the default log file
+    void LogMaster::emit_backlog(bool verbose)
+    {
+       if (backlog!=NULL)
+       {
+         bool backlog_empty = true;
+         for(int i=0; i<globlMaxThreads; i++)
+         {
+            if(backlog[i].size()!=0) backlog_empty = false;
+         }
+         if (not backlog_empty)
+         {
+           if (verbose) *this<<"Logger backlog buffer not empty during LogMaster destruction; attempting to deliver unsent messages to the logs..."<<EOM;
+           // If LogMaster was never initialised, create a default log file to which the messages can be dumped.
+           if (not loggers_readyQ)
+           {
+             if (verbose) std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
+             StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
+             std::set<int> deftag;
+             deftag.insert(def);
+             loggers[deftag] = deflogger;
+             loggers_readyQ = true;
+             if (verbose) std::cout<<"Log messages will be delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
+           }
+           // Dump buffered messages
+           empty_backlog();
+         }
+       }
+    }
+
     // Destructor
     LogMaster::~LogMaster()
     {
@@ -156,7 +186,7 @@ namespace Gambit
          if (stream != NULL and streamtags!= NULL)
          {
            #pragma omp parallel
-           {  
+           {
               int i = omp_get_thread_num();
               if (not stream[i].str().empty() or not streamtags[i].empty())
               {
@@ -165,32 +195,8 @@ namespace Gambit
            }
          }
 
-         // Empty message backlogs if needed
-         if (backlog!=NULL)
-         {
-           bool backlog_empty = true;
-           for(int i=0; i<globlMaxThreads; i++)
-           {
-              if(backlog[i].size()!=0) backlog_empty = false;
-           }
-           if (not backlog_empty)
-           {
-             *this<<"Logger backlog buffer not empty during LogMaster destruction; attempting to deliver unsent messages to the logs..."<<EOM;
-             // If LogMaster was never initialised, create a default log file to which the messages can be dumped.
-             if (not loggers_readyQ)
-             {
-               std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
-               StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
-               std::set<int> deftag;
-               deftag.insert(def);
-               loggers[deftag] = deflogger;
-               loggers_readyQ = true;
-               std::cout<<"Log messages will be delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
-             }
-             // Dump buffered messages
-             empty_backlog();
-           }
-         }
+         // Output the message backlogs if needed
+         emit_backlog(true);
 
        }
 
@@ -243,12 +249,12 @@ namespace Gambit
        logmsg << "  log_debug_messages = ";
        if(log_debug_messages) logmsg << "true; log messages tagged as 'Debug' WILL be logged. " << endl << "WARNING: This may lead to very large log files!";
        else
-       { 
+       {
           // Add "Debug" tag to the global ignore list
           ignore.insert(LogTag::debug);
           logmsg << "false; log messages tagged as 'Debug' will NOT be logged";
        }
- 
+
        if (MPIrank == 0) std::cout << logmsg.str() << std::endl;
        *this << LogTag::logs << LogTag::debug << logmsg.str() << EOM;
 
@@ -260,14 +266,14 @@ namespace Gambit
           std::string filename = infopair->second;
           std::set<int> tags;
 
-          if(separate_file_per_process and MPIsize>1 
+          if(separate_file_per_process and MPIsize>1
              and filename!="stdout" and filename!="stderr")
           {
             std::ostringstream unique_filename;
             unique_filename << filename << "_" << MPIrank;
             filename = unique_filename.str();
           }
- 
+
           // Log the loggers being created :)
           // (will be put into a preliminary buffer until loggers are all constructed)
           *this << LogTag::logs << LogTag::debug << std::endl << "Creating logger for tags [";
@@ -622,7 +628,7 @@ namespace Gambit
        *this<<logs<<debug<<EOM;
     }
     void LogMaster::leaving_backend()
-    { 
+    {
        init_memory();
        int cb_test;
        cb_test = current_backend[omp_get_thread_num()];
