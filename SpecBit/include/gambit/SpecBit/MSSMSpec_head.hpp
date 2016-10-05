@@ -8,16 +8,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
-///  \author Peter Athron  
+///
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  *********************************************
 
@@ -31,16 +31,16 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
 
-namespace Gambit 
+namespace Gambit
 {
-   namespace SpecBit 
+   namespace SpecBit
    {
       template <class MI>  // "MI" for "Model_interface"
       class MSSMSpec;
-   } 
+   }
 
    // For example of what kind of class MI needs to be, see
-   // SpecBit/include/model_files_and_boxes.hpp, 
+   // SpecBit/include/model_files_and_boxes.hpp,
    // MODELNAME_interface class
 
    /// Specialisation of "traits" class used to inform Spec<T> class of what
@@ -69,25 +69,25 @@ namespace Gambit
             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
             /// templated wrapper classes, so need to help them along:
             typedef MSSMSpec<MI> Self;
-            typedef typename Self::MTget MTget; 
-            typedef typename Self::MTset MTset; 
+            typedef typename Self::MTget MTget;
+            typedef typename Self::MTset MTset;
             typedef typename Self::GetterMaps GetterMaps;
             typedef typename Self::SetterMaps SetterMaps;
             typedef typename SpecTraits<Self>::Model Model;
             typedef typename SpecTraits<Self>::Input Input;
-           
+
             /// Interface function overrides
             static int index_offset() {return _index_offset;}
             virtual double GetScale() const;
-            virtual void SetScale(double scale);           
+            virtual void SetScale(double scale);
             virtual void RunToScaleOverride(double scale);
 
             //constructors
             MSSMSpec();
             MSSMSpec(MI, str backend_name, str backend_version);
 
-            //Could more constructors to interface with other generators   
-             
+            //Could more constructors to interface with other generators
+
             // These are public for now so that SpecBit_tests.cpp can access them
             MI model_interface;
 
@@ -104,9 +104,9 @@ namespace Gambit
             const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             //some model independent stuff
-            virtual double get_lsp_mass(int & particle_type, 
+            virtual double get_lsp_mass(int & particle_type,
                                         int & row, int & col) const;
-            virtual int get_numbers_stable_particles() const; 
+            virtual int get_numbers_stable_particles() const;
             //may use something like this to pass error to Gambit
             virtual std::string AccessError(std::string state) const;
 
@@ -129,7 +129,7 @@ namespace Gambit
               model.set_scale( othermodel.get_scale() );
               model.set_Yu( othermodel.get_Yu() );
 
-              //model.calculate_DRbar_parameters(); 
+              //model.calculate_DRbar_parameters();
               //model.calculate_pole_masses();
 
               return;
@@ -154,10 +154,11 @@ namespace Gambit
      /// a safer way if we choose , while still giving the option of
      /// flexibility.  
      
-     struct  MSSM_strs {
+     struct MSSM_strs 
+     {
        MSSM_strs();
-       /// some strings are used in multiple mass
-       /// comments indicate first map they appear 
+       /// some strings are used in multiple masses
+       /// comments indicate first map they appear
        /// dimension 2, no index
        static const str BMu ;
        static const str mHd2;
@@ -209,7 +210,7 @@ namespace Gambit
        static const str Wminus;
        static const str Z0;
 
-       
+
        /// dimension 1, 1 index , special for setters
        static const str su     ; 
        static const str sd	; 
@@ -226,9 +227,8 @@ namespace Gambit
 
        /// @{ "Metadata" vectors
        // TODO: replace with a more integrated system
- 
-       /// @{ Pole_Mass tagged entries
 
+       /// @{ Pole_Mass tagged entries
        static const std::vector<str> pole_mass_strs; 
        static const std::vector<str> pole_mass_pred;
        static const std::vector<str> pole_mass_strs_1;
@@ -254,18 +254,18 @@ namespace Gambit
        static const std::vector<str> mass1_strs;
        static const std::vector<str> mass1_strs_2_3x3;
        /// @}
- 
+
        /// @{ dimensionless tagged entries
        static const std::vector<str> dimensionless_strs;
        static const std::vector<str> dimensionless_strs_2_3x3;
        /// @}
-      
+
        /// TODO: left out mass_eigenstate entries for now
-  
+
        /// @}
      };
 
-     
+
    } // end SpecBit namespace
 } // end Gambit namespace
 

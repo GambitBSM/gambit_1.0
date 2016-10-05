@@ -71,7 +71,6 @@ namespace Gambit {
       DS_PACODES *DSpart = &(*BEreq::pacodes);
       DS_MSPCTM *mymspctm= &(*BEreq::mspctm);
       DS_INTDOF *myintdof= &(*BEreq::intdof);
-      DS_WIDTHS *mywidths= &(*BEreq::widths);
 
       // first add neutralino=WIMP=least massive 'coannihilating particle'
       result.coannihilatingParticles.push_back(
@@ -85,7 +84,7 @@ namespace Gambit {
 #endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
-      // (i.e. SUSY particle conventions should follow GAMBUT, not DS etc)! 
+      // (i.e. SUSY particle conventions should follow GAMBUT, not DS etc)!
       // The use of any
       // DarkSUSY conventions need thus be moved to RD_annrate_DSprep_func
 
@@ -141,9 +140,10 @@ namespace Gambit {
 
 /////////////////////////////
 /////////////////////////////
-// JONATHAN FIXME : please comment out everything and check whether this induces more 
+// JONATHAN FIXME : please comment out everything and check whether this induces more
 //           "dgdap ..." errros. Comment out from here
 //          // DS-specific treatment of narrow Higgs width: is no longer needed here.
+//          DS_WIDTHS *mywidths= &(*BEreq::widths);
 //          if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
 //            // wide res treatment adopted in DS
 //            result.resonances.push_back(
@@ -440,7 +440,7 @@ namespace Gambit {
         default:
           DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1)");
       }
-      
+
       myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
       myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;
       myrdpars.cfr=0.5;
@@ -540,17 +540,17 @@ namespace Gambit {
         logger() << "Tabulating RD_eff_annrate..." << EOM;
         std::cout << "Starting dsrdtab..." << std::endl;
       #endif
-    
+
       // Tabulate invariant rate
       BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
 
       #ifdef DARKBIT_RD_DEBUG
         logger() << LogTags::repeat_to_cout << "...done!" << EOM;
-      
+
         // Get runtime
         end = std::chrono::system_clock::now();
         double runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-      
+
         // Check if runtime too long
         if ( runtime > 30. )
         {
@@ -562,7 +562,7 @@ namespace Gambit {
           tbtest=true;
         }
       #endif
-    
+
       // Check whether piped invalid point was thrown
       piped_invalid_point.check();
 
@@ -581,12 +581,8 @@ namespace Gambit {
       (*BEreq::widths).width(BEreq::particle_code("h0_2"))
          =widthheavyHiggs;
 
-      //capture NAN result and map it to zero RD
-      if (yend!=yend)
-      {
-        logger() << LogTags::repeat_to_cout << "WARNING: DS returned NAN for relic density. Setting to zero..." << EOM;
-        yend=0;
-      }
+      //Check for NAN result.
+      if (yend!=yend) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
 
       result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 
@@ -597,7 +593,7 @@ namespace Gambit {
         std::cout << "Oh2     = " << result << std::endl << std::endl;
         if (tbtest) exit(1);
       #endif
-    
+
     } // function RD_oh2_general
 
 

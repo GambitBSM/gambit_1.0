@@ -17,6 +17,7 @@
 set(source_files src/decay_table.cpp
                  src/equivalency_singleton.cpp
                  src/functors.cpp
+                 src/higgs_couplings_table.cpp
                  src/ini_functions.cpp
                  src/mssm_slhahelp.cpp
                  src/slhaea_helpers.cpp
@@ -32,7 +33,8 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/equivalency_singleton.hpp
                  include/gambit/Elements/functors.hpp
                  include/gambit/Elements/functor_definitions.hpp
-                 include/gambit/Elements/gambit_module_headers.hpp
+                 include/gambit/Elements/higgs_couplings_table.hpp
+                 include/gambit/Elements/ini_code_struct.hpp
                  include/gambit/Elements/ini_code_struct.hpp
                  include/gambit/Elements/ini_functions.hpp
                  include/gambit/Elements/module_macros_common.hpp
@@ -48,7 +50,7 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/spec_fptrfinder.hpp
                  include/gambit/Elements/spectrum_factories.hpp
                  include/gambit/Elements/spec.hpp
-                 include/gambit/Elements/spec_head.hpp 
+                 include/gambit/Elements/spec_head.hpp
                  include/gambit/Elements/subspectrum.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/type_equivalency.hpp

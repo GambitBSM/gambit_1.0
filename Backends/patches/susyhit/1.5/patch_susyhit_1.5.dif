@@ -1,6 +1,6 @@
-diff -rupN SUSY_HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
---- SUSY_HIT_1_5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-26 00:21:44.389833629 +0000
+diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
+--- susyhit_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/hdecay.f	2016-09-27 17:52:24.341987247 +0100
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -76,9 +76,65 @@ diff -rupN SUSY_HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
  c      write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1
        ELSE
        WHHSB(I,J)=0.D0
-diff -rupN SUSY_HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
---- SUSY_HIT_1_5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-26 00:21:44.389833629 +0000
+@@ -9753,6 +9756,18 @@ c     * /(1.+deltamt)**4.
+      * /(1.+deltamb)**4.
+         MTOP2 = DSQRT(MTOP4)
+         MBOT2 = DSQRT(MBOT4)
++c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
++c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high 
++c>>> MSUSY) in GAMBIT.
++c>>> Pat Scott 27/9/2016
++        mtop2 = rmtop**2*(1+bt2*tt- al2*tt/2 - 2*deltamt)
++c     * /(1+deltamt)**2
++        mbot2 = mb**2*(1+bb2*tb - al1*tb/2)
++     * /(1+deltamb)**2
++        mtop4 = mtop2**2
++        mbot4 = mbot2**2
++c       write(6,*)'gfun: ',mtop2,mbot2,rmtop,bt2,al2,deltamt,tt,tb
++c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+         mb = mb/(1+deltamb)
+ 
+         VH1(1,1) = 1./TANBST
+@@ -10051,6 +10066,17 @@ c     * /(1.+deltamt)**4.
+      * /(1.+deltamb)**4.
+         MTOP2 = DSQRT(MTOP4)
+ 	MBOT2 = DSQRT(MBOT4)
++c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
++c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high 
++c>>> MSUSY) in GAMBIT.
++c>>> Pat Scott 27/9/2016
++        mtop2 = rmtop**2*(1+bt2*tt- al2*tt/2 - 2*deltamt)
++c     * /(1+deltamt)**2
++        mbot2 = mb**2*(1+bb2*tb - al1*tb/2)
++     * /(1+deltamb)**2
++        mtop4 = mtop2**2
++        mbot4 = mbot2**2
++c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ 
+         STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
+      *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
+@@ -10124,6 +10150,17 @@ c     * /(1.+deltamt)**4.
+      * /(1.+deltamb)**4.
+         MTOP2 = DSQRT(MTOP4)
+ 	MBOT2 = DSQRT(MBOT4)
++c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
++c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high 
++c>>> MSUSY) in GAMBIT.
++c>>> Pat Scott 27/9/2016
++        mtop2 = rmtop**2*(1+bt2*tt- al2*tt/2 - 2*deltamt)
++c     * /(1+deltamt)**2
++        mbot2 = mb**2*(1+bb2*tb - al1*tb/2)
++     * /(1+deltamb)**2
++        mtop4 = mtop2**2
++        mbot4 = mbot2**2
++c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ 
+         STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
+      *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
+Binary files susyhit_pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
+diff -rupN susyhit_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
+--- susyhit_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst3bod.f	2016-09-27 17:48:47.941984286 +0100
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -133,9 +189,9 @@ diff -rupN SUSY_HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bo
        COMMON/SD_coupewsb/alsew,g2ew,g1ew
        COMMON/SD_mwmzpole/amwp,amzp
  c---- ramona cahnged 2/2/15
-diff -rupN SUSY_HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
---- SUSY_HIT_1_5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-26 00:21:44.393833629 +0000
+diff -rupN susyhit_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
+--- susyhit_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst4bod.f	2016-09-27 17:48:47.941984286 +0100
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -370,9 +426,9 @@ diff -rupN SUSY_HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bo
        COMMON/SD_hmass/ama,aml,amh,amch,amar
  c----- ramona added 4/11/14
        COMMON/SD_mwmzpole/amwp,amzp
-diff -rupN SUSY_HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
---- SUSY_HIT_1_5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/makefile	2016-03-26 00:21:44.393833629 +0000
+diff -rupN susyhit_pristine/makefile installed/susyhit/1.5/makefile
+--- susyhit_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/makefile	2016-09-27 17:48:47.941984286 +0100
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -397,9 +453,9 @@ diff -rupN SUSY_HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
 -	rm -f *.o
 \ No newline at end of file
 +	rm -f *.o
-diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
---- SUSY_HIT_1_5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-26 00:22:04.233833274 +0000
+diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
+--- susyhit_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/sdecay.f	2016-09-27 17:48:47.949984286 +0100
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c

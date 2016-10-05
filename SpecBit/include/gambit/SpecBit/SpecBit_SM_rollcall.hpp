@@ -54,6 +54,15 @@
 
   #undef CAPABILITY
 
+  // Generalised Higgs couplings
+  #define CAPABILITY Higgs_Couplings
+
+    #define FUNCTION SM_higgs_couplings
+    START_FUNCTION(HiggsCouplingsTable)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+  #undef CAPABILITY
 
 #endif
 
