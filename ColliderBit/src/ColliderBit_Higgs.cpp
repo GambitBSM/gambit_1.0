@@ -106,7 +106,7 @@ namespace Gambit
       {
         double upper = spec.get(Par::Pole_Mass_1srd_high, 25, 0);
         double lower = spec.get(Par::Pole_Mass_1srd_low, 25, 0);
-        result.deltaMh[0] = std::max(upper,lower);
+        result.deltaMh[0] = result.Mh[0] * std::max(upper,lower);
       }
       else
       {
@@ -238,7 +238,7 @@ namespace Gambit
         result.Mh[i] = spec.get(Par::Pole_Mass,sHneut[i]);
         double upper = spec.get(Par::Pole_Mass_1srd_high,sHneut[i]);
         double lower = spec.get(Par::Pole_Mass_1srd_low,sHneut[i]);
-        result.deltaMh[i] = std::max(upper,lower);
+        result.deltaMh[i] = result.Mh[i] * std::max(upper,lower);
       }
 
       // Loop over all neutral Higgses, setting their branching fractions and total widths.
@@ -279,7 +279,7 @@ namespace Gambit
       result.MHplus[0] = spec.get(Par::Pole_Mass,"H+");
       double upper = spec.get(Par::Pole_Mass_1srd_high,"H+");
       double lower = spec.get(Par::Pole_Mass_1srd_low,"H+");
-      result.deltaMHplus[0] = std::max(upper,lower);
+      result.deltaMHplus[0] = result.MHplus[0] * std::max(upper,lower);
 
       // Set charged Higgs branching fractions and total width.
       result.HpGammaTot[0] = H_plus_widths.width_in_GeV;

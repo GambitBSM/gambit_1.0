@@ -210,11 +210,17 @@ namespace Gambit
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12,  true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12,  true);
 
-      // Do the lightest Higgs mass seperately.  The default in most codes is 3 GeV. That seems like
+      // Do the lightest Higgs mass separately.  The default in most codes is 3 GeV. That seems like
       // an underestimate if the stop masses are heavy enough, but an overestimate for most points.
       double rd_mh1 = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, "h0", 1, true);
-      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, "h0", 1, true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, ms.h0, 1, true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, ms.h0, 1, true);
+
+      // Do the W mass separately.  Here we use 20 MeV as a temporary guess at the import of the neglected 2-loop corrections.
+      // FIXME Peter is going to work out if 20 MeV is actually reasonable.
+      double rd_mW = 0.02 / mssmspec.get(Par::Pole_Mass, "W+");
+      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mW, "W+", true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mW, "W+", true);
 
       // Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())

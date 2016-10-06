@@ -143,11 +143,11 @@ ObsLikes:
     - capability: lnL_W_mass
       purpose:    LogLike
 
-    - capability: lnL_sinW2_eff
-      purpose:    LogLike
+    #- capability: lnL_sinW2_eff
+    #  purpose:    LogLike
 
-    - capability: lnL_deltarho
-      purpose:    LogLike
+    #- capability: lnL_deltarho
+    #  purpose:    LogLike
 
     - capability:  lnL_gm2
       purpose:     LogLike
@@ -327,8 +327,8 @@ Rules:
 
   - capability: MSSM_spectrum
     type: Spectrum
-    #function: make_MSSM_precision_spectrum_none
-    function: make_MSSM_precision_spectrum_W
+    function: make_MSSM_precision_spectrum_none
+    #function: make_MSSM_precision_spectrum_W
     #function: make_MSSM_precision_spectrum_H_W
     # The following options only have an impact when using make_MSSM_precision_spectrum_H_W.
     # Choose to take FeynHiggs' prediction for the Higgs mass (rather then FlexibleSUSY's).
@@ -347,12 +347,12 @@ Rules:
   #- backend: FeynHiggs
   #  version: 2.11.3
   # If you want to do it from the yaml file now, you need to do this:
-  - capability: FH_Couplings_output
-    backends:
-    - {backend: FeynHiggs, version: 2.11.3}
-  - capability: FH_Precision
-    backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+  #- capability: FH_Couplings_output
+  #  backends:
+  #  - {backend: FeynHiggs, version: 2.11.3}
+  #- capability: FH_Precision
+  #  backends:
+  #  - {backend: FeynHiggs, version: 2.11.3}
   # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W
   #- capability: prec_HiggsMasses
   #  backends:
