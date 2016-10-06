@@ -31,7 +31,6 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
-///
 ///  *********************************************
 
 
@@ -468,9 +467,6 @@ namespace Gambit
 
       /// Add a model conditional dependency for a single model
       void setModelConditionalDependencySingular(str, str, str, void(*)(functor*, module_functor_common*));
-
-      /// Disable a model conditional dependency
-      void disableModelConditionalDependency(str, str, str);
 
       /// Add a rule for activating backend requirements according to the model being scanned.
       void makeBackendRuleForModel(str, str);

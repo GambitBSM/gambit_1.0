@@ -32,7 +32,6 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
-///
 ///  *********************************************
 
 #include <chrono>
@@ -398,7 +397,7 @@ namespace Gambit
         //Return true immediately if all entries in the allowed group combination have been matched.
         if (matches) return true;
       }
-       return false;
+      return false;
     }
 
     /// Test whether the functor has been explictly allowed to be used with a given combination of models
@@ -445,7 +444,6 @@ namespace Gambit
       std::set<str> group_combo(v.begin(), v.end());
       allowedGroupCombos.insert(group_combo);
     }
-
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
@@ -1021,18 +1019,6 @@ namespace Gambit
       dependency_map[key] = resolver;
     }
 
-    /// Disable a model conditional dependency 
-    void module_functor_common::disableModelConditionalDependency
-     (str model, str dep, str dep_type)
-    {
-      sspair key (dep, Utils::fix_type(dep_type));
-      if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
-      {
-        myModelConditionalDependencies[model].erase(key);
-        dependency_map.erase(key);
-      }
-    }
-
     /// Add an unconditional backend requirement
     /// The info gets updated later if this turns out to be conditional on a model.
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
@@ -1460,8 +1446,6 @@ namespace Gambit
             if (verbose) cout << "Activate candidate " << activation_candidate << "?" << it->second << endl;
           }
         }
-        //std::cout << myName << std::endl;
-        //std::cout << it->first << "? = " << it->second << std::endl;
       }
 
       // If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.

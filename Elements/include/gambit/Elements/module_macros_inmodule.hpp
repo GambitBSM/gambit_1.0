@@ -32,7 +32,6 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Apr
 ///
-///
 ///  *********************************************
 
 #ifndef __module_macros_inmodule_hpp__
@@ -237,7 +236,6 @@
                                                                                \
   }                                                                            \
 
-  
 
 /// Redirection of BACKEND_GROUP(GROUP) when invoked from within a module.
 #define MODULE_BE_GROUP(GROUP)                                                 \

@@ -43,8 +43,6 @@
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Nov
-///
-///
 ///  *********************************************
 
 #ifndef __module_macros_incore_hpp__
