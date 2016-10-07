@@ -23,7 +23,7 @@
 // Convenience functions (definition)
 BE_NAMESPACE
 {
-
+/*
   // Run SPheno
   int run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
   {
@@ -208,7 +208,7 @@ BE_NAMESPACE
         } 
       }
       */
-      
+  /*    
     }
    
     if(*kont != 0)
@@ -223,8 +223,8 @@ BE_NAMESPACE
     return *kont;   
  
   }
-
-  Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
+*/
+/*  Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
   {
 
     SLHAstruct slha;
@@ -716,9 +716,9 @@ BE_NAMESPACE
     return spectrum;
 
   }
-
+*/
   // Function to read data from the Gambit inputs and fill SPheno internal variables
-  void ReadingData(const SMInputs &sminputs, const std::map<str, safe_ptr<double> > &Param)
+/*  void ReadingData(const SMInputs &sminputs, const std::map<str, safe_ptr<double> > &Param)
   {
       
     InitializeStandardModel(sminputs); 
@@ -1038,8 +1038,8 @@ BE_NAMESPACE
     }
  
   }
-
-  void InitializeStandardModel(const SMInputs &sminputs)
+*/
+/*  void InitializeStandardModel(const SMInputs &sminputs)
   {
 
     *kont = 0;
@@ -1293,9 +1293,8 @@ BE_NAMESPACE
     return "Unspecified error";
 
   }
-  
+*/  
 }
-
 
 
 END_BE_NAMESPACE
@@ -1303,7 +1302,7 @@ END_BE_NAMESPACE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-
+/*
     // Dump all internal output 
     *ErrCan = 0; 
 
@@ -1382,10 +1381,9 @@ BE_INI_FUNCTION
 
     // 12, minimal value such that a branching ratio is written out
     // TODO: Branching ratios, not covered yet
-    /*Freal8 BrMin = runOptions->getValueOrDef<Freal8>(0.0, "BRMin");
-    if(BrMin > 0.0)
-      SetWriteMinBr(BrMin);
-    */
+    //Freal8 BrMin = runOptions->getValueOrDef<Freal8>(0.0, "BRMin");
+    //if(BrMin > 0.0)
+    //  SetWriteMinBr(BrMin);
 
     // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
     // GAMBIT: private variable, cannot import
@@ -1394,55 +1392,51 @@ BE_INI_FUNCTION
     // 21, whether to calculate cross sections or not
     // TODO: Cross sections, not covered yet
     //*L_CS = runOptions->getValueOrDef<Flogical>(false, "L_CS");
-    *L_CS = false;
+    //*L_CS = false;
 
     // 22, CMS energy
     // TODO: Perhaps there is the option of setting more than one Ecms
     // TODO: Cross sections, not covered yet 
-    /*static  int p_max = 100;
-    static Finteger p_act = 0;
-    p_act ++;
-    if(p_act <= p_max)
-      (*Ecms)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Ecms");
-    else
-      backend_error().raise(LOCAL_INFO, "The number of required points for the calculation of cross sections exceeds the maximum");
-    */
+    //static  int p_max = 100;
+    //static Finteger p_act = 0;
+    //p_act ++;
+    //if(p_act <= p_max)
+    //  (*Ecms)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Ecms");
+    //else
+    //  backend_error().raise(LOCAL_INFO, "The number of required points for the calculation of cross sections exceeds the maximum");
 
     // 23, polarisation of incoming e- beam
     // TODO: Cross sections, not covered yet
-    /*if(p_act <= p_max)
-      (*Pm)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pm");
-    if((*Pm)(p_act) > 1)
-    {
-      backend_error().raise(LOCAL_INFO, "e- beam polarisation has to be between -1 and 1");
-      (*Pm)(p_act) = 0;
-    }
-    */
+    //if(p_act <= p_max)
+    //  (*Pm)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pm");
+    //if((*Pm)(p_act) > 1)
+    //{
+    //  backend_error().raise(LOCAL_INFO, "e- beam polarisation has to be between -1 and 1");
+    //  (*Pm)(p_act) = 0;
+    //}
 
     // 24, polarisation of incoming e+ beam
     // TODO: Cross sections, not covered yet
-    /*if(p_act <= p_max)
-      (*Pp)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pp");
-    if((*Pp)(p_act) > 1)
-    {
-      backend_error().raise(LOCAL_INFO, "e+ beam polarisation has to be between -1 and 1");
-      (*Pp)(p_act) = 0;
-    }
-    */
+    //if(p_act <= p_max)
+    //  (*Pp)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pp");
+    //if((*Pp)(p_act) > 1)
+    //{
+    //  backend_error().raise(LOCAL_INFO, "e+ beam polarisation has to be between -1 and 1");
+    //  (*Pp)(p_act) = 0;
+    //}
 
     // 25, caluclate initial state radiation
     // TODO: Cross sections, not covered yet
-    /*if(p_act <= p_max)
-      (*ISR)(p_act) = runOptions->getValueOrDef<Flogical>(false, "ISR");
-    */
+    //if(p_act <= p_max)
+    //  (*ISR)(p_act) = runOptions->getValueOrDef<Flogical>(false, "ISR");
+    //
 
     // 26, minimal value such that a cross section is written out
     // TODO: Cross sections, not covered yet
-    /*Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
-    if(SigMin > 0.0)
-      SetWriteMinSig(SigMin);
-    */
-
+    //*Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
+    //if(SigMin > 0.0)
+    //  SetWriteMinSig(SigMin);
+    
     // 31, setting a fixed GUT scale
     Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
     if(GUTScale > 0.0)
@@ -1466,10 +1460,9 @@ BE_INI_FUNCTION
 
     // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
     // GAMBIT: not covered
-    /*Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
-    if(YukawaScheme > 0)
-      SetYukawaScheme(YukawaScheme);   
-    */
+    //Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
+    //if(YukawaScheme > 0)
+    //  SetYukawaScheme(YukawaScheme);   
 
     // 38, set looplevel of RGEs
     *TwoLoopRGE = runOptions->getValueOrDef<Flogical>(true, "TwoLoopRGE");
@@ -1538,6 +1531,6 @@ BE_INI_FUNCTION
     // 110, write ouput for LHC observables
     // GAMBIT: private variable, cannot import
     // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
-   
+*/   
 }
 END_BE_INI_FUNCTION
