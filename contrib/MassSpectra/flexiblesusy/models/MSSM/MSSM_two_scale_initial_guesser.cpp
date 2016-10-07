@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:46
+// File generated at Sat 27 Aug 2016 12:50:57
 
 #include "MSSM_two_scale_initial_guesser.hpp"
 #include "MSSM_two_scale_model.hpp"
@@ -30,6 +30,7 @@
 
 namespace flexiblesusy {
 
+#define DERIVEDPARAMETER(p) model->p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -38,14 +39,14 @@ namespace flexiblesusy {
 
 MSSM_initial_guesser<Two_scale>::MSSM_initial_guesser(
    MSSM<Two_scale>* model_,
-   const softsusy::QedQcd& oneset_,
+   const softsusy::QedQcd& qedqcd_,
    const MSSM_low_scale_constraint<Two_scale>& low_constraint_,
    const MSSM_susy_scale_constraint<Two_scale>& susy_constraint_,
    const MSSM_high_scale_constraint<Two_scale>& high_constraint_
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
-   , oneset(oneset_)
+   , qedqcd(qedqcd_)
    , mu_guess(0.)
    , mc_guess(0.)
    , mt_guess(0.)
@@ -100,7 +101,7 @@ void MSSM_initial_guesser<Two_scale>::guess_susy_parameters()
 {
    using namespace softsusy;
 
-   softsusy::QedQcd leAtMt(oneset);
+   softsusy::QedQcd leAtMt(qedqcd);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
@@ -108,20 +109,28 @@ void MSSM_initial_guesser<Two_scale>::guess_susy_parameters()
 
    mu_guess = leAtMt.displayMass(mUp);
    mc_guess = leAtMt.displayMass(mCharm);
-   mt_guess = leAtMt.displayMass(mTop) - 30.0;
+   mt_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mTop) - 30.0 :
+      leAtMt.displayPoleMt();
    md_guess = leAtMt.displayMass(mDown);
    ms_guess = leAtMt.displayMass(mStrange);
    mb_guess = leAtMt.displayMass(mBottom);
-   me_guess = leAtMt.displayMass(mElectron);
-   mm_guess = leAtMt.displayMass(mMuon);
+   me_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mElectron) :
+      leAtMt.displayPoleMel();
+   mm_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mMuon) :
+      leAtMt.displayPoleMmuon();
    mtau_guess = leAtMt.displayMass(mTau);
 
    // guess gauge couplings at mt
    const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   model->set_g1(sqrt(4.0 * M_PI * alpha_sm(1)));
-   model->set_g2(sqrt(4.0 * M_PI * alpha_sm(2)));
-   model->set_g3(sqrt(4.0 * M_PI * alpha_sm(3)));
+   MODEL->set_g1(Sqrt(4. * Pi * alpha_sm(1)));
+   MODEL->set_g2(Sqrt(4. * Pi * alpha_sm(2)));
+   MODEL->set_g3(Sqrt(4. * Pi * alpha_sm(3)));
+
+
    model->set_scale(mtpole);
 
    // apply user-defined initial guess at the low scale
@@ -149,13 +158,13 @@ void MSSM_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
  */
 void MSSM_initial_guesser<Two_scale>::calculate_Yu_DRbar()
 {
-   Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
-   topDRbar(0,0) = mu_guess;
-   topDRbar(1,1) = mc_guess;
-   topDRbar(2,2) = mt_guess;
+   Eigen::Matrix<std::complex<double>,3,3> upQuarksDRbar(ZEROMATRIXCOMPLEX(3,3));
+   upQuarksDRbar(0,0) = mu_guess;
+   upQuarksDRbar(1,1) = mc_guess;
+   upQuarksDRbar(2,2) = mt_guess;
 
    const auto vu = MODELPARAMETER(vu);
-   MODEL->set_Yu((((1.4142135623730951*topDRbar)/vu).transpose()).real());
+   MODEL->set_Yu((((1.4142135623730951*upQuarksDRbar)/vu).transpose()).real());
 
 }
 
@@ -166,13 +175,14 @@ void MSSM_initial_guesser<Two_scale>::calculate_Yu_DRbar()
  */
 void MSSM_initial_guesser<Two_scale>::calculate_Yd_DRbar()
 {
-   Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
-   bottomDRbar(0,0) = md_guess;
-   bottomDRbar(1,1) = ms_guess;
-   bottomDRbar(2,2) = mb_guess;
+   Eigen::Matrix<std::complex<double>,3,3> downQuarksDRbar(ZEROMATRIXCOMPLEX(3,3));
+   downQuarksDRbar(0,0) = md_guess;
+   downQuarksDRbar(1,1) = ms_guess;
+   downQuarksDRbar(2,2) = mb_guess;
 
    const auto vd = MODELPARAMETER(vd);
-   MODEL->set_Yd((((1.4142135623730951*bottomDRbar)/vd).transpose()).real());
+   MODEL->set_Yd((((1.4142135623730951*downQuarksDRbar)/vd).transpose()).real()
+      );
 
 }
 
@@ -183,13 +193,14 @@ void MSSM_initial_guesser<Two_scale>::calculate_Yd_DRbar()
  */
 void MSSM_initial_guesser<Two_scale>::calculate_Ye_DRbar()
 {
-   Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
-   electronDRbar(0,0) = me_guess;
-   electronDRbar(1,1) = mm_guess;
-   electronDRbar(2,2) = mtau_guess;
+   Eigen::Matrix<std::complex<double>,3,3> downLeptonsDRbar(ZEROMATRIXCOMPLEX(3,3));
+   downLeptonsDRbar(0,0) = me_guess;
+   downLeptonsDRbar(1,1) = mm_guess;
+   downLeptonsDRbar(2,2) = mtau_guess;
 
    const auto vd = MODELPARAMETER(vd);
-   MODEL->set_Ye((((1.4142135623730951*electronDRbar)/vd).transpose()).real());
+   MODEL->set_Ye((((1.4142135623730951*downLeptonsDRbar)/vd).transpose()).real(
+      ));
 
 }
 

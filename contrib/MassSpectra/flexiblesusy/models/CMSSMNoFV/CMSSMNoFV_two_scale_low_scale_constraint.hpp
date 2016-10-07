@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:46:21
+// File generated at Sat 27 Aug 2016 12:48:21
 
 #ifndef CMSSMNoFV_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 #define CMSSMNoFV_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
@@ -57,7 +57,7 @@ private:
    double scale;
    double initial_scale_guess;
    CMSSMNoFV<Two_scale>* model;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
    Eigen::Matrix<double,3,3> neutrinoDRbar;

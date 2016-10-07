@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:46:26
+// File generated at Sat 27 Aug 2016 12:48:19
 
 #include "MSSMNoFV_info.hpp"
 
@@ -33,18 +33,18 @@ namespace MSSMNoFV_info {
       , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4,
       2, 1, 1, 1};
 
-   const char* particle_names[NUMBER_OF_PARTICLES] = {"Glu", "VZ", "Fd", "Fs",
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Glu", "Fd", "Fs",
       "Fb", "Fu", "Fc", "Ft", "Fve", "Fvm", "Fvt", "Fe", "Fm", "Ftau", "SveL",
       "SvmL", "SvtL", "Sd", "Su", "Se", "Sm", "Stau", "Ss", "Sc", "Sb", "St", "hh"
-      , "Ah", "Hpm", "Chi", "Cha", "VG", "VP", "VWm"};
+      , "Ah", "Hpm", "Chi", "Cha", "VWm", "VP", "VZ"};
 
-   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "\\tilde{g}",
-      "Z", "d", "s", "b", "u", "c", "t", "\\nu_e", "\\nu_{\\mu}", "\\nu_{\\tau}",
-      "e", "m", "\\tau", "\\tilde{\\nu}_e", "\\tilde{\\nu}_{\\mu}",
-      "\\tilde{\\nu}_{\\tau}", "\\tilde{d}", "\\tilde{u}", "\\tilde{e}",
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g",
+      "\\tilde{g}", "d", "s", "b", "u", "c", "t", "\\nu_e", "\\nu_{\\mu}",
+      "\\nu_{\\tau}", "e", "m", "\\tau", "\\tilde{\\nu}_e", "\\tilde{\\nu}_{\\mu}"
+      , "\\tilde{\\nu}_{\\tau}", "\\tilde{d}", "\\tilde{u}", "\\tilde{e}",
       "\\tilde{\\mu}", "\\tilde{\\tau}", "\\tilde{s}", "\\tilde{c}", "\\tilde{b}",
       "\\tilde{t}", "h", "A^0", "H^-", "\\tilde{\\chi}^0", "\\tilde{\\chi}^-",
-      "g", "\\gamma", "W^-"};
+      "W^-", "\\gamma", "Z"};
 
    const char* parameter_names[NUMBER_OF_PARAMETERS] = {"Yd(0,0)", "Yd(0,1)",
       "Yd(0,2)", "Yd(1,0)", "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)",
@@ -64,6 +64,32 @@ namespace MSSMNoFV_info {
       "mu2(1,0)", "mu2(1,1)", "mu2(1,2)", "mu2(2,0)", "mu2(2,1)", "mu2(2,2)",
       "me2(0,0)", "me2(0,1)", "me2(0,2)", "me2(1,0)", "me2(1,1)", "me2(1,2)",
       "me2(2,0)", "me2(2,1)", "me2(2,2)", "MassB", "MassWB", "MassG"};
+
+   const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {   "ZD(0,0)",
+      "ZD(0,1)", "ZD(1,0)", "ZD(1,1)", "ZU(0,0)", "ZU(0,1)", "ZU(1,0)", "ZU(1,1)",
+      "ZE(0,0)", "ZE(0,1)", "ZE(1,0)", "ZE(1,1)", "ZM(0,0)", "ZM(0,1)", "ZM(1,0)"
+      , "ZM(1,1)", "ZTau(0,0)", "ZTau(0,1)", "ZTau(1,0)", "ZTau(1,1)", "ZS(0,0)",
+      "ZS(0,1)", "ZS(1,0)", "ZS(1,1)", "ZC(0,0)", "ZC(0,1)", "ZC(1,0)", "ZC(1,1)",
+      "ZB(0,0)", "ZB(0,1)", "ZB(1,0)", "ZB(1,1)", "ZT(0,0)", "ZT(0,1)", "ZT(1,0)"
+      , "ZT(1,1)", "ZH(0,0)", "ZH(0,1)", "ZH(1,0)", "ZH(1,1)", "ZA(0,0)",
+      "ZA(0,1)", "ZA(1,0)", "ZA(1,1)", "ZP(0,0)", "ZP(0,1)", "ZP(1,0)", "ZP(1,1)",
+      "Re(ZN(0,0))", "Im(ZN(0,0))", "Re(ZN(0,1))", "Im(ZN(0,1))", "Re(ZN(0,2))",
+      "Im(ZN(0,2))", "Re(ZN(0,3))", "Im(ZN(0,3))", "Re(ZN(1,0))", "Im(ZN(1,0))",
+      "Re(ZN(1,1))", "Im(ZN(1,1))", "Re(ZN(1,2))", "Im(ZN(1,2))", "Re(ZN(1,3))",
+      "Im(ZN(1,3))", "Re(ZN(2,0))", "Im(ZN(2,0))", "Re(ZN(2,1))", "Im(ZN(2,1))",
+      "Re(ZN(2,2))", "Im(ZN(2,2))", "Re(ZN(2,3))", "Im(ZN(2,3))", "Re(ZN(3,0))",
+      "Im(ZN(3,0))", "Re(ZN(3,1))", "Im(ZN(3,1))", "Re(ZN(3,2))", "Im(ZN(3,2))",
+      "Re(ZN(3,3))", "Im(ZN(3,3))", "Re(UM(0,0))", "Im(UM(0,0))", "Re(UM(0,1))",
+      "Im(UM(0,1))", "Re(UM(1,0))", "Im(UM(1,0))", "Re(UM(1,1))", "Im(UM(1,1))",
+      "Re(UP(0,0))", "Im(UP(0,0))", "Re(UP(0,1))", "Im(UP(0,1))", "Re(UP(1,0))",
+      "Im(UP(1,0))", "Re(UP(1,1))", "Im(UP(1,1))", "ZZ(0,0)", "ZZ(0,1)", "ZZ(1,0)"
+      , "ZZ(1,1)"};
+
+   const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS] = {"TanBeta",
+      "SignMu", "Qin", "M1", "M2", "M3", "AtIN", "AbIN", "AtauIN", "AcIN", "AsIN",
+      "AmuonIN", "AuIN", "AdIN", "AeIN", "mHd2IN", "mHu2IN", "ml11IN", "ml22IN",
+      "ml33IN", "me11IN", "me22IN", "me33IN", "mq11IN", "mq22IN", "mq33IN",
+      "mu11IN", "mu22IN", "mu33IN", "md11IN", "md22IN", "md33IN"};
 
    const char* model_name = "MSSMNoFV";
    const bool is_low_energy_model = false;

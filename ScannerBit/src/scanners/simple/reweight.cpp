@@ -287,10 +287,10 @@ scanner_plugin(reweight, version(1, 0, 0))
         std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
         const std::vector<std::string> names = modelparameters.getKeys();
         for(std::vector<std::string>::const_iterator
-            it = names.begin();
-            it!= names.end(); ++it)
+            kt = names.begin();
+            kt!= names.end(); ++kt)
         {
-          std::cout << "    " << *it << " : " << modelparameters[*it] << std::endl;
+          std::cout << "    " << *kt << " : " << modelparameters[*kt] << std::endl;
         }
         /// @}
   

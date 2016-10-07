@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:30:30
+// File generated at Sat 27 Aug 2016 12:49:06
 
 /**
  * @file lowMSSM_mass_eigenstates.hpp
@@ -25,8 +25,8 @@
  *        value problem using the two_scale solver by solving EWSB
  *        and determine the pole masses and mixings
  *
- * This file was generated at Wed 28 Oct 2015 11:30:30 with FlexibleSUSY
- * 1.2.4 (git commit: v1.2.1-468-ga1bedd8) and SARAH 4.5.8 .
+ * This file was generated at Sat 27 Aug 2016 12:49:06 with FlexibleSUSY
+ * 1.5.1 (git commit: 8356bacd26e8aecc6635607a32835d534ea3cf01) and SARAH 4.9.0 .
  */
 
 #ifndef lowMSSM_MASS_EIGENSTATES_H
@@ -70,6 +70,7 @@ public:
    void check_pole_masses_for_tachyons();
    virtual void clear();
    void clear_DRbar_parameters();
+   Eigen::ArrayXd get_DRbar_masses() const;
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void do_force_output(bool);
@@ -80,6 +81,7 @@ public:
    void set_ewsb_loop_order(unsigned);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
+   void set_DRbar_masses(const Eigen::ArrayXd&);
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
    std::size_t get_number_of_ewsb_iterations() const;
@@ -101,15 +103,15 @@ public:
    void clear_problems();
    std::string name() const;
    void run_to(double scale, double eps = -1.0);
-   void print(std::ostream&) const;
+   void print(std::ostream& out = std::cout) const;
    void set_precision(double);
    double get_precision() const;
 
 
+   double get_MVG() const { return MVG; }
    double get_MGlu() const { return MGlu; }
    const Eigen::Array<double,3,1>& get_MFv() const { return MFv; }
    double get_MFv(int i) const { return MFv(i); }
-   double get_MVZ() const { return MVZ; }
    const Eigen::Array<double,6,1>& get_MSd() const { return MSd; }
    double get_MSd(int i) const { return MSd(i); }
    const Eigen::Array<double,3,1>& get_MSv() const { return MSv; }
@@ -134,9 +136,9 @@ public:
    double get_MFd(int i) const { return MFd(i); }
    const Eigen::Array<double,3,1>& get_MFu() const { return MFu; }
    double get_MFu(int i) const { return MFu(i); }
-   double get_MVG() const { return MVG; }
-   double get_MVP() const { return MVP; }
    double get_MVWm() const { return MVWm; }
+   double get_MVP() const { return MVP; }
+   double get_MVZ() const { return MVZ; }
 
    
    Eigen::Array<double,1,1> get_MChargedHiggs() const;
@@ -175,16 +177,18 @@ public:
    const std::complex<double>& get_ZUL(int i, int k) const { return ZUL(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZUR() const { return ZUR; }
    const std::complex<double>& get_ZUR(int i, int k) const { return ZUR(i,k); }
+   const Eigen::Matrix<double,2,2>& get_ZZ() const { return ZZ; }
+   double get_ZZ(int i, int k) const { return ZZ(i,k); }
 
    void set_PhaseGlu(std::complex<double> PhaseGlu_) { PhaseGlu = PhaseGlu_; }
    std::complex<double> get_PhaseGlu() const { return PhaseGlu; }
 
+   double get_mass_matrix_VG() const;
+   void calculate_MVG();
    double get_mass_matrix_Glu() const;
    void calculate_MGlu();
    Eigen::Matrix<double,3,3> get_mass_matrix_Fv() const;
    void calculate_MFv();
-   double get_mass_matrix_VZ() const;
-   void calculate_MVZ();
    Eigen::Matrix<double,6,6> get_mass_matrix_Sd() const;
    void calculate_MSd();
    Eigen::Matrix<double,3,3> get_mass_matrix_Sv() const;
@@ -209,12 +213,10 @@ public:
    void calculate_MFd();
    Eigen::Matrix<double,3,3> get_mass_matrix_Fu() const;
    void calculate_MFu();
-   double get_mass_matrix_VG() const;
-   void calculate_MVG();
-   double get_mass_matrix_VP() const;
-   void calculate_MVP();
    double get_mass_matrix_VWm() const;
    void calculate_MVWm();
+   Eigen::Matrix<double,2,2> get_mass_matrix_VPVZ() const;
+   void calculate_MVPVZ();
 
    double get_ewsb_eq_hh_1() const;
    double get_ewsb_eq_hh_2() const;
@@ -663,8 +665,10 @@ public:
    void tadpole_hh_2loop(double result[2]) const;
 
 
+   void calculate_MVG_pole();
    void calculate_MGlu_pole();
    void calculate_MFv_pole();
+   void calculate_MVP_pole();
    void calculate_MVZ_pole();
    void calculate_MSd_pole();
    void calculate_MSv_pole();
@@ -678,8 +682,6 @@ public:
    void calculate_MFe_pole();
    void calculate_MFd_pole();
    void calculate_MFu_pole();
-   void calculate_MVG_pole();
-   void calculate_MVP_pole();
    void calculate_MVWm_pole();
    double calculate_MVWm_pole(double);
    double calculate_MVZ_pole(double);
@@ -692,8 +694,10 @@ public:
    double calculate_MVZ_DRbar(double);
    double calculate_MVWm_DRbar(double);
 
-   double ThetaW() const;
    double v() const;
+   double Betax() const;
+   double Alpha() const;
+   double ThetaW() const;
 
 
 private:
@@ -739,7 +743,7 @@ private:
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
-   int solve_ewsb_tree_level_via_soft_higgs_masses();
+   int solve_ewsb_tree_level_custom();
    void ewsb_initial_guess(double[number_of_ewsb_equations]);
    int ewsb_step(double[number_of_ewsb_equations]) const;
    static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
@@ -757,9 +761,9 @@ private:
    double G0(double, double, double) const;
 
    // DR-bar masses
+   double MVG;
    double MGlu;
    Eigen::Array<double,3,1> MFv;
-   double MVZ;
    Eigen::Array<double,6,1> MSd;
    Eigen::Array<double,3,1> MSv;
    Eigen::Array<double,6,1> MSu;
@@ -772,9 +776,9 @@ private:
    Eigen::Array<double,3,1> MFe;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
-   double MVG;
-   double MVP;
    double MVWm;
+   double MVP;
+   double MVZ;
 
    // DR-bar mixing matrices
    Eigen::Matrix<double,6,6> ZD;
@@ -793,6 +797,7 @@ private:
    Eigen::Matrix<std::complex<double>,3,3> ZDR;
    Eigen::Matrix<std::complex<double>,3,3> ZUL;
    Eigen::Matrix<std::complex<double>,3,3> ZUR;
+   Eigen::Matrix<double,2,2> ZZ;
 
    // phases
    std::complex<double> PhaseGlu;

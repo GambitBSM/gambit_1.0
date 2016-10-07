@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:33
+// File generated at Sat 27 Aug 2016 12:43:51
 
 #ifndef SingletDMZ3_INPUT_PARAMETERS_H
 #define SingletDMZ3_INPUT_PARAMETERS_H
@@ -40,6 +40,9 @@ struct SingletDMZ3_input_parameters {
    ), Qin(0)
 
    {}
+
+   Eigen::ArrayXd get() const;
+   void set(const Eigen::ArrayXd&);
 };
 
 std::ostream& operator<<(std::ostream&, const SingletDMZ3_input_parameters&);

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:32
+// File generated at Sat 27 Aug 2016 12:43:50
 
 #include "SingletDMZ3_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -25,6 +25,42 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+
+namespace {
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m - Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return - m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+} // anonymous namespace
 
 /**
  * Calculates the one-loop beta function of muS.
@@ -37,7 +73,7 @@ double SingletDMZ3_soft_parameters::calc_beta_muS_one_loop(const Soft_traces& so
 
    double beta_muS;
 
-   beta_muS = Re((4*LamSH*muH + 2*LamS*muS)*oneOver16PiSqr);
+   beta_muS = Re(2*oneOver16PiSqr*(2*LamSH*muH + LamS*muS + 9*Sqr(mu3)));
 
 
    return beta_muS;
@@ -60,7 +96,7 @@ double SingletDMZ3_soft_parameters::calc_beta_muS_two_loop(const Soft_traces& so
    beta_muS = Re(twoLoop*(-24*LamSH*muH*traceYdAdjYd - 8*LamSH*muH*
       traceYeAdjYe - 24*LamSH*muH*traceYuAdjYu + 4.8*LamSH*muH*Sqr(g1) + 24*
       LamSH*muH*Sqr(g2) - 2.5*muS*Sqr(LamS) - 4*muH*Sqr(LamSH) - 0.5*muS*Sqr(
-      LamSH)));
+      LamSH) - 54*LamS*Sqr(mu3)));
 
 
    return beta_muS;

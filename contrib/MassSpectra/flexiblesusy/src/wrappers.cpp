@@ -29,7 +29,7 @@ double MaxRelDiff(double a, double b)
    if (maxx < underflow)
       return 0.0;
 
-   return fabs(1.0 - std::min(sTin, sTout) / maxx);
+   return std::abs((a - b) / maxx);
 }
 
 } // namespace flexiblesusy

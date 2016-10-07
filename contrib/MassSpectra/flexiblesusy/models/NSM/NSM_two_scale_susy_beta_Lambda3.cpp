@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:23
+// File generated at Sat 27 Aug 2016 12:40:16
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,9 +40,9 @@ double NSM_susy_parameters::calc_beta_Lambda3_one_loop(const Susy_traces& susy_t
 
    double beta_Lambda3;
 
-   beta_Lambda3 = Re(-0.5*oneOver16PiSqr*Lambda3*(-12*traceYdAdjYd - 4*
-      traceYeAdjYe - 12*traceYuAdjYu + 24*Lambda1 + 48*Lambda2 + 16*Lambda3 + 3
-      *Sqr(g1) + 9*Sqr(g2)));
+   beta_Lambda3 = Re(0.5*oneOver16PiSqr*Lambda3*(12*traceYdAdjYd + 4*
+      traceYeAdjYe + 12*traceYuAdjYu + 24*Lambda1 + 48*Lambda2 + 16*Lambda3 - 3
+      *Sqr(g1) - 9*Sqr(g2)));
 
 
    return beta_Lambda3;
@@ -68,15 +68,15 @@ double NSM_susy_parameters::calc_beta_Lambda3_two_loop(const Susy_traces& susy_t
 
    beta_Lambda3 = Re(-0.020833333333333332*twoLoop*Lambda3*(-557*Power(g1
       ,4) + 435*Power(g2,4) + 648*traceYdAdjYdYdAdjYd + 1008*
-      traceYdAdjYuYuAdjYd + 216*traceYeAdjYeYeAdjYe + 648*traceYuAdjYuYuAdjYu -
-      3456*traceYuAdjYu*Lambda1 - 1152*traceYuAdjYu*Lambda3 + 6912*Lambda1*
-      Lambda3 + 13824*Lambda2*Lambda3 - 340*traceYuAdjYu*Sqr(g1) + 1152*Lambda1
-      *Sqr(g1) + 96*Lambda3*Sqr(g1) - 540*traceYuAdjYu*Sqr(g2) + 3456*Lambda1*
-      Sqr(g2) + 288*Lambda3*Sqr(g2) - 90*Sqr(g1)*Sqr(g2) - 12*traceYeAdjYe*(96*
-      Lambda1 + 32*Lambda3 + 25*Sqr(g1) + 15*Sqr(g2)) - 1920*traceYuAdjYu*Sqr(
-      g3) - 4*traceYdAdjYd*(864*Lambda1 + 288*Lambda3 + 25*Sqr(g1) + 135*Sqr(g2
-      ) + 480*Sqr(g3)) + 2880*Sqr(Lambda1) + 23040*Sqr(Lambda2) + 2016*Sqr(
-      Lambda3)));
+      traceYdAdjYuYuAdjYd + 216*traceYeAdjYeYeAdjYe + 648*traceYuAdjYuYuAdjYu +
+      3456*traceYuAdjYu*Lambda1 + 1152*traceYuAdjYu*Lambda3 + 6912*Lambda1*
+      Lambda3 + 13824*Lambda2*Lambda3 - 340*traceYuAdjYu*Sqr(g1) - 1152*Lambda1
+      *Sqr(g1) - 96*Lambda3*Sqr(g1) - 540*traceYuAdjYu*Sqr(g2) - 3456*Lambda1*
+      Sqr(g2) - 288*Lambda3*Sqr(g2) - 90*Sqr(g1)*Sqr(g2) - 12*traceYeAdjYe*(-32
+      *(3*Lambda1 + Lambda3) + 25*Sqr(g1) + 15*Sqr(g2)) - 1920*traceYuAdjYu*Sqr
+      (g3) - 4*traceYdAdjYd*(25*Sqr(g1) + 3*(45*Sqr(g2) + 32*(-9*Lambda1 - 3*
+      Lambda3 + 5*Sqr(g3)))) + 2880*Sqr(Lambda1) + 23040*Sqr(Lambda2) + 2016*
+      Sqr(Lambda3)));
 
 
    return beta_Lambda3;

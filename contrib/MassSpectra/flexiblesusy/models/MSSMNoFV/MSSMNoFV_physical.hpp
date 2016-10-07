@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:54:14
+// File generated at Sat 27 Aug 2016 12:50:13
 
 #ifndef MSSMNoFV_PHYSICAL_H
 #define MSSMNoFV_PHYSICAL_H
@@ -34,10 +34,14 @@ struct MSSMNoFV_physical {
    void clear();
    void convert_to_hk();   ///< converts pole masses to HK convention
    void convert_to_slha(); ///< converts pole masses to SLHA convention
+   Eigen::ArrayXd get() const; ///< returns array with all masses and mixings
+   void set(const Eigen::ArrayXd&); ///< set all masses and mixings
+   Eigen::ArrayXd get_masses() const; ///< returns array with all masses
+   void set_masses(const Eigen::ArrayXd&); ///< set all masses
    void print(std::ostream&) const;
 
+   double MVG;
    double MGlu;
-   double MVZ;
    double MFd;
    double MFs;
    double MFb;
@@ -67,9 +71,9 @@ struct MSSMNoFV_physical {
    Eigen::Array<double,2,1> MHpm;
    Eigen::Array<double,4,1> MChi;
    Eigen::Array<double,2,1> MCha;
-   double MVG;
-   double MVP;
    double MVWm;
+   double MVP;
+   double MVZ;
 
    Eigen::Matrix<double,2,2> ZD;
    Eigen::Matrix<double,2,2> ZU;
@@ -86,6 +90,7 @@ struct MSSMNoFV_physical {
    Eigen::Matrix<std::complex<double>,4,4> ZN;
    Eigen::Matrix<std::complex<double>,2,2> UM;
    Eigen::Matrix<std::complex<double>,2,2> UP;
+   Eigen::Matrix<double,2,2> ZZ;
 
 };
 

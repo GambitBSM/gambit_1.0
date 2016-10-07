@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 """Combine data from several hdf5 files created by HDF5Printer into a single file"""
+import signal
+def sigint_handler(signum, frame):
+    print 'CTRL+C is blocked while the HDF5Printer combine script runs! Signal received, but ignored.'
+signal.signal(signal.SIGINT, sigint_handler)
 
 import math
 import numpy as np

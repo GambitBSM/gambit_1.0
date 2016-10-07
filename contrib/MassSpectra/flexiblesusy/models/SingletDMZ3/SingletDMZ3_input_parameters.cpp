@@ -16,13 +16,41 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:33
+// File generated at Sat 27 Aug 2016 12:43:51
 
 #include "SingletDMZ3_input_parameters.hpp"
+#include "wrappers.hpp"
 
 #define INPUT(p) input.p
 
 namespace flexiblesusy {
+
+Eigen::ArrayXd SingletDMZ3_input_parameters::get() const
+{
+   Eigen::ArrayXd pars(7);
+
+   pars(0) = HiggsIN;
+   pars(1) = LamSHInput;
+   pars(2) = LamSInput;
+   pars(3) = muSInput;
+   pars(4) = mu3Input;
+   pars(5) = QEWSB;
+   pars(6) = Qin;
+
+   return pars;
+}
+
+void SingletDMZ3_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+   HiggsIN = pars(0);
+   LamSHInput = pars(1);
+   LamSInput = pars(2);
+   muSInput = pars(3);
+   mu3Input = pars(4);
+   QEWSB = pars(5);
+   Qin = pars(6);
+
+}
 
 std::ostream& operator<<(std::ostream& ostr, const SingletDMZ3_input_parameters& input)
 {

@@ -42,9 +42,11 @@ LIBFFLITE     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 LIBFFLITE_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFFLITE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -57,13 +59,18 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFFLITE_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFFLITE)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFFLITE_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFFLITE)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

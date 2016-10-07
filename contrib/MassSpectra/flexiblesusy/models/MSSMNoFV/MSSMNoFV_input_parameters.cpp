@@ -16,13 +16,91 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:46:25
+// File generated at Sat 27 Aug 2016 12:48:12
 
 #include "MSSMNoFV_input_parameters.hpp"
+#include "wrappers.hpp"
 
 #define INPUT(p) input.p
 
 namespace flexiblesusy {
+
+Eigen::ArrayXd MSSMNoFV_input_parameters::get() const
+{
+   Eigen::ArrayXd pars(32);
+
+   pars(0) = TanBeta;
+   pars(1) = SignMu;
+   pars(2) = Qin;
+   pars(3) = M1;
+   pars(4) = M2;
+   pars(5) = M3;
+   pars(6) = AtIN;
+   pars(7) = AbIN;
+   pars(8) = AtauIN;
+   pars(9) = AcIN;
+   pars(10) = AsIN;
+   pars(11) = AmuonIN;
+   pars(12) = AuIN;
+   pars(13) = AdIN;
+   pars(14) = AeIN;
+   pars(15) = mHd2IN;
+   pars(16) = mHu2IN;
+   pars(17) = ml11IN;
+   pars(18) = ml22IN;
+   pars(19) = ml33IN;
+   pars(20) = me11IN;
+   pars(21) = me22IN;
+   pars(22) = me33IN;
+   pars(23) = mq11IN;
+   pars(24) = mq22IN;
+   pars(25) = mq33IN;
+   pars(26) = mu11IN;
+   pars(27) = mu22IN;
+   pars(28) = mu33IN;
+   pars(29) = md11IN;
+   pars(30) = md22IN;
+   pars(31) = md33IN;
+
+   return pars;
+}
+
+void MSSMNoFV_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+   TanBeta = pars(0);
+   SignMu = pars(1);
+   Qin = pars(2);
+   M1 = pars(3);
+   M2 = pars(4);
+   M3 = pars(5);
+   AtIN = pars(6);
+   AbIN = pars(7);
+   AtauIN = pars(8);
+   AcIN = pars(9);
+   AsIN = pars(10);
+   AmuonIN = pars(11);
+   AuIN = pars(12);
+   AdIN = pars(13);
+   AeIN = pars(14);
+   mHd2IN = pars(15);
+   mHu2IN = pars(16);
+   ml11IN = pars(17);
+   ml22IN = pars(18);
+   ml33IN = pars(19);
+   me11IN = pars(20);
+   me22IN = pars(21);
+   me33IN = pars(22);
+   mq11IN = pars(23);
+   mq22IN = pars(24);
+   mq33IN = pars(25);
+   mu11IN = pars(26);
+   mu22IN = pars(27);
+   mu33IN = pars(28);
+   md11IN = pars(29);
+   md22IN = pars(30);
+   md33IN = pars(31);
+
+}
 
 std::ostream& operator<<(std::ostream& ostr, const MSSMNoFV_input_parameters& input)
 {

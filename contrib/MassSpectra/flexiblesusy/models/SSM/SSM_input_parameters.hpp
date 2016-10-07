@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:50
+// File generated at Sat 27 Aug 2016 12:40:23
 
 #ifndef SSM_INPUT_PARAMETERS_H
 #define SSM_INPUT_PARAMETERS_H
@@ -40,6 +40,9 @@ struct SSM_input_parameters {
    K2input(0)
 
    {}
+
+   Eigen::ArrayXd get() const;
+   void set(const Eigen::ArrayXd&);
 };
 
 std::ostream& operator<<(std::ostream&, const SSM_input_parameters&);

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:33:24
+// File generated at Sat 27 Aug 2016 12:50:58
 
 #ifndef CMSSM_PHYSICAL_H
 #define CMSSM_PHYSICAL_H
@@ -34,13 +34,15 @@ struct CMSSM_physical {
    void clear();
    void convert_to_hk();   ///< converts pole masses to HK convention
    void convert_to_slha(); ///< converts pole masses to SLHA convention
+   Eigen::ArrayXd get() const; ///< returns array with all masses and mixings
+   void set(const Eigen::ArrayXd&); ///< set all masses and mixings
+   Eigen::ArrayXd get_masses() const; ///< returns array with all masses
+   void set_masses(const Eigen::ArrayXd&); ///< set all masses
    void print(std::ostream&) const;
 
    double MVG;
    double MGlu;
    Eigen::Array<double,3,1> MFv;
-   double MVP;
-   double MVZ;
    Eigen::Array<double,6,1> MSd;
    Eigen::Array<double,3,1> MSv;
    Eigen::Array<double,6,1> MSu;
@@ -54,6 +56,8 @@ struct CMSSM_physical {
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
    double MVWm;
+   double MVP;
+   double MVZ;
 
    Eigen::Matrix<double,6,6> ZD;
    Eigen::Matrix<double,3,3> ZV;
@@ -71,6 +75,7 @@ struct CMSSM_physical {
    Eigen::Matrix<std::complex<double>,3,3> ZDR;
    Eigen::Matrix<std::complex<double>,3,3> ZUL;
    Eigen::Matrix<std::complex<double>,3,3> ZUR;
+   Eigen::Matrix<double,2,2> ZZ;
 
 };
 

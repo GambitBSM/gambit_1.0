@@ -17,6 +17,8 @@
 // ====================================================================
 
 #include "threshold_loop_functions.hpp"
+#include "pv.hpp"
+#include "numerics.h"
 
 #include <cmath>
 #include <limits>
@@ -643,24 +645,180 @@ static double Iaac(double a, double b, double c)
       / (6.*sqr(a)*quad(sqr(a) - sqr(c)));
 }
 
-double Iabc(double a, double b, double c)
+/// Iabc(a,a,0)
+double Iaa0(double a, double b)
 {
+   return (17.*sqr(a) - 16.*a*b + 5.*sqr(b)) / (6.*quad(a));
+}
+
+/// Iabc(0,b,c)
+double I0bc(double b, double c)
+{
+   return log(sqr(b/c))/(sqr(b) - sqr(c));
+}
+
+double Iabc(double a, double b, double c) {
+   if ((is_zero(a) && is_zero(b) && is_zero(c)) ||
+       (is_zero(a) && is_zero(b)) ||
+       (is_zero(a) && is_zero(c)) ||
+       (is_zero(b) && is_zero(c)))
+      return 0.;
+
    if (is_equal_rel(std::abs(a), std::abs(b), 0.01) && is_equal_rel(std::abs(a), std::abs(c), 0.01))
       return Iaaa(std::abs(a),std::abs(b),std::abs(c));
 
-   if (is_equal_rel(std::abs(a), std::abs(b), 0.01))
+   if (is_equal_rel(std::abs(a), std::abs(b), 0.01)) {
+      if (is_zero(c))
+         return Iaa0(std::abs(a),std::abs(b));
       return Iaac(std::abs(a),std::abs(b),c);
+   }
 
-   if (is_equal_rel(std::abs(b), std::abs(c), 0.01))
+   if (is_equal_rel(std::abs(b), std::abs(c), 0.01)) {
+      if (is_zero(a))
+         return Iaa0(std::abs(b),std::abs(c));
       return Iaac(std::abs(b),std::abs(c),a);
+   }
 
-   if (is_equal_rel(std::abs(a), std::abs(c), 0.01))
+   if (is_equal_rel(std::abs(a), std::abs(c), 0.01)) {
+      if (is_zero(b))
+         return Iaa0(std::abs(a),std::abs(c));
       return Iaac(std::abs(a),std::abs(c),b);
+   }
+
+   if (is_zero(a))
+      return I0bc(b,c);
+
+   if (is_zero(b))
+      return I0bc(c,a);
+
+   if (is_zero(c))
+      return I0bc(a,b);
 
    return ( (sqr(a * b) * log(sqr(a / b))
            + sqr(b * c) * log(sqr(b / c))
            + sqr(c * a) * log(sqr(c / a)))
            / ((sqr(a) - sqr(b)) * (sqr(b) - sqr(c)) * (sqr(a) - sqr(c))) );
+}
+
+/**
+ * B0 function for zero momentum, arxiv:0901.2065 Eq (130)
+ *
+ * @param m1 \f$m_1\f$ (not squared)
+ * @param m2 \f$m_2\f$ (not squared)
+ * @param scale \f$Q\f$ (not squared)
+ *
+ * @return \f$B_0(p=0,m_1,m_2,Q)\f$
+ */
+double B0(double m1, double m2, double scale)
+{
+   return passarino_veltman::ReB0(0, m1*m1, m2*m2, scale*scale);
+}
+
+/**
+ * B0' function for zero momentum, arxiv:0901.2065 Eq (130)
+ *
+ * @param m1 \f$m_1\f$ (not squared)
+ * @param m2 \f$m_2\f$ (not squared)
+ *
+ * @return \f$B_0'(p=0,m_1,m_2)\f$
+ */
+double DB0(double m1, double m2)
+{
+   const double m12 = sqr(m1);
+   const double m14 = sqr(m12);
+   const double m22 = sqr(m2);
+   const double m24 = sqr(m22);
+
+   if (is_zero(m12) || is_zero(m22))
+      return 0.;
+
+   if (is_equal_rel(m12, m22, 1e-3))
+      return 1./(6. * m22);
+
+   return (m14 - m24 + 2*m12*m22*std::log(m22/m12))/
+      (2*std::pow(m12 - m22,3));
+}
+
+/**
+ * C0 function for zero momentum, arxiv:0901.2065 Eq (130)
+ *
+ * \f$C_0(0,m_1,m_2,m_3) = -I_{abc}(m_1,m_2,m_3)\f$
+ *
+ * @param m1 \f$m_1\f$ (not squared)
+ * @param m2 \f$m_2\f$ (not squared)
+ * @param m3 \f$m_3\f$ (not squared)
+ *
+ * @return \f$C_0(p=0,m_1,m_2,m_3)\f$
+ */
+double C0(double m1, double m2, double m3)
+{
+   return c0(m1, m2, m3);
+}
+
+double D0(double m1, double m2, double m3, double m4)
+{
+   return d0(m1,m2,m3,m4);
+}
+
+/**
+ * \f$\tilde{D}_2\f$ for zero momentum, arxiv:0901.2065 Eq (131)
+ *
+ * @param m1  \f$m_1\f$ (not squared)
+ * @param m2  \f$m_2\f$ (not squared)
+ * @param m3  \f$m_3\f$ (not squared)
+ * @param m4  \f$m_4\f$ (not squared)
+ *
+ * @return \f$\tilde{D}_2(m_1,m_2,m_3,m_4)\f$
+ */
+double D2t(double m1, double m2, double m3, double m4)
+{
+   return C0(m2, m3, m4) + m1*m1 * D0(m1, m2, m3, m4);
+}
+
+/**
+ * \f$\tilde{D}_4\f$ for zero momentum, arxiv:0901.2065 Eq (131)
+ *
+ * @param m1  \f$m_1\f$ (not squared)
+ * @param m2  \f$m_2\f$ (not squared)
+ * @param m3  \f$m_3\f$ (not squared)
+ * @param m4  \f$m_4\f$ (not squared)
+ * @param scale \f$Q\f$ (not squared)
+ *
+ * @return \f$\tilde{D}_4(m_1,m_2,m_3,m_4,Q)\f$
+ */
+double D4t(double m1, double m2, double m3, double m4, double scale)
+{
+   return B0(m3, m4, scale) + (m1*m1 + m2*m2) * C0(m2, m3, m4)
+      + std::pow(m1,4) * D0(m1, m2, m3, m4);
+}
+
+/**
+ * \f$W\f$ for zero momentum, arxiv:0901.2065 Eq (130)
+ *
+ * @param m1 \f$m_1\f$ (not squared)
+ * @param m2 \f$m_2\f$ (not squared)
+ * @param scale \f$Q\f$ (not squared)
+ *
+ * @return \f$W(m_1,m_2,Q)\f$
+ */
+double W(double m1, double m2, double scale)
+{
+   const double m12 = sqr(m1);
+   const double m14 = sqr(m12);
+   const double m22 = sqr(m2);
+   const double m24 = sqr(m22);
+   const double m26 = m24 * m22;
+   const double Q2  = sqr(scale);
+
+   if (is_zero(m12) || is_zero(m22) || is_zero(Q2))
+      return 0.;
+
+   if (is_equal_rel(m12,m22,1e-3))
+      return 2./3. - 2. * std::log(Q2/m22);
+
+   return (- 2*std::log(Q2/m12)
+           - std::log(m22/m12)*(2*m26 - 6*m12*m24)/std::pow(m12 - m22, 3)
+           - (m14 - 6*m22*m12 + m24)/std::pow(m12 - m22, 2));
 }
 
 } // namespace threshold_loop_functions

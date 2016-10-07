@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:46:38
+// File generated at Sat 27 Aug 2016 12:48:13
 
 #ifndef MSSMNoFVatMGUT_UTILITIES_H
 #define MSSMNoFVatMGUT_UTILITIES_H
 
-#include "MSSMNoFVatMGUT_two_scale_model.hpp"
+#include "MSSMNoFVatMGUT_mass_eigenstates.hpp"
 #include "MSSMNoFVatMGUT_info.hpp"
 #include "wrappers.hpp"
 
@@ -31,17 +31,56 @@
 #include <valarray>
 #include <utility>
 
+namespace softsusy {
+class QedQcd;
+}
+
 namespace flexiblesusy {
+
+struct MSSMNoFVatMGUT_observables;
+class Physical_input;
 
 class MSSMNoFVatMGUT_parameter_getter {
 public:
    Eigen::ArrayXd get_parameters(const MSSMNoFVatMGUT_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const MSSMNoFVatMGUT_mass_eigenstates&) const {
+   std::vector<std::string> get_parameter_names() const {
       using namespace MSSMNoFVatMGUT_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
+   }
+   std::vector<std::string> get_particle_names() const {
+      using namespace MSSMNoFVatMGUT_info;
+      return std::vector<std::string>(particle_names,
+                                      particle_names + NUMBER_OF_PARTICLES);
+   }
+   std::vector<std::string> get_mass_names() const {
+      using namespace MSSMNoFVatMGUT_info;
+      std::vector<std::string> masses;
+      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
+         for (unsigned m = 0; m < particle_multiplicities[i]; m++) {
+            masses.push_back(
+               std::string("M") + particle_names[i] +
+               (particle_multiplicities[i] == 1 ? "" : "("
+                + std::to_string(static_cast<unsigned long long>(m)) + ")"));
+         }
+      }
+      return masses;
+   }
+   std::vector<std::string> get_mixing_names() const {
+      using namespace MSSMNoFVatMGUT_info;
+      return std::vector<std::string>(particle_mixing_names,
+                                      particle_mixing_names + NUMBER_OF_MIXINGS);
+   }
+   std::vector<std::string> get_input_parameter_names() const {
+      using namespace MSSMNoFVatMGUT_info;
+      return std::vector<std::string>(input_parameter_names,
+                                      input_parameter_names + NUMBER_OF_INPUT_PARAMETERS);
+   }
+   std::size_t get_number_of_masses() const {
+      using namespace MSSMNoFVatMGUT_info;
+      return NUMBER_OF_MASSES;
    }
 };
 
@@ -81,6 +120,26 @@ std::valarray<double> MSSMNoFVatMGUT_spectrum_plotter::to_valarray(const Eigen::
 {
    return std::valarray<double>(v.data(), v.size());
 }
+
+namespace MSSMNoFVatMGUT_database {
+
+/// append parameter point to database
+void to_database(
+   const std::string&,
+   const MSSMNoFVatMGUT_mass_eigenstates&,
+   const softsusy::QedQcd* qedqcd = 0,
+   const Physical_input* physical_input = 0,
+   const MSSMNoFVatMGUT_observables* observables = 0);
+
+/// fill model from an entry of the database
+MSSMNoFVatMGUT_mass_eigenstates from_database(
+   const std::string&,
+   std::size_t,
+   softsusy::QedQcd* qedqcd = 0,
+   Physical_input* physical_input = 0,
+   MSSMNoFVatMGUT_observables* observables = 0);
+
+} // namespace MSSMNoFVatMGUT_database
 
 } // namespace flexiblesusy
 

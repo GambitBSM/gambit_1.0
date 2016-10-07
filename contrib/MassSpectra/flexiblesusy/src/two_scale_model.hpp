@@ -20,7 +20,7 @@
 #define TWO_SCALE_MODEL_H
 
 #include <string>
-#include <ostream>
+#include <iostream>
 
 namespace flexiblesusy {
 
@@ -31,7 +31,7 @@ public:
    virtual void clear_problems() {}
    virtual std::string name() const { return "unnamed"; }
    virtual void run_to(double, double eps = -1.0) = 0;
-   virtual void print(std::ostream& out) const { out << "Model: " << name(); }
+   virtual void print(std::ostream& out = std::cout) const { out << "Model: " << name(); }
    friend std::ostream& operator<<(std::ostream& out, const Two_scale_model& model) {
       model.print(out);
       return out;

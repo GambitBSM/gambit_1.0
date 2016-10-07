@@ -18,6 +18,7 @@ MSSMatMGUT_TWO_SCALE_MK := \
 		$(MSSMatMGUT_TWO_SCALE_SOFT_MK)
 
 MSSMatMGUT_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.MSSMatMGUT_generated \
 		$(DIR)/LesHouches.in.MSSMatMGUT
 
 MSSMatMGUT_GNUPLOT := \
@@ -34,9 +35,11 @@ LIBMSSMatMGUT_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBMSSMatMGUT_SRC += \
+		$(DIR)/MSSMatMGUT_effective_couplings.cpp \
 		$(DIR)/MSSMatMGUT_mass_eigenstates.cpp \
 		$(DIR)/MSSMatMGUT_info.cpp \
 		$(DIR)/MSSMatMGUT_input_parameters.cpp \
+		$(DIR)/MSSMatMGUT_observables.cpp \
 		$(DIR)/MSSMatMGUT_slha_io.cpp \
 		$(DIR)/MSSMatMGUT_physical.cpp \
 		$(DIR)/MSSMatMGUT_utilities.cpp \
@@ -55,6 +58,7 @@ EXEMSSMatMGUT_SRC += \
 		$(DIR)/scan_MSSMatMGUT.cpp
 LIBMSSMatMGUT_HDR += \
 		$(DIR)/MSSMatMGUT_convergence_tester.hpp \
+		$(DIR)/MSSMatMGUT_effective_couplings.hpp \
 		$(DIR)/MSSMatMGUT_high_scale_constraint.hpp \
 		$(DIR)/MSSMatMGUT_mass_eigenstates.hpp \
 		$(DIR)/MSSMatMGUT_info.hpp \
@@ -63,6 +67,7 @@ LIBMSSMatMGUT_HDR += \
 		$(DIR)/MSSMatMGUT_low_scale_constraint.hpp \
 		$(DIR)/MSSMatMGUT_model.hpp \
 		$(DIR)/MSSMatMGUT_model_slha.hpp \
+		$(DIR)/MSSMatMGUT_observables.hpp \
 		$(DIR)/MSSMatMGUT_physical.hpp \
 		$(DIR)/MSSMatMGUT_slha_io.hpp \
 		$(DIR)/MSSMatMGUT_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_MSSMatMGUT := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBMSSMatMGUT)
+all-$(MODNAME): $(LIBMSSMatMGUT) $(EXEMSSMatMGUT_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBMSSMatMGUT_DEP)
 		-rm -f $(EXEMSSMatMGUT_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBMSSMatMGUT)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBMSSMatMGUT_OBJ)
 		-rm -f $(EXEMSSMatMGUT_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBMSSMatMGUT)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXEMSSMatMGUT_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_MSSMatMGUT):
 		@true
 endif
 
-$(LIBMSSMatMGUT_DEP) $(EXEMSSMatMGUT_DEP) $(LIBMSSMatMGUT_OBJ) $(EXEMSSMatMGUT_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBMSSMatMGUT_DEP) $(EXEMSSMatMGUT_DEP) $(LIBMSSMatMGUT_OBJ) $(EXEMSSMatMGUT_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBMSSMatMGUT_DEP) $(EXEMSSMatMGUT_DEP) $(LIBMSSMatMGUT_OBJ) $(EXEMSSMatMGUT_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBMSSMatMGUT): $(LIBMSSMatMGUT_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBMSSMatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBMSSMatMGUT_DEP) $(EXEMSSMatMGUT_DEP)
 ALLSRC += $(LIBMSSMatMGUT_SRC) $(EXEMSSMatMGUT_SRC)

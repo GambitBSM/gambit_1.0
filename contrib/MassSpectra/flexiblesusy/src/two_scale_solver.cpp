@@ -192,7 +192,7 @@ void RGFlow<Two_scale>::run_up()
          Matching<Two_scale>* mc = model->matching_condition;
          const double scale = mc->get_scale();
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
-	 model->model->run_to(scale);
+         model->model->run_to(scale);
          VERBOSE_MSG("> \t\t\tapplying matching condition");
          mc->match_low_to_high_scale_model();
       }
