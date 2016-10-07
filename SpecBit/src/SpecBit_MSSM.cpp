@@ -218,7 +218,7 @@ namespace Gambit
 
       // Do the W mass separately.  Here we use 20 MeV as a temporary guess at the import of the neglected 2-loop corrections.
       // FIXME Peter is going to work out if 20 MeV is actually reasonable.
-      double rd_mW = 0.02 / mssmspec.get(Par::Pole_Mass, "W+");
+      double rd_mW = 0.01 / mssmspec.get(Par::Pole_Mass, "W+");
       mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mW, "W+", true);
       mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mW, "W+", true);
 
