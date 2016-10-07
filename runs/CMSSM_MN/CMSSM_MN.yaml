@@ -391,8 +391,7 @@ Rules:
                              "HadronLevel:all = on",
                              "SUSY:all = on",
                              "TauDecays:mode = 0",
-                             "TimeShower:pTmin = 20",
-                             "Main:numberOfEvents = 20000"]
+                             "TimeShower:pTmin = 20"]
 
   - capability: LHC_Combined_LogLike
     backends:
