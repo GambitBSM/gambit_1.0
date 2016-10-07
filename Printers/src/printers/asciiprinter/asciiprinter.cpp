@@ -39,12 +39,12 @@
 
 // Switch for debugging output (manual at the moment)
 
-//#define DEBUG_MODE
+//#define AP_DEBUG_MODE
 
-#ifdef DEBUG_MODE 
-  #define DBUG(x) x
+#ifdef AP_DEBUG_MODE 
+  #define AP_DBUG(x) x
 #else 
-  #define DBUG(x)
+  #define AP_DBUG(x)
 #endif
 
 
@@ -182,12 +182,12 @@ namespace Gambit
     asciiPrinter::~asciiPrinter()
     {
       // Make sure buffer is completely written to disk (MOVED TO FINALISE)
-      DBUG( std::cout << "Destructing asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
+      AP_DBUG( std::cout << "Destructing asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
     }
  
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
-    void asciiPrinter::initialise(const std::vector<int>& printmevec)
+    void asciiPrinter::initialise(const std::vector<int>& /*printmevec*/)
     {
       // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
       // //std::cout << "Initialising asciiprinter..." << std::endl;
@@ -204,10 +204,10 @@ namespace Gambit
     }
 
     /// Do final buffer dumps
-    void asciiPrinter::finalise(bool abnormal)
+    void asciiPrinter::finalise(bool /*abnormal*/)
     {
       dump_buffer(true);
-      DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
+      AP_DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
 
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
@@ -282,7 +282,7 @@ namespace Gambit
       std::pair<int,int> bkey = std::make_pair(rank,pointID);
  
       // Register <pointID> as coming from process <rank>.
-      DBUG( std::cout << "My rank is (reported) " << rank << std::endl; )
+      AP_DBUG( std::cout << "My rank is (reported) " << rank << std::endl; )
       if(lastPointID.at(rank)==pointID)
       {
         // Don't need to do anything
@@ -300,13 +300,13 @@ namespace Gambit
 
         // Check whether it is time to dump the (completed) buffer points to disk
         if(buffer.size()>bufferlength) {
-          DBUG( std::cout << "asciiPrinter: Buffer full ("<< buffer.size() <<" records), running buffer dump"<<std::endl; )
+          AP_DBUG( std::cout << "asciiPrinter: Buffer full ("<< buffer.size() <<" records), running buffer dump"<<std::endl; )
           dump_buffer();
         }
       }
 
-      DBUG( std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl; )
-      DBUG( std::cout << "... at slot <rank=" << rank << ", pointID=" << pointID << ">" << std::endl;; )
+      AP_DBUG( std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl; )
+      AP_DBUG( std::cout << "... at slot <rank=" << rank << ", pointID=" << pointID << ">" << std::endl;; )
 
       if( buffer.find(bkey)!=buffer.end() and buffer.at(bkey).readyToPrint==true )
       {
@@ -339,8 +339,8 @@ is a unique record for every rank/pointID pair.";
       // to be kind of haphazard due to the sorted order used by map. Will have to do more work to achieve
       // an ordering that reflects the order of stuff in, say, the inifile.
       //  force=true -- dumps all records regardless if they are "readyToPrint"
-      DBUG( std::cout << "dumping asciiprinter buffer" << std::endl; )
-      DBUG( std::cout << "lfpvfc 1" << std::endl; )
+      AP_DBUG( std::cout << "dumping asciiprinter buffer" << std::endl; )
+      AP_DBUG( std::cout << "lfpvfc 1" << std::endl; )
 
       // Open output file in append mode
       std::ofstream my_fstream;
@@ -365,7 +365,7 @@ is a unique record for every rank/pointID pair.";
           newlineindexrecord[item->first] = std::max(oldlen, newlen);
         }
       }
-      DBUG( std::cout << "lfpvfc 2" << std::endl; )
+      AP_DBUG( std::cout << "lfpvfc 2" << std::endl; )
 
       // Check if the output format has changed, and raise an error if so
       if (lineindexrecord.size()==0)
@@ -413,12 +413,12 @@ is a unique record for every rank/pointID pair.";
         }
         printer_error().raise(LOCAL_INFO,errmsg.str());
       }
-      DBUG( std::cout << "lfpvfc 3" << std::endl; )
+      AP_DBUG( std::cout << "lfpvfc 3" << std::endl; )
 
       // Write the file explaining what is in each column of the output file
       if (info_file_written==false)
       {
-        DBUG( std::cout << "asciiPrinter: Writing info file..." << std::endl; )
+        AP_DBUG( std::cout << "asciiPrinter: Writing info file..." << std::endl; )
          
         std::ofstream info_fstream;
         open_output_file(info_fstream, info_file, std::ofstream::trunc); // trunc mode overwrites old content
@@ -431,18 +431,18 @@ is a unique record for every rank/pointID pair.";
           int length     = it->second;     // slots reserved in output file for these results
           for (int i=0; i<length; i++)
           {
-            DBUG( std::cout<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl; )
+            AP_DBUG( std::cout<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl; )
             info_fstream<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl;
             column_index++;
           }
         }
-        DBUG( std::cout << "lfpvfc 3.1" << std::endl; )
+        AP_DBUG( std::cout << "lfpvfc 3.1" << std::endl; )
         //info_fstream.flush();
         info_fstream.close();
         info_file_written=true;
       }
 
-      DBUG( std::cout << "lfpvfc 4" << std::endl; )
+      AP_DBUG( std::cout << "lfpvfc 4" << std::endl; )
 
       // Actual dump of buffer to file
       for (Buffer::iterator 
@@ -450,10 +450,10 @@ is a unique record for every rank/pointID pair.";
       {
         std::pair<int,int> bkey = bufentry->first;
         Record& record = bufentry->second; 
-        DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bkey.first<<", pointID="<<bkey.second<<">"<< std::endl; )
+        AP_DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bkey.first<<", pointID="<<bkey.second<<">"<< std::endl; )
         if(force or record.readyToPrint)
         {
-          DBUG( std::cout << "asciiPrinter: readyToPrint -- writing output..." << std::endl; )
+          AP_DBUG( std::cout << "asciiPrinter: readyToPrint -- writing output..." << std::endl; )
           for (std::map<int,int>::iterator
             it = lineindexrecord.begin(); it != lineindexrecord.end(); ++it)
           { 
@@ -474,7 +474,7 @@ is a unique record for every rank/pointID pair.";
 
                // Not an error. This can happen if evaluation of a point is abandoned midway for whatever reason
                // Register results as zero length
-               DBUG( std::cout << "asciiPrinter: No data for vertex ID \"" << it->first 
+               AP_DBUG( std::cout << "asciiPrinter: No data for vertex ID \"" << it->first 
                      << "\" found in record <rank=" << bkey.first 
                      << ", pointID=" << bkey.second << ">, printer will output 'null'" << std::endl; )
                reslength = 0;
@@ -505,24 +505,24 @@ is a unique record for every rank/pointID pair.";
           }
           // Delete the record from the buffer and move to next one
           // Post-increment:  Increment the iterator first, THEN delete old one.
-          DBUG( std::cout << "asciiPrinter: Erasing record <rank="<<bkey.first<<", pointID="<<bkey.second<<">"<< std::endl; )
+          AP_DBUG( std::cout << "asciiPrinter: Erasing record <rank="<<bkey.first<<", pointID="<<bkey.second<<">"<< std::endl; )
           buffer.erase(bufentry++);
         }
         else
         {
-          DBUG( std::cout << "asciiPrinter: Not readyToPrint -- leaving in buffer" << std::endl; )
+          AP_DBUG( std::cout << "asciiPrinter: Not readyToPrint -- leaving in buffer" << std::endl; )
           ++bufentry;
         } 
         // line printed, print endline character and go to next line
         my_fstream<<std::endl;
       }
-      DBUG( std::cout << "lfpvfc 5" << std::endl; )
+      AP_DBUG( std::cout << "lfpvfc 5" << std::endl; )
 
       // buffer dump complete! Flush the fstream to ensure write to file happens.
       //my_fstream.flush();
       my_fstream.close();
 
-      DBUG( std::cout << "lfpvfc 6" << std::endl; )
+      AP_DBUG( std::cout << "lfpvfc 6" << std::endl; )
     }
  
  
@@ -605,5 +605,5 @@ is a unique record for every rank/pointID pair.";
   } // end namespace printers
 } // end namespace Gambit
 
-#undef DBUG
-#undef DEBUG_MODE
+#undef AP_DBUG
+#undef AP_DEBUG_MODE

@@ -18,7 +18,8 @@ SingletDM_TWO_SCALE_MK := \
 		$(SingletDM_TWO_SCALE_SOFT_MK)
 
 SingletDM_SLHA_INPUT := \
-LesHouches.in.SingletDM
+		$(DIR)/LesHouches.in.SingletDM_generated \
+		$(DIR)/LesHouches.in.SingletDM
 
 SingletDM_GNUPLOT := \
 		$(DIR)/SingletDM_plot_rgflow.gnuplot \
@@ -34,9 +35,11 @@ LIBSingletDM_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSingletDM_SRC += \
+		$(DIR)/SingletDM_effective_couplings.cpp \
 		$(DIR)/SingletDM_mass_eigenstates.cpp \
 		$(DIR)/SingletDM_info.cpp \
 		$(DIR)/SingletDM_input_parameters.cpp \
+		$(DIR)/SingletDM_observables.cpp \
 		$(DIR)/SingletDM_slha_io.cpp \
 		$(DIR)/SingletDM_physical.cpp \
 		$(DIR)/SingletDM_utilities.cpp \
@@ -55,6 +58,7 @@ EXESingletDM_SRC += \
 		$(DIR)/scan_SingletDM.cpp
 LIBSingletDM_HDR += \
 		$(DIR)/SingletDM_convergence_tester.hpp \
+		$(DIR)/SingletDM_effective_couplings.hpp \
 		$(DIR)/SingletDM_high_scale_constraint.hpp \
 		$(DIR)/SingletDM_mass_eigenstates.hpp \
 		$(DIR)/SingletDM_info.hpp \
@@ -63,6 +67,7 @@ LIBSingletDM_HDR += \
 		$(DIR)/SingletDM_low_scale_constraint.hpp \
 		$(DIR)/SingletDM_model.hpp \
 		$(DIR)/SingletDM_model_slha.hpp \
+		$(DIR)/SingletDM_observables.hpp \
 		$(DIR)/SingletDM_physical.hpp \
 		$(DIR)/SingletDM_slha_io.hpp \
 		$(DIR)/SingletDM_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_SingletDM := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBSingletDM)
+all-$(MODNAME): $(LIBSingletDM) $(EXESingletDM_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBSingletDM_DEP)
 		-rm -f $(EXESingletDM_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBSingletDM)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBSingletDM_OBJ)
 		-rm -f $(EXESingletDM_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBSingletDM)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXESingletDM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_SingletDM):
 		@true
 endif
 
-$(LIBSingletDM_DEP) $(EXESingletDM_DEP) $(LIBSingletDM_OBJ) $(EXESingletDM_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBSingletDM_DEP) $(EXESingletDM_DEP) $(LIBSingletDM_OBJ) $(EXESingletDM_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBSingletDM_DEP) $(EXESingletDM_DEP) $(LIBSingletDM_OBJ) $(EXESingletDM_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBSingletDM): $(LIBSingletDM_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBSingletDM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBSingletDM_DEP) $(EXESingletDM_DEP)
 ALLSRC += $(LIBSingletDM_SRC) $(EXESingletDM_SRC)

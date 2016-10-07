@@ -16,12 +16,15 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:58
+// File generated at Sat 27 Aug 2016 12:45:01
 
 #include "SingletDMZ3_input_parameters.hpp"
+#include "SingletDMZ3_observables.hpp"
 #include "SingletDMZ3_slha_io.hpp"
 #include "SingletDMZ3_spectrum_generator.hpp"
+#include "SingletDMZ3_utilities.hpp"
 
+#include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
@@ -40,13 +43,15 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
+   const std::string database_output_file(options.get_database_output_file());
    const std::string rgflow_file(options.get_rgflow_file());
    const std::string slha_input_source(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
    const std::string spectrum_file(options.get_spectrum_file());
    SingletDMZ3_slha_io slha_io;
+   Physical_input physical_input; // extra non-SLHA physical input
    Spectrum_generator_settings spectrum_generator_settings;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
    SingletDMZ3_input_parameters input;
 
    if (slha_input_source.empty()) {
@@ -57,24 +62,32 @@ int main(int argc, const char* argv[])
 
    try {
       slha_io.read_from_source(slha_input_source);
-      slha_io.fill(oneset);
+      slha_io.fill(qedqcd);
       slha_io.fill(input);
+      slha_io.fill(physical_input);
       slha_io.fill(spectrum_generator_settings);
    } catch (const Error& error) {
       ERROR(error.what());
       return EXIT_FAILURE;
    }
 
-   oneset.toMz(); // run SM fermion masses to MZ
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
+   } catch (const std::string& s) {
+      ERROR(s);
+      return EXIT_FAILURE;
+   }
 
    SingletDMZ3_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
    spectrum_generator.set_parameter_output_scale(
       slha_io.get_parameter_output_scale());
 
-   spectrum_generator.run(oneset, input);
+   spectrum_generator.run(qedqcd, input);
 
-   const SingletDMZ3_slha<algorithm_type> model(spectrum_generator.get_model());
+   const SingletDMZ3_slha<algorithm_type> model(
+      spectrum_generator.get_model(),
+      spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
    const Problems<SingletDMZ3_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
@@ -83,20 +96,35 @@ int main(int argc, const char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   // output
-   slha_io.set_spinfo(problems);
-   slha_io.set_minpar(input);
-   slha_io.set_extpar(input);
-   if (!problems.have_problem() ||
-       spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
-      slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales);
+   SingletDMZ3_observables observables;
+   if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
+      observables = calculate_observables(model, qedqcd, physical_input);
+
+   // SLHA output
+   if (!slha_output_file.empty()) {
+      slha_io.set_spinfo(problems);
+      slha_io.set_minpar(input);
+      slha_io.set_extpar(input);
+      if (!problems.have_problem() ||
+          spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
+         slha_io.set_print_imaginary_parts_of_majorana_mixings(
+            spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses));
+         slha_io.set_spectrum(model);
+         slha_io.set_extra(model, scales, observables);
+      }
+
+      if (slha_output_file == "-") {
+         slha_io.write_to_stream(std::cout);
+      } else {
+         slha_io.write_to_file(slha_output_file);
+      }
    }
 
-   if (slha_output_file.empty()) {
-      slha_io.write_to_stream(std::cout);
-   } else {
-      slha_io.write_to_file(slha_output_file);
+   if (!database_output_file.empty() &&
+       (!problems.have_problem() ||
+        spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
+      SingletDMZ3_database::to_database(database_output_file, model, &qedqcd,
+                                        &physical_input, &observables);
    }
 
    if (!spectrum_file.empty())

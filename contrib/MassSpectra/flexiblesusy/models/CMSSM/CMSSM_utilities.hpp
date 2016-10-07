@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:32:28
+// File generated at Sat 27 Aug 2016 12:50:33
 
 #ifndef CMSSM_UTILITIES_H
 #define CMSSM_UTILITIES_H
 
-#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_mass_eigenstates.hpp"
 #include "CMSSM_info.hpp"
 #include "wrappers.hpp"
 
@@ -31,17 +31,56 @@
 #include <valarray>
 #include <utility>
 
+namespace softsusy {
+class QedQcd;
+}
+
 namespace flexiblesusy {
+
+struct CMSSM_observables;
+class Physical_input;
 
 class CMSSM_parameter_getter {
 public:
    Eigen::ArrayXd get_parameters(const CMSSM_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const CMSSM_mass_eigenstates&) const {
+   std::vector<std::string> get_parameter_names() const {
       using namespace CMSSM_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
+   }
+   std::vector<std::string> get_particle_names() const {
+      using namespace CMSSM_info;
+      return std::vector<std::string>(particle_names,
+                                      particle_names + NUMBER_OF_PARTICLES);
+   }
+   std::vector<std::string> get_mass_names() const {
+      using namespace CMSSM_info;
+      std::vector<std::string> masses;
+      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
+         for (unsigned m = 0; m < particle_multiplicities[i]; m++) {
+            masses.push_back(
+               std::string("M") + particle_names[i] +
+               (particle_multiplicities[i] == 1 ? "" : "("
+                + std::to_string(static_cast<unsigned long long>(m)) + ")"));
+         }
+      }
+      return masses;
+   }
+   std::vector<std::string> get_mixing_names() const {
+      using namespace CMSSM_info;
+      return std::vector<std::string>(particle_mixing_names,
+                                      particle_mixing_names + NUMBER_OF_MIXINGS);
+   }
+   std::vector<std::string> get_input_parameter_names() const {
+      using namespace CMSSM_info;
+      return std::vector<std::string>(input_parameter_names,
+                                      input_parameter_names + NUMBER_OF_INPUT_PARAMETERS);
+   }
+   std::size_t get_number_of_masses() const {
+      using namespace CMSSM_info;
+      return NUMBER_OF_MASSES;
    }
 };
 
@@ -81,6 +120,26 @@ std::valarray<double> CMSSM_spectrum_plotter::to_valarray(const Eigen::Array<Sca
 {
    return std::valarray<double>(v.data(), v.size());
 }
+
+namespace CMSSM_database {
+
+/// append parameter point to database
+void to_database(
+   const std::string&,
+   const CMSSM_mass_eigenstates&,
+   const softsusy::QedQcd* qedqcd = 0,
+   const Physical_input* physical_input = 0,
+   const CMSSM_observables* observables = 0);
+
+/// fill model from an entry of the database
+CMSSM_mass_eigenstates from_database(
+   const std::string&,
+   std::size_t,
+   softsusy::QedQcd* qedqcd = 0,
+   Physical_input* physical_input = 0,
+   CMSSM_observables* observables = 0);
+
+} // namespace CMSSM_database
 
 } // namespace flexiblesusy
 

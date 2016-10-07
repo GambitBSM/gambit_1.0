@@ -41,6 +41,46 @@ unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
 }
 
 /**
+ * Divides a by b element wise.  If the quotient is not finite, it is
+ * set to zero.
+ *
+ * @param a numerator
+ * @param b denominator
+ */
+template <typename Scalar, int M, int N>
+Eigen::Matrix<Scalar,M,N> div_save(
+   const Eigen::Matrix<Scalar,M,N>& a, const Eigen::Matrix<Scalar,M,N>& b)
+{
+   Eigen::Matrix<Scalar,M,N> result(Eigen::Matrix<Scalar,M,N>::Zero());
+
+   for (int i = 0; i < M; i++) {
+      for (int k = 0; k < N; k++) {
+         const double quotient = a(i,k) / b(i,k);
+         if (std::isfinite(quotient))
+            result(i,k) = quotient;
+      }
+   }
+
+   return result;
+}
+
+template <class BinaryOp, class Derived>
+Derived binary_map(
+   const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<Derived>& b, BinaryOp op)
+{
+   typename Derived::PlainObject result(a.rows(), b.cols());
+
+   assert(a.rows() == b.rows());
+   assert(a.cols() == b.cols());
+
+   for (int i = 0; i < a.rows(); i++)
+      for (int k = 0; k < a.cols(); k++)
+         result(i,k) = op(a(i,k), b(i,k));
+
+   return result;
+}
+
+/**
  * The element of v, which is closest to mass, is moved to the
  * position idx.
  *

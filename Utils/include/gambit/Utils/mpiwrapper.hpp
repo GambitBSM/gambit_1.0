@@ -360,7 +360,7 @@ namespace Gambit
             // for messages that will never arrive).
             void Abort()
             {
-              std::cerr << "rank "<<Get_rank()<<": MPI_Abort command received, attempting to terminate all processes..." << std::endl;
+              std::cerr << "rank "<<Get_rank()<<": Issuing MPI_Abort command, attempting to terminate all processes..." << std::endl;
               MPI_Abort(boundcomm, 1);
             }
 

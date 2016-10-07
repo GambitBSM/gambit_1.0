@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:34
+// File generated at Sat 27 Aug 2016 12:43:56
 
 #ifndef SingletDMZ3_TWO_SCALE_SUSY_SCALE_CONSTRAINT_H
 #define SingletDMZ3_TWO_SCALE_SUSY_SCALE_CONSTRAINT_H
@@ -24,6 +24,7 @@
 #include "SingletDMZ3_susy_scale_constraint.hpp"
 #include "SingletDMZ3_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
+#include "lowe.h"
 
 namespace flexiblesusy {
 
@@ -36,7 +37,7 @@ template<>
 class SingletDMZ3_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    SingletDMZ3_susy_scale_constraint();
-   SingletDMZ3_susy_scale_constraint(SingletDMZ3<Two_scale>*);
+   SingletDMZ3_susy_scale_constraint(SingletDMZ3<Two_scale>*, const softsusy::QedQcd&);
    virtual ~SingletDMZ3_susy_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -47,6 +48,8 @@ public:
    const SingletDMZ3_input_parameters& get_input_parameters() const;
    SingletDMZ3<Two_scale>* get_model() const;
    void initialize();
+   const softsusy::QedQcd& get_sm_parameters() const;
+   void set_sm_parameters(const softsusy::QedQcd&);
 
 protected:
    void update_scale();
@@ -55,6 +58,7 @@ private:
    double scale;
    double initial_scale_guess;
    SingletDMZ3<Two_scale>* model;
+   softsusy::QedQcd qedqcd;
 };
 
 } // namespace flexiblesusy

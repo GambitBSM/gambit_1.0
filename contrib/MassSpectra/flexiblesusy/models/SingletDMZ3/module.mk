@@ -18,7 +18,8 @@ SingletDMZ3_TWO_SCALE_MK := \
 		$(SingletDMZ3_TWO_SCALE_SOFT_MK)
 
 SingletDMZ3_SLHA_INPUT := \
-LesHouches.in.SingletDMZ3
+		$(DIR)/LesHouches.in.SingletDMZ3_generated \
+		$(DIR)/LesHouches.in.SingletDMZ3
 
 SingletDMZ3_GNUPLOT := \
 		$(DIR)/SingletDMZ3_plot_rgflow.gnuplot \
@@ -34,9 +35,11 @@ LIBSingletDMZ3_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSingletDMZ3_SRC += \
+		$(DIR)/SingletDMZ3_effective_couplings.cpp \
 		$(DIR)/SingletDMZ3_mass_eigenstates.cpp \
 		$(DIR)/SingletDMZ3_info.cpp \
 		$(DIR)/SingletDMZ3_input_parameters.cpp \
+		$(DIR)/SingletDMZ3_observables.cpp \
 		$(DIR)/SingletDMZ3_slha_io.cpp \
 		$(DIR)/SingletDMZ3_physical.cpp \
 		$(DIR)/SingletDMZ3_utilities.cpp \
@@ -55,6 +58,7 @@ EXESingletDMZ3_SRC += \
 		$(DIR)/scan_SingletDMZ3.cpp
 LIBSingletDMZ3_HDR += \
 		$(DIR)/SingletDMZ3_convergence_tester.hpp \
+		$(DIR)/SingletDMZ3_effective_couplings.hpp \
 		$(DIR)/SingletDMZ3_high_scale_constraint.hpp \
 		$(DIR)/SingletDMZ3_mass_eigenstates.hpp \
 		$(DIR)/SingletDMZ3_info.hpp \
@@ -63,6 +67,7 @@ LIBSingletDMZ3_HDR += \
 		$(DIR)/SingletDMZ3_low_scale_constraint.hpp \
 		$(DIR)/SingletDMZ3_model.hpp \
 		$(DIR)/SingletDMZ3_model_slha.hpp \
+		$(DIR)/SingletDMZ3_observables.hpp \
 		$(DIR)/SingletDMZ3_physical.hpp \
 		$(DIR)/SingletDMZ3_slha_io.hpp \
 		$(DIR)/SingletDMZ3_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_SingletDMZ3 := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBSingletDMZ3)
+all-$(MODNAME): $(LIBSingletDMZ3) $(EXESingletDMZ3_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBSingletDMZ3_DEP)
 		-rm -f $(EXESingletDMZ3_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBSingletDMZ3)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBSingletDMZ3_OBJ)
 		-rm -f $(EXESingletDMZ3_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBSingletDMZ3)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXESingletDMZ3_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_SingletDMZ3):
 		@true
 endif
 
-$(LIBSingletDMZ3_DEP) $(EXESingletDMZ3_DEP) $(LIBSingletDMZ3_OBJ) $(EXESingletDMZ3_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBSingletDMZ3_DEP) $(EXESingletDMZ3_DEP) $(LIBSingletDMZ3_OBJ) $(EXESingletDMZ3_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBSingletDMZ3_DEP) $(EXESingletDMZ3_DEP) $(LIBSingletDMZ3_OBJ) $(EXESingletDMZ3_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBSingletDMZ3): $(LIBSingletDMZ3_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBSingletDMZ3) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBSingletDMZ3_DEP) $(EXESingletDMZ3_DEP)
 ALLSRC += $(LIBSingletDMZ3_SRC) $(EXESingletDMZ3_SRC)

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 16:41:43
+// File generated at Sat 27 Aug 2016 12:42:51
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -29,6 +29,10 @@ namespace flexiblesusy {
 #define CLASSNAME SingletDM_susy_parameters
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT susy_traces
+#define TRACE_STRUCT_TYPE Susy_traces
+#define CALCULATE_TRACES() calc_susy_traces(TRACE_STRUCT);
+
+const int SingletDM_susy_parameters::numberOfParameters;
 
 SingletDM_susy_parameters::SingletDM_susy_parameters(const SingletDM_input_parameters& input_)
    : Beta_function()
@@ -68,32 +72,44 @@ Eigen::ArrayXd SingletDM_susy_parameters::beta() const
 
 SingletDM_susy_parameters SingletDM_susy_parameters::calc_beta() const
 {
-   Susy_traces susy_traces;
-   calc_susy_traces(susy_traces);
+   double beta_g1 = 0.;
+   double beta_g2 = 0.;
+   double beta_g3 = 0.;
+   double beta_LamS = 0.;
+   double beta_LamSH = 0.;
+   double beta_LamH = 0.;
+   Eigen::Matrix<double,3,3> beta_Yu = Eigen::Matrix<double,3,3>::Zero();
+   Eigen::Matrix<double,3,3> beta_Yd = Eigen::Matrix<double,3,3>::Zero();
+   Eigen::Matrix<double,3,3> beta_Ye = Eigen::Matrix<double,3,3>::Zero();
 
-   double beta_g1(calc_beta_g1_one_loop(TRACE_STRUCT));
-   double beta_g2(calc_beta_g2_one_loop(TRACE_STRUCT));
-   double beta_g3(calc_beta_g3_one_loop(TRACE_STRUCT));
-   double beta_LamS(calc_beta_LamS_one_loop(TRACE_STRUCT));
-   double beta_LamSH(calc_beta_LamSH_one_loop(TRACE_STRUCT));
-   double beta_LamH(calc_beta_LamH_one_loop(TRACE_STRUCT));
-   Eigen::Matrix<double,3,3> beta_Yu(calc_beta_Yu_one_loop(TRACE_STRUCT));
-   Eigen::Matrix<double,3,3> beta_Yd(calc_beta_Yd_one_loop(TRACE_STRUCT));
-   Eigen::Matrix<double,3,3> beta_Ye(calc_beta_Ye_one_loop(TRACE_STRUCT));
+   if (get_loops() > 0) {
+      TRACE_STRUCT_TYPE TRACE_STRUCT;
+      CALCULATE_TRACES();
 
-   if (get_loops() > 1) {
-      beta_g1 += calc_beta_g1_two_loop(TRACE_STRUCT);
-      beta_g2 += calc_beta_g2_two_loop(TRACE_STRUCT);
-      beta_g3 += calc_beta_g3_two_loop(TRACE_STRUCT);
-      beta_LamS += calc_beta_LamS_two_loop(TRACE_STRUCT);
-      beta_LamSH += calc_beta_LamSH_two_loop(TRACE_STRUCT);
-      beta_LamH += calc_beta_LamH_two_loop(TRACE_STRUCT);
-      beta_Yu += calc_beta_Yu_two_loop(TRACE_STRUCT);
-      beta_Yd += calc_beta_Yd_two_loop(TRACE_STRUCT);
-      beta_Ye += calc_beta_Ye_two_loop(TRACE_STRUCT);
+      beta_g1 += calc_beta_g1_one_loop(TRACE_STRUCT);
+      beta_g2 += calc_beta_g2_one_loop(TRACE_STRUCT);
+      beta_g3 += calc_beta_g3_one_loop(TRACE_STRUCT);
+      beta_LamS += calc_beta_LamS_one_loop(TRACE_STRUCT);
+      beta_LamSH += calc_beta_LamSH_one_loop(TRACE_STRUCT);
+      beta_LamH += calc_beta_LamH_one_loop(TRACE_STRUCT);
+      beta_Yu += calc_beta_Yu_one_loop(TRACE_STRUCT);
+      beta_Yd += calc_beta_Yd_one_loop(TRACE_STRUCT);
+      beta_Ye += calc_beta_Ye_one_loop(TRACE_STRUCT);
 
-      if (get_loops() > 2) {
+      if (get_loops() > 1) {
+         beta_g1 += calc_beta_g1_two_loop(TRACE_STRUCT);
+         beta_g2 += calc_beta_g2_two_loop(TRACE_STRUCT);
+         beta_g3 += calc_beta_g3_two_loop(TRACE_STRUCT);
+         beta_LamS += calc_beta_LamS_two_loop(TRACE_STRUCT);
+         beta_LamSH += calc_beta_LamSH_two_loop(TRACE_STRUCT);
+         beta_LamH += calc_beta_LamH_two_loop(TRACE_STRUCT);
+         beta_Yu += calc_beta_Yu_two_loop(TRACE_STRUCT);
+         beta_Yd += calc_beta_Yd_two_loop(TRACE_STRUCT);
+         beta_Ye += calc_beta_Ye_two_loop(TRACE_STRUCT);
 
+         if (get_loops() > 2) {
+
+         }
       }
    }
 
@@ -163,7 +179,7 @@ Eigen::ArrayXd SingletDM_susy_parameters::get() const
 
 void SingletDM_susy_parameters::print(std::ostream& ostr) const
 {
-   ostr << "susy parameters:\n";
+   ostr << "susy parameters at Q = " << get_scale() << ":\n";
    ostr << "g1 = " << g1 << '\n';
    ostr << "g2 = " << g2 << '\n';
    ostr << "g3 = " << g3 << '\n';
@@ -231,35 +247,45 @@ void SingletDM_susy_parameters::set_input_parameters(const SingletDM_input_param
 
 void SingletDM_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) const
 {
-   TRACE_STRUCT.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
-   TRACE_STRUCT.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
-   TRACE_STRUCT.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYdAdjYdYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint(
-      )*Yd*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYdAdjYdYdAdjYuYuAdjYd = Re((Yd*Yd.adjoint()*Yd*Yu.adjoint(
-      )*Yu*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYdAdjYuYuAdjYdYdAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint(
-      )*Yd*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYdAdjYuYuAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yu.adjoint(
-      )*Yu*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYeAdjYeYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint(
-      )*Ye*Ye.adjoint()).trace());
-   TRACE_STRUCT.traceYuAdjYuYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint(
-      )*Yu*Yu.adjoint()).trace());
+   if (get_loops() > 0) {
+      TRACE_STRUCT.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
+      TRACE_STRUCT.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
+      TRACE_STRUCT.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
+         .trace());
 
+   }
+
+   if (get_loops() > 1) {
+      TRACE_STRUCT.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYdAdjYdYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint(
+         )*Yd*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYdAdjYdYdAdjYuYuAdjYd = Re((Yd*Yd.adjoint()*Yd*Yu.adjoint(
+         )*Yu*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYdAdjYuYuAdjYdYdAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint(
+         )*Yd*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYdAdjYuYuAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yu.adjoint(
+         )*Yu*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYeAdjYeYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint(
+         )*Ye*Ye.adjoint()).trace());
+      TRACE_STRUCT.traceYuAdjYuYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint(
+         )*Yu*Yu.adjoint()).trace());
+
+   }
+
+   if (get_loops() > 2) {
+
+   }
 }
 
 std::ostream& operator<<(std::ostream& ostr, const SingletDM_susy_parameters& susy_pars)
 {
-   susy_pars.print(std::cout);
+   susy_pars.print(ostr);
    return ostr;
 }
 

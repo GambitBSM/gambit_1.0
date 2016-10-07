@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:25
+// File generated at Sat 27 Aug 2016 12:40:20
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -25,6 +25,42 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+
+namespace {
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m - Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return - m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+} // anonymous namespace
 
 /**
  * Calculates the one-loop beta function of Lambda5.
@@ -37,7 +73,7 @@ double NSM_soft_parameters::calc_beta_Lambda5_one_loop(const Soft_traces& soft_t
 
    double beta_Lambda5;
 
-   beta_Lambda5 = Re(-4*oneOver16PiSqr*(Lambda3*Lambda4 + 18*Lambda2*
+   beta_Lambda5 = Re(oneOver16PiSqr*(4*Lambda3*Lambda4 + 72*Lambda2*
       Lambda5));
 
 
@@ -58,10 +94,10 @@ double NSM_soft_parameters::calc_beta_Lambda5_two_loop(const Soft_traces& soft_t
 
    double beta_Lambda5;
 
-   beta_Lambda5 = Re(-4*twoLoop*(-6*traceYdAdjYd*Lambda3*Lambda4 - 2*
-      traceYeAdjYe*Lambda3*Lambda4 - 6*traceYuAdjYu*Lambda3*Lambda4 + 24*
+   beta_Lambda5 = Re(4*twoLoop*(-6*traceYdAdjYd*Lambda3*Lambda4 - 2*
+      traceYeAdjYe*Lambda3*Lambda4 - 6*traceYuAdjYu*Lambda3*Lambda4 - 24*
       Lambda2*Lambda3*Lambda4 + 2*Lambda3*Lambda4*Sqr(g1) + 6*Lambda3*Lambda4*
-      Sqr(g2) + 828*Lambda5*Sqr(Lambda2) + 8*Lambda4*Sqr(Lambda3) + 9*Lambda5*
+      Sqr(g2) - 828*Lambda5*Sqr(Lambda2) - 8*Lambda4*Sqr(Lambda3) - 9*Lambda5*
       Sqr(Lambda3)));
 
 

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:24:07
+// File generated at Sat 27 Aug 2016 12:48:03
 
 #ifndef lowMSSM_TWO_SCALE_SUSY_SCALE_CONSTRAINT_H
 #define lowMSSM_TWO_SCALE_SUSY_SCALE_CONSTRAINT_H
@@ -24,6 +24,7 @@
 #include "lowMSSM_susy_scale_constraint.hpp"
 #include "lowMSSM_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
+#include "lowe.h"
 
 namespace flexiblesusy {
 
@@ -36,7 +37,7 @@ template<>
 class lowMSSM_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    lowMSSM_susy_scale_constraint();
-   lowMSSM_susy_scale_constraint(lowMSSM<Two_scale>*);
+   lowMSSM_susy_scale_constraint(lowMSSM<Two_scale>*, const softsusy::QedQcd&);
    virtual ~lowMSSM_susy_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -47,6 +48,8 @@ public:
    const lowMSSM_input_parameters& get_input_parameters() const;
    lowMSSM<Two_scale>* get_model() const;
    void initialize();
+   const softsusy::QedQcd& get_sm_parameters() const;
+   void set_sm_parameters(const softsusy::QedQcd&);
 
 protected:
    void update_scale();
@@ -55,6 +58,7 @@ private:
    double scale;
    double initial_scale_guess;
    lowMSSM<Two_scale>* model;
+   softsusy::QedQcd qedqcd;
 };
 
 } // namespace flexiblesusy

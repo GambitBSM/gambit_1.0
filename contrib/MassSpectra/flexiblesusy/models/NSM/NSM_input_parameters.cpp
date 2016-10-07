@@ -16,13 +16,41 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:26
+// File generated at Sat 27 Aug 2016 12:40:23
 
 #include "NSM_input_parameters.hpp"
+#include "wrappers.hpp"
 
 #define INPUT(p) input.p
 
 namespace flexiblesusy {
+
+Eigen::ArrayXd NSM_input_parameters::get() const
+{
+   Eigen::ArrayXd pars(7);
+
+   pars(0) = Lambda1Input;
+   pars(1) = Lambda2Input;
+   pars(2) = Lambda3Input;
+   pars(3) = Lambda4Input;
+   pars(4) = Lambda5Input;
+   pars(5) = vSInput;
+   pars(6) = Qin;
+
+   return pars;
+}
+
+void NSM_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+   Lambda1Input = pars(0);
+   Lambda2Input = pars(1);
+   Lambda3Input = pars(2);
+   Lambda4Input = pars(3);
+   Lambda5Input = pars(4);
+   vSInput = pars(5);
+   Qin = pars(6);
+
+}
 
 std::ostream& operator<<(std::ostream& ostr, const NSM_input_parameters& input)
 {

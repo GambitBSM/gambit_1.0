@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:49
+// File generated at Sat 27 Aug 2016 12:40:20
 
 #ifndef SSM_TWO_SCALE_soft_parameters_H
 #define SSM_TWO_SCALE_soft_parameters_H
@@ -35,7 +35,7 @@ namespace flexiblesusy {
 class SSM_soft_parameters : public SSM_susy_parameters {
 public:
    explicit SSM_soft_parameters(const SSM_input_parameters& input_ = SSM_input_parameters());
-   SSM_soft_parameters(const SSM_susy_parameters& , double K1_, double MS_, double mu2_, double v_
+   SSM_soft_parameters(const SSM_susy_parameters& , double Kappa_, double K1_, double MS_, double mu2_, double v_, double vS_
 );
    virtual ~SSM_soft_parameters() {}
    virtual Eigen::ArrayXd beta() const;
@@ -46,26 +46,32 @@ public:
    SSM_soft_parameters calc_beta() const;
    virtual void clear();
 
+   void set_Kappa(double Kappa_) { Kappa = Kappa_; }
    void set_K1(double K1_) { K1 = K1_; }
    void set_MS(double MS_) { MS = MS_; }
    void set_mu2(double mu2_) { mu2 = mu2_; }
    void set_v(double v_) { v = v_; }
+   void set_vS(double vS_) { vS = vS_; }
 
+   double get_Kappa() const { return Kappa; }
    double get_K1() const { return K1; }
    double get_MS() const { return MS; }
    double get_mu2() const { return mu2; }
    double get_v() const { return v; }
+   double get_vS() const { return vS; }
 
 
 protected:
+   double Kappa;
    double K1;
    double MS;
    double mu2;
    double v;
+   double vS;
 
 
 private:
-   static const int numberOfParameters = 37;
+   static const int numberOfParameters = 39;
 
    struct Soft_traces {
       double traceYdAdjYd;
@@ -79,6 +85,9 @@ private:
    };
    void calc_soft_traces(Soft_traces&) const;
 
+   double calc_beta_Kappa_one_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Kappa_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Kappa_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_K1_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_K1_two_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_K1_three_loop(const TRACE_STRUCT_TYPE&) const;
@@ -91,6 +100,9 @@ private:
    double calc_beta_v_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_v_two_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_v_three_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_vS_one_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_vS_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_vS_three_loop(const TRACE_STRUCT_TYPE&) const;
 
 };
 

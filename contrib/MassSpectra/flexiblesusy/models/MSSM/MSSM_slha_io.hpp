@@ -16,13 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:41
+// File generated at Sat 27 Aug 2016 12:50:55
 
 #ifndef MSSM_SLHA_IO_H
 #define MSSM_SLHA_IO_H
 
 #include "MSSM_two_scale_model_slha.hpp"
 #include "MSSM_info.hpp"
+#include "MSSM_observables.hpp"
 #include "MSSM_physical.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
@@ -37,7 +38,9 @@
 #define PHYSICAL(p) model.get_physical().p
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
+#define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
+#define OBSERVABLES observables
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -62,19 +65,23 @@ public:
    void fill(MSSM_input_parameters&) const;
    void fill(MSSM_mass_eigenstates&) const;
    template <class T> void fill(MSSM_slha<T>&) const;
+   void fill(Physical_input&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
+   void set_block(const std::string& str, SLHA_io::Position position = SLHA_io::back) { slha_io.set_block(str, position); }
+   void set_blocks(const std::vector<std::string>& vec, SLHA_io::Position position = SLHA_io::back) { slha_io.set_blocks(vec, position); }
    void set_extpar(const MSSM_input_parameters&);
-   template <class T> void set_extra(const MSSM_slha<T>&, const MSSM_scales&);
+   template <class T> void set_extra(const MSSM_slha<T>&, const MSSM_scales&, const MSSM_observables&);
    void set_minpar(const MSSM_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const MSSM_slha<T>&);
    template <class T> void set_spectrum(const MSSM<T>&);
    void set_spinfo(const Problems<MSSM_info::NUMBER_OF_PARTICLES>&);
+   void set_print_imaginary_parts_of_majorana_mixings(bool);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 
@@ -82,16 +89,14 @@ public:
    static void fill_extpar_tuple(MSSM_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const MSSM_slha<T>&, const softsusy::QedQcd&, const MSSM_scales&);
+   static void fill_slhaea(SLHAea::Coll&, const MSSM_slha<T>&, const softsusy::QedQcd&, const MSSM_scales&, const MSSM_observables&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const MSSM_slha<T>&, const softsusy::QedQcd&);
-
-   template <class T>
-   static SLHAea::Coll fill_slhaea(const MSSM_slha<T>&, const softsusy::QedQcd&, const MSSM_scales&);
+   static SLHAea::Coll fill_slhaea(const MSSM_slha<T>&, const softsusy::QedQcd&, const MSSM_scales&, const MSSM_observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
+   bool print_imaginary_parts_of_majorana_mixings;
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = 14;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
@@ -119,7 +124,8 @@ void MSSM_slha_io::fill(MSSM_slha<T>& model) const
 template <class T>
 void MSSM_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const MSSM_slha<T>& model,
-   const softsusy::QedQcd& qedqcd, const MSSM_scales& scales)
+   const softsusy::QedQcd& qedqcd, const MSSM_scales& scales,
+   const MSSM_observables& observables)
 {
    MSSM_slha_io slha_io;
    const MSSM_input_parameters& input = model.get_input();
@@ -133,7 +139,7 @@ void MSSM_slha_io::fill_slhaea(
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales);
+      slha_io.set_extra(model, scales, observables);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
@@ -141,20 +147,11 @@ void MSSM_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll MSSM_slha_io::fill_slhaea(
-   const MSSM_slha<T>& model, const softsusy::QedQcd& qedqcd)
-{
-   MSSM_scales scales;
-
-   return fill_slhaea(model, qedqcd, scales);
-}
-
-template <class T>
-SLHAea::Coll MSSM_slha_io::fill_slhaea(
    const MSSM_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const MSSM_scales& scales)
+   const MSSM_scales& scales, const MSSM_observables& observables)
 {
    SLHAea::Coll slhaea;
-   MSSM_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
+   MSSM_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
 
    return slhaea;
 }
@@ -209,6 +206,21 @@ void MSSM_slha_io::set_model_parameters(const MSSM_slha<T>& model)
       slha_io.set_block(block);
    }
 
+   {
+      std::ostringstream block;
+      block << "Block Phases Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_ELEMENT(1, (Re(MODELPARAMETER(PhaseGlu))), "Re(PhaseGlu)")
+      ;
+      slha_io.set_block(block);
+   }
+   {
+      std::ostringstream block;
+      block << "Block IMPhases Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_ELEMENT(1, (Im(MODELPARAMETER(PhaseGlu))), "Im(PhaseGlu)")
+      ;
+      slha_io.set_block(block);
+   }
+
 }
 
 /**
@@ -218,13 +230,14 @@ void MSSM_slha_io::set_model_parameters(const MSSM_slha<T>& model)
  */
 template <class T>
 void MSSM_slha_io::set_extra(
-   const MSSM_slha<T>& model, const MSSM_scales& scales)
+   const MSSM_slha<T>& model, const MSSM_scales& scales,
+   const MSSM_observables& observables)
 {
    const MSSM_physical physical(model.get_physical_slha());
 
    {
       std::ostringstream block;
-      block << "Block FlexibleSUSYOutput Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+      block << "Block FlexibleSUSYOutput" << '\n'
             << FORMAT_ELEMENT(0, (SCALES(HighScale)), "HighScale")
             << FORMAT_ELEMENT(1, (SCALES(SUSYScale)), "SUSYScale")
             << FORMAT_ELEMENT(2, (SCALES(LowScale)), "LowScale")
@@ -233,7 +246,7 @@ void MSSM_slha_io::set_extra(
    }
    {
       std::ostringstream block;
-      block << "Block ALPHA Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+      block << "Block ALPHA" << '\n'
             << FORMAT_NUMBER((ArcSin(Pole(ZH(1,1)))), "ArcSin(Pole(ZH(2,2)))")
       ;
       slha_io.set_block(block);
@@ -349,7 +362,9 @@ void MSSM_slha_io::set_spectrum(const MSSM_slha<T>& model)
 #undef PHYSICAL
 #undef PHYSICAL_SLHA
 #undef LOCALPHYSICAL
+#undef MODEL
 #undef MODELPARAMETER
+#undef OBSERVABLES
 #undef LowEnergyConstant
 #undef SCALES
 

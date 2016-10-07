@@ -91,14 +91,14 @@ private:
 };
 
 /// deletes duplicate elements from a vector (preseves order)
-template <typename Predicate = Is_not_duplicate>
-std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
+template <typename Predicate>
+std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec,
+                                           Predicate& pred)
 {
    std::vector<std::string> unique_vector;
-   Predicate pred;
 
    depgen::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
-                   std::ref(pred));
+                   pred);
 
    return unique_vector;
 }
@@ -187,9 +187,20 @@ std::vector<std::string> get_includes(const std::string& file_name)
       if (!tline.empty() && tline[0] == '#') {
          const std::string ttline(trim_left(tline.substr(1)));
          if (starts_with(ttline, "include")) {
+            // throw away `include'
             const std::string header(trim_left(ttline.substr(7)));
-            if (!header.empty() && header[0] == '"')
-               includes.push_back(header.substr(1, header.size()-2));
+            // extract file name
+            std::size_t pos1 = header.find_first_of('"');
+            if (pos1 == std::string::npos)
+               continue;
+            pos1++;
+            std::size_t pos2 = header.find_first_of('"', pos1);
+            if (pos2 == std::string::npos)
+               continue;
+            pos2--;
+            const std::string file = header.substr(pos1, pos2);
+            if (!file.empty())
+               includes.push_back(file);
          }
       }
    }
@@ -228,12 +239,6 @@ std::vector<std::string> filter(const std::string& dir,
    return existing_files;
 }
 
-struct File_exists : std::unary_function<std::string, bool> {
-   bool operator()(const std::string& file_name) const {
-      return file_exists(file_name);
-   }
-};
-
 /// search recursively for include statments in `file_name'
 /// taking into account only directories given in `paths'
 std::vector<std::string> search_includes(const std::string& file_name,
@@ -251,7 +256,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
    std::vector<std::string> existing;
    for (std::vector<std::string>::const_iterator it = paths.begin(),
            end = paths.end(); it != end; ++it) {
-      const std::vector<std::string> existing_in_path(filter(*it, includes, File_exists()));
+      const std::vector<std::string> existing_in_path(filter(*it, includes, file_exists));
       existing.insert(existing.end(), existing_in_path.begin(), existing_in_path.end());
    }
 
@@ -353,12 +358,15 @@ int main(int argc, const char* argv[])
 
    paths.insert(paths.begin(), directory(file_name));
    paths.push_back(".");
-   paths = delete_duplicates(paths);
+   Is_not_duplicate is_not_dup;
+   paths = delete_duplicates(paths, is_not_dup);
 
    // search for header inclusions (remove duplicate headers)
+   Is_not_duplicate_ignore_path is_not_dup_ign_path;
    std::vector<std::string> dependencies
-      = delete_duplicates<Is_not_duplicate_ignore_path>(
-           search_includes(file_name, paths, ignore_non_existing));
+      = delete_duplicates(
+           search_includes(file_name, paths, ignore_non_existing),
+           is_not_dup_ign_path);
 
    // add file name to dependency list
    std::vector<std::string> dependencies_and_main(dependencies);

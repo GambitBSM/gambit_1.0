@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 16:41:44
+// File generated at Sat 27 Aug 2016 12:42:54
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -86,8 +86,8 @@ double SingletDM_susy_parameters::calc_beta_LamH_two_loop(const Susy_traces& sus
    beta_LamH = Re(twoLoop*(-3.411*Power(g1,6) + 38.125*Power(g2,6) +
       9.435*Power(g1,4)*LamH - 9.125*Power(g2,4)*LamH - 78*Power(LamH,3) - 4*
       Power(LamSH,3) - 3*LamH*traceYdAdjYdYdAdjYd + 60*
-      traceYdAdjYdYdAdjYdYdAdjYd + 12*traceYdAdjYdYdAdjYuYuAdjYd - 42*LamH*
-      traceYdAdjYuYuAdjYd - 24*traceYdAdjYuYuAdjYdYdAdjYd - 12*
+      traceYdAdjYdYdAdjYdYdAdjYd - 24*traceYdAdjYdYdAdjYuYuAdjYd - 42*LamH*
+      traceYdAdjYuYuAdjYd + 12*traceYdAdjYuYuAdjYdYdAdjYd - 12*
       traceYdAdjYuYuAdjYuYuAdjYd - LamH*traceYeAdjYeYeAdjYe + 20*
       traceYeAdjYeYeAdjYeYeAdjYe - 3.42*Power(g1,4)*traceYuAdjYu - 4.5*Power(g2
       ,4)*traceYuAdjYu - 3*LamH*traceYuAdjYuYuAdjYu + 60*

@@ -5,30 +5,30 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=2
-FLEXIBLESUSY_PATCH=4
+FLEXIBLESUSY_MINOR=5
+FLEXIBLESUSY_PATCH=1
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
-GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
-GM2CALC_VERSION="0.2.16-dev"
+GIT_COMMIT=$(git rev-parse HEAD 2> /dev/null || echo unknown)
+GM2CALC_VERSION="1.2.0"
 
 # directory of this script
 BASEDIR=$(dirname $0)
 
 # absolute path to this script
-ABSBASEDIR=$(cd $BASEDIR; pwd)
+ABSBASEDIR=$(cd "$BASEDIR"; pwd | sed 's/ /\\\\ /g')
 
 # config directory
 CONFIGDIR="${BASEDIR}/config"
 
 # current date
-DATE="`date 2>/dev/null || echo unknown`"
+DATE=$(date 2>/dev/null || echo unknown)
 
 # platform information
 debmultiarch=""
 
 # default library directories
-ld_library_path="`echo ${LD_LIBRARY_PATH} | tr ':' ' '`"
+ld_library_path=$(echo "${LD_LIBRARY_PATH}" | tr ':' ' ')
 default_lib_paths="${ld_library_path} /usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
@@ -99,6 +99,7 @@ options="                    \
    enable_looptools          \
    enable_silent             \
    enable_static_libs        \
+   enable_sqlite             \
    enable_threads            \
    enable_tsil               \
    enable_verbose            \
@@ -114,9 +115,10 @@ enable_fflite="no"
 enable_looptools="no"
 enable_meta="no"
 enable_silent="no"
+enable_sqlite="automatic"
 enable_static_libs="yes"
 enable_threads="yes"
-enable_tsil="no"
+enable_tsil="automatic"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
@@ -127,9 +129,11 @@ DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
+DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
+DEFINE_ENABLE_ADDONS=""
 
 boost_lib_dir=""
 boost_inc_dir=""
@@ -163,6 +167,9 @@ LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 OPTIONAL_MODULES=""
+pthread_lib_dir=""
+sqlite_lib_dir=""
+sqlite_inc_dir=""
 tsil_lib_dir=""
 tsil_inc_dir=""
 # available RG algorithms
@@ -230,9 +237,7 @@ do_actions_at_exit() {
 #_____________________________________________________________________
 write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
-    configargs="$*"
-    configargs=`echo $configargs | sed 's,\\\,\\\\,g'`
-    echo "$configargs" > $statusfile
+    echo "$*" > "$statusfile"
 }
 
 #_____________________________________________________________________
@@ -272,7 +277,7 @@ log_package_information() {
 
 #_____________________________________________________________________
 guess_machine_word_size() {
-    chip=`uname -m | tr '[A-Z]' '[a-z]'`
+    local chip="$(uname -m | tr '[A-Z]' '[a-z]')"
     case "$chip" in
         *32|i[36]86)
              machine_word_size="32"; return 0 ;;
@@ -290,12 +295,10 @@ contains() {
         echo "contains: Too few arguments"
         return 1
     fi
-    string="$1"
-    substring="$2"
+    local string="$1"
+    local substring="$2"
     for f in ${string}; do
-        if test "x$f" = "x$substring" ; then
-            return 0 # found
-        fi
+        test "x$f" = "x$substring" && return 0
     done
     return 1 # not found
 }
@@ -307,12 +310,7 @@ contains_not() {
         echo "contains: Too few arguments"
         return 1
     fi
-    contains "$1" "$2"
-    if [ $? -eq 0 ]; then
-        return 1
-    else
-        return 0
-    fi
+    ! contains "$1" "$2"
 }
 
 #_____________________________________________________________________
@@ -355,27 +353,27 @@ check_library() {
 
     if test "x$machine_word_size" = "x64"; then
 	for p in ${libdirs}; do
-            libdir64=`echo "$p" | grep lib | sed -e 's|lib$|lib64|g' -e 's|lib/|lib64/|g'`
+            libdir64=$(echo "$p" | grep lib | sed -e 's|lib$|lib64|g' -e 's|lib/|lib64/|g')
             libdirs="$libdirs $libdir64"
 	done
     fi
     if test "x$machine_word_size" = "x32"; then
 	for p in ${libdirs}; do
-            libdir32=`echo "$p" | grep lib | sed -e 's|lib$|lib32|g' -e 's|lib/|lib32/|g'`
+            libdir32=$(echo "$p" | grep lib | sed -e 's|lib$|lib32|g' -e 's|lib/|lib32/|g')
             libdirs="$libdirs $libdir32"
 	done
     fi
     # look first in the DEB_HOST_MULTIARCH directories
     if test "x$debmultiarch" != "x" ; then
 	for p in ${libdirs}; do
-            multiarch_libdir=`echo "$p" | sed "s|lib$|lib/$debmultiarch|"`
+            multiarch_libdir=$(echo "$p" | sed "s|lib$|lib/$debmultiarch|")
             libdirs="$multiarch_libdir $libdirs"
 	done
     fi
 
     for p in ${libdirs}; do
         for l in ${libs}; do
-            liblist=`echo $p/$l` # expands wildcard
+            liblist=$(echo $p/$l) # expands wildcard
             for n in ${liblist} ; do
                 if test -f $n ; then
                     found_dir=$p
@@ -436,7 +434,7 @@ check_header() {
 
     for p in ${hdrdirs}; do
         for h in ${hdrs}; do
-            hdrlist=`echo $p/$h` # expands wildcard
+            hdrlist=$(echo $p/$h) # expands wildcard
             for n in ${hdrlist} ; do
                 if test -f $n ; then
                     found_dir=$p
@@ -515,10 +513,10 @@ check_symbol() {
         return 1
     fi
 
-    symbollib=`echo $symbollib | sed -e 's/^-l/lib/'`
+    symbollib=$(echo $symbollib | sed -e 's/^-l/lib/')
 
     if test ! "x$symboldir" = "x" ; then
-        symboldir=`echo $symboldir | sed -e 's/^-L//'`
+        symboldir=$(echo $symboldir | sed -e 's/^-L//')
     fi
 
     # Check if we got a specific argument as to where the library
@@ -750,20 +748,8 @@ use_algorithm() {
         return 1
     fi
 
-    # check that the argument is an algorithm
-    alg=`echo "$available_algorithms" | grep $1`
-    if [ -z "$alg" ]; then
-	message "Error: $1 is not an available algorithm"
-	exit 1
-    fi
-
     # check if the argument is in the list of used algorithms
-    alg=`echo "$ALGORITHMS" | grep $1`
-    if [ -z "$alg" ]; then
-	return 1;
-    else
-	return 0;
-    fi
+    contains "$ALGORITHMS" "$1"
 }
 
 #_____________________________________________________________________
@@ -795,7 +781,7 @@ is_empty_dir() {
         return 1
     fi
 
-    find $1 -maxdepth 0 -empty | read v
+    find "$1" -maxdepth 0 -empty | read v
 }
 
 #_____________________________________________________________________
@@ -840,6 +826,9 @@ check_install_dir() {
         logmsg "Source code installation directory does not exist."
     fi
 
+    # escape spaces
+    INSTALL_DIR=$(echo "${INSTALL_DIR}" | sed 's/ /\\\\ /g')
+
     logmsg "Source code installation directory: ${INSTALL_DIR}"
 }
 
@@ -851,7 +840,7 @@ check_algorithms() {
     fi
 
     checking_msg "RGE solver algorithms"
-    algs=`echo $ALGORITHMS | tr ',' ' '`
+    local algs="$(echo $ALGORITHMS | tr ',' ' ')"
     ALGORITHMS=""
     for a in ${algs}; do
         case "$a" in
@@ -868,7 +857,7 @@ check_algorithms() {
     done
 
     # strip whitespace
-    ALGORITHMS="`echo ${ALGORITHMS} | sed -e 's/^ *//' -e 's/ *$//'`"
+    ALGORITHMS="$(echo ${ALGORITHMS} | sed -e 's/^ *//' -e 's/ *$//')"
 
     result "ok (${ALGORITHMS})"
     logmsg "   Algorithms: ${ALGORITHMS}"
@@ -882,12 +871,12 @@ check_models() {
     fi
 
     checking_msg "models"
-    models=`echo $MODELS | tr ',' ' '`
+    local models="$(echo $MODELS | tr ',' ' ')"
     MODELS=""
     for a in ${models}; do
         case "$a" in
             all)
-                MODELS=`find $BASEDIR/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g'`
+                MODELS=$(find "$BASEDIR"/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g')
                 break ;;
             *)
                 if test -d "$BASEDIR/models/$a"; then
@@ -935,7 +924,7 @@ check_models() {
         fi
     done
 
-    local model_names="`echo ${MODELS} | sed -e 's|models/||g' -e 's/^ *//' -e 's/ *$//'`"
+    local model_names="$(echo ${MODELS} | sed -e 's|models/||g' -e 's/^ *//' -e 's/ *$//')"
 
     result "ok (${model_names})"
     logmsg "   Models: ${MODELS}"
@@ -949,12 +938,12 @@ check_addons() {
     fi
 
     checking_msg "addons"
-    addons=`echo $ADDONS | tr ',' ' '`
+    local addons="$(echo $ADDONS | tr ',' ' ')"
     ADDONS=""
     for a in ${addons}; do
         case "$a" in
             all)
-                ADDONS=`find $BASEDIR/addons/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g'`
+                ADDONS=$(find "$BASEDIR"/addons/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g')
                 break ;;
             *)
                 if test -d "$BASEDIR/addons/$a" ; then
@@ -979,7 +968,7 @@ check_addons() {
         fi
     done
 
-    local addon_names="`echo ${ADDONS} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//'`"
+    local addon_names="$(echo ${ADDONS} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//')"
 
     result "ok (${addon_names})"
     logmsg "   Addons: ${ADDONS}"
@@ -992,16 +981,15 @@ check_platform() {
     logmsg ""
     logmsg "# Platform information"
     logmsg ""
-    logmsg "hostname = `(hostname || uname -n) 2>/dev/null | sed 1q`"
-    logmsg "uname -m = `(uname -m) 2>/dev/null || echo unknown`"
-    logmsg "uname -r = `(uname -r) 2>/dev/null || echo unknown`"
-    logmsg "uname -s = `(uname -s) 2>/dev/null || echo unknown`"
-    logmsg "uname -v = `(uname -v) 2>/dev/null || echo unknown`"
+    logmsg "hostname = $( (hostname || uname -n) 2>/dev/null | sed 1q)"
+    logmsg "uname -m = $( (uname -m) 2>/dev/null || echo unknown)"
+    logmsg "uname -r = $( (uname -r) 2>/dev/null || echo unknown)"
+    logmsg "uname -s = $( (uname -s) 2>/dev/null || echo unknown)"
+    logmsg "uname -v = $( (uname -v) 2>/dev/null || echo unknown)"
     logmsg "Machine word size: ${machine_word_size}"
     logmsg ""
 
-    local _paths="`echo $PATH | tr ':' ' '`"
-    for p in ${_paths}; do
+    for p in $(echo "$PATH" | tr ':' ' '); do
         logmsg "PATH: ${p}"
     done
     logmsg ""
@@ -1011,8 +999,8 @@ check_platform() {
     done
     logmsg ""
 
-    operating_system="`(uname -s) 2>/dev/null || echo unknown`"
-    kernel_version="`(uname -r) 2>/dev/null || echo unknown`"
+    operating_system=$( (uname -s) 2>/dev/null || echo unknown)
+    kernel_version=$( (uname -r) 2>/dev/null || echo unknown)
 }
 
 #_____________________________________________________________________
@@ -1022,20 +1010,20 @@ check_multiarch() {
 
     exists_in_path "lsb_release"
     if [ -n "$cmd" ] ; then
-        if lsb_release -d | grep -i 'ubuntu\|debian\|mint' > /dev/null 2>&1; then
+        if lsb_release -d | grep -i 'debian\|deepin\|linux lite\|mint\|elementary\|ubuntu\|zorin' > /dev/null 2>&1; then
             linuxdist="multiarch"
         fi
     fi
 
     if test "x$linuxdist" = "xmultiarch"; then
-        if `which dpkg-architecture > /dev/null 2>&1` ; then
-            if `dpkg-architecture -qDEB_HOST_MULTIARCH > /dev/null 2>&1` ; then
+        if type dpkg-architecture > /dev/null 2>&1 ; then
+            if $(dpkg-architecture -qDEB_HOST_MULTIARCH > /dev/null 2>&1) ; then
                 checking_msg "dpkg-architecture"
-                debmultiarch=`dpkg-architecture -qDEB_HOST_MULTIARCH 2> /dev/null`
+                debmultiarch=$(dpkg-architecture -qDEB_HOST_MULTIARCH 2> /dev/null)
                 result "$debmultiarch"
             fi
         else
-            result "`basename $0`: dpkg-architecture or dpkg-dev MUST be installed"
+            result "$(basename $0): dpkg-architecture or dpkg-dev MUST be installed"
             exit 1
         fi
     fi
@@ -1190,12 +1178,19 @@ check_std_threads() {
 
 #_____________________________________________________________________
 check_thread_libs() {
-    check_library "libpthread" "" "$default_lib_paths"
-    if [ -z "$found_lib" ]; then
-        message "Error: libpthread must be installed to enable multithreading!"
-        exit 1
+    # link libpthread only if $enable_threads = yes
+    # I'm assuming here, that no other library we link needs libpthread.
+    if [ "x$enable_threads" = "xyes" -o -n "$pthread_lib_dir" ] ; then
+        check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths"
+        if [ -z "$found_lib" ]; then
+            message "Error: libpthread must be installed to enable multithreading!"
+            exit 1
+        fi
+        THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+        if [ -n "$pthread_lib_dir" ]; then
+            THREADLIBS="-L$pthread_lib_dir $THREADLIBS"
+        fi
     fi
-    THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 }
 
 #_____________________________________________________________________
@@ -1502,8 +1497,8 @@ check_gsl_config() {
         exit 1
     else
         result "found $cmd"
-        GSLFLAGS=`$cmd --cflags`
-        GSLLIBS=`$cmd --libs`
+        GSLFLAGS=$($cmd --cflags)
+        GSLLIBS=$($cmd --libs)
     fi
 }
 
@@ -1559,7 +1554,7 @@ check_fortran_libs() {
 
     case "$FC" in
         gfortran*)
-            gfortran_lib_search_paths=`${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
+            gfortran_lib_search_paths=$(${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' ')
             check_library "libgfortran" "$gfortran_lib_search_paths" "$default_lib_paths"
             if test "x$found_lib" = "x" ; then
                 message "Error: libgfortran not found in $gfortran_lib_search_paths $default_lib_paths"
@@ -1654,12 +1649,61 @@ check_looptools_incl() {
 }
 
 #_____________________________________________________________________
+check_sqlite_libs() {
+    check_library "libsqlite3" "$sqlite_lib_dir" \
+       "$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Warning: libsqlite3 not found."
+        message "   Support for SQLite will be is disabled."
+        return 1
+    else
+        local SQLITELIBS_="-lsqlite3"
+        if [ -z "$sqlite_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            SQLITELIBS="$SQLITELIBS_"
+        else
+            SQLITELIBS="-L$sqlite_lib_dir $SQLITELIBS_"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_sqlite_incl() {
+    check_header "sqlite3.h" "$sqlite_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Warning: sqlite.h not found in $sqlite_inc_dir $default_inc_paths."
+        message "   Support for SQLite will be is disabled."
+        return 1
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$sqlite_inc_dir" ]; then
+            SQLITEFLAGS="-I$sqlite_inc_dir"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_sqlite() {
+    if test "x$enable_sqlite" != "xno" ; then
+        if check_sqlite_incl && check_sqlite_libs ; then
+            enable_sqlite=yes
+        else
+            enable_sqlite=no
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_tsil_libs() {
     check_library "libtsil" "$tsil_lib_dir" \
        "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Error: libtsil not found."
-        exit 1
+        message "Warning: libtsil not found."
+        message "   Support for TSIL will be is disabled."
+        return 1
     else
         local TSILLIBS_="-ltsil"
         if [ -z "$tsil_lib_dir" ]; then
@@ -1669,6 +1713,7 @@ check_tsil_libs() {
             TSILLIBS="-L$tsil_lib_dir $TSILLIBS_"
         fi
     fi
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1676,12 +1721,25 @@ check_tsil_incl() {
     check_header "tsil.h" "$tsil_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        message "Error: tsil.h not found in $tsil_inc_dir $default_inc_paths."
-        exit 1
+        message "Warning: tsil.h not found in $tsil_inc_dir $default_inc_paths."
+        message "   Support for TSIL will be is disabled."
+        return 1
     else
         # assume that the compiler will look in the default paths
         if [ -n "$tsil_inc_dir" ]; then
             TSILFLAGS="-I$tsil_inc_dir"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_tsil() {
+    if test "x$enable_tsil" != "xno" ; then
+        if check_tsil_incl && check_tsil_libs ; then
+            enable_tsil=yes
+        else
+            enable_tsil=no
         fi
     fi
 }
@@ -1748,7 +1806,7 @@ check_lapack_libs() {
 check_makelib() {
     checking_msg "build library command $MAKELIB"
     # strip arguments from the actual command
-    makelib_cmd=`echo $MAKELIB | awk '{ print $1; }'`
+    makelib_cmd=$(echo "$MAKELIB" | awk '{ print $1; }')
 
     # check if $makelib_cmd can create shared libraries
     if test "x$enable_static_libs" = "xno" ; then
@@ -1808,7 +1866,7 @@ EOF
     if "$MATH" -run "Get[\"${_math_version_check_progr}\"]" > /dev/null 2>&1;
     then
         if test -r "${mathconfig}" ; then
-            MATH_VERSION=`cat ${mathconfig}`
+            MATH_VERSION=$(cat "${mathconfig}")
             result "ok (version ${MATH_VERSION})"
         else
             result "ok"
@@ -1844,14 +1902,14 @@ check_sarah() {
     rm -f ${sarahconfig}
     "$MATH" <<EOF > /dev/null
 Needs["SARAH\`"];
-If[!ValueQ[SA\`Version], Quit[1]];
+If[!ValueQ[SA\`Version] || !StringQ[\$sarahDir], Quit[1]];
 Export["${sarahconfig}", SA\`Version, "String"];
 Quit[0];
 EOF
     local _sarah_is_available="$?"
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
-            SARAH_VERSION=`cat ${sarahconfig}`
+            SARAH_VERSION=$(cat "${sarahconfig}")
             split_version "$SARAH_VERSION" SARAH_MAJOR SARAH_MINOR SARAH_PATCH
 
             if ! major_minor_patch_at_least $SARAH_MAJOR $SARAH_MINOR $SARAH_PATCH "${required_sarah_major}" "${required_sarah_minor}" "${required_sarah_patch}"
@@ -1992,6 +2050,16 @@ enable_defines() {
         fi
     fi
 
+    if test "x${enable_sqlite}" = "xyes" ; then
+        DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
+        logmsg "Enabling sqlite"
+        logmsg "   ${DEFINE_ENABLE_SQLITE}"
+    else
+        DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
+        message "Disabling sqlite"
+        logmsg "   ${DEFINE_ENABLE_SQLITE}"
+    fi
+
     if test "x${enable_threads}" = "xyes" ; then
         DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
         logmsg "Enabling multi-threading"
@@ -2004,9 +2072,18 @@ enable_defines() {
 
     if test "x${enable_tsil}" = "xyes" ; then
         DEFINE_ENABLE_TSIL="#define ENABLE_TSIL 1"
-        message "Enabling tsil"
+        message "Enabling TSIL"
+        logmsg "   ${DEFINE_ENABLE_TSIL}"
+    else
+        DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
+        message "Disabling TSIL"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     fi
+
+    for a in ${ADDONS}; do
+        local addon_name="$(basename ${a})"
+        DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}\n#define ENABLE_${addon_name} 1"
+    done
 }
 
 #_____________________________________________________________________
@@ -2052,11 +2129,14 @@ replace_markers() {
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
 	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
+	-e "s|@ENABLE_SQLITE@|$enable_sqlite|"    \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
+	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
+	-e "s|@SQLITEFLAGS@|$SQLITEFLAGS|"        \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
@@ -2069,7 +2149,7 @@ replace_markers() {
 #_____________________________________________________________________
 help() {
 cat <<EOF
-Usage: ./`basename $0` [options]
+Usage: ./$(basename $0) [options]
 Options:
 
   --help,-h         Print this help message
@@ -2087,8 +2167,10 @@ enable/disable options, prefix with either --enable- or --disable-
 EOF
 cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
+  sqlite            Enable SQLite (default: $enable_sqlite)
   static-libs       Create static libraries (default: $enable_static_libs)
   threads           Enable multi-threading (default: $enable_threads)
+  tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
 
 Package directories, compilation settings and model selection
@@ -2119,15 +2201,18 @@ Package directories, compilation settings and model selection
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
-  --with-optional-modules=  Load optional FlexibleSUSY modules
-                            (for example the \`test' or \`examples' module)
-  --with-tsil-libdir=       Path to search for TSIL library
-  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
+  --with-optional-modules=  Load optional FlexibleSUSY modules
+                            (for example the \`test' or \`examples' module)
+  --with-pthread-libdir=    Path to search for pthread library
+  --with-sqlite-libdir=     Path to search for SQLite library
+  --with-sqlite-incdir=     Path to search for SQLite header
+  --with-tsil-libdir=       Path to search for TSIL library
+  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 }
 
@@ -2151,18 +2236,18 @@ write_configure_parameters "$*"
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
         case "$1" in
-            -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+            -*=*) optarg=$(echo "$1" | sed 's/[-_a-zA-Z0-9]*=//') ;;
             *) optarg= ;;
         esac
 
         case $1 in
             --enable-*)
-                f=`echo $1 | sed -e 's/--//' -e 's/-/_/g'`
-                eval prev='$'`echo ${f}`
+                f=$(echo "$1" | sed -e 's/--//' -e 's/-/_/g')
+                eval prev='$'$(echo "${f}")
                 if test "x${prev}" = "xyes"; then
                     echo "INFO: $1: already enabled by default."
                 fi
-                if test ! "x`echo ${deprecated_options} | grep ${f}`" = "x"; then
+                if test ! "x$(echo ${deprecated_options} | grep ${f})" = "x"; then
                     echo "WARNING: option $1 is deprecated and ignored"'!'
                 fi
                 eval ${f}=yes
@@ -2181,8 +2266,8 @@ if test $# -gt 0 ; then
                 fi
                 ;;
             --disable-*)
-                f=`echo $1 | sed -e 's/--disable/enable/' -e 's/-/_/g'`
-                eval prev='$'`echo ${f}`
+                f=$(echo "$1" | sed -e 's/--disable/enable/' -e 's/-/_/g')
+                eval prev='$'$(echo "${f}")
                 if test "x${prev}" = "xno"; then
                     echo "INFO: $1: already disabled by default."
                 fi
@@ -2222,7 +2307,10 @@ if test $# -gt 0 ; then
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
-            --with-optional-modules=*) OPTIONAL_MODULES=$optarg ;;
+            --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
+            --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
+            --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
+            --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
             --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;
@@ -2268,10 +2356,8 @@ if test "x${enable_compile}" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
     fi
-    if test "x$enable_tsil" = "xyes"; then
-        check_tsil_incl
-        check_tsil_libs
-    fi
+    check_sqlite
+    check_tsil
     check_makelib
     check_random_number_generator
     check_std_threads
@@ -2319,6 +2405,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LDFLAGS@|$LDFLAGS|"         \
     -e "s|@LDLIBS@|$LDLIBS|"           \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
+    -e "s|@SQLITELIBS@|$SQLITELIBS|"   \
+    -e "s|@SQLITEFLAGS@|$SQLITEFLAGS|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
     -e "s|@MAKELIB@|$MAKELIB|"         \
@@ -2366,9 +2454,11 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
+    -e "s|@DEFINE_ENABLE_SQLITE@|$DEFINE_ENABLE_SQLITE|"       \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
+    -e "s|@DEFINE_ENABLE_ADDONS@|$DEFINE_ENABLE_ADDONS|"       \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

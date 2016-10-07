@@ -114,6 +114,7 @@ Minimizer<dimension>::Minimizer()
  * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
+ * @param solver_type_ GSL multimin minimizer type
  */
 template <std::size_t dimension>
 Minimizer<dimension>::Minimizer(
@@ -209,7 +210,7 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
 #ifdef ENABLE_VERBOSE
-   printf("\tMinimization status = %s\n", gsl_strerror(status));
+   std::cout << "\tMinimization status = " << gsl_strerror(status) << '\n';
 #endif
 
    // save minimum point and function value

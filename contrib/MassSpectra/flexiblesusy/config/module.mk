@@ -36,9 +36,11 @@ FLEXIBLESUSY_GIT_COMMIT_FILE := \
 REMOVE_EXPORT_MARKERS := \
 		$(DIR)/remove_export_markers.sh
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME):
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -52,8 +54,17 @@ install-src::
 		$(INSTALL_STRIPPED) $(CONVERT_DOS_PATHS) $(CONFIG_INSTALL_DIR) -m u=rwx,g=r,o=r
 endif
 
-clean-$(MODNAME):
-		-rm -f $(DEPGEN_OBJ) $(DEPGEN_EXE)
+clean-$(MODNAME)-dep:
+		@true
+
+clean-$(MODNAME)-lib:
+		@true
+
+clean-$(MODNAME)-obj:
+		-rm -f $(DEPGEN_OBJ)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		-rm -f $(DEPGEN_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(CONFIG_HDR)
@@ -61,11 +72,13 @@ distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(FLEXIBLESUSY_GIT_COMMIT_FILE)
 		-rm -f $(REQUIRED_SARAH_VERSION_FILE)
 
+clean-obj::     clean-$(MODNAME)-obj
+
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
 $(DEPGEN_EXE): $(DEPGEN_OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $^
+		$(CXX) -o $@ $^ $(LDLIBS)
 
 ALLEXE += $(DEPGEN_EXE)

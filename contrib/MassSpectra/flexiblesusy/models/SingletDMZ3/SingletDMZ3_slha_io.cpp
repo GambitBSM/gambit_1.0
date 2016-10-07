@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:33
+// File generated at Sat 27 Aug 2016 12:43:53
 
 #include "SingletDMZ3_slha_io.hpp"
 #include "SingletDMZ3_input_parameters.hpp"
@@ -36,8 +36,6 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
@@ -51,12 +49,18 @@ char const * const SingletDMZ3_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
 
 SingletDMZ3_slha_io::SingletDMZ3_slha_io()
    : slha_io()
+   , print_imaginary_parts_of_majorana_mixings(false)
 {
 }
 
 void SingletDMZ3_slha_io::clear()
 {
    slha_io.clear();
+}
+
+void SingletDMZ3_slha_io::set_print_imaginary_parts_of_majorana_mixings(bool flag)
+{
+   print_imaginary_parts_of_majorana_mixings = flag;
 }
 
 /**
@@ -156,10 +160,10 @@ void SingletDMZ3_slha_io::set_mass(const SingletDMZ3_physical& physical,
 
    if (write_sm_masses) {
       mass
+         << FORMAT_MASS(21, LOCALPHYSICAL(MVG), "VG")
          << FORMAT_MASS(12, LOCALPHYSICAL(MFv(0)), "Fv(1)")
          << FORMAT_MASS(14, LOCALPHYSICAL(MFv(1)), "Fv(2)")
          << FORMAT_MASS(16, LOCALPHYSICAL(MFv(2)), "Fv(3)")
-         << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
          << FORMAT_MASS(1, LOCALPHYSICAL(MFd(0)), "Fd(1)")
          << FORMAT_MASS(3, LOCALPHYSICAL(MFd(1)), "Fd(2)")
          << FORMAT_MASS(5, LOCALPHYSICAL(MFd(2)), "Fd(3)")
@@ -169,8 +173,8 @@ void SingletDMZ3_slha_io::set_mass(const SingletDMZ3_physical& physical,
          << FORMAT_MASS(11, LOCALPHYSICAL(MFe(0)), "Fe(1)")
          << FORMAT_MASS(13, LOCALPHYSICAL(MFe(1)), "Fe(2)")
          << FORMAT_MASS(15, LOCALPHYSICAL(MFe(2)), "Fe(3)")
-         << FORMAT_MASS(21, LOCALPHYSICAL(MVG), "VG")
          << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
+         << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
       ;
    }
 
@@ -197,6 +201,9 @@ void SingletDMZ3_slha_io::set_mixing_matrices(const SingletDMZ3_physical& physic
       slha_io.set_block("UDRMIX", LOCALPHYSICAL(Ud), "Ud");
       slha_io.set_block("UELMIX", LOCALPHYSICAL(Ve), "Ve");
       slha_io.set_block("UERMIX", LOCALPHYSICAL(Ue), "Ue");
+   }
+
+   if (print_imaginary_parts_of_majorana_mixings) {
    }
 
 }
@@ -297,17 +304,17 @@ void SingletDMZ3_slha_io::fill_drbar_parameters(SingletDMZ3_mass_eigenstates& mo
    model.set_g2(slha_io.read_entry("gauge", 2));
    model.set_g3(slha_io.read_entry("gauge", 3));
    {
-      DEFINE_PARAMETER(Yu);
+      Eigen::Matrix<double,3,3> Yu;
       slha_io.read_block("Yu", Yu);
       model.set_Yu(Yu);
    }
    {
-      DEFINE_PARAMETER(Yd);
+      Eigen::Matrix<double,3,3> Yd;
       slha_io.read_block("Yd", Yd);
       model.set_Yd(Yd);
    }
    {
-      DEFINE_PARAMETER(Ye);
+      Eigen::Matrix<double,3,3> Ye;
       slha_io.read_block("Ye", Ye);
       model.set_Ye(Ye);
    }
@@ -335,6 +342,17 @@ void SingletDMZ3_slha_io::fill(SingletDMZ3_mass_eigenstates& model) const
    fill_physical(physical_hk);
    physical_hk.convert_to_hk();
    model.get_physical() = physical_hk;
+}
+
+/**
+ * Fill struct of extra physical input parameters from SLHA object
+ * (FlexibleSUSYInput block)
+ *
+ * @param settings struct of physical input parameters
+ */
+void SingletDMZ3_slha_io::fill(Physical_input& input) const
+{
+   slha_io.fill(input);
 }
 
 /**
@@ -409,11 +427,13 @@ void SingletDMZ3_slha_io::fill_physical(SingletDMZ3_physical& physical) const
       LOCALPHYSICAL(Ue) = Ue;
    }
 
+   LOCALPHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
    LOCALPHYSICAL(Mss) = slha_io.read_entry("MASS", 6666635);
    LOCALPHYSICAL(MFv)(0) = slha_io.read_entry("MASS", 12);
    LOCALPHYSICAL(MFv)(1) = slha_io.read_entry("MASS", 14);
    LOCALPHYSICAL(MFv)(2) = slha_io.read_entry("MASS", 16);
    LOCALPHYSICAL(Mhh) = slha_io.read_entry("MASS", 25);
+   LOCALPHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    LOCALPHYSICAL(MVZ) = slha_io.read_entry("MASS", 23);
    LOCALPHYSICAL(MFd)(0) = slha_io.read_entry("MASS", 1);
    LOCALPHYSICAL(MFd)(1) = slha_io.read_entry("MASS", 3);
@@ -424,8 +444,6 @@ void SingletDMZ3_slha_io::fill_physical(SingletDMZ3_physical& physical) const
    LOCALPHYSICAL(MFe)(0) = slha_io.read_entry("MASS", 11);
    LOCALPHYSICAL(MFe)(1) = slha_io.read_entry("MASS", 13);
    LOCALPHYSICAL(MFe)(2) = slha_io.read_entry("MASS", 15);
-   LOCALPHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
-   LOCALPHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    LOCALPHYSICAL(MVWp) = slha_io.read_entry("MASS", 24);
 
 }

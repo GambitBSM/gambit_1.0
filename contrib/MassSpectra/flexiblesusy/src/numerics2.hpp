@@ -22,13 +22,14 @@
 #include <cmath>
 #include <limits>
 #include <cstddef>
+#include <cstdlib>
 
 namespace flexiblesusy {
 
 template <typename T>
 bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
 {
-   return std::fabs(a) < prec;
+   return std::abs(a) <= prec;
 }
 
 template <typename T>
@@ -43,10 +44,11 @@ bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
    if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
       return true;
 
-   if (std::fabs(a) < std::numeric_limits<T>::epsilon())
-      return is_equal(a, b, prec);
+   if (std::abs(a) < std::numeric_limits<T>::epsilon() ||
+       std::abs(b) < std::numeric_limits<T>::epsilon())
+      return false;
 
-   return std::fabs((a - b)/a) < prec;
+   return std::abs((a - b)/a) < prec;
 }
 
 bool is_finite(const double*, std::size_t length);

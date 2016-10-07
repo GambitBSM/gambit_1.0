@@ -54,7 +54,7 @@ public:
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
       std::stringstream message;
-      message << "RGFlow<Two_scale>::NoConvergenceError: no convergence"
+      message << "NoConvergenceError: no convergence"
               << " after " << number_of_iterations << " iterations";
       return message.str();
    }
@@ -78,7 +78,7 @@ public:
    virtual ~NoRhoConvergenceError() {}
    virtual std::string what() const {
       std::stringstream message;
-      message << "RGFlow<Two_scale>::NoRhoConvergenceError: no convergence"
+      message << "NoRhoConvergenceError: no convergence"
               << " after " << number_of_iterations << " iterations "
               << " (sin(theta)=" << sin_theta << ", rho-hat=" << rho_hat
               << ")";
@@ -98,18 +98,41 @@ private:
  */
 class NonPerturbativeRunningError : public Error {
 public:
-   explicit NonPerturbativeRunningError(double scale_)
+   /**
+    * Constructor.
+    *
+    * @param scale_ target renormalization scale
+    * @param parameter_index_ index of parameter that becomes non-perturbative
+    * @param value_ parameter value at scale_
+    *
+    * The parameter index can be set to -1 (default) to indicate that
+    * something is wrong with the target renormalization scale.
+    */
+   explicit NonPerturbativeRunningError(double scale_, int parameter_index_ = -1, double value_ = 0)
       : scale(scale_)
+      , value(value_)
+      , parameter_index(parameter_index_)
       {}
    virtual ~NonPerturbativeRunningError() {}
    virtual std::string what() const {
       std::stringstream message;
       message << "NonPerturbativeRunningError: non-perturbative running"
-         " to scale " << scale;
+         " of parameter " << parameter_index << " to scale " << scale;
       return message.str();
    }
+   std::string what(const std::string& parameter_name) const {
+      std::stringstream message;
+      message << "NonPerturbativeRunningError: non-perturbative running"
+         " of " << parameter_name << " = " << value << " to scale " << scale;
+      return message.str();
+   }
+   int get_parameter_index() const { return parameter_index; }
+   double get_parameter_value() const { return value; }
+   double get_scale() const { return scale; }
 private:
-   double scale;
+   double scale; ///< renormalization scale
+   double value; ///< value of parameter that becomes non-perturbative
+   int parameter_index; ///< index of parameter that becomes non-perturbative
 };
 
 /**

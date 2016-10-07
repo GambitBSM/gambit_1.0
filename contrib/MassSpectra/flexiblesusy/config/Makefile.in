@@ -16,6 +16,7 @@ ENABLE_FFLITE      := @ENABLE_FFLITE@
 ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
 ENABLE_META        := @ENABLE_META@
 ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_SQLITE      := @ENABLE_SQLITE@
 ENABLE_THREADS     := @ENABLE_THREADS@
 ENABLE_TSIL        := @ENABLE_TSIL@
 
@@ -59,6 +60,8 @@ GSLFLAGS           := @GSLFLAGS@
 LAPACKLIBS         := @LAPACKLIBS@
 LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
+SQLITEFLAGS        := @SQLITEFLAGS@
+SQLITELIBS         := @SQLITELIBS@
 THREADLIBS         := @THREADLIBS@
 TSILFLAGS          := @TSILFLAGS@
 TSILLIBS           := @TSILLIBS@
@@ -82,12 +85,14 @@ ALLLIB   :=
 ALLEXE   :=
 # the modules add test executables to this variable
 ALLTST   :=
+# the addons add libraries to this variable to be linked against executables
+ADDONLIBS:=
 
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
 # configure script
-CONFIGURE_SCRIPT := $(ABSBASEDIR)/configure
+CONFIGURE_SCRIPT := configure
 
 # dependency generator
 DEPGEN = $(DEPGEN_EXE)
@@ -96,20 +101,18 @@ DEPGEN = $(DEPGEN_EXE)
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
 
 # script which installs a file without export markers
-INSTALL_STRIPPED := \
-		$(ABSBASEDIR)/config/install_stripped.sh
+INSTALL_STRIPPED := config/install_stripped.sh
 
 # script which replaces path\like\this with path/like/this
 # thereby enabling FlexibleSUSY to run on Cygwin
-CONVERT_DOS_PATHS := \
-		$(ABSBASEDIR)/config/convert_dos_paths.sh
+CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 
 # README file
-README_FILE := $(ABSBASEDIR)/README
+README_FILE := README
 
-.PHONY:  all allsrc allexec alllib alltest clean-executables \
-	 clean clean-dep depend distclean showbuild tag \
-	 release-tag release-head
+.PHONY:  all allsrc allexec alllib alltest clean clean-dep \
+	 clean-executables clean-lib clean-obj depend distclean \
+	 release-tag release-head showbuild tag
 
 all:
 ifeq ($(ENABLE_META),yes)
@@ -174,6 +177,12 @@ alltest:  $(ALLTST)
 clean-dep:
 	-rm -f $(ALLDEP)
 
+clean-executables:
+	-rm -f $(ALLEXE)
+
+clean-lib:
+	-rm -f $(ALLLIB)
+
 depend:  clean-dep
 depend:  $(ALLDEP)
 
@@ -188,9 +197,6 @@ depend:  $(ALLDEP)
 
 %.d: %.F | $(DEPGEN)
 	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
-
-clean-executables:
-	-rm -f $(ALLEXE)
 
 distclean::
 	-rm -f Makefile
@@ -229,6 +235,8 @@ showbuild:
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "SQLITELIBS         = $(SQLITELIBS)"
+	@echo "SQLITEFLAGS        = $(SQLITEFLAGS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo "TSILLIBS           = $(TSILLIBS)"
 	@echo "TSILFLAGS          = $(TSILFLAGS)"
@@ -241,6 +249,7 @@ showbuild:
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_SILENT      = $(ENABLE_SILENT)"
+	@echo "ENABLE_SQLITE      = $(ENABLE_SQLITE)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
 	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
 	@echo "ENABLE_TSIL        = $(ENABLE_TSIL)"

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:31:58
+// File generated at Sat 27 Aug 2016 12:44:52
 
 #include "MSSMatMGUT_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -84,11 +84,55 @@ double MSSMatMGUT_susy_parameters::calc_beta_Mu_three_loop(const Susy_traces& su
 {
    DEFINE_PROJECTOR(3,3,3,3)
 
+   const double traceAdjYuYu = TRACE_STRUCT.traceAdjYuYu;
+   const double traceAdjYdYdAdjYdYd = TRACE_STRUCT.traceAdjYdYdAdjYdYd;
+   const double traceAdjYeYeAdjYeYe = TRACE_STRUCT.traceAdjYeYeAdjYeYe;
+   const double traceAdjYuYuAdjYdYd = TRACE_STRUCT.traceAdjYuYuAdjYdYd;
+   const double traceAdjYeYe = TRACE_STRUCT.traceAdjYeYe;
+   const double traceAdjYdYd = TRACE_STRUCT.traceAdjYdYd;
+   const double traceAdjYuYuAdjYuYu = TRACE_STRUCT.traceAdjYuYuAdjYuYu;
+   const double traceAdjYdYdAdjYdYdAdjYdYd =
+      TRACE_STRUCT.traceAdjYdYdAdjYdYdAdjYdYd;
+   const double traceAdjYdYdAdjYuYuAdjYdYd =
+      TRACE_STRUCT.traceAdjYdYdAdjYuYuAdjYdYd;
+   const double traceAdjYeYeAdjYeYeAdjYeYe =
+      TRACE_STRUCT.traceAdjYeYeAdjYeYeAdjYeYe;
+   const double traceAdjYuYuAdjYuYuAdjYdYd =
+      TRACE_STRUCT.traceAdjYuYuAdjYuYuAdjYdYd;
+   const double traceAdjYuYuAdjYuYuAdjYuYu =
+      TRACE_STRUCT.traceAdjYuYuAdjYuYuAdjYuYu;
 
 
    double beta_Mu;
 
-   beta_Mu = 0;
+   beta_Mu = Re(threeLoop*Mu*(19.556928691529336*Power(g1,6) +
+      551.1479244952723*Power(g2,6) + 24.637024256872696*
+      traceAdjYdYdAdjYdYdAdjYdYd + 9*traceAdjYdYdAdjYuYuAdjYdYd +
+      8.212341418957566*traceAdjYeYeAdjYeYeAdjYeYe - 40.84600730744081*Power(g1
+      ,4)*traceAdjYuYu - 192.34437734858165*Power(g2,4)*traceAdjYuYu -
+      72.56624378388685*Power(g3,4)*traceAdjYuYu + 18*traceAdjYuYu*
+      traceAdjYuYuAdjYdYd + 54*traceAdjYuYu*traceAdjYuYuAdjYuYu + 9*
+      traceAdjYuYuAdjYuYuAdjYdYd + 24.637024256872696*
+      traceAdjYuYuAdjYuYuAdjYuYu - 14.973321831185427*Power(g2,4)*Sqr(g1) +
+      15.982214554123619*traceAdjYdYdAdjYdYd*Sqr(g1) - 3.982214554123619*
+      traceAdjYeYeAdjYeYe*Sqr(g1) + 10.339746270332105*traceAdjYuYuAdjYdYd*Sqr(
+      g1) + 7.072595148625461*traceAdjYuYuAdjYuYu*Sqr(g1) - 11.143993098711256*
+      Power(g1,4)*Sqr(g2) + 73.91107277061809*traceAdjYdYdAdjYdYd*Sqr(g2) +
+      24.637024256872696*traceAdjYeYeAdjYeYe*Sqr(g2) + 36*traceAdjYuYuAdjYdYd*
+      Sqr(g2) + 73.91107277061809*traceAdjYuYuAdjYuYu*Sqr(g2) +
+      9.445916979810885*traceAdjYuYu*Sqr(g1)*Sqr(g2) + traceAdjYeYe*(
+      -30.902667816881458*Power(g1,4) - 64.11479244952722*Power(g2,4) + 18*
+      traceAdjYdYdAdjYdYd + 6*traceAdjYeYeAdjYeYe + 6*traceAdjYuYuAdjYdYd +
+      11.373321831185427*Sqr(g1)*Sqr(g2)) - 11.681162692095945*Power(g1,4)*Sqr(
+      g3) - 79.64429108247236*Power(g2,4)*Sqr(g3) - 101.09619405498157*
+      traceAdjYdYdAdjYdYd*Sqr(g3) - 67.39746270332105*traceAdjYuYuAdjYdYd*Sqr(
+      g3) - 101.09619405498157*traceAdjYuYuAdjYuYu*Sqr(g3) + 8.67223383810579*
+      traceAdjYuYu*Sqr(g1)*Sqr(g3) + 41.09619405498157*traceAdjYuYu*Sqr(g2)*Sqr
+      (g3) + traceAdjYdYd*(-18.534500964199108*Power(g1,4) - 192.34437734858165
+      *Power(g2,4) - 72.56624378388685*Power(g3,4) + 54*traceAdjYdYdAdjYdYd +
+      18*traceAdjYeYeAdjYeYe + 18*traceAdjYuYuAdjYdYd - 11.118512128436349*Sqr(
+      g1)*Sqr(g2) + 7.992741297441576*Sqr(g1)*Sqr(g3) + 41.09619405498157*Sqr(
+      g2)*Sqr(g3))));
 
 
    return beta_Mu;
