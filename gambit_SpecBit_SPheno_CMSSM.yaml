@@ -47,7 +47,6 @@ Rules:
     type:         void
     function:     run_SPheno
     options:
-      SPA_convention: true
       delta_mass:     1.0e-4
       n_run:          30
 

@@ -23,7 +23,7 @@
 // Convenience functions (definition)
 BE_NAMESPACE
 {
-/*
+
   // Run SPheno
   int run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
   {
@@ -208,7 +208,7 @@ BE_NAMESPACE
         } 
       }
       */
-  /*    
+      
     }
    
     if(*kont != 0)
@@ -223,8 +223,8 @@ BE_NAMESPACE
     return *kont;   
  
   }
-*/
-/*  Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
+
+  Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
   {
 
     SLHAstruct slha;
@@ -716,9 +716,9 @@ BE_NAMESPACE
     return spectrum;
 
   }
-*/
+
   // Function to read data from the Gambit inputs and fill SPheno internal variables
-/*  void ReadingData(const SMInputs &sminputs, const std::map<str, safe_ptr<double> > &Param)
+  void ReadingData(const SMInputs &sminputs, const std::map<str, safe_ptr<double> > &Param)
   {
       
     InitializeStandardModel(sminputs); 
@@ -1038,8 +1038,8 @@ BE_NAMESPACE
     }
  
   }
-*/
-/*  void InitializeStandardModel(const SMInputs &sminputs)
+
+  void InitializeStandardModel(const SMInputs &sminputs)
   {
 
     *kont = 0;
@@ -1293,7 +1293,7 @@ BE_NAMESPACE
     return "Unspecified error";
 
   }
-*/  
+  
 }
 
 
@@ -1302,7 +1302,7 @@ END_BE_NAMESPACE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-/*
+
     // Dump all internal output 
     *ErrCan = 0; 
 
@@ -1327,9 +1327,12 @@ BE_INI_FUNCTION
     *ErrorLevel = 0;
 
     // 2
-    *SPA_convention = runOptions->getValueOrDef<Flogical>(true, "SPA_convention");
-    Freal8 scale = 1E6;
-    SetRGEScale(scale);
+    *SPA_convention = runOptions->getValueOrDef<Flogical>(false, "SPA_convention");
+    if(*SPA_convention)
+    {
+      Freal8 scale = 1E6;
+      SetRGEScale(scale);
+    }
 
     // 3
     // GAMBIT: no need for external spectrum options
@@ -1531,6 +1534,6 @@ BE_INI_FUNCTION
     // 110, write ouput for LHC observables
     // GAMBIT: private variable, cannot import
     // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
-*/   
+   
 }
 END_BE_INI_FUNCTION
