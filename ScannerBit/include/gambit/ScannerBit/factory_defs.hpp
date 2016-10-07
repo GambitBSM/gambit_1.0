@@ -104,7 +104,9 @@ namespace Gambit
                 else
                 {
                    // New scan; delete any old persistence file
-                   Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
+                   // But only do this if we are process 0, otherwise I think race conditions can occur.
+                   // (TODO do we need to ensure a sync here in case other processes than 0 get too far ahead?)
+                   if(rank==0) Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
                 }
             }
 

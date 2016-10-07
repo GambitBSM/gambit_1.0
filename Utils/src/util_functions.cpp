@@ -29,6 +29,7 @@
 /// POSIX filesystem libraries
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <libgen.h>
 
@@ -158,6 +159,15 @@ namespace Gambit
        std::string prefix = path.substr(0,found);
        recursive_mkdir( prefix.c_str() );
        return path;
+    }
+
+    /// Check if a file exists
+    bool file_exists(const std::string& filename)
+    { 
+        //std::ifstream file(filename);
+        //return not file.fail();
+        struct stat buffer;
+        return (stat(filename.c_str(), &buffer) == 0);
     }
 
     /// Return a vector of strings listing the contents of a directory (POSIX)

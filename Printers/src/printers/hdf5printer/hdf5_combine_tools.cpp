@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
+#include "gambit/Utils/util_functions.hpp"
   
 namespace Gambit 
 {
@@ -178,7 +179,7 @@ namespace Gambit
                     {
                         for (auto it = names.begin(), end = names.end(); it != end; ++it)
                         {
-                            if (param_set.find(*it) != param_set.end())
+                            if (param_set.find(*it) == param_set.end())
                             {
                                 std::ostringstream errmsg;
                                 errmsg << "Parameter '" << *it << "' exists, but not in file " << i << ".";
@@ -267,7 +268,7 @@ namespace Gambit
                 std::vector<unsigned long long> aux_sizes;
                 
                 hid_t old_file, old_group;
-                if (resume)
+                if (resume) // Ben: and Utils::file_exists(file))? On first resume there is no combined file yet.
                 {
                     std::system(("mv " + file + " " + file + ".temp.bak").c_str());
                     old_file = H5Fopen((file + ".temp.bak").c_str(), H5F_ACC_RDWR, H5P_DEFAULT);

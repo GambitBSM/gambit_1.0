@@ -98,6 +98,7 @@
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
 
@@ -1201,8 +1202,9 @@ namespace Gambit
       } //end if(is_primary_printer)
     }
 
-    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-    void HDF5Printer::combine_output(const std::vector<std::string> tmp_files, const bool finalcombine)
+    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file
+    /// This version operates via the python script 'combine_hdf5.py'
+    void HDF5Printer::combine_output_py(const std::vector<std::string> tmp_files, const bool finalcombine)
     {
       std::ostringstream command;
       std::ostringstream tmp_file_list;
@@ -1270,6 +1272,47 @@ namespace Gambit
         // Success!
       }
     }
+
+    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file
+    /// This version operates via Greg's C++ routines.
+    void HDF5Printer::combine_output(const std::vector<std::string> tmp_files, const bool finalcombine)
+    {
+      logger() << LogTags::printers << "Running HDF5 data combination..." << EOM;
+      // Do combination
+      int num = tmp_files.size(); // We don't actually use their names here, Greg's code assumes that they
+                                  // follow a fixed format and they all exist. We check for this before 
+                                  // running this function, so this should be fine.
+      HDF5::combine_hdf5_files(tmp_comb_file, finalfile, group, num, not finalcombine);
+
+      // This is just left the same as the combine_output_py version!
+      if(finalcombine)
+      {
+        // This happens only at the end of the run; copy data to user-requested filename
+        // TODO! This does not permit adding different runs into the same hdf5 file
+        // Need to make sure Greg's combine code can do this.
+        std::ostringstream command2;
+        command2 <<"cp "<<tmp_comb_file<<" "<<finalfile<<" && rm "<<tmp_comb_file; // Note, deletes old file if successful
+        logger() << LogTags::printers << LogTags::info << "Running shell command: " << command2.str() << EOM;
+        FILE* fp = popen(command2.str().c_str(), "r");
+        if(fp==NULL)
+        {
+          // Error running popen
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final location during HDF5Printer finalise()! popen failed to run the specified copy (and delete) command (command was '"<<command2.str()<<"')";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        else if(pclose(fp)!=0)
+        {
+          // Command returned exit code!=0, or pclose failed
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final location during HDF5Printer finalise()! Shell command failed to execute successfully, please check stderr (command was '"<<command2.str()<<"').";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        // Success!
+      }
+
+    }
+
 
     /// Retrieve pointer to HDF5 location to which datasets are added
     hid_t HDF5Printer::get_location()

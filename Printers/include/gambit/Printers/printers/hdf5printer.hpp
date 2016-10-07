@@ -260,7 +260,8 @@ namespace Gambit
         std::vector<std::string> find_temporary_files(const bool error_if_inconsistent=false);
 
         /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-        void combine_output(const std::vector<std::string> tmp_files, const bool finalcombine);
+        void combine_output_py(const std::vector<std::string> tmp_files, const bool finalcombine); // Python version
+        void combine_output(const std::vector<std::string> tmp_files, const bool finalcombine); // Greg version
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
