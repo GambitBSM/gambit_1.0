@@ -216,8 +216,7 @@ namespace Gambit
       mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, ms.h0, 1, true);
       mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, ms.h0, 1, true);
 
-      // Do the W mass separately.  Here we use 20 MeV as a temporary guess at the import of the neglected 2-loop corrections.
-      // FIXME Peter is going to work out if 20 MeV is actually reasonable.
+      // Do the W mass separately.  Here we use 10 MeV based on the size of corrections from two-loop papers and advice from Dominik Stockinger.
       double rd_mW = 0.01 / mssmspec.get(Par::Pole_Mass, "W+");
       mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mW, "W+", true);
       mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mW, "W+", true);
