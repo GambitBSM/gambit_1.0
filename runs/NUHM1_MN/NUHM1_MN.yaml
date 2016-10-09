@@ -16,32 +16,25 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  MSSM7atQ:
-    Qin:
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
-    Ad_3:
+  NUHM1:
+    M0:
+      range: [50, 1e4]
+      prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    mH:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      range: [-1e4, 1e4]
+      flat_start: -1e2
+      flat_end: 1e2
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]
-    Au_3:
-      prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]
-    M2:
-      prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]
     TanBeta:
-      range: [3.0, 70.0]
+      range: [3.0, 70]
       prior_type: flat
-    mHd2:
-      prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]
-    mHu2:
-      prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]
-    mf2:
-      prior_type: double_log_flat_join
-      ranges: [0, 0, 1e4, 1e8]
+    SignMu: 1
 
   Halo_gNFW_rho0:
     rho0:
@@ -65,8 +58,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "NUHM1.hdf5"
+    group: "/NUHM1"
 
 Scanner:
 
@@ -285,7 +278,7 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_MSSMatMGUT_spectrum
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
