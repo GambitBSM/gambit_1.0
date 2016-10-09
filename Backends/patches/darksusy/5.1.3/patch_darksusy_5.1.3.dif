@@ -1,6 +1,6 @@
-diff -rupN darksusy-5.1.3.pristine/configure darksusy-5.1.3/configure
+diff -rupN darksusy-5.1.3.pristine/configure darksusy/5.1.3/configure
 --- darksusy-5.1.3.pristine/configure	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy-5.1.3/configure	2016-02-13 16:18:13.886759474 +0000
++++ darksusy/5.1.3/configure	2016-10-09 01:39:40.974406792 +0100
 @@ -3337,11 +3337,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
  if test "${FCSET}" = "false" ; then
    if test "${FC}" = "ifort"; then
@@ -15,9 +15,9 @@ diff -rupN darksusy-5.1.3.pristine/configure darksusy-5.1.3/configure
    fi
  fi
  
-diff -rupN darksusy-5.1.3.pristine/configure.ac darksusy-5.1.3/configure.ac
+diff -rupN darksusy-5.1.3.pristine/configure.ac darksusy/5.1.3/configure.ac
 --- darksusy-5.1.3.pristine/configure.ac	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy-5.1.3/configure.ac	2016-02-05 14:35:08.231004284 +0000
++++ darksusy/5.1.3/configure.ac	2016-10-09 01:39:40.974406792 +0100
 @@ -28,11 +28,11 @@ AC_PROG_FC([ifort gfortran])
  if test "${FCSET}" = "false" ; then
    if test "${FC}" = "ifort"; then 
@@ -32,10 +32,9 @@ diff -rupN darksusy-5.1.3.pristine/configure.ac darksusy-5.1.3/configure.ac
    fi
  fi
  
-Binary files darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/libFH.so and darksusy-5.1.3/contrib/FeynHiggs-2.9.4/libFH.so differ
-diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in
+diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in
 --- darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in	2013-02-10 06:43:34.000000000 +0000
-+++ darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2016-02-16 15:26:02.949096912 +0000
++++ darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2016-10-09 01:39:40.974406792 +0100
 @@ -31,6 +31,9 @@ ARGS = $(PARALLEL) \
  default all lib frontend mma: force
  	cd $(BLD) && $(MAKE) $(ARGS) $@
@@ -46,9 +45,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in darksusy-
  install: default
  	-mkdir "$(PREFIX)"
  	-mkdir "$(LIBDIR)" "$(INCLUDEDIR)" "$(BINDIR)"
-diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F
+diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F
 --- darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2013-02-10 06:43:34.000000000 +0000
-+++ darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2016-02-03 09:19:30.694574453 +0000
++++ darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2016-10-09 01:39:40.974406792 +0100
 @@ -27,7 +27,7 @@
  #define EpsL(x,y)  vec_(x,y, 3, i)
  #define EpsTL(x,y) vec_(x,y, 4, i)
@@ -58,10 +57,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F d
  	equivalence (vec, spi_)
  
  #define Spi(hel,om,x) spi_(x, om, hel+6, i)
-Binary files darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/libHB.so and darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/libHB.so differ
-diff -rupN darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in
+diff -rupN darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in
 --- darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2016-02-16 15:28:43.937094029 +0000
++++ darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2016-10-09 01:39:40.974406792 +0100
 @@ -106,10 +106,10 @@ OBJSsubroutines =  $(OBJSbasic) \
  default: HiggsBounds
  
@@ -106,9 +104,23 @@ diff -rupN darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefil
  	rm -f example_programs/HBwithFH
  	rm -f example_programs/HBwithCPsuperH
  	rm -f example_programs/example-SM_vs_4thGen
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/aldata.f darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/aldata.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f	2016-10-09 01:39:40.986406792 +0100
+@@ -155,8 +155,8 @@ C          LUXSET=.TRUE. after RLUXGO ha
+      $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
+       SAVE /Q1Q2/
+       LOGICAL GOQ,GOALL,GODY,STDDY,GOWW,ALLWW,GOWMOD
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+ C          SUSY parameters
+ C          AMGLSS               = gluino mass
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f
 --- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,189 +0,0 @@
 -
 -******************************************************************
@@ -299,9 +311,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f darksus
 - 
 -      return
 -      end
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f
 --- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,69 +0,0 @@
 -
 -
@@ -372,9 +384,23 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f dar
 -      
 -      RETURN
 -      END
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/gettot.f darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/gettot.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f	2016-10-09 01:39:40.986406792 +0100
+@@ -77,8 +77,8 @@ C          Jet limits
+       COMMON/IDRUN/IDVER,IDG(2),IEVT,IEVGEN
+       SAVE /IDRUN/
+       INTEGER   IDVER,IDG,IEVT,IEVGEN
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+       COMMON/PRIMAR/NJET,SCM,HALFE,ECM,IDIN(2),NEVENT,NTRIES,NSIGMA,
+      $WRTLHE
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f
 --- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,391 +0,0 @@
 -CDECK  ID>, ISARED.
 -cccccccccccccccccccccccccccccccccccccccccccccc
@@ -767,9 +793,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f darks
 -
 -      RETURN
 -      END
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in
 --- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in	2016-02-16 15:23:54.953099204 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in	2016-10-09 01:39:40.974406792 +0100
 @@ -6,9 +6,6 @@
  FF=@F77@
  FOPT=@FOPT@
@@ -811,9 +837,93 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in da
  
  clean:
  	rm -f *.o
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtevt.f darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtevt.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f	2016-10-09 01:39:40.986406792 +0100
+@@ -84,8 +84,8 @@ C
+       COMMON/WSIG/SIGLLQ
+       SAVE /WSIG/
+       REAL      SIGLLQ
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+ C
+ C          LABELS ARE CHARACTER*8
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtlim.f darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtlim.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f	2016-10-09 01:39:40.986406792 +0100
+@@ -79,8 +79,8 @@ C          KKGravity common
+       COMMON/PRTOUT/NEVPRT,NJUMP
+       SAVE /PRTOUT/
+       INTEGER   NEVPRT,NJUMP
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+       INTEGER MXTYPE
+       PARAMETER (MXTYPE=8)
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfgt.f darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfgt.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f	2016-10-09 01:39:40.986406792 +0100
+@@ -1,4 +1,4 @@
+ C
+-      SUBROUTINE RANFGT(SEED)
++      SUBROUTINE RANFGT(SEEDg)
+       RETURN
+       END
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfst.f darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfst.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f	2016-10-09 01:39:40.986406792 +0100
+@@ -1,4 +1,4 @@
+-      SUBROUTINE RANFST(SEED)
+-      DOUBLE PRECISION SEED
++      SUBROUTINE RANFST(SEEDg)
++      DOUBLE PRECISION SEEDg
+       RETURN
+       END
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/readin.f darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/readin.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f	2016-10-09 01:39:40.986406792 +0100
+@@ -73,8 +73,8 @@ C          KKGravity common
+       COMMON/PRTOUT/NEVPRT,NJUMP
+       SAVE /PRTOUT/
+       INTEGER   NEVPRT,NJUMP
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+       INTEGER MXTYPE
+       PARAMETER (MXTYPE=8)
+@@ -230,7 +230,7 @@ C
+       CHARACTER*8 HTYPE
+       INTEGER JLIM1,JLIM2
+       REAL AMLIM1,AMLIM2
+-      DOUBLE PRECISION SEED
++      DOUBLE PRECISION SEEDg
+ C
+ C          Overlapping variable flags.
+       DATA NLAP/1,2,3, 1,2,7 ,1,2,8, 1,3,5, 1,3,6, 1,3,7, 1,3,8, 1,5,7,
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/reset.f darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f
+--- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/reset.f	2011-11-03 14:34:52.000000000 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f	2016-10-09 01:39:40.986406792 +0100
+@@ -84,8 +84,8 @@ C          Jet limits
+      $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
+       SAVE /Q1Q2/
+       LOGICAL GOQ,GOALL,GODY,STDDY,GOWW,ALLWW,GOWMOD
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+ C          SUSY parameters
+ C          AMGLSS               = gluino mass
+diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f
 --- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f	1970-01-01 01:00:00.000000000 +0100
-+++ darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f	2016-02-02 18:00:59.475882565 +0000
++++ darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f	2016-10-09 01:39:40.974406792 +0100
 @@ -0,0 +1,80 @@
 +      CHARACTER*5 FUNCTION SSID(ID)
 +C-----------------------------------------------------------------------
@@ -895,9 +1005,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f darksus
 +      SSID=LABEL(ID)
 +      RETURN
 +      END
-diff -rupN darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in darksusy-5.1.3/contrib/TSPACK/makefile.in
+diff -rupN darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in darksusy/5.1.3/contrib/TSPACK/makefile.in
 --- darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in	2013-02-10 06:43:34.000000000 +0000
-+++ darksusy-5.1.3/contrib/TSPACK/makefile.in	2016-02-02 12:05:04.402044521 +0000
++++ darksusy/5.1.3/contrib/TSPACK/makefile.in	2016-10-09 01:39:40.974406792 +0100
 @@ -9,8 +9,7 @@ FOPT=@FOPT@
  # Dependencies and libraries
  DINC=../../include
@@ -923,9 +1033,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in darksusy-5.1.3/con
  
  clean:
  	rm -f tspack.f *.o
-diff -rupN darksusy-5.1.3.pristine/include/dswacom.h darksusy-5.1.3/include/dswacom.h
+diff -rupN darksusy-5.1.3.pristine/include/dswacom.h darksusy/5.1.3/include/dswacom.h
 --- darksusy-5.1.3.pristine/include/dswacom.h	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy-5.1.3/include/dswacom.h	2016-02-05 14:57:05.686980691 +0000
++++ darksusy/5.1.3/include/dswacom.h	2016-10-09 01:39:40.974406792 +0100
 @@ -18,30 +18,26 @@ c...to 52.
        integer wamax,walast(2),wanm
        parameter(wamax=6) ! number of tables to load simultaneously
@@ -977,9 +1087,9 @@ diff -rupN darksusy-5.1.3.pristine/include/dswacom.h darksusy-5.1.3/include/dswa
  ***                                                                 ***
  ************************** end of muoncom.h ***************************
  
-diff -rupN darksusy-5.1.3.pristine/makefile.in darksusy-5.1.3/makefile.in
+diff -rupN darksusy-5.1.3.pristine/makefile.in darksusy/5.1.3/makefile.in
 --- darksusy-5.1.3.pristine/makefile.in	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy-5.1.3/makefile.in	2016-02-16 15:33:54.337088470 +0000
++++ darksusy/5.1.3/makefile.in	2016-10-09 01:39:40.974406792 +0100
 @@ -82,7 +82,11 @@ config_paths config :
  
  darksusy_lib dslib : tspack
@@ -1063,9 +1173,133 @@ diff -rupN darksusy-5.1.3.pristine/makefile.in darksusy-5.1.3/makefile.in
  	rm -f $(DS_INSTALL)/lib/aldata.o
  	if [ ! -f $(DS_INSTALL)/makefile.in ] ; then \
  		echo 'The install directory is different from DS_ROOT' ; \
-diff -rupN darksusy-5.1.3.pristine/src/ini/dsdirname.c.in darksusy-5.1.3/src/ini/dsdirname.c.in
+diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBffdxdy.f darksusy/5.1.3/src/ib/dsIBffdxdy.f
+--- darksusy-5.1.3.pristine/src/ib/dsIBffdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ darksusy/5.1.3/src/ib/dsIBffdxdy.f	2016-10-09 01:39:40.982406792 +0100
+@@ -259,14 +259,14 @@ c       endif
+ 
+ c...check that result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-12)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBffdxdy (channel:',IBch,
+-     -                '): negative |M|^2 for model ',idtag,'.'
+-          write (*,*) 'Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-12)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBffdxdy (channel:',IBch,
++c     -                '): negative |M|^2 for model ',idtag,'.'
++c          write (*,*) 'Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBfsrdxdy.f darksusy/5.1.3/src/ib/dsIBfsrdxdy.f
+--- darksusy-5.1.3.pristine/src/ib/dsIBfsrdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ darksusy/5.1.3/src/ib/dsIBfsrdxdy.f	2016-10-09 01:39:40.982406792 +0100
+@@ -62,10 +62,10 @@ c... from a full analytical calculation
+ 
+ c...check that result is positive
+       if (0.gt.fsrtmp) then
+-        write(*,*) '*****'
+-        write (*,*) 'Error in dsIBfsrdxdy: negative |M|^2 !'
+-        write (*,*) 'Setting corresponding contributions to zero...'
+-        write(*,*) '*****'
++c        write(*,*) '*****'
++c        write (*,*) 'Error in dsIBfsrdxdy: negative |M|^2 !'
++c        write (*,*) 'Setting corresponding contributions to zero...'
++c        write(*,*) '*****'
+         dsIBfsrdxdy=0d0
+         return
+       endif
+diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBhhdxdy.f darksusy/5.1.3/src/ib/dsIBhhdxdy.f
+--- darksusy-5.1.3.pristine/src/ib/dsIBhhdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ darksusy/5.1.3/src/ib/dsIBhhdxdy.f	2016-10-09 01:39:40.982406792 +0100
+@@ -80,15 +80,15 @@ c...import full IB expression for |M|**2
+ 
+ c...check that the result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-15)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBhhdxdy: ',
+-     -                'negative |M|^2 for model ',
+-     -                 idtag,'.'
+-          write (*,*) ' Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-15)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBhhdxdy: ',
++c     -                'negative |M|^2 for model ',
++c     -                 idtag,'.'
++c          write (*,*) ' Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBwhdxdy.f darksusy/5.1.3/src/ib/dsIBwhdxdy.f
+--- darksusy-5.1.3.pristine/src/ib/dsIBwhdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ darksusy/5.1.3/src/ib/dsIBwhdxdy.f	2016-10-09 01:39:40.986406792 +0100
+@@ -205,14 +205,14 @@ c       endif
+ 
+ c...check that result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-10)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBwhdxdy: ',
+-     -                'negative |M|^2 for model ',idtag,'.'
+-          write (*,*) 'Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-10)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBwhdxdy: ',
++c     -                'negative |M|^2 for model ',idtag,'.'
++c          write (*,*) 'Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBwwdxdy.f darksusy/5.1.3/src/ib/dsIBwwdxdy.f
+--- darksusy-5.1.3.pristine/src/ib/dsIBwwdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ darksusy/5.1.3/src/ib/dsIBwwdxdy.f	2016-10-09 01:39:40.986406792 +0100
+@@ -137,14 +137,14 @@ c       endif
+ 
+ c...check that result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-10)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBwwdxdy:',
+-     -                ' negative |M|^2 for model ',idtag,'.'
+-          write (*,*) 'Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-10)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBwwdxdy:',
++c     -                ' negative |M|^2 for model ',idtag,'.'
++c          write (*,*) 'Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN darksusy-5.1.3.pristine/src/ini/dsdirname.c.in darksusy/5.1.3/src/ini/dsdirname.c.in
 --- darksusy-5.1.3.pristine/src/ini/dsdirname.c.in	2008-02-21 16:08:34.000000000 +0000
-+++ darksusy-5.1.3/src/ini/dsdirname.c.in	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/src/ini/dsdirname.c.in	1970-01-01 01:00:00.000000000 +0100
 @@ -1,25 +0,0 @@
 -/* #include "../../config.h" */
 -#include <string.h>
@@ -1092,9 +1326,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dsdirname.c.in darksusy-5.1.3/src/ini
 -  strcpy(name,DSROOTNAME);
 -  return;
 -}
-diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f darksusy-5.1.3/src/ini/dssetdsinstall.f
+diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f darksusy/5.1.3/src/ini/dssetdsinstall.f
 --- darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy-5.1.3/src/ini/dssetdsinstall.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/src/ini/dssetdsinstall.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,17 +0,0 @@
 -      subroutine dssetdsinstall
 -      implicit none
@@ -1113,9 +1347,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f darksusy-5.1.3/src/i
 -      stop
 -c      write (*,*) dsinstall
 -      end
-diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsversion.f darksusy-5.1.3/src/ini/dssetdsversion.f
+diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsversion.f darksusy/5.1.3/src/ini/dssetdsversion.f
 --- darksusy-5.1.3.pristine/src/ini/dssetdsversion.f	2008-02-21 16:08:34.000000000 +0000
-+++ darksusy-5.1.3/src/ini/dssetdsversion.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/src/ini/dssetdsversion.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,15 +0,0 @@
 -      subroutine dssetdsversion
 -      implicit none
@@ -1132,9 +1366,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsversion.f darksusy-5.1.3/src/i
 -      dsversion=name(:i)
 -c      write (*,*) dsversion
 -      end
-diff -rupN darksusy-5.1.3.pristine/src/ini/dsvername.c.in darksusy-5.1.3/src/ini/dsvername.c.in
+diff -rupN darksusy-5.1.3.pristine/src/ini/dsvername.c.in darksusy/5.1.3/src/ini/dsvername.c.in
 --- darksusy-5.1.3.pristine/src/ini/dsvername.c.in	2008-02-21 16:08:34.000000000 +0000
-+++ darksusy-5.1.3/src/ini/dsvername.c.in	1970-01-01 01:00:00.000000000 +0100
++++ darksusy/5.1.3/src/ini/dsvername.c.in	1970-01-01 01:00:00.000000000 +0100
 @@ -1,25 +0,0 @@
 -/* #include "../../config.h" */
 -#include <string.h>
@@ -1161,9 +1395,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dsvername.c.in darksusy-5.1.3/src/ini
 -  strcpy(name,DSVERNAME);
 -  return;
 -}
-diff -rupN darksusy-5.1.3.pristine/src/ini/makefile.in darksusy-5.1.3/src/ini/makefile.in
+diff -rupN darksusy-5.1.3.pristine/src/ini/makefile.in darksusy/5.1.3/src/ini/makefile.in
 --- darksusy-5.1.3.pristine/src/ini/makefile.in	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy-5.1.3/src/ini/makefile.in	2016-02-02 12:48:22.605727992 +0000
++++ darksusy/5.1.3/src/ini/makefile.in	2016-10-09 01:39:40.978406792 +0100
 @@ -22,7 +22,7 @@ dswacom.h
  vpath %.h $(DINC)
  
@@ -1173,9 +1407,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/makefile.in darksusy-5.1.3/src/ini/ma
  
  OBJ = $(patsubst %.f,$(DOBJ)/%.o,$(SRC))
  
-diff -rupN darksusy-5.1.3.pristine/src/makefile.in darksusy-5.1.3/src/makefile.in
+diff -rupN darksusy-5.1.3.pristine/src/makefile.in darksusy/5.1.3/src/makefile.in
 --- darksusy-5.1.3.pristine/src/makefile.in	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy-5.1.3/src/makefile.in	2016-02-16 15:20:51.969102481 +0000
++++ darksusy/5.1.3/src/makefile.in	2016-10-09 01:39:40.978406792 +0100
 @@ -10,9 +10,11 @@
  #### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
  ###############################################
@@ -1213,9 +1447,9 @@ diff -rupN darksusy-5.1.3.pristine/src/makefile.in darksusy-5.1.3/src/makefile.i
  clean : 
  	rm -f $(BUILD)/*.o
  
-diff -rupN darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f darksusy-5.1.3/src/nt/dsntmuonyield.f
+diff -rupN darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f darksusy/5.1.3/src/nt/dsntmuonyield.f
 --- darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f	2013-01-31 21:46:16.000000000 +0000
-+++ darksusy-5.1.3/src/nt/dsntmuonyield.f	2016-02-03 21:20:18.288408294 +0000
++++ darksusy/5.1.3/src/nt/dsntmuonyield.f	2016-10-09 01:39:40.978406792 +0100
 @@ -78,21 +78,16 @@ c      call wirate(6,6,1)
           stop
        endif
@@ -1238,9 +1472,64 @@ diff -rupN darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f darksusy-5.1.3/src/nt/
  
        end
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswadydth.f darksusy-5.1.3/src/wa/dswadydth.f
+diff -rupN darksusy-5.1.3.pristine/src/ucmh/dsucmh_aontsq.f darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f
+--- darksusy-5.1.3.pristine/src/ucmh/dsucmh_aontsq.f	2015-04-07 14:12:14.000000000 +0100
++++ darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f	2016-10-09 01:44:12.882401922 +0100
+@@ -6,37 +6,42 @@
+ !Date: 2011
+ !
+ !Input:   z       redshift    (dimensionless)
+-!Output:  aontsq  a^2/(ct)^2  (Mpc^-2)	
++!Output:  aontsq  a^2/(ct)^2  (Mpc^-2)
+ 
+       double precision function dsucmh_aontsq(z)
+ 
+       implicit none
+-      
++
+       include 'dsmpconst.h'
+ 
+       double precision, intent(IN) :: z
++      integer, parameter :: nz = 7
+       double precision, parameter ::
+-     &     zs(7) = (/50.d0, 100.d0, 130.d0, 150.d0, 200.d0,
++     &     zs(nz) = (/50.d0, 100.d0, 130.d0, 150.d0, 200.d0,
+      &     500.d0, 1000.d0/)
+       double precision, parameter ::
+-     &     aontsqs(7) = (/1.78826666d-6, 3.6648633d-6,
++     &     aontsqs(nz) = (/1.78826666d-6, 3.6648633d-6,
+      &     4.84663373d-6, 5.65783754d-6, 7.816d-6, 2.274d-5, 5.57d-5/)
+       double precision :: weight
+       integer :: zlow_index
+ 
+       !Less accurate at high z.
+-      !double precision :: ct, dsageatz 
++      !double precision :: ct, dsageatz
+       !ct = dsageatz(z) * c_light / mperkpc ! Mpc
+       !dsucmh_aontsq = (ct*(z+1.d0))**(-2)
+ 
+       !More accurate for high z.
+-      if (z .lt. zs(1) .or. z .gt. zs(7)) then
++      if (z .lt. zs(1) .or. z .gt. zs(nz)) then
+         write(*,*) 'z_c = ', z, ' outside permitted range in dsumch_aontsq.'
+         stop
+       endif
+-      call dshunt(zs,7,z,zlow_index)
+-      weight = (zs(zlow_index+1) - z) / (zs(zlow_index+1) - zs(zlow_index))
+-      dsucmh_aontsq = exp(weight*log(aontsqs(zlow_index)) + (1.d0 - weight)*log(aontsqs(zlow_index+1)))
++      call dshunt(zs,nz,z,zlow_index)
++      if (zlow_index .eq. nz) then
++        dsucmh_aontsq = aontsqs(nz)
++      else
++        weight = (zs(zlow_index+1) - z) / (zs(zlow_index+1) - zs(zlow_index))
++        dsucmh_aontsq = exp(weight*log(aontsqs(zlow_index)) + (1.d0 - weight)*log(aontsqs(zlow_index+1)))
++      endif
+ 
+       end function dsucmh_aontsq
+ 
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswadydth.f darksusy/5.1.3/src/wa/dswadydth.f
 --- darksusy-5.1.3.pristine/src/wa/dswadydth.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy-5.1.3/src/wa/dswadydth.f	2016-02-02 18:42:09.797410390 +0000
++++ darksusy/5.1.3/src/wa/dswadydth.f	2016-10-09 01:39:40.978406792 +0100
 @@ -8,7 +8,6 @@
        real*8 function dswadydth(cth, phim0,phim1,phim2,phie0,phieth,phithm,
       & phichi,phiwh,phifk,phifv)
@@ -1249,9 +1538,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswadydth.f darksusy-5.1.3/src/wa/dswa
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswaemean.f darksusy-5.1.3/src/wa/dswaemean.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswaemean.f darksusy/5.1.3/src/wa/dswaemean.f
 --- darksusy-5.1.3.pristine/src/wa/dswaemean.f	2009-03-30 13:08:08.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswaemean.f	2016-02-02 18:42:16.749410265 +0000
++++ darksusy/5.1.3/src/wa/dswaemean.f	2016-10-09 01:39:40.978406792 +0100
 @@ -8,8 +8,6 @@
  
        real*8 function dswaemean(e0,m0,m1,m2)
@@ -1261,9 +1550,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswaemean.f darksusy-5.1.3/src/wa/dswa
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswaifind.f darksusy-5.1.3/src/wa/dswaifind.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswaifind.f darksusy/5.1.3/src/wa/dswaifind.f
 --- darksusy-5.1.3.pristine/src/wa/dswaifind.f	2008-04-07 22:27:47.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswaifind.f	2016-02-02 18:42:21.813410175 +0000
++++ darksusy/5.1.3/src/wa/dswaifind.f	2016-10-09 01:39:40.978406792 +0100
 @@ -6,7 +6,6 @@
        subroutine dswaifind(value,array,ipl,ii,imin,imax)
        implicit none
@@ -1272,9 +1561,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswaifind.f darksusy-5.1.3/src/wa/dswa
        include 'dsidtag.h'
  
        integer imin,imax,i,inew,imint,imaxt,iold,ii
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswainit.f darksusy-5.1.3/src/wa/dswainit.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswainit.f darksusy/5.1.3/src/wa/dswainit.f
 --- darksusy-5.1.3.pristine/src/wa/dswainit.f	2013-01-27 15:37:53.000000000 +0000
-+++ darksusy-5.1.3/src/wa/dswainit.f	2016-02-05 15:01:39.514975787 +0000
++++ darksusy/5.1.3/src/wa/dswainit.f	2016-10-09 01:39:40.978406792 +0100
 @@ -271,9 +271,9 @@ c     &            k,mfi
  
  c...Create mixed tables, differential in energy, integrated in theta
@@ -1295,9 +1584,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswainit.f darksusy-5.1.3/src/wa/dswai
        data waftype/'b'/
  c      data wabase/'we-res-b-full'/
  c      data wabase/'we-res-may2012'/
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield.f darksusy-5.1.3/src/wa/dswayield.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield.f darksusy/5.1.3/src/wa/dswayield.f
 --- darksusy-5.1.3.pristine/src/wa/dswayield.f	2011-05-24 09:54:48.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswayield.f	2016-02-02 18:42:34.557409946 +0000
++++ darksusy/5.1.3/src/wa/dswayield.f	2016-10-09 01:39:40.978406792 +0100
 @@ -59,8 +59,6 @@
        real*8 function dswayield(mneu,e,theta,wh,kind,type,istat)
        implicit none
@@ -1307,9 +1596,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield.f darksusy-5.1.3/src/wa/dswa
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldf.f darksusy-5.1.3/src/wa/dswayieldf.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldf.f darksusy/5.1.3/src/wa/dswayieldf.f
 --- darksusy-5.1.3.pristine/src/wa/dswayieldf.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy-5.1.3/src/wa/dswayieldf.f	2016-02-03 20:58:33.228431665 +0000
++++ darksusy/5.1.3/src/wa/dswayieldf.f	2016-10-09 01:39:40.978406792 +0100
 @@ -52,11 +52,13 @@
  
        real*8 function dswayieldf(mwimp,e,theta,chi,wh,kind,
@@ -1347,9 +1636,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldf.f darksusy-5.1.3/src/wa/dsw
        endif
  
        dswayieldf=0.0d0
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldfth.f darksusy-5.1.3/src/wa/dswayieldfth.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldfth.f darksusy/5.1.3/src/wa/dswayieldfth.f
 --- darksusy-5.1.3.pristine/src/wa/dswayieldfth.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy-5.1.3/src/wa/dswayieldfth.f	2016-02-02 18:43:57.029408469 +0000
++++ darksusy/5.1.3/src/wa/dswayieldfth.f	2016-10-09 01:39:40.978406792 +0100
 @@ -6,7 +6,7 @@
  *****************************************************************************
  
@@ -1380,9 +1669,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldfth.f darksusy-5.1.3/src/wa/d
          endif
          dswayieldfth=sum*1.0d-15
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy-5.1.3/src/wa/dswayield_int.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy/5.1.3/src/wa/dswayield_int.f
 --- darksusy-5.1.3.pristine/src/wa/dswayield_int.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy-5.1.3/src/wa/dswayield_int.f	2016-03-11 12:33:44.337481034 +0000
++++ darksusy/5.1.3/src/wa/dswayield_int.f	2016-10-09 01:43:39.738402516 +0100
 @@ -1,5 +1,5 @@
        real*8 function dswayield_int(f,a,b,phichi,phiwh,phim0,phim1,phim2,
 -     & phie0,phieth,phithm,phifk,phifv)        
@@ -1390,7 +1679,7 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy-5.1.3/src/wa/
  
  c_______________________________________________________________________
  c  integrate function f between a and b
-@@ -10,11 +10,10 @@ c  author: joakim edsjo (edsjo@physto.se
+@@ -10,14 +10,13 @@ c  author: joakim edsjo (edsjo@physto.se
  c  based on paolo gondolos wxint.f routine.
  c=======================================================================
        implicit none
@@ -1402,7 +1691,11 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy-5.1.3/src/wa/
 +      integer jmax,it,l,j,nfcn,jdid,waerror
        external f
  c      parameter (a=-1.0,b=1.0,eps=1.0d-4,jmax=20)
-       parameter (eps=1.0d-2,jmax=30)  ! je change in eps ps change in jmax
+-      parameter (eps=1.0d-2,jmax=30)  ! je change in eps ps change in jmax
++      parameter (eps=1.0d-2,jmax=22)  ! je change in eps ps change in jmax
+       dswayield_int=0.d0
+       del=b-a
+       ost=0.5*del*(f(a,phim0,phim1,phim2,phie0,phieth,phithm,phichi,phiwh,phifk,phifv)+
 @@ -50,8 +49,11 @@ c      parameter (a=-1.0,b=1.0,eps=1.0d-
  c        type *,'jdid',jdid,' os',os, 'ost',ost
        enddo
@@ -1416,9 +1709,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy-5.1.3/src/wa/
        dswayield_int=0.0d0
  
        end
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldone.f darksusy-5.1.3/src/wa/dswayieldone.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldone.f darksusy/5.1.3/src/wa/dswayieldone.f
 --- darksusy-5.1.3.pristine/src/wa/dswayieldone.f	2013-01-31 21:46:16.000000000 +0000
-+++ darksusy-5.1.3/src/wa/dswayieldone.f	2016-03-11 12:33:56.297480568 +0000
++++ darksusy/5.1.3/src/wa/dswayieldone.f	2016-10-09 01:39:40.978406792 +0100
 @@ -105,16 +105,16 @@
  *****************************************************************************
  
@@ -1573,9 +1866,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldone.f darksusy-5.1.3/src/wa/d
          istat=ibset(istat,2)
        endif
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields2.f darksusy-5.1.3/src/wa/dswayields2.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields2.f darksusy/5.1.3/src/wa/dswayields2.f
 --- darksusy-5.1.3.pristine/src/wa/dswayields2.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswayields2.f	2016-02-01 19:48:57.413275000 +0000
++++ darksusy/5.1.3/src/wa/dswayields2.f	2016-10-09 01:39:40.978406792 +0100
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
@@ -1862,9 +2155,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields2.f darksusy-5.1.3/src/wa/ds
          endif
  
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields3.f darksusy-5.1.3/src/wa/dswayields3.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields3.f darksusy/5.1.3/src/wa/dswayields3.f
 --- darksusy-5.1.3.pristine/src/wa/dswayields3.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswayields3.f	2016-02-01 19:48:57.413275000 +0000
++++ darksusy/5.1.3/src/wa/dswayields3.f	2016-10-09 01:39:40.978406792 +0100
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
@@ -2151,9 +2444,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields3.f darksusy-5.1.3/src/wa/ds
          endif
  
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields4.f darksusy-5.1.3/src/wa/dswayields4.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields4.f darksusy/5.1.3/src/wa/dswayields4.f
 --- darksusy-5.1.3.pristine/src/wa/dswayields4.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswayields4.f	2016-02-01 19:48:57.413275000 +0000
++++ darksusy/5.1.3/src/wa/dswayields4.f	2016-10-09 01:39:40.978406792 +0100
 @@ -8,7 +8,7 @@
  *****************************************************************************
  
@@ -2293,9 +2586,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields4.f darksusy-5.1.3/src/wa/ds
          endif
  
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields.f darksusy-5.1.3/src/wa/dswayields.f
+diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields.f darksusy/5.1.3/src/wa/dswayields.f
 --- darksusy-5.1.3.pristine/src/wa/dswayields.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy-5.1.3/src/wa/dswayields.f	2016-02-01 19:48:57.409275000 +0000
++++ darksusy/5.1.3/src/wa/dswayields.f	2016-10-09 01:39:40.978406792 +0100
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
