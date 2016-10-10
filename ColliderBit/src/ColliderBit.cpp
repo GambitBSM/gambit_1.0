@@ -148,7 +148,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0); 
+      std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -177,7 +177,7 @@ namespace Gambit
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
 
-      // Check for exceptions 
+      // Check for exceptions
       piped_invalid_point.check();
 
       Loop::executeIteration(FINALIZE);
@@ -202,7 +202,7 @@ namespace Gambit
         // Setup the Pythia documentation path
         if (pythia_doc_path_needs_setting)
         {
-          default_doc_path = "Backends/installed/Pythia/" + 
+          default_doc_path = GAMBIT_DIR "/Backends/installed/Pythia/" +
                              Backends::backendInfo().default_version("Pythia") +
                              "/share/Pythia8/xmldoc/";
           pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
@@ -329,7 +329,7 @@ namespace Gambit
         // Setup the Pythia documentation path
         if (pythia_doc_path_needs_setting)
         {
-          default_doc_path = "Backends/installed/Pythia/" + 
+          default_doc_path = GAMBIT_DIR "/Backends/installed/Pythia/" +
                              Backends::backendInfo().default_version("Pythia") +
                              "/share/Pythia8/xmldoc/";
           pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
@@ -608,7 +608,7 @@ namespace Gambit
         using namespace Pipes::reconstructDelphesEvent;
         if (*Loop::iteration <= BASE_INIT) return;
         result.clear();
-  
+
         #pragma omp critical (Delphes)
         {
           (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
@@ -2152,7 +2152,7 @@ namespace Gambit
         {
           limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
           dumped=true;
-        } 
+        }
       #endif
       using namespace Pipes::L3_Selectron_Conservative_LLike;
       using std::pow;

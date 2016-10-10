@@ -31,7 +31,6 @@ Parameters:
       prior_type: double_log_flat_join
     TanBeta:
       range: [3.0, 70]
-      prior_type: flat
     SignMu: 1
 
   #Dark matter halo parameters.
@@ -74,8 +73,8 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 7200
-      convthresh: 1e-3
+      NP: 14400
+      convthresh: 1e-4
       verbosity: 1
 
 ObsLikes:

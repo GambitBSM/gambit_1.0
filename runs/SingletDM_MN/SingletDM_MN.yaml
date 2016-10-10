@@ -116,7 +116,7 @@ ObsLikes:
 
     # DM Local Halo likelihoods
     - capability: lnL_rho0
-      purpose: LogLike
+      purpose:    LogLike
 
     # SM nuisance parameter likelihoods
     - capability: lnL_t_mass
@@ -138,7 +138,7 @@ ObsLikes:
       purpose:    LogLike
 
     - capability: lnL_GF
-      purpose:  LogLike
+      purpose:    LogLike
 
     # Other observables
     - purpose:    Observable

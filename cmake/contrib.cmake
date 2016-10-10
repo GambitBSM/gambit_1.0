@@ -86,7 +86,9 @@ else()
   foreach(DICT ${DELPHES_DICTS})
     set(clean_files ${clean_files} ${DICT})
   endforeach()
-  add_external_clean(delphes ${DELPHES_DIR} null distclean)
+  set(rmstring "${CMAKE_BINARY_DIR}/delphes-prefix/src/delphes-stamp/delphes")
+  add_custom_target(clean-delphes COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
+                                  COMMAND cd ${DELPHES_DIR} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} distclean) || true)
   add_dependencies(distclean clean-delphes)
 endif()
 
@@ -135,7 +137,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # We need to include some stuff from the eigen3 library.  Just ship it until we can get rid of FlexibleSUSY.
   set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
   include_directories("${EIGEN3_DIR}")
-  
+
   # Silence the deprecated-declarations warnings comming from Eigen3
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(FS_CXX_FLAGS "${FS_CXX_FLAGS} -Wno-deprecated-declarations")
@@ -161,7 +163,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
 
 
   set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SingletDMZ3 SingletDM)
- 
+
 
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.
   string (REPLACE ";" "," BUILT_FS_MODELS_COMMAS "${BUILT_FS_MODELS}")

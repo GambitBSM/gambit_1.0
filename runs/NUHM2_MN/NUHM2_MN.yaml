@@ -1,6 +1,6 @@
 Parameters:
 
-  #SM nuisance parameters.
+  #SM parameters.
   StandardModel_SLHA2: !import ../../StandardModel_SLHA2_MSSM_scan.yaml
 
   #Nuclear matrix parameters.
@@ -16,6 +16,7 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
+  #SUSY parameters.
   NUHM2:
     M0:
       range: [50, 1e4]
@@ -36,13 +37,12 @@ Parameters:
       prior_type: double_log_flat_join
     TanBeta:
       range: [3.0, 70]
-      prior_type: flat
     SignMu: 1
 
+  #Dark matter halo parameters.
   Halo_gNFW_rho0:
     rho0:
       range: [.2, .8]
-      prior_type: flat
     v0: 235.0
     vesc: 550.0
     vrot: 235.0
@@ -54,7 +54,7 @@ Parameters:
 
 Priors:
 
-  # All priors simple, so specified in Parameters section
+  # All the priors are simple for this scan, so they are specified directly in the Parameters section.
 
 Printer:
 
@@ -79,8 +79,8 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 7200
-      convthresh: 1e-3
+      NP: 14400
+      convthresh: 1e-4
       verbosity: 1
 
 ObsLikes:
@@ -204,7 +204,6 @@ ObsLikes:
     - capability: lnL_alpha_s
       purpose:    LogLike
 
-
     # Other observables
     - purpose:    Observable
       capability: RD_oh2
@@ -228,14 +227,24 @@ ObsLikes:
       capability: sigma_SD_n
 
     - purpose:    Observable
+      capability: bsgamma
+
+    - purpose:    Observable
+      capability: muon_gm2
+
+    - purpose:    Observable
       capability: SLHA1_violation
 
     - purpose:    Observable
       capability: MSSM_spectrum
       type:       map_str_dbl
 
-
 Rules:
+
+  # Globally permit maximal mixing between gauge and family eigenstates
+  - options:
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
 
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
@@ -280,11 +289,10 @@ Rules:
     function: all_decays
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
+  # Options set to match benchmark point specified in SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
   - capability: unimproved_MSSM_spectrum
     function: get_MSSMatMGUT_spectrum
     options:
-      # Set to match benchmark point specified in
-      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -325,23 +333,28 @@ Rules:
   - capability: Higgs_Couplings
     function: MSSM_higgs_couplings_pwid
 
-  # Nuclear Parameter Likelihoods (All values in MeV)
+  # Experimental values to be used in nuclear parameter likelihoods (all values in MeV)
   - capability: lnL_SI_nuclear_parameters
     function: lnL_sigmas_sigmal
     options:
-      sigmas_central: 43.
-      sigmas_error: 8.
-      sigmal_central: 58.
-      sigmal_error: 9.
+      sigmas_central: 43.0
+      sigmas_error: 8.0
+      sigmal_central: 58.0
+      sigmal_error: 9.0
 
-  # DM Halo Model Likelihoods
-  - capability: lnL_rho0  # Local dark matter density
+  # Observed value and uncertainty of local dark matter density (in GeV/cm^3)
+  - capability: lnL_rho0
     function: lnL_rho0_lognormal
     options:
-      rho0_obs: 0.4 # GeV/cm^3
-      rho0_obserr: .15 # GeV/cm^3
+      rho0_obs: 0.4
+      rho0_obserr: 0.15
 
-  # ColliderBit
+  # Choose which type of marginalised Poisson likelihood to use for LHC likelihoods
+  - capability: LHC_Combined_LogLike
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  # ATLAS detector simulation
   - capability: SimpleSmearingSim
     type: "ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
@@ -349,6 +362,7 @@ Rules:
       partonOnly: false
       antiktR: 0.4
 
+  # CMS detector simulation
   - capability: SimpleSmearingSim
     type: "ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
@@ -356,34 +370,30 @@ Rules:
       partonOnly: false
       antiktR: 0.5
 
+  # ATLAS analysis setup. Set option useATLAS: false to ignore these analyses.
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:
-      #This defaults to true; set it false to ignore all these analyses
-      useATLAS: true
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                            "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                            "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
                            "ATLAS_3LEPEW_20invfb"]
 
+  # CMS analysis setup. Set option useCMS: false to ignore these analyses.
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:
-      #This defaults to true; set it false to ignore all these analyses
-      useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
+  # Choose Monte Carlo event simulator and number of events to run.
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
       nEvents: 20000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
 
-  - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
-
+  # Define Monte Carlo event simulator and associated options.
   - capability:  HardScatteringSim
     function:  getPythia
     options:
@@ -398,10 +408,6 @@ Rules:
                              "SUSY:all = on",
                              "TauDecays:mode = 0",
                              "TimeShower:pTmin = 20"]
-
-  - capability: LHC_Combined_LogLike
-    backends:
-    - {capability: lnlike_marg_poisson_lognormal_error}
 
 Logger:
 
