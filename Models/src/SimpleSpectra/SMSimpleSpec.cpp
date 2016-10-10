@@ -85,6 +85,7 @@ namespace Gambit
       // allow it as a non-standard entry in SMINPUTS. Here we will stick to
       // SLHA.
       double SMea::get_MW_pole()        const { return getdata("MASS",24); }
+      double SMea::get_MW_unc()         const { return 0.0; }
 
       double SMea::get_sinthW2_pole()   const { return (1.0 - Utils::sqr(get_MW_pole()) / Utils::sqr(get_MZ_pole())); }
       
@@ -186,6 +187,19 @@ namespace Gambit
    
               map_collection[Par::Pole_Mass].map0 = tmp_map;
             }
+           
+            { // fill W mass uncertainties
+              MTget::fmap0 tmp_map;
+              tmp_map["W+"] = &SMea::get_MW_unc;
+              map_collection[Par::Pole_Mass_1srd_high].map0 = tmp_map;
+            }
+                       
+            {
+              MTget::fmap0 tmp_map;
+              tmp_map["W+"] = &SMea::get_MW_unc;
+              map_collection[Par::Pole_Mass_1srd_low].map0 = tmp_map;
+            }
+           
 
             { //local scoping block
               MTget::fmap0 tmp_map;
