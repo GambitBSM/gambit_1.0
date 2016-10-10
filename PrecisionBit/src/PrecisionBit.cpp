@@ -517,18 +517,18 @@ namespace Gambit
     void mw_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SM_spectrum;
-      const SubSpectrum& HE = Dep::SM_spectrum->get_HE();
-      result.central = HE.get(Par::Pole_Mass, "W+");;
-      result.upper = result.central * HE.get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower = result.central * HE.get(Par::Pole_Mass_1srd_low, "W+");
+      const SubSpectrum& LE = Dep::SM_spectrum->get_LE();
+      result.central = LE.get(Par::Pole_Mass, "W+");;
+      result.upper = result.central * LE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower = result.central * LE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SS_spectrum;
-      const SubSpectrum& HE = Dep::SingletDM_spectrum->get_HE();
-      result.central = HE.get(Par::Pole_Mass, "W+");;
-      result.upper = result.central * HE.get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower = result.central * HE.get(Par::Pole_Mass_1srd_low, "W+");
+      const SubSpectrum& LE = Dep::SingletDM_spectrum->get_LE();
+      result.central = LE.get(Par::Pole_Mass, "W+");;
+      result.upper = result.central * LE.get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower = result.central * LE.get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_MSSM_spectrum(triplet<double> &result)
     {

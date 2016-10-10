@@ -23,8 +23,10 @@
 
 //#define DARKBIT_DEBUG
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -43,13 +45,13 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_FinalStates;
       /// Option cMC_finalStates<std::vector<std::string>>: List of final states to simulate (default is ["gamma"])
       list = runOptions->getValueOrDef<std::vector<std::string>>(list, "cMC_finalStates");
-#ifdef DARKBIT_DEBUG
-      std::cout << "Final states to generate: " << list.size() << std::endl;
-      for(size_t i=0; i < list.size(); i++)
-      {
-        std::cout << "  " << list[i] << std::endl;
-      }
-#endif
+      #ifdef DARKBIT_DEBUG
+        std::cout << "Final states to generate: " << list.size() << std::endl;
+        for(size_t i=0; i < list.size(); i++)
+        {
+          std::cout << "  " << list[i] << std::endl;
+        }
+      #endif
     }
 
     // Function setting up the decay table used in decay chains
@@ -538,8 +540,8 @@ namespace Gambit {
           }
           if (ignored)
           {
-            DarkBit_warning().raise(LOCAL_INFO, 
-                "WARNING FCMC: Missing complete decay information for " 
+            DarkBit_warning().raise(LOCAL_INFO,
+                "WARNING FCMC: Missing complete decay information for "
                 + (*it)->getpID() + ". This state is ignored.");
           }
         }

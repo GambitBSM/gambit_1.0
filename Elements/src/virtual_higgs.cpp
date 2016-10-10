@@ -5,7 +5,7 @@
 ///  Simple function for returning SM Higgs partial
 ///  and total widths as a function of virtuality,
 ///  as read from data files from CERN Yellow
-///  Paper arXiv:1101.0593.
+///  Paper arXiv:1307.1347.
 ///
 ///  *********************************************
 ///
@@ -36,7 +36,6 @@ namespace Gambit
   double virtual_SMHiggs_widths(str channel, double mh)
   {
     // Paths to files containing virtual Higgs width tables.
-    //const str virtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1101.0593.dat";
     const str virtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1307.1347.dat";
     const str virtualH_highmass = GAMBIT_DIR "/Elements/data/Higgs_decay_multiTeV_supplement.dat";
     const str virtualH_lowmass = GAMBIT_DIR "/Elements/data/Higgs_decay_lowmass_supplement.dat";

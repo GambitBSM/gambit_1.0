@@ -2,23 +2,20 @@
 //   *********************************************
 ///  \file
 ///
-///  Class defining the parameters that SubSpectrum 
+///  Class defining the parameters that SubSpectrum
 ///  objects providing the Standard Model Higgs
 ///  sector parameters must provide
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2016 Feb 
+///  \date 2016 Feb
 ///
 ///  *********************************************
-
-#ifndef __SM_Higgs_contents_hpp__ 
-#define __SM_Higgs_contents_hpp__ 
 
 #include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
@@ -33,4 +30,3 @@ namespace Gambit {
   }
 
 }
-#endif

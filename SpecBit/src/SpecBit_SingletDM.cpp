@@ -65,22 +65,16 @@ namespace Gambit
       // Initialise an object to carry the Singlet plus Higgs sector information
       Models::SingletDMModel singletmodel;
 
-
       // quantities needed to fill container spectrum, intermediate calculations
       double alpha_em = 1.0 / sminputs.alphainv;
       double mz2 = pow(sminputs.mZ,2);
       double GF = sminputs.GF;
       double sinW2cosW2 = Pi * alpha_em / (pow(2,0.5) * mz2 * GF ) ;
-
-
       double e = pow( 4*Pi*( alpha_em ),0.5) ;
-
-
       double sin2W = pow(2 * sinW2cosW2, 0.5);
       double tW = 0.5* asin( sin2W );
       double sinW2 = pow( sin (tW) , 2);
       double cosW2 = pow( cos (tW) , 2);
-
 
       // Higgs sector
       double mh   = *myPipe::Param.at("mH");
@@ -91,14 +85,11 @@ namespace Gambit
       //singletmodel.LambdaH   = GF*pow(mh,2)/pow(2,0.5) ;
 
       // Scalar singlet sector
-
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
       singletmodel.SingletLambdaS   = 0;
 
-
       // Standard model
-
       singletmodel.sinW2 = sinW2;
 
       // gauge couplings
@@ -106,17 +97,14 @@ namespace Gambit
       singletmodel.g2 = e / cosW2;
       singletmodel.g3   = pow( 4*Pi*( sminputs.alphaS ),0.5) ;
 
-      double sqrt2v = pow(2.0,0.5)/vev;
       // Yukawas
-
+      double sqrt2v = pow(2.0,0.5)/vev;
       singletmodel.Yu[0] = sqrt2v * sminputs.mU;
       singletmodel.Yu[1] = sqrt2v * sminputs.mCmC;
       singletmodel.Yu[2] = sqrt2v * sminputs.mT;
-
       singletmodel.Ye[0] = sqrt2v * sminputs.mE;
       singletmodel.Ye[1] = sqrt2v * sminputs.mMu;
       singletmodel.Ye[2] = sqrt2v * sminputs.mTau;
-
       singletmodel.Yd[0] = sqrt2v * sminputs.mD;
       singletmodel.Yd[1] = sqrt2v * sminputs.mS;
       singletmodel.Yd[2] = sqrt2v * sminputs.mBmB;
@@ -206,29 +194,22 @@ namespace Gambit
 
       MI model_interface(spectrum_generator,oneset,input);
 
-
-      SI singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // new templated spectrum class name
-      //SingletDMSpec<MI> singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // should be 1.2.4?
-
+      SI singletdmspec(model_interface, "FlexibleSUSY", "1.5.1"); // new templated spectrum class name
+      //SingletDMSpec<MI> singletdmspec(model_interface, "FlexibleSUSY", "1.5.1");
 
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",true);
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
 
-
       singletdmspec.set_override(Par::Pole_Mass_1srd_high,0.0, "h0_1", true);
       singletdmspec.set_override(Par::Pole_Mass_1srd_low,0.0,"h0_1", true);
-
-
-
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
-
-            // Deal with points where spectrum generator encountered a problem
+      // Deal with points where spectrum generator encountered a problem
       #ifdef SPECBIT_DEBUG
         std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
         std::cout<<"Warning? "<<problems.have_warning()<<std::endl;

@@ -33,7 +33,7 @@
 #include "flexiblesusy/src/lowe.h"
 
 // Switch for debug mode
-#define SpecBit_DBUG
+//#define SpecBit_DBUG
 
 namespace Gambit
 {
