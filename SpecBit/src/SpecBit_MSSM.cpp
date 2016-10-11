@@ -1150,7 +1150,7 @@ namespace Gambit
       slhahelp::family_state_mix_matrix("~d", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
       specmap["msbottom1"] =  mssm.get(Par::Pole_Mass, msf1);
       specmap["msbottom2"] =  mssm.get(Par::Pole_Mass, msf2);
-      slhahelp::family_state_mix_matrix("~e", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      slhahelp::family_state_mix_matrix("~e-", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
       specmap["mstau1"] =  mssm.get(Par::Pole_Mass, msf1);
       specmap["mstau2"] =  mssm.get(Par::Pole_Mass, msf2);
     }
