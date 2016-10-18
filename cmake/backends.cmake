@@ -69,7 +69,7 @@ set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
 set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}beta.tgz")  # Note "beta" suffix!
-set(md5 "0e1278a88dc2a7838e737edd53525978")
+set(md5 "84771f32a9dfa3957b2c842064adb82f")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
