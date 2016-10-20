@@ -43,7 +43,7 @@
 
 #define square(x) ((x) * (x))  // square a number
 
-//#define DARKSUSY_DEBUG
+#define DARKSUSY_DEBUG
 
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE

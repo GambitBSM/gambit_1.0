@@ -717,7 +717,7 @@ namespace Gambit
         int gen_tau_D        = 3;
         int charge_tau_D     = 0;// D* is the charged version
         double obs_tau_D[3];
-        result=BEreq::BRBDlnu(byVal(gen_tau_D), byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), obs_tau_D, &param);
+        result=BEreq::BRBDlnu(byVal(gen_tau_D), byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), byVal(obs_tau_D), &param);
       }
 
       if(flav_debug) printf("BR(B-> D tau nu )=%.3e\n",result);
@@ -748,7 +748,7 @@ namespace Gambit
         int gen_mu_D        =2;
         int charge_mu_D     =0;// D* is the charged version
         double obs_mu_D[3];
-        result= BEreq::BRBDlnu(byVal(gen_mu_D), byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), obs_mu_D, &param);
+        result= BEreq::BRBDlnu(byVal(gen_mu_D), byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), byVal(obs_mu_D), &param);
       }
 
       if(flav_debug) printf("BR(B->D mu nu)=%.3e\n",result);
@@ -775,7 +775,7 @@ namespace Gambit
         int gen_tau_Dstar        =3;
         int charge_tau_Dstar     =1;// D* is the charged version
         double obs_tau_Dstar[3];
-        result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), obs_tau_Dstar, &param);
+        result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), byVal(obs_tau_Dstar), &param);
       }
 
       if(flav_debug) printf("BR(B->Dstar tau nu)=%.3e\n",result);
@@ -802,7 +802,7 @@ namespace Gambit
         int gen_mu_Dstar        =2;
         int charge_mu_Dstar     =1;// D* is the charged version
         double obs_mu_Dstar[3];
-        result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
+        result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), byVal(obs_mu_Dstar), &param);
       }
 
       if(flav_debug) printf("BR(B->Dstar mu nu)=%.3e\n",result);
