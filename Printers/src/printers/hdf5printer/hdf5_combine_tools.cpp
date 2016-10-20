@@ -161,7 +161,7 @@ namespace Gambit
                     std::stringstream ss;
                     ss << i;
                     //H5::H5File file((file_name + "_" + ss.str()).c_str());
-                    hid_t file_id = H5Fopen((file_name + "_temp_" + ss.str()).c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+                    hid_t file_id = H5Fopen((file_name + "_temp_" + ss.str()).c_str(), H5F_ACC_RDWR, H5P_DEFAULT); // bjf> Read only?
                     files.push_back(file_id);
                     
                     hid_t group_id = H5Gopen2(file_id, group_name.c_str(), H5P_DEFAULT);

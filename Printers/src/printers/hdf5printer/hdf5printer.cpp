@@ -920,7 +920,7 @@ namespace Gambit
           // Matches format of temporary file! Extract the rank that produced it
           std::stringstream ss;
           ss << it->substr(tmp_base.length());
-          if(ss.str()!="combined") // don't count the temporary combined file in this list
+          if(Utils::isInteger(ss.str())) // Only do this for files where the remainder of the string is just an integer (i.e. not the combined files etc.)
           {
             int rank;
             ss >> rank;
@@ -1282,7 +1282,12 @@ namespace Gambit
       int num = tmp_files.size(); // We don't actually use their names here, Greg's code assumes that they
                                   // follow a fixed format and they all exist. We check for this before 
                                   // running this function, so this should be fine.
-      HDF5::combine_hdf5_files(tmp_comb_file, finalfile, group, num, not finalcombine);
+
+      // If we set the final flag 'true' then Greg's code will assume that a '_temp_combined' output file
+      // exists, and it will crash if it doesn't. So we need to first check if such a file exists.
+      bool combined_file_exists = Utils::file_exists(tmp_comb_file); // We already check this externally; pass in as flag?
+      std::cout<<"combined_file_exists? "<<combined_file_exists<<std::endl;
+      HDF5::combine_hdf5_files(tmp_comb_file, finalfile, group, num, combined_file_exists);
 
       // This is just left the same as the combine_output_py version!
       if(finalcombine)

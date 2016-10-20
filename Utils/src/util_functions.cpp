@@ -140,7 +140,19 @@ namespace Gambit
       }
       return s;
     }
+   
+    /// Check if a string represents an integer
+    /// From: http://stackoverflow.com/a/2845275/1447953
+    bool isInteger(const std::string & s)
+    {
+       if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
     
+       char * p ;
+       strtol(s.c_str(), &p, 10) ;
+    
+       return (*p == 0) ;
+    }
+
     /// Copy a std::string to a character array, stripping the null termination character.  Good for sending to Fortran.
     void strcpy2f(char* arr, int len, str s)
     {

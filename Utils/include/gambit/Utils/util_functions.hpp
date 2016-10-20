@@ -174,6 +174,10 @@ namespace Gambit
     /// Local GAMBIT definition of isinf.  Could be redefined at a later point, depending on compiler support. 
     using std::isinf;
 
+    /// Check if a string represents an integer
+    /// From: http://stackoverflow.com/a/2845275/1447953
+    bool isInteger(const std::string&);
+
   }
 
 }
