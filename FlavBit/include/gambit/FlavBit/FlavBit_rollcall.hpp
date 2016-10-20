@@ -29,6 +29,7 @@
 ///  \author Marcin Chrzaszcz
 ///  \date 2015 May
 ///  \date 2016 Aug
+///  \date 2016 Oct
 ///
 ///  *********************************************
 
@@ -52,6 +53,18 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY SuperIso_modelinfo_WC
+  START_CAPABILITY
+    #define FUNCTION SI_fill_WC
+    START_FUNCTION(parameters)
+    BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
+    BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    DEPENDENCY(MSSM_spectrum, Spectrum)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Observable: BR(B -> Xs gamma)
   #define CAPABILITY bsgamma
@@ -185,38 +198,38 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Observable: BR(B->D mu nu)                                                                           
-  #define CAPABILITY BDmunu                                                                              
-  START_CAPABILITY                                                                                        
-    #define FUNCTION SI_BDmunu                                                                           
-    START_FUNCTION(double)                                                                                
-    DEPENDENCY(SuperIso_modelinfo, parameters)                                                            
+  // Observable: BR(B->D mu nu)
+  #define CAPABILITY BDmunu
+  START_CAPABILITY
+    #define FUNCTION SI_BDmunu
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )                                                      
-    #undef FUNCTION                                                                                        
-  #undef CAPABILITY                                                                                        
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  // Observable: BR(B->D* tau nu)                                                                           
-  #define CAPABILITY BDstartaunu                                                                              
-  START_CAPABILITY                                                                                        
-    #define FUNCTION SI_BDstartaunu                                                                           
-    START_FUNCTION(double)                                                                                
-    DEPENDENCY(SuperIso_modelinfo, parameters)                                                            
+  // Observable: BR(B->D* tau nu)
+  #define CAPABILITY BDstartaunu
+  START_CAPABILITY
+    #define FUNCTION SI_BDstartaunu
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(BRBDstarlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )                                                      
-    #undef FUNCTION                                                                                        
-  #undef CAPABILITY                                                                                        
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  // Observable: BR(B->D* mu nu)                                                                            
-  #define CAPABILITY BDstarmunu                                                                             
-  START_CAPABILITY                                                                                           
-    #define FUNCTION SI_BDstarmunu                                                                           
-    START_FUNCTION(double)                                                                                    
-    DEPENDENCY(SuperIso_modelinfo, parameters)                                                                
+  // Observable: BR(B->D* mu nu)
+  #define CAPABILITY BDstarmunu
+  START_CAPABILITY
+    #define FUNCTION SI_BDstarmunu
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(BRBDstarlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )                                                          
-    #undef FUNCTION                                                                                           
-  #undef CAPABILITY                                                                                          
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Observable: Delta0(B -> K* gamma)
   #define CAPABILITY delta0
@@ -504,7 +517,7 @@ START_MODULE
     DEPENDENCY(BDtaunu, double)
     DEPENDENCY(BDmunu, double)
     DEPENDENCY(BDstartaunu, double)
-    DEPENDENCY(BDstarmunu, double) 
+    DEPENDENCY(BDstarmunu, double)
     #undef FUNCTION
   #undef CAPABILITY
 

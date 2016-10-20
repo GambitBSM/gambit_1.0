@@ -115,7 +115,56 @@ namespace Gambit
     // *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     // *************************************************
+    void SI_fill_WC(struct parameters &result)
+    {
+      // this function will fill the parameters from the model it self not from SLH file
+      namespace myPipe = Pipes::SI_fill_WC;  
+      using namespace myPipe;             
+      using namespace std;                
+      
+      // Obtain SLHAea object from spectrum                                  
+      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();                 
+      // Add the MODSEL block if it is not provided by the spectrum object.  
+      SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);             
 
+      // for WC we will fill just the SM parameters
+      // to be honest if this is the best way, but let's follow Nazila
+      if(!spectrum["SMINPUTS"].empty())   
+	{                                   
+	  if(spectrum["SMINPUTS"][1].is_data_line()) result.inv_alpha_em=SLHAea::to<double>(spectrum["SMINPUTS"][1][1]);      
+	  if(spectrum["SMINPUTS"][2].is_data_line()) result.Gfermi=SLHAea::to<double>(spectrum["SMINPUTS"][2][1]);            
+	  if(spectrum["SMINPUTS"][3].is_data_line()) result.alphas_MZ=SLHAea::to<double>(spectrum["SMINPUTS"][3][1]);         
+	  if(spectrum["SMINPUTS"][4].is_data_line()) result.mass_Z=SLHAea::to<double>(spectrum["SMINPUTS"][4][1]);            
+	  if(spectrum["SMINPUTS"][5].is_data_line()) result.mass_b=SLHAea::to<double>(spectrum["SMINPUTS"][5][1]);            
+	  if(spectrum["SMINPUTS"][6].is_data_line()) result.mass_top_pole=SLHAea::to<double>(spectrum["SMINPUTS"][6][1]);     
+	  if(spectrum["SMINPUTS"][7].is_data_line()) result.mass_tau=SLHAea::to<double>(spectrum["SMINPUTS"][7][1]);          
+	  if(spectrum["SMINPUTS"][8].is_data_line()) result.mass_nutau2=SLHAea::to<double>(spectrum["SMINPUTS"][8][1]);       
+	  if(spectrum["SMINPUTS"][11].is_data_line()) result.mass_e2=SLHAea::to<double>(spectrum["SMINPUTS"][11][1]);         
+	  if(spectrum["SMINPUTS"][12].is_data_line()) result.mass_nue2=SLHAea::to<double>(spectrum["SMINPUTS"][12][1]);       
+	  if(spectrum["SMINPUTS"][13].is_data_line()) result.mass_mu2=SLHAea::to<double>(spectrum["SMINPUTS"][13][1]);        
+	  if(spectrum["SMINPUTS"][14].is_data_line()) result.mass_numu2=SLHAea::to<double>(spectrum["SMINPUTS"][14][1]);      
+	  if(spectrum["SMINPUTS"][21].is_data_line()) result.mass_d2=SLHAea::to<double>(spectrum["SMINPUTS"][21][1]);         
+	  if(spectrum["SMINPUTS"][22].is_data_line()) result.mass_u2=SLHAea::to<double>(spectrum["SMINPUTS"][22][1]);         
+	  if(spectrum["SMINPUTS"][23].is_data_line()) result.mass_s2=SLHAea::to<double>(spectrum["SMINPUTS"][23][1]);         
+	  if(spectrum["SMINPUTS"][24].is_data_line()) result.mass_c2=SLHAea::to<double>(spectrum["SMINPUTS"][24][1]);         
+      
+	}      
+      if(!spectrum["VCKMIN"].empty())                                                                               
+	{                                                                                                             
+	  if(spectrum["VCKMIN"][1].is_data_line()) result.CKM_lambda=SLHAea::to<double>(spectrum["VCKMIN"][1][1]);    
+	  if(spectrum["VCKMIN"][2].is_data_line()) result.CKM_A=SLHAea::to<double>(spectrum["VCKMIN"][2][1]);         
+	  if(spectrum["VCKMIN"][3].is_data_line()) result.CKM_rhobar=SLHAea::to<double>(spectrum["VCKMIN"][3][1]);    
+	  if(spectrum["VCKMIN"][4].is_data_line()) result.CKM_etabar=SLHAea::to<double>(spectrum["VCKMIN"][4][1]);    
+	}                                                                                                             
+      //  now the WC should be called from model function
+
+
+      
+    }
+    // *************************************************        
+    /// Rollcalled functions properly hooked up to Gambit       
+    // *************************************************        
+  
     void SI_fill(struct parameters &result)
     {
       namespace myPipe = Pipes::SI_fill;
@@ -211,7 +260,10 @@ namespace Gambit
             if(spectrum["MINPAR"][3].is_data_line()) result.tan_beta=SLHAea::to<double>(spectrum["MINPAR"][3][1]);
             if(spectrum["MINPAR"][4].is_data_line()) result.sign_mu=SLHAea::to<double>(spectrum["MINPAR"][4][1]);
           }
-          default:
+	  case 4:
+	    //	   result.CQpb=....
+	
+	default:
           {
             if(spectrum["MINPAR"][3].is_data_line()) result.tan_beta=SLHAea::to<double>(spectrum["MINPAR"][3][1]);
           }

@@ -12,6 +12,8 @@
 ///  \author Nazila Mahmoudi
 ///          (FIXME @blah.edu)
 ///  \date 2013 Dec
+///  \auther Marcin Chrzaszcz
+///  \date 2016 Oct
 ///
 ///  *********************************************
 
@@ -24,7 +26,7 @@ namespace Gambit
   struct parameters
   {
 	int SM;
-	int model; /* CMSSM=1, GMSB=2, AMSB=3 */
+	int model; /* CMSSM=1, GMSB=2, AMSB=3, WC=4 */
 	int generator; /* ISAJET=1, SOFTSUSY=3, SPHENO=4, SUSPECT=5, NMSSMTOOLS=6 */
 	double Q; /* Qmax ; default = M_EWSB = sqrt(m_stop1*mstop2) */
 	double m0,m12,tan_beta,sign_mu,A0; /* CMSSM parameters */
@@ -89,6 +91,13 @@ namespace Gambit
 	
 	/* Decay widths */
 	double width_Z,width_W;
+
+       /*   Willson Coefficients   */
+       // consult with nazila
+       std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+
+
+
 };
   // now the class that is needed for the hack for superiso
 
