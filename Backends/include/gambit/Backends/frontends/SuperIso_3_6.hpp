@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///  
+///
 ///  \author Nazila Mahmoudi
 ///  \date   2016 Jul
 ///  \author Pat Scott
@@ -70,12 +70,20 @@ BE_FUNCTION(BRBDlnu, double, (int, int, double,  double, double*, struct paramet
 BE_FUNCTION(BRBDstarlnu, double, (int, int, double,  double, double*, struct parameters*), "BRBDstarlnu", "BRBDstarlnu")
 
 // Convenience functions:
-BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "BRBKstarmumu_CONV")    
+BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "BRBKstarmumu_CONV")
 BE_CONV_FUNCTION(bsgamma_CONV, double, (struct parameters*, double), "bsgamma_CONV")
 BE_CONV_FUNCTION(Bsll_untag_CONV, double, (struct parameters*, int), "Bsll_untag_CONV")
 BE_CONV_FUNCTION(Bdll_CONV, double, (struct parameters*, int), "Bdll_CONV")
 
+
+// Same conenience functions with WC:
+BE_CONV_FUNCTION(BRBKstarmumu_CONV_WC, Flav_KstarMuMu_obs, (struct parameters*, double, double), "BRBKstarmumu_CONV_WC")
+
+BE_CONV_FUNCTION(bsgamma_CONV_WC, double, (struct parameters*, double), "bsgamma_CONV_WC")
+BE_CONV_FUNCTION(Bsll_untag_CONV_WC, double, (struct parameters*, int), "Bsll_untag_CONV_WC")
+BE_CONV_FUNCTION(Bdll_CONV_WC, double, (struct parameters*, int), "Bdll_CONV_WC")
+
+
+
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
-
-
