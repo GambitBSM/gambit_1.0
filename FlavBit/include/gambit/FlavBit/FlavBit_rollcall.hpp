@@ -62,6 +62,7 @@ START_MODULE
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     DEPENDENCY(MSSM_spectrum, Spectrum)
+ALLOW_MODELS(WC)
     #undef FUNCTION
   #undef CAPABILITY
 

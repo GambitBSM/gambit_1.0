@@ -119,6 +119,7 @@ namespace Gambit
     {
       // this function will fill the parameters from the model it self not from SLH file
       namespace myPipe = Pipes::SI_fill_WC;  
+      
       using namespace myPipe;             
       using namespace std;                
       
@@ -157,8 +158,8 @@ namespace Gambit
 	  if(spectrum["VCKMIN"][4].is_data_line()) result.CKM_etabar=SLHAea::to<double>(spectrum["VCKMIN"][4][1]);    
 	}                                                                                                             
       //  now the WC should be called from model function
-
-
+      ModelInUse("WC");
+      
       
     }
     // *************************************************        
