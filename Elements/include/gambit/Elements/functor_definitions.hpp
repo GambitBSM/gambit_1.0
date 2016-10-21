@@ -63,8 +63,7 @@ namespace Gambit
     : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction        (inputFunction),
       myValue           (NULL),
-      myPrintFlag       (false),
-      myTimingPrintFlag (false)
+      myPrintFlag       (false)
     {}
 
     /// Destructor
@@ -77,17 +76,10 @@ namespace Gambit
     /// Setter for indicating if the wrapped function's result should be printed
     template <typename TYPE>
     void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
-    /// Setter for indicating if the timing data for this function's execution should be printed
-    template <typename TYPE>
-    void module_functor<TYPE>::setTimingPrintRequirement(bool flag) { if (this == NULL) failBigTime("setTimingPrintRequirement"); myTimingPrintFlag = flag;}
 
     /// Getter indicating if the wrapped function's result should be printed
     template <typename TYPE>
     bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
-
-    /// Getter indicating if the timing data for this function's execution should be printed
-    template <typename TYPE>
-    bool module_functor<TYPE>::requiresTimingPrinting() const { if (this == NULL) failBigTime("requiresTimingPrinting"); return myTimingPrintFlag; }
 
     /// Calculate method
     /// (no loop-manager stuff here because only void specialisation can manage loops)
@@ -121,7 +113,7 @@ namespace Gambit
           {
             this->finishTiming(thread_num);        //Stop timing function evaluation
             throw(e);
-          } 
+          }
         }
         this->finishTiming(thread_num);            //Stop timing function evaluation
         logger().leaving_module();
@@ -185,7 +177,7 @@ namespace Gambit
       {
         if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
         int rank = printer->getRank();
-        std::chrono::duration<double> runtime = end[thread_num] - start[thread_num]; 
+        std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
         printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
         already_printed_timing[thread_num] = true;
       }
