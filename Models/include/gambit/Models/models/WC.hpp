@@ -20,7 +20,7 @@
 
 #define MODEL WC
    START_MODEL
-   DEFINEPARS(CQ0b1, CQ0b2, CQ0b3, CQ1b1, CQ1b2, CQ1b3, CQpb1, CQpb2, CQpb3)
+   DEFINEPARS(Re_DeltaC7, Im_DeltaC7, Re_DeltaC9, Im_DeltaC9, Re_DeltaC10, Im_DeltaC10, Re_DeltaCQ1, Im_DeltaCQ1, Re_DeltaCQ2, Im_DeltaCQ2)
 #undef MODEL  
 
 #endif

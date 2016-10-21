@@ -48,7 +48,7 @@ BE_NAMESPACE
     CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
     Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
     /*double BR =*/  BRBKstarll(2,0,byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
-
+    
     // filling results
     Flav_KstarMuMu_obs results;
     results.q2_min=Q2_min;
@@ -140,16 +140,32 @@ BE_NAMESPACE
 	double mu_b=param->mass_b_1S/2.;
 	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
 	std::complex<double> CQpb[3];
+	
+	// the WC will be done via Delta C modification 
+	double Re_DeltaC7=param->Re_DeltaC7;
+	double Im_DeltaC7=param->Im_DeltaC7;
+	double Re_DeltaC9=param->Re_DeltaC9;
+	double Im_DeltaC9=param->Im_DeltaC9;
+	double Re_DeltaC10=param->Re_DeltaC10;
+	double Im_DeltaC10=param->Im_DeltaC10;
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+ 
 	// now this has to be got from paramenters, need Nazila to answere the email
-        //CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
-	//C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
-	//Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
+	cout<<"Checking WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
+	CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param); // since param.SM=1 we calcule WC at SM
+	cout<<"Checking WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
+	C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param); // calculating them at mu_b mass
+	cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
+	Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
+	// the prime WC I don't care about :P
 	//result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
 	result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
       }
     return result;
-
-
+    
   }
   //###################################################################################
   double Bsll_untag_CONV(struct parameters *param, int flav)

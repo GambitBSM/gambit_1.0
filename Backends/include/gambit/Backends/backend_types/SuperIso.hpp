@@ -94,10 +94,10 @@ namespace Gambit
 
        /*   Willson Coefficients   */
        // consult with nazila
-       std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-
-
+       double Re_DeltaC7, Im_DeltaC7, Re_DeltaC9, Im_DeltaC9, Re_DeltaC10, Im_DeltaC10, Re_DeltaCQ1, Im_DeltaCQ1, Re_DeltaCQ2, Im_DeltaCQ2;
+       
+    
+       
 };
   // now the class that is needed for the hack for superiso
 
