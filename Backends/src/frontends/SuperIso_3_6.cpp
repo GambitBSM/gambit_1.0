@@ -152,6 +152,8 @@ BE_NAMESPACE
 	double Im_DeltaCQ1=param->Im_DeltaCQ1;
 	double Re_DeltaCQ2=param->Re_DeltaCQ2;
 	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+	//superIso doesn't handle imaginary part of WC
  
 	// now this has to be got from paramenters, need Nazila to answere the email
 	cout<<"Checking WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
@@ -161,6 +163,11 @@ BE_NAMESPACE
 	cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
 	Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
 	// the prime WC I don't care about :P
+	//now hacking the WC:
+	C0b[7]+=Re_DeltaC7;
+	C0b[9]+=Re_DeltaC9;
+	C0b[10]+=Re_DeltaC10;
+	
 	//result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
 	result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
       }

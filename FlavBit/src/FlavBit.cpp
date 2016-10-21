@@ -163,11 +163,27 @@ namespace Gambit
       ModelInUse("WC");
       result.SM=1;  // needed acordingly to Nazila
       
-      dep_bucket<Spectrum>* spectrum_dependency;
-      spectrum_dependency=&Dep::WC;
+      //cout<<*Param["Re_DeltaC9"]<<endl;
       
+      cout<<"Oki now feeling the model:"<<endl;
+
+      result.Re_DeltaC7=*Param["Re_DeltaC7"];
+      result.Re_DeltaC9=*Param["Re_DeltaC9"]; 
+      result.Re_DeltaC10=*Param["Re_DeltaC10"];
       
+      result.Im_DeltaC7=*Param["Im_DeltaC7"];    
+      result.Im_DeltaC9=*Param["Im_DeltaC9"];    
+      result.Im_DeltaC10=*Param["Im_DeltaC10"];  
       
+      result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
+      result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
+      
+      result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
+      result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
+
+      cout<<"Checking the nodel: "<<result.Im_DeltaC7<<endl;
+
+
       BEreq::slha_adjust(&result);   // needed acordingly to nazila
     }
     // *************************************************
