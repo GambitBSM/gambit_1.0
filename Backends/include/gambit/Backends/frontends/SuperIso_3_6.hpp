@@ -23,8 +23,8 @@
 
 LOAD_LIBRARY
 
-// Can't do anything non-MSSM with SuperIso (yet)
-BE_ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
+// Can't do anything non-MSSM with SuperIso yet, besides Willson coefficinets
+BE_ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, WC)
 
 BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
 BE_FUNCTION(slha_adjust, void, (struct parameters*), "slha_adjust", "slha_adjust")

@@ -125,13 +125,14 @@ namespace Gambit
       using namespace std;
 
       // Obtain SLHAea object from spectrum
-      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
+      //      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
       // Add the MODSEL block if it is not provided by the spectrum object.
-      SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
+      //SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
 
       BEreq::Init_param(&result);
       // for WC we will fill just the SM parameters
       // to be honest this is not the best way, but let's follow Nazila
+      /*
       if(!spectrum["SMINPUTS"].empty())
 	{
 	  if(spectrum["SMINPUTS"][1].is_data_line()) result.inv_alpha_em=SLHAea::to<double>(spectrum["SMINPUTS"][1][1]);
@@ -159,6 +160,7 @@ namespace Gambit
 	  if(spectrum["VCKMIN"][3].is_data_line()) result.CKM_rhobar=SLHAea::to<double>(spectrum["VCKMIN"][3][1]);
 	  if(spectrum["VCKMIN"][4].is_data_line()) result.CKM_etabar=SLHAea::to<double>(spectrum["VCKMIN"][4][1]);
 	}
+      */
       //  now the WC should be called from model function
       ModelInUse("WC");
       result.SM=1;  // needed acordingly to Nazila
@@ -181,8 +183,8 @@ namespace Gambit
       result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
       result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
 
-      cout<<"Checking the nodel: "<<result.Im_DeltaC7<<endl;
-
+      cout<<"Checking the nodel: "<<result.Re_DeltaC7<<endl;
+      
 
       BEreq::slha_adjust(&result);   // needed acordingly to nazila
     }
@@ -559,6 +561,23 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
     }
 
+    void SI_bsgamma_WC(double &result)                           
+    {                                                         
+      using namespace Pipes::SI_bsgamma_WC;                      
+      if(flav_debug)  cout<<"Starting SI_bsgamma WC"<<endl;      
+                                                          
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;     
+                                                          
+      if(param.model<0) result=0.;                            
+      double E_cut=1.6;                                       
+      result=BEreq::bsgamma_CONV_WC(&param, byVal(E_cut));       
+      
+      if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result); 
+      if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;      
+    }                                                         
+
+
+
     // *************************************************
     /// Calculating Br in Bs->mumu decays for the untaged case
     // *************************************************
@@ -582,8 +601,35 @@ namespace Gambit
       }
 
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
+      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag WC"<<endl;
     }
+    
+    // *************************************************                  
+    /// Calculating Br in Bs->mumu decays for the untaged case            
+    /// WC case
+    // *************************************************                  
+                                                                      
+    void SI_Bsmumu_untag_WC(double &result)                                  
+    {                                                                     
+      using namespace Pipes::SI_Bsmumu_untag;                             
+                                                                      
+      if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;             
+                                                                      
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;                 
+      int flav=2;                                                         
+                                                                      
+      if(param.model<0)                                                   
+	{                                                                   
+	  result=0.;                                                        
+	}                                                                   
+      else                                                                
+	{                                                                   
+	  result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));               
+	}                                                                   
+                                                                      
+      if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);          
+      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag WC"<<endl;             
+    }                                                                     
 
     // *************************************************
     /// Calculating Br in Bs->ee decays for the untaged case

@@ -23,6 +23,7 @@ Scanner:
 
 ObsLikes:
 
+
   - purpose:      Observable
     capability:   bsgamma
   - purpose:      Observable
@@ -90,10 +91,12 @@ ObsLikes:
 
 Rules:
 
-  - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum  
-    options:
-      invalid_point_fatal: true
+- capability: SuperIso_modelinfo
+  function: SI_fill
+  dependencies:
+    - capability: MSSM_spectrum
+      function: make_MSSM_precision_spectrum_H_W
+
       
 Logger:
 

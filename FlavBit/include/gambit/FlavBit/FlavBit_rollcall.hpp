@@ -61,9 +61,7 @@ START_MODULE
     BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    DEPENDENCY(MSSM_spectrum, Spectrum)
-    ALLOW_MODELS(WC)
-DEPENDENCY(WC, Spectrum)
+    ALLOW_MODELS(WC )
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -79,6 +77,17 @@ DEPENDENCY(WC, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY bsgamma_WC
+  START_CAPABILITY
+    #define FUNCTION SI_bsgamma_WC
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(bsgamma_CONV_WC, (libsuperiso), double,(struct parameters*, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+   #undef CAPABILITY
+
+
   // Observable: BR(Bs -> mu+ mu-)_untag
   #define CAPABILITY Bsmumu_untag
   START_CAPABILITY
@@ -86,6 +95,17 @@ DEPENDENCY(WC, Spectrum)
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  #define CAPABILITY Bsmumu_untag_WC
+  START_CAPABILITY
+    #define FUNCTION SI_Bsmumu_untag_WC
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(Bsll_untag_CONV_WC, (libsuperiso),  double, (struct parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
