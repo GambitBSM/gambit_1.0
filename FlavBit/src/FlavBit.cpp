@@ -601,7 +601,7 @@ namespace Gambit
       }
 
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag WC"<<endl;
+      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
     }
     
     // *************************************************                  
@@ -611,7 +611,7 @@ namespace Gambit
                                                                       
     void SI_Bsmumu_untag_WC(double &result)                                  
     {                                                                     
-      using namespace Pipes::SI_Bsmumu_untag;                             
+      using namespace Pipes::SI_Bsmumu_untag_WC;                             
                                                                       
       if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;             
                                                                       
