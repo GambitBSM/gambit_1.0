@@ -124,7 +124,7 @@ namespace Gambit
          sminputs.PMNS.alpha2  = *myPipe::Param["alpha2"];
 
          // W mass.  Stick with the observed value (set in the default constructor) unless instructed otherwise.
-         if (runOptions.getValueOrDef<bool>("enforce_tree_level_MW",false);
+         if (myPipe::runOptions->getValueOrDef<bool>(false,"enforce_tree_level_MW"))
          {
            // Calculate MW from alpha, mZ and G_F, assuming the tree-level relation.
            const double pionroot2 = pi * pow(2,-0.5);

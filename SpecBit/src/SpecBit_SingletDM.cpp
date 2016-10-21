@@ -68,13 +68,10 @@ namespace Gambit
       // quantities needed to fill container spectrum, intermediate calculations
       double alpha_em = 1.0 / sminputs.alphainv;
       double C = alpha_em * Pi / (sminputs.GF * pow(2,0.5));
-      
       double sinW2 = 0.5 - pow( 0.25 - C/pow(sminputs.mZ,2) , 0.5);
       double cosW2 = 0.5 + pow( 0.25 - C/pow(sminputs.mZ,2) , 0.5);
       double e = pow( 4*Pi*( alpha_em ),0.5) ;
-      
-      cout << "sinW2 = " << sinW2 << endl;
-      
+
       // Higgs sector
       double mh   = *myPipe::Param.at("mH");
       singletmodel.HiggsPoleMass   = mh;
