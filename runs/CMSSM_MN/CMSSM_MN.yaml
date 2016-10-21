@@ -31,7 +31,6 @@ Parameters:
       prior_type: double_log_flat_join
     TanBeta:
       range: [3.0, 70]
-      prior_type: flat
     SignMu: 1
 
   #Dark matter halo parameters.
@@ -74,8 +73,8 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 7200
-      convthresh: 1e-3
+      NP: 14400
+      convthresh: 1e-4
       verbosity: 1
 
 ObsLikes:
@@ -294,7 +293,7 @@ Rules:
       pole_mass_loop_order:  2
       ewsb_loop_order:       2
       beta_loop_order:       2
-      threshold_corrections_loop_order: 1
+      threshold_corrections_loop_order: 2
       use_higgs_2loop_at_as: true
       use_higgs_2loop_ab_as: true
       use_higgs_2loop_at_at: true

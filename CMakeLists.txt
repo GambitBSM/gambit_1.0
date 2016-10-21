@@ -52,7 +52,7 @@ foreach(p
 endforeach()
 
 # Set the project name, enabling C, C++ and Fortran support
-project(GAMBIT C CXX Fortran)
+project(gambit C CXX Fortran)
 
 # Disable clang support
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")

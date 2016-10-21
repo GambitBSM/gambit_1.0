@@ -574,7 +574,10 @@ namespace Gambit
         for (int i = 0; i < argc-1; i++)
         {
           str arg = argv[i];
-          if (arg == "gambit" or arg == "./gambit")
+          str x(GAMBIT_EXECUTABLE);
+          int len = arg.length();
+          int xlen = x.length();
+          if (len > xlen and arg.substr(len-xlen,len-1) == x)
           {
             command = argv[i+1];
             break;

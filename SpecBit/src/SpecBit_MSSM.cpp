@@ -1139,14 +1139,20 @@ namespace Gambit
       double MuSUSY = mssm.get(Par::mass1, "Mu");
       double tb = mssm.get(Par::dimensionless, "tanbeta");
       specmap["Xt"] = At - MuSUSY / tb;
-      /// Determine which states are the stops then add them for printing
-      str mst1, mst2;
-      /// Since this is for printing I only want to invalidate the point if this is completely wrong.  We can also plot the mixing if we are suspicious.
+      /// Determine which states are the third gens then add them for printing
+      str msf1, msf2;
+      /// Since this is for printing we only want to invalidate the point if this is completely wrong.  We can also plot the mixing if we are suspicious.
       const static double tol = 0.5;
       const static bool pt_error = true;
-      slhahelp::family_state_mix_matrix("~u", 3, mst1, mst2, mssm, tol, LOCAL_INFO, pt_error);
-      specmap["mstop1"] =  mssm.get(Par::Pole_Mass, mst1);
-      specmap["mstop2"] =  mssm.get(Par::Pole_Mass, mst2);
+      slhahelp::family_state_mix_matrix("~u", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["mstop1"] =  mssm.get(Par::Pole_Mass, msf1);
+      specmap["mstop2"] =  mssm.get(Par::Pole_Mass, msf2);
+      slhahelp::family_state_mix_matrix("~d", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["msbottom1"] =  mssm.get(Par::Pole_Mass, msf1);
+      specmap["msbottom2"] =  mssm.get(Par::Pole_Mass, msf2);
+      slhahelp::family_state_mix_matrix("~e-", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["mstau1"] =  mssm.get(Par::Pole_Mass, msf1);
+      specmap["mstau2"] =  mssm.get(Par::Pole_Mass, msf2);
     }
 
     void get_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
@@ -1196,7 +1202,7 @@ namespace Gambit
               subspec.has(tag,name,ignore_overrides))
            {
              label << " (unimproved)";
-             specmap[label.str()] = subspec.get(tag,name,ignore_overrides);          
+             specmap[label.str()] = subspec.get(tag,name,ignore_overrides);
              //std::cout << label.str() << ": " << specmap[label.str()];
            }
          }
@@ -1213,7 +1219,7 @@ namespace Gambit
                 subspec.has(tag,name,i,ignore_overrides))
              {
                label << " (unimproved)";
-               specmap[label.str()] = subspec.get(tag,name,i,ignore_overrides);          
+               specmap[label.str()] = subspec.get(tag,name,i,ignore_overrides);
                //std::cout << label.str() << ": " << specmap[label.str()];
              }
            }
@@ -1231,7 +1237,7 @@ namespace Gambit
                   subspec.has(tag,name,i,j,ignore_overrides))
                {
                  label << " (unimproved)";
-                 specmap[label.str()] = subspec.get(tag,name,i,j,ignore_overrides);          
+                 specmap[label.str()] = subspec.get(tag,name,i,j,ignore_overrides);
                }
              }
            }
@@ -1240,9 +1246,9 @@ namespace Gambit
          else
          {
            // ERROR
-           std::ostringstream errmsg;           
+           std::ostringstream errmsg;
            errmsg << "Error, invalid parameter received while converting SubSpectrum with contents \""<<contents.getName()<<"\" to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
-           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape; 
+           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape;
            SpecBit_error().forced_throw(LOCAL_INFO,errmsg.str());
          }
       }
