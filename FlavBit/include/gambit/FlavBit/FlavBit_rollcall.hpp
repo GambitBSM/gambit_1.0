@@ -121,6 +121,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY Bsee_untag_WC
+  START_CAPABILITY
+   #define FUNCTION SI_Bsee_untag_WC
+   START_FUNCTION(double)
+   DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+   BACKEND_REQ(Bsll_untag_CONV_WC, (libsuperiso),  double, (struct parameters*, int))
+   BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+   #undef FUNCTION
+  #undef CAPABILITY
+
   // Observable: BR(Bd -> mu+ mu-)
   #define CAPABILITY Bdmumu
   START_CAPABILITY
@@ -131,6 +141,18 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
+
+  // Observable: BR(Bd -> mu+ mu-)
+  #define CAPABILITY Bdmumu_WC
+  START_CAPABILITY
+   #define FUNCTION SI_Bdmumu_WC
+   START_FUNCTION(double)
+   DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+   BACKEND_REQ(Bdll_CONV_WC, (libsuperiso),  double, (struct parameters*, int))
+   BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+   #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Observable: BR(B -> tau nu)
   #define CAPABILITY Btaunu
@@ -282,6 +304,22 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Observable: BR(B -> Xs mu mu)_lowq2
+  #define CAPABILITY BRBXsmumu_lowq2_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBXsmumu_lowq2_WC
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBXsll_lowq2, (libsuperiso), double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
+    BACKEND_REQ(CW_calculator, (libsuperiso), void, (int, double*, double*, double*, double, struct parameters*))
+    BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
+    BACKEND_REQ(CQ_calculator, (libsuperiso), void, (int, std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+    BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (int, double*, std::complex<double>*, double, double, struct parameters*))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Observable: BR(B -> Xs mu mu)_highq2
   #define CAPABILITY BRBXsmumu_highq2
   START_CAPABILITY
@@ -296,6 +334,22 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
+  // Observable: BR(B -> Xs mu mu)_highq2
+  #define CAPABILITY BRBXsmumu_highq2_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBXsmumu_highq2_WC
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBXsll_highq2, (libsuperiso), double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
+    BACKEND_REQ(CW_calculator, (libsuperiso), void, (int, double*, double*, double*, double, struct parameters*))
+    BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
+    BACKEND_REQ(CQ_calculator, (libsuperiso), void, (int, std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+    BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (int, double*, std::complex<double>*, double, double, struct parameters*))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Observable: AFB(B -> Xs mu mu)_lowq2
   #define CAPABILITY A_BXsmumu_lowq2
@@ -383,6 +437,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY BRBKstarmumu_11_25_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_WC
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBKstarmumu_CONV_WC, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_25_40
   START_CAPABILITY
@@ -390,6 +454,16 @@ START_MODULE
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_WC
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBKstarmumu_CONV_WC, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -405,6 +479,17 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY BRBKstarmumu_40_60_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_WC
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBKstarmumu_CONV_WC, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_60_80
   START_CAPABILITY
@@ -415,6 +500,17 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_WC
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBKstarmumu_CONV_WC, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_15_17
@@ -427,6 +523,17 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY BRBKstarmumu_15_17_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_WC
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBKstarmumu_CONV_WC, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_17_19
   START_CAPABILITY
@@ -437,6 +544,17 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_WC
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
+    BACKEND_REQ(BRBKstarmumu_CONV_WC, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Observable: A_I(B -> K* mu mu)
   #define CAPABILITY AI_BKstarmumu

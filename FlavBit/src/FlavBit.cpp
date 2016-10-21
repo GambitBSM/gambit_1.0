@@ -164,27 +164,27 @@ namespace Gambit
       //  now the WC should be called from model function
       ModelInUse("WC");
       result.SM=1;  // needed acordingly to Nazila
-      
+
       //cout<<*Param["Re_DeltaC9"]<<endl;
-      
+
       cout<<"Oki now feeling the model:"<<endl;
 
       result.Re_DeltaC7=*Param["Re_DeltaC7"];
-      result.Re_DeltaC9=*Param["Re_DeltaC9"]; 
+      result.Re_DeltaC9=*Param["Re_DeltaC9"];
       result.Re_DeltaC10=*Param["Re_DeltaC10"];
-      
-      result.Im_DeltaC7=*Param["Im_DeltaC7"];    
-      result.Im_DeltaC9=*Param["Im_DeltaC9"];    
-      result.Im_DeltaC10=*Param["Im_DeltaC10"];  
-      
+
+      result.Im_DeltaC7=*Param["Im_DeltaC7"];
+      result.Im_DeltaC9=*Param["Im_DeltaC9"];
+      result.Im_DeltaC10=*Param["Im_DeltaC10"];
+
       result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
       result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
-      
+
       result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
       result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
 
       cout<<"Checking the nodel: "<<result.Re_DeltaC7<<endl;
-      
+
 
       BEreq::slha_adjust(&result);   // needed acordingly to nazila
     }
@@ -561,20 +561,20 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
     }
 
-    void SI_bsgamma_WC(double &result)                           
-    {                                                         
-      using namespace Pipes::SI_bsgamma_WC;                      
-      if(flav_debug)  cout<<"Starting SI_bsgamma WC"<<endl;      
-                                                          
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;     
-                                                          
-      if(param.model<0) result=0.;                            
-      double E_cut=1.6;                                       
-      result=BEreq::bsgamma_CONV_WC(&param, byVal(E_cut));       
-      
-      if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result); 
-      if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;      
-    }                                                         
+    void SI_bsgamma_WC(double &result)
+    {
+      using namespace Pipes::SI_bsgamma_WC;
+      if(flav_debug)  cout<<"Starting SI_bsgamma WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      if(param.model<0) result=0.;
+      double E_cut=1.6;
+      result=BEreq::bsgamma_CONV_WC(&param, byVal(E_cut));
+
+      if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
+    }
 
 
 
@@ -603,33 +603,33 @@ namespace Gambit
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
     }
-    
-    // *************************************************                  
-    /// Calculating Br in Bs->mumu decays for the untaged case            
+
+    // *************************************************
+    /// Calculating Br in Bs->mumu decays for the untaged case
     /// WC case
-    // *************************************************                  
-                                                                      
-    void SI_Bsmumu_untag_WC(double &result)                                  
-    {                                                                     
-      using namespace Pipes::SI_Bsmumu_untag_WC;                             
-                                                                      
-      if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;             
-                                                                      
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;                 
-      int flav=2;                                                         
-                                                                      
-      if(param.model<0)                                                   
-	{                                                                   
-	  result=0.;                                                        
-	}                                                                   
-      else                                                                
-	{                                                                   
-	  result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));               
-	}                                                                   
-                                                                      
-      if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);          
-      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag WC"<<endl;             
-    }                                                                     
+    // *************************************************
+
+    void SI_Bsmumu_untag_WC(double &result)
+    {
+      using namespace Pipes::SI_Bsmumu_untag_WC;
+
+      if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+      int flav=2;
+
+      if(param.model<0)
+	{
+	  result=0.;
+	}
+      else
+	{
+	  result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
+	}
+
+      if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag WC"<<endl;
+    }
 
     // *************************************************
     /// Calculating Br in Bs->ee decays for the untaged case
@@ -658,6 +658,35 @@ namespace Gambit
     }
 
     // *************************************************
+    /// Calculating Br in Bs->ee decays for the untaged case
+    /// WC case
+    // *************************************************
+
+    void SI_Bsee_untag_WC(double &result)
+    {
+      using namespace Pipes::SI_Bsee_untag_WC;
+
+      if(flav_debug)  cout<<"Starting SI_Bsee_untag WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+      int flav=1;
+
+      if(param.model<0)
+	{
+	  result=0.;
+	}
+      else
+	{
+	  result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
+	}
+
+      if(flav_debug) printf("BR(Bs->ee)_untag=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bsee_untag WC"<<endl;
+    }
+
+
+
+    // *************************************************
     /// Calculating Br in B0->mumu decays
     // *************************************************
 
@@ -681,6 +710,33 @@ namespace Gambit
 
       if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bdmumu"<<endl;
+    }
+
+    // *************************************************
+    /// Calculating Br in B0->mumu decays
+    /// WC case
+    // *************************************************
+
+    void SI_Bdmumu_WC(double &result)
+    {
+      using namespace Pipes::SI_Bdmumu_WC;
+
+      if(flav_debug)  cout<<"Starting SI_Bdmumu WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      int flav=2;
+      if(param.model<0)
+	{
+	  result=0.;
+	}
+      else
+	{
+	  result=BEreq::Bdll_CONV_WC(&param, byVal(flav));
+	}
+
+      if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bdmumu WC"<<endl;
     }
 
 
@@ -1005,6 +1061,69 @@ namespace Gambit
 
     // *************************************************
 
+    void SI_BRBXsmumu_lowq2_WC(double &result)
+    {
+      using namespace Pipes::SI_BRBXsmumu_lowq2_WC;
+
+      if(flav_debug)  cout<<"Starting SI_BRBXsmumu_lowq2 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      if(param.model<0)
+	{
+	  result=0.;
+	}
+      else
+	{
+	  double mu_W=120.;
+	  double mu_b=5.;
+
+	  double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	  std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+
+	  // the WC will be done via Delta C modification
+
+	  double Re_DeltaC7=param.Re_DeltaC7;
+	  double Im_DeltaC7=param.Im_DeltaC7;
+	  double Re_DeltaC9=param.Re_DeltaC9;
+	  double Im_DeltaC9=param.Im_DeltaC9;
+	  double Re_DeltaC10=param.Re_DeltaC10;
+	  double Im_DeltaC10=param.Im_DeltaC10;
+	  double Re_DeltaCQ1=param.Re_DeltaCQ1;
+	  double Im_DeltaCQ1=param.Im_DeltaCQ1;
+	  double Re_DeltaCQ2=param.Re_DeltaCQ2;
+	  double Im_DeltaCQ2=param.Im_DeltaCQ2;
+
+
+	  BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	  BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	  BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	  BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+
+	  // the prime WC I don't care about :P
+	  //now hacking the WC:
+	  C0b[7]+=Re_DeltaC7;
+	  C0b[9]+=Re_DeltaC9;
+	  C0b[10]+=Re_DeltaC10;
+
+	  result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+
+	}
+
+
+
+
+      if(flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
+    }
+
+
+
+
+
+    // *************************************************
+
     void SI_BRBXsmumu_highq2(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_highq2;
@@ -1035,6 +1154,61 @@ namespace Gambit
       if(flav_debug) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
     }
+
+    void SI_BRBXsmumu_highq2_WC(double &result)
+    {
+      using namespace Pipes::SI_BRBXsmumu_highq2_WC;
+
+      if(flav_debug)  cout<<"Starting SI_BRBXsmumu_highq2 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      if(param.model<0)
+	{
+	  result=0.;
+	}
+      else
+	{
+	  double mu_W=120.;
+	  double mu_b=5.;
+
+	  // the WC will be done via Delta C modification
+
+	  double Re_DeltaC7=param.Re_DeltaC7;
+	  double Im_DeltaC7=param.Im_DeltaC7;
+	  double Re_DeltaC9=param.Re_DeltaC9;
+	  double Im_DeltaC9=param.Im_DeltaC9;
+	  double Re_DeltaC10=param.Re_DeltaC10;
+	  double Im_DeltaC10=param.Im_DeltaC10;
+	  double Re_DeltaCQ1=param.Re_DeltaCQ1;
+	  double Im_DeltaCQ1=param.Im_DeltaCQ1;
+	  double Re_DeltaCQ2=param.Re_DeltaCQ2;
+	  double Im_DeltaCQ2=param.Im_DeltaCQ2;
+
+
+	  double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	  std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+
+	  BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	  BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	  BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	  BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+
+	  // the prime WC I don't care about :P
+	  //now hacking the WC:
+	  C0b[7]+=Re_DeltaC7;
+	  C0b[9]+=Re_DeltaC9;
+	  C0b[10]+=Re_DeltaC10;
+
+	  result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	}
+
+
+      if(flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
+    }
+
+
 
     // *************************************************
 
@@ -1201,6 +1375,7 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_A_BXstautau_highq2"<<endl;
     }
 
+
     // *************************************************
     /// Calculating B-> K* mu mu observables in 1.1-2.5 GeV
     // *************************************************
@@ -1221,6 +1396,28 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
     }
+
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 1.1-2.5 GeV WC
+    // *************************************************
+
+    void SI_BRBKstarmumu_11_25_WC( Flav_KstarMuMu_obs &result)
+    {
+
+      using namespace Pipes::SI_BRBKstarmumu_11_25_WC;
+
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_11_25 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      double q2min=1.1;
+      double q2max=2.5;
+      result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
+
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
+
+    }
+
     // *************************************************
     /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV
     // *************************************************
@@ -1239,6 +1436,27 @@ namespace Gambit
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
+
+
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV  WC
+    // *************************************************
+
+    void SI_BRBKstarmumu_25_40_WC( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_WC;
+
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_25_40 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      double q2min=2.5;
+      double q2max=4.0;
+      result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
+
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40 WC"<<endl;
+    }
+
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 4.0-6.0 GeV
@@ -1260,6 +1478,22 @@ namespace Gambit
 
     }
 
+    void SI_BRBKstarmumu_40_60_WC( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_WC;
+
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_25_40 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      double q2min=4.0;
+      double q2max=6.0;
+      result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
+
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40 WC"<<endl;
+
+    }
+
     // *************************************************
     /// Calculating B-> K* mu mu observables in 6.0-8.0 GeV
     // *************************************************
@@ -1276,6 +1510,20 @@ namespace Gambit
       double q2max=8.0;
       result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
+    }
+
+    void SI_BRBKstarmumu_60_80_WC( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_WC;
+
+      if(flav_debug)  cout<<"Starting SI_BRBKstarmumu_60_80 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      double q2min=6.0;
+      double q2max=8.0;
+      result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
+      if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80 WC"<<endl;
     }
 
     // *************************************************
@@ -1297,6 +1545,22 @@ namespace Gambit
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_15_17 "<<endl;
 
     }
+    void SI_BRBKstarmumu_15_17_WC( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_WC;
+
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      double q2min=15.0;
+      double q2max=17.0;
+      result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
+
+      if(flav_debug) cout<<"Finished SI_BRBKstarmumu_15_17 WC"<<endl;
+
+    }
+
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 17.0-19.0 GeV
@@ -1315,6 +1579,21 @@ namespace Gambit
       result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
+    }
+
+    void SI_BRBKstarmumu_17_19_WC( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_WC;
+
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 WC"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo_WC;
+
+      double q2min=17.0;
+      double q2max=19.0;
+      result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
+
+      if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 WC"<<endl;
     }
 
 
