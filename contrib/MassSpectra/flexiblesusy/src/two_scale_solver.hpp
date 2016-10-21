@@ -122,6 +122,7 @@ private:
    double running_precision;           ///< RG running precision
    Two_scale_model* model_at_this_scale; ///< model at current scale
 
+   RGFlow(const RGFlow&) {}
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems

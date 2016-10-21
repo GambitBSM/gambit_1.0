@@ -1,29 +1,32 @@
-// GAMBIT: Global and Modular BSM Inference Tool  
+// GAMBIT: Global and Modular BSM Inference Tool
 //************************************************
-/// \file                                        
-///                                               
-///  Configured options and settings for GAMBIT   
-///                                               
+/// \file
+///
+///  Configured options and settings for GAMBIT
+///
 ///***********************************************
-///                                               
-///  Authors:                                     
-///                                              
+///
+///  Authors:
+///
 ///  \author Antje Putze
-///        (antje.putze@lapth.cnrs.fr)              
+///        (antje.putze@lapth.cnrs.fr)
 ///  \date 2015 Apr, Sep
 ///
 ///  \author Pat Scott
-///        (p.scott@imperial.ac.uk)              
+///        (p.scott@imperial.ac.uk)
 ///  \date 2015 Apr
-///                                             
-///                                               
+///
+///
 ///***********************************************
-                                                  
-#ifndef __cmake_variables_hpp__                   
-#define __cmake_variables_hpp__                   
-                                                  
-/// Gambit source directory                       
-#define GAMBIT_DIR "@PROJECT_SOURCE_DIR@"       
+
+#ifndef __cmake_variables_hpp__
+#define __cmake_variables_hpp__
+
+/// Gambit source directory
+#define GAMBIT_DIR "@PROJECT_SOURCE_DIR@"
+
+/// Name of the gambit executable
+#define GAMBIT_EXECUTABLE "@PROJECT_NAME@"
 
 /// Found regex in STL
 #cmakedefine HAVE_REGEX_H 1

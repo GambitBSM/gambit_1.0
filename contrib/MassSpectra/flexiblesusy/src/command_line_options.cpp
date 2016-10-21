@@ -30,9 +30,10 @@ Command_line_options::Command_line_options()
    , do_print_model_info(false)
    , exit_status(EXIT_SUCCESS)
    , program()
+   , database_output_file()
    , rgflow_file()
    , slha_input_file()
-   , slha_output_file()
+   , slha_output_file("-")
    , spectrum_file()
 {
 }
@@ -42,8 +43,11 @@ Command_line_options::Command_line_options(int argc, const char* argv[])
    , do_print_model_info(false)
    , exit_status(EXIT_SUCCESS)
    , program()
+   , database_output_file()
+   , rgflow_file()
    , slha_input_file()
-   , slha_output_file()
+   , slha_output_file("-")
+   , spectrum_file()
 {
    parse(argc, argv);
 }
@@ -73,10 +77,10 @@ void Command_line_options::parse(int argc, const char* argv[])
             WARNING("no SLHA input file name given");
       } else if (starts_with(option,"--slha-output-file=")) {
          slha_output_file = option.substr(19);
-         if (slha_output_file.empty())
-            WARNING("no SLHA output file name given");
       } else if (starts_with(option,"--spectrum-output-file=")) {
          spectrum_file = option.substr(23);
+      } else if (starts_with(option,"--database-output-file=")) {
+         database_output_file = option.substr(23);
       } else if (starts_with(option,"--rgflow-output-file=")) {
          rgflow_file = option.substr(21);
       } else if (option == "--help" || option == "-h") {
@@ -115,14 +119,18 @@ void Command_line_options::print_usage(std::ostream& ostr) const
 {
    ostr << "Usage: " << program << " [options]\n"
            "Options:\n"
-           "  --slha-input-file=<filename>      SLHA input file\n"
+           "  --slha-input-file=<filename>      SLHA input file (default: )\n"
            "                                    If <filename> is - then the"
                                                 " SLHA input\n"
            "                                    is read from stdin.\n"
-           "  --slha-output-file=<filename>     SLHA output file\n"
-           "                                    If not given, the output is\n"
+           "  --slha-output-file=<filename>     SLHA output file (default: -)\n"
+           "                                    If <filename> is the empty string, then\n"
+           "                                    no SLHA output is written.\n"
+           "                                    If <filename> is - then the output is\n"
            "                                    printed to stdout.\n"
            "  --spectrum-output-file=<filename> file to write spectrum to\n"
+           "  --database-output-file=<filename> SQLite database file to write\n"
+           "                                    parameter point to\n"
            "  --rgflow-output-file=<filename>   file to write rgflow to\n"
            "  --build-info                      print build information\n"
            "  --model-info                      print model information\n"
@@ -140,9 +148,10 @@ void Command_line_options::reset()
    do_print_model_info = false;
    exit_status = EXIT_SUCCESS;
    program.clear();
+   database_output_file.clear();
    rgflow_file.clear();
    slha_input_file.clear();
-   slha_output_file.clear();
+   slha_output_file = "-";
    spectrum_file.clear();
 }
 

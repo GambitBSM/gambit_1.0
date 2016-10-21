@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:32:17
+// File generated at Sat 27 Aug 2016 12:48:06
 
 #include "MSSMatMGUT_slha_io.hpp"
 #include "MSSMatMGUT_input_parameters.hpp"
@@ -36,8 +36,6 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
@@ -52,12 +50,18 @@ char const * const MSSMatMGUT_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
 
 MSSMatMGUT_slha_io::MSSMatMGUT_slha_io()
    : slha_io()
+   , print_imaginary_parts_of_majorana_mixings(false)
 {
 }
 
 void MSSMatMGUT_slha_io::clear()
 {
    slha_io.clear();
+}
+
+void MSSMatMGUT_slha_io::set_print_imaginary_parts_of_majorana_mixings(bool flag)
+{
+   print_imaginary_parts_of_majorana_mixings = flag;
 }
 
 /**
@@ -188,8 +192,6 @@ void MSSMatMGUT_slha_io::set_mass(const MSSMatMGUT_physical& physical,
          << FORMAT_MASS(12, LOCALPHYSICAL(MFv(0)), "Fv(1)")
          << FORMAT_MASS(14, LOCALPHYSICAL(MFv(1)), "Fv(2)")
          << FORMAT_MASS(16, LOCALPHYSICAL(MFv(2)), "Fv(3)")
-         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
-         << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
          << FORMAT_MASS(11, LOCALPHYSICAL(MFe(0)), "Fe(1)")
          << FORMAT_MASS(13, LOCALPHYSICAL(MFe(1)), "Fe(2)")
          << FORMAT_MASS(15, LOCALPHYSICAL(MFe(2)), "Fe(3)")
@@ -199,6 +201,8 @@ void MSSMatMGUT_slha_io::set_mass(const MSSMatMGUT_physical& physical,
          << FORMAT_MASS(2, LOCALPHYSICAL(MFu(0)), "Fu(1)")
          << FORMAT_MASS(4, LOCALPHYSICAL(MFu(1)), "Fu(2)")
          << FORMAT_MASS(6, LOCALPHYSICAL(MFu(2)), "Fu(3)")
+         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
+         << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
       ;
    }
 
@@ -235,6 +239,10 @@ void MSSMatMGUT_slha_io::set_mixing_matrices(const MSSMatMGUT_physical& physical
       slha_io.set_block("UDRMIX", LOCALPHYSICAL(ZDR), "ZDR");
       slha_io.set_block("UULMIX", LOCALPHYSICAL(ZUL), "ZUL");
       slha_io.set_block("UURMIX", LOCALPHYSICAL(ZUR), "ZUR");
+   }
+
+   if (print_imaginary_parts_of_majorana_mixings) {
+      slha_io.set_block_imag("IMNMIX", LOCALPHYSICAL(ZN), "ZN");
    }
 
 }
@@ -323,17 +331,17 @@ void MSSMatMGUT_slha_io::fill(MSSMatMGUT_input_parameters& input) const
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
 
-   slha_io.read_block("MSQ2IN", input.mq2Input);
+   slha_io.read_block("AdijIN", input.Adij);
+   slha_io.read_block("AeijIN", input.Aeij);
+   slha_io.read_block("AuijIN", input.Auij);
+   input.MassBInput = slha_io.read_entry("MSOFTIN", 1);
+   input.MassGInput = slha_io.read_entry("MSOFTIN", 3);
+   input.MassWBInput = slha_io.read_entry("MSOFTIN", 2);
+   slha_io.read_block("MSD2IN", input.md2Input);
    slha_io.read_block("MSE2IN", input.me2Input);
    slha_io.read_block("MSL2IN", input.ml2Input);
+   slha_io.read_block("MSQ2IN", input.mq2Input);
    slha_io.read_block("MSU2IN", input.mu2Input);
-   slha_io.read_block("MSD2IN", input.md2Input);
-   input.MassBInput = slha_io.read_entry("MSOFTIN", 1);
-   input.MassWBInput = slha_io.read_entry("MSOFTIN", 2);
-   input.MassGInput = slha_io.read_entry("MSOFTIN", 3);
-   slha_io.read_block("AeijIN", input.Aeij);
-   slha_io.read_block("AdijIN", input.Adij);
-   slha_io.read_block("AuijIN", input.Auij);
 
 }
 
@@ -346,59 +354,59 @@ void MSSMatMGUT_slha_io::fill_drbar_parameters(MSSMatMGUT_mass_eigenstates& mode
    model.set_g2(slha_io.read_entry("gauge", 2));
    model.set_g3(slha_io.read_entry("gauge", 3));
    {
-      DEFINE_PARAMETER(Yu);
+      Eigen::Matrix<double,3,3> Yu;
       slha_io.read_block("Yu", Yu);
       model.set_Yu(Yu);
    }
    {
-      DEFINE_PARAMETER(Yd);
+      Eigen::Matrix<double,3,3> Yd;
       slha_io.read_block("Yd", Yd);
       model.set_Yd(Yd);
    }
    {
-      DEFINE_PARAMETER(Ye);
+      Eigen::Matrix<double,3,3> Ye;
       slha_io.read_block("Ye", Ye);
       model.set_Ye(Ye);
    }
    {
-      DEFINE_PARAMETER(TYe);
+      Eigen::Matrix<double,3,3> TYe;
       slha_io.read_block("Te", TYe);
       model.set_TYe(TYe);
    }
    {
-      DEFINE_PARAMETER(TYd);
+      Eigen::Matrix<double,3,3> TYd;
       slha_io.read_block("Td", TYd);
       model.set_TYd(TYd);
    }
    {
-      DEFINE_PARAMETER(TYu);
+      Eigen::Matrix<double,3,3> TYu;
       slha_io.read_block("Tu", TYu);
       model.set_TYu(TYu);
    }
    model.set_Mu(slha_io.read_entry("HMIX", 1));
    model.set_BMu(slha_io.read_entry("HMIX", 101));
    {
-      DEFINE_PARAMETER(mq2);
+      Eigen::Matrix<double,3,3> mq2;
       slha_io.read_block("MSQ2", mq2);
       model.set_mq2(mq2);
    }
    {
-      DEFINE_PARAMETER(me2);
+      Eigen::Matrix<double,3,3> me2;
       slha_io.read_block("MSE2", me2);
       model.set_me2(me2);
    }
    {
-      DEFINE_PARAMETER(ml2);
+      Eigen::Matrix<double,3,3> ml2;
       slha_io.read_block("MSL2", ml2);
       model.set_ml2(ml2);
    }
    {
-      DEFINE_PARAMETER(mu2);
+      Eigen::Matrix<double,3,3> mu2;
       slha_io.read_block("MSU2", mu2);
       model.set_mu2(mu2);
    }
    {
-      DEFINE_PARAMETER(md2);
+      Eigen::Matrix<double,3,3> md2;
       slha_io.read_block("MSD2", md2);
       model.set_md2(md2);
    }
@@ -426,6 +434,17 @@ void MSSMatMGUT_slha_io::fill(MSSMatMGUT_mass_eigenstates& model) const
    fill_physical(physical_hk);
    physical_hk.convert_to_hk();
    model.get_physical() = physical_hk;
+}
+
+/**
+ * Fill struct of extra physical input parameters from SLHA object
+ * (FlexibleSUSYInput block)
+ *
+ * @param settings struct of physical input parameters
+ */
+void MSSMatMGUT_slha_io::fill(Physical_input& input) const
+{
+   slha_io.fill(input);
 }
 
 /**

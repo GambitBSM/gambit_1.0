@@ -18,6 +18,7 @@ MSSMNoFV_TWO_SCALE_MK := \
 		$(MSSMNoFV_TWO_SCALE_SOFT_MK)
 
 MSSMNoFV_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.MSSMNoFV_generated \
 		$(DIR)/LesHouches.in.MSSMNoFV
 
 MSSMNoFV_GNUPLOT := \
@@ -34,9 +35,11 @@ LIBMSSMNoFV_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBMSSMNoFV_SRC += \
+		$(DIR)/MSSMNoFV_effective_couplings.cpp \
 		$(DIR)/MSSMNoFV_mass_eigenstates.cpp \
 		$(DIR)/MSSMNoFV_info.cpp \
 		$(DIR)/MSSMNoFV_input_parameters.cpp \
+		$(DIR)/MSSMNoFV_observables.cpp \
 		$(DIR)/MSSMNoFV_slha_io.cpp \
 		$(DIR)/MSSMNoFV_physical.cpp \
 		$(DIR)/MSSMNoFV_utilities.cpp \
@@ -55,6 +58,7 @@ EXEMSSMNoFV_SRC += \
 		$(DIR)/scan_MSSMNoFV.cpp
 LIBMSSMNoFV_HDR += \
 		$(DIR)/MSSMNoFV_convergence_tester.hpp \
+		$(DIR)/MSSMNoFV_effective_couplings.hpp \
 		$(DIR)/MSSMNoFV_high_scale_constraint.hpp \
 		$(DIR)/MSSMNoFV_mass_eigenstates.hpp \
 		$(DIR)/MSSMNoFV_info.hpp \
@@ -63,6 +67,7 @@ LIBMSSMNoFV_HDR += \
 		$(DIR)/MSSMNoFV_low_scale_constraint.hpp \
 		$(DIR)/MSSMNoFV_model.hpp \
 		$(DIR)/MSSMNoFV_model_slha.hpp \
+		$(DIR)/MSSMNoFV_observables.hpp \
 		$(DIR)/MSSMNoFV_physical.hpp \
 		$(DIR)/MSSMNoFV_slha_io.hpp \
 		$(DIR)/MSSMNoFV_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_MSSMNoFV := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBMSSMNoFV)
+all-$(MODNAME): $(LIBMSSMNoFV) $(EXEMSSMNoFV_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBMSSMNoFV_DEP)
 		-rm -f $(EXEMSSMNoFV_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBMSSMNoFV)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBMSSMNoFV_OBJ)
 		-rm -f $(EXEMSSMNoFV_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBMSSMNoFV)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXEMSSMNoFV_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_MSSMNoFV):
 		@true
 endif
 
-$(LIBMSSMNoFV_DEP) $(EXEMSSMNoFV_DEP) $(LIBMSSMNoFV_OBJ) $(EXEMSSMNoFV_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBMSSMNoFV_DEP) $(EXEMSSMNoFV_DEP) $(LIBMSSMNoFV_OBJ) $(EXEMSSMNoFV_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBMSSMNoFV_DEP) $(EXEMSSMNoFV_DEP) $(LIBMSSMNoFV_OBJ) $(EXEMSSMNoFV_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBMSSMNoFV): $(LIBMSSMNoFV_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBMSSMNoFV_DEP) $(EXEMSSMNoFV_DEP)
 ALLSRC += $(LIBMSSMNoFV_SRC) $(EXEMSSMNoFV_SRC)

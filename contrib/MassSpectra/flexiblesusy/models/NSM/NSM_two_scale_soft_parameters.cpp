@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:25
+// File generated at Sat 27 Aug 2016 12:40:20
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -28,6 +28,10 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+#define TRACE_STRUCT_TYPE Soft_traces
+#define CALCULATE_TRACES() calc_soft_traces(TRACE_STRUCT);
+
+const int NSM_soft_parameters::numberOfParameters;
 
 NSM_soft_parameters::NSM_soft_parameters(const NSM_input_parameters& input_)
    : NSM_susy_parameters(input_)
@@ -58,26 +62,35 @@ Eigen::ArrayXd NSM_soft_parameters::beta() const
 
 NSM_soft_parameters NSM_soft_parameters::calc_beta() const
 {
-   Soft_traces soft_traces;
-   calc_soft_traces(soft_traces);
+   double beta_Lambda5 = 0.;
+   double beta_Lambda4 = 0.;
+   double beta_mS2 = 0.;
+   double beta_mH2 = 0.;
+   double beta_vH = 0.;
+   double beta_vS = 0.;
 
-   double beta_Lambda5(calc_beta_Lambda5_one_loop(TRACE_STRUCT));
-   double beta_Lambda4(calc_beta_Lambda4_one_loop(TRACE_STRUCT));
-   double beta_mS2(calc_beta_mS2_one_loop(TRACE_STRUCT));
-   double beta_mH2(calc_beta_mH2_one_loop(TRACE_STRUCT));
-   double beta_vH(calc_beta_vH_one_loop(TRACE_STRUCT));
-   double beta_vS(calc_beta_vS_one_loop(TRACE_STRUCT));
+   if (get_loops() > 0) {
+      TRACE_STRUCT_TYPE TRACE_STRUCT;
+      CALCULATE_TRACES();
 
-   if (get_loops() > 1) {
-      beta_Lambda5 += calc_beta_Lambda5_two_loop(TRACE_STRUCT);
-      beta_Lambda4 += calc_beta_Lambda4_two_loop(TRACE_STRUCT);
-      beta_mS2 += calc_beta_mS2_two_loop(TRACE_STRUCT);
-      beta_mH2 += calc_beta_mH2_two_loop(TRACE_STRUCT);
-      beta_vH += calc_beta_vH_two_loop(TRACE_STRUCT);
-      beta_vS += calc_beta_vS_two_loop(TRACE_STRUCT);
+      beta_Lambda5 += calc_beta_Lambda5_one_loop(TRACE_STRUCT);
+      beta_Lambda4 += calc_beta_Lambda4_one_loop(TRACE_STRUCT);
+      beta_mS2 += calc_beta_mS2_one_loop(TRACE_STRUCT);
+      beta_mH2 += calc_beta_mH2_one_loop(TRACE_STRUCT);
+      beta_vH += calc_beta_vH_one_loop(TRACE_STRUCT);
+      beta_vS += calc_beta_vS_one_loop(TRACE_STRUCT);
 
-      if (get_loops() > 2) {
+      if (get_loops() > 1) {
+         beta_Lambda5 += calc_beta_Lambda5_two_loop(TRACE_STRUCT);
+         beta_Lambda4 += calc_beta_Lambda4_two_loop(TRACE_STRUCT);
+         beta_mS2 += calc_beta_mS2_two_loop(TRACE_STRUCT);
+         beta_mH2 += calc_beta_mH2_two_loop(TRACE_STRUCT);
+         beta_vH += calc_beta_vH_two_loop(TRACE_STRUCT);
+         beta_vS += calc_beta_vS_two_loop(TRACE_STRUCT);
 
+         if (get_loops() > 2) {
+
+         }
       }
    }
 
@@ -119,7 +132,7 @@ Eigen::ArrayXd NSM_soft_parameters::get() const
 void NSM_soft_parameters::print(std::ostream& ostr) const
 {
    NSM_susy_parameters::print(ostr);
-   ostr << "soft parameters:\n";
+   ostr << "soft parameters at Q = " << get_scale() << ":\n";
    ostr << "Lambda5 = " << Lambda5 << '\n';
    ostr << "Lambda4 = " << Lambda4 << '\n';
    ostr << "mS2 = " << mS2 << '\n';
@@ -144,23 +157,33 @@ void NSM_soft_parameters::set(const Eigen::ArrayXd& pars)
 
 void NSM_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) const
 {
-   TRACE_STRUCT.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
-   TRACE_STRUCT.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
-   TRACE_STRUCT.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
-      .trace());
+   if (get_loops() > 0) {
+      TRACE_STRUCT.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
+      TRACE_STRUCT.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
 
+   }
+
+   if (get_loops() > 1) {
+      TRACE_STRUCT.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
+         .trace());
+
+   }
+
+   if (get_loops() > 2) {
+
+   }
 }
 
 std::ostream& operator<<(std::ostream& ostr, const NSM_soft_parameters& soft_pars)
 {
-   soft_pars.print(std::cout);
+   soft_pars.print(ostr);
    return ostr;
 }
 

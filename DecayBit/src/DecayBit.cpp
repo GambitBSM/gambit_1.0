@@ -61,7 +61,18 @@ namespace Gambit
     /// Populate SM Higgs decay channels for a higgs mass of m_h
     void compute_SM_higgs_decays(DecayTable::Entry& result, double mh)
     {
+      // Just kill off the point if the Higgs is < 1 GeV in mass.
       if (mh < 1.) invalid_point().raise("Neutral higgs with mass < 1 GeV");
+      // If it's more than 16 TeV, just calculate as if it has a mass of 16 TeV.  The BFs will
+      // be the same (2/3 WW, 1/3 Z), the width will just be underestimated.  At this mass though,
+      // that shouldn't impact anything.
+      if (mh > 1.6e4)
+      {
+        std::stringstream msg;
+        msg << "Neutral higgs with mass > 16 TeV; calculating SM decays as if m = 16 TeV.  Actual mass: " << mh*1e-3 << " TeV";
+        DecayBit_warning().raise(LOCAL_INFO, msg.str());
+        mh = 1.6e4;
+      }
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
@@ -2386,7 +2397,7 @@ namespace Gambit
     {
       using namespace Pipes::lnL_Higgs_invWidth_SMlike;
       double BF = Dep::Higgs_decay_rates->BF("S","S");
-      static daFunk::Funk chi2 = get_Higgs_invWidth_chi2("DecayBit/data/GammaInv_SM_higgs_DeltaChi2.dat");
+      static daFunk::Funk chi2 = get_Higgs_invWidth_chi2(GAMBIT_DIR "/DecayBit/data/GammaInv_SM_higgs_DeltaChi2.dat");
       result = (BF > 0.0) ? -chi2->bind("BR")->eval(BF)*0.5 : -0.0;
     }
 

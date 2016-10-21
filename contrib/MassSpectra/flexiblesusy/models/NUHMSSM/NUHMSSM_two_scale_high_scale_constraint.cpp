@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:24:02
+// File generated at Sat 27 Aug 2016 12:47:57
 
 #include "NUHMSSM_two_scale_high_scale_constraint.hpp"
 #include "NUHMSSM_two_scale_model.hpp"
@@ -36,6 +36,7 @@
 
 namespace flexiblesusy {
 
+#define DERIVEDPARAMETER(p) model->p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -75,27 +76,7 @@ void NUHMSSM_high_scale_constraint<Two_scale>::apply()
    assert(model && "Error: NUHMSSM_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
-   if (std::fabs(model->get_g1()) > 3.54491) {
-#ifdef ENABLE_VERBOSE
-      ERROR("NUHMSSM_high_scale_constraint: Non-perturbative gauge "
-            "coupling g1 = " << model->get_g1());
-#endif
-      model->set_g1(3.54491);
-   }
-   if (std::fabs(model->get_g2()) > 3.54491) {
-#ifdef ENABLE_VERBOSE
-      ERROR("NUHMSSM_high_scale_constraint: Non-perturbative gauge "
-            "coupling g2 = " << model->get_g2());
-#endif
-      model->set_g2(3.54491);
-   }
-   if (std::fabs(model->get_g3()) > 3.54491) {
-#ifdef ENABLE_VERBOSE
-      ERROR("NUHMSSM_high_scale_constraint: Non-perturbative gauge "
-            "coupling g3 = " << model->get_g3());
-#endif
-      model->set_g3(3.54491);
-   }
+
 
    update_scale();
 
@@ -124,6 +105,8 @@ void NUHMSSM_high_scale_constraint<Two_scale>::apply()
 
 
    check_non_perturbative();
+
+
 }
 
 bool NUHMSSM_high_scale_constraint<Two_scale>::check_non_perturbative()

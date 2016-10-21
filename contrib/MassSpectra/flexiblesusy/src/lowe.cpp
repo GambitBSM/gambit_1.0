@@ -1,36 +1,62 @@
 
-/** \file lowe.cpp 
-   - Project:     SOFTSUSY 
-   - Author:      Ben Allanach 
-   - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305 
+/** \file lowe.cpp
+   - Project:     SOFTSUSY
+   - Author:      Ben Allanach
+   - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
    - Webpage:     http://hepforge.cedar.ac.uk/softsusy/
 */
 
 #include "lowe.h"
+#include "conversion.hpp"
 #include "ew_input.hpp"
+#include "wrappers.hpp"
 
 namespace softsusy {
+
+const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] = {
+   "alpha_em_MSbar_at_MZ",
+   "alpha_s_MSbar_at_MZ",
+   "GFermi",
+   "MZ_pole", "MW_pole",
+   "Mv1_pole", "Mv2_pole", "Mv3_pole",
+   "MElectron_pole", "MMuon_pole", "MTau_pole",
+   "MU_2GeV", "MS_2GeV", "MT_pole",
+   "MD_2GeV", "mc_mc", "mb_mb"
+};
 
 ///  external object temp used to get objects into external routines, however:
 ///  don't use it!
 static QedQcd *tempLe;
 
 QedQcd::QedQcd()
-  : a(2), mf(9), mnu(3), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM),
-    mtauPole(MTAU)
-  , mwPole(flexiblesusy::Electroweak_constants::MW)
-  , mzPole(flexiblesusy::Electroweak_constants::MZ)
-  , gfermi(flexiblesusy::Electroweak_constants::gfermi)
+  : a(2)
+  , mf(9)
+  , input(static_cast<unsigned>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
+  , mbPole(PMBOTTOM)
   , ckm()
   , pmns()
 {
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
-  mf(1) = MUP; mf(2) = MCHARM; 
+  mf(1) = MUP; mf(2) = MCHARM;
   mf(4) = MDOWN; mf(5) = MSTRANGE; mf(6) = MBOTTOM;
   mf(7) = MELECTRON; mf(8) = MMUON; mf(9) = MTAU;
   a(1) = ALPHAMZ;  a(2) = ALPHASMZ;
   mf(3) = getRunMtFromMz(PMTOP, ALPHASMZ);
+  input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
+  input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
+  input(MT_pole) = PMTOP;
+  input(mb_mb) = MBOTTOM;
+  input(MTau_pole) = MTAU;
+  input(MMuon_pole) = MMUON;
+  input(MElectron_pole) = MELECTRON;
+  input(MW_pole) = flexiblesusy::Electroweak_constants::MW;
+  input(MZ_pole) = flexiblesusy::Electroweak_constants::MZ;
+  input(GFermi) = flexiblesusy::Electroweak_constants::gfermi;
+  input(mc_mc) = MCHARM;
+  input(MU_2GeV) = MUP;
+  input(MD_2GeV) = MDOWN;
+  input(MS_2GeV) = MSTRANGE;
   setMu(MZ);
   setLoops(3);
   setThresholds(1);
@@ -38,16 +64,10 @@ QedQcd::QedQcd()
 
 const QedQcd & QedQcd::operator=(const QedQcd & m) {
   if (this == &m) return *this;
-  mtPole = m.mtPole;
-  mbPole = m.mbPole;
-  mbMb   = m.mbMb;
-  mtauPole = m.mtauPole;
-  mwPole = m.mwPole;
-  mzPole = m.mzPole;
-  gfermi = m.gfermi;
   a = m.a;
   mf = m.mf;
-  mnu = m.mnu;
+  mbPole = m.mbPole;
+  input = m.input;
   ckm = m.ckm;
   pmns = m.pmns;
   setLoops(m.displayLoops());
@@ -73,40 +93,49 @@ const DoubleVector QedQcd::display() const {
   return y;
 }
 
+void QedQcd::runto_safe(double scale, double eps)
+{
+   if (runto(scale, eps)) {
+      throw std::string("Error: Non-perturbative running to Q = ")
+         + flexiblesusy::ToString(scale)
+         + " during determination of the SM(5) parameters.";
+   }
+}
+
 //  Active flavours at energy mu
 int QedQcd::flavours(double mu) const {
   int k = 0;
-  if (mu > mf.display(mTop)) k++;
+  // if (mu > mf.display(mTop)) k++;
   if (mu > mf.display(mCharm)) k++;
   if (mu > mf.display(mUp)) k++;
   if (mu > mf.display(mDown)) k++;
   if (mu > mf.display(mBottom)) k++;
   if (mu > mf.display(mStrange)) k++;
-  return k; 
+  return k;
 }
 
 ostream & operator <<(ostream &left, const QedQcd &m) {
-  left << "mU: " << m.displayMass(mUp) 
-       << "  mC: " << m.displayMass(mCharm) 
-       << "  mt: " << m.displayMass(mTop) 
+  left << "mU: " << m.displayMass(mUp)
+       << "  mC: " << m.displayMass(mCharm)
+       << "  mt: " << m.displayMass(mTop)
        << "  mt^pole: " << m.displayPoleMt()
        << endl;
-  left << "mD: " << m.displayMass(mDown) 
+  left << "mD: " << m.displayMass(mDown)
        << "  mS: " << m.displayMass(mStrange)
-       << "  mB: " << m.displayMass(mBottom) 
+       << "  mB: " << m.displayMass(mBottom)
        << "  mb(mb):  " << m.displayMbMb()
        << endl;
-  left << "mE: " << m.displayMass(mElectron) 
-       << "  mM: " << m.displayMass(mMuon) 
-       <<  "  mT: " << m.displayMass(mTau) 
-       << "  mb^pole: " << m.displayPoleMb() 
+  left << "mE: " << m.displayMass(mElectron)
+       << "  mM: " << m.displayMass(mMuon)
+       <<  "  mT: " << m.displayMass(mTau)
+       << "  mb^pole: " << m.displayPoleMb()
        << endl;
-  left << "aE: " << 1.0 / m.displayAlpha(ALPHA) 
-       << "  aS: " << m.displayAlpha(ALPHAS)  
-       << "   Q: " << m.displayMu() 
-       << "  mT^pole: " << m.displayPoleMtau() 
+  left << "aE: " << 1.0 / m.displayAlpha(ALPHA)
+       << "  aS: " << m.displayAlpha(ALPHAS)
+       << "   Q: " << m.displayMu()
+       << "  mT^pole: " << m.displayPoleMtau()
        << endl;
-  left << "loops: " << m.displayLoops() 
+  left << "loops: " << m.displayLoops()
        << "        thresholds: " << m.displayThresholds() << endl;
 
   return left;
@@ -115,7 +144,7 @@ ostream & operator <<(ostream &left, const QedQcd &m) {
 istream & operator >>(istream &left, QedQcd &m) {
 
   string c, cmbmb, cmbpole;
-  double mu, mc, mtpole, md, ms, me, mmu, mtau, invalph, 
+  double mu, mc, mtpole, md, ms, me, mmu, mtau, invalph,
     alphas, scale;
   int t, l;
   left >> c >> mu >> c >> mc >> c >> c >> c >> mtpole;
@@ -165,20 +194,11 @@ double QedQcd::qedBeta() const {
   double x;
   x = 24.0 / 9.0;
   if (displayMu() > mf.display(mCharm)) x += 8.0 / 9.0;
-  if (displayMu() > mf.display(mTop)) x += 8.0 / 9.0;
+  // if (displayMu() > mf.display(mTop)) x += 8.0 / 9.0;
   if (displayMu() > mf.display(mBottom)) x += 2.0 / 9.0;
   if (displayMu() > mf.display(mTau)) x += 2.0 / 3.0;
-  if (displayMu() > MW) x += 1.0 / 6.0;
-  if (displayMu() > (mtPole + TOLERANCE))  {
-    ostringstream ii;
-    
-      ii << "qed beta function called at " << displayMu() << 
-	" above mt=" << displayPoleMt() << 
-	", outside range of validity";
-      ii << " in QedQcd::qedbeta\n";
-      throw ii.str();
-    }
-  
+  if (displayMu() > MW) x += -7.0 / 2.0;
+
   return (x * sqr(a.display(ALPHA)) / PI);
 }
 
@@ -191,22 +211,18 @@ double QedQcd::qcdBeta() const {
   double qb0, qb1, qb2;
   qb0 = (11.0e0 - (2.0e0 / 3.0e0 * quarkFlavours)) / 4.0;
   qb1 = (102.0e0 - (38.0e0 * quarkFlavours) / 3.0e0) / 16.0;
-  qb2 = (2.857e3 * 0.5 - (5.033e3 * quarkFlavours) / 18.0  + 
- 	 (3.25e2 * sqr(quarkFlavours) ) / 5.4e1) / 64; 
-  double qa0, qa1, qa2;
-  
-  if (displayLoops() < 0 || displayLoops() > 3) {
-    ostringstream ii;
-      ii << "Wrong loops parameter :" << displayLoops() << " in " << *this;
-      throw ii.str();
-    }
-  if (displayLoops() > 0) qa0 = qb0 * INVPI; else qa0 = 0.0;
-  if (displayLoops() > 1) qa1 = qb1 * sqr(INVPI); else qa1 = 0.0;
-  if (displayLoops() > 2) qa2 = qb2 * sqr(INVPI) * INVPI; else qa2 = 0.0;
-  
+  qb2 = (2.857e3 * 0.5 - (5.033e3 * quarkFlavours) / 18.0  +
+         (3.25e2 * sqr(quarkFlavours) ) / 5.4e1) / 64;
+
+  double qa0 = 0., qa1 = 0., qa2 = 0.;
+
+  if (displayLoops() > 0) qa0 = qb0 * INVPI;
+  if (displayLoops() > 1) qa1 = qb1 * sqr(INVPI);
+  if (displayLoops() > 2) qa2 = qb2 * sqr(INVPI) * INVPI;
+
   // add contributions of the one, two and three loop constributions resp.
   double beta;
-  beta = -2.0 * sqr(displayAlpha(ALPHAS)) * 
+  beta = -2.0 * sqr(displayAlpha(ALPHAS)) *
     (qa0 + qa1 * displayAlpha(ALPHAS) + qa2 *
      sqr(displayAlpha(ALPHAS)));
   return beta;
@@ -216,23 +232,23 @@ double QedQcd::qcdBeta() const {
 //beta functions -- been checked!
 void QedQcd::massBeta(DoubleVector & x) const {
   static const double INVPI = 1.0 / PI, ZETA3 = 1.202056903159594;
-  
+
   // qcd bits: 1,2,3 loop resp.
   double qg1 = 0., qg2 = 0., qg3 = 0.;
   int quarkFlavours = flavours(displayMu());
   if (displayLoops() > 0) qg1 = INVPI;
-  if (displayLoops() > 1) 
+  if (displayLoops() > 1)
     qg2 = (202.0 / 3.0 - (20.0e0 * quarkFlavours) / 9.0) * sqr(INVPI) / 16.0;
   if (displayLoops() > 2)
     qg3 = (1.249e3 - ((2.216e3 * quarkFlavours) / 27.0e0 +
-		      1.6e2 * ZETA3 * quarkFlavours / 3.0e0) -
-	   140.0e0 * quarkFlavours * quarkFlavours / 81.0e0) * sqr(INVPI) *
+                      1.6e2 * ZETA3 * quarkFlavours / 3.0e0) -
+           140.0e0 * quarkFlavours * quarkFlavours / 81.0e0) * sqr(INVPI) *
       INVPI / 64.0;
-  
+
   double qcd = -2.0 * a.display(ALPHAS) * (qg1  + qg2 * a.display(ALPHAS) +
-					   qg3 * sqr(a.display(ALPHAS)));
+                                           qg3 * sqr(a.display(ALPHAS)));
   double qed = -a.display(ALPHA) * INVPI / 2;
-  
+
   int i;
   for (i=1;i<=3;i++)   // up quarks
     x(i) = (qcd + 4.0 * qed / 3.0) * mf.display(i);
@@ -240,6 +256,7 @@ void QedQcd::massBeta(DoubleVector & x) const {
     x(i) = (qcd + qed / 3.0) * mf.display(i);
   for (i=7;i<=9;i++)   // leptons
     x(i) = 3.0 * qed * mf.display(i);
+
   // switch off relevant beta functions
   if (displayThresholds() > 0)
     for(i=1;i<=9;i++) if (displayMu() < displayMass().display(i)) x(i) = 0.0;
@@ -259,13 +276,13 @@ DoubleVector QedQcd::beta() const {
 }
 
 void QedQcd::runGauge(double x1, double x2) {
-  const double tol = 1.0e-5; 
+  const double tol = 1.0e-5;
 
   DoubleVector y(2);
   tempLe = this;
   y(1) = tempLe->displayAlpha(ALPHA);
   y(2) = tempLe->displayAlpha(ALPHAS);
-  
+
   callRK(x1, x2, y, gaugeDerivs, tol);
 
   setAlpha(ALPHA, y(1));
@@ -278,8 +295,8 @@ double QedQcd::extractRunningMb(double alphasMb) {
 
   if (displayMu() != mbPole) {
     ostringstream ii;
-    ii << "ERROR: QedQcd::extractRunningMb called at scale " 
-	 << displayMu() << " instead of mbpole\n";
+    ii << "ERROR: QedQcd::extractRunningMb called at scale "
+         << displayMu() << " instead of mbpole\n";
     throw ii.str();
   }
 
@@ -287,14 +304,14 @@ double QedQcd::extractRunningMb(double alphasMb) {
   // (1990)
   double delta = 0.;
   if (displayLoops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
-  if (displayLoops() > 1) 
-    delta = delta + sqr(alphasMb / PI) * 
-      (10.1667 + (displayMass(mUp) + displayMass(mDown) + 
-		  displayMass(mCharm) + displayMass(mStrange)) / mbPole);
+  if (displayLoops() > 1)
+    delta = delta + sqr(alphasMb / PI) *
+      (10.1667 + (displayMass(mUp) + displayMass(mDown) +
+                  displayMass(mCharm) + displayMass(mStrange)) / mbPole);
   if (displayLoops() > 2)
     delta = delta + 101.45424 * alphasMb / PI * sqr(alphasMb / PI);
 
-  double mbmb = mbPole * (1.0 - delta); 
+  double mbmb = mbPole * (1.0 - delta);
 
   return mbmb;
 }
@@ -304,7 +321,7 @@ double QedQcd::extractPoleMb(double alphasMb) {
 
   if (displayMu() != displayMass(mBottom)) {
     ostringstream ii;
-    ii << "ERROR: QedQcd::extractPoleMb called at scale " << displayMu() << 
+    ii << "ERROR: QedQcd::extractPoleMb called at scale " << displayMu() <<
       " instead of mb(mb)\n";
     throw ii.str();
   }
@@ -313,9 +330,9 @@ double QedQcd::extractPoleMb(double alphasMb) {
   double delta = 0.0;
   if (displayLoops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
   if (displayLoops() > 1) delta = delta + sqr(alphasMb / PI) *
-    (9.2778 + (displayMass(mUp) + displayMass(mDown) + displayMass(mCharm) + 
-	       displayMass(mStrange)) / mbPole);
-  if (displayLoops() > 2) 
+    (9.2778 + (displayMass(mUp) + displayMass(mDown) + displayMass(mCharm) +
+               displayMass(mStrange)) / mbPole);
+  if (displayLoops() > 2)
     delta = delta + 94.4182 * alphasMb / PI * sqr(alphasMb / PI);
 
   double mbPole = displayMass(mBottom) * (1.0 + delta);
@@ -323,7 +340,7 @@ double QedQcd::extractPoleMb(double alphasMb) {
   return mbPole;
 }
 
-// Calculates the running mass from the pole mass: 
+// Calculates the running mass from the pole mass:
 void QedQcd::calcRunningMb() {
 
   const double tol = 1.0e-5;
@@ -336,13 +353,13 @@ void QedQcd::calcRunningMb() {
   setMass(mBottom, 0.);
   runto(displayPoleMb(), tol);
   double mbAtPoleMb = extractRunningMb(displayAlpha(ALPHAS));
-  setMass(mBottom, mbAtPoleMb); 
+  setMass(mBottom, mbAtPoleMb);
   // Now, by running down to 1 GeV, you'll be left with mb(mb) since it will
   // decouple at this scale.
   runto(1.0, tol);
   double mbmb = displayMass(mBottom);
 
-  // restore initial object 
+  // restore initial object
   set(saving);
   setMu(saveMu);
   setMass(mBottom, mbmb);
@@ -358,7 +375,7 @@ void QedQcd::calcPoleMb() {
 
   runGauge(displayMu(), displayMass(mBottom));
   double poleMb = extractPoleMb(displayAlpha(ALPHAS));
-  setPoleMb(poleMb); 
+  setPoleMb(poleMb);
 
   // Reset to erase numerical integration errors.
   setAlpha(ALPHAS, alphasMZ);
@@ -371,15 +388,17 @@ void QedQcd::toMt() {
 
   const double tol = 1.0e-5;
 
+  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS)));
+  calcPoleMb();
+
   double alphasMZ = displayAlpha(ALPHAS);
   double alphaMZ = displayAlpha(ALPHA);
 
-  double mz = displayMu();
+  double mz = displayPoleMZ();
 
   runGauge(mz, 1.0);
   //Run whole lot up to pole top mass
   double mt = this->displayPoleMt();
-
   run(1.0, mz, tol);
 
   // Reset alphas to erase numerical integration errors.
@@ -390,7 +409,7 @@ void QedQcd::toMt() {
 
 // Takes QedQcd object created at MZ and spits it out at MZ
 void QedQcd::toMz() {
-  double mt = mtPole, as = a(2);
+  double mt = input(MT_pole), as = a(2);
   setMass(mTop, getRunMtFromMz(mt, as));
   calcPoleMb();
 
@@ -406,6 +425,73 @@ void QedQcd::toMz() {
   setAlpha(ALPHA, alphaMZ);
 }
 
+/**
+ * Calculates all running parameters in the SM w/o top quark at Q.
+ * This function can be called multiple times, leading to the same
+ * result (in contrast to toMz()).
+ *
+ * @param scale target renormalization scale
+ * @param precision_goal precision goal
+ * @param max_iterations maximum number of iterations
+ */
+void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
+   unsigned it = 0;
+   bool converged = false;
+   DoubleVector qedqcd_old(display()), qedqcd_new(display());
+
+   while (!converged && it < max_iterations) {
+      // set alpha_i(MZ)
+      runto_safe(displayPoleMZ(), precision_goal);
+      setAlpha(ALPHA, input(alpha_em_MSbar_at_MZ));
+      setAlpha(ALPHAS, input(alpha_s_MSbar_at_MZ));
+
+      // set mb(mb)
+      runto_safe(displayMbMb(), precision_goal);
+      setMass(mBottom, displayMbMb());
+      setPoleMb(extractPoleMb(displayAlpha(ALPHAS)));
+
+      // set mc(mc)
+      runto_safe(displayMcMc(), precision_goal);
+      setMass(mCharm, displayMcMc());
+
+      // set mu, md, ms at 2 GeV
+      runto_safe(2.0, precision_goal);
+      setMass(mUp, displayMu2GeV());
+      setMass(mDown, displayMd2GeV());
+      setMass(mStrange, displayMs2GeV());
+
+      // set me, mm, ml at 2 GeV
+      setMass(mElectron, displayPoleMel());
+      setMass(mMuon, displayPoleMmuon());
+      setMass(mTau, displayPoleMtau());
+
+      // check convergence
+      runto_safe(scale, precision_goal);
+      qedqcd_new = display();
+
+      converged = flexiblesusy::MaxRelDiff(
+         flexiblesusy::ToEigenArray(qedqcd_old),
+         flexiblesusy::ToEigenArray(qedqcd_new)) < precision_goal;
+
+      qedqcd_old = qedqcd_new;
+
+      it++;
+   }
+
+   // set alpha_i(MZ) on last time
+   runto_safe(displayPoleMZ(), precision_goal);
+   setAlpha(ALPHA, input(alpha_em_MSbar_at_MZ));
+   setAlpha(ALPHAS, input(alpha_s_MSbar_at_MZ));
+
+   runto_safe(scale, precision_goal);
+
+   if (!converged && max_iterations > 0) {
+      std::ostringstream ostr;
+      ostr << "Error: Iteration to determine SM(5) parameters did not"
+         " converge after " << max_iterations;
+      throw ostr.str();
+   }
+}
 
 // This will calculate the three gauge couplings of the Standard Model at the
 // scale m2.
@@ -431,20 +517,69 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
   a1 = 5.0 * aem / (3.0 * (1.0 - sinth));
   a2 = aem / sinth;
 
-  // Renormalise a1,a2 to scale m2 assuming topless SM with one light Higgs
-  // doublet
-  a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / m2) / 2.4e2 );
-  a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / m2) / 4.8e1 );
+  const double mtpole = displayPoleMt();
+  QedQcd oneset(*this);
 
-  temp.set(1, a1);
-  temp.set(2, a2);
-  // calculate alphas(m2)
-  QedQcd oneset(*this); 
-  oneset.runto(oneset.displayPoleMt());
-  // Set alphas(m) to be what's already calculated.
-  temp.set(3, oneset.displayAlpha(ALPHAS));
+  if (m1 < mtpole) {
+    // Renormalise a1,a2 to threshold scale assuming topless SM with one
+    // light Higgs doublet
+    const double thresh = minimum(m2, mtpole);
+    a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2 );
+    a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1 );
+
+    temp.set(1, a1);
+    temp.set(2, a2);
+
+    // calculate alphas(m2)
+    if (m2 >= 1.0) {
+       oneset.runto(thresh);
+    } else {
+       oneset.runto(1.0);
+    }
+    // Set alphas(m) to be what's already calculated.
+    temp.set(3, oneset.displayAlpha(ALPHAS));
+
+    if (m2 > mtpole) {
+      if (displayThresholds() > 0) {
+        const double mtrun = oneset.displayMass(mTop);
+        const double alphas_5f = oneset.displayAlpha(ALPHAS);
+        const double alphas_sm = alphas_5f / (1.0 + INVPI * alphas_5f *
+                                              log(mtrun / mtpole) / 3.0);
+        oneset.setAlpha(ALPHAS, alphas_sm);
+      }
+      temp = oneset.runSMGauge(m2, temp);
+    }
+  } else {
+    // Above the top threshold use SM RGEs only
+    temp.set(1, a1);
+    temp.set(2, a2);
+    temp.set(3, oneset.displayAlpha(ALPHAS));
+    temp = oneset.runSMGauge(m2, temp);
+  }
 
   return temp;
+}
+
+// Given the values of the SM gauge couplings alpha_i, i = 1, 2, 3, at
+// the current scale, run to the scale end using SM RGEs.
+// Range of validity is for scales greater than or equal to the
+// top quark pole mass.
+DoubleVector QedQcd::runSMGauge(double end, const DoubleVector& alphas)
+{
+  const double tol = 1.0e-5;
+
+  const double start = displayMu();
+
+  DoubleVector y(3);
+  QedQcd oneset(*this);
+  tempLe = &oneset;
+  y(1) = alphas(1);
+  y(2) = alphas(2);
+  y(3) = alphas(3);
+
+  callRK(start, end, y, smGaugeDerivs, tol);
+
+  return y;
 }
 
 int accessedReadIn; // Should be initialised to zero at start of prog
@@ -452,26 +587,26 @@ int accessedReadIn; // Should be initialised to zero at start of prog
 --------------- read in a qcd-type object ------------------
 Call with fname "" if you want it to come from standard input
 
-"massIn" is an example of a data initialisation file: 
+"massIn" is an example of a data initialisation file:
 */
 void readIn(QedQcd &mset, const char fname[80]) {
    static QedQcd prevReadIn; // Data will be stored in here for rest of the
-				// run
+                                // run
 
   // Read in data if it's not been set
   if (accessedReadIn == 0) {
     string c;
-    if (!strcmp(fname,"")) cin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE 
-			       >> c >> PRINTOUT; // from standard input 
-    else {   
+    if (!strcmp(fname,"")) cin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE
+                               >> c >> PRINTOUT; // from standard input
+    else {
       // read from filename fname
-	  fstream fin(fname, ios::in); 
-	  if(!fin) {
-	    mset = QedQcd();
-	    return;
-	  }
-	  fin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE >> c >> PRINTOUT;
-	  fin.close();
+          fstream fin(fname, ios::in);
+          if(!fin) {
+            mset = QedQcd();
+            return;
+          }
+          fin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE >> c >> PRINTOUT;
+          fin.close();
     }
 
     if (PRINTOUT) cout << prevReadIn;
@@ -489,7 +624,35 @@ DoubleVector gaugeDerivs(double x, const DoubleVector & y) {
   tempLe->setAlpha(ALPHAS, y.display(2));
   DoubleVector dydx(2);
   dydx(1) = tempLe->qedBeta();
-  dydx(2) = tempLe->qcdBeta();   
+  dydx(2) = tempLe->qcdBeta();
+
+  return dydx;
+}
+
+// SM beta functions for the gauge couplings, neglecting Yukawa
+// contributions, from arXiv:1208.3357 [hep-ph].
+DoubleVector smGaugeDerivs(double x, const DoubleVector & y) {
+  const double oneO4Pi = 1.0 / (4.0 * PI);
+
+  const double scale = std::exp(x);
+
+  tempLe->setMu(scale);
+
+  const double a1 = y(1);
+  const double a2 = y(2);
+  const double a3 = y(3);
+
+  const int nG = 3;
+
+  DoubleVector dydx(3);
+
+  dydx(1) = oneO4Pi * a1 * a1 * (0.2 + 8.0 * nG / 3.0 + oneO4Pi * (0.36 * a1
+    + 1.8 * a2 + nG * (38.0 * a1 / 15.0 + 1.2 * a2 + 88.0 * a3 / 15.0)));
+  dydx(2) = oneO4Pi * a2 * a2 * (-43.0 / 3.0 + 8.0 * nG / 3.0 + oneO4Pi *
+    (0.6 * a1 - 259.0 * a2 / 3.0 + nG * (0.4 * a1 + 98.0 * a2 / 3.0 + 8.0
+    * a3)));
+  dydx(3) = oneO4Pi * a3 * a3 * (-22.0 + 8.0 * nG / 3.0 + oneO4Pi * (-204.0
+    * a3 + nG * (11.0 * a1 / 15.0 + 3.0 * a2 + 152.0 * a3 / 3.0)));
 
   return dydx;
 }
@@ -509,24 +672,71 @@ double getRunMt(double poleMt, double asmt) {
 // it's a very good approximation at these scales, better than 10^-3 accuracy
 double getAsmt(double mtop, double alphasMz) {
   using std::log;
-  return alphasMz / 
+  return alphasMz /
       (1.0 - 23.0 * alphasMz / (6.0 * PI) * log(MZ / mtop));
 }
 
 // We must first define a down-quark mass matrix: 3 x 3. QedQcd should be at MZ
-void massFermions(const QedQcd & r, DoubleMatrix & mDon, 
-			   DoubleMatrix & mUpq, DoubleMatrix & mEle) {
+void massFermions(const QedQcd & r, DoubleMatrix & mDon,
+                           DoubleMatrix & mUpq, DoubleMatrix & mEle) {
 
   mDon(3, 3) = r.displayMass(mBottom);
   mUpq(3, 3) = r.displayMass(mTop);
   mEle(3, 3) = r.displayMass(mTau);
 
-  mDon(1, 1) = r.displayMass(mDown);    
+  mDon(1, 1) = r.displayMass(mDown);
   mDon(2, 2) = r.displayMass(mStrange);
-  mUpq(1, 1) = r.displayMass(mUp);    
-  mUpq(2, 2) = r.displayMass(mCharm);    
-  mEle(1, 1) = r.displayMass(mElectron);    
-  mEle(2, 2) = r.displayMass(mMuon);    
+  mUpq(1, 1) = r.displayMass(mUp);
+  mUpq(2, 2) = r.displayMass(mCharm);
+  mEle(1, 1) = r.displayMass(mElectron);
+  mEle(2, 2) = r.displayMass(mMuon);
+}
+
+void QedQcd::set_input(const Eigen::ArrayXd& pars)
+{
+   input = pars;
+}
+
+Eigen::ArrayXd QedQcd::display_input() const
+{
+   return input;
+}
+
+std::vector<std::string> QedQcd::display_input_parameter_names()
+{
+   return std::vector<std::string>(QedQcd_input_parmeter_names,
+                                   QedQcd_input_parmeter_names
+                                   + NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS);
+}
+
+bool operator ==(const QedQcd& a, const QedQcd& b)
+{
+   const double eps = 1e-10;
+
+   return
+      std::fabs(a.displayMu() - b.displayMu()) < eps &&
+      std::fabs(a.displayLoops() - b.displayLoops()) < eps &&
+      std::fabs(a.displayThresholds() - b.displayThresholds()) < eps &&
+      std::fabs(a.displayAlpha(ALPHA) - b.displayAlpha(ALPHA)) < eps &&
+      std::fabs(a.displayAlpha(ALPHAS) - b.displayAlpha(ALPHAS)) < eps &&
+      std::fabs(a.displayMass(mUp) - b.displayMass(mUp)) < eps &&
+      std::fabs(a.displayMass(mCharm) - b.displayMass(mCharm)) < eps &&
+      std::fabs(a.displayMass(mTop) - b.displayMass(mTop)) < eps &&
+      std::fabs(a.displayMass(mDown) - b.displayMass(mDown)) < eps &&
+      std::fabs(a.displayMass(mStrange) - b.displayMass(mStrange)) < eps &&
+      std::fabs(a.displayMass(mBottom) - b.displayMass(mBottom)) < eps &&
+      std::fabs(a.displayMass(mElectron) - b.displayMass(mElectron)) < eps &&
+      std::fabs(a.displayMass(mMuon) - b.displayMass(mMuon)) < eps &&
+      std::fabs(a.displayMass(mTau) - b.displayMass(mTau)) < eps &&
+      std::fabs(a.displayNeutrinoPoleMass(1) - b.displayNeutrinoPoleMass(1)) < eps &&
+      std::fabs(a.displayNeutrinoPoleMass(2) - b.displayNeutrinoPoleMass(2)) < eps &&
+      std::fabs(a.displayNeutrinoPoleMass(3) - b.displayNeutrinoPoleMass(3)) < eps &&
+      std::fabs(a.displayPoleMt() - b.displayPoleMt()) < eps &&
+      std::fabs(a.displayPoleMb() - b.displayPoleMb()) < eps &&
+      std::fabs(a.displayPoleMtau() - b.displayPoleMtau()) < eps &&
+      std::fabs(a.displayPoleMW() - b.displayPoleMW()) < eps &&
+      std::fabs(a.displayPoleMZ() - b.displayPoleMZ()) < eps &&
+      std::fabs(a.displayFermiConstant() - b.displayFermiConstant()) < eps;
 }
 
 } // namespace softsusy

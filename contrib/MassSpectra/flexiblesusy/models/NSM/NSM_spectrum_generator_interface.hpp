@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:36:03
+// File generated at Sat 27 Aug 2016 12:40:45
 
 #ifndef NSM_SPECTRUM_GENERATOR_INTERFACE_H
 #define NSM_SPECTRUM_GENERATOR_INTERFACE_H
@@ -43,35 +43,57 @@ class NSM_spectrum_generator_interface {
 public:
    NSM_spectrum_generator_interface()
       : model()
+      , settings()
       , parameter_output_scale(0.)
-      , precision_goal(1.0e-4)
       , reached_precision(std::numeric_limits<double>::infinity())
-      , beta_zero_threshold(1.0e-11)
-      , max_iterations(0)
-      , beta_loop_order(2)
-      , threshold_corrections_loop_order(2)
-      , calculate_sm_masses(false)
-      , force_output(false)
    {}
    virtual ~NSM_spectrum_generator_interface() {}
 
    const NSM<T>& get_model() const { return model; }
+   NSM<T>& get_model() { return model; }
    const Problems<NSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); }
    double get_reached_precision() const { return reached_precision; }
+   const Spectrum_generator_settings& get_settings() const { return settings; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
-   void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
-   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
-   void set_beta_zero_threshold(double t) { beta_zero_threshold = t; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
-   void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_force_output(bool flag) { force_output = flag; }
-   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
-   void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
+   void set_precision_goal(double precision_goal_) {
+      settings.set(Spectrum_generator_settings::precision, precision_goal_);
+   }
+   void set_pole_mass_loop_order(unsigned l) {
+      settings.set(Spectrum_generator_settings::pole_mass_loop_order, l);
+      model.set_pole_mass_loop_order(l);
+   }
+   void set_pole_scale(double q) {
+      settings.set(Spectrum_generator_settings::pole_mass_scale, q);
+   }
+   void set_ewsb_loop_order(unsigned l) {
+      settings.set(Spectrum_generator_settings::ewsb_loop_order, l);
+      model.set_ewsb_loop_order(l);
+   }
+   void set_beta_loop_order(unsigned l) {
+      settings.set(Spectrum_generator_settings::beta_loop_order, l);
+   }
+   void set_beta_zero_threshold(double t) {
+      settings.set(Spectrum_generator_settings::beta_zero_threshold, t);
+   }
+   void set_max_iterations(unsigned n) {
+      settings.set(Spectrum_generator_settings::max_iterations, n);
+   }
+   void set_calculate_sm_masses(bool flag) {
+      settings.set(Spectrum_generator_settings::calculate_sm_masses, flag);
+   }
+   void set_force_output(bool flag) {
+      settings.set(Spectrum_generator_settings::force_output, flag);
+   }
+   void set_threshold_corrections_loop_order(unsigned t) {
+      settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, t);
+   }
+   void set_two_loop_corrections(const Two_loop_corrections& c) {
+      settings.set_two_loop_corrections(c);
+      model.set_two_loop_corrections(c);
+   }
    void set_settings(const Spectrum_generator_settings&);
 
    virtual void run(const softsusy::QedQcd&, const NSM_input_parameters&) = 0;
@@ -80,15 +102,9 @@ public:
 
 protected:
    NSM<T> model;
+   Spectrum_generator_settings settings;
    double parameter_output_scale; ///< output scale for running parameters
-   double precision_goal; ///< precision goal
    double reached_precision; ///< the precision that was reached
-   double beta_zero_threshold; ///< beta function zero threshold
-   unsigned max_iterations; ///< maximum number of iterations
-   unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
-   bool calculate_sm_masses; ///< calculate SM pole masses
-   bool force_output; ///< force output
 };
 
 /**
@@ -98,28 +114,12 @@ protected:
  */
 template <class T>
 void NSM_spectrum_generator_interface<T>::set_settings(
-   const Spectrum_generator_settings& settings)
+   const Spectrum_generator_settings& settings_)
 {
-   set_precision_goal(
-      settings.get(Spectrum_generator_settings::precision));
-   set_max_iterations(
-      settings.get(Spectrum_generator_settings::max_iterations));
-   set_calculate_sm_masses(
-      settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
-   set_force_output(
-      settings.get(Spectrum_generator_settings::force_output) >= 1.0);
-   set_pole_mass_loop_order(
-      settings.get(Spectrum_generator_settings::pole_mass_loop_order));
-   set_ewsb_loop_order(
-      settings.get(Spectrum_generator_settings::ewsb_loop_order));
-   set_beta_loop_order(
-      settings.get(Spectrum_generator_settings::beta_loop_order));
-   set_beta_zero_threshold(
-      settings.get(Spectrum_generator_settings::beta_zero_threshold));
-   set_threshold_corrections_loop_order(
-      settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
-   set_two_loop_corrections(
-      settings.get_two_loop_corrections());
+   settings = settings_;
+   model.set_pole_mass_loop_order(settings.get(Spectrum_generator_settings::pole_mass_loop_order));
+   model.set_ewsb_loop_order(settings.get(Spectrum_generator_settings::ewsb_loop_order));
+   model.set_two_loop_corrections(settings.get_two_loop_corrections());
 }
 
 /**

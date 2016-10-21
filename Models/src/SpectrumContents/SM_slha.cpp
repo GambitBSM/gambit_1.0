@@ -2,27 +2,25 @@
 //   *********************************************
 ///  \file
 ///
-///  Class defining the parameters that SubSpectrum 
+///  Class defining the parameters that SubSpectrum
 ///  objects providing Standard Model parameters
 ///  (minus the Higgs sector) must provide.
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2016 Feb 
+///  \date 2016 Feb
 ///
 ///  *********************************************
 
-#ifndef __mssmcontents_hpp__ 
-#define __mssmcontents_hpp__ 
-
 #include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
-namespace Gambit {
+namespace Gambit
+{
 
   /// Only have to define the constructor
   SpectrumContents::SM_slha::SM_slha()
@@ -45,7 +43,7 @@ namespace Gambit {
      //addParameter(Par::mass1, "gamma", scalar);
      //addParameter(Par::mass1, "g"    , scalar);
 
-     // And we don't provide these either since they cannot be provided at the same scale. 
+     // And we don't provide these either since they cannot be provided at the same scale.
      //addParameter(Par::dimensionless, "alpha" , scalar);
      //addParameter(Par::dimensionless, "alphaS", scalar);
 
@@ -59,7 +57,7 @@ namespace Gambit {
 
      addParameter(Par::Pole_Mass, "e-", v3);
      addParameter(Par::Pole_Mass, "nu", v3);
- 
+
      addParameter(Par::Pole_Mixing, "sinW2", scalar);
 
      // Nearest flavour 'aliases' for the SM mass eigenstates
@@ -72,4 +70,3 @@ namespace Gambit {
   }
 
 }
-#endif

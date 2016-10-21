@@ -47,30 +47,33 @@ namespace Gambit
         using boost::shared_ptr;
         using boost::enable_shared_from_this;
 #endif
-            
+
         ///Generic function base used my the scanner.  Can be Likelihood, observables, etc.
         template<typename T>
         class Function_Base;
-        
+
         ///Functor that deletes a Function_Base functor
         template<typename T>
         class Function_Deleter;
-                        
+
         ///Generic ptr that takes ownership of a Function_Base.  This is how a plugin will call a function.
         template<typename T>
         class scan_ptr;
-        
+
         template<typename ret, typename... args>
         class Function_Base <ret (args...)> : public enable_shared_from_this<Function_Base <ret (args...)>>
         {
         private:
             friend class Function_Deleter<ret (args...)>;
             friend class scan_ptr<ret (args...)>;
-            
+
             printer *main_printer;
             Priors::BasePrior *prior;
             std::string purpose;
-            int rank; 
+            int rank;
+
+            /// Variable to store some offset to be removed when printing out the return value of the function.
+            double purpose_offset;
 
             /// Variable to store state of affairs regarding use of alternate min_LogL
             bool use_alternate_min_LogL;
@@ -82,16 +85,16 @@ namespace Gambit
             {
                 delete in;
             }
-            
+
             virtual const std::type_info & type() const {return typeid(ret (args...));}
-                
+
         public:
-            Function_Base() : rank(0), use_alternate_min_LogL(false), _scanner_can_quit(false)
+            Function_Base(double offset = 0.) : rank(0), purpose_offset(offset), use_alternate_min_LogL(false), _scanner_can_quit(false)
             {
-#ifdef WITH_MPI
-                GMPI::Comm world;
-                rank = world.Get_rank();
-#endif
+                #ifdef WITH_MPI
+                    GMPI::Comm world;
+                    rank = world.Get_rank();
+                #endif
                 // Check if we should be using the alternative min_LogL from the very beginning
                 // (for example if we are resuming from a run where we already switched to this)
                 if (Gambit::Scanner::Plugins::plugin_info.resume_mode())
@@ -104,20 +107,20 @@ namespace Gambit
                    Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
                 }
             }
-            
+
             virtual ret main(const args&...) = 0;
-            virtual ~Function_Base(){} 
-            
-            ret operator () (const args&... params) 
+            virtual ~Function_Base(){}
+
+            ret operator () (const args&... params)
             {
                 Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
                 ++Gambit::Printers::get_point_id();
                 ret ret_val = main(params...);
                 Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
-                
+
                 return ret_val;
             }
-            
+
             void setPurpose(const std::string p) {purpose = p;}
             void setPrinter(printer* p) {main_printer = p;}
             void setPrior(Priors::BasePrior *p) {prior = p;}
@@ -126,12 +129,14 @@ namespace Gambit
             std::vector<std::string> getParameters() {return prior->getParameters();}
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
+            double getPurposeOffset() const { return purpose_offset; }
+            void setPurposeOffset(double os) { purpose_offset = os; }
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
             unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
 
             /// Tell ScannerBit that we are aborting the scan and it should tell the scanner plugin to stop, and return control to the calling code.
             void tell_scanner_early_shutdown_in_progress()
-            { 
+            {
               Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress();
             }
 
@@ -159,7 +164,7 @@ namespace Gambit
               Gambit::Scanner::Plugins::plugin_info.save_alt_min_LogL_state(); // Write a file to disk so that upon startup we can check if the alternate min LogL is supposed to be used.
             }
 
-            /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function 
+            /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function
             bool check_for_switch_to_alternate_min_LogL()
             {
               if(not use_alternate_min_LogL)
@@ -178,7 +183,7 @@ namespace Gambit
               }
               // If we didn't decide to switch yet, check for the existence of
               // the persistence file. This is not necessary for proper functioning
-              // of this system, but it allows users to manually create the persistence file 
+              // of this system, but it allows users to manually create the persistence file
               // as a 'hack' to force the likelihood to switch to the alternate min LogL
               // value.
               if(not use_alternate_min_LogL)
@@ -190,102 +195,102 @@ namespace Gambit
             /// @}
 
        };
-        
+
         template<typename ret, typename... args>
         class Function_Deleter<ret (args...)>
         {
         private:
             Function_Base <ret (args...)> *obj;
-                
+
         public:
             Function_Deleter(void *in) : obj(static_cast< Function_Base<ret (args...)>* >(in)) {}
-            
+
             Function_Deleter(const Function_Deleter<ret (args...)> &in) : obj(in.obj) {}
-            
+
             void operator =(const Function_Deleter<ret (args...)> &in)
             {
                 obj = in.obj;
             }
-            
+
             void operator()(Function_Base <ret (args...)> *in)
             {
                 obj->deleter(in);
             }
         };
-        
+
         template<typename ret, typename... args>
         class scan_ptr<ret (args...)> : public shared_ptr< Function_Base< ret (args...)> >
         {
         private:
             typedef shared_ptr< Function_Base< ret (args...) > > s_ptr;
-                
+
         public:
             scan_ptr(){}
             scan_ptr(const scan_ptr &in) : s_ptr (in){}
             scan_ptr(scan_ptr &&in) : s_ptr (std::move(in)) {}
             scan_ptr(void *in) : s_ptr
                                 (
-                                    static_cast< Function_Base<ret (args...)>* >(in), 
+                                    static_cast< Function_Base<ret (args...)>* >(in),
                                     Function_Deleter<ret (args...)>(in)
-                                ) 
+                                )
             {
                 if (typeid(ret (args...)) != this->get()->type())
                 {
                     scan_err << "scan_ptr and the functor return by \"get functor\" do not have the same type." << scan_end;
                 }
             }
-            
+
             scan_ptr<ret (args...)> &operator=(void *in)
             {
                     this->s_ptr::operator=
                     (
                         s_ptr
                         (
-                            static_cast< Function_Base<ret (args...)>* >(in), 
+                            static_cast< Function_Base<ret (args...)>* >(in),
                             Function_Deleter<ret (args...)>(in)
                         )
                     );
-                    
+
                     if (typeid(ret (args...)) != this->get()->type())
                     {
                         scan_err << "scan_ptr and the functor return by \"get functor\" do not have the same type." << scan_end;
                     }
-            
+
                     return *this;
             }
-            
+
             scan_ptr<ret (args...)> &operator=(const scan_ptr<ret (args...)> &in)
             {
                 this->s_ptr::operator=(in);
-        
+
                 return *this;
             }
-            
+
             scan_ptr<ret (args...)> &operator=(s_ptr &&in)
             {
                 this->s_ptr::operator=(std::move(in));
-        
+
                 return *this;
             }
-            
+
             ret operator()(const args&... params)
             {
                 return (*this)->operator()(params...);
             }
         };
-        
+
         class like_ptr : public scan_ptr<double (std::unordered_map<std::string, double> &)>
         {
         private:
             typedef scan_ptr<double (std::unordered_map<std::string, double> &)> s_ptr;
             std::unordered_map<std::string, double> map;
-            
+
         public:
             like_ptr(){}
             like_ptr(const like_ptr &in) : s_ptr (in){}
             //like_ptr(like_ptr &&in) : s_ptr (std::move(in)) {}
             like_ptr(void *in) : s_ptr(in) {}
-            
+
             double operator()(const std::vector<double> &vec)
             {
                 static int rank = (*this)->getRank();
@@ -297,10 +302,10 @@ namespace Gambit
                 (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
                 (*this)->getPrinter().print(int(id), "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);
-                
-                return ret_val;
+
+                return ret_val + (*this)->getPurposeOffset();
             }
-            
+
             double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
             {
                 static int rank = (*this)->getRank();
@@ -309,15 +314,14 @@ namespace Gambit
                 unsigned long long int id = Gambit::Printers::get_point_id();
                 (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
                 (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)
-                if (vec.size() > 0)
-                    (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                if (vec.size() > 0) (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
                 (*this)->getPrinter().print(int(id), "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);
-                
-                return ret_val;
+                // Return the value of the function, offset by any offset set
+                return ret_val + (*this)->getPurposeOffset();
             }
         };
-        
+
         ///Pure Base class of a plugin Factory function.
         class Factory_Base
         {

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 16:42:09
+// File generated at Sat 27 Aug 2016 12:44:12
 
 /**
  * @file SingletDM_two_scale_model.hpp
@@ -24,8 +24,8 @@
  *        value problem using the two_scale solver by solvingt EWSB
  *        and determine the pole masses and mixings
  *
- * This file was generated at Mon 22 Feb 2016 16:42:09 with FlexibleSUSY
- * 1.2.4 (git commit: unknown) and SARAH 4.5.8 .
+ * This file was generated at Sat 27 Aug 2016 12:44:12 with FlexibleSUSY
+ * 1.5.1 (git commit: 8356bacd26e8aecc6635607a32835d534ea3cf01) and SARAH 4.9.0 .
  */
 
 #ifndef SingletDM_TWO_SCALE_H
@@ -53,9 +53,11 @@ public:
    virtual void clear_problems();
    virtual std::string name() const;
    virtual void run_to(double scale, double eps = -1.0);
-   virtual void print(std::ostream&) const;
+   virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
 };
+
+std::ostream& operator<<(std::ostream&, const SingletDM<Two_scale>&);
 
 } // namespace flexiblesusy
 

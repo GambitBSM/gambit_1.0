@@ -30,7 +30,7 @@
 
 
 namespace Gambit
-{   
+{
    namespace MultiNest
    {
       /// Global pointer to loglikelihood wrapper object, for use in the MultiNest callback functions
@@ -51,7 +51,7 @@ scanner_plugin(MultiNest, version(3, 10))
    // An error is thrown if any of the following entries are not present in the inifile (none absolutely required for MultiNest).
    reqd_inifile_entries();
 
-   // Tell cmake system to search known paths for these libraries; any not found must be specified in config/scanner_locations.yaml. 
+   // Tell cmake system to search known paths for these libraries; any not found must be specified in config/scanner_locations.yaml.
    reqd_libraries("nest3");
 
    // Pointer to the (log)likelihood function
@@ -62,7 +62,7 @@ scanner_plugin(MultiNest, version(3, 10))
    {
       // Retrieve the external likelihood calculator
       LogLike = get_purpose(get_inifile_value<std::string>("like"));
-      if(LogLike->getRank() == 0) std::cout << "Loading MultiNest nested sampling plugin for ScannerBit." << std::endl;
+      if (LogLike->getRank() == 0) std::cout << "Loading MultiNest nested sampling plugin for ScannerBit." << std::endl;
    }
 
    /// The main routine to run for the MultiNest scanner.
@@ -78,8 +78,14 @@ scanner_plugin(MultiNest, version(3, 10))
       // Retrieve the dimensionality of the scan.
       int ma = get_dimension();
 
-      // Retrieve the global option specifying the minimum interesting likelihood.
+      // Retrieve the global option specifying the minimum interesting likelihood
       double gl0 = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
+      // Retrieve the global option specifying the likelihood offset to use
+      double offset = get_inifile_value<double>("likelihood: lnlike_offset", 0.);
+      // Make sure the likleihood functor knows to apply the offset internally in ScannerBit
+      LogLike->setPurposeOffset(offset);
+      // Offset the minimum interesting likelihood by the offset
+      gl0 = gl0 + offset;
 
       // MultiNest algorithm options.
       int IS (get_inifile_value<int>("IS", 1) );                // do Nested Importance Sampling?
@@ -104,7 +110,7 @@ scanner_plugin(MultiNest, version(3, 10))
       void *context = 0;                                        // any additional information user wants to pass (not required by MN)
       // Which parameters to have periodic boundary conditions?
       int pWrap[ndims];
-      for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)        
+      for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)
 
       // TODO: check what happens if resume mode is active but multinest native output is not written. I guess it will resume writing to the printer output, but actually start a new scan?
 
@@ -119,13 +125,13 @@ scanner_plugin(MultiNest, version(3, 10))
 
       if(resume==1 and outfile==0)
       {
-        // It is stupid to be in resume mode while not writing output files. 
+        // It is stupid to be in resume mode while not writing output files.
         // Means subsequent resumes will be impossible. Throw an error.
         scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however "
                                       "MultiNest native output files are set to not be written. These are needed "
                                       "for resuming; please change this setting in your yaml file (set option \"outfile: 1\")");
       }
- 
+
       // Setup auxilliary streams. These are only needed by the master process,
       // so let's create them only for that process
       int myrank = get_printer().get_stream()->getRank(); // MPI rank of this process
@@ -143,21 +149,21 @@ scanner_plugin(MultiNest, version(3, 10))
 
          // Initialise auxiliary print streams
          get_printer().new_stream("txt",txt_options);
-         //get_printer().new_stream("stats",stats_options); //FIXME       
+         //get_printer().new_stream("stats",stats_options); //FIXME
          get_printer().new_stream("live",live_options);
       }
 
       // Ensure that MPI processes have the same IDs for auxiliary print streams;
       Gambit::Scanner::assign_aux_numbers("Posterior","LastLive");
-      
+
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
       Gambit::MultiNest::global_loglike_object = &loglwrapper;
 
       //Run MultiNest, passing callback functions for the loglike and dumper.
       if(myrank == 0) std::cout << "Starting MultiNest run..." << std::endl;
-      run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, 
-          root, seed, pWrap, fb, resume, outfile, initMPI, ln0, maxiter, 
+      run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol,
+          root, seed, pWrap, fb, resume, outfile, initMPI, ln0, maxiter,
           Gambit::MultiNest::callback_loglike, Gambit::MultiNest::callback_dumper, context);
       if(myrank == 0) std::cout << "Multinest run finished!" << std::endl;
       return 0;
@@ -172,7 +178,7 @@ scanner_plugin(MultiNest, version(3, 10))
 /// =================================================
 
 namespace Gambit {
-   
+
    namespace MultiNest {
 
       ///@{ Plain-vanilla functions to pass to Multinest for the callback
@@ -182,31 +188,31 @@ namespace Gambit {
       {
          // Call global interface to ScannerBit loglikelihood function
          // Could also pass this object in via context pointer, but that
-         // involves some casting and could risk a segfault. 
+         // involves some casting and could risk a segfault.
          return global_loglike_object->LogLike(Cube, ndim, npars);
       }
 
       void callback_dumper(int nSamples, int nlive, int nPar, double *physLive,
-                           double *posterior, double *paramConstr, 
-                           double maxLogLike, double logZ, double logZerr, 
+                           double *posterior, double *paramConstr,
+                           double maxLogLike, double logZ, double logZerr,
                            void*)
       {
          global_loglike_object->
-            dumper(nSamples, nlive, nPar, physLive, posterior, paramConstr, 
+            dumper(nSamples, nlive, nPar, physLive, posterior, paramConstr,
                    maxLogLike, logZ, logZerr);
       }
-      ///@}      
+      ///@}
 
 
       /// LogLikeWrapper Constructor
       LogLikeWrapper::LogLikeWrapper(scanPtr loglike, printer_interface& printer, int ndim)
         : boundLogLike(loglike), boundPrinter(printer), my_ndim(ndim), dumper_runonce(false)
       { }
-   
-      /// Main interface function from MultiNest to ScannerBit-supplied loglikelihood function 
-      /// This is the function that will be passed to Multinest as the 
+
+      /// Main interface function from MultiNest to ScannerBit-supplied loglikelihood function
+      /// This is the function that will be passed to Multinest as the
       /// loglike callback routine
-      ///      
+      ///
       /// Input arguments
       /// ndim    = dimensionality (total number of free parameters) of the problem
       /// npars   = total number of free plus derived parameters
@@ -214,22 +220,22 @@ namespace Gambit {
       ///
       /// Input/Output arguments
       /// Cube[npars]  = on entry has the ndim parameters in unit-hypercube
-      ///                on exit, the physical parameters plus copy any derived parameters 
+      ///                on exit, the physical parameters plus copy any derived parameters
       ///                you want to store with the free parameters
-      ///   
+      ///
       /// Output arguments
       /// lnew = loglikelihood
       ///
       double LogLikeWrapper::LogLike(double *Cube, int ndim, int)
       {
          //convert C style array to C++ vector class
-         std::vector<double> unitpars(Cube, Cube + ndim); 
+         std::vector<double> unitpars(Cube, Cube + ndim);
 
-         ///TODO: Something broke with these; fix later 
+         ///TODO: Something broke with these; fix later
          //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
          //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
-         
-         double lnew = boundLogLike(unitpars); 
+
+         double lnew = boundLogLike(unitpars);
 
          // Extract the primary printer from the printer manager
          //printer* primary_stream( boundPrinter.get_stream() );
@@ -241,10 +247,10 @@ namespace Gambit {
          Cube[ndim+1] = pointID;
 
          // Done! (lnew will be used by MultiNest to guide the search)
-         return lnew;                  
+         return lnew;
       }
-   
-      /// Main interface to MultiNest dumper routine   
+
+      /// Main interface to MultiNest dumper routine
       /// The dumper routine will be called every updInt*10 iterations
       /// MultiNest does not need to the user to do anything. User can use the arguments in whichever way he/she wants
       ///
@@ -253,12 +259,12 @@ namespace Gambit {
       /// nSamples                                             = total number of samples in posterior distribution
       /// nlive                                                = total number of live points
       /// nPar                                                 = total number of parameters (free + derived)
-      /// physLive[1][nlive * (nPar + 1)]                      = 2D array containing the last set of live points 
-      ///                                                        (physical parameters plus derived parameters) along 
+      /// physLive[1][nlive * (nPar + 1)]                      = 2D array containing the last set of live points
+      ///                                                        (physical parameters plus derived parameters) along
       ///                                                        with their loglikelihood values
       /// TODO: Multinest uses the likelihood of the lowest live point as the "threshold" for iterating, i.e. it throws out the live point if it finds a better one. So we can use this number to update the GAMBIT 'cutoff' threshold when evaluating the likelihood function.
 
-      /// posterior[1][nSamples * (nPar + 2)]                  = posterior distribution containing nSamples points. 
+      /// posterior[1][nSamples * (nPar + 2)]                  = posterior distribution containing nSamples points.
       ///                                                        Each sample has nPar parameters (physical + derived)
       ///                                                        along with the their loglike value & posterior probability
       /// paramConstr[0][0] to paramConstr[0][nPar - 1]        = mean values of the parameters
@@ -271,7 +277,7 @@ namespace Gambit {
       /// logZerr                                              = error on log evidence value
       /// context                                              = void pointer, any additional information
       void LogLikeWrapper::dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double* /*paramConstr*/, 
-       double maxLogLike, double logZ, double logZerr)
+       double /*maxLogLike*/, double /*logZ*/, double /*logZerr*/)
       {
           int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
           if(thisrank!=0)
@@ -283,16 +289,16 @@ namespace Gambit {
                       <<"version of MultiNest you are using may be too far ahead of what this plugin can handle, "
                       <<"if e.g. the described behaviour has changed since this plugin was written."
                       << scan_end;
-          } 
+          }
 
           // Send signal to other processes to switch to higher min_logL value.
           // MultiNest was sometimes getting stuck looking for live point candidates;
           // increasing this above the MultiNext zero_LogL value should avoid that
           // issue.
-          // We do this here because initial live point generation should be finished 
+          // We do this here because initial live point generation should be finished
           // once the dumper runs, and we want the original min_logL value while generating
           // live points.
-          if (!dumper_runonce) 
+          if (!dumper_runonce)
           {
              dumper_runonce = true;
              boundLogLike->switch_to_alternate_min_LogL();
@@ -306,7 +312,7 @@ namespace Gambit {
 
           // Reset the print streams. WARNING! This potentially deletes the old data (here we overwrite it on purpose)
           //stats_stream->reset();  // FIXME
-          txt_stream->reset();   
+          txt_stream->reset();
           live_stream->reset();
 
           // Ensure the "quantity" IDcode is UNIQUE across all printers! This way fancy printers
@@ -325,15 +331,15 @@ namespace Gambit {
 
           // txt file stuff
           // Send info for each point to printer one command at a time
-          int pointID; // ID number for each point 
+          int pointID; // ID number for each point
           int myrank;  // MPI rank which wrote each point
-        
+
           // The discarded live points (and rejected candidate live points if IS = 1)
           for( int i = 0; i < nSamples; i++ )
           {
              myrank  = posterior[(nPar-2)*nSamples + i]; //MPI rank stored in second last entry of cube
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
-           
+
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
              // Put rest of parameters into a vector for printing all together // TODO: not needed, delete?
              // std::vector<double> parameters;

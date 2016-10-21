@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:54:14
+// File generated at Sat 27 Aug 2016 12:50:22
 
 #ifndef MSSMNoFV_SPECTRUM_GENERATOR_H
 #define MSSMNoFV_SPECTRUM_GENERATOR_H
@@ -28,6 +28,7 @@
 #include "MSSMNoFV_two_scale_convergence_tester.hpp"
 #include "MSSMNoFV_two_scale_initial_guesser.hpp"
 #include "MSSMNoFV_input_parameters.hpp"
+#include "MSSMNoFV_info.hpp"
 
 #include "lowe.h"
 #include "error.hpp"
@@ -45,7 +46,6 @@ class MSSMNoFV_spectrum_generator
 public:
    MSSMNoFV_spectrum_generator()
       : MSSMNoFV_spectrum_generator_interface<T>()
-      , solver()
       , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
@@ -63,7 +63,6 @@ public:
    void write_running_couplings(const std::string& filename = "MSSMNoFV_rgflow.dat") const;
 
 private:
-   RGFlow<T> solver;
    MSSMNoFV_high_scale_constraint<T> high_scale_constraint;
    MSSMNoFV_susy_scale_constraint<T> susy_scale_constraint;
    MSSMNoFV_low_scale_constraint<T>  low_scale_constraint;
@@ -78,21 +77,21 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
- * @param oneset Standard Model input parameters
+ * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
 template <class T>
-void MSSMNoFV_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void MSSMNoFV_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
                                 const MSSMNoFV_input_parameters& input)
 {
    MSSMNoFV<T>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(this->calculate_sm_masses);
-   model.do_force_output(this->force_output);
-   model.set_loops(this->beta_loop_order);
-   model.set_thresholds(this->threshold_corrections_loop_order);
-   model.set_zero_threshold(this->beta_zero_threshold);
+   model.do_calculate_sm_pole_masses(this->settings.get(Spectrum_generator_settings::calculate_sm_masses));
+   model.do_force_output(this->settings.get(Spectrum_generator_settings::force_output));
+   model.set_loops(this->settings.get(Spectrum_generator_settings::beta_loop_order));
+   model.set_thresholds(this->settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
+   model.set_zero_threshold(this->settings.get(Spectrum_generator_settings::beta_zero_threshold));
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
@@ -103,7 +102,8 @@ void MSSMNoFV_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
 
-   low_scale_constraint .set_sm_parameters(oneset);
+   susy_scale_constraint.set_sm_parameters(qedqcd);
+   low_scale_constraint .set_sm_parameters(qedqcd);
 
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
@@ -118,18 +118,21 @@ void MSSMNoFV_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    downward_constraints[1] = &susy_scale_constraint;
    downward_constraints[2] = &low_scale_constraint;
 
-   MSSMNoFV_convergence_tester<T> convergence_tester(&model, this->precision_goal);
-   if (this->max_iterations > 0)
-      convergence_tester.set_max_iterations(this->max_iterations);
+   MSSMNoFV_convergence_tester<T> convergence_tester(
+      &model, this->settings.get(Spectrum_generator_settings::precision));
+   if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
+      convergence_tester.set_max_iterations(
+         this->settings.get(Spectrum_generator_settings::max_iterations));
 
-   MSSMNoFV_initial_guesser<T> initial_guesser(&model, oneset,
+   MSSMNoFV_initial_guesser<T> initial_guesser(&model, qedqcd,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
 
-   Two_scale_increasing_precision precision(10.0, this->precision_goal);
+   Two_scale_increasing_precision precision(
+      10.0, this->settings.get(Spectrum_generator_settings::precision));
 
-   solver.reset();
+   RGFlow<T> solver;
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
@@ -145,7 +148,11 @@ void MSSMNoFV_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       low_scale  = low_scale_constraint.get_scale();
       this->reached_precision = convergence_tester.get_current_accuracy();
 
-      model.run_to(susy_scale);
+      const double mass_scale =
+         this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
+         this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
+
+      model.run_to(mass_scale);
       model.solve_ewsb();
       model.calculate_spectrum();
 
@@ -159,8 +166,14 @@ void MSSMNoFV_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       }
    } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
-   } catch (const NonPerturbativeRunningError&) {
+   } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();
+      const int parameter_index = error.get_parameter_index();
+      const std::string parameter_name =
+         parameter_index < 0 ? "Q" : MSSMNoFV_info::parameter_names[parameter_index];
+      const double parameter_value = error.get_parameter_value();
+      const double scale = error.get_scale();
+      model.get_problems().flag_non_perturbative_parameter(parameter_name, parameter_value, scale, -1);
    } catch (const NoRhoConvergenceError&) {
       model.get_problems().flag_no_rho_convergence();
    } catch (const Error& error) {

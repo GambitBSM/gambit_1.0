@@ -16,13 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:46:19
+// File generated at Sat 27 Aug 2016 12:48:16
 
 #ifndef CMSSMNoFV_SLHA_IO_H
 #define CMSSMNoFV_SLHA_IO_H
 
 #include "CMSSMNoFV_two_scale_model_slha.hpp"
 #include "CMSSMNoFV_info.hpp"
+#include "CMSSMNoFV_observables.hpp"
 #include "CMSSMNoFV_physical.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
@@ -37,7 +38,9 @@
 #define PHYSICAL(p) model.get_physical().p
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
+#define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
+#define OBSERVABLES observables
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -62,19 +65,23 @@ public:
    void fill(CMSSMNoFV_input_parameters&) const;
    void fill(CMSSMNoFV_mass_eigenstates&) const;
    template <class T> void fill(CMSSMNoFV_slha<T>&) const;
+   void fill(Physical_input&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
+   void set_block(const std::string& str, SLHA_io::Position position = SLHA_io::back) { slha_io.set_block(str, position); }
+   void set_blocks(const std::vector<std::string>& vec, SLHA_io::Position position = SLHA_io::back) { slha_io.set_blocks(vec, position); }
    void set_extpar(const CMSSMNoFV_input_parameters&);
-   template <class T> void set_extra(const CMSSMNoFV_slha<T>&, const CMSSMNoFV_scales&);
+   template <class T> void set_extra(const CMSSMNoFV_slha<T>&, const CMSSMNoFV_scales&, const CMSSMNoFV_observables&);
    void set_minpar(const CMSSMNoFV_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const CMSSMNoFV_slha<T>&);
    template <class T> void set_spectrum(const CMSSMNoFV<T>&);
    void set_spinfo(const Problems<CMSSMNoFV_info::NUMBER_OF_PARTICLES>&);
+   void set_print_imaginary_parts_of_majorana_mixings(bool);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 
@@ -82,16 +89,14 @@ public:
    static void fill_extpar_tuple(CMSSMNoFV_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const CMSSMNoFV_slha<T>&, const softsusy::QedQcd&, const CMSSMNoFV_scales&);
+   static void fill_slhaea(SLHAea::Coll&, const CMSSMNoFV_slha<T>&, const softsusy::QedQcd&, const CMSSMNoFV_scales&, const CMSSMNoFV_observables&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const CMSSMNoFV_slha<T>&, const softsusy::QedQcd&);
-
-   template <class T>
-   static SLHAea::Coll fill_slhaea(const CMSSMNoFV_slha<T>&, const softsusy::QedQcd&, const CMSSMNoFV_scales&);
+   static SLHAea::Coll fill_slhaea(const CMSSMNoFV_slha<T>&, const softsusy::QedQcd&, const CMSSMNoFV_scales&, const CMSSMNoFV_observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
+   bool print_imaginary_parts_of_majorana_mixings;
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = 14;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
@@ -119,7 +124,8 @@ void CMSSMNoFV_slha_io::fill(CMSSMNoFV_slha<T>& model) const
 template <class T>
 void CMSSMNoFV_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const CMSSMNoFV_slha<T>& model,
-   const softsusy::QedQcd& qedqcd, const CMSSMNoFV_scales& scales)
+   const softsusy::QedQcd& qedqcd, const CMSSMNoFV_scales& scales,
+   const CMSSMNoFV_observables& observables)
 {
    CMSSMNoFV_slha_io slha_io;
    const CMSSMNoFV_input_parameters& input = model.get_input();
@@ -133,7 +139,7 @@ void CMSSMNoFV_slha_io::fill_slhaea(
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales);
+      slha_io.set_extra(model, scales, observables);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
@@ -141,20 +147,11 @@ void CMSSMNoFV_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll CMSSMNoFV_slha_io::fill_slhaea(
-   const CMSSMNoFV_slha<T>& model, const softsusy::QedQcd& qedqcd)
-{
-   CMSSMNoFV_scales scales;
-
-   return fill_slhaea(model, qedqcd, scales);
-}
-
-template <class T>
-SLHAea::Coll CMSSMNoFV_slha_io::fill_slhaea(
    const CMSSMNoFV_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const CMSSMNoFV_scales& scales)
+   const CMSSMNoFV_scales& scales, const CMSSMNoFV_observables& observables)
 {
    SLHAea::Coll slhaea;
-   CMSSMNoFV_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
+   CMSSMNoFV_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
 
    return slhaea;
 }
@@ -209,6 +206,21 @@ void CMSSMNoFV_slha_io::set_model_parameters(const CMSSMNoFV_slha<T>& model)
       slha_io.set_block(block);
    }
 
+   {
+      std::ostringstream block;
+      block << "Block Phases Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_ELEMENT(1, (Re(MODELPARAMETER(PhaseGlu))), "Re(PhaseGlu)")
+      ;
+      slha_io.set_block(block);
+   }
+   {
+      std::ostringstream block;
+      block << "Block IMPhases Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_ELEMENT(1, (Im(MODELPARAMETER(PhaseGlu))), "Im(PhaseGlu)")
+      ;
+      slha_io.set_block(block);
+   }
+
 }
 
 /**
@@ -218,7 +230,8 @@ void CMSSMNoFV_slha_io::set_model_parameters(const CMSSMNoFV_slha<T>& model)
  */
 template <class T>
 void CMSSMNoFV_slha_io::set_extra(
-   const CMSSMNoFV_slha<T>& model, const CMSSMNoFV_scales& scales)
+   const CMSSMNoFV_slha<T>& model, const CMSSMNoFV_scales& scales,
+   const CMSSMNoFV_observables& observables)
 {
    const CMSSMNoFV_physical physical(model.get_physical_slha());
 
@@ -228,6 +241,26 @@ void CMSSMNoFV_slha_io::set_extra(
             << FORMAT_ELEMENT(0, (SCALES(HighScale)), "HighScale")
             << FORMAT_ELEMENT(1, (SCALES(SUSYScale)), "SUSYScale")
             << FORMAT_ELEMENT(2, (SCALES(LowScale)), "LowScale")
+      ;
+      slha_io.set_block(block);
+   }
+   {
+      std::ostringstream block;
+      block << "Block FlexibleSUSYLowEnergy Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_ELEMENT(1, (OBSERVABLES.a_muon_gm2calc), "Delta(g-2)_muon/2 GM2Calc")
+            << FORMAT_ELEMENT(2, (OBSERVABLES.a_muon_gm2calc_uncertainty), "Delta(g-2)_muon/2 GM2Calc uncertainty")
+      ;
+      slha_io.set_block(block);
+   }
+   {
+      std::ostringstream block;
+      block << "Block EFFHIGGSCOUPLINGS Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_RANK_THREE_TENSOR(25, 22, 22, (Abs(OBSERVABLES.eff_cp_higgs_photon_photon(0))), "Abs(effective H-Photon-Photon coupling)")
+            << FORMAT_RANK_THREE_TENSOR(35, 22, 22, (Abs(OBSERVABLES.eff_cp_higgs_photon_photon(1))), "Abs(effective H-Photon-Photon coupling)")
+            << FORMAT_RANK_THREE_TENSOR(25, 21, 21, (Abs(OBSERVABLES.eff_cp_higgs_gluon_gluon(0))), "Abs(effective H-Gluon-Gluon coupling)")
+            << FORMAT_RANK_THREE_TENSOR(35, 21, 21, (Abs(OBSERVABLES.eff_cp_higgs_gluon_gluon(1))), "Abs(effective H-Gluon-Gluon coupling)")
+            << FORMAT_RANK_THREE_TENSOR(36, 22, 22, (Abs(OBSERVABLES.eff_cp_pseudoscalar_photon_photon)), "Abs(effective A-Photon-Photon coupling)")
+            << FORMAT_RANK_THREE_TENSOR(36, 21, 21, (Abs(OBSERVABLES.eff_cp_pseudoscalar_gluon_gluon)), "Abs(effective A-Gluon-Gluon coupling)")
       ;
       slha_io.set_block(block);
    }
@@ -400,7 +433,9 @@ void CMSSMNoFV_slha_io::set_spectrum(const CMSSMNoFV_slha<T>& model)
 #undef PHYSICAL
 #undef PHYSICAL_SLHA
 #undef LOCALPHYSICAL
+#undef MODEL
 #undef MODELPARAMETER
+#undef OBSERVABLES
 #undef LowEnergyConstant
 #undef SCALES
 

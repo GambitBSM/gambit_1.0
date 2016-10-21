@@ -25,12 +25,12 @@ fi
 stripped_source="${source}.stripped"
 
 # strip source file
-${BASEDIR}/remove_export_markers.sh ${source} > ${stripped_source}
+${BASEDIR}/remove_export_markers.sh "${source}" > "${stripped_source}"
 
 if test -d "${dest}"; then
     dest="${dest}/`basename ${source}`"
 fi
 
-install ${args} ${stripped_source} ${dest}
+install ${args} "${stripped_source}" "${dest}"
 
-rm -f ${stripped_source}
+rm -f "${stripped_source}"

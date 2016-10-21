@@ -1,6 +1,7 @@
-diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
---- susyhit_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/hdecay.f	2016-09-27 17:52:24.341987247 +0100
+Binary files susyhit-1.5.pristine/bsg.o and installed/susyhit/1.5/bsg.o differ
+diff -rupN susyhit-1.5.pristine/hdecay.f installed/susyhit/1.5/hdecay.f
+--- susyhit-1.5.pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/hdecay.f	2016-10-15 17:21:32.660058316 +0100
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -131,10 +132,12 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  
          STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
       *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
-Binary files susyhit_pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
-diff -rupN susyhit_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
---- susyhit_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/lightst3bod.f	2016-09-27 17:48:47.941984286 +0100
+Binary files susyhit-1.5.pristine/hdecay.o and installed/susyhit/1.5/hdecay.o differ
+Binary files susyhit-1.5.pristine/hgaga.o and installed/susyhit/1.5/hgaga.o differ
+Binary files susyhit-1.5.pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
+diff -rupN susyhit-1.5.pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
+--- susyhit-1.5.pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst3bod.f	2016-10-15 17:21:32.660058316 +0100
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -189,9 +192,10 @@ diff -rupN susyhit_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
        COMMON/SD_coupewsb/alsew,g2ew,g1ew
        COMMON/SD_mwmzpole/amwp,amzp
  c---- ramona cahnged 2/2/15
-diff -rupN susyhit_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
---- susyhit_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/lightst4bod.f	2016-09-27 17:48:47.941984286 +0100
+Binary files susyhit-1.5.pristine/lightst3bod.o and installed/susyhit/1.5/lightst3bod.o differ
+diff -rupN susyhit-1.5.pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
+--- susyhit-1.5.pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst4bod.f	2016-10-15 17:21:32.664058316 +0100
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -426,9 +430,10 @@ diff -rupN susyhit_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
        COMMON/SD_hmass/ama,aml,amh,amch,amar
  c----- ramona added 4/11/14
        COMMON/SD_mwmzpole/amwp,amzp
-diff -rupN susyhit_pristine/makefile installed/susyhit/1.5/makefile
---- susyhit_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/makefile	2016-09-27 17:48:47.941984286 +0100
+Binary files susyhit-1.5.pristine/lightst4bod.o and installed/susyhit/1.5/lightst4bod.o differ
+diff -rupN susyhit-1.5.pristine/makefile installed/susyhit/1.5/makefile
+--- susyhit-1.5.pristine/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/makefile	2016-10-15 17:21:32.664058316 +0100
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -453,9 +458,9 @@ diff -rupN susyhit_pristine/makefile installed/susyhit/1.5/makefile
 -	rm -f *.o
 \ No newline at end of file
 +	rm -f *.o
-diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
---- susyhit_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/sdecay.f	2016-09-27 17:48:47.949984286 +0100
+diff -rupN susyhit-1.5.pristine/sdecay.f installed/susyhit/1.5/sdecay.f
+--- susyhit-1.5.pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/sdecay.f	2016-10-15 17:25:03.160063413 +0100
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
@@ -1648,3 +1653,59 @@ diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
        COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
        COMMON/SD_weinberg/sw,cw
        COMMON/SD_mixang/alp_mssm,tanbeta
+@@ -42649,9 +43302,13 @@ c --------------------------------------
+          else
+             x1=dcmplx( (s-m22+m12+zkappa)/(2.D0*s) )
+             x2=dcmplx( (s-m22+m12-zkappa)/(2.D0*s) )
+-            SD_B02=dreal( 2.D0+ dlog(mu2/m22) 
+-     .                       + x1*cdlog(1.D0-1.D0/x1) 
+-     .                       + x2*cdlog(1.D0-1.D0/x2))
++            SD_B02=2.D0+ dlog(mu2/m22)
++            ! Added by Pat Scott Oct 15 2016 to fix numerical divergence when x1 or x2 underflows to 0.
++            ! In this case, use the fact that lim_{x->0} x*log(1-1/x) = 0 to discard the irrelevant term.
++            if (x1 .ne. (0.d0, 0.d0))
++     .       SD_B02=SD_B02+dreal(x1*cdlog(1.D0-1.D0/x1))
++            if (x2 .ne. (0.d0, 0.d0))
++     .       SD_B02=SD_B02+dreal(x2*cdlog(1.D0-1.D0/x2))
+          endif
+       endif 
+ 
+@@ -42665,7 +43322,7 @@ c --------------------------------------
+       implicit none 
+ 
+       real*8     s,m1,m2,mu2,m12,m22 
+-      complex*16 zkappa,x1,x2
++      complex*16 zkappa,x1,x2,fx1,fx2
+       
+       m12 = m1**2
+       m22 = m2**2 
+@@ -42709,10 +43366,20 @@ c--- end ramona changed
+       else 
+          x1=dcmplx( (s-m22+m12+zkappa)/(2.D0*s) )
+          x2=dcmplx( (s-m22+m12-zkappa)/(2.D0*s) )
+-         SD_BP02=dreal( -1.D0 + ( x1*(1.D0-x1)*cdlog(1.D0-1.D0/x1)
+-     .                     - x2*(1.D0-x2)*cdlog(1.D0-1.D0/x2) )  
+-     .                                                  /(x1-x2) )/s
+-      endif 
++         ! Added by Pat Scott Oct 15 2016 to fix numerical divergence when x1 or x2 underflows to 0.
++         ! In this case, use the fact that lim_{x->0} x*log(1-1/x) = 0 to discard the irrelevant term.
++         if (x1 .ne. (0.d0, 0.d0)) then
++           fx1 = x1*(1.D0-x1)*cdlog(1.D0-1.D0/x1)
++         else
++           fx1 = 0.d0
++         endif
++         if (x2 .ne. (0.d0, 0.d0)) then
++           fx2 = x2*(1.D0-x2)*cdlog(1.D0-1.D0/x2)
++         else
++           fx2 = 0.d0
++         endif
++         SD_BP02=dreal( -1.D0 + (fx1 - fx2)/(x1-x2) ) / s
++      endif
+ 
+       return
+       end
+Binary files susyhit-1.5.pristine/sdecay.o and installed/susyhit/1.5/sdecay.o differ
+Binary files susyhit-1.5.pristine/suspect2.o and installed/susyhit/1.5/suspect2.o differ
+Binary files susyhit-1.5.pristine/susylha.o and installed/susyhit/1.5/susylha.o differ
+Binary files susyhit-1.5.pristine/twoloophiggs.o and installed/susyhit/1.5/twoloophiggs.o differ
+Binary files susyhit-1.5.pristine/Xvegas.o and installed/susyhit/1.5/Xvegas.o differ

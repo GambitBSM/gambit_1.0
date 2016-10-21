@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///  \date 2013 Aug
 ///  \date 2014 Feb, Aug
@@ -42,7 +42,7 @@ namespace Gambit
       typedef std::vector<functor*> fVec;
       typedef std::vector<primary_model_functor*> pmfVec;
       typedef std::map<str, primary_model_functor*> pmfMap;
-      /// @}     
+      /// @}
 
       /// Internal model claw pointer
       const Models::ModelFunctorClaw* modelInfo;
@@ -52,7 +52,7 @@ namespace Gambit
 
       /// Set of all declared modules
       std::set<str> modules;
-      
+
       /// Map from backend names to a list of all registered versions of the backend
       std::map<str, std::set<str> > backend_versions;
 
@@ -67,7 +67,7 @@ namespace Gambit
 
       /// List of all module functors that are declared as nested (i.e. require loop managers)
       fVec nestedFunctorList;
- 
+
       /// List of all declared backend functors
       fVec backendFunctorList;
 
@@ -115,17 +115,17 @@ namespace Gambit
       void ff_test_function_diagnostic(str&);
       void ff_prior_diagnostic(str&);
       /// @}
- 
+
       /// Compute the status of a given backend
       str backend_status(str, str, bool&);
 
       /// Launch MPI and return the rank, for limiting diagnostic output to master node.
       int launch_diagnostic_MPI();
-  
+
       /// Quit MPI used for diagnostic mode.
       void quit_diagnostic_MPI();
 
- 
+
     public:
 
       /// Constructor
@@ -173,19 +173,19 @@ namespace Gambit
       void registerBackendFunctor(functor&);
 
       /// Add a new primary model functor to primaryModelFunctorList
-      void registerPrimaryModelFunctor(primary_model_functor&); 
+      void registerPrimaryModelFunctor(primary_model_functor&);
 
       /// Add entries to the map of activated primary model functors
-      void registerActiveModelFunctors(const pmfVec&); 
+      void registerActiveModelFunctors(const pmfVec&);
 
       /// Get a reference to the map of all registered backends
       const std::map<str, std::set<str> > getBackends() const ;
 
       /// Get a reference to the list of module functors
-      const fVec& getModuleFunctors() const ; 
+      const fVec& getModuleFunctors() const ;
 
       /// Get a reference to the list of nested module functors
-      const fVec& getNestedModuleFunctors() const ; 
+      const fVec& getNestedModuleFunctors() const ;
 
       /// Get a reference to the list of backend model functors
       const fVec& getBackendFunctors() const ;
@@ -195,7 +195,7 @@ namespace Gambit
 
       /// Get a reference to the map of all user-activated primary model functors
       const pmfMap& getActiveModelFunctors() const ;
-    
+
       /// Tell the module functors which backends are actually present
       void accountForMissingClasses() const ;
 
@@ -204,14 +204,14 @@ namespace Gambit
 
       /// Get the description (and other info) of the named item from the model database
       const model_info get_model_info(const str&) const;
- 
+
       /// Getter for precision to use for cout
-      int get_outprec() const; 
+      int get_outprec() const;
 
       /// Check the named database for conflicts and missing descriptions
       /// Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts.
       void check_databases();
- 
+
       /// Vector of all capability_info objects
       std::vector<capability_info> capability_dbase;
 

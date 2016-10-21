@@ -21,7 +21,7 @@
  * @brief contains wrapper class for model class in SLHA convention
  */
 
-// File generated at Wed 28 Oct 2015 11:34:47
+// File generated at Sat 27 Aug 2016 12:50:57
 
 #ifndef MSSM_TWO_SCALE_SLHA_H
 #define MSSM_TWO_SCALE_SLHA_H
@@ -47,7 +47,7 @@ template<>
 class MSSM_slha<Two_scale> : public MSSM<Two_scale> {
 public:
    explicit MSSM_slha(const MSSM_input_parameters& input_ = MSSM_input_parameters());
-   explicit MSSM_slha(const MSSM<Two_scale>&);
+   explicit MSSM_slha(const MSSM<Two_scale>&, bool do_convert_masses_to_slha = true);
    virtual ~MSSM_slha();
 
    virtual void clear();
@@ -56,6 +56,7 @@ public:
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns_matrix() const { return pmns; }
    const MSSM_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
    MSSM_physical& get_physical_slha(); ///< returns pole masses to SLHA convention
+   void set_convert_masses_to_slha(bool); ///< allow/disallow for negative majoran fermion masses
 
    // interface functions
    virtual void calculate_spectrum();
@@ -65,8 +66,6 @@ public:
    double get_MGlu_pole_slha() const { return PHYSICAL_SLHA(MGlu); }
    const Eigen::Array<double,3,1>& get_MFv_pole_slha() const { return PHYSICAL_SLHA(MFv); }
    double get_MFv_pole_slha(int i) const { return PHYSICAL_SLHA(MFv(i)); }
-   double get_MVP_pole_slha() const { return PHYSICAL_SLHA(MVP); }
-   double get_MVZ_pole_slha() const { return PHYSICAL_SLHA(MVZ); }
    const Eigen::Array<double,6,1>& get_MSd_pole_slha() const { return PHYSICAL_SLHA(MSd); }
    double get_MSd_pole_slha(int i) const { return PHYSICAL_SLHA(MSd(i)); }
    const Eigen::Array<double,3,1>& get_MSv_pole_slha() const { return PHYSICAL_SLHA(MSv); }
@@ -92,6 +91,8 @@ public:
    const Eigen::Array<double,3,1>& get_MFu_pole_slha() const { return PHYSICAL_SLHA(MFu); }
    double get_MFu_pole_slha(int i) const { return PHYSICAL_SLHA(MFu(i)); }
    double get_MVWm_pole_slha() const { return PHYSICAL_SLHA(MVWm); }
+   double get_MVP_pole_slha() const { return PHYSICAL_SLHA(MVP); }
+   double get_MVZ_pole_slha() const { return PHYSICAL_SLHA(MVZ); }
 
    const Eigen::Matrix<double,6,6>& get_ZD_pole_slha() const { return PHYSICAL_SLHA(ZD); }
    double get_ZD_pole_slha(int i, int k) const { return PHYSICAL_SLHA(ZD(i,k)); }
@@ -125,6 +126,8 @@ public:
    const std::complex<double>& get_ZUL_pole_slha(int i, int k) const { return PHYSICAL_SLHA(ZUL(i,k)); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZUR_pole_slha() const { return PHYSICAL_SLHA(ZUR); }
    const std::complex<double>& get_ZUR_pole_slha(int i, int k) const { return PHYSICAL_SLHA(ZUR(i,k)); }
+   const Eigen::Matrix<double,2,2>& get_ZZ_pole_slha() const { return PHYSICAL_SLHA(ZZ); }
+   double get_ZZ_pole_slha(int i, int k) const { return PHYSICAL_SLHA(ZZ(i,k)); }
 
    const Eigen::Array<double,3,1>& get_Yu_slha() const { return Yu_slha; }
    double get_Yu_slha(int i) const { return Yu_slha(i); }
@@ -169,6 +172,7 @@ private:
    MSSM_physical physical_slha; ///< contains the pole masses and mixings in slha convention
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
+   bool convert_masses_to_slha;        ///< allow/disallow for negative majoran fermion masses
    Eigen::Array<double,3,1> Yu_slha;
    Eigen::Array<double,3,1> Yd_slha;
    Eigen::Array<double,3,1> Ye_slha;
@@ -197,6 +201,8 @@ private:
    void convert_trilinear_couplings_to_slha();
    void convert_soft_squared_masses_to_slha();
 };
+
+std::ostream& operator<<(std::ostream& ostr, const MSSM_slha<Two_scale>& model);
 
 } // namespace flexiblesusy
 

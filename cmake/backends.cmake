@@ -45,14 +45,12 @@ set(ver "5.1.3")
 set(dl "http://www.fysik.su.se/~edsjo/darksusy/tars/${name}-${ver}.tar.gz")
 set(md5 "ca95ffa083941a469469710fab2f3c97")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
-  PATCH_COMMAND patch -p1 < ${patch}/patchDS_sharedlib_+_threadsafety.dif
-        COMMAND patch -p1 -d src < ${patch}/patchDS.dif
-        COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${patch}/patchISA.dif
+  PATCH_COMMAND patch -p1 < ${patch}
         # FIXME parallel relic density routines don't work yet.
         #COMMAND patch -b -p2 -d src < ${patch}/patchDS_OMP_src.dif
         #COMMAND patch -b -p2 -d include < ${patch}/patchDS_OMP_include.dif
@@ -65,48 +63,13 @@ ExternalProject_Add(${name}_${ver}
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
-# DarkSUSY
-set(name "darksusy")
-set(ver "5.1.1")
-set(dl "http://www.fysik.su.se/~edsjo/darksusy/tars/${name}-${ver}.tar.gz")
-set(md5 "ebeb0e1cfb4d834858e120190e423f62")
-set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}")
-set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
-set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(_ld_prefix "-Wl,-all_load")
-  set(_ld_suffix "")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  set(_ld_prefix "-Wl,--whole-archive")
-  set(_ld_suffix "-Wl,--no-whole-archive")
-endif()
-set(libs ${_ld_prefix} lib/libFH.a lib/libHB.a lib/libdarksusy.a lib/libisajet.a ${_ld_suffix})
-ExternalProject_Add(${name}_${ver}
-  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
-  SOURCE_DIR ${dir}
-  BUILD_IN_SOURCE 1
-  PATCH_COMMAND patch -p1 -d src < ${patch}/patchDS.dif
-        COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${patch}/patchISA.dif
-        #COMMAND patch -p2 -d src < ${patch}/patchDS_OMP_src.dif
-        #COMMAND patch -p2 -d include < ${patch}/patchDS_OMP_include.dif
- # FIXME DarkSUSY segfaults with -O2 setting
- #CONFIGURE_COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
-  CONFIGURE_COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
-        COMMAND ar d lib/libdarksusy.a ${remove_files_from_libdarksusy} || true
-        COMMAND ar d lib/libisajet.a ${remove_files_from_libisajet} || true
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o lib/libdarksusy.so
-)
-add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-
 
 # SuperIso
 set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
 set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}beta.tgz")  # Note "beta" suffix!
-set(md5 "0e1278a88dc2a7838e737edd53525978")
+set(md5 "84771f32a9dfa3957b2c842064adb82f")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}

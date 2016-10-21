@@ -16,13 +16,39 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 16:41:46
+// File generated at Sat 27 Aug 2016 12:43:00
 
 #include "SingletDM_input_parameters.hpp"
+#include "wrappers.hpp"
 
 #define INPUT(p) input.p
 
 namespace flexiblesusy {
+
+Eigen::ArrayXd SingletDM_input_parameters::get() const
+{
+   Eigen::ArrayXd pars(6);
+
+   pars(0) = HiggsIN;
+   pars(1) = LamSHInput;
+   pars(2) = LamSInput;
+   pars(3) = muSInput;
+   pars(4) = QEWSB;
+   pars(5) = Qin;
+
+   return pars;
+}
+
+void SingletDM_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+   HiggsIN = pars(0);
+   LamSHInput = pars(1);
+   LamSInput = pars(2);
+   muSInput = pars(3);
+   QEWSB = pars(4);
+   Qin = pars(5);
+
+}
 
 std::ostream& operator<<(std::ostream& ostr, const SingletDM_input_parameters& input)
 {

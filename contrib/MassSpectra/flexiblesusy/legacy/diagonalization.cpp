@@ -19,6 +19,7 @@
 #include "diagonalization.hpp"
 #include "wrappers.hpp"
 #include "config.h"
+#include <sstream>
 
 namespace flexiblesusy {
 
@@ -48,7 +49,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
 #ifdef ENABLE_DEBUG
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
-      ostringstream ii;
+      std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m;
       throw ii.str();
    }
@@ -97,7 +98,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u, so
 #ifdef ENABLE_DEBUG
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
-      ostringstream ii;
+      std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m;
       throw ii.str();
    }
@@ -147,7 +148,7 @@ void AssociateOrderAbs(softsusy::DoubleMatrix& u, softsusy::DoubleMatrix& v, sof
    if ((u.displayRows() != w.displayEnd()) ||
        (u.displayCols() != w.displayEnd()) ||
        (w.displayStart() != 1)) {
-      ostringstream ii;
+      std::ostringstream ii;
       ii << "Associated ordering incompatibility\n";
       throw ii.str();
    }
@@ -179,7 +180,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        v.displayCols() != c || v.displayRows() !=c ||
        u.displayCols() !=c || u.displayRows() !=c) {
-      ostringstream ii;
+      std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m
          << "with u" << u << "v " << v << "eigenvalues " << eigenvalues;
       throw ii.str();
@@ -219,7 +220,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u,
    const int c = m.displayCols();
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        v.displayCols() != c || v.displayRows() !=c || c > 10) {
-      ostringstream ii;
+      std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m;
       throw ii.str();
    }

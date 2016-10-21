@@ -201,11 +201,11 @@ BE_NAMESPACE
         piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayield_int didn't converge. This occasionally happens "
                                            "due to finite statistics in the nu yield tables from Pythia. "
                                            "This is benign (the missing integrals are always negligible).");
-    }    
+    }
     if (istat > 4)
     {
       std::ostringstream err;
-      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;      
+      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;
       piped_errors.request(LOCAL_INFO, err.str());
     }
     return result;
@@ -368,7 +368,7 @@ BE_NAMESPACE
     // Make sure the b pole mass is present in the MASS block
     if (mySLHA.at("MASS").find(initVector<str>("5")) == mySLHA.at("MASS").end())
       backend_error().raise(LOCAL_INFO, "DarkSUSY init_diskless needs b pole mass entry (5) in SLHA(ea) MASS block.");
-    
+
     // Block SMINPUTS
     couplingconstants->alphem   = 1./to<double>(mySLHA.at("SMINPUTS").at(1).at(1)); // 1/alpha_{QED}
     smruseful->alph3mz          = to<double>(mySLHA.at("SMINPUTS").at(3).at(1));    // alpha_s @ MZ
@@ -627,7 +627,7 @@ BE_NAMESPACE
     mssmiuseful->lsp = DSpart->kn(1);
     mssmiuseful->kln = 1;
     dsvertx();
-    
+
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
     widths->width(DSparticle_code("h0_1")) = myDecays.at(std::pair<int,int>(25,0)).width_in_GeV;
     widths->width(DSparticle_code("h0_2")) = myDecays.at(std::pair<int,int>(35,0)).width_in_GeV;
@@ -667,7 +667,7 @@ BE_NAMESPACE
     widths->width(DSparticle_code("tau-")) = myDecays.at(std::pair<int,int>(15,1)).width_in_GeV;
 
     // Set up SM gauge boson widths
-    widths->width(DSparticle_code("W+")) = myDecays.at(std::pair<int,int>(24,0)).width_in_GeV; 
+    widths->width(DSparticle_code("W+")) = myDecays.at(std::pair<int,int>(24,0)).width_in_GeV;
     widths->width(DSparticle_code("Z0")) = myDecays.at(std::pair<int,int>(23,0)).width_in_GeV;
 
     // Set up sfermion widths
@@ -720,7 +720,7 @@ BE_NAMESPACE
     }
 
     #ifdef DARKSUSY_DEBUG
-      // Spit out spectrum and width files for debug purposes. 
+      // Spit out spectrum and width files for debug purposes.
       int u1 = 50;
       int u2 = 100050;
       #ifdef WITH_MPI

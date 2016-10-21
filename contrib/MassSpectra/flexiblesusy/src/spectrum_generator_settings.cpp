@@ -65,6 +65,9 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | top_2loop_corrections_qcd        | 0, 1                         | 1 (= enabled)   |
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
+ * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
+ * | force_positive_masses            | 0 (no) or 1 (yes)            | 0 (= no)        |
+ * | pole_mass_scale                  | any positive double          | 0 (= SUSY scale)|
  */
 void Spectrum_generator_settings::reset()
 {
@@ -83,6 +86,9 @@ void Spectrum_generator_settings::reset()
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[top_2loop_corrections_qcd]        = 1.;
    values[beta_zero_threshold]              = 1.0e-11;
+   values[calculate_observables]            = 0;
+   values[force_positive_masses]            = 0;
+   values[pole_mass_scale]                  = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
@@ -95,6 +101,16 @@ Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() con
    two_loop_corrections.top_qcd         = get(top_2loop_corrections_qcd);
 
    return two_loop_corrections;
+}
+
+void Spectrum_generator_settings::set_two_loop_corrections(
+   const Two_loop_corrections& two_loop_corrections)
+{
+   set(higgs_2loop_correction_at_as, two_loop_corrections.higgs_at_as);
+   set(higgs_2loop_correction_ab_as, two_loop_corrections.higgs_ab_as);
+   set(higgs_2loop_correction_at_at, two_loop_corrections.higgs_at_at);
+   set(higgs_2loop_correction_atau_atau, two_loop_corrections.higgs_atau_atau);
+   set(top_2loop_corrections_qcd, two_loop_corrections.top_qcd);
 }
 
 } // namespace flexiblesusy

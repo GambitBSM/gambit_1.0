@@ -16,13 +16,41 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:50
+// File generated at Sat 27 Aug 2016 12:40:23
 
 #include "SSM_input_parameters.hpp"
+#include "wrappers.hpp"
 
 #define INPUT(p) input.p
 
 namespace flexiblesusy {
+
+Eigen::ArrayXd SSM_input_parameters::get() const
+{
+   Eigen::ArrayXd pars(7);
+
+   pars(0) = Qin;
+   pars(1) = QEWSB;
+   pars(2) = Lambdainput;
+   pars(3) = LambdaSinput;
+   pars(4) = MSinput;
+   pars(5) = K1input;
+   pars(6) = K2input;
+
+   return pars;
+}
+
+void SSM_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+   Qin = pars(0);
+   QEWSB = pars(1);
+   Lambdainput = pars(2);
+   LambdaSinput = pars(3);
+   MSinput = pars(4);
+   K1input = pars(5);
+   K2input = pars(6);
+
+}
 
 std::ostream& operator<<(std::ostream& ostr, const SSM_input_parameters& input)
 {

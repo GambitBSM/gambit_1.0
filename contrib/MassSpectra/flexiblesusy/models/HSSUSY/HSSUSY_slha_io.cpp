@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:12:32
+// File generated at Sat 27 Aug 2016 12:40:18
 
 #include "HSSUSY_slha_io.hpp"
 #include "HSSUSY_input_parameters.hpp"
@@ -36,8 +36,6 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
@@ -51,12 +49,18 @@ char const * const HSSUSY_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
 
 HSSUSY_slha_io::HSSUSY_slha_io()
    : slha_io()
+   , print_imaginary_parts_of_majorana_mixings(false)
 {
 }
 
 void HSSUSY_slha_io::clear()
 {
    slha_io.clear();
+}
+
+void HSSUSY_slha_io::set_print_imaginary_parts_of_majorana_mixings(bool flag)
+{
+   print_imaginary_parts_of_majorana_mixings = flag;
 }
 
 /**
@@ -78,6 +82,7 @@ void HSSUSY_slha_io::set_extpar(const HSSUSY_input_parameters& input)
    extpar << FORMAT_ELEMENT(6, input.MEWSB, "MEWSB");
    extpar << FORMAT_ELEMENT(7, input.AtInput, "AtInput");
    extpar << FORMAT_ELEMENT(25, input.TanBeta, "TanBeta");
+   extpar << FORMAT_ELEMENT(100, input.LambdaLoopOrder, "LambdaLoopOrder");
    slha_io.set_block(extpar);
 
 }
@@ -157,8 +162,6 @@ void HSSUSY_slha_io::set_mass(const HSSUSY_physical& physical,
          << FORMAT_MASS(14, LOCALPHYSICAL(MFv(1)), "Fv(2)")
          << FORMAT_MASS(16, LOCALPHYSICAL(MFv(2)), "Fv(3)")
          << FORMAT_MASS(25, LOCALPHYSICAL(Mhh), "hh")
-         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
-         << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
          << FORMAT_MASS(1, LOCALPHYSICAL(MFd(0)), "Fd(1)")
          << FORMAT_MASS(3, LOCALPHYSICAL(MFd(1)), "Fd(2)")
          << FORMAT_MASS(5, LOCALPHYSICAL(MFd(2)), "Fd(3)")
@@ -168,6 +171,8 @@ void HSSUSY_slha_io::set_mass(const HSSUSY_physical& physical,
          << FORMAT_MASS(11, LOCALPHYSICAL(MFe(0)), "Fe(1)")
          << FORMAT_MASS(13, LOCALPHYSICAL(MFe(1)), "Fe(2)")
          << FORMAT_MASS(15, LOCALPHYSICAL(MFe(2)), "Fe(3)")
+         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
+         << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
       ;
    }
 
@@ -194,6 +199,9 @@ void HSSUSY_slha_io::set_mixing_matrices(const HSSUSY_physical& physical,
       slha_io.set_block("UDRMIX", LOCALPHYSICAL(Ud), "Ud");
       slha_io.set_block("UELMIX", LOCALPHYSICAL(Ve), "Ve");
       slha_io.set_block("UERMIX", LOCALPHYSICAL(Ue), "Ue");
+   }
+
+   if (print_imaginary_parts_of_majorana_mixings) {
    }
 
 }
@@ -282,11 +290,11 @@ void HSSUSY_slha_io::fill(HSSUSY_input_parameters& input) const
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
 
+   slha_io.read_block("MSD2IN", input.msd2);
+   slha_io.read_block("MSE2IN", input.mse2);
+   slha_io.read_block("MSL2IN", input.msl2);
    slha_io.read_block("MSQ2IN", input.msq2);
    slha_io.read_block("MSU2IN", input.msu2);
-   slha_io.read_block("MSD2IN", input.msd2);
-   slha_io.read_block("MSL2IN", input.msl2);
-   slha_io.read_block("MSE2IN", input.mse2);
 
 }
 
@@ -299,17 +307,17 @@ void HSSUSY_slha_io::fill_drbar_parameters(HSSUSY_mass_eigenstates& model) const
    model.set_g2(slha_io.read_entry("gauge", 2));
    model.set_g3(slha_io.read_entry("gauge", 3));
    {
-      DEFINE_PARAMETER(Yu);
+      Eigen::Matrix<double,3,3> Yu;
       slha_io.read_block("Yu", Yu);
       model.set_Yu(Yu);
    }
    {
-      DEFINE_PARAMETER(Yd);
+      Eigen::Matrix<double,3,3> Yd;
       slha_io.read_block("Yd", Yd);
       model.set_Yd(Yd);
    }
    {
-      DEFINE_PARAMETER(Ye);
+      Eigen::Matrix<double,3,3> Ye;
       slha_io.read_block("Ye", Ye);
       model.set_Ye(Ye);
    }
@@ -333,6 +341,17 @@ void HSSUSY_slha_io::fill(HSSUSY_mass_eigenstates& model) const
    fill_physical(physical_hk);
    physical_hk.convert_to_hk();
    model.get_physical() = physical_hk;
+}
+
+/**
+ * Fill struct of extra physical input parameters from SLHA object
+ * (FlexibleSUSYInput block)
+ *
+ * @param settings struct of physical input parameters
+ */
+void HSSUSY_slha_io::fill(Physical_input& input) const
+{
+   slha_io.fill(input);
 }
 
 /**
@@ -368,6 +387,7 @@ void HSSUSY_slha_io::fill_extpar_tuple(HSSUSY_input_parameters& input,
    case 6: input.MEWSB = value; break;
    case 7: input.AtInput = value; break;
    case 25: input.TanBeta = value; break;
+   case 100: input.LambdaLoopOrder = value; break;
    default: WARNING("Unrecognized entry in block EXTPAR: " << key); break;
    }
 

@@ -56,6 +56,7 @@ namespace Gambit
            double get_MW_pole()        const; 
 
            double get_sinthW2_pole()   const;
+           double get_MW_unc()         const;
            
            double get_md()             const;
            double get_mu()             const;
@@ -92,6 +93,7 @@ namespace Gambit
             /// Map filler
             /// Used to initialise maps of function pointers
             static GetterMaps fill_getter_maps();
+            
  
 
       };

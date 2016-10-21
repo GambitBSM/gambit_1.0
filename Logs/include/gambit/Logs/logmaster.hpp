@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2014 Mar
@@ -28,7 +28,7 @@
 #include <vector>
 #include <deque>
 #include <fstream>
-#include <chrono> 
+#include <chrono>
 #include <omp.h>
 
 // Gambit
@@ -47,7 +47,7 @@ namespace Gambit
     /// Logging "controller" object
     /// Keeps track of the various "Logger" objects
     class LogMaster
-    {  
+    {
        public:
         /// Default constructor
         LogMaster();
@@ -57,7 +57,7 @@ namespace Gambit
         LogMaster(std::map<std::set<int>,BaseLogger*>&);
 
         /// Destructor
-        /// If errors happen before the inifile is loaded, we need to dump the log messages 
+        /// If errors happen before the inifile is loaded, we need to dump the log messages
         /// (that have been buffered) into a default log file. These will be log messages coming from initialisation code and so on.
         ~LogMaster();
 
@@ -80,6 +80,9 @@ namespace Gambit
         // Function to check if all log messages are silenced
         bool disabled();
 
+        /// Print the backlogs to the default log file
+        void emit_backlog(bool verbose);
+
         /// Functions for stream input (actual stream operators which use these are defined in logger.cpp)
         void input(const std::string&);
         void input(const LogTag&);
@@ -90,7 +93,7 @@ namespace Gambit
         void input(const manip3);
 
         /// Main logging function (user-friendly overloaded version)
-        // Need a bunch of overloads of this to deal with 
+        // Need a bunch of overloads of this to deal with
         void send(const std::string&);
         void send(const std::string&,LogTag);
         void send(const std::string&,LogTag,LogTag);
@@ -123,7 +126,7 @@ namespace Gambit
         void entering_backend(int);
         void leaving_backend();
 
-        /// @{ Setters for behaviour options 
+        /// @{ Setters for behaviour options
         /// Must be used before "initialise" in order to have any effect
         /// Choose whether a separate log file for each MPI process is used
         /// NOW FORBIDDEN! Always must be true to avoid concurrent write access issues
@@ -132,22 +135,22 @@ namespace Gambit
         /// Choose whether "Debug" tagged log messages will be ignored (i.e. not logged)
         void set_log_debug_messages(bool flag) {log_debug_messages=flag;}
 
-        /// @}        
+        /// @}
 
       private:
         /// Empty the backlog buffer to the 'send' function
         void empty_backlog();
-     
+
         /// Map to identify loggers
         std::map<std::set<int>,BaseLogger*> loggers;
 
         /// Global ignore set; if these tags/integers are seen, ignore messages containing them.
         std::set<int> ignore;
-  
+
         /// Flag to set whether loggers have been initialised not
         bool loggers_readyQ;
 
-        /// Flag to silence logger 
+        /// Flag to silence logger
         bool silenced;
 
         /// Flag to store log messages for different processes in separate files
@@ -155,7 +158,7 @@ namespace Gambit
 
         /// Flag to ignore Debug tagged messages
         bool log_debug_messages;
- 
+
         /// MPI variables
         int MPIrank;
         int MPIsize;

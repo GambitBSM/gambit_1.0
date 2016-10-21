@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:32:25
+// File generated at Sat 27 Aug 2016 12:50:30
 
 #include "CMSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -25,6 +25,42 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+
+namespace {
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator+(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(const Eigen::MatrixBase<Derived>& m, double n)
+{
+   return m - Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen::MatrixBase<Derived>& m)
+{
+   return - m + Eigen::Matrix<double,
+                            Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+                            Eigen::MatrixBase<Derived>::ColsAtCompileTime>::Identity() * n;
+}
+
+} // anonymous namespace
 
 /**
  * Calculates the one-loop beta function of MassB.
@@ -78,11 +114,47 @@ double CMSSM_soft_parameters::calc_beta_MassB_three_loop(const Soft_traces& soft
 {
    DEFINE_PROJECTOR(3,3,3,3)
 
+   const double traceAdjYdYd = TRACE_STRUCT.traceAdjYdYd;
+   const double traceAdjYeYe = TRACE_STRUCT.traceAdjYeYe;
+   const double traceAdjYuYu = TRACE_STRUCT.traceAdjYuYu;
+   const double traceTYdAdjYd = TRACE_STRUCT.traceTYdAdjYd;
+   const double traceTYeAdjYe = TRACE_STRUCT.traceTYeAdjYe;
+   const double traceTYuAdjYu = TRACE_STRUCT.traceTYuAdjYu;
+   const double traceAdjYdYdAdjYdYd = TRACE_STRUCT.traceAdjYdYdAdjYdYd;
+   const double traceAdjYdTYdAdjYdYd = TRACE_STRUCT.traceAdjYdTYdAdjYdYd;
+   const double traceAdjYeYeAdjYeYe = TRACE_STRUCT.traceAdjYeYeAdjYeYe;
+   const double traceAdjYeTYeAdjYeYe = TRACE_STRUCT.traceAdjYeTYeAdjYeYe;
+   const double traceAdjYuYuAdjYdYd = TRACE_STRUCT.traceAdjYuYuAdjYdYd;
+   const double traceAdjYuYuAdjYuYu = TRACE_STRUCT.traceAdjYuYuAdjYuYu;
+   const double traceAdjYuTYuAdjYdYd = TRACE_STRUCT.traceAdjYuTYuAdjYdYd;
+   const double traceAdjYuTYuAdjYuYu = TRACE_STRUCT.traceAdjYuTYuAdjYuYu;
+   const double traceTYdAdjYuYuAdjYd = TRACE_STRUCT.traceTYdAdjYuYuAdjYd;
 
 
    double beta_MassB;
 
-   beta_MassB = 0;
+   beta_MassB = Re(-0.005333333333333333*threeLoop*Sqr(g1)*(96351*Power(
+      g1,4)*MassB + 6075*Power(g2,4)*MassB - 12100*Power(g3,4)*MassB - 24200*
+      Power(g3,4)*MassG + 12150*Power(g2,4)*MassWB + 8100*traceAdjYdTYdAdjYdYd
+      - 4050*MassB*traceAdjYdYdAdjYdYd + 8100*traceAdjYeTYeAdjYeYe - 4050*MassB
+      *traceAdjYeYeAdjYeYe + 4350*traceAdjYuTYuAdjYdYd + 12600*
+      traceAdjYuTYuAdjYuYu - 4350*MassB*traceAdjYuYuAdjYdYd - 6300*MassB*
+      traceAdjYuYuAdjYuYu + 4350*traceTYdAdjYuYuAdjYd + 13500*traceAdjYuYu*
+      traceTYuAdjYu + 1690*MassB*traceAdjYuYu*Sqr(g1) - 245*traceTYdAdjYd*Sqr(
+      g1) - 1215*traceTYeAdjYe*Sqr(g1) - 845*traceTYuAdjYu*Sqr(g1) + 6525*MassB
+      *traceAdjYuYu*Sqr(g2) + 6525*MassWB*traceAdjYuYu*Sqr(g2) - 2475*
+      traceTYdAdjYd*Sqr(g2) - 4725*traceTYeAdjYe*Sqr(g2) - 6525*traceTYuAdjYu*
+      Sqr(g2) + 2070*MassB*Sqr(g1)*Sqr(g2) + 1035*MassWB*Sqr(g1)*Sqr(g2) + 45*
+      traceAdjYeYe*(140*traceTYdAdjYd + 80*traceTYeAdjYe + 54*MassB*Sqr(g1) +
+      105*MassB*Sqr(g2) + 105*MassWB*Sqr(g2)) + 8800*MassB*traceAdjYuYu*Sqr(g3)
+      + 8800*MassG*traceAdjYuYu*Sqr(g3) - 6400*traceTYdAdjYd*Sqr(g3) - 8800*
+      traceTYuAdjYu*Sqr(g3) + 10960*MassB*Sqr(g1)*Sqr(g3) + 5480*MassG*Sqr(g1)*
+      Sqr(g3) + 1800*MassB*Sqr(g2)*Sqr(g3) + 1800*MassG*Sqr(g2)*Sqr(g3) + 1800*
+      MassWB*Sqr(g2)*Sqr(g3) + 5*traceAdjYdYd*(-1260*MassB*traceAdjYeYe + 1080*
+      traceTYdAdjYd + 1260*traceTYeAdjYe + 98*MassB*Sqr(g1) + 495*MassB*Sqr(g2)
+      + 495*MassWB*Sqr(g2) + 1280*MassB*Sqr(g3) + 1280*MassG*Sqr(g3)) - 2700*
+      MassB*Sqr(traceAdjYdYd) - 1800*MassB*Sqr(traceAdjYeYe) - 6750*MassB*Sqr(
+      traceAdjYuYu)));
 
 
    return beta_MassB;

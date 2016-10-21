@@ -22,12 +22,14 @@ space='    '
 
 def islast(item,iterator):
     """Check if an item is the last one in an iterator"""
+    i = None
     for i in iterator:
         pass    #go through the iterator to the end
     return item==i 
 
 def lastitem(iterator):
     """Check if an item is the last one in an iterator"""
+    i = None
     for i in iterator:
         pass    #go through the iterator to the end
     return i
@@ -48,6 +50,8 @@ def printcontents(item,prelines):
         print dset
         print "Contents:"
         print dset[:]  
+    except TypeError: # No item in list, just ignore
+        pass
 
 printcontents(f,'')
 

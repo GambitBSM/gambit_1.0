@@ -115,6 +115,7 @@ Root_finder<dimension>::Root_finder()
  * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
+ * @param solver_type_ GSL multiroot solver type
  */
 template <std::size_t dimension>
 Root_finder<dimension>::Root_finder(
@@ -208,7 +209,7 @@ int Root_finder<dimension>::find_root(const double start[dimension])
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
 #ifdef ENABLE_VERBOSE
-   printf("\tRoot_finder status = %s\n", gsl_strerror(status));
+   std::cout << "\tRoot_finder status = " << gsl_strerror(status) << '\n';
 #endif
 
    gsl_vector_memcpy(root, solver->x);

@@ -20,6 +20,8 @@
 #include "wrappers.hpp"
 #include "pv.hpp"
 
+#include <cmath>
+
 namespace flexiblesusy {
 
 using namespace passarino_veltman;
@@ -179,6 +181,97 @@ double self_energy_higgs_2loop_at_at_sm(
       2*mt2*(-3*yt4*(9*LogT2 - 3*LogT + 2 + Sqr(Pi)/3.));
 
    return - result * twoLoop;
+}
+
+namespace {
+
+double QA0(double m, double Q) {
+   using namespace flexiblesusy::passarino_veltman;
+   return ReA0(m*m, Q*Q);
+}
+
+double QB0(double p, double m1, double m2, double Q) {
+   using namespace flexiblesusy::passarino_veltman;
+   return ReB0(p*p, m1*m1, m2*m2, Q*Q);
+}
+
+}
+
+/**
+ * Standard Model Higgs 1-loop self-energy as used in SUSYHD 1.0.2.
+ *
+ * @note The result contains the 1-loop tadpole diagrams.  It is
+ * therefore not 1-particle irreducible (1PI).
+ *
+ * @param vev Higgs Vacuum expectation value (~ 246 GeV)
+ * @param Mt top quark pole mass
+ * @param mh MS-bar Higgs mass
+ * @param MW W pole mass
+ * @param MZ Z pole mass
+ * @param Q renormalization scale
+ *
+ * @return real part of 1-loop self-energy
+ */
+double self_energy_higgs_1loop_sm_SUSYHD(
+   double vev, double Mt, double mh, double MW, double MZ, double Q)
+{
+   using namespace std;
+
+   const double Pi = M_PI;
+
+   const double delta_lambda =
+      ((pow(mh,4) + pow(mh,2)*
+         (-6*pow(Mt,2) + 2*pow(MW,2) + pow(MZ,2)) -
+        8*(2*pow(MW,4) + pow(MZ,4)))/4. -
+     (3*pow(mh,2)*pow(MW,2)*QA0(mh,Q))/
+      (2.*(pow(mh,2) - pow(MW,2))) + 3*pow(mh,2)*QA0(Mt,Q) +
+     (pow(mh,2)*(-11 + (3*pow(mh,2))/
+           (pow(mh,2) - pow(MW,2)) -
+          (3*pow(MW,2))/(-pow(MW,2) + pow(MZ,2)))*QA0(MW,Q))/
+      2. + (pow(mh,2)*(7*pow(MW,2) - 4*pow(MZ,2))*QA0(MZ,Q))/
+      (2.*(-pow(MW,2) + pow(MZ,2))) +
+     (9*pow(mh,4)*QB0(mh,mh,mh,Q))/4. +
+     3*pow(Mt,2)*(pow(mh,2) - 4*pow(Mt,2))*QB0(mh,Mt,Mt,Q) +
+     ((pow(mh,4) - 4*pow(mh,2)*pow(MW,2) + 12*pow(MW,4))*
+        QB0(mh,MW,MW,Q))/2. +
+     ((pow(mh,4) - 4*pow(mh,2)*pow(MZ,2) + 12*pow(MZ,4))*
+      QB0(mh,MZ,MZ,Q))/4.)/(16.*pow(Pi,2)*pow(vev,4));
+
+   const double sigma = 2 * delta_lambda * vev * vev;
+
+   return sigma;
+}
+
+/**
+ * Standard Model Higgs 2-loop self-energy as used in SUSYHD 1.0.2.
+ *
+ * @note The result contains the 2-loop tadpole diagrams.  It is
+ * therefore not 1-particle irreducible (1PI).
+ *
+ * @param vev Higgs Vacuum expectation value (~ 246 GeV)
+ * @param Mt top quark pole mass
+ * @param Mh Higgs pole mass
+ * @param g3 strong gauge coupling at the top quark pole mass scale
+ *    \f$Q = M_t\f$
+ *
+ * @return real part of 2-loop self-energy
+ */
+double self_energy_higgs_2loop_sm_SUSYHD(
+   double vev, double Mt, double Mh, double g3)
+{
+   using namespace std;
+
+   const double Pi = M_PI;
+
+   const double delta_lambda_QCD = pow(g3,2)*(
+      -23.88 + 0.12*(-125 + Mh) - 0.64*(-173 + Mt))/(256.*pow(Pi,4));
+   const double delta_lambda_EW =
+      (-9.45 - 0.12*(-125 + Mh) - 0.21*(-173 + Mt))/(256.*pow(Pi,4));
+   const double delta_lambda = delta_lambda_QCD + delta_lambda_EW;
+
+   const double sigma = 2 * delta_lambda * vev * vev;
+
+   return sigma;
 }
 
 } // namespace flexiblesusy

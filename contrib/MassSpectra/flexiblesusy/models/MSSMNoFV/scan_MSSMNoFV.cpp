@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:54:14
+// File generated at Sat 27 Aug 2016 12:50:22
 
 #include "MSSMNoFV_input_parameters.hpp"
 #include "MSSMNoFV_spectrum_generator.hpp"
@@ -29,6 +29,8 @@
 
 #include <iostream>
 #include <cstring>
+
+#define INPUTPARAMETER(p) input.p
 
 namespace flexiblesusy {
 
@@ -198,8 +200,14 @@ int main(int argc, char* argv[])
    MSSMNoFV_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
-   softsusy::QedQcd oneset;
-   oneset.toMz();
+   softsusy::QedQcd qedqcd;
+
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
+   } catch (const std::string& s) {
+      ERROR(s);
+      return EXIT_FAILURE;
+   }
 
    MSSMNoFV_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
@@ -217,9 +225,10 @@ int main(int argc, char* argv[])
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
-      input.TanBeta = *it;
+      INPUTPARAMETER(TanBeta) = *it;
 
-      spectrum_generator.run(oneset, input);
+
+      spectrum_generator.run(qedqcd, input);
 
       const MSSMNoFV_slha<algorithm_type> model(spectrum_generator.get_model());
       const MSSMNoFV_physical& pole_masses = model.get_physical_slha();
@@ -229,7 +238,7 @@ int main(int argc, char* argv[])
       const bool error = problems.have_problem();
 
       cout << "  "
-           << std::setw(12) << std::left << input.TanBeta << ' '
+           << std::setw(12) << std::left << *it << ' '
            << std::setw(12) << std::left << higgs << ' '
            << std::setw(12) << std::left << error;
       if (error) {

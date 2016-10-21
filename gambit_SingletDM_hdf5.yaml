@@ -348,6 +348,14 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
+  # Ben: I don't know the details here, I just added this to resolve dependency issues so I could test the scalar singlet model
+  - capability: LHC_Higgs_LogLike
+    function: calc_HS_LHC_LogLike
+    dependencies:
+      - capability: HB_ModelParameters
+        function: SMHiggs_ModelParameters
+
+
 #########################
 # Logging setup
 #########################

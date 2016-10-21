@@ -16,15 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:54:17
+// File generated at Sat 27 Aug 2016 12:50:26
 
 #include "MSSMNoFVatMGUT_input_parameters.hpp"
+#include "MSSMNoFVatMGUT_observables.hpp"
 #include "MSSMNoFVatMGUT_spectrum_generator.hpp"
 #include "MSSMNoFVatMGUT_slha_io.hpp"
 
 #include "command_line_options.hpp"
 #include "lowe.h"
 #include "logger.hpp"
+#include "physical_input.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -193,8 +195,15 @@ int main(int argc, char* argv[])
    MSSMNoFVatMGUT_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
-   softsusy::QedQcd oneset;
-   oneset.toMz();
+   Physical_input physical_input;
+   softsusy::QedQcd qedqcd;
+
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
+   } catch (const std::string& s) {
+      ERROR(s);
+      return EXIT_FAILURE;
+   }
 
    MSSMNoFVatMGUT_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
@@ -207,7 +216,7 @@ int main(int argc, char* argv[])
    spectrum_generator.set_beta_loop_order(2);        // 2-loop
    spectrum_generator.set_threshold_corrections_loop_order(1); // 1-loop
 
-   spectrum_generator.run(oneset, input);
+   spectrum_generator.run(qedqcd, input);
 
    const int exit_code = spectrum_generator.get_exit_code();
    const MSSMNoFVatMGUT_slha<algorithm_type> model(spectrum_generator.get_model());
@@ -217,8 +226,10 @@ int main(int argc, char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
+   const MSSMNoFVatMGUT_observables observables(calculate_observables(model, qedqcd, physical_input));
+
    // SLHA output
-   SLHAea::Coll slhaea(MSSMNoFVatMGUT_slha_io::fill_slhaea(model, oneset, scales));
+   SLHAea::Coll slhaea(MSSMNoFVatMGUT_slha_io::fill_slhaea(model, qedqcd, scales, observables));
 
    std::cout << slhaea;
 
