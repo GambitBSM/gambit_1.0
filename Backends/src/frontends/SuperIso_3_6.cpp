@@ -106,8 +106,8 @@ BE_NAMESPACE
      C0b[7]+=Re_DeltaC7;      
      C0b[9]+=Re_DeltaC9;      
      C0b[10]+=Re_DeltaC10;    
-     CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
-     CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
+     CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
+     CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
 
      /*double BR =*/  BRBKstarll(2,0,byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
@@ -189,8 +189,8 @@ BE_NAMESPACE
 	C0b[7]+=Re_DeltaC7;
 	C0b[9]+=Re_DeltaC9;
 	C0b[10]+=Re_DeltaC10;
-	CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
-	CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
+	//CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
+	//CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
 	
 	//result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
@@ -267,8 +267,8 @@ BE_NAMESPACE
 	C0b[7]+=Re_DeltaC7;                   
 	C0b[9]+=Re_DeltaC9;                   
 	C0b[10]+=Re_DeltaC10;                 
-	CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1); 
-	CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2); 
+	CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1); 
+	CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2); 
 	
 	
 	result = Bsll_untag(flav,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param ,byVal(mu_b));
@@ -350,8 +350,8 @@ BE_NAMESPACE
 	C0b[7]+=Re_DeltaC7;                   
 	C0b[9]+=Re_DeltaC9;                   
 	C0b[10]+=Re_DeltaC10;                 
-	CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1); 
-	CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2); 
+	CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1); 
+	CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2); 
 
 	
 	result = Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
