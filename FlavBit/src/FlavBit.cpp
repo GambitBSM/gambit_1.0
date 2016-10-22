@@ -1105,6 +1105,8 @@ namespace Gambit
 	  C0b[7]+=Re_DeltaC7;
 	  C0b[9]+=Re_DeltaC9;
 	  C0b[10]+=Re_DeltaC10;
+	  CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);   
+	  CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);   
 
 	  result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 
@@ -1199,6 +1201,8 @@ namespace Gambit
 	  C0b[7]+=Re_DeltaC7;
 	  C0b[9]+=Re_DeltaC9;
 	  C0b[10]+=Re_DeltaC10;
+	  CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
+	  CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
 	  result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	}
