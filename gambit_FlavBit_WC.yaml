@@ -1,0 +1,75 @@
+Parameters:
+
+  WC:
+    Re_DeltaC7:
+       range: [-4, 4]
+       prior_type: flat
+    Im_DeltaC7: 0
+    Re_DeltaC9:  
+       range: [-4, 4]
+       prior_type: flat
+    Im_DeltaC9:  0
+    Re_DeltaC10:  
+       range: [-4, 4] 
+       prior_type: flat
+    Im_DeltaC10:  0
+    Re_DeltaCQ1:  0
+    Im_DeltaCQ1:  0
+    Re_DeltaCQ2:  0
+    Im_DeltaCQ2:  0
+
+        
+
+Priors:
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "gambit_output.txt"
+
+Scanner:
+
+  use_scanner: toy_mcmc
+
+  scanners:
+
+    toy_mcmc:
+      plugin: toy_mcmc
+      point_number: 2
+      like:  Likelihood
+
+
+ObsLikes:
+
+  - purpose:      Observable
+    capability:   bsgamma_WC
+
+
+#########################
+# Rule entries
+#########################
+
+Rules:
+
+- capability: SuperIso_modelinfo_WC
+  function: SI_fill_WC
+
+
+Logger:
+
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [FlavBit] : "FlavBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  default_output_path: "runs/gambit_FlavBit"
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+    use_old_routines: false
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
