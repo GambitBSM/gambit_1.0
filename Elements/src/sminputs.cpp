@@ -84,7 +84,7 @@ namespace Gambit
    }
 
    // Return a fresh SLHAea object containing the contents of this object.
-   SLHAstruct SMInputs::getSLHAea(bool) const
+   SLHAstruct SMInputs::getSLHAea() const
    {
       SLHAstruct slha;
       this->add_to_SLHAea(slha);
@@ -92,8 +92,8 @@ namespace Gambit
       return slha;
    }
 
-   // Add the contents of this object to an existing SLHAea object
-   void SMInputs::add_to_SLHAea(SLHAea::Coll& data,bool) const
+   // Add the contents of this object to an existing SLHAea object.
+   void SMInputs::add_to_SLHAea(SLHAea::Coll& data) const
    {
       // SMINPUTS block
       SLHAea_add(data,"SMINPUTS",1 , alphainv, "alpha^{-1}(mZ)^MSbar");

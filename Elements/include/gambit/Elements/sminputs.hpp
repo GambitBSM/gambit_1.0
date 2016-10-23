@@ -96,10 +96,10 @@ namespace Gambit
       double mW = mw_central_observed; // 24: W pole mass
 
       // Return a fresh SLHAea object containing the contents of this object.
-      SLHAstruct getSLHAea(bool = false) const;
+      SLHAstruct getSLHAea() const;
 
       // Add the contents of this object to an existing SLHAea object
-      void add_to_SLHAea(SLHAstruct& slha /*modify*/, bool = false) const;
+      void add_to_SLHAea(SLHAstruct& slha /*modify*/) const;
 
    };
 

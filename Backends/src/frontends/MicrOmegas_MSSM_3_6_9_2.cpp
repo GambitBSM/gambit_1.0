@@ -60,7 +60,8 @@ BE_INI_FUNCTION
         // Write out a SLHA file with a random file name;
         filename = "DarkBit" + std::to_string(Random::draw()) + std::to_string(Random::draw()) + "_" + std::to_string(rank) + ".slha";
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
-        SLHAstruct mySLHA = mySpec.getSLHAea();
+        SLHAstruct mySLHA = mySpec.getSLHAea(1);
+        //FIXME
 
         std::vector<double> mix_matrix_stop, mix_matrix_sbottom, mix_matrix_stau;
         std::string mass_es1, mass_es2;

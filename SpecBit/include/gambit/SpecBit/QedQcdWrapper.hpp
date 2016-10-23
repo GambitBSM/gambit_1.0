@@ -4,8 +4,8 @@
 ///
 ///  This class is used to wrap the QedQcd object used by SoftSUSY
 ///  and FlexibleSUSY in a Gambit SubSpectrum object. This is to enable
-///  access to the parameters of the SM defined as a low-energy effective theory 
-///  (as opposed to correspending information defined in a UV model). 
+///  access to the parameters of the SM defined as a low-energy effective theory
+///  (as opposed to correspending information defined in a UV model).
 ///  Parameters defined this way are often used as input to a physics calculator.
 ///
 ///  This is one of the simplest wrappers possible, so it is useful as a guide
@@ -18,12 +18,12 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Mar 
+///  \date 2015 Mar
 ///
 ///  *********************************************
 
@@ -40,34 +40,34 @@ namespace Gambit
 {
    namespace SpecBit
    {
-      class QedQcdWrapper;       
+      class QedQcdWrapper;
    }
 
    /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
    template <>
-   struct SpecTraits<SpecBit::QedQcdWrapper> 
+   struct SpecTraits<SpecBit::QedQcdWrapper>
    {
       static std::string name() { return "QedQcdWrapper"; }
       typedef SpectrumContents::SM Contents;
       typedef softsusy::QedQcd Model;
       typedef SMInputs         Input;
    };
-     
+
    namespace SpecBit
-   {   
-      class QedQcdWrapper : public Spec<QedQcdWrapper> 
+   {
+      class QedQcdWrapper : public Spec<QedQcdWrapper>
       {
          private:
             // Keep copies of Model and Input objects internally
             Model qedqcd;
             Input sminputs;
-   
+
          public:
             // Constructors/destructors
             QedQcdWrapper();
             QedQcdWrapper(const softsusy::QedQcd&, const SMInputs&);
             virtual ~QedQcdWrapper();        /***/
-   
+
             // Functions to interface Model and Input objects with the base 'Spec' class
             Model& get_Model() { return qedqcd; }
             Input& get_Input() { return sminputs; }
@@ -75,15 +75,15 @@ namespace Gambit
             const Input& get_Input() const { return sminputs; }
 
             virtual int get_numbers_stable_particles() const;  /***/
-   
+
             /// Add QEDQCD information to an SLHAea object
-            virtual void add_to_SLHAea(SLHAstruct& slha, bool = false) const;
+            virtual void add_to_SLHAea(int, SLHAstruct& slha) const;
 
             /// RunningPars interface overrides
             virtual double GetScale() const;      /***/
             virtual void SetScale(double scale);  /***/
             virtual void RunToScaleOverride(double);      /***/
-   
+
             /// Limits for running
             /// @{
             double hardup; // Be careful of order in constructor!
@@ -95,13 +95,13 @@ namespace Gambit
             virtual double soft_lower() const {return softlow;}/*O*/
             virtual double hard_lower() const {return hardlow;}/*O*/
             /// @}
-   
+
             /// Map fillers
             static GetterMaps fill_getter_maps(); /*O*/
             static SetterMaps fill_setter_maps(); /*O*/
-    
+
       };
- 
+
    } // end SpecBit namespace
 } // end Gambit namespace
 

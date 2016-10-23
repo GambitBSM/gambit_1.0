@@ -111,7 +111,7 @@ namespace Gambit
             virtual std::string AccessError(std::string state) const;
 
             // Fill an SLHAea object with spectrum information
-            virtual void add_to_SLHAea(SLHAstruct& slha, bool include_SLHA1_blocks = false) const;
+            virtual void add_to_SLHAea(int slha_version, SLHAstruct& slha) const;
 
             /// TODO: Need to implement this properly...
             /// Copy low energy spectrum information from another model object
@@ -152,9 +152,9 @@ namespace Gambit
      /// This struct contains all the strings we will use for the MSSM
      /// in the maps.  this allows us to implement the maps in
      /// a safer way if we choose , while still giving the option of
-     /// flexibility.  
-     
-     struct MSSM_strs 
+     /// flexibility.
+
+     struct MSSM_strs
      {
        MSSM_strs();
        /// some strings are used in multiple masses
@@ -163,13 +163,13 @@ namespace Gambit
        static const str BMu ;
        static const str mHd2;
        static const str mHu2;
-       /// dimension 2, 2 indices 
+       /// dimension 2, 2 indices
        static const str mq2;
        static const str ml2;
        static const str md2;
        static const str mu2;
        static const str me2;
-       /// dimension 1, no index 
+       /// dimension 1, no index
        static const str M1;
        static const str M2;
        static const str M3;
@@ -183,14 +183,14 @@ namespace Gambit
        static const str ad;
        static const str ae;
        static const str au;
-       /// dimension 0, no index 
+       /// dimension 0, no index
        static const str g1;
        static const str g2;
        static const str g3;
-       /// dimension 0, no index, special map  
+       /// dimension 0, no index, special map
        static const str tanbeta;
        static const str sinW2;
-       /// dimension 1, no index, special map  
+       /// dimension 1, no index, special map
        static const str mA2;
        /// dimension 0, 2 indices
        static const str Yd;
@@ -212,24 +212,24 @@ namespace Gambit
 
 
        /// dimension 1, 1 index , special for setters
-       static const str su     ; 
-       static const str sd	; 
-       static const str se	; 
-       static const str snu	; 
-       static const str chiplus; 
-       static const str chi0   ; 
-       static const str h0	; 
-       static const str subar  ; 
-       static const str sdbar  ; 
-       static const str seplus ; 
-       static const str snubar ; 
+       static const str su     ;
+       static const str sd	;
+       static const str se	;
+       static const str snu	;
+       static const str chiplus;
+       static const str chi0   ;
+       static const str h0	;
+       static const str subar  ;
+       static const str sdbar  ;
+       static const str seplus ;
+       static const str snubar ;
        static const str chiminus;
 
        /// @{ "Metadata" vectors
        // TODO: replace with a more integrated system
 
        /// @{ Pole_Mass tagged entries
-       static const std::vector<str> pole_mass_strs; 
+       static const std::vector<str> pole_mass_strs;
        static const std::vector<str> pole_mass_pred;
        static const std::vector<str> pole_mass_strs_1;
        static const std::vector<str> pole_mass_strs_1_6;

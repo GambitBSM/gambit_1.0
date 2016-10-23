@@ -555,7 +555,7 @@ namespace Gambit {
         if ( runtime > 30. )
         {
           std::cout << "Duration [ms]: " << runtime << std::endl;
-//          SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea();
+//          SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea(2);
 //          std::ofstream ofs("RelicDensity_debug.slha");
 //          ofs << mySLHA;
 //          ofs.close();

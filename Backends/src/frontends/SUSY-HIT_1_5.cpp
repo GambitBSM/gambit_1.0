@@ -381,8 +381,9 @@ BE_INI_FUNCTION
     //  backend_error().raise(LOCAL_INFO, "MSSM_spectrum dependency is not at the SUSY scale.");
     //}
 
-    slha = (*Dep::MSSM_spectrum).getSLHAea();
-    const SubSpectrum& mssm = (*Dep::MSSM_spectrum).get_HE();
+    //FIXME
+    slha = Dep::MSSM_spectrum->getSLHAea(2);
+    const SubSpectrum& mssm = Dep::MSSM_spectrum->get_HE();
 
     // Retrieve the tolerances for off-diagonal sfermion mixing
     const static double gtol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");

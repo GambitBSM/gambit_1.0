@@ -217,8 +217,8 @@ namespace Gambit
         slha = Dep::decay_rates->getSLHAea();
         if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
         {
-          // MSSM-specific
-          spectrum = (*Dep::MSSM_spectrum).getSLHAea();
+          // MSSM-specific.  SLHAea in SLHA2 format, please.
+          spectrum = Dep::MSSM_spectrum->getSLHAea(2);
           SLHAea::Block block("MODSEL");
           block.push_back("BLOCK MODSEL              # Model selection");
           SLHAea::Line line;

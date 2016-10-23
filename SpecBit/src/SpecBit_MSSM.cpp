@@ -181,7 +181,7 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the
       // one-stop-shop for all spectrum information, including the model interface object.
-      MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
+      MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.5.1");
 
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns on the 'allow_new' option for the override setter, which allows
@@ -489,12 +489,8 @@ namespace Gambit
       // Only allow neutralino LSPs.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
-      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename,true);
-      }
+      // Drop SLHA files if requested
+      result.drop_SLHAs_if_requested(myPipe::runOptions, "GAMBIT_unimproved_spectrum");
 
     }
 
@@ -509,12 +505,7 @@ namespace Gambit
       fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
-      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file, including legacy SLHA1 blocks.
-        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename,true);
-      }
+      result.drop_SLHAs_if_requested(myPipe::runOptions, "GAMBIT_unimproved_spectrum");
     }
 
     // Runs MSSM spectrum generator with GUT scale input
@@ -527,12 +518,7 @@ namespace Gambit
       fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
-      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename);
-      }
+      result.drop_SLHAs_if_requested(myPipe::runOptions, "GAMBIT_unimproved_spectrum");
     }
 
     void get_GUTMSSMB_spectrum (Spectrum &/*result*/)
@@ -553,10 +539,16 @@ namespace Gambit
       result = &matched_spectra.get_LE();
     }
 
-    /// Extract an SLHAea version of the spectrum contained in a Spectrum object
-    void get_MSSM_spectrum_as_SLHAea (SLHAstruct &result)
+    /// Extract an SLHAea version of the spectrum contained in a Spectrum object, in SLHA1 format
+    void get_MSSM_spectrum_as_SLHAea_SLHA1(SLHAstruct &result)
     {
-      result = (*Pipes::get_MSSM_spectrum_as_SLHAea::Dep::unimproved_MSSM_spectrum).getSLHAea();
+      result = Pipes::get_MSSM_spectrum_as_SLHAea_SLHA1::Dep::unimproved_MSSM_spectrum->getSLHAea(1);
+    }
+
+    /// Extract an SLHAea version of the spectrum contained in a Spectrum object, in SLHA2 format
+    void get_MSSM_spectrum_as_SLHAea_SLHA2(SLHAstruct &result)
+    {
+      result = Pipes::get_MSSM_spectrum_as_SLHAea_SLHA2::Dep::unimproved_MSSM_spectrum->getSLHAea(2);
     }
 
     /// Get an MSSMSpectrum object from an SLHA file

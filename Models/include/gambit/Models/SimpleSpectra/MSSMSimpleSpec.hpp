@@ -5,12 +5,16 @@
 //
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Apr 
+///  \date 2015 Apr
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2016 Oct
 ///
 ///  *********************************************
 
@@ -34,17 +38,17 @@ namespace Gambit
            MSSMea(const SLHAstruct& input);
            /// @}
 
-           /// @{ Getters for MSSM information 
-           double get_Mu()  const; 
-           double get_BMu() const; 
-           double get_vd()  const; 
-           double get_vu()  const; 
+           /// @{ Getters for MSSM information
+           double get_Mu()  const;
+           double get_BMu() const;
+           double get_vd()  const;
+           double get_vu()  const;
 
-           double get_MassB () const; 
-           double get_MassWB() const; 
-           double get_MassG () const; 
-           double get_mHd2()   const;  
-           double get_mHu2()   const;  
+           double get_MassB () const;
+           double get_MassWB() const;
+           double get_MassG () const;
+           double get_mHd2()   const;
+           double get_mHu2()   const;
 
            double get_mq2(int i, int j) const;
            double get_ml2(int i, int j) const;
@@ -56,16 +60,16 @@ namespace Gambit
            double get_TYu(int i, int j) const;
            double get_TYe(int i, int j) const;
 
-           double get_Yd(int i, int j) const; 
-           double get_Yu(int i, int j) const; 
-           double get_Ye(int i, int j) const; 
-   
+           double get_Yd(int i, int j) const;
+           double get_Yu(int i, int j) const;
+           double get_Ye(int i, int j) const;
+
            double get_g1() const;
            double get_g2() const;
            double get_g3() const;
            double get_tanbeta() const;
            double get_sinthW2_DRbar() const;
-  
+
            double get_MGlu_pole() const;
 
            double get_Mhh_pole_slha(int i) const;
@@ -78,7 +82,7 @@ namespace Gambit
            double get_MSe_pole_slha(int i) const;
            double get_MSv_pole_slha(int i) const;
            double get_MChi_pole_slha(int i) const;
-           
+
            // Pole Mixings
            double get_ZD_pole_slha(int i, int j) const;
            double get_ZU_pole_slha(int i, int j) const;
@@ -97,7 +101,7 @@ namespace Gambit
 
       /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
       template <>
-      struct SpecTraits<MSSMSimpleSpec> 
+      struct SpecTraits<MSSMSimpleSpec>
       {
           static std::string name() { return "MSSMSimpleSpec"; }
           typedef SpectrumContents::MSSM Contents;
@@ -106,7 +110,7 @@ namespace Gambit
       };
 
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class MSSMSimpleSpec : public SLHASimpleSpec<MSSMSimpleSpec> 
+      class MSSMSimpleSpec : public SLHASimpleSpec<MSSMSimpleSpec>
       {
          private:
             /// Set pole mass uncertainties
@@ -125,10 +129,10 @@ namespace Gambit
             virtual ~MSSMSimpleSpec() {};
 
             virtual int get_index_offset() const;
-            virtual SLHAstruct getSLHAea(bool = false) const;
-            virtual void add_to_SLHAea(SLHAea::Coll&, bool = false) const; 
+            virtual SLHAstruct getSLHAea(int) const;
+            virtual void add_to_SLHAea(int, SLHAea::Coll&) const;
             virtual const std::map<int, int>& PDG_translator() const;
- 
+
             /// Map fillers
             /// Used to initialise maps in Spec class, accessed via SubSpectrum interface class
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
