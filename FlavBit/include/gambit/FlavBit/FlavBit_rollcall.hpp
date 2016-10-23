@@ -607,6 +607,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY b2sgamma_LL_WC
+  START_CAPABILITY
+    #define FUNCTION b2sgamma_likelihood_WC
+    START_FUNCTION(double)
+    DEPENDENCY(bsgamma_WC, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY b2sll_M
   START_CAPABILITY
     #define FUNCTION b2sll_measurements
@@ -620,6 +628,20 @@ START_MODULE
    #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY b2sll_M_WC
+  START_CAPABILITY
+    #define FUNCTION b2sll_measurements_WC
+    START_FUNCTION(FlavBit::Flav_measurement_assym)
+    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
+    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
+    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
+    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
+    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
+    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
+   #undef FUNCTION
+  #undef CAPABILITY
+
+
   #define CAPABILITY b2sll_LL
   START_CAPABILITY
     #define FUNCTION b2sll_likelihood
@@ -627,6 +649,15 @@ START_MODULE
     DEPENDENCY(b2sll_M, FlavBit::Flav_measurement_assym)
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY b2sll_LL_WC
+  START_CAPABILITY
+    #define FUNCTION b2sll_likelihood_WC
+    START_FUNCTION(double)
+    DEPENDENCY(b2sll_M_WC, FlavBit::Flav_measurement_assym)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   #define CAPABILITY b2ll_LL
   START_CAPABILITY
@@ -644,6 +675,25 @@ START_MODULE
     DEPENDENCY(Bdmumu, double )
    #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY b2ll_LL_WC
+  START_CAPABILITY
+    #define FUNCTION b2ll_likelihood_WC
+    START_FUNCTION(double)
+    DEPENDENCY(b2ll_M_WC, FlavBit::Flav_measurement_assym)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY b2ll_M_WC
+  START_CAPABILITY
+    #define FUNCTION b2ll_measurements_WC
+    START_FUNCTION(FlavBit::Flav_measurement_assym)
+    DEPENDENCY(Bsmumu_untag_WC, double)
+    DEPENDENCY(Bdmumu_WC, double )
+   #undef FUNCTION
+  #undef CAPABILITY
+
+
 
   #define CAPABILITY SL_M
   START_CAPABILITY

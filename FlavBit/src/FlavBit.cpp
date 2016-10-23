@@ -1865,6 +1865,177 @@ namespace Gambit
 
     }
 
+
+   // *************************************************
+    /// reading measurements for b->sll
+    // *************************************************
+
+    void b2sll_measurements_WC(Flav_measurement_assym &measurement_assym)
+    {
+      using namespace Pipes::b2sll_measurements_WC;
+
+      if(flav_debug)  cout<<"Starting b2sll_measurements function"<<endl;
+
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(flav_debug);
+      if(flav_debug)  cout<<"init Flav Reader the B2sll "<<endl;
+      vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
+      vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
+      vector<string> observables;
+      for(unsigned i=0;i<observablesq.size();++i)
+      {
+        for(unsigned j=0;j<observablesn.size();++j)
+        {
+	        observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
+        }
+      }
+
+      for(unsigned i=0;i<observables.size();++i)
+      {
+        red.read_yaml_mesurement("flav_data.yaml", observables[i]);
+      }
+
+      red.create_global_corr();
+      //cov matirces
+
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
+
+      // We assert that the experiments and the observables are the same size
+      assert(! ( M_exp.size1() != observables.size()  ));
+
+      Flav_KstarMuMu_obs obs_out_11_25= *Dep::BRBKstarmumu_11_25_WC;
+      Flav_KstarMuMu_obs obs_out_25_40= *Dep::BRBKstarmumu_25_40_WC;
+      Flav_KstarMuMu_obs obs_out_40_60= *Dep::BRBKstarmumu_40_60_WC;
+      Flav_KstarMuMu_obs obs_out_60_80= *Dep::BRBKstarmumu_60_80_WC;
+      Flav_KstarMuMu_obs obs_out_15_17= *Dep::BRBKstarmumu_15_17_WC;
+      Flav_KstarMuMu_obs obs_out_17_19= *Dep::BRBKstarmumu_17_19_WC;
+
+      Kstarmumu_theory_errr th_reader;
+      boost::numeric::ublas::matrix<double> M_cov_th = th_reader.get_cov_theory(observables);  //(M_exp.size1(),M_exp.size2());
+      boost::numeric::ublas::matrix<double> M_th(M_cov_th.size1(),1);
+      M_th(0,0)=obs_out_11_25.FL;
+      M_th(1,0)=obs_out_11_25.AFB;
+      M_th(2,0)=obs_out_11_25.S3;
+      M_th(3,0)=obs_out_11_25.S4;
+      M_th(4,0)=obs_out_11_25.S5;
+      M_th(5,0)=obs_out_11_25.S7;
+      M_th(6,0)=obs_out_11_25.S8;
+      M_th(7,0)=obs_out_11_25.S9;
+
+      M_th(8,0)=obs_out_25_40.FL;
+      M_th(9,0)=obs_out_25_40.AFB;
+      M_th(10,0)=obs_out_25_40.S3;
+      M_th(11,0)=obs_out_25_40.S4;
+      M_th(12,0)=obs_out_25_40.S5;
+      M_th(13,0)=obs_out_25_40.S7;
+      M_th(14,0)=obs_out_25_40.S8;
+      M_th(15,0)=obs_out_25_40.S9;
+
+      M_th(16,0)=obs_out_40_60.FL;
+      M_th(17,0)=obs_out_40_60.AFB;
+      M_th(18,0)=obs_out_40_60.S3;
+      M_th(19,0)=obs_out_40_60.S4;
+      M_th(20,0)=obs_out_40_60.S5;
+      M_th(21,0)=obs_out_40_60.S7;
+      M_th(22,0)=obs_out_40_60.S8;
+      M_th(23,0)=obs_out_40_60.S9;
+
+      M_th(24,0)=obs_out_60_80.FL;
+      M_th(25,0)=obs_out_60_80.AFB;
+      M_th(26,0)=obs_out_60_80.S3;
+      M_th(27,0)=obs_out_60_80.S4;
+      M_th(28,0)=obs_out_60_80.S5;
+      M_th(29,0)=obs_out_60_80.S7;
+      M_th(30,0)=obs_out_60_80.S8;
+      M_th(31,0)=obs_out_60_80.S9;
+
+      M_th(32,0)=obs_out_15_17.FL;
+      M_th(33,0)=obs_out_15_17.AFB;
+      M_th(34,0)=obs_out_15_17.S3;
+      M_th(35,0)=obs_out_15_17.S4;
+      M_th(36,0)=obs_out_15_17.S5;
+      M_th(37,0)=obs_out_15_17.S7;
+      M_th(38,0)=obs_out_15_17.S8;
+      M_th(39,0)=obs_out_15_17.S9;
+
+      M_th(40,0)=obs_out_17_19.FL;
+      M_th(41,0)=obs_out_17_19.AFB;
+      M_th(42,0)=obs_out_17_19.S3;
+      M_th(43,0)=obs_out_17_19.S4;
+      M_th(44,0)=obs_out_17_19.S5;
+      M_th(45,0)=obs_out_17_19.S7;
+      M_th(46,0)=obs_out_17_19.S8;
+      M_th(47,0)=obs_out_17_19.S9;
+
+      measurement_assym.LL_name="b2ll_likelihood";
+
+      measurement_assym.value_exp=M_exp;
+      measurement_assym.cov_exp=M_cov;
+
+      measurement_assym.value_th=M_th;
+      measurement_assym.cov_th=M_cov_th;
+
+      int n_experiments=M_cov_th.size1();
+      vector<double> diff;
+      for(int i=0;i<n_experiments;++i)
+      {
+        diff.push_back(M_exp(i,0)-M_th(i,0));
+      }
+
+      measurement_assym.diff=diff;
+      measurement_assym.dim=n_experiments;
+
+      if(flav_debug)  cout<<"Finished b2sll_measurements function"<<endl;
+    }
+
+    // *************************************************
+    /// likelihood for b->sll
+    // *************************************************
+
+
+    void b2sll_likelihood_WC(double &result)
+    {
+      using namespace Pipes::b2sll_likelihood_WC;
+
+      if(flav_debug)  cout<<"Starting b2sll_likelihood"<<endl;
+
+      // Get experimental measurements
+      Flav_measurement_assym measurement_assym=*Dep::b2sll_M_WC;
+
+      // Get experimental covariance
+      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+
+      // Add theory covariance
+      cov+=measurement_assym.cov_th;
+
+      //calculating a diff
+      vector<double> diff;
+      diff=measurement_assym.diff;
+
+      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+      InvertMatrix(cov, cov_inv);
+
+      double Chi2=0;
+
+      for(int i=0; i < measurement_assym.dim; ++i)
+      {
+        for(int j=0; j<measurement_assym.dim; ++j)
+        {
+          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+        }
+      }
+
+      Chi2=Chi2/measurement_assym.dim;
+      result=-0.5*Chi2;
+
+      if(flav_debug)  cout<<"Finished b2sll_likelihood"<<endl;
+      if(flav_debug_LL) cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
+
+    }
+
+
     // *************************************************
     /// measurement for b->s gamma
     // *************************************************
@@ -1874,6 +2045,41 @@ namespace Gambit
       if (flav_debug) cout<<"Starting b2sgamma_measurements"<<endl;
 
       double theory_prediction= *Dep::bsgamma;
+
+      if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
+
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(flav_debug);
+
+      if(flav_debug) cout<<"Inited Flav reader"<<endl;
+      red.read_yaml_mesurement("flav_data.yaml", "BR_b2sgamma");
+
+      red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+      boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
+
+      if (flav_debug) cout<<"Experiment: "<<M_exp<<" "<<sqrt(M_cov(0,0))<<" "<<th_err<<endl;
+
+      double exp_meas=M_exp(0,0);
+      double exp_b2sgamma_err=sqrt(M_cov(0,0));
+      double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
+
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+
+      result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
+
+    }
+    // *************************************************
+    /// measurement for b->s gamma WC
+    // *************************************************
+    void b2sgamma_likelihood_WC(double &result)
+    {
+      using namespace Pipes::b2sgamma_likelihood_WC;
+      if (flav_debug) cout<<"Starting b2sgamma_measurements"<<endl;
+
+      double theory_prediction= *Dep::bsgamma_WC;
 
       if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
 
@@ -2016,6 +2222,123 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
+ // *************************************************
+    /// measurement for b->mumu WC
+    // *************************************************
+    void b2ll_measurements_WC(Flav_measurement_assym &measurement_assym)
+    {
+      using namespace Pipes::b2ll_measurements_WC;
+
+      if(flav_debug)  cout<<"Starting b2ll_measurements WC"<<endl;
+
+      // experimental measurement
+      //Bsmumu
+
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(flav_debug);
+
+      if(flav_debug) cout<<"Initiated Flav reader"<<endl;
+      red.read_yaml_mesurement("flav_data.yaml", "BR_Bs2mumu");
+      red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
+      if (flav_debug) cout<<"Finish reading b->mumu"<<endl;
+
+      red.create_global_corr();
+
+      boost::numeric::ublas::matrix<double> th_err = red.get_th_err();
+
+      double theory_bs2mumu=*Dep::Bsmumu_untag_WC;
+      double theory_bd2mumu=*Dep::Bdmumu_WC;
+
+      // Naliza doesn't provide the errors, need to take them from paper
+      double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
+      double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
+
+      // we have everything, correlation
+
+      boost::numeric::ublas::matrix<double> M_cov_th(2,2);
+      M_cov_th(0,0)=theory_bs2mumu_error*theory_bs2mumu_error;
+      M_cov_th(0,1)=0.;
+      M_cov_th(1,0)=0.;
+      M_cov_th(1,1)=theory_bd2mumu_error*theory_bd2mumu_error;
+
+      boost::numeric::ublas::matrix<double> M_th(2,1);
+
+      M_th(0,0)=theory_bs2mumu;
+      M_th(1,0)=theory_bd2mumu;
+
+      // #########################
+
+      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
+
+      measurement_assym.LL_name="b2ll_likelihood";
+
+      measurement_assym.value_exp=M_exp;
+      measurement_assym.cov_exp=M_cov;
+
+      measurement_assym.value_th=M_th;
+      measurement_assym.cov_th=M_cov_th;
+
+      vector<double> diff;
+
+      for(int i=0;i<2;++i)
+      {
+        diff.push_back(M_exp(i,0)-M_th(i,0));
+      }
+      measurement_assym.diff=diff;
+      measurement_assym.dim=2;
+
+      if(flav_debug)  cout<<"Finished b2ll_measurements"<<endl;
+
+    }
+
+    // *************************************************
+    /// likelihood for b->mumu
+    // *************************************************
+
+
+    void b2ll_likelihood_WC(double &result)
+    {
+      using namespace Pipes::b2ll_likelihood_WC;
+
+      if(flav_debug)  cout<<"Starting b2ll_likelihood"<<endl;
+      result=0.;
+      if(flav_debug_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
+
+      Flav_measurement_assym measurement_assym = *Dep::b2ll_M_WC;
+
+      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+
+      // adding theory and experimenta covariance
+      cov+=measurement_assym.cov_th;
+
+      //calculating a diff
+      vector<double> diff;
+      diff=measurement_assym.diff;
+
+      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+      InvertMatrix(cov, cov_inv);
+
+      // calculating the chi2
+      double Chi2=0;
+
+      for(int i=0; i < measurement_assym.dim; ++i)
+      {
+        for(int j=0; j<measurement_assym.dim; ++j)
+        {
+          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+        }
+      }
+
+      Chi2=Chi2/measurement_assym.dim;
+      result=-0.5*Chi2;
+
+      if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
+      if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
+
+    }
+
+
 
     // *************************************************
     /// measurement Semileptonic B decays
