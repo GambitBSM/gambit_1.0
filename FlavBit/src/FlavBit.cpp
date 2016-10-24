@@ -1105,8 +1105,8 @@ namespace Gambit
 	  C0b[7]+=Re_DeltaC7;
 	  C0b[9]+=Re_DeltaC9;
 	  C0b[10]+=Re_DeltaC10;
-	  CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);   
-	  CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);   
+	  CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
+	  CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
 	  result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 
@@ -1421,6 +1421,125 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
     }
+    // *************************************************
+    /// Getting the observables 1.1-2.5 GetV
+    // *************************************************
+
+    void SI_BRBKstarmumu_11_25_FL_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_FL_WC;
+       if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_11_25_S3_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S3_WC;
+       if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_11_25_S4_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S4_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_11_25_S5_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S5_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_11_25_AFB_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_AFB_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_11_25_S7_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S7_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_11_25_S8_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S8_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_11_25_S9_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S9_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.S9;
+    }
+
+
+    void SI_BRBKstarmumu_11_25_FL( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_FL;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_11_25_S3( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S3;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_11_25_S4( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S4;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_11_25_S5( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S5;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_11_25_AFB( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_AFB;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_11_25_S7( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S7;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_11_25_S8( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S8;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_11_25_S9( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_S9;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.S9;
+    }
+    
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV
@@ -1440,7 +1559,7 @@ namespace Gambit
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
-
+    
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV  WC
@@ -1459,6 +1578,124 @@ namespace Gambit
       result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40 WC"<<endl;
+    }
+    // *************************************************
+    /// Getting the observables 2.5 - 4.0 GetV
+    // *************************************************
+
+    void SI_BRBKstarmumu_25_40_FL_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_FL_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_25_40_S3_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S3_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_25_40_S4_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S4_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_25_40_S5_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S5_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_25_40_AFB_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_AFB_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_25_40_S7_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S7_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_25_40_S8_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S8_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_25_40_S9_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S9_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.S9;
+    }
+
+
+    void SI_BRBKstarmumu_25_40_FL( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_FL;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_25_40_S3( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S3;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_25_40_S4( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S4;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_25_40_S5( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S5;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_25_40_AFB( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_AFB;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_25_40_S7( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S7;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_25_40_S8( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S8;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_25_40_S9( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_S9;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.S9;
     }
 
 
@@ -1497,7 +1734,125 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40 WC"<<endl;
 
     }
+    // *************************************************
+    /// Getting the observables 2.5 - 4.0 GetV
+    // *************************************************
+    void SI_BRBKstarmumu_40_60_FL_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_FL_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_40_60_S3_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S3_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_40_60_S4_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S4_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_40_60_S5_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S5_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_40_60_AFB_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_AFB_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_40_60_S7_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S7_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_40_60_S8_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S8_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_40_60_S9_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S9_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.S9;
+    }
 
+
+    void SI_BRBKstarmumu_40_60_FL( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_FL;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_40_60_S3( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S3;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_40_60_S4( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S4;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_40_60_S5( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S5;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_40_60_AFB( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_AFB;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_40_60_S7( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S7;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_40_60_S8( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S8;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_40_60_S9( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_S9;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.S9;
+    }
+    
+    
     // *************************************************
     /// Calculating B-> K* mu mu observables in 6.0-8.0 GeV
     // *************************************************
@@ -1529,6 +1884,124 @@ namespace Gambit
       result=BEreq::BRBKstarmumu_CONV_WC(&param, byVal(q2min), byVal(q2max) );
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80 WC"<<endl;
     }
+
+
+
+    void SI_BRBKstarmumu_60_80_FL_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_FL_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_60_80_S3_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S3_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_60_80_S4_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S4_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_60_80_S5_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S5_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_60_80_AFB_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_AFB_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_60_80_S7_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S7_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_60_80_S8_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S8_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_60_80_S9_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S9_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.S9;
+    }
+
+
+    void SI_BRBKstarmumu_60_80_FL( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_FL;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_60_80_S3( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S3;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_60_80_S4( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S4;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_60_80_S5( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S5;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_60_80_AFB( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_AFB;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_60_80_S7( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S7;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_60_80_S8( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S8;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_60_80_S9( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_S9;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.S9;
+    }
+
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 15.0-17.0 GeV
@@ -1565,7 +2038,123 @@ namespace Gambit
 
     }
 
+    
 
+    void SI_BRBKstarmumu_15_17_FL_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_FL_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_15_17_S3_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S3_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_15_17_S4_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S4_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_15_17_S5_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S5_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_15_17_AFB_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_AFB_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_15_17_S7_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S7_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_15_17_S8_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S8_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_15_17_S9_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S9_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.S9;
+    }
+
+
+    void SI_BRBKstarmumu_15_17_FL( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_FL;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_15_17_S3( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S3;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_15_17_S4( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S4;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_15_17_S5( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S5;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_15_17_AFB( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_AFB;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_15_17_S7( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S7;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_15_17_S8( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S8;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_15_17_S9( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_S9;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.S9;
+    }
+    
     // *************************************************
     /// Calculating B-> K* mu mu observables in 17.0-19.0 GeV
     // *************************************************
@@ -1599,6 +2188,122 @@ namespace Gambit
 
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 WC"<<endl;
     }
+    
+    void SI_BRBKstarmumu_17_19_FL_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_FL_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_17_19_S3_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S3_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_17_19_S4_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S4_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_17_19_S5_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S5_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_17_19_AFB_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_AFB_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_17_19_S7_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S7_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_17_19_S8_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S8_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_17_19_S9_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S9_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.S9;
+    }
+
+
+    void SI_BRBKstarmumu_17_19_FL( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_FL;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 FL WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.FL;
+    }
+    void SI_BRBKstarmumu_17_19_S3( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S3;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S3 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.S3;
+    }
+    void SI_BRBKstarmumu_17_19_S4( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S4;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S4 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.S4;
+    }
+    void SI_BRBKstarmumu_17_19_S5( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S5;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S5 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.S5;
+    }
+    void SI_BRBKstarmumu_17_19_AFB( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_AFB;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 AFB WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.AFB;
+    }
+    void SI_BRBKstarmumu_17_19_S7( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S7;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S7 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.S7;
+    }
+    void SI_BRBKstarmumu_17_19_S8( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S8;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S8 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.S8;
+    }
+    void SI_BRBKstarmumu_17_19_S9( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_S9;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S9 WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.S9;
+    }
+    
 
 
     // *************************************************
