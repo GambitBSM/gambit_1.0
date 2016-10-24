@@ -11,12 +11,12 @@ Parameters:
          range: [-4, 4]
          prior_type: flat
       Im_DeltaC9:  0
-      Re_DeltaC10:
-         range: [-4, 4]
-         prior_type: flat
+      Re_DeltaC10: 0
+#         range: [-4, 4]
+#         prior_type: flat
       Im_DeltaC10:  0
       Re_DeltaCQ1:  0
-      Im_DeltaCQ1:  0	
+      Im_DeltaCQ1:  0
       Re_DeltaCQ2:  0
       Im_DeltaCQ2:  0
 
@@ -53,6 +53,85 @@ Scanner:
       verbosity: 1
 
 ObsLikes:
+
+    - purpose:      Observable
+      capability:   bsgamma_WC
+    - purpose:      Observable
+      capability:   Bsmumu_untag_WC
+    - purpose:      Observable
+      capability:   Bdmumu_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_FL_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_S3_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_S4_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_AFB_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_S5_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_S7_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_S8_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_11_25_S9_WC
+
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_FL_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_S3_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_S4_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_AFB_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_S5_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_S7_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_S8_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_25_40_S9_WC
+
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_FL_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_S3_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_S4_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_AFB_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_S5_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_S7_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_S8_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_40_60_S9_WC
+
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_FL_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_S3_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_S4_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_AFB_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_S5_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_S7_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_S8_WC
+    - purpose:      Observable
+      capability:   BRBKstarmumu_60_80_S9_WC
+
+
+
+
+
 
     # Flavour physics likelihoods
     - purpose:    LogLike
