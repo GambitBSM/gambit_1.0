@@ -57,7 +57,7 @@ BE_INI_FUNCTION
 
     if (ModelInUse("MSSM63atQ"))
     {
-        // Write out an SLHA1 file
+        // Write out an SLHA1 file, as required by Micromegas
         filename = "DarkBit_to_MicrOmegas_" + std::to_string(rank) + ".slha";
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
         SLHAstruct mySLHA = mySpec.getSLHAea(1);
