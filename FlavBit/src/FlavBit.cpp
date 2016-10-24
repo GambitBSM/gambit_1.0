@@ -1425,6 +1425,14 @@ namespace Gambit
     /// Getting the observables 1.1-2.5 GetV
     // *************************************************
 
+    void SI_BRBKstarmumu_11_25_BR_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_BR_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
+      result=res.BR;
+    }
+
     void SI_BRBKstarmumu_11_25_FL_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_FL_WC;
@@ -1482,6 +1490,13 @@ namespace Gambit
       result=res.S9;
     }
 
+    void SI_BRBKstarmumu_11_25_BR( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_11_25_BR;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
+      result=res.BR;
+    }
 
     void SI_BRBKstarmumu_11_25_FL( double &result)
     {
@@ -1539,7 +1554,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
       result=res.S9;
     }
-    
+
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV
@@ -1559,7 +1574,7 @@ namespace Gambit
 
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
-    
+
 
     // *************************************************
     /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV  WC
@@ -1582,6 +1597,14 @@ namespace Gambit
     // *************************************************
     /// Getting the observables 2.5 - 4.0 GetV
     // *************************************************
+
+    void SI_BRBKstarmumu_25_40_BR_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_BR_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
+      result=res.BR;
+    }
 
     void SI_BRBKstarmumu_25_40_FL_WC( double &result)
     {
@@ -1640,7 +1663,13 @@ namespace Gambit
       result=res.S9;
     }
 
-
+    void SI_BRBKstarmumu_25_40_BR( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40_BR;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_25_40_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_FL;
@@ -1737,6 +1766,14 @@ namespace Gambit
     // *************************************************
     /// Getting the observables 2.5 - 4.0 GetV
     // *************************************************
+
+    void SI_BRBKstarmumu_40_60_BR_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_BR_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_40_60_FL_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_FL_WC;
@@ -1794,7 +1831,13 @@ namespace Gambit
       result=res.S9;
     }
 
-
+    void SI_BRBKstarmumu_40_60_BR( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60_BR;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_40_60_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_FL;
@@ -1851,8 +1894,8 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
       result=res.S9;
     }
-    
-    
+
+
     // *************************************************
     /// Calculating B-> K* mu mu observables in 6.0-8.0 GeV
     // *************************************************
@@ -1886,7 +1929,13 @@ namespace Gambit
     }
 
 
-
+    void SI_BRBKstarmumu_60_80_BR_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_BR_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_60_80_FL_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_FL_WC;
@@ -1944,7 +1993,13 @@ namespace Gambit
       result=res.S9;
     }
 
-
+    void SI_BRBKstarmumu_60_80_BR( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80_BR;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_60_80_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_FL;
@@ -2038,8 +2093,14 @@ namespace Gambit
 
     }
 
-    
 
+    void SI_BRBKstarmumu_15_17_BR_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_BR_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_15_17_FL_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_FL_WC;
@@ -2097,7 +2158,13 @@ namespace Gambit
       result=res.S9;
     }
 
-
+    void SI_BRBKstarmumu_15_17_BR( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17_BR;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_15_17_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_FL;
@@ -2154,7 +2221,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
       result=res.S9;
     }
-    
+
     // *************************************************
     /// Calculating B-> K* mu mu observables in 17.0-19.0 GeV
     // *************************************************
@@ -2188,7 +2255,14 @@ namespace Gambit
 
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 WC"<<endl;
     }
-    
+
+    void SI_BRBKstarmumu_17_19_BR_WC( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_BR_WC;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_17_19_FL_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_FL_WC;
@@ -2246,7 +2320,13 @@ namespace Gambit
       result=res.S9;
     }
 
-
+    void SI_BRBKstarmumu_17_19_BR( double &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19_BR;
+      if(flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 BR WC"<<endl;
+      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
+      result=res.BR;
+    }
     void SI_BRBKstarmumu_17_19_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_FL;
@@ -2303,7 +2383,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
       result=res.S9;
     }
-    
+
 
 
     // *************************************************
@@ -2769,6 +2849,10 @@ namespace Gambit
       double exp_meas=M_exp(0,0);
       double exp_b2sgamma_err=sqrt(M_cov(0,0));
       double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
+      
+      //delete this
+      cout<<"Theor prediction on b->s gamma: "<<std::abs(theory_prediction)<<endl;  
+      cout<<"Theor b->sgamma= "<<theory_b2sgamma_err<<endl;
 
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -2787,7 +2871,7 @@ namespace Gambit
       double theory_prediction= *Dep::bsgamma_WC;
 
       if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
-
+      
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
       red.debug_mode(flav_debug);
 
@@ -2804,7 +2888,11 @@ namespace Gambit
       double exp_meas=M_exp(0,0);
       double exp_b2sgamma_err=sqrt(M_cov(0,0));
       double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
-
+      
+      // comment this out:
+      cout<<"Theor prediction on b->s gamma: "<<std::abs(theory_prediction)<<endl;
+      cout<<"Theory error on the b->s gamma prediction: "<<theory_b2sgamma_err<<endl;
+      
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
 
@@ -2842,6 +2930,9 @@ namespace Gambit
       // Naliza doesn't provide the errors, need to take them from paper
       double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
       double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
+      // comment this out
+      cout<<"THeory prediction b->mumu decays= "<<theory_bs2mumu<< "  "<<theory_bd2mumu<<endl;
+      cout<<"Theory Errors on b-> mumu decays= "<<theory_bs2mumu_error<<"  "<<theory_bd2mumu_error<<endl;
 
       // we have everything, correlation
 
@@ -2957,6 +3048,10 @@ namespace Gambit
       // Naliza doesn't provide the errors, need to take them from paper
       double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
       double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
+      // comment this out                                                                                 
+      cout<<"THeory prediction b->mumu decays= "<<theory_bs2mumu<< "  "<<theory_bd2mumu<<endl;            
+      cout<<"Theory Errors on b-> mumu decays= "<<theory_bs2mumu_error<<"  "<<theory_bd2mumu_error<<endl; 
+
 
       // we have everything, correlation
 

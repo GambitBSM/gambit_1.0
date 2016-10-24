@@ -3,7 +3,7 @@
   value: 2.8e-9
   exp_stat_error: 0.7e-9
   exp_sys_error: 0.0e-9
-  th_error: 0.1
+  th_error: 0.0
   source: Nature 522
   error_type: M
   correlation:
@@ -14,7 +14,7 @@
   value: 3.9e-10
   exp_stat_error: 1.5e-10
   exp_sys_error: 0.0e-10
-  th_error: 0.1
+  th_error: 0.0
   source: Nature 522
   error_type: M
   correlation:
@@ -25,7 +25,7 @@
   value: 343.e-6
   exp_stat_error: 21.e-6
   exp_sys_error: 7.e-6
-  th_error: 23.e-6
+  th_error: 0.0
   source: HFAG
   error_type: M
   correlation:
@@ -37,7 +37,7 @@
   value: 1.64e-4
   exp_stat_error: 0.34e-4
   exp_sys_error: 0.0
-  th_error: 0.2
+  th_error: 0.0
   error_type: M
   source: PDG
   correlation:
@@ -48,7 +48,7 @@
   value: 1.04e-2
   exp_stat_error: 0.35e-2
   exp_sys_error: 0.18e-2
-  th_error: 0.06
+  th_error: 0.00
   error_type: M
   source: PDG
   correlation:
@@ -59,7 +59,7 @@
   value: 2.19e-2
   exp_stat_error: 0.12e-2
   exp_sys_error: 0.
-  th_error: 0.01e-2
+  th_error: 0.0
   error_type: M
   source: PDG
   correlation:
