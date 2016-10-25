@@ -639,7 +639,11 @@ namespace Gambit
         //      threads other than the main one need to be accessed with
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        if (not typeComp(masterGraph[*it]->type(),  "void", *boundTEs, false)) masterGraph[*it]->print(boundPrinter,pointID);
+        if (not typeComp(masterGraph[*it]->type(),  "void", *boundTEs, false)) 
+        {
+           //std::cout << "Printing '"<< masterGraph[*it]->name() <<"' for point ID '"<<pointID<<"'" << std::endl; // Debug
+           masterGraph[*it]->print(boundPrinter,pointID);
+        }
         //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
       // Reset the cout output precision, in case any backends have messed with it during the ObsLike evaluation.
@@ -846,7 +850,9 @@ namespace Gambit
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
         // (so that later on they can pass this to the printer object to identify themselves)  
-        masterGraph[*vi]->setVertexID(index[*vi]);  
+        //masterGraph[*vi]->setVertexID(index[*vi]); // Ugh cannot do this, needs to be consistent with get_main_param_id 
+        std::string label = masterGraph[*vi]->label();
+        masterGraph[*vi]->setVertexID(Printers::get_main_param_id(label));
         // Same for timing output ID, but get ID number from printer system
         std::string timing_label = masterGraph[*vi]->timingLabel();
         masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));  
