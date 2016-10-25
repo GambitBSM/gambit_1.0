@@ -31,15 +31,44 @@ namespace Gambit
    {
 
       /// Known maps filled at initialisation
-      // FIXME should these be const?
-      std::map<str, p_int_string> gauge_label_to_index_type = init_gauge_label_to_index_type();
-      std::map<str, p_int_string> mass_label_to_index_type = init_mass_label_to_index_type();
-      std::map<str, pair_string_ints> familystate_label = init_familystate_label();
-      std::map<p_int_string, std::vector<str> > type_family_to_gauge_states = init_type_family_to_gauge_states();
-      std::map<str,std::vector<str> > family_state_to_gauge_state = init_family_state_to_gauge_state();
-      std::map<str,std::vector<str> > gauge_es_to_family_states = init_gauge_es_to_family_states() ;
-      std::map<str,std::vector<str> > type_to_vec_of_mass_es = init_type_to_vec_of_mass_es();
-      std::map<str,std::vector<str> > type_to_vec_of_gauge_es = init_type_to_vec_of_gauge_es();
+      /// @{
+      const std::map<str, p_int_string> gauge_label_to_index_type = init_gauge_label_to_index_type();
+      const std::map<str, p_int_string> mass_label_to_index_type = init_mass_label_to_index_type();
+      const std::map<str, pair_string_ints> familystate_label = init_familystate_label();
+      const std::map<p_int_string, std::vector<str> > type_family_to_gauge_states = init_type_family_to_gauge_states();
+      const std::map<str,std::vector<str> > family_state_to_gauge_state = init_family_state_to_gauge_state();
+      const std::map<str,std::vector<str> > gauge_es_to_family_states = init_gauge_es_to_family_states() ;
+      const std::map<str,std::vector<str> > type_to_vec_of_mass_es = init_type_to_vec_of_mass_es();
+      const std::map<str,std::vector<str> > type_to_vec_of_gauge_es = init_type_to_vec_of_gauge_es();
+      /// @}
+
+      // FIXME: these two should be made members of the spectrum object itself
+      std::vector<double> get_Pole_Mixing_col(str type, int gauge_index, const SubSpectrum& mssm)
+      {
+         //extract info about indices for type using map
+         std::vector<str> mass_es_strs = type_to_vec_of_mass_es.at(type);
+         double col_length = mass_es_strs.size();
+         std::vector<double> mass_state_content(col_length);
+         //iterate over column in some way, e..g
+         for(std::vector<int>::size_type i = 1; i <= col_length; i++)
+         {
+            //Mix_{row, col}. Iterate through row index with column index fixed
+            mass_state_content[i - 1] = mssm.get(Par::Pole_Mixing,type, i, gauge_index);
+         }
+         return mass_state_content;
+      }
+      std::vector<double> get_Pole_Mixing_row(str type, int mass_index, const SubSpectrum& mssm)
+      {
+         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es.at(type);
+         double row_length = gauge_es_strs.size();
+         std::vector<double> gauge_state_content(row_length);
+         for(std::vector<int>::size_type i = 1; i <= row_length; i++)
+         {
+            /// Mix_{row, col}. Iterate through column index with row index fixed
+            gauge_state_content.at(i - 1) = mssm.get(Par::Pole_Mixing,type, mass_index, i);
+         }
+         return gauge_state_content;
+      }
 
       /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
       void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object)
@@ -65,48 +94,6 @@ namespace Gambit
         }
       }
 
-
-      // FIXME: these two should be switched over to members of the sectrum object itself
-      /// This will simplify things.
-      std::vector<double> get_Pole_Mixing_col(str type,
-                                              int gauge_index,
-                                              const SubSpectrum& mssm)
-      {
-         //extract info about indices for type using map
-         std::vector<str> mass_es_strs = type_to_vec_of_mass_es[type];
-         double col_length = mass_es_strs.size();
-         std::vector<double> mass_state_content(col_length);
-         //iterate over collumn in some way, e..g
-         for(std::vector<int>::size_type i = 1; i <= col_length; i++)
-            {
-               //Mix_{row, col}
-               /// iterate through row indice with column indice fixed
-               mass_state_content[i - 1] =
-                  mssm.get(Par::Pole_Mixing,type, i, gauge_index); /// fill
-           }
-         return mass_state_content;
-      }
-
-      /// This will simplify things.
-      std::vector<double> get_Pole_Mixing_row(str type, int mass_index,
-                                              const SubSpectrum& mssm)
-      {
-         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
-         double row_length = gauge_es_strs.size();
-         std::vector<double> gauge_state_content(row_length);
-         for(std::vector<int>::size_type i = 1; i <= row_length; i++)
-            {
-               /// Mix_{row, col}
-               /// iterate through column indice with row indice fixed
-               gauge_state_content[i - 1] =
-                  mssm.get(Par::Pole_Mixing,type, mass_index, i); /// fill
-            }
-         return gauge_state_content;
-      }
-
-
-      // FIXME: The rest of these belong here as they are MSSM specific things
-
       /// returns vector representing composition of requested gauge state
       /// in terms of the slha2 mass eigenstates (~u_1 ...~u_6 etc)
       /// which is just a column in the mixing matrix
@@ -114,7 +101,7 @@ namespace Gambit
                                                   const SubSpectrum& mssm)
       {
          /// extract info from string via map
-         p_int_string index_type = gauge_label_to_index_type[gauge_es];
+         p_int_string index_type = gauge_label_to_index_type.at(gauge_es);
          str type = index_type.second;
          int gauge_index  = index_type.first;
 
@@ -129,8 +116,8 @@ namespace Gambit
       double get_mixing_element(str gauge_es, str mass_es, const SubSpectrum& mssm)
       {
          ///extract info from maps
-         p_int_string mass_es_index_type = mass_label_to_index_type[mass_es];
-         p_int_string gauge_es_index_type = gauge_label_to_index_type[gauge_es];
+         p_int_string mass_es_index_type = mass_label_to_index_type.at(mass_es);
+         p_int_string gauge_es_index_type = gauge_label_to_index_type.at(gauge_es);
          int gauge_index = gauge_es_index_type.first;
          int mass_index = mass_es_index_type.first;
          /// types should match but getting both allows us to throw error
@@ -155,7 +142,7 @@ namespace Gambit
       std::vector<double> get_gauge_comp_for_mass(str mass_es, const SubSpectrum& mssm)
       {
          /// extract info using map
-         p_int_string index_type = mass_label_to_index_type[mass_es];
+         p_int_string index_type = mass_label_to_index_type.at(mass_es);
          int mass_index = index_type.first;
          str type = index_type.second;
          //fill vector with mixings
@@ -176,10 +163,10 @@ namespace Gambit
          /// make sure this is zero to start
          max_mixing = 0;
          /// retrive type from the gauge_es string
-         str type = (gauge_label_to_index_type[gauge_es]).second;
+         str type = (gauge_label_to_index_type.at(gauge_es)).second;
          str mass_es, temp_mass_es;
          /// iterate over vector of strings for mass states
-         std::vector<str> mass_es_set = type_to_vec_of_mass_es[type];
+         std::vector<str> mass_es_set = type_to_vec_of_mass_es.at(type);
          typedef std::vector<str>::iterator iter;
          for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
             temp_mass_es = *it;
@@ -276,10 +263,10 @@ namespace Gambit
          /// start with zero
          max_mixing = 0;
          /// retrive type from the gauge_es string
-         str type = (mass_label_to_index_type[mass_es]).second;
+         str type = (mass_label_to_index_type.at(mass_es)).second;
          str gauge_es, temp_gauge_es;
          /// iterate over vector of strings for mass states
-         std::vector<str> gauge_es_vec = type_to_vec_of_gauge_es[type];
+         std::vector<str> gauge_es_vec = type_to_vec_of_gauge_es.at(type);
          typedef std::vector<str>::iterator iter;
          for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it)
             {
@@ -395,8 +382,8 @@ namespace Gambit
          str mass_esR = mass_es_from_gauge_es(gauge_esR, mssm);
 
          sspair answer;
-         int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
-         int mass_index_R = (mass_label_to_index_type[mass_esR]).first;
+         int mass_index_L = (mass_label_to_index_type.at(mass_esL)).first;
+         int mass_index_R = (mass_label_to_index_type.at(mass_esR)).first;
          // order pair by mass
          if(mass_index_L < mass_index_R)
             answer = std::make_pair(mass_esL,mass_esR);
@@ -424,13 +411,13 @@ namespace Gambit
 
          // extract mass order (1 or 2) from string via map
          pair_string_ints type_family_massorder =
-            familystate_label[familystate];
+            familystate_label.at(familystate);
          pair_ints family_massorder = type_family_massorder.second;
          int mass_order = family_massorder.second;
          // if massorder is 1 choose select from masstateL and mass_esR the one
          // with the lowest index else take highest
-         int massorderL = (mass_label_to_index_type[mass_esL]).first;
-         int massorderR = (mass_label_to_index_type[mass_esR]).first;
+         int massorderL = (mass_label_to_index_type.at(mass_esL)).first;
+         int massorderR = (mass_label_to_index_type.at(mass_esR)).first;
          str answer;
          if( (mass_order == 1 && massorderL < massorderR) ||
              (mass_order == 2 && massorderL > massorderR) ) answer = mass_esL;
@@ -449,8 +436,8 @@ namespace Gambit
          //get mass_es using one of our routines
          mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
-         int mass_index = (mass_label_to_index_type[mass_es]).first;
-         pair_string_ints state_info = familystate_label[familystate];
+         int mass_index = (mass_label_to_index_type.at(mass_es)).first;
+         pair_string_ints state_info = familystate_label.at(familystate);
          str type = state_info.first;
          std::vector<double> gauge_es_content =
             get_Pole_Mixing_row(type, mass_index,mssm);
@@ -478,13 +465,13 @@ namespace Gambit
          str gauge_state_R = gauge_states[1];
 
          p_int_string gauge_Lindex_type =
-            gauge_label_to_index_type[gauge_state_L];
+            gauge_label_to_index_type.at(gauge_state_L);
          unsigned int gauge_L_index = gauge_Lindex_type.first;
          str type = gauge_Lindex_type.second;
          unsigned int gauge_R_index
-            = (gauge_label_to_index_type[gauge_state_R]).first;
-         int mass_index = (mass_label_to_index_type[mass_es]).first;
-         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
+            = (gauge_label_to_index_type.at(gauge_state_R)).first;
+         int mass_index = (mass_label_to_index_type.at(mass_es)).first;
+         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es.at(type);
          double row_length = gauge_es_strs.size();
          for(std::vector<int>::size_type i = 1; i <= row_length; i++)
             {
@@ -612,17 +599,17 @@ namespace Gambit
          /// get index of right family states (ie gauge states with
          ///same family as requested family state
          p_int_string gauge_Lindex_type =
-            gauge_label_to_index_type[gauge_es_L];
+            gauge_label_to_index_type.at(gauge_es_L);
          unsigned int gauge_L_index = gauge_Lindex_type.first;
          unsigned int gauge_R_index
-            = (gauge_label_to_index_type[gauge_es_R]).first;
+            = (gauge_label_to_index_type.at(gauge_es_R)).first;
 
          str type_L = gauge_Lindex_type.second;
-         int mass_index1 = (mass_label_to_index_type[mass_es1]).first;
-         int mass_index2 = (mass_label_to_index_type[mass_es2]).first;
+         int mass_index1 = (mass_label_to_index_type.at(mass_es1)).first;
+         int mass_index2 = (mass_label_to_index_type.at(mass_es2)).first;
          std::vector<double> mix_row_1;
          std::vector<double> mix_row_2;
-         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
+         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es.at(type);
          double row_length = gauge_es_strs.size();
          for(std::vector<int>::size_type i = 1; i <= row_length; i++)
             {
@@ -653,7 +640,7 @@ namespace Gambit
          try { type_family_massorder = familystate_label.at(familystate); }
          catch (std::out_of_range&) { utils_error().raise(LOCAL_INFO, "Unrecognised family state."); }
          str family_type = type_family_massorder.first;
-         p_int_string gauge_es_index_type = gauge_label_to_index_type[gauge_es];
+         p_int_string gauge_es_index_type = gauge_label_to_index_type.at(gauge_es);
          int gauge_index = gauge_es_index_type.first;
          /// types should match but getting both allows us to throw error
          str type_gauge = gauge_es_index_type.second;
@@ -665,7 +652,7 @@ namespace Gambit
          ///get mass_es using one of our routines
          mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
-         int mass_index = (mass_label_to_index_type[mass_es]).first;
+         int mass_index = (mass_label_to_index_type.at(mass_es)).first;
          double admix = mssm.get(Par::Pole_Mixing,type_gauge, mass_index,
                                                    gauge_index);
          return admix;
@@ -682,10 +669,10 @@ namespace Gambit
          /// get gauge_es with largest mixing to this mass_es
          str gauge_es = gauge_es_from_mass_es(mass_es, mass_comp, mssm);
          /// get family states for the same generation as this gauge_es
-         std::vector<str> family_states = gauge_es_to_family_states[gauge_es];
+         std::vector<str> family_states = gauge_es_to_family_states.at(gauge_es);
          str family_state1 = family_states[0];
          str family_state2 = family_states[1];
-         std::vector<str> gauge_states = family_state_to_gauge_state[family_state1];
+         std::vector<str> gauge_states = family_state_to_gauge_state.at(family_state1);
          str gauge_es_L = gauge_states[0];
          str gauge_es_R = gauge_states[1];
          str mass_es_other;
@@ -693,8 +680,8 @@ namespace Gambit
             mass_es_other = mass_es_from_gauge_es(gauge_es_R, mssm);
          else mass_es_other = mass_es_from_gauge_es(gauge_es_L, mssm);
          /// extractindex of mass-es and mass_ess_other from strings
-         int mass_index = (mass_label_to_index_type[mass_es]).first;
-         int mass_index_other = (mass_label_to_index_type[mass_es_other]).first;
+         int mass_index = (mass_label_to_index_type.at(mass_es)).first;
+         int mass_index_other = (mass_label_to_index_type.at(mass_es_other)).first;
          str fam_state;
          /// choose mass ordering for family state which matches
          /// mass ordering of mass_es
@@ -702,11 +689,11 @@ namespace Gambit
          else fam_state = family_state2;
 
          //get gauge_indices to sum correct mixing elements
-         int gauge_index_L = (gauge_label_to_index_type[gauge_es_L]).first;
-         int gauge_index_R = (gauge_label_to_index_type[gauge_es_R]).first;
+         int gauge_index_L = (gauge_label_to_index_type.at(gauge_es_L)).first;
+         int gauge_index_R = (gauge_label_to_index_type.at(gauge_es_R)).first;
          /// subrtact 1 fgrom indices to deal with different indexing
-         sum_sq_mix = mass_comp[gauge_index_L-1] * mass_comp[gauge_index_L-1];
-         sum_sq_mix += mass_comp[gauge_index_R-1] * mass_comp[gauge_index_R-1];
+         sum_sq_mix = mass_comp.at(gauge_index_L-1) * mass_comp.at(gauge_index_L-1);
+         sum_sq_mix += mass_comp.at(gauge_index_R-1) * mass_comp.at(gauge_index_R-1);
 
          return fam_state;
       }
@@ -763,6 +750,7 @@ namespace Gambit
          }
          return fs;
       }
+
 
    }  // namespace slhahelp
 
