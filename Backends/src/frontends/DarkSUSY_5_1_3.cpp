@@ -330,15 +330,6 @@ BE_NAMESPACE
     const std::complex<double> imagi(0.0, 1.0);
     DS_PACODES *DSpart = &(*pacodes);
 
-    /*
-    // FIXME: Joakim --> would this be need for anything / should this be
-    // checked?
-    SLHAea::Block modsel_block("MODSEL");
-    modsel_block.push_back("BLOCK MODSEL");
-    modsel_block.push_back("6 3 # FV");
-    mySLHA.push_back(modsel_block);
-    */
-
     // Define required blocks and raise an error if a block is missing
     required_block("SMINPUTS", mySLHA);
     required_block("VCKMIN",   mySLHA);
@@ -392,14 +383,14 @@ BE_NAMESPACE
     mspctm->mass(DSpart->kqu(1)) = mspctm->mu2gev;                                 // use as proxy for pole
     mspctm->md2gev               = to<double>(mySLHA.at("SMINPUTS").at(21).at(1)); // down quark mass @ 2 GeV
     mspctm->mass(DSpart->kqd(1)) = mspctm->md2gev;                                 // use as proxy for pole
-    mspctm->mcmc                 = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
-    mspctm->mass(DSpart->kqu(2)) = mspctm->mcmc;                                   // use as proxy for pole
     mspctm->ms2gev               = to<double>(mySLHA.at("SMINPUTS").at(23).at(1)); // stange mass @ 2 GeV
     mspctm->mass(DSpart->kqd(2)) = mspctm->ms2gev;                                 // use as proxy for pole
+    mspctm->mcmc                 = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
     mspctm->mbmb                 = to<double>(mySLHA.at("SMINPUTS").at(5).at(1));  // bottom mass at m_b
     mspctm->mass(DSpart->kqd(3)) = to<double>(mySLHA.at("MASS").at(5).at(1));      // bottom pole mass
     mspctm->mass(DSpart->kqu(3)) = to<double>(mySLHA.at("SMINPUTS").at(6).at(1));  // top pole mass
-
+    dsfindmtmt();                                                                  // set internal value of top mass at mt
+    mspctm->mass(DSpart->kqu(2)) = dsmqpole4loop(DSpart->kqu(2),mspctm->mcmc);     // use DS internal routine to get mc pole
 
     // Weinberg angle will be dealt with later using this W mass (need to respect tree level relation)
     mspctm->mass(DSparticle_code("W+"))  = to<double>(mySLHA.at("MASS").at(24).at(1));    // W boson mass
@@ -464,9 +455,13 @@ BE_NAMESPACE
 
     // OK, we now have to enforce the tree-level condition for unitarity.
     // We then have a choice of calculating both sin^2 theta_W and MW
-    // from alpha, MZ and GF as we normally do in DarkSUSY. This line would
+    // from alpha, MZ and GF as we normally do in DarkSUSY. These lines would
     // enforce that:
-    //   mspctm->mass(DSpart->kw)=mass(DSpart->kz)*sqrt(1.0-smruseful->s2thw)
+    // smruseful->s2thw=dsgf2s2thw(smruseful->gfermi,
+    //                               couplingconstants->alphem,
+    //                               mspctm->mass(DSparticle_code("Z0")),
+    //                               mspctm->mass(DSpart->kqu(3)),1);
+    // mspctm->mass(DSparticle_code("W+"))=mspctm->mass(DSparticle_code("Z0"))*sqrt(1.0-smruseful->s2thw);
     // However, it is more prudent to take the value of MW from the SLHA file
     // as given (read in earlier), and instead enforce the tree-level condition
     // by redefining sin^2 theta_W. That we do here:
