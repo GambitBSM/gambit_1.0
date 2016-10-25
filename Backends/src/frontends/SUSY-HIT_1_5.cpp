@@ -25,14 +25,7 @@
 BE_NAMESPACE
 {
 
-  /// Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
-  /// @{
-  void optional_block(const str& name, SLHAea::Block& block, const SLHAstruct& slha)
-  {
-    if (slha.find(name) != slha.end()) block = slha.at(name);
-    else block.push_back ("BLOCK " + name);
-  }
-
+  /// Shortcut for dealing with SLHA blocks
   void required_block(const str& name, SLHAea::Block& block, const SLHAea::Coll& slha)
   {
     if (slha.find(name) != slha.end()) block = slha.at(name);

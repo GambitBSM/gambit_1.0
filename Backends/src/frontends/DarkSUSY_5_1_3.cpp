@@ -120,7 +120,7 @@ END_BE_INI_FUNCTION
 BE_NAMESPACE
 {
 
-  /// Some DarkSUSY-specific shortcuts for dealing with SLHA blocks
+  /// Shortcut for dealing with SLHA blocks
   void required_block(const std::string& name, const SLHAea::Coll& slha)
   {
     if (slha.find(name) != slha.end()) return;
