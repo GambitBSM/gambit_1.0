@@ -24,12 +24,14 @@
 
 typedef unsigned int uint;
 typedef unsigned long ulong;
+typedef long long int llint;
 typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
  
 // Types that Gambit printers can output (if printer plugin is properly equipped)
 #define PRINTABLE_TYPES  \
 (bool)                   \
 (int)(uint)(long)(ulong) \
+(llint)                  \
 (float)(double)          \
 (std::vector<bool>)      \
 (std::vector<int>)       \

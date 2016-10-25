@@ -310,8 +310,8 @@ namespace Gambit
 
         // Types compatible with the template print function
         #define TEMPLATE_TYPES      \
-         (int)(unsigned int)(long)(unsigned long)   \
-         (float)(double)
+         (int)(unsigned int)(long)(unsigned long)  \
+         (float)(double)(long long int) 
 
         // Types for which custom print functions are defined
         typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
