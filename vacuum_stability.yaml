@@ -249,6 +249,8 @@ KeyValues:
     subkey3:
       subsubkey1: value2
 
+  print_timing_data: true
+
   rng: ranlux48
 
   dependency_resolution:

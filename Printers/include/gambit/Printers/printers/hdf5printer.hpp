@@ -38,6 +38,7 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
+#include "gambit/Elements/printable_types.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Logs/logger.hpp"
@@ -309,9 +310,10 @@ namespace Gambit
         // for all types that have a << operator already defined.
 
         // Types compatible with the template print function
-        #define TEMPLATE_TYPES      \
-         (int)(unsigned int)(long)(unsigned long)  \
-         (float)(double)(long long int) 
+        #define TEMPLATE_TYPES  \
+         ALL_INT_TYPES \
+         (float)\
+         (double)\
 
         // Types for which custom print functions are defined
         typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
