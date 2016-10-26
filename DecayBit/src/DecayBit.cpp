@@ -56,9 +56,9 @@ namespace Gambit
         else
           DecayBit_error().raise(info, "Negative width returned!");
       }
-      if (w > 1000.)
+      if (w > 1e7)
       {
-        DecayBit_error().raise(info, "Suspiciously large width returned.");
+        DecayBit_error().raise(info, "Suspiciously large width returned: "+std::to_string(w)+" GeV");
       }
     }
 
