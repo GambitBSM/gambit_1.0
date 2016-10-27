@@ -1,7 +1,6 @@
-Binary files susyhit-1.5.pristine/bsg.o and installed/susyhit/1.5/bsg.o differ
-diff -rupN susyhit-1.5.pristine/hdecay.f installed/susyhit/1.5/hdecay.f
---- susyhit-1.5.pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/hdecay.f	2016-10-15 17:21:32.660058316 +0100
+diff -rupN susyhit_1.5/hdecay.f installed/susyhit/1.5/hdecay.f
+--- susyhit_1.5/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/hdecay.f	2016-10-27 17:07:20.476126445 +0100
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -114,7 +113,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  
          STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
       *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
-@@ -10124,6 +10150,17 @@ c     * /(1.+deltamt)**4.
+@@ -10124,18 +10150,40 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
  	MBOT2 = DSQRT(MBOT4)
@@ -132,12 +131,32 @@ diff -rupN susyhit-1.5.pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  
          STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
       *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
-Binary files susyhit-1.5.pristine/hdecay.o and installed/susyhit/1.5/hdecay.o differ
-Binary files susyhit-1.5.pristine/hgaga.o and installed/susyhit/1.5/hgaga.o differ
-Binary files susyhit-1.5.pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
-diff -rupN susyhit-1.5.pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
---- susyhit-1.5.pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/lightst3bod.f	2016-10-15 17:21:32.660058316 +0100
+      *   +(((G2**2-5.*G1**2/3.)/4.*(H1T**2-H2T**2) +
+      *   MQ2 - MUR2)**2*0.25 + MTOP2*(AT-MU/TANBST)**2)**.5
+ 
++c>>>Added by Pat Scott Oct 27 2016 to keep h widths sensible when SUSY scale is <~ mt.
++c>>>Should only occur for points that are outrageously excluded anyway.         
++        STOP22_TREE = STOP22
++
+         STOP22 = (MQ2 + MUR2)*.5 + MTOP2 
+      *  +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2) 
+      *   - (((G2**2-5.*G1**2/3.)/4.*(H1T**2-H2T**2) +
+      *  MQ2 - MUR2)**2*0.25 
+      *  + MTOP2*(AT-MU/TANBST)**2)**.5
+ 
++c>>>Added by Pat Scott Oct 27 2016 to keep h widths sensible when SUSY scale is <~ mt.
++c>>>Should only occur for points that are outrageously excluded anyway.         
++        IF(STOP22.LT.0.) THEN
++          write(*,*) 'Warning: discarding deltamt correction in HDECAY.'
++          STOP22=STOP22_TREE
++        ENDIF
++
+         IF(STOP22.LT.0.) GOTO 4237
+ 
+         SBOT12 = (MQ2 + MD2)*.5  
+diff -rupN susyhit_1.5/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
+--- susyhit_1.5/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst3bod.f	2016-10-27 16:07:38.708190588 +0100
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -192,10 +211,9 @@ diff -rupN susyhit-1.5.pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.
        COMMON/SD_coupewsb/alsew,g2ew,g1ew
        COMMON/SD_mwmzpole/amwp,amzp
  c---- ramona cahnged 2/2/15
-Binary files susyhit-1.5.pristine/lightst3bod.o and installed/susyhit/1.5/lightst3bod.o differ
-diff -rupN susyhit-1.5.pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
---- susyhit-1.5.pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/lightst4bod.f	2016-10-15 17:21:32.664058316 +0100
+diff -rupN susyhit_1.5/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
+--- susyhit_1.5/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst4bod.f	2016-10-27 16:07:38.712190588 +0100
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -430,10 +448,9 @@ diff -rupN susyhit-1.5.pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.
        COMMON/SD_hmass/ama,aml,amh,amch,amar
  c----- ramona added 4/11/14
        COMMON/SD_mwmzpole/amwp,amzp
-Binary files susyhit-1.5.pristine/lightst4bod.o and installed/susyhit/1.5/lightst4bod.o differ
-diff -rupN susyhit-1.5.pristine/makefile installed/susyhit/1.5/makefile
---- susyhit-1.5.pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/makefile	2016-10-15 17:21:32.664058316 +0100
+diff -rupN susyhit_1.5/makefile installed/susyhit/1.5/makefile
+--- susyhit_1.5/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/makefile	2016-10-27 16:07:38.712190588 +0100
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -458,9 +475,9 @@ diff -rupN susyhit-1.5.pristine/makefile installed/susyhit/1.5/makefile
 -	rm -f *.o
 \ No newline at end of file
 +	rm -f *.o
-diff -rupN susyhit-1.5.pristine/sdecay.f installed/susyhit/1.5/sdecay.f
---- susyhit-1.5.pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/sdecay.f	2016-10-15 17:25:03.160063413 +0100
+diff -rupN susyhit_1.5/sdecay.f installed/susyhit/1.5/sdecay.f
+--- susyhit_1.5/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/sdecay.f	2016-10-27 16:07:38.716190587 +0100
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
@@ -1704,8 +1721,3 @@ diff -rupN susyhit-1.5.pristine/sdecay.f installed/susyhit/1.5/sdecay.f
  
        return
        end
-Binary files susyhit-1.5.pristine/sdecay.o and installed/susyhit/1.5/sdecay.o differ
-Binary files susyhit-1.5.pristine/suspect2.o and installed/susyhit/1.5/suspect2.o differ
-Binary files susyhit-1.5.pristine/susylha.o and installed/susyhit/1.5/susylha.o differ
-Binary files susyhit-1.5.pristine/twoloophiggs.o and installed/susyhit/1.5/twoloophiggs.o differ
-Binary files susyhit-1.5.pristine/Xvegas.o and installed/susyhit/1.5/Xvegas.o differ
