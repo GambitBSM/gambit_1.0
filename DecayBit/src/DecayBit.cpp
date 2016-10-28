@@ -47,18 +47,23 @@ namespace Gambit
     /// @{
 
     /// Check if a width is negative or suspiciously large and raise an error.
-    void check_width(const str& info, double& w, bool raise_invalid_pt)
+    void check_width(const str& info, double& w, bool raise_invalid_pt_negative_width = false, bool raise_invalid_pt_large_width = false)
     {
       if (w < 0)
       {
-        if (raise_invalid_pt)
-          invalid_point().raise("Negative width returned!");
+        str nwiderr("Negative width returned!");
+        if (raise_invalid_pt_negative_width)
+          invalid_point().raise(nwiderr);
         else
-          DecayBit_error().raise(info, "Negative width returned!");
+          DecayBit_error().raise(info, nwiderr);
       }
       if (w > 1e7)
       {
-        DecayBit_error().raise(info, "Suspiciously large width returned: "+std::to_string(w)+" GeV");
+        str lwiderr("Suspiciously large width returned: "+std::to_string(w)+" GeV");
+        if (raise_invalid_pt_large_width)
+          invalid_point().raise(lwiderr);
+        else
+          DecayBit_error().raise(info, lwiderr);
       }
     }
 
@@ -637,7 +642,7 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhlslnl/3.0 : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhlslnl/3.0 : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
 
-      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"), true);
     }
 
     /// SUSY-HIT MSSM decays: h0_2
@@ -708,7 +713,7 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhhslnl/3.0 : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhhslnl/3.0 : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
 
-      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"), true);
     }
 
     /// SUSY-HIT MSSM decays: A0
