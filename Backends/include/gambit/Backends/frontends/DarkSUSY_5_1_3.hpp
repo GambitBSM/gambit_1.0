@@ -74,11 +74,15 @@ BE_FUNCTION(dsntmuonyield, double, (const double&, const double&, const char&, c
 BE_FUNCTION(dswspectrum, void, (int&), "dswspectrum_", "dswspectrum")
 BE_FUNCTION(dswwidth, void, (int&), "dswwidth_", "dswwidth")
 BE_FUNCTION(dssuconst, void, (), "dssuconst_", "dssuconst")
+BE_FUNCTION(dsmssmzero, void, (), "dsmssmzero_", "dsmssmzero")
 BE_FUNCTION(dsvertx, void, (), "dsvertx_", "dsvertx")
 BE_FUNCTION(dshigwid, void, (), "dshigwid_", "dshigwid")
 BE_FUNCTION(dsspwid, void, (), "dsspwid_", "dsspwid")
 BE_FUNCTION(dsfindmtmt, void, (), "dsfindmtmt_", "dsspwid")
+BE_FUNCTION(dssuconst_ckm, void, (), "dssuconst_ckm_", "dssuconst_ckm")
+BE_FUNCTION(dssuconst_yukawa_running, void, (), "dssuconst_yukawa_running_", "dssuconst_yukawa_running")
 BE_FUNCTION(dsmqpole4loop, double, (int&, double&), "dsmqpole4loop_", "dsmqpole4loop")
+BE_FUNCTION(dsspectrum, void, (int&, int&), "dsspectrum_", "dsspectrum")
 BE_FUNCTION(dsgf2s2thw, double, (const double&, const double&, const double&, const double&, const int&), "dsgf2s2thw_", "dsgf2s2thw")
 
 // Variables
