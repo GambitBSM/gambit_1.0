@@ -278,7 +278,6 @@ int main()
     get_SMINPUTS.resolveDependency(&Models::StandardModel_SLHA2::Functown::primary_parameters);
     get_mass_es_pseudonyms.resolveDependency(&make_MSSM_precision_spectrum_H_W);
 
-    FH_Couplings.resolveDependency(&FH_HiggsMasses);
     FH_PrecisionObs.resolveDependency(&FH_Couplings);
     FH_precision_mw.resolveDependency(&FH_PrecisionObs);
     FH_precision_sinW2.resolveDependency(&FH_PrecisionObs);
@@ -351,6 +350,7 @@ int main()
     chargino_minus_2_decays.resolveDependency(&chargino_plus_2_decays);
 
     all_decays.resolveDependency(&get_mass_es_pseudonyms);
+    all_decays.resolveDependency(&make_MSSM_precision_spectrum_H_W);
     all_decays.resolveDependency(&FH_MSSM_h0_1_decays);
     all_decays.resolveDependency(&W_minus_decays);
     all_decays.resolveDependency(&W_plus_decays);
@@ -580,8 +580,9 @@ int main()
         ofs << slha[i];
         ofs.close();
         mylock.release_lock();
-        cout << endl << "SLHA file " << filename_out[i] << " successfully emitted." << endl << endl;
+        cout << endl << "SLHA file " << filename_out[i] << " successfully emitted.";
       }
+      cout << endl << endl;
 
     }
 
