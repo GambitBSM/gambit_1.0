@@ -116,82 +116,6 @@ namespace Gambit
     // *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     // *************************************************
-    void SI_fill_WC(struct parameters &result)
-    {
-      // this function will fill the parameters from the model it self not from SLH file
-      namespace myPipe = Pipes::SI_fill_WC;
-
-      using namespace myPipe;
-      using namespace std;
-
-      // Obtain SLHAea object from spectrum
-      //      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
-      // Add the MODSEL block if it is not provided by the spectrum object.
-      //SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
-
-      BEreq::Init_param(&result);
-      // for WC we will fill just the SM parameters
-      // to be honest this is not the best way, but let's follow Nazila
-      /*
-      if(!spectrum["SMINPUTS"].empty())
-	{
-	  if(spectrum["SMINPUTS"][1].is_data_line()) result.inv_alpha_em=SLHAea::to<double>(spectrum["SMINPUTS"][1][1]);
-	  if(spectrum["SMINPUTS"][2].is_data_line()) result.Gfermi=SLHAea::to<double>(spectrum["SMINPUTS"][2][1]);
-	  if(spectrum["SMINPUTS"][3].is_data_line()) result.alphas_MZ=SLHAea::to<double>(spectrum["SMINPUTS"][3][1]);
-	  if(spectrum["SMINPUTS"][4].is_data_line()) result.mass_Z=SLHAea::to<double>(spectrum["SMINPUTS"][4][1]);
-	  if(spectrum["SMINPUTS"][5].is_data_line()) result.mass_b=SLHAea::to<double>(spectrum["SMINPUTS"][5][1]);
-	  if(spectrum["SMINPUTS"][6].is_data_line()) result.mass_top_pole=SLHAea::to<double>(spectrum["SMINPUTS"][6][1]);
-	  if(spectrum["SMINPUTS"][7].is_data_line()) result.mass_tau=SLHAea::to<double>(spectrum["SMINPUTS"][7][1]);
-	  if(spectrum["SMINPUTS"][8].is_data_line()) result.mass_nutau2=SLHAea::to<double>(spectrum["SMINPUTS"][8][1]);
-	  if(spectrum["SMINPUTS"][11].is_data_line()) result.mass_e2=SLHAea::to<double>(spectrum["SMINPUTS"][11][1]);
-	  if(spectrum["SMINPUTS"][12].is_data_line()) result.mass_nue2=SLHAea::to<double>(spectrum["SMINPUTS"][12][1]);
-	  if(spectrum["SMINPUTS"][13].is_data_line()) result.mass_mu2=SLHAea::to<double>(spectrum["SMINPUTS"][13][1]);
-	  if(spectrum["SMINPUTS"][14].is_data_line()) result.mass_numu2=SLHAea::to<double>(spectrum["SMINPUTS"][14][1]);
-	  if(spectrum["SMINPUTS"][21].is_data_line()) result.mass_d2=SLHAea::to<double>(spectrum["SMINPUTS"][21][1]);
-	  if(spectrum["SMINPUTS"][22].is_data_line()) result.mass_u2=SLHAea::to<double>(spectrum["SMINPUTS"][22][1]);
-	  if(spectrum["SMINPUTS"][23].is_data_line()) result.mass_s2=SLHAea::to<double>(spectrum["SMINPUTS"][23][1]);
-	  if(spectrum["SMINPUTS"][24].is_data_line()) result.mass_c2=SLHAea::to<double>(spectrum["SMINPUTS"][24][1]);
-
-	}
-      if(!spectrum["VCKMIN"].empty())
-	{
-	  if(spectrum["VCKMIN"][1].is_data_line()) result.CKM_lambda=SLHAea::to<double>(spectrum["VCKMIN"][1][1]);
-	  if(spectrum["VCKMIN"][2].is_data_line()) result.CKM_A=SLHAea::to<double>(spectrum["VCKMIN"][2][1]);
-	  if(spectrum["VCKMIN"][3].is_data_line()) result.CKM_rhobar=SLHAea::to<double>(spectrum["VCKMIN"][3][1]);
-	  if(spectrum["VCKMIN"][4].is_data_line()) result.CKM_etabar=SLHAea::to<double>(spectrum["VCKMIN"][4][1]);
-	}
-      */
-      //  now the WC should be called from model function
-      ModelInUse("WC");
-      result.SM=1;  // needed acordingly to Nazila
-
-      //cout<<*Param["Re_DeltaC9"]<<endl;
-
-      cout<<"Oki now feeling the model:"<<endl;
-
-      result.Re_DeltaC7=*Param["Re_DeltaC7"];
-      result.Re_DeltaC9=*Param["Re_DeltaC9"];
-      result.Re_DeltaC10=*Param["Re_DeltaC10"];
-
-      result.Im_DeltaC7=*Param["Im_DeltaC7"];
-      result.Im_DeltaC9=*Param["Im_DeltaC9"];
-      result.Im_DeltaC10=*Param["Im_DeltaC10"];
-
-      result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
-      result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
-
-      result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
-      result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
-
-      cout<<"Checking the nodel: "<<result.Re_DeltaC7<<endl;
-
-
-      BEreq::slha_adjust(&result);   // needed acordingly to nazila
-    }
-    // *************************************************
-    /// Rollcalled functions properly hooked up to Gambit
-    // *************************************************
-
     void SI_fill(struct parameters &result)
     {
       namespace myPipe = Pipes::SI_fill;
@@ -220,6 +144,24 @@ namespace Gambit
       if(result.NMSSM != 0) result.model=result.NMSSM;
       if(result.RV != 0) result.model=-2;
       if(result.CPV != 0) result.model=-2;
+
+      if(ModelInUse("WC")) 
+	{
+	  result.SM=1;  // needed acordingly to Nazila          
+	  result.Re_DeltaC7=*Param["Re_DeltaC7"];               
+	  result.Re_DeltaC9=*Param["Re_DeltaC9"];               
+	  result.Re_DeltaC10=*Param["Re_DeltaC10"];             
+                                                      
+	  result.Im_DeltaC7=*Param["Im_DeltaC7"];               
+	  result.Im_DeltaC9=*Param["Im_DeltaC9"];               
+	  result.Im_DeltaC10=*Param["Im_DeltaC10"];             
+                                                      
+	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];             
+	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];             
+                                                      
+	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];             
+	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];             
+	}
 
       if(!spectrum["SMINPUTS"].empty())
       {
@@ -538,6 +480,10 @@ namespace Gambit
       if(!spectrum["TE"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
 
+
+      
+
+
       BEreq::slha_adjust(&result);
       if(flav_debug) cout<<"Finished SI_fill"<<endl;
     }
@@ -555,26 +501,13 @@ namespace Gambit
 
       if(param.model<0) result=0.;
       double E_cut=1.6;
+      //if(ModelInUse("WC"))      result=BEreq::bsgamma_CONV_WC(&param, byVal(E_cut));
       result=BEreq::bsgamma_CONV(&param, byVal(E_cut));
-
+      
       if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
     }
 
-    void SI_bsgamma_WC(double &result)
-    {
-      using namespace Pipes::SI_bsgamma_WC;
-      if(flav_debug)  cout<<"Starting SI_bsgamma WC"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-
-      if(param.model<0) result=0.;
-      double E_cut=1.6;
-      result=BEreq::bsgamma_CONV_WC(&param, byVal(E_cut));
-
-      if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
-    }
 
 
 
@@ -595,6 +528,7 @@ namespace Gambit
       {
         result=0.;
       }
+      //      else if(ModelInUse("WC")) result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav)); 
       else
       {
         result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
@@ -602,33 +536,6 @@ namespace Gambit
 
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
-    }
-
-    // *************************************************
-    /// Calculating Br in Bs->mumu decays for the untaged case
-    /// WC case
-    // *************************************************
-
-    void SI_Bsmumu_untag_WC(double &result)
-    {
-      using namespace Pipes::SI_Bsmumu_untag_WC;
-
-      if(flav_debug)  cout<<"Starting SI_Bsmumu_untag"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-      int flav=2;
-
-      if(param.model<0)
-	{
-	  result=0.;
-	}
-      else
-	{
-	  result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
-	}
-
-      if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bsmumu_untag WC"<<endl;
     }
 
     // *************************************************
@@ -648,6 +555,7 @@ namespace Gambit
       {
         result=0.;
       }
+      //      else if(ModelInUse("WC")) result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
       else
       {
         result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
@@ -655,33 +563,6 @@ namespace Gambit
 
       if(flav_debug) printf("BR(Bs->ee)_untag=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bsee_untag"<<endl;
-    }
-
-    // *************************************************
-    /// Calculating Br in Bs->ee decays for the untaged case
-    /// WC case
-    // *************************************************
-
-    void SI_Bsee_untag_WC(double &result)
-    {
-      using namespace Pipes::SI_Bsee_untag_WC;
-
-      if(flav_debug)  cout<<"Starting SI_Bsee_untag WC"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-      int flav=1;
-
-      if(param.model<0)
-	{
-	  result=0.;
-	}
-      else
-	{
-	  result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
-	}
-
-      if(flav_debug) printf("BR(Bs->ee)_untag=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bsee_untag WC"<<endl;
     }
 
 
@@ -716,7 +597,7 @@ namespace Gambit
     /// Calculating Br in B0->mumu decays
     /// WC case
     // *************************************************
-
+    /*
     void SI_Bdmumu_WC(double &result)
     {
       using namespace Pipes::SI_Bdmumu_WC;
@@ -738,7 +619,7 @@ namespace Gambit
       if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bdmumu WC"<<endl;
     }
-
+    */
 
     // *************************************************
     /// Calculating Br in B->tau nu_tau decays
@@ -1060,7 +941,7 @@ namespace Gambit
     }
 
     // *************************************************
-
+    /*
     void SI_BRBXsmumu_lowq2_WC(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_lowq2_WC;
@@ -1121,7 +1002,7 @@ namespace Gambit
     }
 
 
-
+    */
 
 
     // *************************************************
@@ -1156,7 +1037,7 @@ namespace Gambit
       if(flav_debug) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
     }
-
+    /*
     void SI_BRBXsmumu_highq2_WC(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_highq2_WC;
@@ -1213,7 +1094,7 @@ namespace Gambit
     }
 
 
-
+    */
     // *************************************************
 
     void SI_A_BXsmumu_lowq2(double &result)
@@ -1404,7 +1285,7 @@ namespace Gambit
     // *************************************************
     /// Calculating B-> K* mu mu observables in 1.1-2.5 GeV WC
     // *************************************************
-
+    /*
     void SI_BRBKstarmumu_11_25_WC( Flav_KstarMuMu_obs &result)
     {
 
@@ -1489,7 +1370,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25_WC;
       result=res.S9;
     }
-
+    */
     void SI_BRBKstarmumu_11_25_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_BR;
@@ -1579,7 +1460,7 @@ namespace Gambit
     // *************************************************
     /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV  WC
     // *************************************************
-
+    /*
     void SI_BRBKstarmumu_25_40_WC( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_WC;
@@ -1662,7 +1543,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40_WC;
       result=res.S9;
     }
-
+    */
     void SI_BRBKstarmumu_25_40_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_BR;
@@ -1747,7 +1628,7 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
 
     }
-
+    /*
     void SI_BRBKstarmumu_40_60_WC( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_WC;
@@ -1830,7 +1711,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60_WC;
       result=res.S9;
     }
-
+    */
     void SI_BRBKstarmumu_40_60_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_BR;
@@ -1913,7 +1794,7 @@ namespace Gambit
       result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
     }
-
+    /*
     void SI_BRBKstarmumu_60_80_WC( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_WC;
@@ -1928,7 +1809,7 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80 WC"<<endl;
     }
 
-
+    
     void SI_BRBKstarmumu_60_80_BR_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_BR_WC;
@@ -1992,7 +1873,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80_WC;
       result=res.S9;
     }
-
+    */
     void SI_BRBKstarmumu_60_80_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_BR;
@@ -2077,6 +1958,7 @@ namespace Gambit
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_15_17 "<<endl;
 
     }
+    /*
     void SI_BRBKstarmumu_15_17_WC( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_WC;
@@ -2157,7 +2039,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17_WC;
       result=res.S9;
     }
-
+    */
     void SI_BRBKstarmumu_15_17_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_BR;
@@ -2240,7 +2122,7 @@ namespace Gambit
 
       if(flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
     }
-
+    /*
     void SI_BRBKstarmumu_17_19_WC( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_WC;
@@ -2319,7 +2201,7 @@ namespace Gambit
       Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19_WC;
       result=res.S9;
     }
-
+    */
     void SI_BRBKstarmumu_17_19_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_BR;
@@ -2654,7 +2536,7 @@ namespace Gambit
    // *************************************************
     /// reading measurements for b->sll
     // *************************************************
-
+    /*
     void b2sll_measurements_WC(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2sll_measurements_WC;
@@ -2820,7 +2702,7 @@ namespace Gambit
 
     }
 
-
+    */
     // *************************************************
     /// measurement for b->s gamma
     // *************************************************
@@ -2860,6 +2742,7 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
 
     }
+    /*
     // *************************************************
     /// measurement for b->s gamma WC
     // *************************************************
@@ -2899,7 +2782,7 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
 
     }
-
+    */
     // *************************************************
     /// measurement for b->mumu
     // *************************************************
@@ -3018,6 +2901,7 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
+    /*
  // *************************************************
     /// measurement for b->mumu WC
     // *************************************************
@@ -3137,7 +3021,8 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
-
+    
+    */
 
 
     // *************************************************

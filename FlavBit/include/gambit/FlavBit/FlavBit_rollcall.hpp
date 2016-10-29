@@ -54,17 +54,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY SuperIso_modelinfo_WC
-  START_CAPABILITY
-    #define FUNCTION SI_fill_WC
-    START_FUNCTION(parameters)
-    BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
-    BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    ALLOW_MODELS(WC )
-    #undef FUNCTION
-  #undef CAPABILITY
-
 
   // Observable: BR(B -> Xs gamma)
   #define CAPABILITY bsgamma
@@ -77,17 +66,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY bsgamma_WC
-  START_CAPABILITY
-    #define FUNCTION SI_bsgamma_WC
-    START_FUNCTION(double)
-    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
-    BACKEND_REQ(bsgamma_CONV_WC, (libsuperiso), double,(struct parameters*, double))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    #undef FUNCTION
-   #undef CAPABILITY
-
-
   // Observable: BR(Bs -> mu+ mu-)_untag
   #define CAPABILITY Bsmumu_untag
   START_CAPABILITY
@@ -95,17 +73,6 @@ START_MODULE
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  #define CAPABILITY Bsmumu_untag_WC
-  START_CAPABILITY
-    #define FUNCTION SI_Bsmumu_untag_WC
-    START_FUNCTION(double)
-    DEPENDENCY(SuperIso_modelinfo_WC, parameters)
-    BACKEND_REQ(Bsll_untag_CONV_WC, (libsuperiso),  double, (struct parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -120,7 +87,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY Bsee_untag_WC
   START_CAPABILITY
    #define FUNCTION SI_Bsee_untag_WC
@@ -130,7 +97,7 @@ START_MODULE
    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
-
+*/
   // Observable: BR(Bd -> mu+ mu-)
   #define CAPABILITY Bdmumu
   START_CAPABILITY
@@ -141,7 +108,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
-
+/*
   // Observable: BR(Bd -> mu+ mu-)
   #define CAPABILITY Bdmumu_WC
   START_CAPABILITY
@@ -152,7 +119,7 @@ START_MODULE
    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
-
+*/
 
   // Observable: BR(B -> tau nu)
   #define CAPABILITY Btaunu
@@ -303,7 +270,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   // Observable: BR(B -> Xs mu mu)_lowq2
   #define CAPABILITY BRBXsmumu_lowq2_WC
   START_CAPABILITY
@@ -318,7 +285,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+*/
 
   // Observable: BR(B -> Xs mu mu)_highq2
   #define CAPABILITY BRBXsmumu_highq2
@@ -335,6 +302,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+/*
   // Observable: BR(B -> Xs mu mu)_highq2
   #define CAPABILITY BRBXsmumu_highq2_WC
   START_CAPABILITY
@@ -349,7 +317,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+*/
 
   // Observable: AFB(B -> Xs mu mu)_lowq2
   #define CAPABILITY A_BXsmumu_lowq2
@@ -436,7 +404,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY BRBKstarmumu_11_25_WC
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_11_25_WC
@@ -520,7 +488,7 @@ START_MODULE
     #undef FUNCTION                                      
   #undef CAPABILITY  
 
-
+*/
    #define CAPABILITY BRBKstarmumu_11_25_BR
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_11_25_BR
@@ -605,6 +573,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+/*
   #define CAPABILITY BRBKstarmumu_25_40_WC
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_25_40_WC
@@ -686,7 +655,7 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION                                      
   #undef CAPABILITY  
-
+*/
    #define CAPABILITY BRBKstarmumu_25_40_BR
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_25_40_BR
@@ -769,7 +738,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY BRBKstarmumu_40_60_WC
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_40_60_WC
@@ -851,6 +820,7 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION                                      
   #undef CAPABILITY  
+*/
 
    #define CAPABILITY BRBKstarmumu_40_60_BR
   START_CAPABILITY
@@ -936,7 +906,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY BRBKstarmumu_60_80_WC
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_60_80_WC
@@ -1018,6 +988,7 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION                                      
   #undef CAPABILITY  
+*/
 
    #define CAPABILITY BRBKstarmumu_60_80_BR
   START_CAPABILITY
@@ -1026,6 +997,7 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
+
 
   #define CAPABILITY BRBKstarmumu_60_80_FL
   START_CAPABILITY
@@ -1101,6 +1073,8 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
+/*
 
   #define CAPABILITY BRBKstarmumu_15_17_WC
   START_CAPABILITY
@@ -1183,6 +1157,8 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION                                      
   #undef CAPABILITY  
+
+*/
 
    #define CAPABILITY BRBKstarmumu_15_17_BR
   START_CAPABILITY
@@ -1268,6 +1244,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+/*
+
   #define CAPABILITY BRBKstarmumu_17_19_WC
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_17_19_WC
@@ -1349,6 +1327,8 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION                                      
   #undef CAPABILITY  
+
+*/
 
   #define CAPABILITY BRBKstarmumu_17_19_BR
   START_CAPABILITY
@@ -1472,7 +1452,7 @@ START_MODULE
     DEPENDENCY(bsgamma, double)
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY b2sgamma_LL_WC
   START_CAPABILITY
     #define FUNCTION b2sgamma_likelihood_WC
@@ -1480,7 +1460,7 @@ START_MODULE
     DEPENDENCY(bsgamma_WC, double)
     #undef FUNCTION
   #undef CAPABILITY
-
+*/
   #define CAPABILITY b2sll_M
   START_CAPABILITY
     #define FUNCTION b2sll_measurements
@@ -1493,7 +1473,7 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
    #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY b2sll_M_WC
   START_CAPABILITY
     #define FUNCTION b2sll_measurements_WC
@@ -1506,7 +1486,7 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
    #undef FUNCTION
   #undef CAPABILITY
-
+*/
 
   #define CAPABILITY b2sll_LL
   START_CAPABILITY
@@ -1515,7 +1495,7 @@ START_MODULE
     DEPENDENCY(b2sll_M, FlavBit::Flav_measurement_assym)
     #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY b2sll_LL_WC
   START_CAPABILITY
     #define FUNCTION b2sll_likelihood_WC
@@ -1523,7 +1503,7 @@ START_MODULE
     DEPENDENCY(b2sll_M_WC, FlavBit::Flav_measurement_assym)
     #undef FUNCTION
   #undef CAPABILITY
-
+*/
 
   #define CAPABILITY b2ll_LL
   START_CAPABILITY
@@ -1541,7 +1521,7 @@ START_MODULE
     DEPENDENCY(Bdmumu, double )
    #undef FUNCTION
   #undef CAPABILITY
-
+/*
   #define CAPABILITY b2ll_LL_WC
   START_CAPABILITY
     #define FUNCTION b2ll_likelihood_WC
@@ -1559,7 +1539,7 @@ START_MODULE
    #undef FUNCTION
   #undef CAPABILITY
 
-
+*/
 
   #define CAPABILITY SL_M
   START_CAPABILITY
