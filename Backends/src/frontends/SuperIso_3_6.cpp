@@ -69,7 +69,7 @@ BE_NAMESPACE
 
     return results;
   }
-  /*
+
   //Kstarmumu with WC
   Flav_KstarMuMu_obs BRBKstarmumu_CONV_WC(struct parameters *param, double Q2_min, double Q2_max)
   {
@@ -132,7 +132,7 @@ BE_NAMESPACE
 
     return results;
   }
-  */
+
   //###################################################################################
   double bsgamma_CONV(struct parameters *param, double E_t)
   {
@@ -153,7 +153,7 @@ BE_NAMESPACE
     }
     return result;
   }
-  /*
+
   //b->s gamma with Wilson coefficients
   double bsgamma_CONV_WC(struct parameters *param, double E_t)
   {
@@ -202,7 +202,7 @@ BE_NAMESPACE
     return result;
 
   }
-  */
+
 
   //###################################################################################
   double Bsll_untag_CONV(struct parameters *param, int flav)
@@ -232,7 +232,7 @@ BE_NAMESPACE
   }
   // Willson coefficients
   //###################################################################################
-  /*
+
   double Bsll_untag_CONV_WC(struct parameters *param, int flav)
   {
 
@@ -283,7 +283,7 @@ BE_NAMESPACE
     return result;
   }
 
-  */
+
 
 
   //###################################################################################
@@ -315,7 +315,7 @@ BE_NAMESPACE
   }
 
 
-  /*
+
   //###################################################################################
   double Bdll_CONV_WC(struct parameters *param, int flav)
   {
@@ -367,6 +367,6 @@ BE_NAMESPACE
 
     return result;
   }
-  */
+  
 }
 END_BE_NAMESPACE
