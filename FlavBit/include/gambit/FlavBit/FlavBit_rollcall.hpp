@@ -47,10 +47,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_fill
     START_FUNCTION(parameters)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, WC)
     BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    DEPENDENCY(MSSM_spectrum, Spectrum)
+    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, Spectrum, MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -431,62 +432,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_11_25_S3_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S3_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_11_25_S4_WC              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_11_25_S4_WC           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_11_25_S5_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S5_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_11_25_S3_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S3_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_11_25_AFB_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_AFB_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_11_25_S7_WC             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_11_25_S7_WC          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_11_25_S4_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S4_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_11_25_S8_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S8_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_11_25_S5_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S5_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_11_25_S9_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S9_WC         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_AFB_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_AFB_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_S7_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S7_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_S8_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S8_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_S9_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S9_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 */
    #define CAPABILITY BRBKstarmumu_11_25_BR
@@ -504,63 +505,63 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_11_25_S3            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S3         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_11_25_S4              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_11_25_S4           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_11_25_S5            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S5         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_11_25_S3
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S3
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_11_25_AFB            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_AFB         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_11_25_S7             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_11_25_S7          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_11_25_S4
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S4
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_11_25_S8            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S8         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_11_25_S5
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S5
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_11_25_S9            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_11_25_S9         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_AFB
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_AFB
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
-  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_S7
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S7
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_S8
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S8
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_11_25_S9
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_11_25_S9
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_25_40
@@ -599,62 +600,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_25_40_S3_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S3_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_25_40_S4_WC              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_25_40_S4_WC           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_25_40_S5_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S5_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_25_40_S3_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S3_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_25_40_AFB_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_AFB_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_25_40_S7_WC             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_25_40_S7_WC          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_25_40_S4_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S4_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_25_40_S8_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S8_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_25_40_S5_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S5_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_25_40_S9_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S9_WC         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_AFB_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_AFB_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_S7_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S7_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_S8_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S8_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_S9_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S9_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 */
    #define CAPABILITY BRBKstarmumu_25_40_BR
   START_CAPABILITY
@@ -671,62 +672,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_25_40_S3            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S3         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_25_40_S4              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_25_40_S4           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_25_40_S5            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S5         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_25_40_S3
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S3
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_25_40_AFB            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_AFB         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_25_40_S7             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_25_40_S7          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_25_40_S4
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S4
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_25_40_S8            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S8         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_25_40_S5
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S5
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_25_40_S9            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_25_40_S9         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_AFB
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_AFB
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_S7
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S7
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_S8
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S8
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40_S9
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40_S9
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_40_60
@@ -764,62 +765,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_40_60_S3_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S3_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_40_60_S4_WC              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_40_60_S4_WC           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_40_60_S5_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S5_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_40_60_S3_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S3_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_40_60_AFB_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_AFB_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_40_60_S7_WC             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_40_60_S7_WC          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_40_60_S4_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S4_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_40_60_S8_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S8_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_40_60_S5_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S5_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_40_60_S9_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S9_WC         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_AFB_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_AFB_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_S7_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S7_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_S8_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S8_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_S9_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S9_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 */
 
    #define CAPABILITY BRBKstarmumu_40_60_BR
@@ -838,62 +839,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_40_60_S3            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S3         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_40_60_S4              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_40_60_S4           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_40_60_S5            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S5         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_40_60_S3
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S3
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_40_60_AFB            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_AFB         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_40_60_S7             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_40_60_S7          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_40_60_S4
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S4
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_40_60_S8            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S8         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_40_60_S5
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S5
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_40_60_S9            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_40_60_S9         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_AFB
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_AFB
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_S7
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S7
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_S8
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S8
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60_S9
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60_S9
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 
   // Observable: BR(B -> K* mu mu)
@@ -932,62 +933,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_60_80_S3_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S3_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_60_80_S4_WC              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_60_80_S4_WC           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_60_80_S5_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S5_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_60_80_S3_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S3_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_60_80_AFB_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_AFB_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_60_80_S7_WC             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_60_80_S7_WC          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_60_80_S4_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S4_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_60_80_S8_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S8_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_60_80_S5_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S5_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_60_80_S9_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S9_WC         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_AFB_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_AFB_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_S7_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S7_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_S8_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S8_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_S9_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S9_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 */
 
    #define CAPABILITY BRBKstarmumu_60_80_BR
@@ -1006,62 +1007,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_60_80_S3            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S3         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_60_80_S4              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_60_80_S4           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_60_80_S5            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S5         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_60_80_S3
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S3
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_60_80_AFB            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_AFB         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_60_80_S7             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_60_80_S7          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_60_80_S4
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S4
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_60_80_S8            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S8         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_60_80_S5
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S5
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_60_80_S9            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_60_80_S9         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_AFB
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_AFB
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_S7
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S7
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_S8
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S8
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80_S9
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80_S9
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu)
   #define CAPABILITY BRBKstarmumu_15_17
@@ -1101,62 +1102,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_15_17_S3_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S3_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_15_17_S4_WC              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_15_17_S4_WC           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_15_17_S5_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S5_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_15_17_S3_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S3_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_15_17_AFB_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_AFB_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_15_17_S7_WC             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_15_17_S7_WC          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_15_17_S4_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S4_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_15_17_S8_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S8_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_15_17_S5_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S5_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_15_17_S9_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S9_WC         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_AFB_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_AFB_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_S7_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S7_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_S8_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S8_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_S9_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S9_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 */
 
@@ -1175,62 +1176,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_15_17_S3            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S3         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_15_17_S4              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_15_17_S4           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_15_17_S5            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S5         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_15_17_S3
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S3
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_15_17_AFB            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_AFB         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_15_17_S7             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_15_17_S7          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_15_17_S4
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S4
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_15_17_S8            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S8         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_15_17_S5
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S5
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_15_17_S9            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_15_17_S9         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_AFB
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_AFB
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_S7
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S7
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_S8
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S8
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17_S9
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17_S9
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 
   // Observable: BR(B -> K* mu mu)
@@ -1271,62 +1272,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_17_19_S3_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S3_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_17_19_S4_WC              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_17_19_S4_WC           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_17_19_S5_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S5_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_17_19_S3_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S3_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_17_19_AFB_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_AFB_WC         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_17_19_S7_WC             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_17_19_S7_WC          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_17_19_S4_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S4_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_17_19_S8_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S8_WC         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_17_19_S5_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S5_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_17_19_S9_WC            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S9_WC         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_AFB_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_AFB_WC
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_S7_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S7_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_S8_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S8_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_S9_WC
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S9_WC
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19_WC, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 */
 
@@ -1345,62 +1346,62 @@ START_MODULE
     DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
     #undef FUNCTION
   #undef CAPABILITY
-  
-  #define CAPABILITY BRBKstarmumu_17_19_S3            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S3         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_17_19_S4              
-  START_CAPABILITY                                         
-    #define FUNCTION SI_BRBKstarmumu_17_19_S4           
-    START_FUNCTION(double)                                 
-    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)  
-    #undef FUNCTION                                        
-  #undef CAPABILITY                                        
 
-  #define CAPABILITY BRBKstarmumu_17_19_S5            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S5         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_17_19_S3
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S3
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-   
-  #define CAPABILITY BRBKstarmumu_17_19_AFB            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_AFB         
-    START_FUNCTION(double)                               
-    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_17_19_S7             
-  START_CAPABILITY                                        
-    #define FUNCTION SI_BRBKstarmumu_17_19_S7          
-    START_FUNCTION(double)                                
-    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs) 
-    #undef FUNCTION                                       
-  #undef CAPABILITY                                       
+  #define CAPABILITY BRBKstarmumu_17_19_S4
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S4
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY BRBKstarmumu_17_19_S8            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S8         
-    START_FUNCTION(double)                               
+  #define CAPABILITY BRBKstarmumu_17_19_S5
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S5
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY                                      
-  
-  #define CAPABILITY BRBKstarmumu_17_19_S9            
-  START_CAPABILITY                                       
-    #define FUNCTION SI_BRBKstarmumu_17_19_S9         
-    START_FUNCTION(double)                               
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_AFB
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_AFB
+    START_FUNCTION(double)
     DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
-    #undef FUNCTION                                      
-  #undef CAPABILITY  
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_S7
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S7
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_S8
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S8
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19_S9
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19_S9
+    START_FUNCTION(double)
+    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Observable: A_I(B -> K* mu mu)
   #define CAPABILITY AI_BKstarmumu
