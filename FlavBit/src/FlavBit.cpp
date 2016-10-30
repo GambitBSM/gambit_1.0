@@ -138,9 +138,40 @@ namespace Gambit
                                                     
 	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];       
 	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];       
+
+	  // now SM inputs
+	  
+	  SMInputs spectrum = *(Dep::SMINPUTS);
+	  
+	  
+	  result.inv_alpha_em=spectrum.alphainv;
+	  result.Gfermi=spectrum.GF;
+	  result.alphas_MZ=spectrum.mZ;
+	  result.mass_Z=spectrum.mZ;
+	  result.mass_b=spectrum.mBmB;
+	  result.mass_top_pole=spectrum.mT;
+	  result.mass_tau=spectrum.mTau;
+	  result.mass_nutau2=spectrum.mNu3;
+	  result.mass_e2=spectrum.mE;
+	  result.mass_nue2=spectrum.mNu1;
+	  result.mass_mu2=spectrum.mMu;
+	  result.mass_numu2=spectrum.mNu2;
+	  result.mass_d2=spectrum.mD;
+	  result.mass_u2=spectrum.mU;
+	  result.mass_s2=spectrum.mS;
+	  result.mass_c2=spectrum.mCmC;
+	  
+	  	  
+	  result.CKM_lambda=spectrum.CKM.lambda;
+	  result.CKM_A=spectrum.CKM.A;
+	  result.CKM_rhobar=spectrum.CKM.rhobar;
+	  result.CKM_etabar=spectrum.CKM.etabar;
+
 	  
 	  BEreq::slha_adjust(&result);                    
 	  if(flav_debug) cout<<"Finished SI_fill"<<endl;  
+	  
+
 
 	  return;
 	}                                                 
