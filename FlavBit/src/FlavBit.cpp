@@ -201,7 +201,14 @@ namespace Gambit
         if(spectrum["UPMNSIN"][6].is_data_line()) result.PMNS_alpha2=SLHAea::to<double>(spectrum["UPMNSIN"][6][1]);
       }
 
-      if(!spectrum["MINPAR"].empty())
+      if(ModelInUse("WC"))
+	{
+	  BEreq::slha_adjust(&result);                               
+	  if(flav_debug) cout<<"Finished SI_fill"<<endl;             
+	}
+
+      
+      if(!spectrum["MINPAR"].empty() && !(ModelInUse("WC")) )
       {
         switch(result.model)
         {
