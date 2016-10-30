@@ -122,6 +122,33 @@ namespace Gambit
       using namespace myPipe;
       using namespace std;
 
+      if(ModelInUse("WC"))                                
+	{                                                 
+	  result.SM=1;  // needed acordingly to Nazila    
+	  result.Re_DeltaC7=*Param["Re_DeltaC7"];         
+	  result.Re_DeltaC9=*Param["Re_DeltaC9"];         
+	  result.Re_DeltaC10=*Param["Re_DeltaC10"];       
+                                                    
+	  result.Im_DeltaC7=*Param["Im_DeltaC7"];         
+	  result.Im_DeltaC9=*Param["Im_DeltaC9"];         
+	  result.Im_DeltaC10=*Param["Im_DeltaC10"];       
+                                                    
+	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];       
+	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];       
+                                                    
+	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];       
+	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];       
+	  
+	  BEreq::slha_adjust(&result);                    
+	  if(flav_debug) cout<<"Finished SI_fill"<<endl;  
+
+	  return;
+	}                                                 
+                                                    
+
+      
+
+
       // Obtain SLHAea object from spectrum
       SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
       // Add the MODSEL block if it is not provided by the spectrum object.
@@ -144,24 +171,6 @@ namespace Gambit
       if(result.NMSSM != 0) result.model=result.NMSSM;
       if(result.RV != 0) result.model=-2;
       if(result.CPV != 0) result.model=-2;
-
-      if(ModelInUse("WC")) 
-	{
-	  result.SM=1;  // needed acordingly to Nazila          
-	  result.Re_DeltaC7=*Param["Re_DeltaC7"];               
-	  result.Re_DeltaC9=*Param["Re_DeltaC9"];               
-	  result.Re_DeltaC10=*Param["Re_DeltaC10"];             
-                                                      
-	  result.Im_DeltaC7=*Param["Im_DeltaC7"];               
-	  result.Im_DeltaC9=*Param["Im_DeltaC9"];               
-	  result.Im_DeltaC10=*Param["Im_DeltaC10"];             
-                                                      
-	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];             
-	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];             
-                                                      
-	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];             
-	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];             
-	}
 
       if(!spectrum["SMINPUTS"].empty())
       {
@@ -200,12 +209,6 @@ namespace Gambit
         if(spectrum["UPMNSIN"][5].is_data_line()) result.PMNS_alpha1=SLHAea::to<double>(spectrum["UPMNSIN"][5][1]);
         if(spectrum["UPMNSIN"][6].is_data_line()) result.PMNS_alpha2=SLHAea::to<double>(spectrum["UPMNSIN"][6][1]);
       }
-
-      if(ModelInUse("WC"))
-	{
-	  BEreq::slha_adjust(&result);                               
-	  if(flav_debug) cout<<"Finished SI_fill"<<endl;             
-	}
 
       
       if(!spectrum["MINPAR"].empty() && !(ModelInUse("WC")) )
