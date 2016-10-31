@@ -14,30 +14,44 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Put the path to the HDF5 file here (and specify the group)
-f = h5py.File("/home/mwhi/GambitResults/MSSM7-Diver-MO/MSSM7.hdf5",'r')
+# Note that the file name and group are still named MSSM7 (Pat bug)
+f = h5py.File("/home/mwhi/GambitResults/MSSM11-Diver-MO/MSSM7.hdf5",'r')
 group = f["/MSSM7"]
 
-# Now extract the MSSM7 parameter arrays
-Ad3 = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::Ad_3"]
-Ad3_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::Ad_3_isvalid"],dtype=np.bool)
+# Now extract the MSSM11 parameter arrays
+Ad3 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::Ad_3"]
+Ad3_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::Ad_3_isvalid"],dtype=np.bool)
 
-Au3 = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::Au_3"]
-Au3_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::Au_3_isvalid"],dtype=np.bool)
+Au3 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::Au_3"]
+Au3_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::Au_3_isvalid"],dtype=np.bool)
 
-M2 = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::M2"]
-M2_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::M2_isvalid"],dtype=np.bool)
+Ae3 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::Ae_3"]
+Ae3_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::Ae_3_isvalid"],dtype=np.bool)
 
-tanB = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::TanBeta"]
-tanB_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::TanBeta_isvalid"],dtype=np.bool)
+M1 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::M1"]
+M1_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::M1_isvalid"],dtype=np.bool)
 
-MHd2 = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::mHd2"]
-MHd2_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::mHd2_isvalid"],dtype=np.bool)
+M2 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::M2"]
+M2_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::M2_isvalid"],dtype=np.bool)
 
-MHu2 = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::mHu2"]
-MHu2_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::mHu2_isvalid"],dtype=np.bool)
+M3 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::M3"]
+M3_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::M3_isvalid"],dtype=np.bool)
 
-Mf2 = group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::mf2"]
-Mf2_isvalid = np.array(group["#MSSM7atQ_parameters @MSSM7atQ::primary_parameters::mf2_isvalid"],dtype=np.bool)
+tanB = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::TanBeta"]
+tanB_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::TanBeta_isvalid"],dtype=np.bool)
+
+MHd2 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::mHd2"]
+MHd2_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::mHd2_isvalid"],dtype=np.bool)
+
+MHu2 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::mHu2"]
+MHu2_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::mHu2_isvalid"],dtype=np.bool)
+
+Mq2 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::mq2"]
+Mq2_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::mq2_isvalid"],dtype=np.bool)
+
+Ml2 = group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::ml2"]
+Ml2_isvalid = np.array(group["#MSSM11atQ_parameters @MSSM11atQ::primary_parameters::ml2_isvalid"],dtype=np.bool)
+
 
 # Get the SM nuisance parameters
 mtop = group["#StandardModel_SLHA2_parameters @StandardModel_SLHA2::primary_parameters::mT"]
@@ -90,11 +104,15 @@ cuts = (-10000<L[mask])
 
 Ad3_cuts = Ad3[mask][cuts]
 Au3_cuts = Au3[mask][cuts]
-M2_cuts = M2[mask][cuts] 
+Ae3_cuts = Ae3[mask][cuts]
+M1_cuts = M1[mask][cuts]
+M2_cuts = M2[mask][cuts]
+M3_cuts = M3[mask][cuts]
 tanB_cuts = tanB[mask][cuts]
 MHd2_cuts = MHd2[mask][cuts] 
 MHu2_cuts = MHu2[mask][cuts]
-Mf2_cuts = Mf2[mask][cuts]
+Mq2_cuts = Mq2[mask][cuts]
+Ml2_cuts = Ml2[mask][cuts]
 mchi1_cuts = mChi1[mask][cuts]
 mCharge1_cuts = mCharge1[mask][cuts]
 mslep_cuts = mSlep[mask][cuts]
@@ -120,7 +138,7 @@ selected_oh2_ll = []
 selected_mh = []
 selected_mchi1 = []
 
-for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, mtop, alphas, higgs_ll, oh2_ll, oh2, mCharge1, mstop1,mu in zip (Ad3_cuts, Au3_cuts, M2_cuts, tanB_cuts, MHd2_cuts, MHu2_cuts, Mf2_cuts, mchi1_cuts, mslep_cuts, mhiggs1_cuts, mhiggs2_cuts, mA_cuts, loglike_cuts, mtop_cuts, alphas_cuts, higgs_loglike_cuts, oh2_loglike_cuts, oh2_cuts, mCharge1_cuts,mstop1_cuts,mu_cuts):
+for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, mtop, alphas, higgs_ll, oh2_ll, oh2, mCharge1, mstop1,mu in zip (Ad3_cuts, Au3_cuts, Ae3_cuts, M1_cuts, M2_cuts, M3_cuts, tanB_cuts, MHd2_cuts, MHu2_cuts, Mq2_cuts, Ml2_cuts, mchi1_cuts, mslep_cuts, mhiggs1_cuts, mhiggs2_cuts, mA_cuts, loglike_cuts, mtop_cuts, alphas_cuts, higgs_loglike_cuts, oh2_loglike_cuts, oh2_cuts, mCharge1_cuts,mstop1_cuts,mu_cuts):
 
 #    if( ((mslep/mchi1) - 1) < 0.15 and L > -100):
 #    if( ((mslep/mchi1) - 1) < 0.15 and mh > 123):
@@ -129,18 +147,22 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, 
 # See equation (1) of arXiv:1508.01173
 # Note the likelihood case in each case
 
-    ll_cut_value = -60
+    ll_cut_value = -50
 
         # Stau coannihilation region (we use the lightest slepton assuming it is a stau)
     if( ((mslep/mchi1) - 1) < 0.15 and L > ll_cut_value):
         print "STAU COANNIHILATION POINT",mchi1,mslep,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
         print "M2 = ",M2
+        print "M3 = ",M3
         print "tanB = ",tanB
         print "MHd2 = ",MHd2
         print "MHu2 = ",MHu2
-        print "Mf2 = ",Mf2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
         print "mtop = ",mtop
         print "alphas = ",alphas
         print " "
@@ -155,11 +177,15 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, 
         print "CHARGINO COANNIHILATION POINT",mchi1,mCharge1,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
         print "M2 = ",M2
+        print "M3 = ",M3
         print "tanB = ",tanB
         print "MHd2 = ",MHd2
         print "MHu2 = ",MHu2
-        print "Mf2 = ",Mf2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
         print "mtop = ",mtop
         print "alphas = ",alphas
         print " "
@@ -170,11 +196,15 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, 
         print "STOP COANNIHILATION POINT",mchi1,mstop1,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
         print "M2 = ",M2
+        print "M3 = ",M3
         print "tanB = ",tanB
         print "MHd2 = ",MHd2
         print "MHu2 = ",MHu2
-        print "Mf2 = ",Mf2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
         print "mtop = ",mtop
         print "alphas = ",alphas
         print " "
@@ -185,11 +215,15 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, 
         print "AFUNNEL COANNIHILATION POINT",mchi1,mA,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
         print "M2 = ",M2
+        print "M3 = ",M3
         print "tanB = ",tanB
         print "MHd2 = ",MHd2
         print "MHu2 = ",MHu2
-        print "Mf2 = ",Mf2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
         print "mtop = ",mtop
         print "alphas = ",alphas
         print " "
@@ -200,11 +234,15 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, 
         print "HFUNNEL POINT",mchi1,mhiggs2,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
         print "M2 = ",M2
+        print "M3 = ",M3
         print "tanB = ",tanB
         print "MHd2 = ",MHd2
         print "MHu2 = ",MHu2
-        print "Mf2 = ",Mf2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
         print "mtop = ",mtop
         print "alphas = ",alphas
         print " "
@@ -215,18 +253,21 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, 
         print "FOCUS POINT",mchi1,mu,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
         print "M2 = ",M2
+        print "M3 = ",M3
         print "tanB = ",tanB
         print "MHd2 = ",MHd2
         print "MHu2 = ",MHu2
-        print "Mf2 = ",Mf2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
         print "mtop = ",mtop
         print "alphas = ",alphas
         print " "
         print " "
 
-        
-# Make some a plot down here        
+# Make a plot down here        
 fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
 
