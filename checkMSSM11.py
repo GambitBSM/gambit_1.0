@@ -148,9 +148,10 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
 # Note the likelihood case in each case
 
     ll_cut_value = -50
-
+    classified = False
         # Stau coannihilation region (we use the lightest slepton assuming it is a stau)
     if( ((mslep/mchi1) - 1) < 0.15 and L > ll_cut_value):
+        classified=True
         print "STAU COANNIHILATION POINT",mchi1,mslep,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -174,6 +175,7 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
 
         # Chargino coannihilation region
     if( ((mCharge1/mchi1) - 1) < 0.1 and L > ll_cut_value):
+        classified=True
         print "CHARGINO COANNIHILATION POINT",mchi1,mCharge1,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -193,6 +195,7 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
 
         # stop coannihilation region 
     if( ((mstop1/mchi1) - 1) < 0.2 and L > ll_cut_value):
+        classified=True
         print "STOP COANNIHILATION POINT",mchi1,mstop1,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -212,6 +215,7 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
 
         # A funnel
     if( (abs(mA/mchi1) - 2) < 0.4 and L > ll_cut_value):
+        classified=True
         print "AFUNNEL COANNIHILATION POINT",mchi1,mA,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -231,6 +235,7 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
 
         # H funnel
     if( (abs(mhiggs2/mchi1) - 2) < 0.4 and L > ll_cut_value):
+        classified=True
         print "HFUNNEL POINT",mchi1,mhiggs2,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -250,6 +255,7 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
 
         # Focus point (am assuming a mistake in the MasterCode paper)
     if( ((mu/mchi1) - 1) < 0.3 and L > ll_cut_value):
+        classified=True
         print "FOCUS POINT",mchi1,mu,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -267,6 +273,26 @@ for Ad3, Au3, Ae3, M1, M2, M3, tanB, MHd2, MHu2, Mq2, Ml2, mchi1, mslep, mhiggs1
         print " "
         print " "
 
+ #       Print out unclassified points
+    if(not classified):
+        print "UNCLASSIFIED POINT",mchi1,mu,mhiggs1,oh2,L,higgs_ll,oh2_ll
+        print "Ad3 = ",Ad3
+        print "Au3 = ",Au3
+        print "Ae3 = ",Ae3
+        print "M1 = ",M1
+        print "M2 = ",M2
+        print "M3 = ",M3
+        print "tanB = ",tanB
+        print "MHd2 = ",MHd2
+        print "MHu2 = ",MHu2
+        print "Mq2 = ",Mq2
+        print "Ml2 = ",Ml2
+        print "mtop = ",mtop
+        print "alphas = ",alphas
+        print " "
+        print " "
+
+        
 # Make a plot down here        
 fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
