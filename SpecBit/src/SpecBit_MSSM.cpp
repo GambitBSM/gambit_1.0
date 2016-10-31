@@ -20,6 +20,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015, 2016
+///
 ///  *********************************************
 
 #include <string>
@@ -302,9 +306,7 @@ namespace Gambit
        Eigen::Matrix<double,3,3> output;
        for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
        {
-         std::stringstream parname;
-         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         output(i,j) = *Param.at(parname.str());
+         output(i,j) = *Param.at(rootname + "_" + to_string(i+1) + to_string(j+1));
        }
        return output;
     }
@@ -313,11 +315,10 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) for(int j=i; j<3; ++j)
+       for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
        {
-         std::stringstream parname;
-         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         output(i,j) = *Param.at(parname.str());
+         str parname = rootname + "_" + ( i < j ? to_string(i+1) + to_string(j+1) : to_string(j+1) + to_string(i+1));
+         output(i,j) = *Param.at(parname);
        }
        return output;
     }
