@@ -63,6 +63,8 @@ mA = group["#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::A0 Pole_Mass"]
 
 mstop1 = group["#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::mstop1"]
 
+mu = group["#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::Mu mass1"]
+
 # Get some log likelihoods here
 higgs_loglike = group["#LHC_Higgs_LogLike @ColliderBit::calc_HS_LHC_LogLike"]
 oh2_loglike = group ["#lnL_oh2 @DarkBit::lnL_oh2_upperlimit"]
@@ -94,6 +96,7 @@ MHd2_cuts = MHd2[mask][cuts]
 MHu2_cuts = MHu2[mask][cuts]
 Mf2_cuts = Mf2[mask][cuts]
 mchi1_cuts = mChi1[mask][cuts]
+mCharge1_cuts = mCharge1[mask][cuts]
 mslep_cuts = mSlep[mask][cuts]
 mhiggs1_cuts = mHiggs1[mask][cuts]
 mhiggs2_cuts = mHiggs2[mask][cuts]
@@ -104,6 +107,8 @@ alphas_cuts = alphas[mask][cuts]
 higgs_loglike_cuts = higgs_loglike[mask][cuts]
 oh2_loglike_cuts = oh2_loglike[mask][cuts]
 oh2_cuts = oh2[mask][cuts]
+mstop1_cuts = mstop1[mask][cuts]
+mu_cuts = mu[mask][cuts]
 
 print "L range: ", np.min(loglike_cuts), np.max(loglike_cuts)
 
@@ -115,11 +120,19 @@ selected_oh2_ll = []
 selected_mh = []
 selected_mchi1 = []
 
-for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, loglike, mtop, alphas, higgs_ll, oh2_ll, oh2 in zip (Ad3_cuts, Au3_cuts, M2_cuts, tanB_cuts, MHd2_cuts, MHu2_cuts, Mf2_cuts, mchi1_cuts, mslep_cuts, mhiggs1_cuts, mhiggs2_cuts, mA_cuts, loglike_cuts, mtop_cuts, alphas_cuts, higgs_loglike_cuts, oh2_loglike_cuts, oh2_cuts):
+for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, L, mtop, alphas, higgs_ll, oh2_ll, oh2, mCharge1, mstop1,mu in zip (Ad3_cuts, Au3_cuts, M2_cuts, tanB_cuts, MHd2_cuts, MHu2_cuts, Mf2_cuts, mchi1_cuts, mslep_cuts, mhiggs1_cuts, mhiggs2_cuts, mA_cuts, loglike_cuts, mtop_cuts, alphas_cuts, higgs_loglike_cuts, oh2_loglike_cuts, oh2_cuts, mCharge1_cuts,mstop1_cuts,mu_cuts):
 
 #    if( ((mslep/mchi1) - 1) < 0.15 and L > -100):
 #    if( ((mslep/mchi1) - 1) < 0.15 and mh > 123):
-    if( ((mslep/mchi1) - 1) < 0.1 and L > -200):
+
+# Uncomment each section to get a particular region from the MasterCode paper
+# See equation (1) of arXiv:1508.01173
+# Note the likelihood case in each case
+
+    ll_cut_value = -100
+
+        # Stau coannihilation region (we use the lightest slepton assuming it is a stau)
+    if( ((mslep/mchi1) - 1) < 0.15 and L > ll_cut_value):
         print "STAU COANNIHILATION POINT",mchi1,mslep,mhiggs1,oh2,L,higgs_ll,oh2_ll
         print "Ad3 = ",Ad3
         print "Au3 = ",Au3
@@ -137,6 +150,82 @@ for Ad3, Au3, M2, tanB, MHd2, MHu2, Mf2, mchi1, mslep, mhiggs1, mhiggs2, mA, log
         selected_mh.append(mhiggs1)
         selected_mchi1.append(mchi1)
 
+        # Chargino coannihilation region
+    if( ((mCharge1/mchi1) - 1) < 0.1 and L > ll_cut_value):
+        print "CHARGINO COANNIHILATION POINT",mchi1,mCharge1,mhiggs1,oh2,L,higgs_ll,oh2_ll
+        print "Ad3 = ",Ad3
+        print "Au3 = ",Au3
+        print "M2 = ",M2
+        print "tanB = ",tanB
+        print "MHd2 = ",MHd2
+        print "MHu2 = ",MHu2
+        print "Mf2 = ",Mf2
+        print "mtop = ",mtop
+        print "alphas = ",alphas
+        print " "
+        print " "
+
+        # stop coannihilation region 
+    if( ((mstop1/mchi1) - 1) < 0.2 and L > ll_cut_value):
+        print "STOP COANNIHILATION POINT",mchi1,mstop1,mhiggs1,oh2,L,higgs_ll,oh2_ll
+        print "Ad3 = ",Ad3
+        print "Au3 = ",Au3
+        print "M2 = ",M2
+        print "tanB = ",tanB
+        print "MHd2 = ",MHd2
+        print "MHu2 = ",MHu2
+        print "Mf2 = ",Mf2
+        print "mtop = ",mtop
+        print "alphas = ",alphas
+        print " "
+        print " "
+
+        # A funnel
+    if( (abs(mA/mchi1) - 2) < 0.4 and L > ll_cut_value):
+        print "AFUNNEL COANNIHILATION POINT",mchi1,mA,mhiggs1,oh2,L,higgs_ll,oh2_ll
+        print "Ad3 = ",Ad3
+        print "Au3 = ",Au3
+        print "M2 = ",M2
+        print "tanB = ",tanB
+        print "MHd2 = ",MHd2
+        print "MHu2 = ",MHu2
+        print "Mf2 = ",Mf2
+        print "mtop = ",mtop
+        print "alphas = ",alphas
+        print " "
+        print " "
+
+        # H funnel
+    if( (abs(mhiggs2/mchi1) - 2) < 0.4 and L > ll_cut_value):
+        print "HFUNNEL POINT",mchi1,mhiggs2,mhiggs1,oh2,L,higgs_ll,oh2_ll
+        print "Ad3 = ",Ad3
+        print "Au3 = ",Au3
+        print "M2 = ",M2
+        print "tanB = ",tanB
+        print "MHd2 = ",MHd2
+        print "MHu2 = ",MHu2
+        print "Mf2 = ",Mf2
+        print "mtop = ",mtop
+        print "alphas = ",alphas
+        print " "
+        print " "
+
+        # Focus point (am assuming a mistake in the MasterCode paper)
+    if( ((mu/mchi1) - 1) < 0.3 and L > ll_cut_value):
+        print "FOCUS POINT",mchi1,mu,mhiggs1,oh2,L,higgs_ll,oh2_ll
+        print "Ad3 = ",Ad3
+        print "Au3 = ",Au3
+        print "M2 = ",M2
+        print "tanB = ",tanB
+        print "MHd2 = ",MHd2
+        print "MHu2 = ",MHu2
+        print "Mf2 = ",Mf2
+        print "mtop = ",mtop
+        print "alphas = ",alphas
+        print " "
+        print " "
+
+        
 # Make some a plot down here        
 fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
