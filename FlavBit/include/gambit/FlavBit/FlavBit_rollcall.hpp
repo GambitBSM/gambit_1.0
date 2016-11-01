@@ -51,8 +51,9 @@ START_MODULE
     BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, Spectrum, MSSM63atQ, MSSM63atMGUT)
-    MODEL_CONDITIONAL_DEPENDENCY(SMINPUTS, SMInputs, WC)
+    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, Spectrum, (MSSM63atQ, MSSM63atMGUT))
+//DEPENDENCY(SMINPUTS, SMInputs)
+    MODEL_CONDITIONAL_DEPENDENCY(SMINPUTS, SMInputs, (WC))  
     #undef FUNCTION
   #undef CAPABILITY
 

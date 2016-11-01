@@ -135,13 +135,13 @@ ObsLikes:
 
     # Flavour physics likelihoods
     - purpose:    LogLike
-      capability: b2ll_LL_WC
+      capability: b2ll_LL
 
     - purpose:    LogLike
-      capability: b2sll_LL_WC
+      capability: b2sll_LL
 
     - purpose:    LogLike
-      capability: b2sgamma_LL_WC
+      capability: b2sgamma_LL
 
 
 

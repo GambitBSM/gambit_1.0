@@ -140,8 +140,12 @@ namespace Gambit
 	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];       
 
 	  // now SM inputs
+	  // Access the pipes for this function to get model and parameter information, and dependencies
 	  
-	  SMInputs spectrum = *(Dep::SMINPUTS);
+
+	  // Get SLHA2 SMINPUTS values                                                                  
+
+	  const SMInputs& spectrum = *(Dep::SMINPUTS);
 	  
 	  
 	  result.inv_alpha_em=spectrum.alphainv;
