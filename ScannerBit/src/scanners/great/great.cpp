@@ -81,6 +81,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
     const int  MPIrank     = get_printer().get_stream()->getRank();      // MPI rank of this process
     const bool resume_mode = get_printer().resume_mode();                // Resuming run or not
     const str  outpath     = Gambit::Utils::ensure_path_exists(get_inifile_value<std::string>("default_output_path")+"GreAT-native/");
+    data.min_logLike       = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
 
     // Set up output and MultiRun log filenames
     std::ostringstream ss1, ss2, ss3; 
@@ -200,9 +201,29 @@ namespace Gambit
   {
     double LogLikelihoodFunction(TGreatPoint& point)
     {
+      // check if point is within the unit cube
       std::vector<double> parameter_vector = point.GetPoint();
-      point.SetID(data.likelihood_function->getNextPtID()); // Need to use the *next* PtID because PtID will not move on until the likelihood function is called.
-      return data.likelihood_function(parameter_vector);
+
+      bool outside = false;
+      for (unsigned int i=0;i<parameter_vector.size();i++)
+      {
+        if (parameter_vector[i]<0 || parameter_vector[i]>1)
+        {
+          outside = true;
+        }
+      }
+      
+      if (outside)
+      {
+        // at least one dimension is outside the unit cube so return -1e100 for LogLike
+        cout << "returning bad loglike = " << data.min_logLike;
+        return data.min_logLike;
+      }
+      else
+      {
+        point.SetID(data.likelihood_function->getNextPtID()); // Need to use the *next* PtID because PtID will not move on until the likelihood function is called.
+        return data.likelihood_function(parameter_vector);
+      }
     }
   }
 }
