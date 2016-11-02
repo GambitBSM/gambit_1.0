@@ -1614,9 +1614,10 @@ def isHeader(file_el):
     is_header = False
 
     file_name = file_el.get('name')
-    if '.' in file_name:
-        extension = file_name.rsplit('.',1)[1]
-        if extension.lower() in ['hpp', 'h']:
+    extension = os.path.splitext(file_name)[1]
+    
+    if extension != '':
+        if extension.lower() in ['.hpp', '.h', '.hh', '.hxx', cfg.header_extension.lower()]:
             is_header = True
 
     return is_header

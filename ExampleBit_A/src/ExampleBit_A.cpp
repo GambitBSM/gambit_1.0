@@ -173,8 +173,10 @@ namespace Gambit
           " function should have ALLOW_MODELS(NormalDist) defined.");
       }
 
-      // Randomly invalidate points for testing purposes
-      if (Random::draw() < 0.5)
+      // Randomly raise some ficticious alarms about this point, with probability x,
+      // where x is given by the input yaml option or a default of 1.
+      double x = 1.0-runOptions->getValueOrDef<double>(1., "probability_of_validity");
+      if (Random::draw() < x)
       {
         invalid_point().raise("I don't like this point.");
       }

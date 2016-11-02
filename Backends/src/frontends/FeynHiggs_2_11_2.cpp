@@ -14,6 +14,10 @@
 ///          (crogan@cern.ch)
 ///  \date 2015 Sept
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2016 Aug
+///
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
@@ -167,22 +171,20 @@ BE_INI_FUNCTION
   fh_complex Ab = Af, As = Af, Ad = Af;
   fh_complex Atau = Af, Amu = Af, Ae = Af;
 
-  Au.re   = SLHAea::to<double>( slhaea.at("Au").at(1,1).at(2) );
-  Ac.re   = SLHAea::to<double>( slhaea.at("Au").at(2,2).at(2) );
-  At.re   = SLHAea::to<double>( slhaea.at("Au").at(3,3).at(2) );
-  Ad.re   = SLHAea::to<double>( slhaea.at("Ad").at(1,1).at(2) );
-  As.re   = SLHAea::to<double>( slhaea.at("Ad").at(2,2).at(2) );
-  Ab.re   = SLHAea::to<double>( slhaea.at("Ad").at(3,3).at(2) );
-  Ae.re   = SLHAea::to<double>( slhaea.at("Ae").at(1,1).at(2) );
-  Amu.re  = SLHAea::to<double>( slhaea.at("Ae").at(2,2).at(2) );
-  Atau.re = SLHAea::to<double>( slhaea.at("Ae").at(3,3).at(2) );
+  Au.re   = SLHAea::to<double>(slhaea.at("TU").at(1,1).at(2))/SLHAea::to<double>(slhaea.at("YU").at(1,1).at(2));
+  Ac.re   = SLHAea::to<double>(slhaea.at("TU").at(2,2).at(2))/SLHAea::to<double>(slhaea.at("YU").at(2,2).at(2));
+  At.re   = SLHAea::to<double>(slhaea.at("TU").at(3,3).at(2))/SLHAea::to<double>(slhaea.at("YU").at(3,3).at(2));
+  Ad.re   = SLHAea::to<double>(slhaea.at("TD").at(1,1).at(2))/SLHAea::to<double>(slhaea.at("YD").at(1,1).at(2));
+  As.re   = SLHAea::to<double>(slhaea.at("TD").at(2,2).at(2))/SLHAea::to<double>(slhaea.at("YD").at(2,2).at(2));
+  Ab.re   = SLHAea::to<double>(slhaea.at("TD").at(3,3).at(2))/SLHAea::to<double>(slhaea.at("YD").at(3,3).at(2));
+  Ae.re   = SLHAea::to<double>(slhaea.at("TE").at(1,1).at(2))/SLHAea::to<double>(slhaea.at("YE").at(1,1).at(2));
+  Amu.re  = SLHAea::to<double>(slhaea.at("TE").at(2,2).at(2))/SLHAea::to<double>(slhaea.at("YE").at(2,2).at(2));
+  Atau.re = SLHAea::to<double>(slhaea.at("TE").at(3,3).at(2))/SLHAea::to<double>(slhaea.at("YE").at(3,3).at(2));
 
   // cout << "** Au =" << endl;
   // cout << Au.re << " " << Ac.re << " " << At.re << endl;
-
   // cout << "** Ad =" << endl;
   // cout << Ad.re << " " << As.re << " " << Ab.re << endl;
-
   // cout << "** Ae =" << endl;
   // cout << Ae.re << " " << Amu.re << " " << Atau.re << endl;
 

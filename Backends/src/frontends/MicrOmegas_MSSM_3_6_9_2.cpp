@@ -57,66 +57,10 @@ BE_INI_FUNCTION
 
     if (ModelInUse("MSSM63atQ"))
     {
-        // Write out a SLHA file with a random file name;
-        filename = "DarkBit" + std::to_string(Random::draw()) + std::to_string(Random::draw()) + "_" + std::to_string(rank) + ".slha";
+        // Write out an SLHA1 file, as required by Micromegas
+        filename = "DarkBit_to_MicrOmegas_" + std::to_string(rank) + ".slha";
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
         SLHAstruct mySLHA = mySpec.getSLHAea(1);
-        //FIXME
-
-        std::vector<double> mix_matrix_stop, mix_matrix_sbottom, mix_matrix_stau;
-        std::string mass_es1, mass_es2;
-        const static double tol = runOptions->getValueOrDef<double>(.01, "family_mixing_tolerance");
-        const static bool pterror = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
-
-        mix_matrix_stop = Gambit::slhahelp::family_state_mix_matrix("~u", 3, mass_es1, mass_es2, mySpec.get_HE());
-
-        mySLHA["STOPMIX"][""] << "Block"<< "STOPMIX";
-        mySLHA["STOPMIX"][""] << 1 << 1 << mix_matrix_stop[0];
-        mySLHA["STOPMIX"][""] << 1 << 2 << mix_matrix_stop[1];
-        mySLHA["STOPMIX"][""] << 2 << 1 << mix_matrix_stop[2];
-        mySLHA["STOPMIX"][""] << 2 << 2 << mix_matrix_stop[3];
-
-        mix_matrix_sbottom = Gambit::slhahelp::family_state_mix_matrix("~d", 3, mass_es1, mass_es2, mySpec.get_HE());
-
-        mySLHA["SBOTMIX"][""] << "Block"<< "SBOTMIX";
-        mySLHA["SBOTMIX"][""] << 1 << 1 << mix_matrix_sbottom[0];
-        mySLHA["SBOTMIX"][""] << 1 << 2 << mix_matrix_sbottom[1];
-        mySLHA["SBOTMIX"][""] << 2 << 1 << mix_matrix_sbottom[2];
-        mySLHA["SBOTMIX"][""] << 2 << 2 << mix_matrix_sbottom[3];
-
-        mix_matrix_stau = Gambit::slhahelp::family_state_mix_matrix("~e-", 3, mass_es1, mass_es2, mySpec.get_HE());
-
-        mySLHA["STAUMIX"][""] << "Block"<< "STAUMIX";
-        mySLHA["STAUXMIX"][""] << 1 << 1 << mix_matrix_stau[0];
-        mySLHA["STAUXMIX"][""] << 1 << 2 << mix_matrix_stau[1];
-        mySLHA["STAUXMIX"][""] << 2 << 1 << mix_matrix_stau[2];
-        mySLHA["STAUXMIX"][""] << 2 << 2 << mix_matrix_stau[3];
-
-        // Check for too much flavour mixing
-        if ((mix_matrix_stop[0]*mix_matrix_stop[0] + mix_matrix_stop[1]*mix_matrix_stop[1]) < (1. - tol) ||
-                (mix_matrix_stop[2]*mix_matrix_stop[2] + mix_matrix_stop[3]*mix_matrix_stop[3]) < (1. - tol) ||
-                (mix_matrix_sbottom[0]*mix_matrix_sbottom[0] + mix_matrix_sbottom[1]*mix_matrix_sbottom[1]) < (1. - tol) ||
-                (mix_matrix_sbottom[2]*mix_matrix_sbottom[2] + mix_matrix_sbottom[3]*mix_matrix_sbottom[3]) < (1. - tol) ||
-                (mix_matrix_stau[0]*mix_matrix_stau[0] + mix_matrix_stau[1]*mix_matrix_stau[1]) < (1. - tol) ||
-                (mix_matrix_stau[2]*mix_matrix_stau[2] + mix_matrix_stau[3]*mix_matrix_stau[3]) < (1. - tol))
-        {
-            std::stringstream tol_string;
-            tol_string << tol;
-            const str errmsg = "Flavour mixing is in excess of what is allowed by MicrOmegas flavour_mixing_tolerance\n"
-                    "parameter (currently set to " + tol_string.str() + ").";
-            if (pterror)
-            {
-                invalid_point().raise(errmsg);
-            }
-            else
-            {
-                std::ofstream SLHAerror("MicrOmegasError.slha");
-                SLHAerror << mySLHA;
-                SLHAerror.close();
-                backend_error().raise(LOCAL_INFO, errmsg + " Mixing matrices outputted to MicrOmegasError.slha");
-            }
-        }
-
         std::ofstream ofs(filename);
         ofs << mySLHA;
         ofs.close();
@@ -132,11 +76,11 @@ BE_INI_FUNCTION
 
         unsigned int usec = 100000;  // 100 ms delay
 
-        // Trying 100 times before giving up
+        // Try 100 times before giving up
         for (int counter = 0; counter < 100; counter++)
         {
             usleep(usec);
-            error = lesHinput(byVal(filename_c));
+            error = lesHinput(&filename_c[0]);
             if (error != 0)
                 backend_warning().raise(LOCAL_INFO,
                         "Troubles loading SLHA file in MicrOmegas lesHinput: " + filename + "\n"
@@ -150,7 +94,7 @@ BE_INI_FUNCTION
                     "lesHinput ("+filename+") returned error code: " + std::to_string(error));
         }
 
-        error = sortOddParticles(byVal(cdmName));
+        error = sortOddParticles(&cdmName[0]);
         if (error != 0) backend_error().raise(LOCAL_INFO, "MicrOmegas function "
                 "sortOddParticles ("+filename+") returned error code: " + std::to_string(error));
 
