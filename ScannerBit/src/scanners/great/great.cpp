@@ -216,7 +216,6 @@ namespace Gambit
       if (outside)
       {
         // at least one dimension is outside the unit cube so return -1e100 for LogLike
-        cout << "returning bad loglike = " << data.min_logLike;
         return data.min_logLike;
       }
       else
