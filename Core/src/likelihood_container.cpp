@@ -313,9 +313,13 @@ namespace Gambit
       if(dependencyResolver.printTiming())
       {
         int rank = printer.getRank();
-        printer.print(std::chrono::duration_cast<ms>(runtimeL).count(),            intralooptime_label,intraloopID,rank,getPtID());
-        printer.print(std::chrono::duration_cast<ms>(interloop_time).count(),      interlooptime_label,interloopID,rank,getPtID());
-        printer.print(std::chrono::duration_cast<ms>(true_total_loop_time).count(),totallooptime_label,totalloopID,rank,getPtID());
+        // Convert time counts to doubles (had weird problem with long long ints on some systems)
+        double d_runtime   = std::chrono::duration_cast<ms>(runtimeL).count(); 
+        double d_interloop = std::chrono::duration_cast<ms>(interloop_time).count();     
+        double d_total     = std::chrono::duration_cast<ms>(true_total_loop_time).count();
+        printer.print(d_runtime,   intralooptime_label, intraloopID, rank, getPtID());
+        printer.print(d_interloop, interlooptime_label, interloopID, rank, getPtID());
+        printer.print(d_total,     totallooptime_label, totalloopID, rank, getPtID());
       }
 
     }

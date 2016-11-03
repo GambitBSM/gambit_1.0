@@ -14,7 +14,7 @@ Parameters:
       fixed_value: 3
     A0:
       fixed_value: 100
-  
+
 Priors:
 
 Printer:
@@ -24,7 +24,7 @@ Printer:
 
 Scanner:
   use_scanner: toy_mcmc
-  
+
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
@@ -46,7 +46,7 @@ ObsLikes:
 
   - purpose:      Test
     capability:   unimproved_MSSM_spectrum
-    function:     get_MSSM_spectrum_as_SLHAea
+    function:     get_MSSM_spectrum_as_SLHAea_SLHA2
     printme:      false
 
   - purpose:      Test
@@ -76,10 +76,20 @@ ObsLikes:
 Rules:
 
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSM_spectrum_as_SLHAea
+    function: get_MSSM_spectrum_as_SLHAea_SLHA2
     dependencies:
       - capability: unimproved_MSSM_spectrum
         function: get_MSSMatMGUT_spectrum
+
+  - function: get_MSSM_spectrum_from_SLHAfile
+    options:
+      filenames: ["GAMBIT_spectrum.slha2"]
+
+  - capability: run_MSSMspectrum_test
+    function: MSSMspectrum_test
+    dependencies:
+      - capability: unimproved_MSSM_spectrum
+        function: get_MSSM_spectrum_from_SLHAfile
 
   - function: get_MSSMatMGUT_spectrum
     options:
@@ -121,4 +131,4 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
+

@@ -163,17 +163,6 @@ namespace Gambit
     }
     /// @}
 
-    /// Helper function to drop SLHA file
-    void drop_SLHA_if_requested(safe_ptr<Options>& runOptions, Spectrum& improved_spectrum)
-    {
-      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
-        improved_spectrum.getSLHA(filename,true);
-      }
-    }
-
     /// Helper function to set W masses
     void update_W_masses(SubSpectrum& HE, SubSpectrum& LE, const triplet<double>& prec_mw)
     {
@@ -190,7 +179,7 @@ namespace Gambit
     {
       using namespace Pipes::make_MSSM_precision_spectrum_none;
       improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
-      drop_SLHA_if_requested(runOptions, improved_spec);
+      improved_spec.drop_SLHAs_if_requested(runOptions, "GAMBIT_spectrum");
     }
 
     /// Precision MSSM spectrum manufacturer with precision W mass only
@@ -199,7 +188,7 @@ namespace Gambit
       using namespace Pipes::make_MSSM_precision_spectrum_W;
       improved_spec = *Dep::unimproved_MSSM_spectrum; // Does copy
       update_W_masses(improved_spec.get_HE(), improved_spec.get_LE(), *Dep::prec_mw);
-      drop_SLHA_if_requested(runOptions, improved_spec);
+      improved_spec.drop_SLHAs_if_requested(runOptions, "GAMBIT_spectrum");
     }
 
     /// Precision MSSM spectrum manufacturer with precision H and W masses
@@ -508,7 +497,7 @@ namespace Gambit
       if (central == 3) HE.set_override(Par::dimensionless, 1.0, "h mass from: "+p_orig+"::"+p_calc+", "+s_orig+"::"+s_calc, true);
 
       // Check if an SLHA file needs to be excreted.
-      drop_SLHA_if_requested(runOptions, improved_spec);
+      improved_spec.drop_SLHAs_if_requested(runOptions, "GAMBIT_spectrum");
 
     }
 

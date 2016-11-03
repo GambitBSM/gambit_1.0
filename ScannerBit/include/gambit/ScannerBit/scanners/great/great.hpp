@@ -33,6 +33,7 @@ namespace Gambit
     {
       Scanner::like_ptr likelihood_function;
       Scanner::printer_interface* printer;
+      double min_logLike;
     };
 
     /// Function to be minimised by GreAT
