@@ -1,5 +1,6 @@
 
 #include "gambit/Printers/printer_id_tools.hpp"
+#include "gambit/Logs/logger.hpp"
 
 namespace Gambit
 {
@@ -26,6 +27,7 @@ namespace Gambit
             {
                 N++;
                 map[name] = N;
+                logger() << LogTags::printers << LogTags::info << "Assigned printer ID '"<<N<<"' to output quantity with label '"<<name<<"'" << EOM;
                 return N;
             }
                 
@@ -45,7 +47,8 @@ namespace Gambit
             {
                 N--;
                 map[name] = N;
-                return N;
+                logger() << LogTags::printers << LogTags::info << "Assigned auxilliary printer ID '"<<N<<"' to output quantity with label '"<<name<<"'" << EOM;
+               return N;
             }
         }
     }
