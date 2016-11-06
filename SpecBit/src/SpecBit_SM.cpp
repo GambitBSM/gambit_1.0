@@ -101,9 +101,12 @@ namespace Gambit
       // Create a SubSpectrum object to wrap the EW sector information
       SMHiggsSimpleSpec higgsspec(higgsmodel);
 
-      // Create full Spectrum object from components above
-      // (SubSpectrum objects will be "cloned" into the Spectrum object)
-      result = Spectrum(qedqcdspec,higgsspec,sminputs,&myPipe::Param);
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
+      // Create full Spectrum object from components above (SubSpectrum objects will be "cloned" into the Spectrum object)
+      result = Spectrum(qedqcdspec,higgsspec,sminputs,&myPipe::Param,mass_cut,mass_ratio_cut);
     }
 
     /// Put together the SM Higgs couplings

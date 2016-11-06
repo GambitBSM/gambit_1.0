@@ -26,7 +26,7 @@
 ///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
-///  \date 2015 May
+///  \date 2015 May, 2016 Nov
 ///
 ///  \author Abram Krislock
 ///          (a.m.b.krislock@fys.uio.no)
@@ -39,13 +39,16 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
+//#define SPECTRUM_DEBUG
+
 namespace Gambit
 {
 
    /// @{ Spectrum class member function definitions
 
    /// Check if object has been fully initialised
-   void Spectrum::check_init() const {
+   void Spectrum::check_init() const
+   {
      if(not initialised) utils_error().raise(LOCAL_INFO,"Access or deepcopy of empty Spectrum object attempted!");
    }
 
@@ -60,45 +63,55 @@ namespace Gambit
        swap(first.HE_new, second.HE_new);
        swap(first.SMINPUTS, second.SMINPUTS);
        swap(first.input_Param, second.input_Param);
+       swap(first.mass_cuts, second.mass_cuts);
+       swap(first.mass_ratio_cuts, second.mass_ratio_cuts);
        swap(first.initialised, second.initialised);
    }
 
    /// @{ Constructors/destructors
 
    /// Default constructor
-   Spectrum::Spectrum() : input_Param(NULL), initialised(false) {}
+   Spectrum::Spectrum() : input_Param(NULL), mass_cuts(NULL), mass_ratio_cuts(NULL), initialised(false) {}
 
    /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-   Spectrum::Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params)
+   Spectrum::Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params,
+    const mc_info& mci, const mr_info& mri)
      : LE_new(le.clone())
      , HE_new(he.clone())
      , LE(LE_new.get())
      , HE(HE_new.get())
      , SMINPUTS(smi)
      , input_Param(params)
+     , mass_cuts(&mci)
+     , mass_ratio_cuts(&mri)
      , initialised(true)
-   {}
+   { check_mass_cuts(); }
 
    /// Construct new object, automatically creating an SMSimpleSpec as the LE subspectrum, and cloning the HE SubSpectrum object supplied and taking possession of it.
-   Spectrum::Spectrum(const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params)
+   Spectrum::Spectrum(const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params, const mc_info& mci, const mr_info& mri)
      : LE_new(SMSimpleSpec(smi).clone())
      , HE_new(he.clone())
      , LE(LE_new.get())
      , HE(HE_new.get())
      , SMINPUTS(smi)
      , input_Param(params)
+     , mass_cuts(&mci)
+     , mass_ratio_cuts(&mri)
      , initialised(true)
-   {}
+   { check_mass_cuts(); }
 
    /// Construct new object, wrapping existing SubSpectrum objects
    ///  Make sure the original objects don't get deleted before this wrapper does!
-   Spectrum::Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params)
+   Spectrum::Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params,
+    const mc_info& mci, const mr_info& mri)
      : LE(le)
      , HE(he)
      , SMINPUTS(smi)
      , input_Param(params)
+     , mass_cuts(&mci)
+     , mass_ratio_cuts(&mri)
      , initialised(true)
-   {}
+   { check_mass_cuts(); }
 
    /// Copy constructor, clones SubSpectrum objects.
    /// Make a non-const copy in order to use e.g. RunBothToScale function.
@@ -109,6 +122,8 @@ namespace Gambit
      , HE(HE_new.get())
      , SMINPUTS(other.SMINPUTS)
      , input_Param(other.input_Param)
+     , mass_cuts(other.mass_cuts)
+     , mass_ratio_cuts(other.mass_ratio_cuts)
      , initialised(other.initialised)
    {}
 
@@ -140,6 +155,43 @@ namespace Gambit
      LE->RunToScale(scale);
      HE->RunToScale(scale);
    }
+
+   /// Check the that the spectrum satisifies any mass cuts requested from the yaml file.
+   void Spectrum::check_mass_cuts()
+   {
+     if (mass_cuts != NULL and not mass_cuts->empty())
+     {
+       for (auto it = mass_cuts->begin(); it != mass_cuts->end(); ++it)
+       {
+         const str& p = it->first;
+         const double& low = it->second.first;
+         const double& high = it->second.second;
+         #ifdef SPECTRUM_DEBUG
+           cout << "Applying mass cut " << low << " GeV < mass(" << p << ") < " << high << " GeV" << endl;
+         #endif
+         if (not has(Par::Pole_Mass, p)) utils_error().raise(LOCAL_INFO, "Cannot cut on mass of unrecognised particle: " + p);
+         double m = get(Par::Pole_Mass, p);
+         if (m < low or m > high) invalid_point().raise(p + " failed requested mass cut.");
+       }
+     }
+     if (mass_ratio_cuts != NULL and not mass_ratio_cuts->empty())
+     {
+       for (auto it = mass_ratio_cuts->begin(); it != mass_ratio_cuts->end(); ++it)
+       {
+         const str& p1 = it->first.first;
+         const str& p2 = it->first.second;
+         const double& low = it->second.first;
+         const double& high = it->second.second;
+         #ifdef SPECTRUM_DEBUG
+           cout << "Applying mass ratio cut " << low << " < |mass(" << p1 << ")/mass(" << p2 << ")| < " << high << endl;
+         #endif
+         if (not has(Par::Pole_Mass, p1)) utils_error().raise(LOCAL_INFO, "Cannot cut on ratio with mass of unrecognised particle: " + p1);
+         if (not has(Par::Pole_Mass, p2)) utils_error().raise(LOCAL_INFO, "Cannot cut on ratio with mass of unrecognised particle: " + p2);
+         double mratio = std::abs(get(Par::Pole_Mass, p1) / get(Par::Pole_Mass, p2));
+         if (mratio < low or mratio > high) invalid_point().raise(p1 + "/" + p2 +" failed requested mass ratio cut.");
+       }
+     }
+     }
 
    /// Standard getters
    /// Return references to internal data members. Make sure original Spectrum object doesn't
