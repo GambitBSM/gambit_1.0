@@ -227,7 +227,7 @@ set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -Wno-deprecated-declarations -ffast-math ")
 endif()
 
 # - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used

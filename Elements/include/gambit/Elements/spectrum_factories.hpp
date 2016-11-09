@@ -7,7 +7,7 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2016 Jan
@@ -24,7 +24,7 @@ namespace Gambit
 {
    /// Create a simple spectrum object from an SLHAea object
    template <typename HE, typename HEmod>
-   Spectrum spectrum_from_SLHAea(HEmod hemod, SLHAstruct slhaea)
+   Spectrum spectrum_from_SLHAea(HEmod hemod, SLHAstruct slhaea, const Spectrum::mc_info& mci, const Spectrum::mr_info& mri)
    {
      // Create HE simple SubSpectrum object from the SLHAea object
      // (interacts with MSSM blocks in MSSM case)
@@ -47,16 +47,16 @@ namespace Gambit
      // later. INSTEAD, we should just pass the objects themselves, and
      // then they will be CLONED and the Spectrum object will take
      // possession of them:
-     return Spectrum(sm,he,sminputs,NULL);
+     return Spectrum(sm,he,sminputs,NULL,mci,mri);
    }
 
    /// Create a simple spectrum object from an SLHA file
    template <typename HE>
-   Spectrum spectrum_from_SLHA(str slha)
+   Spectrum spectrum_from_SLHA(str slha, const Spectrum::mc_info& mci, const Spectrum::mr_info& mri)
    {
      // Read the SLHA file in to an SLHAea object
-     SLHAstruct slhaea = read_SLHA(slha);      
+     SLHAstruct slhaea = read_SLHA(slha);
      // Create the final object from the SLHAea object
-     return spectrum_from_SLHAea<HE, SLHAstruct>(slhaea, slhaea);
+     return spectrum_from_SLHAea<HE, SLHAstruct>(slhaea, slhaea, mci, mri);
    }
 }
