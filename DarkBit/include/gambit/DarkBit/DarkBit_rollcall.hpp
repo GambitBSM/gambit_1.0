@@ -390,6 +390,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY set_gamLike_GC_halo
+  START_CAPABILITY
+    #define FUNCTION set_gamLike_GC_halo
+      START_FUNCTION(bool)
+      DEPENDENCY(GalacticHalo, GalacticHaloProperties)
+      BACKEND_REQ(set_halo_profile, (gamLike), void, (int, const std::vector<double> &, const std::vector<double> &, double))
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
@@ -406,6 +415,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -416,6 +426,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -426,6 +437,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY

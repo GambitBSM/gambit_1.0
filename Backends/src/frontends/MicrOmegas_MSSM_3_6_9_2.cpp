@@ -57,13 +57,10 @@ BE_INI_FUNCTION
 
     if (ModelInUse("MSSM63atQ"))
     {
-        // Write out a SLHA file with a random file name;
-        filename = "DarkBit" + std::to_string(Random::draw()) + std::to_string(Random::draw()) + "_" + std::to_string(rank) + ".slha";
+        // Write out an SLHA1 file, as required by Micromegas
+        filename = "DarkBit_to_MicrOmegas_" + std::to_string(rank) + ".slha";
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
-
-        // MicrOmegas requires SLHA1:
         SLHAstruct mySLHA = mySpec.getSLHAea(1);
-
         std::ofstream ofs(filename);
         ofs << mySLHA;
         ofs.close();
@@ -79,11 +76,11 @@ BE_INI_FUNCTION
 
         unsigned int usec = 100000;  // 100 ms delay
 
-        // Trying 100 times before giving up
+        // Try 100 times before giving up
         for (int counter = 0; counter < 100; counter++)
         {
             usleep(usec);
-            error = lesHinput(byVal(filename_c));
+            error = lesHinput(&filename_c[0]);
             if (error != 0)
                 backend_warning().raise(LOCAL_INFO,
                         "Troubles loading SLHA file in MicrOmegas lesHinput: " + filename + "\n"
@@ -97,7 +94,7 @@ BE_INI_FUNCTION
                     "lesHinput ("+filename+") returned error code: " + std::to_string(error));
         }
 
-        error = sortOddParticles(byVal(cdmName));
+        error = sortOddParticles(&cdmName[0]);
         if (error != 0) backend_error().raise(LOCAL_INFO, "MicrOmegas function "
                 "sortOddParticles ("+filename+") returned error code: " + std::to_string(error));
 

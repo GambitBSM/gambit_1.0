@@ -29,16 +29,16 @@
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/PrecisionBit/PrecisionBit_rollcall.hpp"
 
-using namespace BackendIniBit::Functown;    
-using namespace SpecBit::Functown;     
-using namespace DecayBit::Functown;     
-using namespace PrecisionBit::Functown;     
+using namespace BackendIniBit::Functown;
+using namespace SpecBit::Functown;
+using namespace DecayBit::Functown;
+using namespace PrecisionBit::Functown;
 
 using std::cout;
 using std::endl;
 
 const std::string filename_in = "3bithit.in";
-const std::string filename_out = "3bithit.out.slha";
+const std::string filename_out[2] = {"3bithit.out.slha1", "3bithit.out.slha2"};
 
 int main()
 {
@@ -91,7 +91,7 @@ int main()
     model[true] = "NUHM2";
     model[false] = "MSSM20atQ";
     try
-    { 
+    {
       infile = YAML::LoadFile(filename_in);
       if (infile["StandardModel_SLHA2"]) SM_parameters = infile["StandardModel_SLHA2"];
       else throw std::runtime_error("Block StandardModel_SLHA2 not found in "+filename_in+".  Quitting...");
@@ -103,8 +103,8 @@ int main()
         SUSY_parameters = infile[model[false]];
       }
       else if (not model_is_GUT_scale) throw std::runtime_error("You must give an " + model[false] + " or " +
-                                                             model[true] + " model in "+filename_in+".");    
-    } 
+                                                             model[true] + " model in "+filename_in+".");
+    }
     catch (YAML::Exception &e)
     {
       throw std::runtime_error("YAML error in "+filename_in+".\n(yaml-cpp error: "+std::string(e.what())+" )");
@@ -117,7 +117,6 @@ int main()
                                                        : Models::MSSM20atQ::Functown::primary_parameters.getcontentsPtr();
 
     // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
-    FH_MSSMMasses.resolveBackendReq(&Backends::FeynHiggs_2_11_3::Functown::FHGetPara);
     FH_HiggsMasses.resolveBackendReq(&Backends::FeynHiggs_2_11_3::Functown::FHHiggsCorr);
     FH_HiggsMasses.resolveBackendReq(&Backends::FeynHiggs_2_11_3::Functown::FHUncertainties);
     FH_Couplings.resolveBackendReq(&Backends::FeynHiggs_2_11_3::Functown::FHCouplings);
@@ -128,90 +127,90 @@ int main()
     gluino_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_glui3body);
     gluino_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_gluiloop);
     gluino_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_gluiwidth);
-    
+
     stop_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stop2body);
     stop_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stop3body);
     stop_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stoploop);
     stop_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stopwidth);
-    
+
     stop_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stop2body);
     stop_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stop3body);
     stop_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stopwidth);
-    
+
     sbottom_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot2body);
     sbottom_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot3body);
     sbottom_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbotwidth);
-    
+
     sbottom_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot2body);
     sbottom_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbot3body);
     sbottom_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sbotwidth);
-    
+
     sup_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sup2body);
     sup_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_supwidth);
-    
+
     sup_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sup2body);
     sup_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_supwidth);
-    
+
     sdown_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdown2body);
     sdown_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdownwidth);
-    
+
     sdown_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdown2body);
     sdown_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdownwidth);
-    
+
     scharm_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sup2body);
     scharm_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_supwidth);
-    
+
     scharm_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sup2body);
     scharm_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_supwidth);
-    
+
     sstrange_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdown2body);
     sstrange_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdownwidth);
     sstrange_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdown2body);
     sstrange_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sdownwidth);
-    
+
     selectron_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sel2body);
     selectron_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_selwidth);
-    
+
     selectron_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sel2body);
     selectron_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_selwidth);
-    
+
     smuon_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sel2body);
     smuon_l_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_selwidth);
-    
+
     smuon_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sel2body);
     smuon_r_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_selwidth);
-    
+
     stau_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stau2body);
     stau_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stau2bodygrav);
     stau_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stauwidth);
-    
+
     stau_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stau2body);
     stau_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_stauwidth);
-    
+
     snu_electronl_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_snel2body);
     snu_electronl_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_snelwidth);
-    
+
     snu_muonl_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_snel2body);
     snu_muonl_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_snelwidth);
-    
+
     snu_taul_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sntau2body);
     snu_taul_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_sntauwidth);
-    
+
     chargino_plus_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_char2body);
     chargino_plus_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_char2bodygrav);
     chargino_plus_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_char3body);
     chargino_plus_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_charwidth);
-    
+
     chargino_plus_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_char2body);
     chargino_plus_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_char2bodygrav);
     chargino_plus_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_char3body);
     chargino_plus_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_charwidth);
-    
+
     neutralino_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2body);
     neutralino_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2bodygrav);
     neutralino_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
     neutralino_1_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
-    
+
     neutralino_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2body);
     neutralino_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2bodygrav);
     neutralino_2_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
@@ -223,16 +222,16 @@ int main()
     neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
     neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
     neutralino_3_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
-  
+
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2body);
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut2bodygrav);
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neut3body);
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutloop);
     neutralino_4_decays.resolveBackendReq(&Backends::SUSY_HIT_1_5::Functown::sd_neutwidth);
 
-    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_2_0::Functown::calculate_amu_1loop);
-    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_2_0::Functown::calculate_amu_2loop);
-    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_2_0::Functown::calculate_uncertainty_amu_2loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_3_0::Functown::calculate_amu_1loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_3_0::Functown::calculate_amu_2loop);
+    GM2C_SUSY.resolveBackendReq(&Backends::gm2calc_1_3_0::Functown::calculate_uncertainty_amu_2loop);
 
     // Notify any module functions that care of the models being scanned.
     get_SMINPUTS.notifyOfModel("StandardModel_SLHA2");
@@ -249,7 +248,6 @@ int main()
       Models::MSSM30atQ::Functown::MSSM63atQ_parameters.notifyOfModel(SUSY_model);
       get_MSSMatQ_spectrum.notifyOfModel(SUSY_model);
     }
-    FH_MSSMMasses.notifyOfModel(SUSY_model);
     FH_HiggsMasses.notifyOfModel(SUSY_model);
     FH_Couplings.notifyOfModel(SUSY_model);
     SUSY_HIT_1_5_init.notifyOfModel(SUSY_model);
@@ -264,7 +262,7 @@ int main()
       get_MSSMatMGUT_spectrum.resolveDependency(&Models::MSSM30atMGUT::Functown::MSSM63atMGUT_parameters);
       get_MSSMatMGUT_spectrum.resolveDependency(&get_SMINPUTS);
       FeynHiggs_2_11_3_init.resolveDependency(&get_MSSMatMGUT_spectrum);
-      make_MSSM_precision_spectrum.resolveDependency(&get_MSSMatMGUT_spectrum);
+      make_MSSM_precision_spectrum_H_W.resolveDependency(&get_MSSMatMGUT_spectrum);
     }
     else
     {
@@ -274,24 +272,22 @@ int main()
       get_MSSMatQ_spectrum.resolveDependency(&Models::MSSM30atQ::Functown::MSSM63atQ_parameters);
       get_MSSMatQ_spectrum.resolveDependency(&get_SMINPUTS);
       FeynHiggs_2_11_3_init.resolveDependency(&get_MSSMatQ_spectrum);
-      make_MSSM_precision_spectrum.resolveDependency(&get_MSSMatQ_spectrum);
+      make_MSSM_precision_spectrum_H_W.resolveDependency(&get_MSSMatQ_spectrum);
     }
 
     get_SMINPUTS.resolveDependency(&Models::StandardModel_SLHA2::Functown::primary_parameters);
-    get_mass_es_pseudonyms.resolveDependency(&make_MSSM_precision_spectrum);
+    get_mass_es_pseudonyms.resolveDependency(&make_MSSM_precision_spectrum_H_W);
 
-    FH_HiggsMasses.resolveDependency(&FH_MSSMMasses);
-    FH_Couplings.resolveDependency(&FH_HiggsMasses);
     FH_PrecisionObs.resolveDependency(&FH_Couplings);
     FH_precision_mw.resolveDependency(&FH_PrecisionObs);
     FH_precision_sinW2.resolveDependency(&FH_PrecisionObs);
     FH_precision_deltarho.resolveDependency(&FH_PrecisionObs);
-    make_MSSM_precision_spectrum.resolveDependency(&FH_precision_mw);
-    make_MSSM_precision_spectrum.resolveDependency(&FH_HiggsMasses);
-    GM2C_SUSY.resolveDependency(&make_MSSM_precision_spectrum);
+    make_MSSM_precision_spectrum_H_W.resolveDependency(&FH_precision_mw);
+    make_MSSM_precision_spectrum_H_W.resolveDependency(&FH_HiggsMasses);
+    GM2C_SUSY.resolveDependency(&make_MSSM_precision_spectrum_H_W);
 
     FeynHiggs_2_11_3_init.resolveDependency(&get_SMINPUTS);
-    SUSY_HIT_1_5_init.resolveDependency(&make_MSSM_precision_spectrum);
+    SUSY_HIT_1_5_init.resolveDependency(&make_MSSM_precision_spectrum_H_W);
     SUSY_HIT_1_5_init.resolveDependency(&W_plus_decays);
     SUSY_HIT_1_5_init.resolveDependency(&W_minus_decays);
     SUSY_HIT_1_5_init.resolveDependency(&Z_decays);
@@ -313,20 +309,20 @@ int main()
     FH_h0_2_decays.resolveDependency(&get_mass_es_pseudonyms);
     FH_A0_decays.resolveDependency(&get_mass_es_pseudonyms);
     FH_H_plus_decays.resolveDependency(&get_mass_es_pseudonyms);
-    gluino_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    stop_1_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    stop_2_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    sbottom_1_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    sbottom_2_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    stau_1_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    stau_2_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    snu_taul_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    chargino_plus_1_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    chargino_plus_2_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    neutralino_1_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    neutralino_2_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    neutralino_3_decays.resolveDependency(&get_mass_es_pseudonyms); 
-    neutralino_4_decays.resolveDependency(&get_mass_es_pseudonyms); 
+    gluino_decays.resolveDependency(&get_mass_es_pseudonyms);
+    stop_1_decays.resolveDependency(&get_mass_es_pseudonyms);
+    stop_2_decays.resolveDependency(&get_mass_es_pseudonyms);
+    sbottom_1_decays.resolveDependency(&get_mass_es_pseudonyms);
+    sbottom_2_decays.resolveDependency(&get_mass_es_pseudonyms);
+    stau_1_decays.resolveDependency(&get_mass_es_pseudonyms);
+    stau_2_decays.resolveDependency(&get_mass_es_pseudonyms);
+    snu_taul_decays.resolveDependency(&get_mass_es_pseudonyms);
+    chargino_plus_1_decays.resolveDependency(&get_mass_es_pseudonyms);
+    chargino_plus_2_decays.resolveDependency(&get_mass_es_pseudonyms);
+    neutralino_1_decays.resolveDependency(&get_mass_es_pseudonyms);
+    neutralino_2_decays.resolveDependency(&get_mass_es_pseudonyms);
+    neutralino_3_decays.resolveDependency(&get_mass_es_pseudonyms);
+    neutralino_4_decays.resolveDependency(&get_mass_es_pseudonyms);
 
     H_minus_decays.resolveDependency(&H_plus_decays);
     stopbar_1_decays.resolveDependency(&stop_1_decays);
@@ -352,9 +348,10 @@ int main()
     snubar_taul_decays.resolveDependency(&snu_taul_decays);
     chargino_minus_1_decays.resolveDependency(&chargino_plus_1_decays);
     chargino_minus_2_decays.resolveDependency(&chargino_plus_2_decays);
-    
+
     all_decays.resolveDependency(&get_mass_es_pseudonyms);
-    all_decays.resolveDependency(&FH_MSSM_h0_1_decays); 
+    all_decays.resolveDependency(&make_MSSM_precision_spectrum_H_W);
+    all_decays.resolveDependency(&FH_MSSM_h0_1_decays);
     all_decays.resolveDependency(&W_minus_decays);
     all_decays.resolveDependency(&W_plus_decays);
     all_decays.resolveDependency(&Z_decays);
@@ -372,61 +369,61 @@ int main()
     all_decays.resolveDependency(&rho_minus_decays);
     all_decays.resolveDependency(&rho_plus_decays);
     all_decays.resolveDependency(&omega_decays);
-    all_decays.resolveDependency(&FH_h0_2_decays); 
-    all_decays.resolveDependency(&FH_A0_decays); 
-    all_decays.resolveDependency(&FH_H_plus_decays); 
-    all_decays.resolveDependency(&H_minus_decays); 
-    all_decays.resolveDependency(&gluino_decays); 
-    all_decays.resolveDependency(&stop_1_decays); 
-    all_decays.resolveDependency(&stop_2_decays); 
-    all_decays.resolveDependency(&sbottom_1_decays); 
-    all_decays.resolveDependency(&sbottom_2_decays); 
-    all_decays.resolveDependency(&sup_l_decays); 
-    all_decays.resolveDependency(&sup_r_decays); 
-    all_decays.resolveDependency(&sdown_l_decays); 
-    all_decays.resolveDependency(&sdown_r_decays); 
-    all_decays.resolveDependency(&scharm_l_decays); 
-    all_decays.resolveDependency(&scharm_r_decays); 
-    all_decays.resolveDependency(&sstrange_l_decays); 
-    all_decays.resolveDependency(&sstrange_r_decays); 
-    all_decays.resolveDependency(&selectron_l_decays); 
-    all_decays.resolveDependency(&selectron_r_decays); 
-    all_decays.resolveDependency(&smuon_l_decays); 
-    all_decays.resolveDependency(&smuon_r_decays); 
-    all_decays.resolveDependency(&stau_1_decays); 
-    all_decays.resolveDependency(&stau_2_decays); 
-    all_decays.resolveDependency(&snu_electronl_decays); 
-    all_decays.resolveDependency(&snu_muonl_decays); 
-    all_decays.resolveDependency(&snu_taul_decays); 
-    all_decays.resolveDependency(&stopbar_1_decays); 
-    all_decays.resolveDependency(&stopbar_2_decays); 
-    all_decays.resolveDependency(&sbottombar_1_decays); 
-    all_decays.resolveDependency(&sbottombar_2_decays); 
-    all_decays.resolveDependency(&supbar_l_decays); 
-    all_decays.resolveDependency(&supbar_r_decays); 
-    all_decays.resolveDependency(&sdownbar_l_decays); 
-    all_decays.resolveDependency(&sdownbar_r_decays); 
-    all_decays.resolveDependency(&scharmbar_l_decays); 
-    all_decays.resolveDependency(&scharmbar_r_decays); 
-    all_decays.resolveDependency(&sstrangebar_l_decays); 
-    all_decays.resolveDependency(&sstrangebar_r_decays); 
-    all_decays.resolveDependency(&selectronbar_l_decays); 
-    all_decays.resolveDependency(&selectronbar_r_decays); 
-    all_decays.resolveDependency(&smuonbar_l_decays); 
-    all_decays.resolveDependency(&smuonbar_r_decays); 
-    all_decays.resolveDependency(&staubar_1_decays); 
-    all_decays.resolveDependency(&staubar_2_decays); 
-    all_decays.resolveDependency(&snubar_electronl_decays); 
-    all_decays.resolveDependency(&snubar_muonl_decays); 
-    all_decays.resolveDependency(&snubar_taul_decays); 
-    all_decays.resolveDependency(&chargino_plus_1_decays); 
-    all_decays.resolveDependency(&chargino_minus_1_decays); 
-    all_decays.resolveDependency(&chargino_plus_2_decays); 
-    all_decays.resolveDependency(&chargino_minus_2_decays); 
-    all_decays.resolveDependency(&neutralino_1_decays); 
-    all_decays.resolveDependency(&neutralino_2_decays); 
-    all_decays.resolveDependency(&neutralino_3_decays); 
-    all_decays.resolveDependency(&neutralino_4_decays); 
+    all_decays.resolveDependency(&FH_h0_2_decays);
+    all_decays.resolveDependency(&FH_A0_decays);
+    all_decays.resolveDependency(&FH_H_plus_decays);
+    all_decays.resolveDependency(&H_minus_decays);
+    all_decays.resolveDependency(&gluino_decays);
+    all_decays.resolveDependency(&stop_1_decays);
+    all_decays.resolveDependency(&stop_2_decays);
+    all_decays.resolveDependency(&sbottom_1_decays);
+    all_decays.resolveDependency(&sbottom_2_decays);
+    all_decays.resolveDependency(&sup_l_decays);
+    all_decays.resolveDependency(&sup_r_decays);
+    all_decays.resolveDependency(&sdown_l_decays);
+    all_decays.resolveDependency(&sdown_r_decays);
+    all_decays.resolveDependency(&scharm_l_decays);
+    all_decays.resolveDependency(&scharm_r_decays);
+    all_decays.resolveDependency(&sstrange_l_decays);
+    all_decays.resolveDependency(&sstrange_r_decays);
+    all_decays.resolveDependency(&selectron_l_decays);
+    all_decays.resolveDependency(&selectron_r_decays);
+    all_decays.resolveDependency(&smuon_l_decays);
+    all_decays.resolveDependency(&smuon_r_decays);
+    all_decays.resolveDependency(&stau_1_decays);
+    all_decays.resolveDependency(&stau_2_decays);
+    all_decays.resolveDependency(&snu_electronl_decays);
+    all_decays.resolveDependency(&snu_muonl_decays);
+    all_decays.resolveDependency(&snu_taul_decays);
+    all_decays.resolveDependency(&stopbar_1_decays);
+    all_decays.resolveDependency(&stopbar_2_decays);
+    all_decays.resolveDependency(&sbottombar_1_decays);
+    all_decays.resolveDependency(&sbottombar_2_decays);
+    all_decays.resolveDependency(&supbar_l_decays);
+    all_decays.resolveDependency(&supbar_r_decays);
+    all_decays.resolveDependency(&sdownbar_l_decays);
+    all_decays.resolveDependency(&sdownbar_r_decays);
+    all_decays.resolveDependency(&scharmbar_l_decays);
+    all_decays.resolveDependency(&scharmbar_r_decays);
+    all_decays.resolveDependency(&sstrangebar_l_decays);
+    all_decays.resolveDependency(&sstrangebar_r_decays);
+    all_decays.resolveDependency(&selectronbar_l_decays);
+    all_decays.resolveDependency(&selectronbar_r_decays);
+    all_decays.resolveDependency(&smuonbar_l_decays);
+    all_decays.resolveDependency(&smuonbar_r_decays);
+    all_decays.resolveDependency(&staubar_1_decays);
+    all_decays.resolveDependency(&staubar_2_decays);
+    all_decays.resolveDependency(&snubar_electronl_decays);
+    all_decays.resolveDependency(&snubar_muonl_decays);
+    all_decays.resolveDependency(&snubar_taul_decays);
+    all_decays.resolveDependency(&chargino_plus_1_decays);
+    all_decays.resolveDependency(&chargino_minus_1_decays);
+    all_decays.resolveDependency(&chargino_plus_2_decays);
+    all_decays.resolveDependency(&chargino_minus_2_decays);
+    all_decays.resolveDependency(&neutralino_1_decays);
+    all_decays.resolveDependency(&neutralino_2_decays);
+    all_decays.resolveDependency(&neutralino_3_decays);
+    all_decays.resolveDependency(&neutralino_4_decays);
 
     // Set some module function options here if you need to, e.g.
     //all_decays.setOption<double>("blahblah", 0.1);
@@ -437,7 +434,7 @@ int main()
       auto names = SM_primpar->getKeys();
       for (auto it = names.begin(); it != names.end(); ++it) SM_primpar->setValue(*it, SM_parameters[*it].as<double>());
       names = SUSY_primpar->getKeys();
-      for (auto it = names.begin(); it != names.end(); ++it) SUSY_primpar->setValue(*it, SUSY_parameters[*it].as<double>());      
+      for (auto it = names.begin(); it != names.end(); ++it) SUSY_primpar->setValue(*it, SUSY_parameters[*it].as<double>());
     }
     catch (YAML::Exception &e)
     {
@@ -469,7 +466,7 @@ int main()
       FH_Couplings.reset_and_calculate();
       FH_PrecisionObs.reset_and_calculate();
       FH_precision_mw.reset_and_calculate();
-      make_MSSM_precision_spectrum.reset_and_calculate();
+      make_MSSM_precision_spectrum_H_W.reset_and_calculate();
 
       // Now the decays.
       get_mass_es_pseudonyms.reset_and_calculate();
@@ -477,7 +474,7 @@ int main()
       W_minus_decays.reset_and_calculate();
       Z_decays.reset_and_calculate();
       SUSY_HIT_1_5_init.reset_and_calculate();
-      FH_MSSM_h0_1_decays.reset_and_calculate(); 
+      FH_MSSM_h0_1_decays.reset_and_calculate();
       FH_t_decays.reset_and_calculate();
       tbar_decays.reset_and_calculate();
       mu_plus_decays.reset_and_calculate();
@@ -493,77 +490,77 @@ int main()
       rho_minus_decays.reset_and_calculate();
       omega_decays.reset_and_calculate();
       get_mass_es_pseudonyms.reset_and_calculate();
-      FH_h0_2_decays.reset_and_calculate(); 
-      FH_A0_decays.reset_and_calculate(); 
-      FH_H_plus_decays.reset_and_calculate(); 
-      H_minus_decays.reset_and_calculate(); 
-      gluino_decays.reset_and_calculate(); 
-      stop_1_decays.reset_and_calculate(); 
-      stop_2_decays.reset_and_calculate(); 
-      sbottom_1_decays.reset_and_calculate(); 
-      sbottom_2_decays.reset_and_calculate(); 
-      sup_l_decays.reset_and_calculate(); 
-      sup_r_decays.reset_and_calculate(); 
-      sdown_l_decays.reset_and_calculate(); 
-      sdown_r_decays.reset_and_calculate(); 
-      scharm_l_decays.reset_and_calculate(); 
-      scharm_r_decays.reset_and_calculate(); 
-      sstrange_l_decays.reset_and_calculate(); 
-      sstrange_r_decays.reset_and_calculate(); 
-      selectron_l_decays.reset_and_calculate(); 
-      selectron_r_decays.reset_and_calculate(); 
-      smuon_l_decays.reset_and_calculate(); 
-      smuon_r_decays.reset_and_calculate(); 
-      stau_1_decays.reset_and_calculate(); 
-      stau_2_decays.reset_and_calculate(); 
-      snu_electronl_decays.reset_and_calculate(); 
-      snu_muonl_decays.reset_and_calculate(); 
-      snu_taul_decays.reset_and_calculate(); 
-      stopbar_1_decays.reset_and_calculate(); 
-      stopbar_2_decays.reset_and_calculate(); 
-      sbottombar_1_decays.reset_and_calculate(); 
-      sbottombar_2_decays.reset_and_calculate(); 
-      supbar_l_decays.reset_and_calculate(); 
-      supbar_r_decays.reset_and_calculate(); 
-      sdownbar_l_decays.reset_and_calculate(); 
-      sdownbar_r_decays.reset_and_calculate(); 
-      scharmbar_l_decays.reset_and_calculate(); 
-      scharmbar_r_decays.reset_and_calculate(); 
-      sstrangebar_l_decays.reset_and_calculate(); 
-      sstrangebar_r_decays.reset_and_calculate(); 
-      selectronbar_l_decays.reset_and_calculate(); 
-      selectronbar_r_decays.reset_and_calculate(); 
-      smuonbar_l_decays.reset_and_calculate(); 
-      smuonbar_r_decays.reset_and_calculate(); 
-      staubar_1_decays.reset_and_calculate(); 
-      staubar_2_decays.reset_and_calculate(); 
-      snubar_electronl_decays.reset_and_calculate(); 
-      snubar_muonl_decays.reset_and_calculate(); 
-      snubar_taul_decays.reset_and_calculate(); 
-      chargino_plus_1_decays.reset_and_calculate(); 
-      chargino_minus_1_decays.reset_and_calculate(); 
-      chargino_plus_2_decays.reset_and_calculate(); 
-      chargino_minus_2_decays.reset_and_calculate(); 
-      neutralino_1_decays.reset_and_calculate(); 
-      neutralino_2_decays.reset_and_calculate(); 
-      neutralino_3_decays.reset_and_calculate(); 
-      neutralino_4_decays.reset_and_calculate(); 
+      FH_h0_2_decays.reset_and_calculate();
+      FH_A0_decays.reset_and_calculate();
+      FH_H_plus_decays.reset_and_calculate();
+      H_minus_decays.reset_and_calculate();
+      gluino_decays.reset_and_calculate();
+      stop_1_decays.reset_and_calculate();
+      stop_2_decays.reset_and_calculate();
+      sbottom_1_decays.reset_and_calculate();
+      sbottom_2_decays.reset_and_calculate();
+      sup_l_decays.reset_and_calculate();
+      sup_r_decays.reset_and_calculate();
+      sdown_l_decays.reset_and_calculate();
+      sdown_r_decays.reset_and_calculate();
+      scharm_l_decays.reset_and_calculate();
+      scharm_r_decays.reset_and_calculate();
+      sstrange_l_decays.reset_and_calculate();
+      sstrange_r_decays.reset_and_calculate();
+      selectron_l_decays.reset_and_calculate();
+      selectron_r_decays.reset_and_calculate();
+      smuon_l_decays.reset_and_calculate();
+      smuon_r_decays.reset_and_calculate();
+      stau_1_decays.reset_and_calculate();
+      stau_2_decays.reset_and_calculate();
+      snu_electronl_decays.reset_and_calculate();
+      snu_muonl_decays.reset_and_calculate();
+      snu_taul_decays.reset_and_calculate();
+      stopbar_1_decays.reset_and_calculate();
+      stopbar_2_decays.reset_and_calculate();
+      sbottombar_1_decays.reset_and_calculate();
+      sbottombar_2_decays.reset_and_calculate();
+      supbar_l_decays.reset_and_calculate();
+      supbar_r_decays.reset_and_calculate();
+      sdownbar_l_decays.reset_and_calculate();
+      sdownbar_r_decays.reset_and_calculate();
+      scharmbar_l_decays.reset_and_calculate();
+      scharmbar_r_decays.reset_and_calculate();
+      sstrangebar_l_decays.reset_and_calculate();
+      sstrangebar_r_decays.reset_and_calculate();
+      selectronbar_l_decays.reset_and_calculate();
+      selectronbar_r_decays.reset_and_calculate();
+      smuonbar_l_decays.reset_and_calculate();
+      smuonbar_r_decays.reset_and_calculate();
+      staubar_1_decays.reset_and_calculate();
+      staubar_2_decays.reset_and_calculate();
+      snubar_electronl_decays.reset_and_calculate();
+      snubar_muonl_decays.reset_and_calculate();
+      snubar_taul_decays.reset_and_calculate();
+      chargino_plus_1_decays.reset_and_calculate();
+      chargino_minus_1_decays.reset_and_calculate();
+      chargino_plus_2_decays.reset_and_calculate();
+      chargino_minus_2_decays.reset_and_calculate();
+      neutralino_1_decays.reset_and_calculate();
+      neutralino_2_decays.reset_and_calculate();
+      neutralino_3_decays.reset_and_calculate();
+      neutralino_4_decays.reset_and_calculate();
       all_decays.reset_and_calculate();
 
       // Now the other EWPO.
       FH_precision_sinW2.reset_and_calculate();
       FH_precision_deltarho.reset_and_calculate();
       GM2C_SUSY.reset_and_calculate();
-      
-      // Dump the final results to an SLHA file.
-      SLHAstruct slha = make_MSSM_precision_spectrum(0).getSLHAea();
+
+      // Dump the final results to SLHA files.
+      SLHAstruct slha[2] = {make_MSSM_precision_spectrum_H_W(0).getSLHAea(1), make_MSSM_precision_spectrum_H_W(0).getSLHAea(2)};
       SLHAstruct decays = all_decays(0).getSLHAea();
-      slha.insert(slha.end(), decays.cbegin(), decays.cend());
+      for (int i = 0; i < 2; i++) slha[i].insert(slha[i].end(), decays.cbegin(), decays.cend());
       SLHAea::Block ewpo_block("EWPO");
       ewpo_block.push_back("BLOCK EWPO              # Electroweak precision observable predictions");
       ewpo_block.push_back("#       central                 +1sigma                 -1sigma");
       SLHAea::Line line1, line2, line3, line4, line5;
-      const SubSpectrum& HE = make_MSSM_precision_spectrum(0).get_HE();
+      const SubSpectrum& HE = make_MSSM_precision_spectrum_H_W(0).get_HE();
       line1 << 1 << HE.get(Par::Pole_Mass, 25, 0)   << "  " << HE.get(Par::Pole_Mass_1srd_high, 25, 0) << "  " << HE.get(Par::Pole_Mass_1srd_low, 25, 0) << "# Precision Higgs mass (GeV)";
       line2 << 2 << FH_precision_mw(0).central       << "  " << FH_precision_mw(0).upper                 << "  " << FH_precision_mw(0).lower                << "# Precision W mass (GeV)";
       line3 << 3 << FH_precision_sinW2(0).central    << "  " << FH_precision_sinW2(0).upper              << "  " << FH_precision_sinW2(0).lower             << "# sin^2 \\theta_W effective (leptonic)";
@@ -574,17 +571,21 @@ int main()
       ewpo_block.push_back(line3);
       ewpo_block.push_back(line4);
       ewpo_block.push_back(line5);
-      slha.push_back(ewpo_block);
-      Utils::FileLock mylock(filename_out);
-      mylock.get_lock();
-      std::ofstream ofs(filename_out);
-      ofs << slha;
-      ofs.close();
-      mylock.release_lock();
-      cout << endl << "SLHA file " << filename_out << " successfully emitted." << endl << endl;
+      for (int i = 0; i < 2; i++)
+      {
+        slha[i].push_back(ewpo_block);
+        Utils::FileLock mylock(filename_out[i]);
+        mylock.get_lock();
+        std::ofstream ofs(filename_out[i]);
+        ofs << slha[i];
+        ofs.close();
+        mylock.release_lock();
+        cout << endl << "SLHA file " << filename_out[i] << " successfully emitted.";
+      }
+      cout << endl << endl;
 
     }
-    
+
     // Be sure to do something sensible in cases where the point was invalidated by one of the functions.
     catch (Gambit::invalid_point_exception& e)
     {

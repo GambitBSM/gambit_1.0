@@ -1,13 +1,13 @@
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
-///  
+///
 ///  Example of GAMBIT FlavBit standalone
 ///  main program.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Martin White
 ///          (martin.white@adelaide.edu.au)
 ///  \date Jan 2016
@@ -43,9 +43,9 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
-      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputfile);     
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputfile, Spectrum::mc_info(), Spectrum::mr_info());
     }
-    
+
   }
 }
 
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 
   try
   {
-      
+
     cout << "starting" << endl;
     // Get the SLHA filename from the command line, if it has been given.
     if (argc >= 2) inputfile = argv[1];
@@ -66,30 +66,30 @@ int main(int argc, char** argv)
     // Make a logging object
     std::map<std::string, std::string> loggerinfo;
     cout << "starting" << endl;
-    
+
     // Define where the logs will end up
     std::string prefix("runs/FlavBit_standalone/logs/");
 
     // Ensure that the above directory exists
     Utils::ensure_path_exists(prefix);
-    
+
     // Add entries to the loggerinfo map
     loggerinfo["Core, Error"] = prefix+"core_errors.log";
     loggerinfo["Default"]     = prefix+"default.log";
     loggerinfo["Warning"]     = prefix+"warnings.log";
     loggerinfo["FlavBit, Info"] = prefix+"FlavBit_info.log";
-    
+
     // Initialise global LogMaster object
     logger().initialise(loggerinfo);
-    
+
     logger()<<"Running FlavBit standalone example"<<LogTags::info<<EOM;
-    
+
     std::cout << std::endl << "My name is " << name() << std::endl;
     std::cout << " I can calculate: " << endl << iCanDo << std::endl;
     std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
 
     createSpectrum.notifyOfModel("MSSM30atQ");
-    
+
     // Set up the b2sll_LL likelihood
     // Have to resolve dependencies by hand
     // b2sll_likelihood depends on:
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
     //  - Bsll_untag_CONV
     SI_Bsmumu_untag.resolveDependency(&SI_fill);
     SI_Bsmumu_untag.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bsll_untag_CONV);
-    
+
     // Resolve dependencies of SI_Bdmumu
     // These are:
     //  - SI_fill
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
     // - Bdmumu
     // - CW_calculator
     // - C_calculator_base1
-    // - CQ_calculator   
+    // - CQ_calculator
     SI_Bdmumu.resolveDependency(&SI_fill);
     SI_Bdmumu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bdll_CONV);
 
@@ -210,7 +210,7 @@ int main(int argc, char** argv)
     SI_Dmunu.resolveDependency(&SI_fill);
     SI_Dmunu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Dmunu);
 
-    // Now resolve dependencies for the b->sgamma likelihoods 
+    // Now resolve dependencies for the b->sgamma likelihoods
     b2sgamma_likelihood.resolveDependency(&SI_bsgamma);
 
     // Resolve dependencies and backend requirements of SI_bsgamma:
@@ -219,7 +219,7 @@ int main(int argc, char** argv)
     // - bsgamma_CONV
     SI_bsgamma.resolveDependency(&SI_fill);
     SI_bsgamma.resolveBackendReq(&Backends::SuperIso_3_6::Functown::bsgamma_CONV);
-    
+
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function SI_fill has had its backend requirement on Init_param filled by:" << std::endl;
     std::cout << FlavBit::Pipes::SI_fill::BEreq::Init_param.origin() << "::";
@@ -231,8 +231,8 @@ int main(int argc, char** argv)
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function SI_Bdmumu  has had its backend requirement on Bdll_CONV filled by:" << std::endl;
     std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.origin() << "::";
-    std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.name() << std::endl;    
-    
+    std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.name() << std::endl;
+
     // Double-check which dependencies have been filled with whatever (not every combination is shown)
     std::cout << std::endl << "My function SI_fill has had its dependency on MSSM_spectrum filled by:" << endl;
     std::cout << FlavBit::Pipes::SI_fill::Dep::MSSM_spectrum.origin() << "::";
@@ -241,7 +241,7 @@ int main(int argc, char** argv)
     std::cout << std::endl << "My function b2sll_likelihood has had its dependency on b2sll_M filled by:" << endl;
     std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::b2sll_M.origin() << "::";
     std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::b2sll_M.name() << std::endl;
-    
+
     std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_11_25 filled by:" << endl;
     std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_11_25.origin() << "::";
     std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_11_25.name() << std::endl;
@@ -260,14 +260,14 @@ int main(int argc, char** argv)
     std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_17_19 filled by:" << endl;
     std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_17_19.origin() << "::";
     std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_17_19.name() << std::endl;
-    
+
     // Start running here
     {
 
       double loglike;
       std::cout << std::endl;
 
-      // Call the initialisation functions for all backends that are in use. 
+      // Call the initialisation functions for all backends that are in use.
       SuperIso_3_6_init.reset_and_calculate();
 
       // Now call the module functions in an appropriate order
@@ -306,7 +306,7 @@ int main(int argc, char** argv)
       SL_likelihood.reset_and_calculate();
       loglike = SL_likelihood(0);
       std::cout << "Semi-leptonic B decays (B->D l nu) joint log-likelihood: " << loglike << std::endl;
-      
+
       // Calculate the B -> X_s gamma likelihood
       SI_bsgamma.reset_and_calculate();
       b2sgamma_likelihood.reset_and_calculate();
@@ -316,7 +316,7 @@ int main(int argc, char** argv)
       std::cout << endl;
 
     }
-    
+
   }
 
   catch (std::exception& e)

@@ -20,6 +20,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015, 2016
+///
 ///  *********************************************
 
 #include <string>
@@ -290,8 +294,12 @@ namespace Gambit
          slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum->slha");
       #endif
 
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = runOptions.getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = runOptions.getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
       // Package QedQcd SubSpectrum object, MSSM SubSpectrum object, and SMInputs struct into a 'full' Spectrum object
-      return Spectrum(qedqcdspec,mssmspec,sminputs,&input_Param);
+      return Spectrum(qedqcdspec,mssmspec,sminputs,&input_Param,mass_cut,mass_ratio_cut);
     }
 
 
@@ -302,9 +310,7 @@ namespace Gambit
        Eigen::Matrix<double,3,3> output;
        for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
        {
-         std::stringstream parname;
-         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         output(i,j) = *Param.at(parname.str());
+         output(i,j) = *Param.at(rootname + "_" + to_string(i+1) + to_string(j+1));
        }
        return output;
     }
@@ -313,11 +319,10 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) for(int j=i; j<3; ++j)
+       for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
        {
-         std::stringstream parname;
-         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         output(i,j) = *Param.at(parname.str());
+         str parname = rootname + "_" + ( i < j ? to_string(i+1) + to_string(j+1) : to_string(j+1) + to_string(i+1));
+         output(i,j) = *Param.at(parname);
        }
        return output;
     }
@@ -594,8 +599,12 @@ namespace Gambit
         ncycle++;
       }
 
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
       // Create Spectrum object from the slhaea object
-      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
+      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha, mass_cut, mass_ratio_cut);
 
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
@@ -609,14 +618,19 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAstruct;
       const SLHAstruct& input_slha_tmp = *myPipe::Dep::unimproved_MSSM_spectrum; // Retrieve dependency on SLHAstruct
 
+      /// @TODO @FIXME this needs to be fixed -- is it needed any more?  Where is this GAMBIT block supposed to be written?
       SLHAstruct input_slha(input_slha_tmp); // Copy struct (for demo adding of GAMBIT block only)
       // For example; add this to your input SLHAstruct:
       input_slha["GAMBIT"][""] << "BLOCK" << "GAMBIT";
       input_slha["GAMBIT"][""] <<      1  << 1e99 << "# Input scale";
-      std::cout << input_slha << std::endl; // test
+      std::cout << input_slha << std::endl; // test.
+
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
 
       // Create Spectrum object from the slhaea object
-      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
+      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha, mass_cut, mass_ratio_cut);
 
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");

@@ -5,7 +5,8 @@
 
 from __future__ import division
 from numpy import *
-import pylab as plt
+#import pylab as plt
+import matplotlib.pyplot as plt
 import subprocess
 import yaml
 
@@ -18,7 +19,8 @@ def getTags():
       'JE58D_007879',
       'JE67B_006998',
       'JE67D_001840',
-      'JE87O_006600'
+      'JE87O_006600',
+      #'JE87O_006600_ADD_DECAY_INFO_BY_HAND',
       ]:
     SLHAPATH = 'DarkBit/slha-benchmarks/14-12-2014_joakim/'
     yield {'slha':SLHAPATH+tag+".slha", 'dNdE_gambit': SLHAPATH+"dNdE_gambit_"+tag+".dat",
@@ -35,8 +37,12 @@ def rungambit(tags):
   print "Running SLHA file", slhafile
   process = subprocess.Popen(
       ('./DarkBit_standalone_MSSM ' + slhafile + ' ' + outfile1 + ' ' + outfile2 + ' ' + outfile3).split(), stdout = subprocess.PIPE)
-  output = process.communicate()[0]
-  print output
+  #output = process.communicate()[0]
+  #print output
+  with process.stdout:
+    for line in iter(process.stdout.readline, b''):
+      print line,
+  process.wait()
 
 def runtests():
   tags = getTags()
@@ -103,6 +109,7 @@ def showSpec():
     try:
       makeplot(t)
     except IOError:
+      print "Error!"
       pass
 
   plt.legend(frameon=False, loc=2)

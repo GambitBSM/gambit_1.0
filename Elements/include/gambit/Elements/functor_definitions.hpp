@@ -168,6 +168,7 @@ namespace Gambit
         int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
                                             // In the auxilliary printing system we may tell the printer to overwrite
                                             // the output of other ranks.
+        logger() << LogTags::debug << "Printing "<<myLabel<<" (vID="<<myVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
         printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
         already_printed[thread_num] = true;
       }
@@ -178,6 +179,7 @@ namespace Gambit
         if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
         int rank = printer->getRank();
         std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
+        logger() << LogTags::debug << "Printing "<<myTimingLabel<<" (vID="<<myTimingVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
         printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
         already_printed_timing[thread_num] = true;
       }

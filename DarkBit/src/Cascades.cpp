@@ -117,8 +117,14 @@ namespace Gambit
             }
             Loop::executeIteration(it);
             #pragma omp critical (cascadeMC_Counter)
+            {
               if((*Loop::done and ((counter >= cMC_minEvents) or piped_errors.inquire()))
-                or (counter >= cMC_maxEvents)) finished=true;
+                or (counter >= cMC_maxEvents))
+                  finished=true;
+              if (counter >= cMC_maxEvents)
+                DarkBit_warning().raise(LOCAL_INFO,
+                    "WARNING FCMC: cMC_maxEvents reached without convergence.");
+            }
           }
         }
         // Raise any exceptions
@@ -383,11 +389,11 @@ namespace Gambit
           cMC_gammaBGPower       =
             runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
           cMC_gammaRelError      =
-            runOptions->getValueOrDef<double>(0.05,   "cMC_gammaRelError");
+            runOptions->getValueOrDef<double>(0.20,   "cMC_gammaRelError");
 
           // Note: use same binning for all particle species
-          /// Option cMC_NhistBins<int>: Number of histogram bins (default 350)
-          cMC_NhistBins = runOptions->getValueOrDef<int>   (350,     "cMC_NhistBins");
+          /// Option cMC_NhistBins<int>: Number of histogram bins (default 140)
+          cMC_NhistBins = runOptions->getValueOrDef<int>   (140,     "cMC_NhistBins");
           /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
           cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");
           /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
@@ -583,6 +589,7 @@ namespace Gambit
             std::cout << "Estimated maxBin: " << maxBin << std::endl;
             std::cout << "Energy at maxBin: " << hist.binCenter(maxBin) << std::endl;
             std::cout << "Estimated error at maxBin: " << hist.getRelError(maxBin) << std::endl;
+            std::cout << "Value at maxBin: " << hist.getBinValues()[maxBin];
 #endif
             // Check if end condition is fulfilled. If not, set cond to
             // unfinished.
@@ -598,7 +605,7 @@ namespace Gambit
         {
 #ifdef DARKBIT_DEBUG
           std::cout << "!! wrapping up !!" << std::endl;
-          std::cout << "Perfomed iterations: " << *Loop::iteration << std::endl;
+          std::cout << "Performed iterations: " << *Loop::iteration << std::endl;
 #endif
           Loop::wrapup();
         }
