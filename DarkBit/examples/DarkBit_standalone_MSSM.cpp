@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
 ///  \author Sebastian Wild
@@ -50,7 +50,7 @@ namespace Gambit
       /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
-      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName, Spectrum::mc_info(), Spectrum::mr_info());
     }
 
     // Create decay object from SLHA file input.slha
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
 
     // ---- Check that required backends are present ----
-    
+
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
     if (not Backends::backendInfo().works["MicrOmegas_MSSM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for MSSM is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
@@ -437,7 +437,7 @@ int main(int argc, char* argv[])
     IC79WH_loglike.resolveDependency(&IC79WH_full);
     IC79WH_loglike.reset_and_calculate();
     // FIXME: Code up other analyses
-    
+
 
     // ---- Runs DarkBit UnitTest ----
 
@@ -448,7 +448,7 @@ int main(int argc, char* argv[])
     UnitTest_DarkBit.resolveDependency(&DarkMatter_ID_MSSM);
     UnitTest_DarkBit.resolveDependency(&DD_couplings_DarkSUSY);
     UnitTest_DarkBit.reset_and_calculate();
-    
+
 
     // ---- Dump results on screen ----
 
