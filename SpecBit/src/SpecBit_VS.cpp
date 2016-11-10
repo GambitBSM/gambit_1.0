@@ -310,7 +310,7 @@ namespace Gambit
         
         LB=u;
         #ifdef SPECBIT_DEBUG
-        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4); // compute tunnelling rate
+        double p=exp(4*140-26/(abs(0.5*lambda_min)))*pow(LB/(1.2e19),4); // compute tunnelling rate
         if (p>1)
         {
             cout<< "vacuum is unstable" << endl;
@@ -320,8 +320,8 @@ namespace Gambit
             cout<< "vacuum is metastable" << endl;
         }
         #endif
-       
-        lifetime=1/(exp(3*140-2600/(abs(lambda_min)/0.01))*pow(1/(1.2e19),3)*pow(LB,4));
+        double pi2_8_over3 = 8.* pow ( pi , 2 ) / 3.;
+        lifetime=1/(exp(3*140-pi2_8_over3/(abs(0.5*lambda_min)))*pow(1/(1.2e19),3)*pow(LB,4));
       }
       else // quartic coupling always positive, set output to default values
       {
