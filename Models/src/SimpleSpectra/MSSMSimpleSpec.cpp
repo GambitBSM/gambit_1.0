@@ -279,7 +279,7 @@ namespace Gambit
       /// @}
 
       /// Ofset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
-      int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
+      int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions. (because Peter is god, he knows user assumptions before they do.)
 
       /// Retrieve SLHAea object
       SLHAea::Coll MSSMSimpleSpec::getSLHAea(int slha_version) const

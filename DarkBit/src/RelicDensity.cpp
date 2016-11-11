@@ -26,8 +26,10 @@
 #include "gambit/Utils/util_functions.hpp"
 
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
 //#define DARKBIT_DEBUG
 //#define DARKBIT_RD_DEBUG
