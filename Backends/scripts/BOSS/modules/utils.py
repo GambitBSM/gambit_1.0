@@ -2170,9 +2170,10 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     castxml_cmd = castxml_path + ' --castxml-gccxml -x c++'
 
     # Add castxml settings from cfg file
-    castxml_cmd += ' --castxml-cc-' + cfg.castxml_cc_id + ' ' + cfg.castxml_cc
+    castxml_cmd += ' --castxml-cc-' + cfg.castxml_cc_id + ' "(" ' + cfg.castxml_cc
     if cfg.castxml_cc_opt != '':
         castxml_cmd += ' ' + cfg.castxml_cc_opt
+    castxml_cmd += ' ")" '
 
     # - Add include paths
     for incl_path in include_paths_list:

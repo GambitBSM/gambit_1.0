@@ -556,7 +556,7 @@ def parseFactoryFunctionFiles():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 20.
+        timeout = 300.
         poll = 0.2
 
         # Run castxml
@@ -645,7 +645,7 @@ def parseFunctionSourceFiles():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 20.
+        timeout = 300.
         poll = 0.2
 
         # Run castxml
