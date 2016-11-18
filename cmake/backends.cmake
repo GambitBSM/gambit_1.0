@@ -351,6 +351,13 @@ set(dl "http://astro.ic.ac.uk/sites/default/files/susyhit-${ver}.tar_.gz_.txt")
 set(md5 "493c7ba3a07e192918d3412875fb386a")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
+
+# - Due to a bug/instability in SUSYHIT, switch off optimization for Intel compilers
+set(susyhit_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(susyhit_Fortran_FLAGS "${susyhit_Fortran_FLAGS} -O0")
+endif()
+
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
            COMMAND ${CMAKE_COMMAND} -E rename ${backend_download}/susyhit-${ver}.tar_.gz_.txt ${backend_download}/susyhit-${ver}.tar.gz
@@ -358,7 +365,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -p1 < ${patch}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${susyhit_Fortran_FLAGS}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
