@@ -17,11 +17,17 @@ Parameters:
       fixed_value: -0.085
 
   #SUSY parameters.
-  CMSSM:
+  NUHM2:
     M0:
       range: [50, 1e4]
       prior_type: log
     M12:
+      range: [50, 1e4]
+      prior_type: log
+    mHu:
+      range: [50, 1e4]
+      prior_type: log
+    mHd:
       range: [50, 1e4]
       prior_type: log
     A0:
@@ -55,8 +61,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "CMSSM.hdf5"
-    group: "/CMSSM"
+    output_file: "NUHM2.hdf5"
+    group: "/NUHM2"
 
 Scanner:
 
@@ -66,15 +72,15 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 4000
-      tol: 0.5
+      nlive: 5000
+      tol: 0.1
       updInt: 1
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 14400
-      convthresh: 1e-4
+      NP: 19200
+      convthresh: 1e-5
       verbosity: 1
 
 ObsLikes:
@@ -262,7 +268,12 @@ Rules:
   - capability: RD_oh2
     function: RD_oh2_general
     options:
+      # for all calculations
       fast: 1
+      # used by RD_oh2_DarkSUSY only
+      #omtype: 1
+      # used by RD_oh2_MicrOmegas only
+      #Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood from gamlike
   - capability: lnL_FermiLATdwarfs
@@ -285,7 +296,7 @@ Rules:
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   # Options set to match benchmark point specified in SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
   - capability: unimproved_MSSM_spectrum
-    function: get_CMSSM_spectrum
+    function: get_MSSMatMGUT_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0
@@ -425,5 +436,3 @@ KeyValues:
     model_invalid_for_lnlike_below_alt: -1e5
 
   default_output_path: "./"
-
-  debug: true
