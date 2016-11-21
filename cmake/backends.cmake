@@ -222,12 +222,12 @@ set(md5 "0886d1b2827d8f0cd2ae69b925045f40")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks")
 
-# - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra
+# - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra.
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast") # -fast sometimes makes xsecs come out as NaN, but we catch that and invalidate those points.
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -Wno-deprecated-declarations -ffast-math ")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -Wno-deprecated-declarations ") # -ffast-math causes incorrect xsec values with optimisation and threads.
 endif()
 
 # - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
@@ -237,7 +237,7 @@ else()
   set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
 endif()
 
-# - Add option to turn of intel IPO if insufficient memory exists to use it.
+# - Add option to turn off intel IPO if insufficient memory exists to use it.
 option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimization on/off" ON)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND NOT "${PYTHIA_OPT}")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -no-ipo -ip")

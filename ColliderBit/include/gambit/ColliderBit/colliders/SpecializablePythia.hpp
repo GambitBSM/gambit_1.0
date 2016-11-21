@@ -13,7 +13,8 @@ namespace Gambit {
   namespace ColliderBit {
 
     /// A specializable, recyclable class interfacing ColliderBit and Pythia.
-    class SpecializablePythia : public BaseCollider<Pythia8::Event> {
+    class SpecializablePythia : public BaseCollider<Pythia8::Event>
+    {
       protected:
         Pythia8::Pythia* _pythiaInstance;
         Pythia8::Pythia* _pythiaBase;
@@ -31,14 +32,18 @@ namespace Gambit {
       ///@{
       public:
         /// An exception for when Pythia fails to initialize.
-        class InitializationError : public std::exception {
-          virtual const char* what() const throw() {
+        class InitializationError : public std::exception
+        {
+          virtual const char* what() const throw()
+          {
             return "Pythia could not initialize.";
           }
         };
         /// An exception for when Pythia fails to generate events.
-        class EventFailureError : public std::exception {
-          virtual const char* what() const throw() {
+        class EventFailureError : public std::exception
+        {
+          virtual const char* what() const throw()
+          {
             return "Pythia could not make the next event.";
           }
         };
@@ -47,7 +52,7 @@ namespace Gambit {
       /// @name Construction, Destruction, and Recycling:
       ///@{
       public:
-        SpecializablePythia() : _pythiaInstance(nullptr), _pythiaBase(nullptr) {}        
+        SpecializablePythia() : _pythiaInstance(nullptr), _pythiaBase(nullptr) {}
         ~SpecializablePythia();
         void clear();
       ///@}
@@ -65,7 +70,8 @@ namespace Gambit {
         /// Initialize from some external settings: override version.
         /// @note A string denoting the path to Pythia's xmldoc directory is
         /// @note assumed to be at the end of the settings vector:
-        void init(const std::vector<std::string>& externalSettings) {
+        void init(const std::vector<std::string>& externalSettings)
+        {
           std::string docPath = externalSettings.back();
           std::vector<std::string> settings(externalSettings);
           settings.pop_back();
@@ -84,15 +90,17 @@ namespace Gambit {
 
         /// Initialize from some external settings, assuming no given SLHAea instance.
         void init(const std::string pythiaDocPath,
-                  const std::vector<std::string>& externalSettings, std::ostream& os) {
+                  const std::vector<std::string>& externalSettings, std::ostream& os)
+        {
           init(pythiaDocPath, externalSettings, nullptr, os);
         }
         /// Initialize from some external settings, assuming no given SLHAea instance.
         void init_user_model(const std::string pythiaDocPath,
-                             const std::vector<std::string>& externalSettings, std::ostream& os) {
+                             const std::vector<std::string>& externalSettings, std::ostream& os)
+        {
           init_user_model(pythiaDocPath, externalSettings, nullptr, os);
         }
-      
+
         /// Specialize this Pythia interface to Gambit with a specialization function.
         void resetSpecialization(const std::string&);
       ///@}
@@ -101,7 +109,8 @@ namespace Gambit {
       ///@{
       public:
         /// Event generation for any Pythia interface to Gambit.
-        void nextEvent(EventType& event) const {
+        void nextEvent(EventType& event) const
+        {
           // Try to make and populate an event
           if (!_pythiaInstance->next()) throw EventFailureError();
           event = _pythiaInstance->event;

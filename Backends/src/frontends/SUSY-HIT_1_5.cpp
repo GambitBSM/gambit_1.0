@@ -183,7 +183,7 @@ BE_NAMESPACE
       }
     }
 
-    // ALPHA (value is spectrum generator's "best choice" => can be on-shell, DRbar at a give scale, whatever)
+    // ALPHA (value is spectrum generator's "best choice" => can be on-shell, DRbar at a given scale, whatever)
     sd_leshouches2->alphaval = to<double>(alpha.back().at(0));             // Mixing angle in the neutral Higgs boson sector.
 
     // HMIX
