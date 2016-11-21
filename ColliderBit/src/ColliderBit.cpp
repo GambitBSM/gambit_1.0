@@ -291,7 +291,6 @@ namespace Gambit
           }
         }
 
-
         // xsec veto
         code = -1;
         nxsec = 0;
@@ -458,14 +457,12 @@ namespace Gambit
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
-      bool partonOnly;
-      double antiktR;
+      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
       if (*Loop::iteration == START_SUBPROCESS and useATLAS)
       {
-        result.clear();
         // Setup new BuckFast:
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.clear();
         result.init(partonOnly, antiktR);
       }
     }
@@ -474,14 +471,12 @@ namespace Gambit
     void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
     {
       using namespace Pipes::getBuckFastCMS;
-      bool partonOnly;
-      double antiktR;
+      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
       if (*Loop::iteration == START_SUBPROCESS and useCMS)
       {
+        // Setup new BuckFast:
         result.clear();
-        // Setup new BuckFast
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
         result.init(partonOnly, antiktR);
       }
     }
@@ -490,14 +485,12 @@ namespace Gambit
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
     {
       using namespace Pipes::getBuckFastIdentity;
-      bool partonOnly;
-      double antiktR;
+      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
       if (*Loop::iteration == START_SUBPROCESS)
       {
+        // Setup new BuckFast:
         result.clear();
-        // Setup new BuckFast
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
         result.init(partonOnly, antiktR);
       }
     }
