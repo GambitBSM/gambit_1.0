@@ -266,11 +266,10 @@ namespace Gambit
         // .... except for showProcesses, which we need for the xsec veto.
         pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
+        pythiaOptions.push_back("SLHA:file = slhaea");
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-
-        pythiaOptions.push_back("SLHA:file = slhaea");
 
         try
         {
@@ -278,7 +277,9 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
+          int newSeedBase = int(Random::draw() * 899990000.);
+          pythiaOptions.pop_back();
+          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase + omp_get_thread_num()));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
@@ -367,6 +368,8 @@ namespace Gambit
         int code, nxsec;
         double xsec, totalxsec;
 
+        if (omp_get_thread_num() == 0) logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
+
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
@@ -376,21 +379,20 @@ namespace Gambit
         // .... except for showProcesses, which we need for the xsec veto.
         pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
+        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
-        // Run Pythia reading an SLHA file.
-        if (omp_get_thread_num() == 0)
-          logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
-        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         try
         {
           result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
+          int newSeedBase = int(Random::draw() * 899990000.);
+          pythiaOptions.pop_back();
+          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase + omp_get_thread_num()));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
@@ -496,16 +498,15 @@ namespace Gambit
     }
 
 
-
     /// *** Initialization for analyses ***
 
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
       if (*Loop::iteration == BASE_INIT)
       {
-        useATLAS = runOptions->getValueOrDef<bool>(true, "useATLAS");
-        if (!useATLAS) return;
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
+        useATLAS = analysisNamesATLAS.empty();
+        if (!useATLAS) return;
         globalAnalysesATLAS.clear();
         globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
@@ -544,9 +545,9 @@ namespace Gambit
       using namespace Pipes::getCMSAnalysisContainer;
       if (*Loop::iteration == BASE_INIT)
       {
-        useCMS = runOptions->getValueOrDef<bool>(true, "useCMS");
-        if (!useCMS) return;
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
+        useCMS = analysisNamesCMS.empty();
+        if (!useCMS) return;
         globalAnalysesCMS.clear();
         globalAnalysesCMS.init(analysisNamesCMS);
         return;
