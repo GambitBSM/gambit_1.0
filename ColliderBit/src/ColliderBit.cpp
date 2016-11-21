@@ -279,7 +279,7 @@ namespace Gambit
         {
           int newSeedBase = int(Random::draw() * 899990000.);
           pythiaOptions.pop_back();
-          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase + omp_get_thread_num()));
+          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
@@ -392,7 +392,7 @@ namespace Gambit
         {
           int newSeedBase = int(Random::draw() * 899990000.);
           pythiaOptions.pop_back();
-          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase + omp_get_thread_num()));
+          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
