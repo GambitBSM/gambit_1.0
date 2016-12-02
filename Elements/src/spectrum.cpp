@@ -39,7 +39,7 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
-#define SPECTRUM_DEBUG
+//#define SPECTRUM_DEBUG
 
 namespace Gambit
 {
