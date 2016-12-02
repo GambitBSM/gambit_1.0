@@ -76,8 +76,8 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 14400
-      convthresh: 1e-4
+      NP: 19200
+      convthresh: 1e-5
       verbosity: 1
 
 ObsLikes:
