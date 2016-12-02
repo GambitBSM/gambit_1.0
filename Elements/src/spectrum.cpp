@@ -39,7 +39,7 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/file_lock.hpp"
 
-//#define SPECTRUM_DEBUG
+#define SPECTRUM_DEBUG
 
 namespace Gambit
 {
@@ -156,6 +156,14 @@ namespace Gambit
      HE->RunToScale(scale);
    }
 
+   /// Helper function for checking if a particle or ratio has been requested as an absolute value
+   bool is_abs(str& s)
+   {
+      if (s.at(0) != '|' or *s.rbegin() != '|') return false;
+      s = s.substr(1, s.size()-2);
+      return true;
+   }
+
    /// Check the that the spectrum satisifies any mass cuts requested from the yaml file.
    void Spectrum::check_mass_cuts()
    {
@@ -163,14 +171,19 @@ namespace Gambit
      {
        for (auto it = mass_cuts->begin(); it != mass_cuts->end(); ++it)
        {
-         const str& p = it->first;
+         str p = it->first;
+         bool absolute_value = is_abs(p);
          const double& low = it->second.first;
          const double& high = it->second.second;
          #ifdef SPECTRUM_DEBUG
-           cout << "Applying mass cut " << low << " GeV < mass(" << p << ") < " << high << " GeV" << endl;
+           cout << "Applying mass cut " << low << " GeV < " << (absolute_value ? "|mass("+p+")|" : "mass("+p+")") << " < " << high << " GeV" << endl;
          #endif
          if (not has(Par::Pole_Mass, p)) utils_error().raise(LOCAL_INFO, "Cannot cut on mass of unrecognised particle: " + p);
          double m = get(Par::Pole_Mass, p);
+         if (absolute_value) m = std::abs(m);
+         #ifdef SPECTRUM_DEBUG
+           cout << "Actual value: " << m << endl;
+         #endif
          if (m < low or m > high) invalid_point().raise(p + " failed requested mass cut.");
        }
      }
@@ -178,16 +191,28 @@ namespace Gambit
      {
        for (auto it = mass_ratio_cuts->begin(); it != mass_ratio_cuts->end(); ++it)
        {
-         const str& p1 = it->first.first;
-         const str& p2 = it->first.second;
+         str p1 = it->first.first;
+         str p2 = it->first.second;
+         bool absolute_value1 = is_abs(p1);
+         bool absolute_value2 = is_abs(p2);
          const double& low = it->second.first;
          const double& high = it->second.second;
          #ifdef SPECTRUM_DEBUG
-           cout << "Applying mass ratio cut " << low << " < |mass(" << p1 << ")/mass(" << p2 << ")| < " << high << endl;
+           cout << "Applying mass ratio cut " << low << " < "
+                << (absolute_value1 ? "|mass("+p1+")|" : "mass("+p1+")") << " / "
+                << (absolute_value2 ? "|mass("+p2+")|" : "mass("+p2+")")
+                << " < " << high << endl;
          #endif
          if (not has(Par::Pole_Mass, p1)) utils_error().raise(LOCAL_INFO, "Cannot cut on ratio with mass of unrecognised particle: " + p1);
          if (not has(Par::Pole_Mass, p2)) utils_error().raise(LOCAL_INFO, "Cannot cut on ratio with mass of unrecognised particle: " + p2);
-         double mratio = std::abs(get(Par::Pole_Mass, p1) / get(Par::Pole_Mass, p2));
+         double m1 = get(Par::Pole_Mass, p1);
+         double m2 = get(Par::Pole_Mass, p2);
+         if (absolute_value1) m1 = std::abs(m1);
+         if (absolute_value2) m2 = std::abs(m2);
+         double mratio = m1/m2;
+         #ifdef SPECTRUM_DEBUG
+           cout << "Actual value: " << mratio << endl;
+         #endif
          if (mratio < low or mratio > high) invalid_point().raise(p1 + "/" + p2 +" failed requested mass ratio cut.");
        }
      }
