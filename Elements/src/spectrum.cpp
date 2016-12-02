@@ -160,7 +160,7 @@ namespace Gambit
    bool is_abs(str& s)
    {
       if (s.at(0) != '|' or *s.rbegin() != '|') return false;
-      s = s.substr(1, s.size()-1);
+      s = s.substr(1, s.size()-2);
       return true;
    }
 
@@ -181,6 +181,9 @@ namespace Gambit
          if (not has(Par::Pole_Mass, p)) utils_error().raise(LOCAL_INFO, "Cannot cut on mass of unrecognised particle: " + p);
          double m = get(Par::Pole_Mass, p);
          if (absolute_value) m = std::abs(m);
+         #ifdef SPECTRUM_DEBUG
+           cout << "Actual value: " << m << endl;
+         #endif
          if (m < low or m > high) invalid_point().raise(p + " failed requested mass cut.");
        }
      }
@@ -197,8 +200,8 @@ namespace Gambit
          #ifdef SPECTRUM_DEBUG
            cout << "Applying mass ratio cut " << low << " < "
                 << (absolute_value1 ? "|mass("+p1+")|" : "mass("+p1+")") << " / "
-                << (absolute_value2 ? "|mass("+p2+")|" : "mass("+p2+")") << " / "
-                << high << endl;
+                << (absolute_value2 ? "|mass("+p2+")|" : "mass("+p2+")")
+                << " < " << high << endl;
          #endif
          if (not has(Par::Pole_Mass, p1)) utils_error().raise(LOCAL_INFO, "Cannot cut on ratio with mass of unrecognised particle: " + p1);
          if (not has(Par::Pole_Mass, p2)) utils_error().raise(LOCAL_INFO, "Cannot cut on ratio with mass of unrecognised particle: " + p2);
@@ -207,6 +210,9 @@ namespace Gambit
          if (absolute_value1) m1 = std::abs(m1);
          if (absolute_value2) m2 = std::abs(m2);
          double mratio = m1/m2;
+         #ifdef SPECTRUM_DEBUG
+           cout << "Actual value: " << mratio << endl;
+         #endif
          if (mratio < low or mratio > high) invalid_point().raise(p1 + "/" + p2 +" failed requested mass ratio cut.");
        }
      }
