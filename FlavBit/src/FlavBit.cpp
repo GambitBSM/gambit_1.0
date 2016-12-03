@@ -147,36 +147,40 @@ namespace Gambit
 
 	  const SMInputs& spectrum = *(Dep::SMINPUTS);
 	  
-	  
+	  result.mass_W=160.74067/2.;
 	  result.inv_alpha_em=spectrum.alphainv;
 	  result.Gfermi=spectrum.GF;
-	  result.alphas_MZ=spectrum.mZ;
+	  result.alphas_MZ=spectrum.alphaS;
 	  result.mass_Z=spectrum.mZ;
 	  result.mass_b=spectrum.mBmB;
+	  // std::cout<<"top mass : "<<spectrum.mT<<endl;
 	  result.mass_top_pole=spectrum.mT;
 	  result.mass_tau=spectrum.mTau;
 	  result.mass_nutau2=spectrum.mNu3;
-	  result.mass_e2=spectrum.mE;
-	  result.mass_nue2=spectrum.mNu1;
-	  result.mass_mu2=spectrum.mMu;
+	  result.mass_e=spectrum.mE;
+	  result.mass_nue=spectrum.mNu1;
+	  result.mass_mu=spectrum.mMu;
 	  result.mass_numu2=spectrum.mNu2;
-	  result.mass_d2=spectrum.mD;
-	  result.mass_u2=spectrum.mU;
-	  result.mass_s2=spectrum.mS;
-	  result.mass_c2=spectrum.mCmC;
+	  result.mass_d=spectrum.mD;
+	  result.mass_u=spectrum.mU;
+	  result.mass_s=spectrum.mS;
+	  result.mass_c=spectrum.mCmC; 
+	  result.mass_b_1S=2.348147*2.;
+	  // for the WC we need to fix the 
 	  
-	  	  
 	  result.CKM_lambda=spectrum.CKM.lambda;
 	  result.CKM_A=spectrum.CKM.A;
 	  result.CKM_rhobar=spectrum.CKM.rhobar;
 	  result.CKM_etabar=spectrum.CKM.etabar;
 
+	  double mtmt=BEreq::mt_mt(&result); 
+	  result.mtmt=mtmt;
 	  
-	  BEreq::slha_adjust(&result);                    
+	  //	  BEreq::slha_adjust(&result);                    
 	  if(flav_debug) cout<<"Finished SI_fill"<<endl;  
 	  
-
-
+	  //result.model=4;// WC are 4
+	  
 	  return;
 	}                                                 
                                                     

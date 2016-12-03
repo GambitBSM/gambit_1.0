@@ -1,7 +1,7 @@
 Parameters:
 
-#  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml           
-
+  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml           
+   
   WC:
     Re_DeltaC7:
        range: [-4, 4]
