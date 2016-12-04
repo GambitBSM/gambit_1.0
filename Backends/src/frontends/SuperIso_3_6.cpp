@@ -160,6 +160,9 @@ BE_NAMESPACE
       C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
       cout<<"Checking NO WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
       Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
+
+      cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;  
+
       //result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
       result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
     }
@@ -217,6 +220,7 @@ BE_NAMESPACE
 	//CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
 	cout<<"E_t: "<<E_t<<endl;
+	cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;
 	//result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
 	result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
 	std::cout<<"CONV function bs-> gamma BR: "<<result<<endl;

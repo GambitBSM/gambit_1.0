@@ -88,6 +88,81 @@ namespace Gambit
       false;
     #endif
 
+    ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
+    inline std::complex<double> rhoplusieta(double lambda, double A, double rhobar, double etabar)
+    {
+      std::complex<double> x(rhobar, etabar);
+      double y = pow(A*lambda*lambda,2);
+      return sqrt((1.0-y)/(1.0-lambda*lambda))*x/(1.0-x*y);
+    }
+
+    /// CKM Wolfenstein --> V_ud standard parameterisation convertor
+    inline double Wolf2V_ud(double l, double A, double rhobar, double etabar)
+    {
+      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
+      return 1.0 - 0.5*pow(l,2) - 0.125*pow(l,4) - 0.0625*pow(l,6)*(1.0+8.0*A*A*norm)
+	- 0.0078125*pow(l,8)*(5.0-32.0*A*A*norm);
+    }
+
+    /// CKM Wolfenstein --> V_us standard parameterisation convertor
+    inline double Wolf2V_us(double l, double A, double rhobar, double etabar)
+    {
+      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
+      return l - 0.5*A*A*pow(l,7)*norm;
+    }
+
+    /// CKM Wolfenstein --> V_ub standard parameterisation convertor
+    inline std::complex<double> Wolf2V_ub(double l, double A, double rhobar, double etabar)
+    {
+      return A*pow(l,3)*std::conj(rhoplusieta(l,A,rhobar,etabar));
+    }
+
+    /// CKM Wolfenstein --> V_cd standard parameterisation convertor
+    inline std::complex<double> Wolf2V_cd(double l, double A, double rhobar, double etabar)
+    {
+      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
+      return 0.5*pow(A*l,2)*(pow(l,3)*(1.0-2.0*x) + pow(l,5)*x) - l;
+    }
+
+    /// CKM Wolfenstein --> V_cs standard parameterisation convertor
+    inline std::complex<double> Wolf2V_cs(double l, double A, double rhobar, double etabar)
+    {
+      double l2 = l*l;
+      double fA2 = 4.0*A*A;
+      return 1.0 - 0.5*l2 - 0.125*l2*l2*(1.0+fA2)
+	- 0.0625*pow(l2,3)*(1.0-fA2+4.0*fA2*rhoplusieta(l,A,rhobar,etabar))
+	- 0.0078125*pow(l2,4)*(5.0-fA2*(2.0+4.0*fA2));
+    }
+
+    /// CKM Wolfenstein --> V_cb standard parameterisation convertor
+    inline  double Wolf2V_cb(double l, double A, double rhobar, double etabar)
+    {
+      return A*l*l * (1.0 - 0.5*A*A*pow(l,6)*std::norm(rhoplusieta(l,A,rhobar,etabar)));
+    }
+
+    /// CKM Wolfenstein --> V_td standard parameterisation convertor
+    inline std::complex<double> Wolf2V_td(double l, double A, double rhobar, double etabar)
+    {
+      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
+      return A*l*l * (l*(1.0-x) + 0.5*pow(l,3)*x + 0.125*pow(l,5)*(1.0+4.0*A*A)*x);
+    }
+
+    /// CKM Wolfenstein --> V_ts standard parameterisation convertor
+    inline std::complex<double> Wolf2V_ts(double l, double A, double rhobar, double etabar)
+    {
+      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
+      return A*l*l * (0.5*pow(l,2)*(1.0-2.0*x) + 0.125*pow(l,4) + 0.0625*pow(l,6)*(1.0+8.0*A*A*x) - 1.0);
+    }
+
+    /// CKM Wolfenstein --> V_tb standard parameterisation convertor
+    inline double Wolf2V_tb(double l, double A, double rhobar, double etabar)
+    {
+      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
+      double l4 = pow(l,4);
+      return 1.0 - 0.5*A*A*l4 * (1.0 + l*l*norm + 0.25*A*A*l4);
+    }
+
+
 
     template<class T>
     bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse)
@@ -122,31 +197,31 @@ namespace Gambit
       using namespace myPipe;
       using namespace std;
 
-      if(ModelInUse("WC"))                                
-	{                                                 
-	  result.SM=1;  // needed acordingly to Nazila    
-	  result.Re_DeltaC7=*Param["Re_DeltaC7"];         
-	  result.Re_DeltaC9=*Param["Re_DeltaC9"];         
-	  result.Re_DeltaC10=*Param["Re_DeltaC10"];       
-                                                    
-	  result.Im_DeltaC7=*Param["Im_DeltaC7"];         
-	  result.Im_DeltaC9=*Param["Im_DeltaC9"];         
-	  result.Im_DeltaC10=*Param["Im_DeltaC10"];       
-                                                    
-	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];       
-	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];       
-                                                    
-	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];       
-	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];       
+      if(ModelInUse("WC"))
+	{
+	  result.SM=1;  // needed acordingly to Nazila
+	  result.Re_DeltaC7=*Param["Re_DeltaC7"];
+	  result.Re_DeltaC9=*Param["Re_DeltaC9"];
+	  result.Re_DeltaC10=*Param["Re_DeltaC10"];
+
+	  result.Im_DeltaC7=*Param["Im_DeltaC7"];
+	  result.Im_DeltaC9=*Param["Im_DeltaC9"];
+	  result.Im_DeltaC10=*Param["Im_DeltaC10"];
+
+	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
+	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
+
+	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
+	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
 
 	  // now SM inputs
 	  // Access the pipes for this function to get model and parameter information, and dependencies
-	  
 
-	  // Get SLHA2 SMINPUTS values                                                                  
+
+	  // Get SLHA2 SMINPUTS values
 
 	  const SMInputs& spectrum = *(Dep::SMINPUTS);
-	  
+
 	  result.mass_W=160.74067/2.;
 	  result.inv_alpha_em=spectrum.alphainv;
 	  result.Gfermi=spectrum.GF;
@@ -164,28 +239,42 @@ namespace Gambit
 	  result.mass_d=spectrum.mD;
 	  result.mass_u=spectrum.mU;
 	  result.mass_s=spectrum.mS;
-	  result.mass_c=spectrum.mCmC; 
+	  result.mass_c=spectrum.mCmC;
 	  result.mass_b_1S=2.348147*2.;
-	  // for the WC we need to fix the 
-	  
+	  // for the WC we need to fix the
+
 	  result.CKM_lambda=spectrum.CKM.lambda;
 	  result.CKM_A=spectrum.CKM.A;
 	  result.CKM_rhobar=spectrum.CKM.rhobar;
 	  result.CKM_etabar=spectrum.CKM.etabar;
+	  result.Vtb=Wolf2V_tb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vcb=Wolf2V_cb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vub=Wolf2V_ub(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 
-	  double mtmt=BEreq::mt_mt(&result); 
+	  result.Vts=Wolf2V_ts(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vcs=Wolf2V_cs(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vus=Wolf2V_us(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+
+	  result.Vtd=Wolf2V_td(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vcd=Wolf2V_cd(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vud=Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+
+          result.BR_BXclnu_exp=0.1065;
+    
+
+	  double mtmt=BEreq::mt_mt(&result);
 	  result.mtmt=mtmt;
-	  
-	  //	  BEreq::slha_adjust(&result);                    
-	  if(flav_debug) cout<<"Finished SI_fill"<<endl;  
-	  
-	  //result.model=4;// WC are 4
-	  
-	  return;
-	}                                                 
-                                                    
 
-      
+	  //	  BEreq::slha_adjust(&result);
+	  if(flav_debug) cout<<"Finished SI_fill"<<endl;
+
+	  //result.model=4;// WC are 4
+
+	  return;
+	}
+
+
+
 
 
       // Obtain SLHAea object from spectrum
@@ -249,7 +338,7 @@ namespace Gambit
         if(spectrum["UPMNSIN"][6].is_data_line()) result.PMNS_alpha2=SLHAea::to<double>(spectrum["UPMNSIN"][6][1]);
       }
 
-      
+
       if(!spectrum["MINPAR"].empty() && !(ModelInUse("WC")) )
       {
         switch(result.model)
@@ -530,7 +619,7 @@ namespace Gambit
              if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
 
 
-      
+
 
 
       BEreq::slha_adjust(&result);
@@ -552,7 +641,7 @@ namespace Gambit
       double E_cut=1.6;
       //if(ModelInUse("WC"))      result=BEreq::bsgamma_CONV_WC(&param, byVal(E_cut));
       result=BEreq::bsgamma_CONV(&param, byVal(E_cut));
-      
+
       if(flav_debug)  printf("BR(b->s gamma)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_bsgamma"<<endl;
     }
@@ -577,7 +666,7 @@ namespace Gambit
       {
         result=0.;
       }
-      //      else if(ModelInUse("WC")) result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav)); 
+      //      else if(ModelInUse("WC")) result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
       else
       {
         result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
@@ -1858,7 +1947,7 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_BRBKstarmumu_60_80 WC"<<endl;
     }
 
-    
+
     void SI_BRBKstarmumu_60_80_BR_WC( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_BR_WC;
@@ -2780,9 +2869,9 @@ namespace Gambit
       double exp_meas=M_exp(0,0);
       double exp_b2sgamma_err=sqrt(M_cov(0,0));
       double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
-      
+
       //delete this
-      cout<<"Theor prediction on b->s gamma: "<<std::abs(theory_prediction)<<endl;  
+      cout<<"Theor prediction on b->s gamma: "<<std::abs(theory_prediction)<<endl;
       cout<<"Theor b->sgamma= "<<theory_b2sgamma_err<<endl;
 
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
@@ -2803,7 +2892,7 @@ namespace Gambit
       double theory_prediction= *Dep::bsgamma_WC;
 
       if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
-      
+
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
       red.debug_mode(flav_debug);
 
@@ -2820,11 +2909,11 @@ namespace Gambit
       double exp_meas=M_exp(0,0);
       double exp_b2sgamma_err=sqrt(M_cov(0,0));
       double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
-      
+
       // comment this out:
       cout<<"Theor prediction on b->s gamma: "<<std::abs(theory_prediction)<<endl;
       cout<<"Theory error on the b->s gamma prediction: "<<theory_b2sgamma_err<<endl;
-      
+
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
 
@@ -2981,9 +3070,9 @@ namespace Gambit
       // Naliza doesn't provide the errors, need to take them from paper
       double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
       double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
-      // comment this out                                                                                 
-      cout<<"THeory prediction b->mumu decays= "<<theory_bs2mumu<< "  "<<theory_bd2mumu<<endl;            
-      cout<<"Theory Errors on b-> mumu decays= "<<theory_bs2mumu_error<<"  "<<theory_bd2mumu_error<<endl; 
+      // comment this out
+      cout<<"THeory prediction b->mumu decays= "<<theory_bs2mumu<< "  "<<theory_bd2mumu<<endl;
+      cout<<"Theory Errors on b-> mumu decays= "<<theory_bs2mumu_error<<"  "<<theory_bd2mumu_error<<endl;
 
 
       // we have everything, correlation
@@ -3070,7 +3159,7 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
-    
+
     */
 
 
