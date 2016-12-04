@@ -199,21 +199,23 @@ namespace Gambit
 
       if(ModelInUse("WC"))
 	{
+	  //BEreq::Init_param(&result); 
 	  result.SM=1;  // needed acordingly to Nazila
 	  result.Re_DeltaC7=*Param["Re_DeltaC7"];
 	  result.Re_DeltaC9=*Param["Re_DeltaC9"];
 	  result.Re_DeltaC10=*Param["Re_DeltaC10"];
-
+	  
 	  result.Im_DeltaC7=*Param["Im_DeltaC7"];
 	  result.Im_DeltaC9=*Param["Im_DeltaC9"];
 	  result.Im_DeltaC10=*Param["Im_DeltaC10"];
-
+	  
 	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
 	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
-
+	  
 	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
 	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
-
+	  
+	  
 	  // now SM inputs
 	  // Access the pipes for this function to get model and parameter information, and dependencies
 
@@ -260,7 +262,93 @@ namespace Gambit
 	  result.Vud=Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 
           result.BR_BXclnu_exp=0.1065;
-    
+	  result.m_Bs=5.366770;
+	  result.m_B=5.27926;
+	  result.m_Bd=5.27958;  
+	  result.mass_b_pole=4.791059;
+	  result.life_pi=2.6033e-8;      
+	  result.life_K=1.2380e-8;       
+	  result.life_B=1.638e-12;       
+	  result.life_Bs=1.512e-12;      
+	  result.life_Bd=1.519e-12;      
+	  result.life_D=1.040e-12;       
+	  result.life_Ds=5.e-13;         
+	  result.f_B=0.1905;         
+	  result.f_Bs=0.2277;        
+	  result.f_Ds=0.2486;        
+	  result.f_D=0.2135;         
+	  result.f_K=0.156;          
+	  result.fK_fpi=1.193;       
+	  result.f_Kstar_par=0.216;  
+	  result.f_Kstar_perp=0.163; 
+	  result.f_phi_par=0.235;    
+	  result.f_phi_perp=0.191;   
+	  result.m_pi=0.13957;         
+	  result.m_K=0.493677;         
+	  result.m_K0=0.497614;        
+	  result.m_Kstar=0.89166;      
+	  result.m_Kstar0=0.89581;     
+	  result.m_D0=1.86484;         
+	  result.m_D=1.86961;          
+	  result.m_Dstar=2.01027;      
+	  result.m_Dstar0=2.00697;     
+	  result.m_Ds=1.9683;          
+	  result.m_phi=1.019461;       
+	  result.a1perp=0.04;           
+	  result.a2perp=0.10;           
+	  result.a1par=0.06;            
+	  result.a2par=0.16;            
+	  result.a1K=0.06;              
+	  result.a2K=0.25;              
+	  result.a1phi_perp=0.;         
+	  result.a1phi_par=0.;          
+	  result.a2phi_perp=0.14;       
+	  result.a2phi_par=0.23;        
+	  result.zeta3A=0.032;          
+	  result.zeta3V=0.013;          
+	  result.wA10=-2.1;             
+	  result.deltatp=0.16;          
+	  result.deltatm=-0.16;         
+	  result.deltatp_phi=0.33;      
+	  result.deltatm_phi=0.;        
+	  result.lambda_Bp=0.46;        
+	  result.lambda_Bsp=0.46;       
+	  result.rho1=0.06;             
+	  result.lambda2=0.12;          
+	  result.fullFF=1; 
+	  result.CKM_lambda=0.22537;           
+	  result.CKM_A=0.814;                  
+	  result.CKM_rhobar=0.117;             
+	  result.CKM_etabar=0.353;             
+                                     
+	  result.mass_u = 2.3e-3;              
+	  result.mass_d = 4.8e-3;              
+	  result.mass_s = 0.095;               
+	  result.mass_c = 1.275;               
+	  result.mass_b = 4.18;                
+	  result.mass_top_pole = 173.34;       
+                                     
+	  result.mass_e = 0.511e-3;            
+	  result.mass_mu= 0.105658;            
+	  result.mass_tau_pole=1.77682;        
+	  result.mass_tau=result.mass_tau_pole;
+                                     
+	  result.mass_Z=91.1876;               
+	  result.alphas_MZ=0.1185;             
+	  result.mass_W=80.385;                
+                                     
+	  result.mass_h0=125.;                 
+                                     
+	  result.gp=result.gp_Q=3.57458e-1;    
+	  result.g2=result.g2_Q=6.51908e-1;    
+	  result.inv_alpha_em=1.27916e2;       
+	  result.Gfermi=1.16637000e-5;         
+                                     
+	  result.width_Z=2.4952;               
+	  result.width_W=2.085;                
+
+
+
 
 	  double mtmt=BEreq::mt_mt(&result);
 	  result.mtmt=mtmt;

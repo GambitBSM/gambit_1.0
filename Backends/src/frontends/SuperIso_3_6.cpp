@@ -296,6 +296,9 @@ BE_NAMESPACE
 	CQ_calculator(flav,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
 	Cprime_calculator(flav,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
 
+	cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;  
+
+
 	// the prime WC I don't care about :P
 	//now hacking the WC:
 	C0b[7]+=Re_DeltaC7;
@@ -306,6 +309,8 @@ BE_NAMESPACE
 
 
 	result = Bsll_untag(flav,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param ,byVal(mu_b));
+	cout<<"Debug Bsll_untag WC BR: "<<result<<endl;
+	
       }
 
     return result;
@@ -388,6 +393,8 @@ BE_NAMESPACE
 	C0b[10]+=Re_DeltaC10;
 	CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
 	CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
+
+	cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;   
 
 
 	result = Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
