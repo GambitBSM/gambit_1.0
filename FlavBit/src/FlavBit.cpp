@@ -2635,6 +2635,7 @@ namespace Gambit
       using namespace Pipes::b2sll_likelihood;
 
       if(flav_debug)  cout<<"Starting b2sll_likelihood"<<endl;
+      cout<<"Starting the B->sll"<<endl;
 
       // Get experimental measurements
       Flav_measurement_assym measurement_assym=*Dep::b2sll_M;
@@ -2876,9 +2877,11 @@ namespace Gambit
 
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+      cout<<"Likelihood ok got the bool"<<endl;
 
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
-
+      cout<<"result calculated correctly"<<endl;
+      cout<<result<<endl;
     }
     /*
     // *************************************************

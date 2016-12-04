@@ -4,15 +4,15 @@ Parameters:
    
   WC:
     Re_DeltaC7:
-       range: [-4, 4]
+       range: [-0.01, 0.01]
        prior_type: flat
     Im_DeltaC7: 0
     Re_DeltaC9:  
-       range: [-4, 4]
+       range: [-0.01, 0.01]
        prior_type: flat
     Im_DeltaC9:  0
     Re_DeltaC10:  
-       range: [-4, 4] 
+       range: [-0.01, 0.01] 
        prior_type: flat
     Im_DeltaC10:  0
     Re_DeltaCQ1:  0
