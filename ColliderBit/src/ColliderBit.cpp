@@ -505,7 +505,7 @@ namespace Gambit
       if (*Loop::iteration == BASE_INIT)
       {
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
-        useATLAS = analysisNamesATLAS.empty();
+        useATLAS = !analysisNamesATLAS.empty();
         if (!useATLAS) return;
         globalAnalysesATLAS.clear();
         globalAnalysesATLAS.init(analysisNamesATLAS);
@@ -546,7 +546,7 @@ namespace Gambit
       if (*Loop::iteration == BASE_INIT)
       {
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
-        useCMS = analysisNamesCMS.empty();
+        useCMS = !analysisNamesCMS.empty();
         if (!useCMS) return;
         globalAnalysesCMS.clear();
         globalAnalysesCMS.init(analysisNamesCMS);
