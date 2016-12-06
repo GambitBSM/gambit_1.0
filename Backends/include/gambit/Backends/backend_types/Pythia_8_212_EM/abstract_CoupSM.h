@@ -109,10 +109,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_CoupSM& operator=(const Abstract_CoupSM&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::CoupSM from backend Pythia_8_212_EM. The function Abstract_CoupSM::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 CoupSM* get_init_wptr()
                 {
@@ -126,10 +123,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_CoupSM()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::CoupSM from backend Pythia_8_212_EM. The function Abstract_CoupSM::~Abstract_CoupSM in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_CoupSM() =0;
         };
     }
     

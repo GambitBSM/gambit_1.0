@@ -99,10 +99,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_SlowJet& operator=(const Abstract_SlowJet&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SlowJet from backend Pythia_8_212_EM. The function Abstract_SlowJet::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 SlowJet* get_init_wptr()
                 {
@@ -116,10 +113,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_SlowJet()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SlowJet from backend Pythia_8_212_EM. The function Abstract_SlowJet::~Abstract_SlowJet in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_SlowJet() =0;
         };
     }
     

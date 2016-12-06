@@ -275,10 +275,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_ParticleDataEntry& operator=(const Abstract_ParticleDataEntry&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ParticleDataEntry from backend Pythia_8_212_EM. The function Abstract_ParticleDataEntry::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 ParticleDataEntry* get_init_wptr()
                 {
@@ -292,10 +289,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_ParticleDataEntry()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ParticleDataEntry from backend Pythia_8_212_EM. The function Abstract_ParticleDataEntry::~Abstract_ParticleDataEntry in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_ParticleDataEntry() =0;
         };
     }
     

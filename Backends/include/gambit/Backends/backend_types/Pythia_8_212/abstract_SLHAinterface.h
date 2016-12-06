@@ -69,10 +69,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_SLHAinterface& operator=(const Abstract_SLHAinterface&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SLHAinterface from backend Pythia_8_212. The function Abstract_SLHAinterface::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 SLHAinterface* get_init_wptr()
                 {
@@ -86,10 +83,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_SLHAinterface()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SLHAinterface from backend Pythia_8_212. The function Abstract_SLHAinterface::~Abstract_SLHAinterface in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_SLHAinterface() =0;
         };
     }
     

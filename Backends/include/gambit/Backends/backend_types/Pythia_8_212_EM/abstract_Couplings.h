@@ -52,10 +52,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_Couplings& operator=(const Abstract_Couplings&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Couplings from backend Pythia_8_212_EM. The function Abstract_Couplings::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 Couplings* get_init_wptr()
                 {
@@ -69,10 +66,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_Couplings()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Couplings from backend Pythia_8_212_EM. The function Abstract_Couplings::~Abstract_Couplings in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_Couplings() =0;
         };
     }
     

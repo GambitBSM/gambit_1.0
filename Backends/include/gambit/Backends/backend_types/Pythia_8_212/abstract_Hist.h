@@ -114,10 +114,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_Hist& operator=(const Abstract_Hist&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Hist from backend Pythia_8_212. The function Abstract_Hist::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 Hist* get_init_wptr()
                 {
@@ -131,10 +128,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_Hist()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Hist from backend Pythia_8_212. The function Abstract_Hist::~Abstract_Hist in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_Hist() =0;
         };
     }
     

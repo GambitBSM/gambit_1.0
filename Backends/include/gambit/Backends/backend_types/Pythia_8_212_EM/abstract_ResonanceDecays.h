@@ -58,10 +58,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_ResonanceDecays& operator=(const Abstract_ResonanceDecays&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ResonanceDecays from backend Pythia_8_212_EM. The function Abstract_ResonanceDecays::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 ResonanceDecays* get_init_wptr()
                 {
@@ -75,10 +72,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_ResonanceDecays()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ResonanceDecays from backend Pythia_8_212_EM. The function Abstract_ResonanceDecays::~Abstract_ResonanceDecays in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_ResonanceDecays() =0;
         };
     }
     
