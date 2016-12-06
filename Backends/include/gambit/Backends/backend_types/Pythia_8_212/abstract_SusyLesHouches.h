@@ -102,10 +102,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_SusyLesHouches& operator=(const Abstract_SusyLesHouches&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SusyLesHouches from backend Pythia_8_212. The function Abstract_SusyLesHouches::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 SusyLesHouches* get_init_wptr()
                 {
@@ -119,10 +116,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_SusyLesHouches()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SusyLesHouches from backend Pythia_8_212. The function Abstract_SusyLesHouches::~Abstract_SusyLesHouches in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_SusyLesHouches() =0;
         };
     }
     

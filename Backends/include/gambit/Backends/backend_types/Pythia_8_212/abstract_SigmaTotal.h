@@ -106,10 +106,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_SigmaTotal& operator=(const Abstract_SigmaTotal&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SigmaTotal from backend Pythia_8_212. The function Abstract_SigmaTotal::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 SigmaTotal* get_init_wptr()
                 {
@@ -123,10 +120,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_SigmaTotal()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::SigmaTotal from backend Pythia_8_212. The function Abstract_SigmaTotal::~Abstract_SigmaTotal in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_SigmaTotal() =0;
         };
     }
     

@@ -385,9 +385,12 @@ namespace Gambit
       initialisePrinter();
 
 #ifdef HAVE_GRAPHVIZ
-      // Generate graphviz plot
-      std::ofstream outf(activeFunctorGraphFile);
-      write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
+      // Generate graphviz plot if running in dry-run mode.
+      if (boundCore->show_runorder)
+      {
+        std::ofstream outf(activeFunctorGraphFile);
+        write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
+      }
 #endif
 
       // Done
@@ -639,7 +642,7 @@ namespace Gambit
         //      threads other than the main one need to be accessed with
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        if (not typeComp(masterGraph[*it]->type(),  "void", *boundTEs, false)) 
+        if (not typeComp(masterGraph[*it]->type(),  "void", *boundTEs, false))
         {
            //std::cout << "Printing '"<< masterGraph[*it]->name() <<"' for point ID '"<<pointID<<"'" << std::endl; // Debug
            masterGraph[*it]->print(boundPrinter,pointID);
@@ -849,13 +852,13 @@ namespace Gambit
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
-        // (so that later on they can pass this to the printer object to identify themselves)  
-        //masterGraph[*vi]->setVertexID(index[*vi]); // Ugh cannot do this, needs to be consistent with get_main_param_id 
+        // (so that later on they can pass this to the printer object to identify themselves)
+        //masterGraph[*vi]->setVertexID(index[*vi]); // Ugh cannot do this, needs to be consistent with get_main_param_id
         std::string label = masterGraph[*vi]->label();
         masterGraph[*vi]->setVertexID(Printers::get_main_param_id(label));
         // Same for timing output ID, but get ID number from printer system
         std::string timing_label = masterGraph[*vi]->timingLabel();
-        masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));  
+        masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is

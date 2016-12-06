@@ -5,9 +5,9 @@ Parameters:
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
-    sigmas: #43.0 
+    sigmas: #43.0
       range:  [19, 67]
-    sigmal: #58.0 
+    sigmal: #58.0
       range:  [31, 85]
     deltau:
       fixed_value:  0.842
@@ -23,31 +23,31 @@ Parameters:
       fixed_value: 1
     Ad_3:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     Au_3:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     M1:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     M2:
       prior_type: double_log_flat_join
-      ranges: [0, 0, 1e2, 1e4]    
+      ranges: [0, 0, 1e2, 1e4]
     M3:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     TanBeta:
       range: [3.0, 70.0]
       prior_type: flat
     mHd2:
       prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]    
+      ranges: [-1e8, -1e4, 1e4, 1e8]
     mHu2:
       prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]    
+      ranges: [-1e8, -1e4, 1e4, 1e8]
     mf2:
       prior_type: double_log_flat_join
-      ranges: [0, 0, 1e4, 1e8]    
+      ranges: [0, 0, 1e4, 1e8]
 
   Halo_gNFW_rho0:
     rho0:
@@ -61,7 +61,7 @@ Parameters:
     alpha: 1
     beta: 3
     gamma: 1
-     
+
 
 Priors:
 
@@ -153,7 +153,7 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    - purpose:    LogLike 
+    - purpose:    LogLike
       capability: b2sgamma_LL
 
     # Precision physics likelihoods
@@ -358,8 +358,8 @@ Rules:
   # Make sure to use the next-to-latest version (2.11.3) of FeynHiggs for things that need it,
   # as the latest version (2.12.0) is buggy.
   # In practice, the easiest way to do this is just to not install / nuke the versions you don't want to use, e.g.
-  #  make nuke-feynhiggs_2_12_0  
-  #  make nuke-feynhiggs_2_11_2  
+  #  make nuke-feynhiggs_2_12_0
+  #  make nuke-feynhiggs_2_11_2
   # In a future version of GAMBIT, it will possible to just do this here in the yaml file:
   #- backend: FeynHiggs
   #  version: 2.11.3
@@ -373,7 +373,7 @@ Rules:
   - capability: FH_HiggsProd
     backends:
     - {backend: FeynHiggs, version: 2.11.3}
-  # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W 
+  # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W
   #- capability: prec_HiggsMasses
   #  backends:
   #  - {backend: FeynHiggs, version: 2.11.3}
@@ -458,9 +458,7 @@ Rules:
 
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
-    options:  
-      #This defaults to true; set it false to ignore all these analyses
-      useATLAS: true
+    options:
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                            "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                            "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
@@ -468,9 +466,7 @@ Rules:
 
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
-    options:  
-      #This defaults to true; set it false to ignore all these analyses
-      useCMS: true
+    options:
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 

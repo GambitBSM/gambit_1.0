@@ -164,10 +164,13 @@ namespace Gambit
           while(currentEvent<nEvents and not *Loop::done) {
             if (!eventsGenerated)
               eventsGenerated = true;
-            try {
+            try
+            {
               Loop::executeIteration(currentEvent);
               currentEvent++;
-            } catch (std::domain_error& e) {
+            }
+            catch (std::domain_error& e)
+            {
               std::cerr<<"\n   Continuing to the next event...\n\n";
             }
           }
@@ -263,11 +266,10 @@ namespace Gambit
         // .... except for showProcesses, which we need for the xsec veto.
         pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
+        pythiaOptions.push_back("SLHA:file = slhaea");
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-
-        pythiaOptions.push_back("SLHA:file = slhaea");
 
         try
         {
@@ -275,7 +277,9 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
+          int newSeedBase = int(Random::draw() * 899990000.);
+          pythiaOptions.pop_back();
+          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
@@ -287,7 +291,6 @@ namespace Gambit
             return;
           }
         }
-
 
         // xsec veto
         code = -1;
@@ -301,7 +304,8 @@ namespace Gambit
           issPtr >> code;
           if (!issPtr.good() && nxsec > 0) break;
           issPtr >> _junk >> xsec;
-          if (issPtr.good()) {
+          if (issPtr.good())
+          {
             totalxsec += xsec;
             nxsec++;
           }
@@ -364,6 +368,8 @@ namespace Gambit
         int code, nxsec;
         double xsec, totalxsec;
 
+        if (omp_get_thread_num() == 0) logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
+
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
@@ -373,21 +379,20 @@ namespace Gambit
         // .... except for showProcesses, which we need for the xsec veto.
         pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
+        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
-        // Run Pythia reading an SLHA file.
-        if (omp_get_thread_num() == 0)
-          logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
-        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         try
         {
           result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
-          pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
+          int newSeedBase = int(Random::draw() * 899990000.);
+          pythiaOptions.pop_back();
+          pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase));
           try
           {
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
@@ -412,7 +417,8 @@ namespace Gambit
           issPtr >> code;
           if (!issPtr.good() && nxsec > 0) break;
           issPtr >> _junk >> xsec;
-          if (issPtr.good()) {
+          if (issPtr.good())
+          {
             totalxsec += xsec;
             nxsec++;
           }
@@ -431,10 +437,11 @@ namespace Gambit
     /// *** Detector Simulators ***
 
     #ifndef EXCLUDE_DELPHES
-      void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
+      void getDelphes(Gambit::ColliderBit::DelphesVanilla &result)
+      {
         using namespace Pipes::getDelphes;
         std::vector<std::string> delphesOptions;
-        if (*Loop::iteration == INIT)
+        if (*Loop::iteration == START_SUBPROCESS)
         {
           result.clear();
           // Reset Options
@@ -452,14 +459,12 @@ namespace Gambit
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
-      bool partonOnly;
-      double antiktR;
-      if (*Loop::iteration == INIT and useATLAS)
+      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+      if (*Loop::iteration == START_SUBPROCESS and useATLAS)
       {
-        result.clear();
         // Setup new BuckFast:
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.clear();
         result.init(partonOnly, antiktR);
       }
     }
@@ -468,14 +473,12 @@ namespace Gambit
     void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
     {
       using namespace Pipes::getBuckFastCMS;
-      bool partonOnly;
-      double antiktR;
-      if (*Loop::iteration == INIT and useCMS)
+      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+      if (*Loop::iteration == START_SUBPROCESS and useCMS)
       {
+        // Setup new BuckFast:
         result.clear();
-        // Setup new BuckFast
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
         result.init(partonOnly, antiktR);
       }
     }
@@ -484,28 +487,26 @@ namespace Gambit
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
     {
       using namespace Pipes::getBuckFastIdentity;
-      bool partonOnly;
-      double antiktR;
-      if (*Loop::iteration == INIT)
+      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+      if (*Loop::iteration == START_SUBPROCESS)
       {
+        // Setup new BuckFast:
         result.clear();
-        // Setup new BuckFast
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
         result.init(partonOnly, antiktR);
       }
     }
-
 
 
     /// *** Initialization for analyses ***
 
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
-      if (*Loop::iteration == BASE_INIT) {
-        useATLAS = runOptions->getValueOrDef<bool>(true, "useATLAS");
-        if (!useATLAS) return;
+      if (*Loop::iteration == BASE_INIT)
+      {
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
+        useATLAS = analysisNamesATLAS.empty();
+        if (!useATLAS) return;
         globalAnalysesATLAS.clear();
         globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
@@ -542,10 +543,11 @@ namespace Gambit
 
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
-      if (*Loop::iteration == BASE_INIT) {
-        useCMS = runOptions->getValueOrDef<bool>(true, "useCMS");
-        if (!useCMS) return;
+      if (*Loop::iteration == BASE_INIT)
+      {
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
+        useCMS = analysisNamesCMS.empty();
+        if (!useCMS) return;
         globalAnalysesCMS.clear();
         globalAnalysesCMS.init(analysisNamesCMS);
         return;
@@ -590,13 +592,17 @@ namespace Gambit
       result.clear();
 
       /// Get the next event from Pythia8
-      try {
-        (*Dep::HardScatteringSim).nextEvent(result);
-      } catch (SpecializablePythia::EventFailureError &e) {
+      try
+      {
+        Dep::HardScatteringSim->nextEvent(result);
+      }
+      catch (SpecializablePythia::EventFailureError &e)
+      {
         piped_invalid_point.request("Bad point: Pythia can't generate events");
         Loop::wrapup();
         return;
       }
+
     }
 
 
@@ -624,7 +630,7 @@ namespace Gambit
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
       try
       {
-        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+        Dep::SimpleSmearingSim->processEvent(*Dep::HardScatteringEvent, result);
       }
       catch (std::domain_error& e)
       {
@@ -649,7 +655,7 @@ namespace Gambit
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
       try
       {
-        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+        Dep::SimpleSmearingSim->processEvent(*Dep::HardScatteringEvent, result);
       }
       catch (std::domain_error& e)
       {
@@ -673,10 +679,13 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8 and convert to HEPUtils::Event
-      try {
+      try
+      {
         (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
-      } catch (std::domain_error& e) {
-#pragma omp critical (event_warning)
+      }
+      catch (std::domain_error& e)
+      {
+        #pragma omp critical (event_warning)
         {
           std::cerr<<"\n== ColliderBit Warning ==";
           std::cerr<<"\n   Event problem: "<<e.what();
@@ -697,7 +706,8 @@ namespace Gambit
     {
       using namespace Pipes::runATLASAnalyses;
       if (!useATLAS) return;
-      if (*Loop::iteration == FINALIZE && eventsGenerated) {
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         globalAnalysesATLAS.scale();
@@ -718,7 +728,8 @@ namespace Gambit
     {
       using namespace Pipes::runCMSAnalyses;
       if (!useCMS) return;
-      if (*Loop::iteration == FINALIZE && eventsGenerated) {
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         globalAnalysesCMS.scale();
@@ -745,7 +756,8 @@ namespace Gambit
       */
 
       // xsec veto
-      if (not eventsGenerated) {
+      if (not eventsGenerated)
+      {
         logger() << "This point was xsec vetoed." << EOM;
         result = 0.;
         return;
@@ -760,14 +772,16 @@ namespace Gambit
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
-      for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
+      for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis)
+      {
         // cout << "In analysis loop" << endl;
 
         // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
         /// @note In general each analysis could/should work out its own likelihood so they can handle SR combination if possible.
         /// @note For now we just take the result from the SR *expected* to be most constraining, i.e. with highest expected dll
         double bestexp_dll_exp = 0, bestexp_dll_obs = 0;
-        for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
+        for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR)
+        {
           // cout << "In signal region loop" << endl;
           SignalRegionData srData = analysisResults[analysis][SR];
 

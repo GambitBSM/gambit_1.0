@@ -5,22 +5,24 @@ NEW TODO list
 DarkBit
 =======
 
-Urgent (for production runs):
-- Bring paper to internal review [CW]
-
 Before internal paper review:
-- Add discussion about LUX etc likelihoods to paper [FK]
-- Double-check that fast option for general oh2 routine is clear [CW]
-- Add caveat information about decay blocks in SLHA files [CW]
-- Update paper discussion about local density [JC/CW]
-- Update nuclear parameter best fit value discussion [JC]
-- Update likelihood technical details in physics papers [all]
-- Redo plots Fig. 7 (more channels) and Fig. 8 (official limits) [JC]
-  (as discussed during meeting)
-- Update cascade code discussions in paper to new treatment [CW]
-- Mention all options in the darkbit paper [CW, JE, JC]
+- Update v-related discussion in DDCalc parts of paper [FK]
+- Finalize/delete/shorten discussion about max-gap method [FK/PS]
 
 After internal paper review started:
+- Redo spoke plots: [JC]
+  —to reflect new relic density likelihood
+  —add +/- to spoke plots to show how parameters are changing.
+  —larger fonts?
+- Add SuperCDMS bounds to SI validation plot and LUX 2015 proton bounds to SD plots. [JC]
+- Add discussion of Table 24 disagreements (related to <sigma v>_eff plots) [JC/?]
+- Figure 3 “exemplary” -> “example” [?]
+- Figure out why SIMPLE and Xenon100 likelihoods do not agree with official limits? [JC/FK]
+- Clean up standalones [JC/?]
+- Update/finalize LUX 2016 likelihoods [FK]
+- Double-check that all options are mentioned properly in darkbit paper [CW, JE, JC]
+- Make gambit_DarkBit_example.yaml file complete and useful (in the spirit of
+  class' explanatory.ini) [all]
 - Make sure that content of future automatic paper reference system is complete
   (in particular for DarkSUYS) [TB]
 - Figure out whether cascade routines run properly when doing MSSM7 scans, but
@@ -38,6 +40,8 @@ After internal paper review started:
 - Add RD_oh2_general to MSSM and SingletDM standalones, remove Sloppy.cpp and
   associated functions (and update numbers and tables in paper) [JC]
 - J-factor calculation in gamLike, using the new halo model scheme [CW/SW]
+    --> For HESS and CTA, check that the implementation is consistent with the text
+        in the DarkBit paper, in particular with the possible choices for the "version" option!       
 - Prepare post-processing of CMSSM results with alternative DarkBit
   configurations [CW/JC/SW]
 - Concepts/cosmetics
@@ -47,7 +51,7 @@ After internal paper review started:
 — Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
 - Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
 - Check that all SM values are being set by MicrOmegas SLHA reader [JC] [Added by JC]
-- Properly MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
+- Properly compile MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
 - Include proper isnan check in RD_eff_annrate_SUSY [?]
 
 Before release:
@@ -63,7 +67,6 @@ Later/maybe/not-first-release:
 - MicrOmegas MSSM diskless initialization [JC] [Added by JC]
 - Set up MicrOmegas MSSM to use GAMBIT decay rates (don’t use internal calculations) [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
-— Update LUX limits and SD constraints in DDCalc [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
   open annihilation channels
 - Use singlet scalar spectrum object (which is not existing up to now)
@@ -86,6 +89,18 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Add small note discussing low mass disagreement in DD validation plots [FK]
+- Clarify nucleon matrix element section [JC]
+- Fix DDCalc validation figures [JC]
+- Redo plots Fig. 7 (more channels) and Fig. 8 & 9 (official limits) [JC]
+  (as discussed during meeting)
+- Update J-value discussion for gamLike, after finishing implementation [SW]
+- Add discussion about LUX etc likelihoods to paper [FK]
+- Update cascade code discussions in paper to new treatment [CW]
+- Add caveat information about decay blocks in SLHA files [CW]
+- Double-check that fast option for general oh2 routine is clear [CW]
+- Update paper discussion about local density [JC/CW]
+- Update nuclear parameter best fit value discussion [JC]
 - Replace daFunk::raiseInvalidPoint (DarkBit_types.hpp:287) with piped
   exception (Mail Anders 29-07-16) [CW]
 - Update valid energy ranges in SimYieldTables_MicrOmegas (GamYields.cpp) [SW]

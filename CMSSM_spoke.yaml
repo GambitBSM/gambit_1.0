@@ -12,10 +12,10 @@ Parameters:
     deltas: -0.085
 
   CMSSM:
-    M0: 2800
-#     range: [2550, 3050]
-    M12: # 475
-      range: [350, 600]
+    M0: #2800
+      range: [2625, 2975] # old: [2550, 3050]
+    M12: 465 # old: 475
+#      range: [330, 600] # old: [350,600]
     A0: 1725
     TanBeta: 51
     SignMu: 1
@@ -41,7 +41,8 @@ Printer:
   printer: ascii
 
   options:
-    output_file: "M12.txt"
+    #output_file: "M12.txt"
+    output_file: "M0.txt"
 
 Scanner:
 
@@ -104,9 +105,9 @@ Rules:
  
   # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
   - capability: RD_oh2
-    #function: RD_oh2_general
+    function: RD_oh2_general
     #function: RD_oh2_DarkSUSY
-    function: RD_oh2_MicrOmegas
+    #function: RD_oh2_MicrOmegas
     options:
       fast: 1
       omtype: 1
@@ -127,8 +128,8 @@ Rules:
 
   # Use DarkSUSY or MicrOmegas for calculating direct detection couplings
   - capability: DD_couplings
-    #function: DD_couplings_DarkSUSY
-    function: DD_couplings_MicrOmegas
+    function: DD_couplings_DarkSUSY
+    #function: DD_couplings_MicrOmegas
 
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
@@ -157,19 +158,19 @@ Rules:
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: prec_HiggsMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: Higgs_Couplings
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_HiggsProd
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_MSSMMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
   #  version: 2.11.3

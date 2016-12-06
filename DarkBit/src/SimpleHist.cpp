@@ -19,12 +19,19 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 
+//#define DARKBIT_DEBUG
+
 namespace Gambit {
   namespace DarkBit {
 
     SimpleHist::SimpleHist(int nBins, double Emin, double Emax, bool logscale):
       nBins(nBins)
     {
+#ifdef DARKBIT_DEBUG
+      std::cout << "Emin:  " << Emin << std::endl;
+      std::cout << "Emax:  " << Emax << std::endl;
+      std::cout << "nBins: " << nBins << std::endl;
+#endif
       if(logscale)
       {
         if(Emin<=0)
@@ -37,6 +44,9 @@ namespace Gambit {
         double binL=Emin;
         for(int i=0; i<nBins; i++)
         {
+#ifdef DARKBIT_DEBUG
+          std::cout << binL << std::endl;
+#endif
           binLower.push_back(binL);
           binVals.push_back(0.0);
           wtSq.push_back(0.0);
@@ -220,3 +230,4 @@ namespace Gambit {
   } // namespace DarkBit
 
 } // namespace Gambit
+#undef DARKBIT_DEBUG

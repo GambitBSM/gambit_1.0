@@ -155,10 +155,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             Abstract_MSSMNoFV_onshell_physical& operator=(const Abstract_MSSMNoFV_onshell_physical&) { return *this; }
    
-            virtual void init_wrapper()
-            {
-               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell_physical from backend gm2calc_1_3_0. The function Abstract_MSSMNoFV_onshell_physical::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-            }
+            virtual void init_wrapper() =0;
    
             MSSMNoFV_onshell_physical* get_init_wptr()
             {
@@ -172,10 +169,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                return *wptr;
             }
    
-            virtual ~Abstract_MSSMNoFV_onshell_physical()
-            {
-               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::MSSMNoFV_onshell_physical from backend gm2calc_1_3_0. The function Abstract_MSSMNoFV_onshell_physical::~Abstract_MSSMNoFV_onshell_physical in GAMBIT should never have been called..." << std::endl;
-            }
+            virtual ~Abstract_MSSMNoFV_onshell_physical() =0;
       };
    }
    

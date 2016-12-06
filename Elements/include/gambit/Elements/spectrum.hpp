@@ -43,34 +43,106 @@
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Models/partmap.hpp"
+
+
+/// YAML overloads for mass cut and mass cut ratio constituents
+namespace YAML
+{
+
+  typedef std::pair<std::string, std::pair<double, double> > sdd;
+  typedef std::pair<std::pair<std::string,std::string>, std::pair<double, double> > ssdd;
+
+  template<>
+  struct convert<sdd>
+  {
+    static Node encode(const sdd& rhs)
+    {
+      Node node;
+      node.push_back(rhs.first);
+      node.push_back(rhs.second.first);
+      node.push_back(rhs.second.second);
+      return node;
+    }
+
+    static bool decode(const Node& node, sdd& rhs)
+    {
+      if(!node.IsSequence() || node.size() != 3) return false;
+      rhs.first         = node[0].as<std::string>();
+      rhs.second.first  = node[1].as<double>();
+      rhs.second.second = node[2].as<double>();
+      return true;
+    }
+  };
+
+  template<>
+  struct convert<ssdd>
+  {
+    static Node encode(const ssdd& rhs)
+    {
+      Node node;
+      node.push_back(rhs.first.first);
+      node.push_back(rhs.first.second);
+      node.push_back(rhs.second.first);
+      node.push_back(rhs.second.second);
+      return node;
+    }
+
+    static bool decode(const Node& node, ssdd& rhs)
+    {
+      if(!node.IsSequence() || node.size() != 4) return false;
+      rhs.first.first   = node[0].as<std::string>();
+      rhs.first.second  = node[1].as<std::string>();
+      rhs.second.first  = node[2].as<double>();
+      rhs.second.second = node[3].as<double>();
+      return true;
+    }
+  };
+
+}
+
 
 namespace Gambit
 {
-   /// Less confusing name for SLHAea container class
-   typedef SLHAea::Coll SLHAstruct;
 
    /// "Standard Model" (low-energy) plus high-energy model container class
    class Spectrum
    {
+      /// Friend function: swap resources of two Spectrum objects
+      friend void swap(Spectrum& first, Spectrum& second);
+
+      public:
+
+         /// Typedefs for making it easier to manipulate mass cut and mass ratio cut info.
+         /// @{
+         typedef std::vector<YAML::sdd>  mc_info;
+         typedef std::vector<YAML::ssdd> mr_info;
+         /// @}
+
       private:
+
+         /// Variables
+         /// @{
          std::unique_ptr<SubSpectrum> LE_new; // low energy model
          std::unique_ptr<SubSpectrum> HE_new; // high energy model
          SubSpectrum* LE;
          SubSpectrum* HE;
          SMInputs SMINPUTS;
          const std::map<str, safe_ptr<double> >* input_Param;
+         const mc_info* mass_cuts;
+         const mr_info* mass_ratio_cuts;
          bool initialised;
+         /// @}
+
+         /// Check if object has been fully initialised
          void check_init() const;
 
-         ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
+         ///Calculate Wolfenstein rho+i*eta from rhobar and etabar
          static std::complex<double> rhoplusieta(double, double, double, double);
 
-      /// Swap resources of two Spectrum objects
-      // Note: Not a member function! This is an external function which is a friend of this class.
-      friend void swap(Spectrum& first, Spectrum& second);
-
       public:
+
          /// @{ Constructors/Destructors
          /// Need custom copy and move constructors plus copy-assignment operator
          /// in order to manage the unique_ptrs properly.
@@ -78,14 +150,14 @@ namespace Gambit
          /// Default constructor
          Spectrum();
          /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
+         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param, const mc_info&, const mr_info&);
          /// Construct new object, wrapping existing SubSpectrum objects
          ///  Make sure the original objects don't get deleted before this wrapper does!
-         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
+         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param, const mc_info&, const mr_info&);
 
          /// Construct new object, automatically creating an SMSimpleSpec as the LE subspectrum, and cloning the HE SubSpectrum object supplied and taking possession of it.
          /// (won't make a version of this taking a pointer, since this is an "advanced" task, let people use the full contructor to do it.)
-         Spectrum(const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
+         Spectrum(const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param, const mc_info&, const mr_info&);
 
          /// Copy constructor, clones SubSpectrum objects.
          /// Make a non-const copy in order to use e.g. RunBothToScale function.
@@ -101,6 +173,9 @@ namespace Gambit
          /// Linked running
          /// Only possible with non-const object
          void RunBothToScale(double scale);
+
+         /// Check the that the spectrum satisifies any mass cuts requested from the yaml file.
+         void check_mass_cuts();
 
          /// @{ Standard SubSpectrum getters
          /// Return references to internal data members. Make sure original Spectrum object doesn't
@@ -179,5 +254,6 @@ namespace Gambit
    };
 
 } // end namespace Gambit
+
 
 #endif

@@ -649,13 +649,15 @@ BE_NAMESPACE
       }
     }
 
+    // Do flavour reordering for SLHA2 compatibility
+    dsorder_flavour();
     // Set up SUSY vertices
     dsvertx();
 
     // At this point, if you wanted to match the DarkSUSY SLHAreader, you would also call
     // dshigwid();
     // dsspwid();
-    // which just fudge a few widths...but we won't do that, because we can get actual decays from DecayBit.
+    // which just fudge a few widths...but we won't do that, because we can get real decay widths from DecayBit.
 
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
     widths->width(DSparticle_code("h0_1")) = myDecays.at(std::pair<int,int>(25,0)).width_in_GeV;

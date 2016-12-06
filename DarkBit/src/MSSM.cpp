@@ -30,8 +30,10 @@
 
 #include "gambit/Utils/mpiwrapper.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
     //////////////////////////////////////////////////////////////////////////
     //
