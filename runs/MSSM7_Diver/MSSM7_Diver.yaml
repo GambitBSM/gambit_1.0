@@ -268,11 +268,12 @@ Rules:
     options:
       mode: leq_one
 
-  # Use the DarkBit native calculator for the relic density
+  # Use MicrOmegas for the relic density; DarkSUSY is too slow for this model
   - capability: RD_oh2
-    function: RD_oh2_general
+    function: RD_oh2_MicrOmegas
     options:
       fast: 1
+      Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood from gamlike
   - capability: lnL_FermiLATdwarfs
