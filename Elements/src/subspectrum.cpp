@@ -37,12 +37,12 @@ namespace Gambit
    /// @{ SubSpectrum member function definitions
 
    /// Dump out spectrum information to an SLHA file (if possible)
-   void SubSpectrum::getSLHA(const str& filename, bool include_SLHA1_blocks) const
+   void SubSpectrum::getSLHA(int slha_version, const str& filename) const
    {
      std::ofstream ofs(filename);
      if (ofs)
      {
-       ofs << getSLHAea(include_SLHA1_blocks);
+       ofs << getSLHAea(slha_version);
      }
      else
      {
@@ -53,10 +53,10 @@ namespace Gambit
    }
 
    /// Get spectrum information in SLHAea format (if possible)
-   SLHAstruct SubSpectrum::getSLHAea(bool include_SLHA1_blocks) const
+   SLHAstruct SubSpectrum::getSLHAea(int slha_version) const
    {
      SLHAstruct slha;
-     this->add_to_SLHAea(slha,include_SLHA1_blocks);
+     this->add_to_SLHAea(slha_version, slha);
      slhahelp::add_MODSEL_disclaimer(slha, "spectrum");
      return slha;
    }
@@ -67,7 +67,7 @@ namespace Gambit
       std::map<Par::Tags,OverrideMaps> tmp;
       std::vector<Par::Tags> all = Par::get_all();
       for(std::vector<Par::Tags>::iterator it = all.begin(); it!=all.end(); ++it)
-      { 
+      {
         tmp[*it];
       }
       return tmp;
@@ -76,54 +76,54 @@ namespace Gambit
    /// @{ PDB getter/checker overloads
 
    /* Input PDG code plus context integer as separate arguments */
-   bool SubSpectrum::has(const Par::Tags partype, 
-                         const int pdg_code, const int context, 
-                         SpecOverrideOptions check_overrides, 
+   bool SubSpectrum::has(const Par::Tags partype,
+                         const int pdg_code, const int context,
+                         SpecOverrideOptions check_overrides,
                          SafeBool check_antiparticle) const
    {
       return has( partype, std::make_pair(pdg_code,context), check_overrides, check_antiparticle );
    }
 
    /* Input PDG code plus context integer as separate arguments */
-   double SubSpectrum::get(const Par::Tags partype, 
-                           const int pdg_code, const int context, 
-                           SpecOverrideOptions check_overrides, 
+   double SubSpectrum::get(const Par::Tags partype,
+                           const int pdg_code, const int context,
+                           SpecOverrideOptions check_overrides,
                            SafeBool check_antiparticle) const
    {
       return get( partype, std::make_pair(pdg_code,context), check_overrides, check_antiparticle );
    }
 
    /* Input PDG code plus context integer as pair */
-   bool SubSpectrum::has(const Par::Tags partype, 
-                         const std::pair<int,int> pdgpr, 
-                         SpecOverrideOptions check_overrides, 
+   bool SubSpectrum::has(const Par::Tags partype,
+                         const std::pair<int,int> pdgpr,
+                         SpecOverrideOptions check_overrides,
                          SafeBool check_antiparticle) const
    {
-      return has( partype, Models::ParticleDB().long_name(pdgpr), check_overrides, check_antiparticle );      
+      return has( partype, Models::ParticleDB().long_name(pdgpr), check_overrides, check_antiparticle );
    }
 
    /* Input PDG code plus context integer as pair */
-   double SubSpectrum::get(const Par::Tags partype, 
-                           const std::pair<int,int> pdgpr, 
-                           SpecOverrideOptions check_overrides, 
+   double SubSpectrum::get(const Par::Tags partype,
+                           const std::pair<int,int> pdgpr,
+                           SpecOverrideOptions check_overrides,
                            SafeBool check_antiparticle) const
    {
-      return get( partype, Models::ParticleDB().long_name(pdgpr), check_overrides, check_antiparticle );      
+      return get( partype, Models::ParticleDB().long_name(pdgpr), check_overrides, check_antiparticle );
    }
 
    /* Input short name plus index as pair */
-   bool SubSpectrum::has(const Par::Tags partype, 
-                         const std::pair<str,int> shortpr, 
-                         SpecOverrideOptions check_overrides, 
+   bool SubSpectrum::has(const Par::Tags partype,
+                         const std::pair<str,int> shortpr,
+                         SpecOverrideOptions check_overrides,
                          SafeBool check_antiparticle) const
    {
       return has( partype, shortpr.first, shortpr.second, check_overrides, check_antiparticle);
    }
 
    /* Input short name plus index as pair */
-   double SubSpectrum::get(const Par::Tags partype, 
-                           const std::pair<str,int> shortpr, 
-                           SpecOverrideOptions check_overrides, 
+   double SubSpectrum::get(const Par::Tags partype,
+                           const std::pair<str,int> shortpr,
+                           SpecOverrideOptions check_overrides,
                            SafeBool check_antiparticle) const
    {
       return get( partype, shortpr.first, shortpr.second, check_overrides, check_antiparticle);
@@ -133,9 +133,9 @@ namespace Gambit
 
    /// @{ safeget functions, by Abram
 
-   double SubSpectrum::safeget(const Par::Tags partype, 
-                               const str& mass, 
-                               const SpecOverrideOptions check_overrides, 
+   double SubSpectrum::safeget(const Par::Tags partype,
+                               const str& mass,
+                               const SpecOverrideOptions check_overrides,
                                const SafeBool check_antiparticle) const
    {
       double result = get( partype, mass, check_overrides, check_antiparticle);
@@ -144,9 +144,9 @@ namespace Gambit
       return result;
    }
 
-   double SubSpectrum::safeget(const Par::Tags partype, 
-                               const str& mass, const int i, 
-                               const SpecOverrideOptions check_overrides, 
+   double SubSpectrum::safeget(const Par::Tags partype,
+                               const str& mass, const int i,
+                               const SpecOverrideOptions check_overrides,
                                const SafeBool check_antiparticle) const
    {
       double result = get( partype, mass, i, check_overrides, check_antiparticle);
@@ -165,9 +165,9 @@ namespace Gambit
       return result;
    }
 
-   double SubSpectrum::safeget(const Par::Tags partype, 
-                               const int pdg_code, const int context, 
-                               const SpecOverrideOptions check_overrides, 
+   double SubSpectrum::safeget(const Par::Tags partype,
+                               const int pdg_code, const int context,
+                               const SpecOverrideOptions check_overrides,
                                const SafeBool check_antiparticle) const
    {
       double result = get( partype, pdg_code, context, check_overrides, check_antiparticle);
@@ -176,9 +176,9 @@ namespace Gambit
       return result;
    }
 
-   double SubSpectrum::safeget(const Par::Tags partype, 
+   double SubSpectrum::safeget(const Par::Tags partype,
                                const std::pair<int,int> pdgpr,
-                               const SpecOverrideOptions check_overrides, 
+                               const SpecOverrideOptions check_overrides,
                                const SafeBool check_antiparticle) const
    {
       double result = get( partype, pdgpr, check_overrides, check_antiparticle);
@@ -187,9 +187,9 @@ namespace Gambit
       return result;
    }
 
-   double SubSpectrum::safeget(const Par::Tags partype, 
-                               const std::pair<str,int> shortpr, 
-                               const SpecOverrideOptions check_overrides, 
+   double SubSpectrum::safeget(const Par::Tags partype,
+                               const std::pair<str,int> shortpr,
+                               const SpecOverrideOptions check_overrides,
                                const SafeBool check_antiparticle) const
    {
       double result = get( partype, shortpr, check_overrides, check_antiparticle);
@@ -204,8 +204,8 @@ namespace Gambit
 
    void SubSpectrum::set_override(const Par::Tags partype,
                       const double value, const str& name, const bool allow_new, const bool decouple)
-   {   
-      bool done = false;                  
+   {
+      bool done = false;
       // No index input; check if direct string exists in map
       // If not, try to use particle database to convert to short
       // name plus index and try that.
@@ -219,7 +219,7 @@ namespace Gambit
       //     if no:
       //        if allow_new=false: no match anywhere, and not allowed to add new, error!
       //        if allow_new=true: add new entry under original name
-   
+
       // SafeBool(false) set so we don't match on antiparticle; if anti-particle entry exists, need to convert to and set that override instead.
       #ifdef CHECK_WHERE_FOUND
       std::cout << "set_override "<<name<<" called (allow_new="<<allow_new<<", decouple="<<decouple<<"): checking zero index maps" << std::endl;
@@ -250,40 +250,40 @@ namespace Gambit
       }
 
       // Deal with possible antiparticle match and decoupling
-      if(not done) 
-      { 
-         if(decouple) 
+      if(not done)
+      {
+         if(decouple)
          {
-           if(allow_new) 
+           if(allow_new)
            {
               override_maps.at(partype).m0[name] = value;
               done = true;
               #ifdef CHECK_WHERE_FOUND
               std::cout << "Decoupling allowed: added value to one index override map"<< std::endl;
               #endif
-           } 
-           else 
+           }
+           else
            {
-              std::ostringstream errmsg;           
+              std::ostringstream errmsg;
               errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
               errmsg << "Options 'decouple=true' and 'allow_new=false' set simultaneously, but this doesn't make sense. If you might be decoupling particle/antiparticle values for the first time then you *must* also set 'allow_new'." << std::endl;
               utils_error().forced_throw(LOCAL_INFO,errmsg.str());
            }
          }
          else  // no decouple
-         { 
+         {
            #ifdef CHECK_WHERE_FOUND
            std::cout << "Checking for entries under antiparticle name"<< std::endl;
            std::cout << "has_particle = "<<Models::ParticleDB().has_particle(name)<<std::endl;
            if(Models::ParticleDB().has_particle(name)) {
-             std::cout << "has_antiparticle = "<<Models::ParticleDB().has_antiparticle(name)<<std::endl;           
-           }  
+             std::cout << "has_antiparticle = "<<Models::ParticleDB().has_antiparticle(name)<<std::endl;
+           }
             #endif
 
            // Try antiparticle
-           if(Models::ParticleDB().has_particle(name) and 
-              Models::ParticleDB().has_antiparticle(name)) 
-           {  
+           if(Models::ParticleDB().has_particle(name) and
+              Models::ParticleDB().has_antiparticle(name))
+           {
               std::string antiname = Models::ParticleDB().get_antiparticle(name);
               // Repeat the logic above
               #ifdef CHECK_WHERE_FOUND
@@ -313,28 +313,28 @@ namespace Gambit
                  }
               }
               // No maching antiparticle entry; check if we are allowed to add new values
-              else if(allow_new) 
+              else if(allow_new)
               {
                  override_maps.at(partype).m0[name] = value;
                  done = true;
                  #ifdef CHECK_WHERE_FOUND
                  std::cout << "No antiparticle match found, but 'allow_new'="<<allow_new<<", so adding entry to zero index override map." << std::endl;
                  #endif
-              } 
-           } 
+              }
+           }
            else // No antiparticle conversion possible
            {
-              if(allow_new) 
+              if(allow_new)
               {
                  override_maps.at(partype).m0[name] = value;
                  done = true;
                  #ifdef CHECK_WHERE_FOUND
                  std::cout << "Antiparticle doesn't exist, but 'allow_new'="<<allow_new<<", so adding entry to zero index override map." << std::endl;
                  #endif
-              } 
-              else 
+              }
+              else
               {
-                 std::ostringstream errmsg;           
+                 std::ostringstream errmsg;
                  errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
                  errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the wrapped spectrum" <<std::endl;
                  errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'allow_new' boolean parameter set to 'true'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
@@ -346,8 +346,8 @@ namespace Gambit
 
       // If none of that worked, throw an error.
       if(not done)
-      {                                      
-        std::ostringstream errmsg;           
+      {
+        std::ostringstream errmsg;
         errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
         errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the wrapped spectrum!" <<std::endl;
         errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'allow_new' boolean parameter set to 'true'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
@@ -357,11 +357,11 @@ namespace Gambit
 
    void SubSpectrum::set_override(const Par::Tags partype,
                       const double value, const str& name, const int i, const bool allow_new, const bool decouple)
-   {                                         
-      bool done = false;                  
+   {
+      bool done = false;
       // One index input; check if direct string plus index exists in map
       // If not, try to use particle database to convert to long name
-      // and try that. 
+      // and try that.
       // Otherwise:
       // If decouple=true
       //   If allow_new=false: Doesn't make sense; error
@@ -372,7 +372,7 @@ namespace Gambit
       //     if no:
       //        if allow_new=false: no match anywhere, and not allowed to add new, error!
       //        if allow_new=true: add new entry under original name
- 
+
 
       if( has(partype,name,i,use_overrides,SafeBool(false)) ) // Don't match anti-particle; will check that if other matching fails
       {
@@ -390,29 +390,29 @@ namespace Gambit
       }
 
       // Deal with possible antiparticle match and decoupling
-      if(not done) 
-      { 
-         if(decouple) 
+      if(not done)
+      {
+         if(decouple)
          {
-           if(allow_new) 
+           if(allow_new)
            {
               override_maps.at(partype).m1[name][i] = value;
               done = true;
-           } 
-           else 
+           }
+           else
            {
-              std::ostringstream errmsg;           
+              std::ostringstream errmsg;
               errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
               errmsg << "Options 'decouple=true' and 'allow_new=false' set simultaneously, but this doesn't make sense. If you might be decoupling particle/antiparticle values for the first time then you *must* also set 'allow_new'." << std::endl;
               utils_error().forced_throw(LOCAL_INFO,errmsg.str());
            }
          }
          else  // no decouple
-         { 
+         {
            // Try antiparticle
-           if(Models::ParticleDB().has_particle(name) and 
-              Models::ParticleDB().has_antiparticle(name)) 
-           {  
+           if(Models::ParticleDB().has_particle(name) and
+              Models::ParticleDB().has_antiparticle(name))
+           {
               std::string antiname = Models::ParticleDB().get_antiparticle(name);
               // Repeat the logic above
               if( has(partype,antiname,i,use_overrides,SafeBool(false)) ) // Don't match anti-particle; will check that if other matching fails
@@ -430,22 +430,22 @@ namespace Gambit
                  }
               }
               // No matching antiparticle; see if we are allowed to just add the value
-              else if(allow_new) 
+              else if(allow_new)
               {
                  override_maps.at(partype).m1[name][i] = value;
                  done = true;
-              } 
-           } 
+              }
+           }
            else // No antiparticle conversion possible
            {
-              if(allow_new) 
+              if(allow_new)
               {
                  override_maps.at(partype).m1[name][i] = value;
                  done = true;
-              } 
-              else 
+              }
+              else
               {
-                 std::ostringstream errmsg;           
+                 std::ostringstream errmsg;
                  errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
                  errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the wrapped spectrum" <<std::endl;
                  errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'allow_new' boolean parameter set to 'true'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
@@ -457,8 +457,8 @@ namespace Gambit
 
       // If none of that worked, throw an error.
       if(not done)
-      {                                      
-        std::ostringstream errmsg;           
+      {
+        std::ostringstream errmsg;
         errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
         errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the wrapped spectrum!" <<std::endl;
         errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'allow_new' boolean parameter set to 'true'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
@@ -469,10 +469,10 @@ namespace Gambit
 
    void SubSpectrum::set_override(const Par::Tags partype,
                       const double value, const str& name, const int i, const int j, const bool allow_new)
-   {                                         
+   {
       if(not allow_new and not has(partype,name,i,j) )
-      {                                      
-        std::ostringstream errmsg;           
+      {
+        std::ostringstream errmsg;
         errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
         errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and indices '"<<i<<","<<j<<"' exists in the wrapped spectrum!" <<std::endl;
         errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'allow_new' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
@@ -497,15 +497,15 @@ namespace Gambit
 
    void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<int,int> pdgpr, const bool allow_new, const bool decouple)
    {
-      /* If there is a short name, then retrieve that plus the index */      
-      if( Models::ParticleDB().has_short_name(pdgpr) )                       
-      {                                                                      
+      /* If there is a short name, then retrieve that plus the index */
+      if( Models::ParticleDB().has_short_name(pdgpr) )
+      {
         return set_override(partype, value, Models::ParticleDB().short_name_pair(pdgpr), allow_new, decouple);
-      }                                                                      
-      else /* Use the long name with no index instead (will throw error if name not in PDB) */                     
-      {                                                                      
-        return set_override(partype, value, Models::ParticleDB().long_name(pdgpr), allow_new, decouple);      
-      }                                                                      
+      }
+      else /* Use the long name with no index instead (will throw error if name not in PDB) */
+      {
+        return set_override(partype, value, Models::ParticleDB().long_name(pdgpr), allow_new, decouple);
+      }
    }
 
    /// @{ Vector override functions
@@ -537,19 +537,19 @@ namespace Gambit
    {
       std::vector<int> indices;
       indices.push_back(i);
-      this->set_override_vector(tag,value,params,indices,allow_new,decouple);    
+      this->set_override_vector(tag,value,params,indices,allow_new,decouple);
    }
 
    void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const str& par, const std::vector<int> indices, const bool allow_new, const bool decouple)
    {
       std::vector<str> params;
       params.push_back(par);
-      this->set_override_vector(tag,value,params,indices,allow_new,decouple);    
+      this->set_override_vector(tag,value,params,indices,allow_new,decouple);
    }
 
    void SubSpectrum::RunToScale(double scale, const int behave)
    {
-      if(behave==0 or behave==1) 
+      if(behave==0 or behave==1)
       {
          if(scale < hard_lower() or scale > hard_upper()) {
             if(behave==1) {
@@ -560,7 +560,7 @@ namespace Gambit
                msg << "  hard_lower: "<< hard_lower() << std::endl;
                utils_error().raise(LOCAL_INFO, msg.str());
             } else { // behave==0
-               if     (scale < soft_lower()) { scale=soft_lower(); } 
+               if     (scale < soft_lower()) { scale=soft_lower(); }
                else if(scale > soft_upper()) { scale=soft_upper(); }
                else {
                  // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
@@ -572,7 +572,7 @@ namespace Gambit
                  msg << "  soft_lower: "<< soft_lower() << std::endl;
                  msg << "  hard_lower: "<< hard_lower() << std::endl;
                  utils_error().raise(LOCAL_INFO, msg.str());
-               } 
+               }
             }
          } else if(scale < soft_lower() or scale > soft_upper()) {
             if(behave==1) {
@@ -596,7 +596,7 @@ namespace Gambit
 
 
    /// @}
- 
+
    /// @}
 
 

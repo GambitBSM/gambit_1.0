@@ -49,7 +49,7 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/model_parameters.hpp"
-#include "gambit/Logs/logger.hpp" 
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logmaster.hpp" // Need full declaration of LogMaster class
 
 /// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
@@ -384,6 +384,12 @@ namespace Gambit
       /// Setter for the fade rate
       void setFadeRate(double);
 
+      /// Setter for indicating if the timing data for this function's execution should be printed
+      void setTimingPrintRequirement(bool);
+
+      /// Getter indicating if the timing data for this function's execution should be printed
+      bool requiresTimingPrinting() const;
+
       /// Indicate whether or not a known model is activated or not.
       bool getActiveModelFlag(str);
 
@@ -529,6 +535,9 @@ namespace Gambit
       /// Do post-calculate timing things
       virtual void finishTiming(int);
 
+      /// Flag to select whether or not the timing data for this function's execution should be printed;
+      bool myTimingPrintFlag;
+
       /// Initialise the memory of this functor.
       virtual void init_memory();
 
@@ -657,7 +666,7 @@ namespace Gambit
       /// *The emergency signal handling cannot be made completely threadsafe; it can still cause
       /// lockups and memory corruption if it occurs at an inopportune time. "soft" shutdown is
       /// always preferable.
-      bool signal_mode_locked = true; 
+      bool signal_mode_locked = true;
       /// @}
 
       /// Connectors to external helper functions (to decouple signal handling from this class)
@@ -689,14 +698,8 @@ namespace Gambit
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool flag);
 
-      /// Setter for indicating if the timing data for this function's execution should be printed
-      virtual void setTimingPrintRequirement(bool flag);
-
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
-
-      /// Getter indicating if the timing data for this function's execution should be printed
-      virtual bool requiresTimingPrinting() const;
 
       /// Calculate method
       void calculate();
@@ -724,9 +727,6 @@ namespace Gambit
 
       /// Flag to select whether or not the results of this functor should be sent to the printer object.
       bool myPrintFlag;
-
-      /// Flag to select whether or not the timing data for this function's execution should be printed;
-      bool myTimingPrintFlag;
 
       /// Initialise the memory of this functor.
       virtual void init_memory();

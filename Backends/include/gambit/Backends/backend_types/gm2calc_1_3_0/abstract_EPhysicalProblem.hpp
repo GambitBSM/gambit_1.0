@@ -53,10 +53,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             Abstract_EPhysicalProblem& operator=(const Abstract_EPhysicalProblem&) { return *this; }
    
-            virtual void init_wrapper()
-            {
-               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::EPhysicalProblem from backend gm2calc_1_3_0. The function Abstract_EPhysicalProblem::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-            }
+            virtual void init_wrapper() =0;
    
             EPhysicalProblem* get_init_wptr()
             {
@@ -70,10 +67,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                return *wptr;
             }
    
-            virtual ~Abstract_EPhysicalProblem()
-            {
-               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::EPhysicalProblem from backend gm2calc_1_3_0. The function Abstract_EPhysicalProblem::~Abstract_EPhysicalProblem in GAMBIT should never have been called..." << std::endl;
-            }
+            virtual ~Abstract_EPhysicalProblem() =0;
       };
    }
    

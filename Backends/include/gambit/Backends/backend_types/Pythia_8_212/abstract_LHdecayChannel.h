@@ -65,10 +65,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_LHdecayChannel& operator=(const Abstract_LHdecayChannel&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::LHdecayChannel from backend Pythia_8_212. The function Abstract_LHdecayChannel::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 LHdecayChannel* get_init_wptr()
                 {
@@ -82,10 +79,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_LHdecayChannel()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::LHdecayChannel from backend Pythia_8_212. The function Abstract_LHdecayChannel::~Abstract_LHdecayChannel in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_LHdecayChannel() =0;
         };
     }
     

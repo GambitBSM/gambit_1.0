@@ -197,6 +197,7 @@ namespace Gambit
       using namespace myPipe;
       using namespace std;
 
+
       if(ModelInUse("WC"))
 	{
 	  //BEreq::Init_param(&result); 
@@ -366,7 +367,8 @@ namespace Gambit
 
 
       // Obtain SLHAea object from spectrum
-      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
+      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea(2);
+
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
 

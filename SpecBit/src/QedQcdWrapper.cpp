@@ -78,12 +78,13 @@ namespace Gambit
       ///     @}
 
       /// Add QED x QCD information to an SLHAea object
-      void QedQcdWrapper::add_to_SLHAea(SLHAstruct& slha, bool) const
+      void QedQcdWrapper::add_to_SLHAea(int, SLHAstruct& slha) const
       {
         // Here we assume that all SMINPUTS defined in SLHA2 are provided by the
         // SMINPUTS object, so we don't bother repeating them here.  We also assume
         // that the HE spectrum is going to provide the gauge couplings, so we don't
-        // bother with those either.
+        // bother with those either.  We ignore the first parameter, as it doesn't matter
+        // if we're helping make an SLHA1 or SLHA2 file.
 
         // Add the b pole mass
         SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass,"d_3","MASS",5,"# mb (pole)");

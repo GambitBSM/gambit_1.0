@@ -425,3 +425,5 @@ KeyValues:
     model_invalid_for_lnlike_below_alt: -1e5
 
   default_output_path: "./"
+
+  debug: true

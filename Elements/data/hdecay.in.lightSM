@@ -1,0 +1,114 @@
+SLHAIN   = 0
+SLHAOUT  = 0
+COUPVAR  = 0
+HIGGS    = 0
+OMIT ELW = 0
+SM4      = 0
+FERMPHOB = 0
+2HDM     = 0
+MODEL    = 1
+TGBET    = 30.D0
+MABEG    = 1.D0
+MAEND    = 80.D0
+NMA      = 317
+********************* hMSSM (MODEL = 10) *********************************
+MHL      = 125.D0
+**************************************************************************
+ALS(MZ)  = 0.1185D0
+MSBAR(2) = 0.095D0
+MCBAR(3) = 0.986D0
+MBBAR(MB)= 4.180D0
+MT       = 173.34D0
+MTAU     = 1.77682D0
+MMUON    = 0.105658372D0
+1/ALPHA  = 137.0359997D0
+GF       = 1.1663787D-5
+GAMW     = 2.0850D0
+GAMZ     = 2.4952D0
+MZ       = 91.1876D0
+MW       = 80.385D0
+VTB      = 0.9991D0
+VTS      = 0.0404D0
+VTD      = 0.00867D0
+VCB      = 0.0412D0
+VCS      = 0.97344D0
+VCD      = 0.22520D0
+VUB      = 0.00351D0
+VUS      = 0.22534D0
+VUD      = 0.97427D0
+********************* 4TH GENERATION *************************************
+  SCENARIO FOR ELW. CORRECTIONS TO H -> GG (EVERYTHING IN GEV):
+  GG_ELW = 1: MTP = 500    MBP = 450    MNUP = 375    MEP = 450
+  GG_ELW = 2: MBP = MNUP = MEP = 600    MTP = MBP+50*(1+LOG(M_H/115)/5)
+
+GG_ELW   = 1
+MTP      = 500.D0
+MBP      = 450.D0
+MNUP     = 375.D0
+MEP      = 450.D0
+************************** 2 Higgs Doublet Model *************************
+  TYPE: 1 (I), 2 (II), 3 (lepton-specific), 4 (flipped)
+  PARAM: 1 (masses), 2 (lambda_i)
+
+PARAM    = 2
+TYPE     = 1
+********************
+TGBET2HDM= 1.0D0
+M_12^2   = 25600.D0
+******************** PARAM=1:
+ALPHA_H  = -0.14D0
+MHL      = 125.D0
+MHH      = 210.D0
+MHA      = 130.D0
+MH+-     = 130.D0
+******************** PARAM=2:
+LAMBDA1  = 2.6885665050462264D0
+LAMBDA2  = 0.000156876030254505681D0
+LAMBDA3  = 0.46295674052962260D0
+LAMBDA4  = 0.96605498373771792D0
+LAMBDA5  = -0.88138084173680198D0
+**************************************************************************
+SUSYSCALE= 1000.D0
+MU       = 1000.D0
+M2       = 1000.D0
+MGLUINO  = 1000.D0
+MSL1     = 1000.D0
+MER1     = 1000.D0
+MQL1     = 1000.D0
+MUR1     = 1000.D0
+MDR1     = 1000.D0
+MSL      = 1000.D0
+MER      = 1000.D0
+MSQ      = 1000.D0
+MUR      = 1000.D0
+MDR      = 1000.D0
+AL       = 2450.D0
+AU       = 2450.D0
+AD       = 2450.D0
+ON-SHELL = 0
+ON-SH-WZ = 0
+IPOLE    = 0
+OFF-SUSY = 0
+INDIDEC  = 0
+NF-GG    = 5
+IGOLD    = 0
+MPLANCK  = 2.4D18
+MGOLD    = 1.D-13
+******************* VARIATION OF HIGGS COUPLINGS *************************
+ELWK     = 0
+CW       = 1.D0
+CZ       = 1.D0
+Ctau     = 1.D0
+Cmu      = 1.D0
+Ct       = 1.D0
+Cb       = 1.D0
+Cc       = 1.D0
+Cs       = 1.D0
+Cgaga    = 0.D0
+Cgg      = 0.D0
+CZga     = 0.D0
+********************* 4TH GENERATION *************************************
+Ctp      = 0.D0
+Cbp      = 0.D0
+Cnup     = 0.D0
+Cep      = 0.D0

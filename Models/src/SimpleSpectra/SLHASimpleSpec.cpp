@@ -12,6 +12,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Apr
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2016 Oct
+///
 ///  *********************************************
 
 #include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp"
@@ -46,18 +50,80 @@ namespace Gambit
       /// Constructor via SLHAea object
       SLHAeaModel::SLHAeaModel(const SLHAea::Coll& input)
         : data(input)
-      {}
+      {
+        // Work out which version of SLHA the wrapped SLHAea object follows.
+        try
+        {
+          data.at("SELMIX").find_block_def();
+          wrapped_slha_version = 2;
+        }
+        catch(const std::out_of_range& e)
+        {
+          try
+          {
+            data.at("STOPMIX").find_block_def();
+            wrapped_slha_version = 1;
+          }
+          catch(const std::out_of_range& e)
+          {
+            wrapped_slha_version = 0;
+          }
+        }
+      }
+
+      /// Get the SLHA version of the internal SLHAea object
+      int SLHAeaModel::slha_version() const { return wrapped_slha_version; }
 
       /// Get reference to internal SLHAea object
-      const SLHAea::Coll& SLHAeaModel::getSLHAea(bool) const
+      const SLHAea::Coll& SLHAeaModel::getSLHAea(int slha_version) const
       {
+        if (slha_version != wrapped_slha_version)
+        {
+          std::stringstream x;
+          x << "Wrapped SLHA file is in SLHA" << wrapped_slha_version << ", but something requested an SLHAea object in SLHA" << slha_version << " format.";
+          model_error().forced_throw(LOCAL_INFO, x.str());
+        }
         return data;
       }
 
       /// Add spectrum information to an SLHAea object
-      void SLHAeaModel::add_to_SLHAea(SLHAea::Coll& slha, bool) const
+      void SLHAeaModel::add_to_SLHAea(int slha_version, SLHAea::Coll& slha) const
       {
-        slha.insert(slha.end(), data.cbegin(), data.cend());
+        if (slha_version != wrapped_slha_version)
+        {
+          std::stringstream x;
+          x << "Wrapped SLHA file is in SLHA" << wrapped_slha_version << ", but something requested to add it to an SLHAea object in SLHA" << slha_version << " format.";
+          model_error().raise(LOCAL_INFO, x.str());
+        }
+        // Make a copy of the internal SLHAea object, remove any SM info from it, and add the rest to the slhaea object.
+        SLHAea::Coll data_copy = data;
+        Coll::key_matches target_blocks[4] = { Coll::key_matches("SMINPUTS"), Coll::key_matches("VCKMIN"), Coll::key_matches("UPMNSIN"), Coll::key_matches("MASS") };
+        for (Coll::iterator sblock = slha.begin(); sblock != slha.end(); ++sblock)
+        {
+          for (Coll::iterator dblock = data_copy.begin(); dblock != data_copy.end();)
+          {
+            bool delete_dblock = false;
+            for (int i = 0; i < 3; i++)
+            {
+              if (target_blocks[i](*sblock) and target_blocks[i](*dblock)) delete_dblock = true;
+            }
+            if (delete_dblock) dblock = data_copy.erase(dblock);
+            else ++dblock;
+          }
+        }
+        for (Coll::iterator sblock = slha.begin(); sblock != slha.end();)
+        {
+          if (target_blocks[3](*sblock))
+          {
+            if(slha["MASS"][24].is_data_line()) data_copy["MASS"][24] = slha["MASS"][24];
+            sblock = slha.erase(sblock);
+          }
+          else
+          {
+            ++sblock;
+          }
+        }
+        slha.insert(slha.end(), data_copy.cbegin(), data_copy.cend());
       }
 
       /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
@@ -75,7 +141,7 @@ namespace Gambit
          double output;
          try
          {
-           output = to<double>(getSLHAea().at(block).at(index).at(1));
+           output = to<double>(data.at(block).at(index).at(1));
          }
          catch (const std::out_of_range& e)
          {
@@ -93,7 +159,7 @@ namespace Gambit
          double output;
          try
          {
-           output = to<double>(getSLHAea().at(block).at(i,j).at(2));
+           output = to<double>(data.at(block).at(i,j).at(2));
          }
          catch (const std::out_of_range& e)
          {

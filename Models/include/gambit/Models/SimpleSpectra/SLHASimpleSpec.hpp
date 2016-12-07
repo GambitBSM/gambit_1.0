@@ -7,12 +7,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Apr 
+///  \date 2015 Apr
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2016 Oct
 ///
 ///  *********************************************
 
@@ -30,7 +34,9 @@ namespace Gambit
          protected:
            /// SLHAea object
            SLHAea::Coll data;
-           /// PDG translation map (e.g. from SLHA1 to SLHA2 for MSSMskeleton) 
+           /// SLHA version of SLHAea object
+           int wrapped_slha_version;
+           /// PDG translation map (e.g. from SLHA1 to SLHA2 for MSSMskeleton)
            std::map<int, int> PDG_translation_map;
 
          public:
@@ -39,11 +45,14 @@ namespace Gambit
            SLHAeaModel(const SLHAea::Coll& input);
            /// @}
 
+           /// Get the SLHA version of the internal SLHAea object
+           int slha_version() const;
+
            /// Get reference to internal SLHAea object
-           const SLHAea::Coll& getSLHAea(bool = false) const;
+           const SLHAea::Coll& getSLHAea(int) const;
 
            /// Add spectrum information to an SLHAea object
-           void add_to_SLHAea(SLHAea::Coll&, bool = false) const;
+           void add_to_SLHAea(int, SLHAea::Coll&) const;
 
            /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
            const std::map<int, int>& PDG_translator() const;
@@ -53,16 +62,16 @@ namespace Gambit
            double getdata(const std::string& block, int i, int j) const;
       };
 
-      template<class Derived> 
-      class SLHASimpleSpec : public Spec<Derived> 
+      template<class Derived>
+      class SLHASimpleSpec : public Spec<Derived>
       {
          public:
-            // Grab typedefs from derived wrapper traits class 
+            // Grab typedefs from derived wrapper traits class
             // (only needed because this is a template class, and would have to
             // qualify the name all over the place in order to use the equivalent
             // typedef which is inherited from the base class)
-            typedef typename SpecTraits<Derived>::Model Model; 
-            typedef typename SpecTraits<Derived>::Input Input; 
+            typedef typename SpecTraits<Derived>::Model Model;
+            typedef typename SpecTraits<Derived>::Input Input;
 
          protected:
             // Store SLHAea object internally (via wrapper)
@@ -72,10 +81,10 @@ namespace Gambit
             Input dummyinput;
 
          public:
-            typedef MapTypes<Derived,MapTag::Get> MTget; 
+            typedef MapTypes<Derived,MapTag::Get> MTget;
 
             // Constructors/destructors
-            SLHASimpleSpec() 
+            SLHASimpleSpec()
              : slhawrap()
             {}
 
@@ -84,7 +93,7 @@ namespace Gambit
             {}
 
             virtual ~SLHASimpleSpec() {};
- 
+
             // Functions to interface Model and Input objects with the base 'Spec' class
             // Need both const and non-const versions of it, so that wrapped objects cannot be modified
             // if the wrapper is const
@@ -95,10 +104,10 @@ namespace Gambit
 
             /// @{ RunningPars interface overrides
             virtual double GetScale() const
-            { 
+            {
                /// TODO: Currently assumes all blocks at same scale. Should at least check if this
                /// is true in constructor.
-               const SLHAea::Coll& data(slhawrap.getSLHAea());
+               const SLHAea::Coll& data(slhawrap.getSLHAea(slhawrap.slha_version()));
                double scale;
                try
                {
@@ -108,7 +117,7 @@ namespace Gambit
                {
                  std::ostringstream errmsg;
                  errmsg << "Could not find block \"GAUGE\" in SLHAea object. Received out_of_range error with message: " << e.what();
-                 utils_error().raise(LOCAL_INFO,errmsg.str());    
+                 utils_error().raise(LOCAL_INFO,errmsg.str());
                }
                return scale;
             }
@@ -132,9 +141,9 @@ namespace Gambit
 
          protected:
             /// Map fillers go in derived class
-    
+
       };
- 
+
 
 } // end Gambit namespace
 

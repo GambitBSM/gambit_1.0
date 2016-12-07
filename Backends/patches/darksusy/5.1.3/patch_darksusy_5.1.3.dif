@@ -1,6 +1,6 @@
-diff -rupN darksusy-5.1.3.pristine/configure darksusy/5.1.3/configure
---- darksusy-5.1.3.pristine/configure	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy/5.1.3/configure	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/configure installed/darksusy/5.1.3/configure
+--- darksusy-5.1.3/configure	2015-04-07 10:23:05.000000000 +0100
++++ installed/darksusy/5.1.3/configure	2016-11-15 13:30:13.730328528 +0000
 @@ -3337,11 +3337,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
  if test "${FCSET}" = "false" ; then
    if test "${FC}" = "ifort"; then
@@ -15,9 +15,9 @@ diff -rupN darksusy-5.1.3.pristine/configure darksusy/5.1.3/configure
    fi
  fi
  
-diff -rupN darksusy-5.1.3.pristine/configure.ac darksusy/5.1.3/configure.ac
---- darksusy-5.1.3.pristine/configure.ac	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy/5.1.3/configure.ac	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/configure.ac installed/darksusy/5.1.3/configure.ac
+--- darksusy-5.1.3/configure.ac	2015-04-07 10:23:05.000000000 +0100
++++ installed/darksusy/5.1.3/configure.ac	2016-11-15 13:30:13.730328528 +0000
 @@ -28,11 +28,11 @@ AC_PROG_FC([ifort gfortran])
  if test "${FCSET}" = "false" ; then
    if test "${FC}" = "ifort"; then 
@@ -32,9 +32,9 @@ diff -rupN darksusy-5.1.3.pristine/configure.ac darksusy/5.1.3/configure.ac
    fi
  fi
  
-diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in
---- darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in	2013-02-10 06:43:34.000000000 +0000
-+++ darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in
+--- darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2013-02-10 06:43:34.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2016-11-15 13:30:13.730328528 +0000
 @@ -31,6 +31,9 @@ ARGS = $(PARALLEL) \
  default all lib frontend mma: force
  	cd $(BLD) && $(MAKE) $(ARGS) $@
@@ -45,9 +45,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/makefile.in darksusy/
  install: default
  	-mkdir "$(PREFIX)"
  	-mkdir "$(LIBDIR)" "$(INCLUDEDIR)" "$(BINDIR)"
-diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F
---- darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2013-02-10 06:43:34.000000000 +0000
-+++ darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F
+--- darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2013-02-10 06:43:34.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2016-11-15 13:30:13.730328528 +0000
 @@ -27,7 +27,7 @@
  #define EpsL(x,y)  vec_(x,y, 3, i)
  #define EpsTL(x,y) vec_(x,y, 4, i)
@@ -57,9 +57,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F d
  	equivalence (vec, spi_)
  
  #define Spi(hel,om,x) spi_(x, om, hel+6, i)
-diff -rupN darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in
---- darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2015-04-07 10:23:05.000000000 +0100
++++ installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2016-11-15 13:30:13.730328528 +0000
 @@ -106,10 +106,10 @@ OBJSsubroutines =  $(OBJSbasic) \
  default: HiggsBounds
  
@@ -104,9 +104,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/HiggsBounds-3.8.1/HiggsBounds/makefil
  	rm -f example_programs/HBwithFH
  	rm -f example_programs/HBwithCPsuperH
  	rm -f example_programs/example-SM_vs_4thGen
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/aldata.f darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/aldata.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/aldata.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/aldata.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f	2016-11-15 13:30:13.730328528 +0000
 @@ -155,8 +155,8 @@ C          LUXSET=.TRUE. after RLUXGO ha
       $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
        SAVE /Q1Q2/
@@ -118,9 +118,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/aldata.f darks
        CHARACTER*24 XSEED
  C          SUSY parameters
  C          AMGLSS               = gluino mass
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,189 +0,0 @@
 -
 -******************************************************************
@@ -311,9 +311,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func.f darksus
 - 
 -      return
 -      end
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,69 +0,0 @@
 -
 -
@@ -384,9 +384,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/func_int.f dar
 -      
 -      RETURN
 -      END
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/gettot.f darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/gettot.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/gettot.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/gettot.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f	2016-11-15 13:30:13.730328528 +0000
 @@ -77,8 +77,8 @@ C          Jet limits
        COMMON/IDRUN/IDVER,IDG(2),IEVT,IEVGEN
        SAVE /IDRUN/
@@ -398,9 +398,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/gettot.f darks
        CHARACTER*24 XSEED
        COMMON/PRIMAR/NJET,SCM,HALFE,ECM,IDIN(2),NEVENT,NTRIES,NSIGMA,
       $WRTLHE
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,391 +0,0 @@
 -CDECK  ID>, ISARED.
 -cccccccccccccccccccccccccccccccccccccccccccccc
@@ -793,9 +793,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/isared.f darks
 -
 -      RETURN
 -      END
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in	2016-11-15 13:30:13.730328528 +0000
 @@ -6,9 +6,6 @@
  FF=@F77@
  FOPT=@FOPT@
@@ -837,9 +837,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/makefile.in da
  
  clean:
  	rm -f *.o
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtevt.f darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtevt.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtevt.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/prtevt.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f	2016-11-15 13:30:13.730328528 +0000
 @@ -84,8 +84,8 @@ C
        COMMON/WSIG/SIGLLQ
        SAVE /WSIG/
@@ -851,9 +851,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtevt.f darks
        CHARACTER*24 XSEED
  C
  C          LABELS ARE CHARACTER*8
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtlim.f darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtlim.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtlim.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/prtlim.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f	2016-11-15 13:30:13.730328528 +0000
 @@ -79,8 +79,8 @@ C          KKGravity common
        COMMON/PRTOUT/NEVPRT,NJUMP
        SAVE /PRTOUT/
@@ -865,18 +865,18 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/prtlim.f darks
        CHARACTER*24 XSEED
        INTEGER MXTYPE
        PARAMETER (MXTYPE=8)
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfgt.f darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfgt.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfgt.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfgt.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f	2016-11-15 13:30:13.730328528 +0000
 @@ -1,4 +1,4 @@
  C
 -      SUBROUTINE RANFGT(SEED)
 +      SUBROUTINE RANFGT(SEEDg)
        RETURN
        END
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfst.f darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfst.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfst.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfst.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f	2016-11-15 13:30:13.730328528 +0000
 @@ -1,4 +1,4 @@
 -      SUBROUTINE RANFST(SEED)
 -      DOUBLE PRECISION SEED
@@ -884,9 +884,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ranfst.f darks
 +      DOUBLE PRECISION SEEDg
        RETURN
        END
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/readin.f darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/readin.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/readin.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/readin.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f	2016-11-15 13:30:13.730328528 +0000
 @@ -73,8 +73,8 @@ C          KKGravity common
        COMMON/PRTOUT/NEVPRT,NJUMP
        SAVE /PRTOUT/
@@ -907,9 +907,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/readin.f darks
  C
  C          Overlapping variable flags.
        DATA NLAP/1,2,3, 1,2,7 ,1,2,8, 1,3,5, 1,3,6, 1,3,7, 1,3,8, 1,5,7,
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/reset.f darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/reset.f	2011-11-03 14:34:52.000000000 +0000
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/reset.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/reset.f	2011-11-03 14:34:52.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f	2016-11-15 13:30:13.730328528 +0000
 @@ -84,8 +84,8 @@ C          Jet limits
       $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
        SAVE /Q1Q2/
@@ -921,9 +921,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/reset.f darksu
        CHARACTER*24 XSEED
  C          SUSY parameters
  C          AMGLSS               = gluino mass
-diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f
---- darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f	1970-01-01 01:00:00.000000000 +0100
-+++ darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f
+--- darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f	1970-01-01 01:00:00.000000000 +0100
++++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f	2016-11-15 13:30:13.730328528 +0000
 @@ -0,0 +1,80 @@
 +      CHARACTER*5 FUNCTION SSID(ID)
 +C-----------------------------------------------------------------------
@@ -1005,9 +1005,9 @@ diff -rupN darksusy-5.1.3.pristine/contrib/isajet781-for-darksusy/ssid.f darksus
 +      SSID=LABEL(ID)
 +      RETURN
 +      END
-diff -rupN darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in darksusy/5.1.3/contrib/TSPACK/makefile.in
---- darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in	2013-02-10 06:43:34.000000000 +0000
-+++ darksusy/5.1.3/contrib/TSPACK/makefile.in	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/contrib/TSPACK/makefile.in installed/darksusy/5.1.3/contrib/TSPACK/makefile.in
+--- darksusy-5.1.3/contrib/TSPACK/makefile.in	2013-02-10 06:43:34.000000000 +0000
++++ installed/darksusy/5.1.3/contrib/TSPACK/makefile.in	2016-11-15 13:30:13.730328528 +0000
 @@ -9,8 +9,7 @@ FOPT=@FOPT@
  # Dependencies and libraries
  DINC=../../include
@@ -1033,9 +1033,68 @@ diff -rupN darksusy-5.1.3.pristine/contrib/TSPACK/makefile.in darksusy/5.1.3/con
  
  clean:
  	rm -f tspack.f *.o
-diff -rupN darksusy-5.1.3.pristine/include/dswacom.h darksusy/5.1.3/include/dswacom.h
---- darksusy-5.1.3.pristine/include/dswacom.h	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy/5.1.3/include/dswacom.h	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/include/dsandwcom.h installed/darksusy/5.1.3/include/dsandwcom.h
+--- darksusy-5.1.3/include/dsandwcom.h	2010-08-06 09:27:44.000000000 +0100
++++ installed/darksusy/5.1.3/include/dsandwcom.h	2016-11-15 13:30:13.734328528 +0000
+@@ -23,7 +23,7 @@ c....dwcom - common block needed for the
+       save /dwcom1/,/dwcom2/
+ 
+ * partial annihilation rates
+-      real*8 prtial(54)
++      real*8 prtial(114)
+       common /partials/ prtial
+ 
+ ***                                                                 ***
+diff -rupN darksusy-5.1.3/include/dsascom.h installed/darksusy/5.1.3/include/dsascom.h
+--- darksusy-5.1.3/include/dsascom.h	2008-06-23 22:39:47.000000000 +0100
++++ installed/darksusy/5.1.3/include/dsascom.h	2016-11-15 13:30:13.734328528 +0000
+@@ -44,10 +44,10 @@ c some roundoff terms
+ 
+ c dsasdwdcossfsf final/intermediate state arrays/variables
+       real*8  cfactini,cfactfin,gg1,gg2
+-      integer kp1s,kp2s,kp3in(30),kp4in(30),chcol,nsfertc,ksfertc(6),
++      integer kp1s,kp2s,kp3in(114),kp4in(114),chcol,nsfertc,ksfertc(6),
+      &  nsferuc,ksferuc(6),nsfertn,ksfertn(6),nsferun,ksferun(6),
+      &  kf2,kf2o,ick1,ick2
+-      logical chon(30),gluonin,gammain,neutcurr,nosneutrinov
++      logical chon(114),gluonin,gammain,neutcurr,nosneutrinov
+       common/aswsfsfcom/cfactini,cfactfin,gg1,gg2,kp1s,kp2s,kp3in,kp4in,
+      &  chcol,nsfertc,ksfertc,nsferuc,ksferuc,nsfertn,ksfertn,nsferun,
+      &  ksferun,kf2,kf2o,ick1,ick2,chon,gluonin,gammain,neutcurr,
+@@ -55,10 +55,10 @@ c dsasdwdcossfsf final/intermediate stat
+ 
+ c dsasdwdcossfchi final/intermediate state arrays/variables
+       real*8  gg1c,gg2c
+-      integer kp1c,kp2c,ciaux,kcfers,ncfers,kcfersv(3),ncferd,kcferd(3),
+-     & ncsfert,kcsfertn(2),ncsfertc,kcsfertc(6)
++      integer kp1c,kp2c,ciaux,ncfers,kcfersv(3),ncferd,kcferd(3),
++     & ncsfert,kcsfertn(6),ncsfertc,kcsfertc(6)
+       logical cgammain,cgluonin
+-      common/aswsfchicom/gg1c,gg2c,kp1c,kp2c,ciaux,kcfers,ncfers,
++      common/aswsfchicom/gg1c,gg2c,kp1c,kp2c,ciaux,ncfers,
+      & kcfersv,ncferd,kcferd,ncsfert,kcsfertn,ncsfertc,kcsfertc,
+      & cgammain,cgluonin
+ 
+diff -rupN darksusy-5.1.3/include/dsmssm.h installed/darksusy/5.1.3/include/dsmssm.h
+--- darksusy-5.1.3/include/dsmssm.h	2013-01-31 21:46:16.000000000 +0000
++++ installed/darksusy/5.1.3/include/dsmssm.h	2016-11-17 19:09:26.531531850 +0000
+@@ -140,9 +140,12 @@ c
+       complex*16 neunmx(4,4),chaumx(2,2),chavmx(2,2),
+      & slulmx(3,3),sldlmx(6,3),sldrmx(6,3),
+      & squlmx(6,3),squrmx(6,3),sqdlmx(6,3),sqdrmx(6,3)
++      integer flavsortsqu(6),flavsortsqd(6),flavsortsl(6),
++     & flavsortsnu(3)
+       common /mssmmixing/ neunmx,chaumx,chavmx,
+      & slulmx,sldlmx,sldrmx,
+-     & squlmx,squrmx,sqdlmx,sqdrmx,alpha,mix_stop,mix_sbot,mix_stau
++     & squlmx,squrmx,sqdlmx,sqdrmx,alpha,mix_stop,mix_sbot,mix_stau,
++     & flavsortsqu,flavsortsqd,flavsortsl,flavsortsnu ! see dsorder_flavour
+ * msugra variables
+       real*8 m0var,mhfvar,a0var,tgbetavar,sgnmuvar
+       common/sugrainput/m0var,mhfvar,a0var,tgbetavar,sgnmuvar
+diff -rupN darksusy-5.1.3/include/dswacom.h installed/darksusy/5.1.3/include/dswacom.h
+--- darksusy-5.1.3/include/dswacom.h	2015-12-20 21:43:06.000000000 +0000
++++ installed/darksusy/5.1.3/include/dswacom.h	2016-11-15 13:30:13.734328528 +0000
 @@ -18,30 +18,26 @@ c...to 52.
        integer wamax,walast(2),wanm
        parameter(wamax=6) ! number of tables to load simultaneously
@@ -1087,9 +1146,9 @@ diff -rupN darksusy-5.1.3.pristine/include/dswacom.h darksusy/5.1.3/include/dswa
  ***                                                                 ***
  ************************** end of muoncom.h ***************************
  
-diff -rupN darksusy-5.1.3.pristine/makefile.in darksusy/5.1.3/makefile.in
---- darksusy-5.1.3.pristine/makefile.in	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy/5.1.3/makefile.in	2016-10-09 01:39:40.974406792 +0100
+diff -rupN darksusy-5.1.3/makefile.in installed/darksusy/5.1.3/makefile.in
+--- darksusy-5.1.3/makefile.in	2015-04-07 10:23:05.000000000 +0100
++++ installed/darksusy/5.1.3/makefile.in	2016-11-15 13:30:13.734328528 +0000
 @@ -82,7 +82,11 @@ config_paths config :
  
  darksusy_lib dslib : tspack
@@ -1173,9 +1232,2862 @@ diff -rupN darksusy-5.1.3.pristine/makefile.in darksusy/5.1.3/makefile.in
  	rm -f $(DS_INSTALL)/lib/aldata.o
  	if [ ! -f $(DS_INSTALL)/makefile.in ] ; then \
  		echo 'The install directory is different from DS_ROOT' ; \
-diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBffdxdy.f darksusy/5.1.3/src/ib/dsIBffdxdy.f
---- darksusy-5.1.3.pristine/src/ib/dsIBffdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ib/dsIBffdxdy.f	2016-10-09 01:39:40.982406792 +0100
+diff -rupN darksusy-5.1.3/misc/makefile.in installed/darksusy/5.1.3/misc/makefile.in
+--- darksusy-5.1.3/misc/makefile.in	2013-02-15 17:58:12.000000000 +0000
++++ installed/darksusy/5.1.3/misc/makefile.in	2016-11-15 13:30:13.734328528 +0000
+@@ -26,6 +26,10 @@ caprates : caprates.f $(LIB)/libdarksusy
+ 	$(FF) $(FOPT) $(INC) -L$(LIB) -o caprates caprates.f \
+         -ldarksusy -lHB -lFH
+ 
++oh2test : oh2test.f $(LIB)/libdarksusy.a
++	$(FF) $(FOPT) $(INC) -L$(LIB) -o oh2test oh2test.f \
++        -L$(LIB)/aldata.o -ldarksusy -lisajet -lHB -lFH
++
+ caprates_ea : caprates_ea.f $(LIB)/libdarksusy.a
+ 	$(FF) $(FOPT) $(INC) -L$(LIB) -o caprates_ea caprates_ea.f \
+         -ldarksusy -lHB -lFH
+diff -rupN darksusy-5.1.3/misc/oh2test.f installed/darksusy/5.1.3/misc/oh2test.f
+--- darksusy-5.1.3/misc/oh2test.f	1970-01-01 01:00:00.000000000 +0100
++++ installed/darksusy/5.1.3/misc/oh2test.f	2016-11-17 19:03:50.899537000 +0000
+@@ -0,0 +1,294 @@
++      program oh2test
++c
++c     This program is a sample DarkSUSY main program. It asks for model
++c     parameters interactively and calculates the relic density and
++c     various rates for each given model. This program can be used
++c     as is for quick calculations, or be modified to your liking for
++c     more advanced uses.
++c
++c     
++c-----This line is 72 columns long--------------------------------------
++c
++      implicit none
++
++      character*80 slhafile
++      real*8 xf,oh2,dsrdomega,dsabsq
++      real*8 dsandwdcosij
++      real*8 wx,dsanwx,wtot
++      real*8 iby,dsibyield
++      integer ierr,iwar,nfc,i,j,istat
++      integer knew(50)
++      logical first
++      data first/.true./
++
++      include 'dsmssm.h'
++      include 'dsio.h'
++      include 'dsidtag.h'
++c      integer flavsortsl(6),flavsortsqu(6),flavsortsqd(6),flavsortsnu(3)
++      data flavsortsl/1,2,3,4,5,6/
++      data flavsortsqu/1,2,3,4,5,6/
++      data flavsortsqd/1,2,3,4,5,6/
++      data flavsortsnu/1,2,3/
++
++c...Initial setup
++      do i=1,50
++         knew(i)=i
++      enddo
++      
++      
++      call dsinit
++
++c      slhafile='slha/GAMBIT_spectrum_all.slha2'
++c      slhafile='slha/GAMBIT_spectrum_sleptons.slha2'
++c      slhafile='slha/GAMBIT_spectrum_squarks.slha2'
++c      slhafile='slha/GAMBIT_spectrum_trilinears.slha2'
++c      slhafile='slha/slepton_wino.slha1'
++      slhafile='../slha2.dat'
++      call dsSLHAread(slhafile,0) ! 0=no warnings, 1=print warnings
++
++
++      write(*,*) ' '
++      write(*,*) '***** MODEL: ',idtag,' *****'
++
++      call dsprep
++      open (unit=30,file='dsmain1.tmp')
++      write(30,*) ' '
++      write(30,*) '***** MODEL: ',idtag,' *****'
++      call dswspectrum(30)
++      call dswvertx(30)
++      call dswwidth(30)
++      close (30)
++
++      write(*,*) pname(ksl(3))
++      write(*,*) 'mass(22) = ',mass(22),pname(22)
++      write(*,*) 'mass(23) = ',mass(23),pname(23)
++      write(*,*) 'mass(25) = ',mass(25),pname(25)
++      write(*,*) 'mass(26) = ',mass(26),pname(26)
++      write(*,*) 'mass(28) = ',mass(28),pname(28)
++      write(*,*) 'mass(29) = ',mass(29),pname(29)
++
++c      write(*,*) gl(kn(1),ksnu(1),knutau)
++c      write(*,*) gl(kn(1),ksnu(2),knutau)
++c      write(*,*) gl(kn(1),ksnu(3),knutau)
++      write(*,*) gl(kcha(1),ksl(1),knutau),pname(ksl(1))
++      write(*,*) gl(kcha(1),ksl(2),knutau),pname(ksl(2))
++      write(*,*) gl(kcha(1),ksl(3),knutau),pname(ksl(3))
++      write(*,*) gl(kcha(1),ksl(4),knutau),pname(ksl(4))
++      write(*,*) gl(kcha(1),ksl(5),knutau),pname(ksl(5))
++      write(*,*) gl(kcha(1),ksl(6),knutau),pname(ksl(6))
++
++      write(*,*) gl(ksqu(1),ksqu(1),kz),pname(ksqu(1))
++      write(*,*) gl(ksqu(3),ksqu(3),kz),pname(ksqu(3))
++      write(*,*) gr(ksqu(1),ksqu(1),kgluon),pname(ksqu(1))
++      write(*,*) gr(ksqu(3),ksqu(3),kgluon),pname(ksqu(3))
++      write(*,*) gl(ksqu(1),ksqu(1),kz),pname(ksqu(1))
++      write(*,*) gl(ksqu(3),ksqu(3),kz),pname(ksqu(3))
++      write(*,*) gr(ksqu(1),ksqu(1),kgluon),pname(ksqu(1))
++      write(*,*) gr(ksqu(3),ksqu(3),kgluon),pname(ksqu(3))
++      write(*,*) gl(kc,kc,kgluon),pname(kc)
++      write(*,*) gr(kc,kc,kgluon),pname(kc)
++
++      write(*,*) ' '
++      write(*,*) gl(kcha(1),ke,knue)
++      write(*,*) gr(kcha(1),ke,knue)
++      write(*,*) gl(kcha(1),ke,knumu)
++      write(*,*) gr(kcha(1),ke,knumu)
++
++      write(*,*) '  Neutralino mass = ',mass(kn(1))
++      write(*,*) '  Gaugino fraction = ',
++     &  dsabsq(neunmx(1,1))+dsabsq(neunmx(1,2))
++      write(*,*) '  Chargino 1 mass = ',mass(kcha(1))
++      write(*,*) '  Chargino 2 mass = ',mass(kcha(2))
++      write(*,*) '  H1 mass =  ',mass(kh1),width(kh1)
++      write(*,*) '  H2 mass =  ',mass(kh2),width(kh2)
++      write(*,*) '  H3 mass =  ',mass(kh3),width(kh3)
++      write(*,*) '  H+- mass = ',mass(khc),width(khc)
++
++      write(*,*) 'Calculating omega h^2 without coannihilations,',
++     &     ' please be patient...'
++      oh2=dsrdomega(0,1,xf,ierr,iwar,nfc)
++      write(*,*) '  without coannihilations Oh2 = ',oh2,ierr,iwar
++      write(*,*) 'Calculating omega h^2 with coannihilations,',
++     &     ' please be patient...'
++      oh2=dsrdomega(1,1,xf,ierr,iwar,nfc)
++      write(*,*) '  with coannihilations Oh2 = ',oh2,ierr,iwar
++      write(*,*) '  Chemical decoupling (freeze-out) occured at'
++      write(*,*) '  T_f = ',mass(kn(1))/xf,' GeV.'
++
++      iby=dsibyield(120.d0,152,istat)
++      write(*,*) 'IB gamma yield at 120 GeV = ',iby
++      iby=dsibyield(400.d0,152,istat)
++      write(*,*) 'IB gamma yield at 400 GeV = ',iby
++
++      wx=dsanwx(100.d0)
++      write(*,*) 'Invariant rate at 100 GeV: ',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,22)
++      write(*,*) 'chi_1^0 s_l_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,23)
++      write(*,*) 'chi_1^0 s_l_2, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,25)
++      write(*,*) 'chi_1^0 s_l_3, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,26)
++      write(*,*) 'chi_1^0 s_l_4, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,28)
++      write(*,*) 'chi_1^0 s_l_5, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,29)
++      write(*,*) 'chi_1^0 s_l_6, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,30)
++      write(*,*) 'chi_1^0 u~1, dsandwdcosij=',wx
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,46,22)
++      write(*,*) 'chi_1^+ s_l_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,23)
++      write(*,*) 'chi_1^+ s_l_2, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,25)
++      write(*,*) 'chi_1^+ s_l_3, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,26)
++      write(*,*) 'chi_1^+ s_l_4, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,28)
++      write(*,*) 'chi_1^+ s_l_5, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,29)
++      write(*,*) 'chi_1^+ s_l_6, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,30)
++      write(*,*) 'chi_1^+ u~1, dsandwdcosij=',wx
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,22,22)
++      write(*,*) 's_l_1 s_l_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,23,23)
++      write(*,*) 's_l_2 s_l_2, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,25,25)
++      write(*,*) 's_l_3 s_l_3, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,26,26)
++      write(*,*) 's_l_4 s_l_4, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,28,28)
++      write(*,*) 's_l_5 s_l_5, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,29,29)
++      write(*,*) 's_l_6 s_l_6, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,28,22)
++      write(*,*) 's_l_5 s_l_1, dsandwdcosij=',wx
++
++
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,22,30)
++      write(*,*) 's_l_1 s_u_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,22,32)
++      write(*,*) 's_l_1 s_d_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,28,38)
++      write(*,*) 's_l_5 s_u_5, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,28,40)
++      write(*,*) 's_l_5 s_d_5, dsandwdcosij=',wx
++
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,30,30)
++      write(*,*) 's_u_1 s_u_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,31,31)
++      write(*,*) 's_u_2 s_u_2, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,34,34)
++      write(*,*) 's_u_3 s_u_3, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,35,35)
++      write(*,*) 's_u_4 s_u_4, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,38,38)
++      write(*,*) 's_u_5 s_u_5, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,39,39)
++      write(*,*) 's_u_6 s_u_6, dsandwdcosij=',wx
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,32,32)
++      write(*,*) 's_d_1 s_d_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,33,33)
++      write(*,*) 's_d_2 s_d_2, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,36,36)
++      write(*,*) 's_d_3 s_d_3, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,37,37)
++      write(*,*) 's_d_4 s_d_4, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,40,40)
++      write(*,*) 's_d_5 s_d_5, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,41,41)
++      write(*,*) 's_d_6 s_d_6, dsandwdcosij=',wx
++
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,30,32)
++      write(*,*) 's_u_1 s_d_1, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,38,40)
++      write(*,*) 's_u_5 s_d_5, dsandwdcosij=',wx
++
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,42,42)
++      write(*,*) 'chi_1^0 chi_1^0, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,43)
++      write(*,*) 'chi_1^0 chi_2^0, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,46,46)
++      write(*,*) 'chi_1^+ chi_1^+, dsandwdcosij=',wx
++      wx=dsandwdcosij(100.d0,0.5d0,42,46)
++      write(*,*) 'chi_1^0 chi_1^+, dsandwdcosij=',wx
++      
++      write(*,*) 'Now performing full test...'
++
++c...Manual reordering in other direction      
++c      flavsortsl(1)=3
++c      flavsortsl(2)=2
++c      flavsortsl(3)=1
++c      flavsortsl(4)=6
++c      flavsortsl(5)=5
++c      flavsortsl(6)=4
++
++c      flavsortsqu(1)=3
++c      flavsortsqu(2)=6
++c      flavsortsqu(3)=2
++c      flavsortsqu(4)=1
++c      flavsortsqu(5)=5
++c      flavsortsqu(6)=4
++
++c      flavsortsqd(1)=3
++c      flavsortsqd(2)=6
++c      flavsortsqd(3)=2
++c      flavsortsqd(4)=1
++c      flavsortsqd(5)=5
++c      flavsortsqd(6)=4
++
++c      flavsortsnu(1)=3
++c      flavsortsnu(2)=2
++c      flavsortsnu(3)=1
++c...Reorder knew
++c      do i=1,6         
++c         knew(ksl(i))=ksl(flavsortsl(i))
++c         knew(ksqu(i))=ksqu(flavsortsqu(i))
++c         knew(ksqd(i))=ksqd(flavsortsqd(i))
++c      enddo
++c      do i=1,3
++c         knew(ksnu(i))=ksnu(flavsortsnu(i))
++c      enddo
++      
++      
++      wtot=0.d0
++      do i=21,47 ! 30,41 ! 21,29  ! 21,47
++         do j=21,47 ! 30,41 ! 21,29 ! 21,47
++            wx=dsandwdcosij(100.d0,0.5d0,knew(i),knew(j))
++     &           +dsandwdcosij(100.d0,-0.5d0,knew(i),knew(j))
++            write(*,*) i,j,wx
++            write(47,*) i,j,wx
++            wtot=wtot+wx
++         enddo
++      enddo
++      write(*,*) 'wtot = ',wtot
++      
++
++      wx=dsandwdcosij(100.d0,0.5d0,46,21)
++      write(*,*) 'chi_1^+ snu_e wx = ',wx
++      wx=dsandwdcosij(100.d0,0.5d0,21,24)
++      write(*,*) 'snu_e snu_mu wx = ',wx
++      wx=dsandwdcosij(100.d0,0.5d0,21,25)
++      write(*,*) 'snu_e smu_1 wx = ',wx
++      wx=dsandwdcosij(100.d0,-0.5d0,21,25)
++      write(*,*) 'snu_e smu_1 wx = ',wx
++      wx=dsandwdcosij(100.d0,0.5d0,21,22)
++      write(*,*) 'snu_e se_1 wx = ',wx
++
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,34,41)
++      write(*,*) 'c_1 b_1 wx = ',wx
++
++      write(*,*) ' '
++      wx=dsandwdcosij(100.d0,0.5d0,ksl(1),ksl(2))
++      write(*,*) 'sl_1 sl_2 wx = ',wx
++      
++      end
+diff -rupN darksusy-5.1.3/src/as/dsaschicasea.f installed/darksusy/5.1.3/src/as/dsaschicasea.f
+--- darksusy-5.1.3/src/as/dsaschicasea.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsaschicasea.f	2016-11-15 13:30:13.734328528 +0000
+@@ -177,9 +177,13 @@ c....mass symbols used in form-code
+           kchiu(k+2)=0
+         enddo
+         nchiu=2
+-***** in the s-channel (1 fermion):
+-        kfers(1)=kcfers
+-        nfers=1
++***** in the s-channel (3 fermion): ! JE CORR 1->3
++c        kfers(1)=kcfers
++c        nfers=1
++        nfers=ncfers
++        do i=1,nfers
++           kfers(i)=kcfersv(i)
++        enddo
+         goto 100
+       endif
+ *****
+@@ -217,14 +221,14 @@ c....mass symbols used in form-code
+         enddo
+ ***** in the u-channel (4 neutralinos):
+ ***** only when initial/final state (s)fermions are of same family
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-	else
+-          nchiu=0
+-        endif
++c	else
++c          nchiu=0
++c        endif
+ ***** no s-channel:
+         nfers=0
+         goto 100
+@@ -239,15 +243,16 @@ c....mass symbols used in form-code
+         nsfert=0 
+ ***** in the u-channel (4 neutralinos):
+ ***** only when initial/final state (s)fermions are of same family
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR, always include, due to sfermion mixings
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif
+-***** in the s-channel (1 lepton or 3 quarks):
++c        else
++c          nchiu=0
++c        endif
++        
++***** in the s-channel (3 leptons or 3 quarks):
+         nfers=ncferd
+         do i=1,nfers
+           kfers(i)=kcferd(i)
+diff -rupN darksusy-5.1.3/src/as/dsaschicaseb.f installed/darksusy/5.1.3/src/as/dsaschicaseb.f
+--- darksusy-5.1.3/src/as/dsaschicaseb.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsaschicaseb.f	2016-11-15 13:30:13.738328528 +0000
+@@ -171,9 +171,13 @@ c....mass symbols used in form-code
+           kchiu(k+2)=0
+         enddo
+         nchiu=2
+-***** in the s-channel (1 fermion): 
+-        kfers(1)=kcfers
+-        nfers=1
++***** in the s-channel (3 fermion): ! JE CORR 1->3
++c        kfers(1)=kcfers
++c        nfers=1
++        nfers=ncfers ! JE CORR 4 lines
++        do i=1,nfers
++           kfers(i)=kcfersv(i)
++        enddo
+         goto 200
+       endif
+ *****
+@@ -185,15 +189,15 @@ c....mass symbols used in form-code
+ ***** no t-channel:  
+         nsfert=0
+ ***** in the u-channel (0 or 4 neutralinos):
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif
+-***** in the s-channel (1 lepton or 3 quarks):
++c        else
++c          nchiu=0
++c        endif
++***** in the s-channel (3 leptons or 3 quarks):
+         nfers=ncferd
+         do i=1,nfers
+           kfers(i)=kcferd(i)
+@@ -212,14 +216,14 @@ c....mass symbols used in form-code
+           ksfert(i)=kcsfertc(i)
+         enddo
+ ***** in the u-channel (0 or 4 neutralinos):
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif
++c        else
++c          nchiu=0
++c        endif
+ ***** no s-channel:
+         nfers=0
+         goto 200
+diff -rupN darksusy-5.1.3/src/as/dsaschicasec.f installed/darksusy/5.1.3/src/as/dsaschicasec.f
+--- darksusy-5.1.3/src/as/dsaschicasec.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsaschicasec.f	2016-11-15 13:30:13.738328528 +0000
+@@ -227,9 +227,13 @@ c....mass symbols used in form-code
+           kchiu(k+2)=0
+         enddo
+         nchiu=2
+-***** in the s-channel (1 fermion):
+-        kfers(1)=kcfers
+-        nfers=1
++***** in the s-channel (3 fermion): ! JE CORR 1->3
++c        kfers(1)=kcfers
++c        nfers=1
++        nfers=ncfers ! JE CORR 4 lines
++        do i=1,nfers
++           kfers(i)=kcfersv(i)
++        enddo
+         goto 300
+       endif
+ *****
+@@ -244,14 +248,14 @@ c....mass symbols used in form-code
+           ksfert(i)=kcsfertc(i)
+         enddo
+ ***** in the u-channel (0 or 4 neutralinos):
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif
++c        else
++c          nchiu=0
++c        endif
+ ***** no s-channel:
+         nfers=0       
+         goto 300
+@@ -265,15 +269,15 @@ c....mass symbols used in form-code
+ ***** no t-channel:  
+         nsfert=0 
+ ***** in the u-channel (0 or 4 neutralinos):
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR, always include due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif
+-***** in the s-channel (1 lepton or 3 quarks):
++c        else
++c          nchiu=0
++c        endif
++***** in the s-channel (3 leptons or 3 quarks):
+         nfers=ncferd
+         do i=1,nfers
+           kfers(i)=kcferd(i)
+diff -rupN darksusy-5.1.3/src/as/dsaschicased.f installed/darksusy/5.1.3/src/as/dsaschicased.f
+--- darksusy-5.1.3/src/as/dsaschicased.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsaschicased.f	2016-11-15 13:30:13.738328528 +0000
+@@ -194,9 +194,13 @@ c....mass symbols used in form-code
+           kchiu(k+2)=0
+         enddo
+         nchiu=2
+-***** in the s-channel (1 fermion):
+-        kfers(1)=kcfers
+-        nfers=1
++***** in the s-channel (3 fermion): ! JE CORR 1->3
++c        kfers(1)=kcfers
++c        nfers=1
++        nfers=ncfers ! JE CORR 4 lines
++        do i=1,nfers
++           kfers(i)=kcfersv(i)
++        enddo
+         goto 400
+       endif  
+ *****
+@@ -208,15 +212,15 @@ c....mass symbols used in form-code
+ ***** no t-channel:
+         nsfert=0
+ ***** in the u-channel (0 or 4 neutralinos):
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif
+-***** in the s-channel (1 or 3 fermions):
++c        else
++c          nchiu=0
++c        endif
++***** in the s-channel (3 fermions):
+         nfers=ncferd
+         do i=1,nfers
+           kfers(i)=kcferd(i)
+@@ -235,14 +239,14 @@ c....mass symbols used in form-code
+           ksfert(i)=kcsfertc(i)
+         enddo
+ ***** in the u-channel (0 or 4 neutralinos):
+-        if(iifam(1).eq.ivfam(kfer)) then
+-          do k=1,4
++c        if(iifam(1).eq.ivfam(kfer)) then
++          do k=1,4 ! JE CORR due to sfermion mixing
+             kchiu(k)=kn(k)
+           enddo
+           nchiu=4
+-        else
+-          nchiu=0
+-        endif 
++c        else
++c          nchiu=0
++c        endif 
+ ***** no s-channel:
+         nfers=0
+         goto 400
+diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfchi.f installed/darksusy/5.1.3/src/as/dsasdwdcossfchi.f
+--- darksusy-5.1.3/src/as/dsasdwdcossfchi.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsasdwdcossfchi.f	2016-11-15 13:30:13.738328528 +0000
+@@ -15,6 +15,8 @@
+ ***   final state quarks in selected cases, June 2006, Jan 2007      ***
+ *** modified: Piero Ullio to include a new labelling of states,      ***
+ ***   08-05-30                                                       ***
++*** modified: Joakim Edsjo to properly include inter-family mixing   ***
++***   2016-10-29                                                     ***
+ ************************************************************************
+ 
+       real*8 function dsasdwdcossfchi(p,costhe,kp1,kp2)
+@@ -24,7 +26,7 @@
+       include 'dsandwcom.h'
+       include 'dsidtag.h'
+       real*8 p,costhe
+-      integer kp1,kp2,kp3,kp4,kp2int,i,f,fsave,icase
++      integer kp1,kp2,kp3,kp4,kp2int,i,f,icase
+       real*8 w,par
+       logical wok
+ ************************************************************************
+@@ -69,40 +71,91 @@
+         do i=1,54
+           prtial(i)=0.0d0
+         enddo
+-        if(kp1.ne.kp1c.or.kp2int.ne.kp2c) then
++        if(kp1.ne.kp1c.or.kp2int.ne.kp2c) then ! to save CPU, don't recalc
+         kp1c=kp1
+         kp2c=kp2int
+         cgammain=.false.
+         cgluonin=.false.
+         ciaux=iifam(1)/10
+         ciaux=iifam(1)-ciaux*10
+-        do f=knue,kb
+-          if(iifam(1).eq.ivfam(f)) then 
+-            fsave=f
+-          endif
+-        enddo
+-        kcfers=fsave
+-        if(kcfers.le.ktau.and.kcfers.ge.knue) then
+-          if(ciaux.eq.1) then
+-            ncsfert=1
+-            kcsfertn(1)=ksnu((fsave+1)/2)
+-            ncferd=1
+-            kcferd(1)=fsave+1
+-          endif
+-          if(ciaux.eq.2) then
+-            ncsfert=2
+-            kcsfertn(1)=ksl(fsave/2)
+-            kcsfertn(2)=ksl(fsave/2+3)
+-            ncferd=1
+-            kcferd(1)=fsave-1
++c        do f=knue,kb ! not needed anymore (JE)
++c          if(iifam(1).eq.ivfam(f)) then 
++c            fsave=f
++c          endif
++c        enddo
++c        kcfers=fsave
++c...Add virtual s-channel fermions (made array by 3)
++        ncfers=3
++        if (iifam(1).eq.12.or.iifam(1).eq.22.or.iifam(1).eq.32) then
++           kcfersv(1)=ke
++           kcfersv(2)=kmu
++           kcfersv(3)=ktau
++        elseif (iifam(1).eq.11.or.iifam(1).eq.21.or.iifam(1).eq.31) then
++           kcfersv(1)=knue
++           kcfersv(2)=knumu
++           kcfersv(3)=knutau
++        elseif (iifam(1).eq.42.or.iifam(1).eq.52.or.iifam(1).eq.62) then
++           kcfersv(1)=kd
++           kcfersv(2)=ks
++           kcfersv(3)=kb
++        elseif (iifam(1).eq.41.or.iifam(1).eq.51.or.iifam(1).eq.61) then
++           kcfersv(1)=ku
++           kcfersv(2)=kc
++           kcfersv(3)=kt
++        else
++           write(*,*) 'ERROR in DS: dsasdwdcossfchi:'
++           write(*,*) 'Illegal iifam= ',iifam(1)
++           write(*,*) 'Something is wrong.'
++           stop
++        endif
++        
++        if(kcfersv(1).le.ktau.and.kcfersv(1).ge.knue) then ! slepton case
++          if(ciaux.eq.1) then ! sneutrino
++c            ncsfert=1 ! add all three?
++c            kcsfertn(1)=ksnu((fsave+1)/2)
++             ncsfert=3 ! JE CORRECTION these 4 lines
++             kcsfertn(1)=ksnu(1)
++             kcsfertn(2)=ksnu(2)
++             kcsfertn(3)=ksnu(3)
++c            ncferd=1 ! add all three
++c            kcferd(1)=fsave+1
++             ncferd=3 ! JE CORRECTION these 4 lines
++             kcferd(1)=ke
++             kcferd(2)=kmu
++             kcferd(3)=ktau
++          endif
++          if(ciaux.eq.2) then ! charged slepton
++c            ncsfert=2 ! add all six?
++c            kcsfertn(1)=ksl(fsave/2)
++c            kcsfertn(2)=ksl(fsave/2+3)
++            ncsfert=6 ! JE CORRECTION these 7 lines
++            kcsfertn(1)=ksl(1)
++            kcsfertn(2)=ksl(2)
++            kcsfertn(3)=ksl(3)
++            kcsfertn(4)=ksl(4)
++            kcsfertn(5)=ksl(5)
++            kcsfertn(6)=ksl(6)
++c            ncferd=1 ! add all three?
++c            kcferd(1)=fsave-1
++            ncferd=3 ! JE CORRECTION these 4 lines
++            kcferd(1)=knue
++            kcferd(2)=knumu
++            kcferd(3)=knutau
+             cgammain=.true.
+           endif
+         endif
+-        if(kcfers.le.kb.and.kcfers.ge.ku) then
+-          if(ciaux.eq.1) then
+-            ncsfert=2
+-            kcsfertn(1)=ksqu((fsave-6+1)/2)
+-            kcsfertn(2)=ksqu((fsave-6+1)/2+3)
++        if(kcfersv(1).le.kb.and.kcfersv(1).ge.ku) then ! squarks
++          if(ciaux.eq.1) then ! up type 
++c            ncsfert=2 ! add all 6?
++c            kcsfertn(1)=ksqu((fsave-6+1)/2)
++c            kcsfertn(2)=ksqu((fsave-6+1)/2+3)
++            ncsfert=6 ! JE CORRECTION these 7 lines
++            kcsfertn(1)=ksqu(1)
++            kcsfertn(2)=ksqu(2)
++            kcsfertn(3)=ksqu(3)
++            kcsfertn(4)=ksqu(4)
++            kcsfertn(5)=ksqu(5)
++            kcsfertn(6)=ksqu(6)
+             ncferd=3
+             kcferd(1)=kd
+             kcferd(2)=ks
+@@ -110,10 +163,17 @@
+             cgammain=.true.
+             cgluonin=.true.
+           endif
+-          if(ciaux.eq.2) then
+-            ncsfert=2
+-            kcsfertn(1)=ksqd((fsave-6)/2)
+-            kcsfertn(2)=ksqd((fsave-6)/2+3)
++          if(ciaux.eq.2) then ! down type
++c            ncsfert=2 ! add all 6?
++c            kcsfertn(1)=ksqd((fsave-6)/2)
++c            kcsfertn(2)=ksqd((fsave-6)/2+3)
++            ncsfert=6 ! JE CORRECTION these 7 lines
++            kcsfertn(1)=ksqd(1)
++            kcsfertn(2)=ksqd(2)
++            kcsfertn(3)=ksqd(3)
++            kcsfertn(4)=ksqd(4)
++            kcsfertn(5)=ksqd(5)
++            kcsfertn(6)=ksqd(6)
+             ncferd=3
+             kcferd(1)=ku
+             kcferd(2)=kc
+@@ -126,92 +186,141 @@
+         endif
+ ******************************************************** sf chi^0 -> Z f
+         kp3=kz
+-        kp4=kcfers
+         icase=1
+-        call dsaschicasea(kp1,kp2,kp3,kp4,icase,par)
+-        prtial(1)=par
++        do f=1,3
++c           kcfers=kcfersv(f)
++           kp4=kcfersv(f)
++           call dsaschicasea(kp1,kp2,kp3,kp4,icase,par)
++           prtial(1)=prtial(1)+par
++        enddo
++
+ **************************************************** sf chi^0 -> gamma f
+         if(cgammain) then
+           kp3=kgamma
+-          kp4=kcfers
+           icase=7
+-          call dsaschizero(kp1,kp2,kp3,kp4,icase,par)
+-          prtial(2)=par
++          do f=1,3
++c             kcfers=kcfersv(f)
++             kp4=kcfersv(f)
++             call dsaschizero(kp1,kp2,kp3,kp4,icase,par)
++             prtial(2)=prtial(2)+par
++          enddo
+         endif
+ ******************************************************** sf chi^0 -> h f
+         kp3=kh2
+-        kp4=kcfers
+         icase=1
+-        call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
+-        prtial(3)=par
++        do f=1,3
++c           kcfers=kcfersv(f)
++           kp4=kcfersv(f)
++           call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
++           prtial(3)=prtial(3)+par
++        enddo
+ ******************************************************** sf chi^0 -> H f
+         kp3=kh1
+-        kp4=kcfers
+         icase=1
+-        call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
+-        prtial(4)=par
++        do f=1,3
++c           kcfers=kcfersv(f)
++           kp4=kcfersv(f)
++           call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
++           prtial(4)=prtial(4)+par
++        enddo
+ ******************************************************** sf chi^0 -> a f
+         kp3=kh3
+-        kp4=kcfers
+         icase=2
+-        call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
+-        prtial(5)=par
++        do f=1,3
++c           kcfers=kcfersv(f)
++           kp4=kcfersv(f)
++           call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
++           prtial(5)=prtial(5)+par
++        enddo
+ **************************************************** sf chi^0 -> gluon f
+         if(cgluonin) then
+           kp3=kgluon
+-          kp4=kcfers
+           icase=9
+-          call dsaschizero(kp1,kp2,kp3,kp4,icase,par)
+-          prtial(8)=par
++          do f=1,3
++c             kcfers=kcfersv(f)
++             kp4=kcfersv(f)
++             call dsaschizero(kp1,kp2,kp3,kp4,icase,par)
++             prtial(8)=prtial(8)+par
++          enddo
+         endif
+ ********
+-        if(ciaux.eq.1) then
++c        kcfers=fsave ! FIX ME is this needed?
++        if(ciaux.eq.1) then ! up type
+           prtial(6)=0.d0
+           prtial(7)=0.d0
+           do i=1,ncferd
+             kp4=kcferd(i)
+             if(kp4.le.ktau.and.kp4.ge.knue) then
+-              ncsfertc=2
+-              kcsfertc(1)=ksl(kp4/2)
+-              kcsfertc(2)=ksl(kp4/2+3)
++c              ncsfertc=2
++c              kcsfertc(1)=ksl(kp4/2)
++c              kcsfertc(2)=ksl(kp4/2+3)
++               ncsfertc=6 ! JE CORRECTION these 7 lines
++               kcsfertc(1)=ksl(1)
++               kcsfertc(2)=ksl(2)
++               kcsfertc(3)=ksl(3)
++               kcsfertc(4)=ksl(4)
++               kcsfertc(5)=ksl(5)
++               kcsfertc(6)=ksl(6)
+             else
+-              ncsfertc=2
+-              kcsfertc(1)=ksqd((kp4-6)/2)
+-              kcsfertc(2)=ksqd((kp4-6)/2+3)
++c              ncsfertc=2
++c              kcsfertc(1)=ksqd((kp4-6)/2)
++c              kcsfertc(2)=ksqd((kp4-6)/2+3)
++               ncsfertc=6 ! JE CORRECTION these 7 lines
++               kcsfertc(1)=ksqd(1)
++               kcsfertc(2)=ksqd(2)
++               kcsfertc(3)=ksqd(3)
++               kcsfertc(4)=ksqd(4)
++               kcsfertc(5)=ksqd(5)
++               kcsfertc(6)=ksqd(6)
+             endif
+ *********************************************** sfu^* chi^0 -> W^- fdbar
+             kp3=kw
+             icase=2
++c            kcfers=kp4 ! JE CORRECTION
+             call dsaschicaseb(kp1,kp2,kp3,kp4,icase,par)
+             prtial(6)=prtial(6)+par   
+ *********************************************** sfu^* chi^0 -> h^- fdbar
+             kp3=khc
+             icase=3
++c            kcfers=kp4 ! JE CORRECTION
+             call dsaschicased(kp1,kp2,kp3,kp4,icase,par)
+             prtial(7)=prtial(7)+par
+           enddo
+-        elseif(ciaux.eq.2) then  
++        elseif(ciaux.eq.2) then  ! down type
+ ********
+           prtial(6)=0.d0
+           prtial(7)=0.d0
+           do i=1,ncferd
+             kp4=kcferd(i)
+             if(kp4.le.ktau.and.kp4.ge.knue) then
+-              ncsfertc=1
+-              kcsfertc(1)=ksnu((kp4+1)/2)
++c              ncsfertc=1
++c              kcsfertc(1)=ksnu((kp4+1)/2)
++               ncsfertc=3 ! JE CORRECTION these 4 lines
++               kcsfertc(1)=ksnu(1)
++               kcsfertc(2)=ksnu(2)
++               kcsfertc(3)=ksnu(3)
+             else
+-              ncsfertc=2
+-              kcsfertc(1)=ksqu((kp4-6+1)/2)
+-              kcsfertc(2)=ksqu((kp4-6+1)/2+3)
++c              ncsfertc=2
++c              kcsfertc(1)=ksqu((kp4-6+1)/2)
++c              kcsfertc(2)=ksqu((kp4-6+1)/2+3)
++              ncsfertc=6 ! JE CORRECTION these 7 lines
++              kcsfertc(1)=ksqu(1)
++              kcsfertc(2)=ksqu(2)
++              kcsfertc(3)=ksqu(3)
++              kcsfertc(4)=ksqu(4)
++              kcsfertc(5)=ksqu(5)
++              kcsfertc(6)=ksqu(6)
+             endif
+ **************************************************** sfd chi^0 -> W^- fu
+             kp3=kw
+             icase=2
++c            kcfers=kp4+1 ! JE CORRECTION
+             call dsaschicasea(kp1,kp2,kp3,kp4,icase,par)
+             prtial(6)=prtial(6)+par
+ **************************************************** sfd chi^0 -> h^- fu
+             kp3=khc
+             icase=4
++c            kcfers=kp4+1 ! JE CORRECTION
+             call dsaschicasec(kp1,kp2,kp3,kp4,icase,par)
+             prtial(7)=prtial(7)+par
+           enddo
+@@ -233,6 +342,15 @@
+                                  ! or  sfd chi^0 -> h^- fu
+         w=w+prtial(8)            ! sf chi^0 -> gluon f
+         dsasdwdcossfchi = w      ! The weighting factor is 1
++c        write(*,*) 'sfchi, prtial(1)=',prtial(1)
++c        write(*,*) 'sfchi, prtial(2)=',prtial(2)
++c        write(*,*) 'sfchi, prtial(3)=',prtial(3)
++c        write(*,*) 'sfchi, prtial(4)=',prtial(4)
++c        write(*,*) 'sfchi, prtial(5)=',prtial(5)
++c        write(*,*) 'sfchi, prtial(6)=',prtial(6)
++c        write(*,*) 'sfchi, prtial(7)=',prtial(7)
++c        write(*,*) 'sfchi, prtial(8)=',prtial(8)
++c        write(*,*) 'sfchi, w=',w
+ 
+ ************************************************************************
+ *****
+@@ -241,51 +359,124 @@
+         do i=1,54
+           prtial(i)=0.0d0
+         enddo
+-        if(kp1.ne.kp1c.or.kp2int.ne.kp2c) then
++        if(kp1.ne.kp1c.or.kp2int.ne.kp2c) then ! only recalcualte when needed
+         kp1c=kp1
+         kp2c=kp2int
+         cgluonin=.false.
+         ciaux=iifam(1)/10
+         ciaux=iifam(1)-ciaux*10
+-        do f=knue,kb
+-          if(iifam(1).eq.ivfam(f)) then 
+-            fsave=f
+-          endif
+-        enddo
+-        kcfers=fsave
+-        if(kcfers.le.ktau.and.kcfers.ge.knue) then
+-          if(ciaux.eq.1) then
+-            ncsfert=1
+-            kcsfertn(1)=ksnu((fsave+1)/2)
+-            ncfers=1
+-            kcfersv(1)=kcfers
+-            ncferd=1
+-            kcferd(1)=fsave+1
+-            ncsfertc=2
+-            kcsfertc(1)=ksl((fsave+1)/2)
+-            kcsfertc(2)=ksl((fsave+1)/2+3)
+-          endif
+-          if(ciaux.eq.2) then
+-            ncsfert=2
+-            kcsfertn(1)=ksl(fsave/2)
+-            kcsfertn(2)=ksl(fsave/2+3)
+-            ncfers=1
+-            kcfersv(1)=kcfers
+-            ncferd=1
+-            kcferd(1)=fsave-1
+-            ncsfertc=1
+-            kcsfertc(1)=ksnu(fsave/2)
++c        do f=knue,kb! not needed anymore
++c          if(iifam(1).eq.ivfam(f)) then 
++c            fsave=f
++c          endif
++c        enddo
++c        kcfers=fsave
++c JE FIX. Is this enough with fsave and kcfers? Do we need to make kcfers an
++c array of dimension 3
++c...JE CORRECTION
++c...Add final state fermions to be used in this routine
++        ncfers=3
++        if (iifam(1).eq.12.or.iifam(1).eq.22.or.iifam(1).eq.32) then
++           kcfersv(1)=ke
++           kcfersv(2)=kmu
++           kcfersv(3)=ktau
++        elseif (iifam(1).eq.11.or.iifam(1).eq.21.or.iifam(1).eq.31) then
++           kcfersv(1)=knue
++           kcfersv(2)=knumu
++           kcfersv(3)=knutau
++        elseif (iifam(1).eq.42.or.iifam(1).eq.52.or.iifam(1).eq.62) then
++           kcfersv(1)=kd
++           kcfersv(2)=ks
++           kcfersv(3)=kb
++        elseif (iifam(1).eq.41.or.iifam(1).eq.51.or.iifam(1).eq.61) then
++           kcfersv(1)=ku
++           kcfersv(2)=kc
++           kcfersv(3)=kt
++        else
++           write(*,*) 'ERROR in DS: dsasdwdcossfchi:'
++           write(*,*) 'Illegal iifam= ',iifam(1)
++           write(*,*) 'Something is wrong.'
++           stop
++        endif
++
++        if(kcfersv(1).le.ktau.and.kcfersv(1).ge.knue) then
++          if(ciaux.eq.1) then ! sneutrino
++c            ncsfert=1
++c            kcsfertn(1)=ksnu((fsave+1)/2)
++            ncsfert=3 ! JE CORRECTION these 4 lines
++            kcsfertn(1)=ksnu(1)
++            kcsfertn(2)=ksnu(2)
++            kcsfertn(3)=ksnu(3)
++c            ncfers=1
++c            kcfersv(1)=kcfers
++c            ncfers=3 ! JE CORRECTION these 4 lines ! done already
++c            kcfersv(1)=kcfinal(1)
++c            kcfersv(2)=kcfinal(2)
++c            kcfersv(3)=kcfinal(3)
++c            ncferd=1
++c            kcferd(1)=fsave+1
++            ncferd=3 ! JE CORRECTION these 4 lines
++            kcferd(1)=ke
++            kcferd(2)=kmu
++            kcferd(3)=ktau
++c            ncsfertc=2
++c            kcsfertc(1)=ksl((fsave+1)/2)
++c            kcsfertc(2)=ksl((fsave+1)/2+3)
++           ncsfertc=6 ! JE CORRECTION these 7 lines
++           kcsfertc(1)=ksl(1)
++           kcsfertc(2)=ksl(2)
++           kcsfertc(3)=ksl(3)
++           kcsfertc(4)=ksl(4)
++           kcsfertc(5)=ksl(5)
++           kcsfertc(6)=ksl(6)
++          endif
++          if(ciaux.eq.2) then ! charged slepton
++c            ncsfert=2
++c            kcsfertn(1)=ksl(fsave/2)
++c            kcsfertn(2)=ksl(fsave/2+3)
++            ncsfert=6 ! JE CORRECTION these 7 lines
++            kcsfertn(1)=ksl(1)
++            kcsfertn(2)=ksl(2)
++            kcsfertn(3)=ksl(3)
++            kcsfertn(4)=ksl(4)
++            kcsfertn(5)=ksl(5)
++            kcsfertn(6)=ksl(6)
++c            ncfers=1
++c            kcfersv(1)=kcfers
++c            ncfers=3 ! JE CORRECTION these 4 lines ! done already
++c            kcfersv(1)=kcfinal(1)
++c            kcfersv(2)=kcfinal(2)
++c            kcfersv(3)=kcfinal(3)
++c            ncferd=1
++c            kcferd(1)=fsave-1
++            ncferd=3 ! JE CORRECTION these 4 lines
++            kcferd(1)=knue
++            kcferd(2)=knumu
++            kcferd(3)=knutau
++c            ncsfertc=1
++c            kcsfertc(1)=ksnu(fsave/2)
++            ncsfertc=3 ! JE CORRECTION these 4 lines
++            kcsfertc(1)=ksnu(1)
++            kcsfertc(2)=ksnu(2)
++            kcsfertc(3)=ksnu(3)
+           endif
+         endif
+-        if(kcfers.le.kb.and.kcfers.ge.ku) then
+-          if(ciaux.eq.1) then
+-            ncsfert=2
+-            kcsfertn(1)=ksqu((fsave-6+1)/2)
+-            kcsfertn(2)=ksqu((fsave-6+1)/2+3)
+-            ncfers=3
+-            kcfersv(1)=ku
+-            kcfersv(2)=kc
+-            kcfersv(3)=kt
++        if(kcfersv(1).le.kb.and.kcfersv(1).ge.ku) then ! squarks
++          if(ciaux.eq.1) then ! up type
++c            ncsfert=2
++c            kcsfertn(1)=ksqu((fsave-6+1)/2)
++c            kcsfertn(2)=ksqu((fsave-6+1)/2+3)
++            ncsfert=6 ! JE CORRECTION these 7 lines
++            kcsfertn(1)=ksqu(1)
++            kcsfertn(2)=ksqu(2)
++            kcsfertn(3)=ksqu(3)
++            kcsfertn(4)=ksqu(4)
++            kcsfertn(5)=ksqu(5)
++            kcsfertn(6)=ksqu(6)
++c            ncfers=3 ! done already
++c            kcfersv(1)=ku
++c            kcfersv(2)=kc
++c            kcfersv(3)=kt
+             ncferd=3
+             kcferd(1)=kd
+             kcferd(2)=ks
+@@ -296,14 +487,21 @@
+             enddo
+             cgluonin=.true.
+           endif
+-          if(ciaux.eq.2) then
+-            ncsfert=2
+-            kcsfertn(1)=ksqd((fsave-6)/2)
+-            kcsfertn(2)=ksqd((fsave-6)/2+3)
+-            ncfers=3
+-            kcfersv(1)=kd
+-            kcfersv(2)=ks
+-            kcfersv(3)=kb
++          if(ciaux.eq.2) then ! down type
++c            ncsfert=2
++c            kcsfertn(1)=ksqd((fsave-6)/2)
++c            kcsfertn(2)=ksqd((fsave-6)/2+3)
++            ncsfert=6 ! JE CORRECTION these 7 lines
++            kcsfertn(1)=ksqd(1)
++            kcsfertn(2)=ksqd(2)
++            kcsfertn(3)=ksqd(3)
++            kcsfertn(4)=ksqd(4)
++            kcsfertn(5)=ksqd(5)
++            kcsfertn(6)=ksqd(6)
++c            ncfers=3 ! done already
++c            kcfersv(1)=kd
++c            kcfersv(2)=ks
++c            kcfersv(3)=kb
+             ncferd=3
+             kcferd(1)=ku
+             kcferd(2)=kc
+@@ -318,7 +516,7 @@
+ ********
+         endif
+ ********
+-        if(ciaux.eq.1) then
++        if(ciaux.eq.1) then ! up type
+ ************************************************* sfu^* chi^+ -> Z fdbar
+           kp3=kz
+           prtial(1)=0.d0
+@@ -427,8 +625,9 @@
+           w=w+prtial(10)           ! sfu^* chi^+ -> g fdbar
+           dsasdwdcossfchi = w*0.5d0 ! 0.5d0 <- we should return weff for sf chi+ ann
+                                     ! with sf and chi+ combined part. and anti-particle states
++          
+ ********
+-        elseif(ciaux.eq.2) then
++        elseif(ciaux.eq.2) then ! down type
+ ****************************************************** sfd chi^+ -> Z fu
+           kp3=kz
+           prtial(1)=0.d0
+@@ -481,6 +680,7 @@
+             kp4=kcfersv(i)
+ 	    icase=5  
+             call dsaschicasea(kp1,kp2,kp3,kp4,icase,par)
++c            write(*,*) 'sfd chi+ -> W+ fd: ',kp1,kp2,kp3,kp4,par
+             prtial(6)=prtial(6)+par
+           enddo
+ **************************************************** sfd chi^+ -> h^+ fd
+@@ -538,6 +738,16 @@
+           dsasdwdcossfchi = w*0.5d0 
+                ! 0.5d0 <- we should return weff for sf chi+ ann
+                ! with sf and chi+ combined part. and anti-particle states
++c          write(*,*) 'sf-cha: prtial(1) = ',prtial(1)
++c          write(*,*) 'sf-cha: prtial(2) = ',prtial(2)
++c          write(*,*) 'sf-cha: prtial(3) = ',prtial(3)
++c          write(*,*) 'sf-cha: prtial(4) = ',prtial(4)
++c          write(*,*) 'sf-cha: prtial(5) = ',prtial(5)
++c          write(*,*) 'sf-cha: prtial(6) = ',prtial(6)
++c          write(*,*) 'sf-cha: prtial(7) = ',prtial(7)
++c          write(*,*) 'sf-cha: prtial(8) = ',prtial(8)
++c          write(*,*) 'sf-cha: prtial(9) = ',prtial(9)
++c          write(*,*) 'sf-cha: prtial(10)= ',prtial(10)
+ ********
+         else
+           write(*,*) 'DS: wrong ciaux value =',ciaux
+diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfsf.f installed/darksusy/5.1.3/src/as/dsasdwdcossfsf.f
+--- darksusy-5.1.3/src/as/dsasdwdcossfsf.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsasdwdcossfsf.f	2016-11-17 19:03:50.907537000 +0000
+@@ -19,6 +19,11 @@
+ *** modified: Piero Ullio to include mixing in fermion final states  ***
+ ***   and a new labelling of states                                  ***
+ ***   08-05-30                                                       ***
++***   Joakim Edsjo, bug fix in slepton-squark part (case 3)          ***
++***   2015-04-08                                                     ***
++***   Joakim Edsjo, made more general (full 6x6 mixing),             ***
++***   Cleaned up a bit (not as many if's needed with full 6x6        ***
++***   mixing). 2016-11-16                                            ***
+ ************************************************************************
+ 
+       real*8 function dsasdwdcossfsf(p,costhe,kp1,kp2)
+@@ -64,7 +69,7 @@ c...them changed on return, let's use so
+ ***** decide on type for kp1i and kp2i, i.e.:
+ *****   itype(iii)=ivfam(ku) for up-type (s)quark
+ *****   itype(iii)=ivfam(kd) for down-type (s)quark
+-*****   itype(iii)=ivfam(iii) for (s)leptons
++*****   itype(iii)=ivfam(iii) for (s)leptons, JE CORR ivfam(ke) for (s)leptons
+       itype(1)=ivtype(kp1i)
+       itype(2)=ivtype(kp2i)
+ 
+@@ -93,24 +98,28 @@ c...them changed on return, let's use so
+       call dsaskinset1
+ ***** 
+ *****    3 cases:
++c======================================================================
++c======================================================================
+ ***** 1) sfermions with same type index, i.e.:
+-*****    slepton + slepton* (same family, both charged or both neutral) 
++*****    slepton + slepton* (both charged or both neutral) 
+ *****    up-type-squark1 + up-type-squark2  or 
+ *****    down-type-squark1 + down-type-squark2 
++c======================================================================
++c======================================================================
+       if(itype(1).eq.itype(2)) then
+-        do i=1,54
++        do i=1,66
+           prtial(i)=0.0d0
+         enddo
+ ccc
+ ccc check whether to reload final/intermediate state arrays/variables
+ ccc
+-        if(kp1i.ne.kp1s.or.kp2i.ne.kp2s) then
++        if(kp1i.ne.kp1s.or.kp2i.ne.kp2s) then ! recalculate when needed
+         kp1s=kp1i
+         kp2s=kp2i
+ ccc
+ ccc do the resetting in the various cases:
+ ccc
+-        do i=1,30
++        do i=1,66
+           chon(i)=.false.
+         enddo
+         gluonin=.false.
+@@ -119,30 +128,123 @@ ccc
+         nosneutrinov=.true.
+ ccc
+         if(itype(1).ge.ivtype(knue).and.itype(1).le.ivtype(ktau)) then
++c============================================================
+ ccc input:   \tilde{l}_1,2(i) \tilde{l}^*_1,2(i)
++c============================================================
+ ccc
+ ccc fermion channels:
+ ccc
+         i=0
+-***** f fbar
++***** f fbar 
+         do f=knue,kb
+           i=i+1
+           kp3in(i)=f
+           kp4in(i)=f
+           chon(i)=.true.
++       enddo                    ! i=1-12 now filled
++
++c..JE CORR following states added
++***** up-type quark(i), up-type antiquark(j) i,j matching initial state
++        i=12
++        do f1=1,3 ! i=13-18 filled here
++        do f2=1,3
++          kp3=ku+2*(f1-1)
++          kp4=ku+2*(f2-1)
++          if(kp3.ne.kp4) then
++          i=i+1
++c          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4)) then ! JE CORR
++          chon(i)=.true.
++          kp3in(i)=kp3
++          kp4in(i)=kp4
++c          endif ! JE CORR
++          endif         
++        enddo
++        enddo
++c...JE CORR following states added        
++***** down-type quark(i), down-type antiquark(j) i.ne.j 
++        do f1=1,3 ! i=19-24 filled here
++        do f2=1,3 
++          kp3=kd+2*(f1-1)
++          kp4=kd+2*(f2-1)
++          if(kp3.ne.kp4) then
++          i=i+1
++          chon(i)=.true.
++          kp3in(i)=kp3
++          kp4in(i)=kp4
++          endif         
++        enddo
+         enddo
+-***** no up-type quark(i), up-type antiquark(j) i.ne.j 
+-***** no down-type quark(i), down-type antiquark(j) i.ne.j 
++       
+ ***** lepton1,  lepton2
+-        i=25
+-        chon(i)=.true.
+-        do f=knue,ktau
+-          if(itype(1).eq.ivtype(f)) then
+-            kp3in(i)=f
+-            kp4in(i)=f
+-            fsave=f
+-          endif
+-        enddo      
++c...JE CORR Added all families as final states, ch 25-30
++        i=24
++        if (itype(1).eq.ivtype(knue)) then ! sneutrino
++           do f1=1,3
++              do f2=f1,3
++                 i=i+1
++                 chon(i)=.true.
++                 kp3in(i)=knu(f1)
++                 kp4in(i)=knu(f2)
++              enddo
++           enddo
++           fsave=knue           ! just for type testing later
++        else                    ! charged slepton
++           do f1=1,3
++              do f2=f1,3
++                 i=i+1
++                 chon(i)=.true.
++                 kp3in(i)=kl(f1)
++                 kp4in(i)=kl(f2)
++              enddo
++           enddo
++           fsave=ke ! just for type testing
++        endif
++        
++c..Old one family code. Replaced by code above        
++c        i=25 ! lepton_1 lepton_1 (same type)
++c        chon(i)=.true.
++c        do f=knue,ktau
++c          if(itype(1).eq.ivtype(f)) then 
++c            kp3in(i)=f
++c            kp4in(i)=f
++c            fsave=f
++c          endif
++c        enddo      
++
++c...Mixed final state lepton states (OK even w/o flavour violation
++c...for initial states with different flavours)        
++        i=54
++        do f1=1,3 ! i=55-60 filled here, nu_i nu_j 
++           do f2=1,3
++              kp3=knu(f1)
++              kp4=knu(f2)
++              if (kp3.ne.kp4) then
++                 i=i+1
++                 if (itype(1).eq.itype(2)) then ! same type (up/down)
++                    kp3in(i)=kp3 ! sl sl* ->
++                    kp4in(i)=kp4
++                    chon(i)=.true.
++                 endif
++              endif
++           enddo
++        enddo
++
++        do f1=1,3 ! i=61-66 filled here, l_i l_j
++           do f2=1,3
++              kp3=kl(f1)
++              kp4=kl(f2)
++              if (kp3.ne.kp4) then
++                 i=i+1
++                 if (itype(1).eq.itype(2)) then ! same type (up/down)
++                    kp3in(i)=kp3 ! sl sl* ->
++                    kp4in(i)=kp4
++                    chon(i)=.true.
++                 endif
++              endif
++           enddo
++        enddo
++        
++        
+ ccc
+ ccc gauge boson channels:
+ ccc
+@@ -152,24 +254,57 @@ ccc
+ ccc t- and u-channels:
+ ccc
+         if(dabs(echarg(fsave)).gt.1.d-15) then ! for charged sleptons:
+-          ksfertc(1)=ksnu(fsave/2)
+-          nsfertc=1
++c          ksfertc(1)=ksnu(fsave/2)
++c          nsfertc=1
++          nsfertc=3 ! JE CORRECTION 4 lines
++          ksfertc(1)=ksnu(1)
++          ksfertc(2)=ksnu(2)
++          ksfertc(3)=ksnu(3)
+           nsferuc=0
+-          ksfertn(1)=ksl(fsave/2)
+-          ksfertn(2)=ksl(fsave/2+3)
+-          nsfertn=2
+-          ksferun(1)=ksl(fsave/2)
+-          ksferun(2)=ksl(fsave/2+3)
+-          nsferun=2
++c          ksfertn(1)=ksl(fsave/2)
++c          ksfertn(2)=ksl(fsave/2+3)
++c          nsfertn=2
++          nsfertn=6 ! JE CORRECTION 7 lines
++          ksfertn(1)=ksl(1)
++          ksfertn(2)=ksl(2)
++          ksfertn(3)=ksl(3)
++          ksfertn(4)=ksl(4)
++          ksfertn(5)=ksl(5)
++          ksfertn(6)=ksl(6)
++c          ksferun(1)=ksl(fsave/2)
++c          ksferun(2)=ksl(fsave/2+3)
++c          nsferun=2
++          nsferun=6 ! JE CORRECTION 7 lines
++          ksferun(1)=ksl(1)
++          ksferun(2)=ksl(2)
++          ksferun(3)=ksl(3)
++          ksferun(4)=ksl(4)
++          ksferun(5)=ksl(5)
++          ksferun(6)=ksl(6)
+         else ! for sneutrinos:
+           nsfertc=0
+-          ksferuc(1)=ksl((fsave+1)/2)
+-          ksferuc(2)=ksl((fsave+1)/2+3)
+-          nsferuc=2
+-          ksfertn(1)=ksnu((fsave+1)/2)
+-          nsfertn=1
+-          ksferun(1)=ksnu((fsave+1)/2)
+-          nsferun=1
++c          ksferuc(1)=ksl((fsave+1)/2)
++c          ksferuc(2)=ksl((fsave+1)/2+3)
++c          nsferuc=2
++          nsferuc=6 ! JE CORRECTION 7 lines
++          ksferuc(1)=ksl(1)
++          ksferuc(2)=ksl(2)
++          ksferuc(3)=ksl(3)
++          ksferuc(4)=ksl(4)
++          ksferuc(5)=ksl(5)
++          ksferuc(6)=ksl(6)
++c          ksfertn(1)=ksnu((fsave+1)/2)
++c          nsfertn=1
++          nsfertn=3 ! JE CORRECTION 4 lines
++          ksfertn(1)=ksnu(1)
++          ksfertn(2)=ksnu(2)
++          ksfertn(3)=ksnu(3)
++c          ksferun(1)=ksnu((fsave+1)/2)
++c          nsferun=1
++          nsferun=3 ! JE CORRECTION 4 lines
++          ksferun(1)=ksnu(1)
++          ksferun(2)=ksnu(2)
++          ksferun(3)=ksnu(3)
+           nosneutrinov=.false.
+         endif
+ ccc
+@@ -180,8 +315,11 @@ ccc
+         cfactfin=3.d0
+         endif
+ ccc
+-        if(iifam(1).eq.iifam(2).and.itype(1).eq.ivtype(ku)) then
+-ccc input:   \tilde{u}_1,2(i) \tilde{u}^*_1,2(i)
++c        if(iifam(1).eq.iifam(2).and.itype(1).eq.ivtype(ku)) then
++        if(itype(1).eq.ivtype(ku)) then ! JE CORR
++c============================================================
++ccc input:   \tilde{u}_1,2(i) \tilde{u}^*_1,2(j) (all i,j)
++c============================================================
+ ccc
+ ccc fermion channels:
+ ccc
+@@ -193,172 +331,28 @@ ccc
+           kp4in(i)=f
+           chon(i)=.true.
+         enddo
+-***** no up-type quark(i), up-type antiquark(j) i.ne.j 
+-        i=i+6
+-***** down-type quark(i), down-type antiquark(j) i.ne.j 
+-        do f1=1,3
+-        do f2=1,3
+-          kp3=kd+2*(f1-1)
+-          kp4=kd+2*(f2-1)
+-          if(kp3.ne.kp4) then
+-          i=i+1
+-          chon(i)=.true.
+-          kp3in(i)=kp3
+-          kp4in(i)=kp4
+-          endif         
+-        enddo
+-        enddo
+-***** up-type quark1, up-type quark2 
+-        do f1=1,3
+-        do f2=f1,3
+-          kp3=ku+2*(f1-1)
+-          kp4=ku+2*(f2-1)
+-          i=i+1  
+-          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4).or.
+-     &       iifam(1).eq.ivfam(kp4).and.iifam(2).eq.ivfam(kp3)) then
+-            chon(i)=.true.
+-            kp3in(i)=kp3
+-            kp4in(i)=kp4
+-            fsave=f1
+-          endif
+-        enddo
+-        enddo
+-ccc
+-ccc boson channels:
+-ccc
+-        gluonin=.true.
+-        gammain=.true.
+-        neutcurr=.true.
+-ccc
+-ccc t- and u-channels:
+-ccc
+-        nsfertc=0 
+-        do i=1,6
+-          ksferuc(i)=ksqd(i)
+-        enddo
+-        nsferuc=6
+-        ksfertn(1)=ksqu(fsave)
+-        ksfertn(2)=ksqu(fsave+3)
+-        nsfertn=2
+-        ksferun(1)=ksqu(fsave)
+-        ksferun(2)=ksqu(fsave+3)
+-        nsferun=2
+-ccc
+-ccc degrees of freedom and color factors
+-ccc
+-        gg1=3.d0
+-        gg2=3.d0
+-        chcol=2
+-        call dsascolset(chcol)
+-        cfactini=1.d0  ! set inside the routine dsasfercol
+-        cfactfin=1.d0
+-ccc
+-        endif
+-ccc
+-        if(iifam(1).eq.iifam(2).and.itype(1).eq.ivtype(kd)) then
+-ccc input:   \tilde{d}_1,2(i) \tilde{d}^*_1,2(i)
+-        i=0
+-***** f fbar
+-        do f=knue,kb
+-          i=i+1
+-          kp3in(i)=f
+-          kp4in(i)=f
+-          chon(i)=.true.
+-        enddo
+-***** up-type quark(i), up-type antiquark(j) i.ne.j 
+-        do f1=1,3
+-        do f2=1,3
+-          kp3=ku+2*(f1-1)
+-          kp4=ku+2*(f2-1)
+-          if(kp3.ne.kp4) then
+-          i=i+1
+-          chon(i)=.true.
+-          kp3in(i)=kp3
+-          kp4in(i)=kp4
+-          endif         
+-        enddo
+-        enddo
+-***** no down-type quark(i), down-type antiquark(j) i.ne.j 
+-        i=i+6
+-***** down-type quark1, down-type quark2 
+-        do f1=1,3
+-        do f2=f1,3
+-          kp3=kd+2*(f1-1)
+-          kp4=kd+2*(f2-1)
+-          i=i+1  
+-          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4).or.
+-     &       iifam(1).eq.ivfam(kp4).and.iifam(2).eq.ivfam(kp3)) then
+-            chon(i)=.true.
+-            kp3in(i)=kp3
+-            kp4in(i)=kp4
+-            fsave=f1
+-          endif
+-        enddo
+-        enddo  
+-ccc
+-ccc boson channels:
+-ccc
+-        gluonin=.true.
+-        gammain=.true.
+-        neutcurr=.true.
+-ccc
+-ccc t- and u-channels:
+-ccc
+-        do i=1,6
+-          ksfertc(i)=ksqu(i)
+-        enddo
+-        nsfertc=6
+-        nsferuc=0
+-        ksfertn(1)=ksqd(fsave)
+-        ksfertn(2)=ksqd(fsave+3)
+-        nsfertn=2
+-        ksferun(1)=ksqd(fsave)
+-        ksferun(2)=ksqd(fsave+3)
+-        nsferun=2
+-ccc
+-ccc degrees of freedom and color factors
+-ccc
+-        gg1=3.d0
+-        gg2=3.d0
+-        chcol=2
+-        call dsascolset(chcol)
+-        cfactini=1.d0  ! set inside the routine dsasfercol
+-        cfactfin=1.d0
+-ccc
+-        endif
+-ccc
+-        if(iifam(1).ne.iifam(2).and.itype(1).eq.ivtype(ku)) then
+-ccc input:   \tilde{u}_1,2(i) \tilde{u}^*_1,2(j)  i.ne.j
+-ccc
+-ccc fermion channels:
+-ccc
+-        i=0
+-***** down-type quark(i), down-type antiquark(i) 
+-        do f=1,3
+-          i=kd+2*(f-1)
+-          kp3in(i)=i
+-          kp4in(i)=i
+-          chon(i)=.true.
+-        enddo
++
++c..JE CORR following states added
+ ***** up-type quark(i), up-type antiquark(j) i,j matching initial state
+         i=12
+-        do f1=1,3
++        do f1=1,3 ! i=13-18 filled here
+         do f2=1,3
+           kp3=ku+2*(f1-1)
+           kp4=ku+2*(f2-1)
+           if(kp3.ne.kp4) then
+           i=i+1
+-          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4)) then
++c          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4)) then ! JE CORR
+           chon(i)=.true.
+           kp3in(i)=kp3
+           kp4in(i)=kp4
+-          endif
++c          endif ! JE CORR
+           endif         
+         enddo
+         enddo
++        
+ ***** down-type quark(i), down-type antiquark(j) i.ne.j 
+-        do f1=1,3
+-        do f2=1,3
++        do f1=1,3 ! i=19-24 filled here
++        do f2=1,3 
+           kp3=kd+2*(f1-1)
+           kp4=kd+2*(f2-1)
+           if(kp3.ne.kp4) then
+@@ -369,23 +363,28 @@ ccc
+           endif         
+         enddo
+         enddo
++
+ ***** up-type quark1, up-type quark2 
+-        do f1=1,3
++        do f1=1,3 ! i=25-30 filled here
+         do f2=f1,3
+           kp3=ku+2*(f1-1)
+           kp4=ku+2*(f2-1)
+           i=i+1  
+-          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4).or.
+-     &       iifam(1).eq.ivfam(kp4).and.iifam(2).eq.ivfam(kp3)) then
++c          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4).or. ! JE CORR
++c     &       iifam(1).eq.ivfam(kp4).and.iifam(2).eq.ivfam(kp3)) then
+             chon(i)=.true.
+             kp3in(i)=kp3
+             kp4in(i)=kp4
+-          endif
++c            fsave=f1 ! JE CORR
++c          endif
+         enddo
+         enddo
+ ccc
+-ccc only w gauge boson channels:
++ccc boson channels:
+ ccc
++        gluonin=.true.
++        gammain=.true.
++        neutcurr=.true.
+ ccc
+ ccc t- and u-channels:
+ ccc
+@@ -394,8 +393,26 @@ ccc
+           ksferuc(i)=ksqd(i)
+         enddo
+         nsferuc=6
+-        nsfertn=0
+-        nsferun=0
++c        ksfertn(1)=ksqu(fsave)
++c        ksfertn(2)=ksqu(fsave+3)
++c        nsfertn=2
++        nsfertn=6 ! JE CORRECTION 7 lines
++        ksfertn(1)=ksqu(1)
++        ksfertn(2)=ksqu(2)
++        ksfertn(3)=ksqu(3)
++        ksfertn(4)=ksqu(4)
++        ksfertn(5)=ksqu(5)
++        ksfertn(6)=ksqu(6)
++c        ksferun(1)=ksqu(fsave)
++c        ksferun(2)=ksqu(fsave+3)
++c        nsferun=2
++        nsferun=6 ! JE CORRECTION 7 lines
++        ksferun(1)=ksqu(1)
++        ksferun(2)=ksqu(2)
++        ksferun(3)=ksqu(3)
++        ksferun(4)=ksqu(4)
++        ksferun(5)=ksqu(5)
++        ksferun(6)=ksqu(6)
+ ccc
+ ccc degrees of freedom and color factors
+ ccc
+@@ -408,21 +425,20 @@ ccc
+ ccc
+         endif
+ ccc
+-        if(iifam(1).ne.iifam(2).and.itype(1).eq.ivtype(kd)) then
+-ccc input:   \tilde{d}_1,2(i) \tilde{d}^*_1,2(j)  i.ne.j
+-ccc
+-ccc fermion channels:
+-ccc
++c        if(iifam(1).eq.iifam(2).and.itype(1).eq.ivtype(kd)) then
++        if(itype(1).eq.ivtype(kd)) then ! JE CORR
++c============================================================
++ccc input:   \tilde{d}_1,2(i) \tilde{d}^*_1,2(j) (all i,j)
++c============================================================
+         i=0
+-***** up-type quark(i), up-type antiquark(i) 
+-        do f=1,3
+-          i=ku+2*(f-1)
+-          kp3in(i)=i
+-          kp4in(i)=i
++***** f fbar
++        do f=knue,kb
++          i=i+1
++          kp3in(i)=f
++          kp4in(i)=f
+           chon(i)=.true.
+         enddo
+-***** up-type quark(i), up-type antiquark(j) i.ne.j
+-        i=12
++***** up-type quark(i), up-type antiquark(j) i.ne.j 
+         do f1=1,3
+         do f2=1,3
+           kp3=ku+2*(f1-1)
+@@ -435,6 +451,8 @@ ccc
+           endif         
+         enddo
+         enddo
++
++c...JE CORR added d_i d_j final states to be more general
+ ***** down-type quark(i), down-type antiquark(j) i,j matching initial state 
+         do f1=1,3
+         do f2=1,3
+@@ -442,31 +460,36 @@ ccc
+           kp4=kd+2*(f2-1)
+           if(kp3.ne.kp4) then
+           i=i+1
+-          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4)) then
++c          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4)) then ! JE CORR
+           chon(i)=.true.
+           kp3in(i)=kp3
+           kp4in(i)=kp4
+-          endif
++c          endif ! JE CORR
+           endif         
+         enddo
+         enddo
++      
+ ***** down-type quark1, down-type quark2 
+         do f1=1,3
+         do f2=f1,3
+           kp3=kd+2*(f1-1)
+           kp4=kd+2*(f2-1)
+-          i=i+1  
+-          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4).or.
+-     &       iifam(1).eq.ivfam(kp4).and.iifam(2).eq.ivfam(kp3)) then
++          i=i+1
++c          if(iifam(1).eq.ivfam(kp3).and.iifam(2).eq.ivfam(kp4).or. ! JE CORR
++c     &       iifam(1).eq.ivfam(kp4).and.iifam(2).eq.ivfam(kp3)) then
+             chon(i)=.true.
+             kp3in(i)=kp3
+             kp4in(i)=kp4
+-          endif
+-        enddo
++c            fsave=f1 ! JE COEE
++c          endif ! JE CORR
+         enddo
++        enddo  
+ ccc
+-ccc only w gauge boson channels:
++ccc boson channels:
+ ccc
++        gluonin=.true.
++        gammain=.true.
++        neutcurr=.true.
+ ccc
+ ccc t- and u-channels:
+ ccc
+@@ -475,8 +498,26 @@ ccc
+         enddo
+         nsfertc=6
+         nsferuc=0
+-        nsfertn=0
+-        nsferun=0
++c        ksfertn(1)=ksqd(fsave)
++c        ksfertn(2)=ksqd(fsave+3)
++c        nsfertn=2
++        nsfertn=6 ! JE CORRECTION 7 lines
++        ksfertn(1)=ksqd(1)
++        ksfertn(2)=ksqd(2)
++        ksfertn(3)=ksqd(3)
++        ksfertn(4)=ksqd(4)
++        ksfertn(5)=ksqd(5)
++        ksfertn(6)=ksqd(6)
++c        ksferun(1)=ksqd(fsave)
++c        ksferun(2)=ksqd(fsave+3)
++c        nsferun=2
++        nsferun=6 ! JE CORRECTION 7 lines
++        ksferun(1)=ksqd(1)
++        ksferun(2)=ksqd(2)
++        ksferun(3)=ksqd(3)
++        ksferun(4)=ksqd(4)
++        ksferun(5)=ksqd(5)
++        ksferun(6)=ksqd(6)
+ ccc
+ ccc degrees of freedom and color factors
+ ccc
+@@ -489,10 +530,11 @@ ccc
+ ccc
+         endif
+ ccc
++ccc
+         endif
+ *****
+ ******************************************************* sf sf* -> f fbar
+-        do i=1,12
++        do i=1,12 
+           if(chon(i)) then
+           kp3=kp3in(i)
+           kp4=kp4in(i)
+@@ -503,8 +545,28 @@ ccc
+               result=result*cfactfin 
+             endif
+           elseif(chcol.eq.2) then
+-            icase=1  
+-            call dsasfercol(kp1i,kp2i,kp3,kp4,icase,result)
++             icase=1
++             call dsasfercol(kp1i,kp2i,kp3,kp4,icase,result)
++          else
++            write(*,*) 'chcol not set correctly, = ',chcol
++            stop
++          endif  
++          prtial(i)=result
++          endif
++        enddo  
++
++c...Add mixed slepton final states sl sl* -> ...
++        do i=55,66
++          if(chon(i)) then
++          kp3=kp3in(i)
++          kp4=kp4in(i)
++          if(chcol.eq.1) then
++            icase=3
++            call dsasfer(kp1i,kp2i,kp3,kp4,icase,result)
++          elseif(chcol.eq.2) then ! only for sleptons
++c             icase=1
++c             call dsasfercol(kp1i,kp2i,kp3,kp4,icase,result)
++             result=0.d0
+           else
+             write(*,*) 'chcol not set correctly, = ',chcol
+             stop
+@@ -512,12 +574,13 @@ ccc
+           prtial(i)=result
+           endif
+         enddo  
++        
+ ***************************************************** sf sf* -> q1 q2bar
+ *****
+ ***** for squark initial states, possible flavour mixing in the initial 
+-***** state, not in the final state:
++***** state, not in the final state: (JE CORR: this is more general now)
+ *****
+-        if(chcol.eq.2) then  
++        if(chcol.eq.2) then  ! JE FIX ME. Do we want this for sleptons too?
+         do i=13,24
+           if(chon(i)) then
+             kp3=kp3in(i)
+@@ -530,19 +593,20 @@ ccc
+         endif
+ ************************************************* sl sl -> lepton lepton
+         if(chcol.eq.1) then  
+-          i=25
+-          if(chon(i)) then
+-            kp3=kp3in(i)
+-            kp4=kp4in(i)
+-            icase=1
+-            call dsasfere(kp1i,kp2i,kp3,kp4,icase,result)
+-            prtial(i)=result
+-          endif
++          do i=25,30
++             if(chon(i)) then
++                kp3=kp3in(i)
++                kp4=kp4in(i)
++                icase=1
++                call dsasfere(kp1i,kp2i,kp3,kp4,icase,result)
++                prtial(i)=result
++             endif
++          enddo
+         endif 
+ ********************************************************* sf sf -> q1 q2
+ *****
+ ***** for squark initial states, possible flavour mixing in the initial 
+-***** state, not in the final state:
++***** state, not in the final state: (JE CORR this is more general now)
+ *****
+         if(chcol.eq.2) then  
+         do i=25,30
+@@ -743,12 +807,12 @@ ccc
+         w=w+prtial(22)           ! sf sf* -> s bbar
+         w=w+prtial(23)           ! sf sf* -> b dbar
+         w=w+prtial(24)           ! sf sf* -> b sbar
+-        w=w+prtial(25)           ! sf sf -> lepton lepton or u u or d d
+-        w=w+prtial(26)           ! sf sf -> u c  or  d s 
+-        w=w+prtial(27)           ! sf sf -> u t  or  d b
+-        w=w+prtial(28)           ! sf sf -> c c  or  s s
+-        w=w+prtial(29)           ! sf sf -> c t  or  s b
+-        w=w+prtial(30)           ! sf sf -> t t  or  b b
++        w=w+prtial(25)           ! sf sf -> lepton_1 lepton_1 or u u or d d
++        w=w+prtial(26)           ! sf sf -> lepton_1 lepton 2 or u c  or  d s 
++        w=w+prtial(27)           ! sf sf -> lepton_1 lepton 3 or u t  or  d b
++        w=w+prtial(28)           ! sf sf -> lepton_2 lepton_2 or c c  or  s s
++        w=w+prtial(29)           ! sf sf -> lepton_2 lepton_3 or  c t  or  s b
++        w=w+prtial(30)           ! sf sf -> lepton_3 lepton_3 or t t  or  b b
+         w=w+prtial(31)           ! sf sf* ->  w+ w-
+         w=w+prtial(32)           ! sf sf* -> z z
+         w=w+prtial(33)           ! sf sf* -> z gamma
+@@ -773,7 +837,24 @@ ccc
+         w=w+prtial(52)           ! sf sf* -> gluon H
+         w=w+prtial(53)           ! sf sf* -> gluon h
+         w=w+prtial(54)           ! sf sf* -> gluon A
++        w=w+prtial(55)           ! sf sf* -> nu_e nu_mu-bar
++        w=w+prtial(56)           ! sf sf* -> nu_e nu_tau-bar
++        w=w+prtial(57)           ! sf sf* -> nu_mu nu_e-bar
++        w=w+prtial(58)           ! sf sf* -> nu_mu nu_tau-bar
++        w=w+prtial(59)           ! sf sf* -> nu_tau nu_e-bar
++        w=w+prtial(60)           ! sf sf* -> nu_tau nu_mu-bar
++        w=w+prtial(61)           ! sf sf* -> e- mu+
++        w=w+prtial(62)           ! sf sf* -> e- tau+
++        w=w+prtial(63)           ! sf sf* -> mu- e+
++        w=w+prtial(64)           ! sf sf* -> mu- tau+
++        w=w+prtial(65)           ! sf sf* -> tau- e+
++        w=w+prtial(66)           ! sf sf* -> tau- mu+
+ 
++c        do i=1,66 ! JE TMP
++c           write(*,'(A,I2,1x,I2,1x,I3,1x,E12.6,1x,E12.6,1x,L1)')
++c     &       'sfsf case 1: ',kp1,kp2,i,mass1,prtial(i),chon(i)
++c        enddo
++        
+ c
+ c check for large negative terms in the fermion final states
+ c
+@@ -788,6 +869,17 @@ c
+             endif  
+           endif  
+         enddo
++
++        do i=55,66
++          if (prtial(i).lt.0.0d0) then
++            if (dabs(prtial(i)/w).gt.fertoll) then
++              wok=.false.
++            else
++              w=w-prtial(i)
++              prtial(i)=0.0d0
++            endif  
++          endif  
++        enddo
+ c
+ c write error message:
+ c
+@@ -797,7 +889,7 @@ c
+           write(*,*) 'DS: large negative term in dsasdwdcossfsf'
+           write(*,*) 'DS: called with kp1i=',kp1i,' kp2i=',kp2i
+           write(*,*) 'DS: p=',p,' costh=',costhe,' w=',w
+-          do i=1,54
++          do i=1,66
+             write(*,*) 'DS: i=',i,' prtial=',prtial(i)
+           enddo
+         endif
+@@ -805,12 +897,15 @@ c
+ c
+         dsasdwdcossfsf = w*0.5d0 ! 0.5d0 <- we should return weff for 
+               ! sf sf ann with sf combined part. and anti-particle state
+-************************************************************************
++c======================================================================
++c======================================================================
+ *****
+-***** 2) sneutrino + slepton in same family or
++***** 2) sneutrino + slepton or
+ *****    up-type squark + down-type squark
++c======================================================================
++c======================================================================
+       elseif(abs(itype(1)-itype(2)).eq.1) then
+-        do i=1,33
++        do i=1,39
+           prtial(i)=0.0d0
+         enddo
+ ccc
+@@ -824,40 +919,95 @@ ccc
+ ***** 
+         gluonin=.false.
+ ccc
++
+         if(itype(1).ge.ivtype(knue).and.itype(1).le.ivtype(ktau)) then
+-ccc input:   \tilde{nu}(i) \tilde{l}^*_1,2(i)
++c============================================================
++ccc input:   \tilde{nu}(i) \tilde{l}^*_1,2(j)
++c============================================================
+ ccc
+ ccc fermion channels: 
+-ccc    neutrino(j) lepton^+(j) -- same family j \in (1,2,3)
++ccc    neutrino(j) lepton^+(j) -- all allowed 
+ ccc    up-type quark(j) down-type antiquark(k) -- all allowed
+ ccc
+-ccc    neutrino(i) lepton^-(i) -- same family as in the initial state
+-        i=13
+-        do f=1,3
+-          kp3=knue+2*(f-1)
+-          kp4=ke+2*(f-1)
+-          if(ivtype(kp3).eq.itype(1)) then
+-            kp3in(i)=kp3
+-            kp4in(i)=kp4
+-            fsave=f
+-          endif
++ccc    neutrino(i) lepton^-(j) -- all three families
++        i=12
++        do f1=1,3 ! JE CORR all families
++           kp3=knu(f1)
++           do f2=1,3
++              i=i+1
++              kp4=kl(f2)
++              kp3in(i)=kp3
++              kp4in(i)=kp4
++           enddo
+         enddo
++
++c...Need to add mixed final states snu sl* -> nu' l-bar         
++        i=33
++        do f1=1,3 ! JE CORR all families
++           kp3=knu(f1)
++           do f2=1,3
++              kp4=kl(f2)
++              if ((ivfam(kp3)+1).ne.ivfam(kp4)) then ! new mixed state
++                 i=i+1
++                 kp3in(i)=kp3
++                 kp4in(i)=kp4
++              endif
++           enddo
++        enddo
++
++              
++c...Old code below
++c        do f=1,3
++c          kp3=knue+2*(f-1)
++c          kp4=ke+2*(f-1)
++c          if(ivtype(kp3).eq.itype(1)) then
++c            kp3in(i)=kp3
++c            kp4in(i)=kp4
++c            fsave=f 
++c          endif
++c        enddo
++
+ ccc
+ ccc gauge boson channels:
+ ccc
+ ccc
+ ccc t- and u-channels:
+ ccc
+-        ksfertc(1)=ksl(fsave)
+-        ksfertc(2)=ksl(fsave+3)
+-        nsfertc=2
+-        ksferuc(1)=ksnu(fsave)
+-        nsferuc=1
+-        ksfertn(1)=ksnu(fsave)
+-        nsfertn=1
+-        ksferun(1)=ksl(fsave)
+-        ksferun(2)=ksl(fsave+3)
+-        nsferun=2
++c        ksfertc(1)=ksl(fsave)
++c        ksfertc(2)=ksl(fsave+3)
++c        nsfertc=2
++        ksfertc(1)=ksl(1) ! JE CORR all 6 below
++        ksfertc(2)=ksl(2)
++        ksfertc(3)=ksl(3)
++        ksfertc(4)=ksl(4)
++        ksfertc(5)=ksl(5)
++        ksfertc(6)=ksl(6)
++        nsfertc=6
++
++c        ksferuc(1)=ksnu(fsave)
++c        nsferuc=1
++        ksferuc(1)=ksnu(1) ! JE CORR all 3 below
++        ksferuc(2)=ksnu(2)
++        ksferuc(3)=ksnu(3)
++        nsferuc=3
++
++c        ksfertn(1)=ksnu(fsave)
++c        nsfertn=1
++        ksfertn(1)=ksnu(1) ! JE CORR all 3 below
++        ksfertn(2)=ksnu(2)
++        ksfertn(3)=ksnu(3)
++        nsfertn=3
++
++c        ksferun(1)=ksl(fsave)
++c        ksferun(2)=ksl(fsave+3)
++c        nsferun=2
++        ksferun(1)=ksl(1) ! JE CORR all 6 below
++        ksferun(2)=ksl(2)
++        ksferun(3)=ksl(3)
++        ksferun(4)=ksl(4)
++        ksferun(5)=ksl(5)
++        ksferun(6)=ksl(6)
++        nsferun=6
+ ccc
+         gg1=1.d0 
+         gg2=1.d0
+@@ -867,7 +1017,9 @@ ccc
+         endif
+ ccc
+         if(itype(1).ge.ivtype(ku).and.(iifam(2)-iifam(1)).eq.1) then
++c============================================================
+ ccc input:   \tilde{u}_1,2(i) \tilde{d}^*_1,2(i)
++c============================================================
+ ccc
+ ccc fermion channels: 
+ ccc    neutrino(j) lepton^+(j) -- same family j \in (1,2,3)
+@@ -875,13 +1027,16 @@ ccc    up-type quark(j) down-type antiqu
+ ccc
+ ccc    up-type quark(i) down-type antiquark(i) -- same family 
+ ccc       as in the initial state
+-        do f=1,3
+-          kp3=ku+2*(f-1) ! up-type quark
+-          if(ivfam(kp3).eq.iifam(1)) then
+-            fsave=f
+-            f2save=f
+-          endif
+-        enddo
++
++c...JE CORR. No need to set fsave here           
++c        do f=1,3
++c          kp3=ku+2*(f-1) ! up-type quark
++c          if(ivfam(kp3).eq.iifam(1)) then
++c            fsave=f
++c            f2save=f
++c          endif
++c        enddo
++
+ ccc
+ ccc gauge boson channels:
+ ccc
+@@ -889,18 +1044,49 @@ ccc
+ ccc
+ ccc t- and u-channels:
+ ccc
+-        ksfertc(1)=ksqd(fsave)
+-        ksfertc(2)=ksqd(fsave+3)
+-        nsfertc=2
+-        ksferuc(1)=ksqu(fsave)
+-        ksferuc(2)=ksqu(fsave+3)
+-        nsferuc=2
+-        ksfertn(1)=ksqu(fsave)
+-        ksfertn(2)=ksqu(fsave+3)
+-        nsfertn=2
+-        ksferun(1)=ksqd(fsave)
+-        ksferun(2)=ksqd(fsave+3)
+-        nsferun=2
++c        ksfertc(1)=ksqd(fsave)
++c        ksfertc(2)=ksqd(fsave+3)
++c        nsfertc=2
++        ksfertc(1)=ksqd(1) ! JE CORR all 6
++        ksfertc(2)=ksqd(2)
++        ksfertc(3)=ksqd(3)
++        ksfertc(4)=ksqd(4)
++        ksfertc(5)=ksqd(5)
++        ksfertc(6)=ksqd(6)
++        nsfertc=6
++
++c        ksferuc(1)=ksqu(fsave)
++c        ksferuc(2)=ksqu(fsave+3)
++c        nsferuc=2
++        ksferuc(1)=ksqu(1) ! JE CORR all 6
++        ksferuc(2)=ksqu(2)
++        ksferuc(3)=ksqu(3)
++        ksferuc(4)=ksqu(4)
++        ksferuc(5)=ksqu(5)
++        ksferuc(6)=ksqu(6)
++        nsferuc=6
++
++c        ksfertn(1)=ksqu(fsave)
++c        ksfertn(2)=ksqu(fsave+3)
++c        nsfertn=2
++        ksfertn(1)=ksqu(1) ! JE CORR all 6
++        ksfertn(2)=ksqu(2)
++        ksfertn(3)=ksqu(3)
++        ksfertn(4)=ksqu(4)
++        ksfertn(5)=ksqu(5)
++        ksfertn(6)=ksqu(6)
++        nsfertn=6
++
++c        ksferun(1)=ksqd(fsave)
++c        ksferun(2)=ksqd(fsave+3)
++c        nsferun=2
++        ksferun(1)=ksqd(1) ! JE CORR all 6
++        ksferun(2)=ksqd(2)
++        ksferun(3)=ksqd(3)
++        ksferun(4)=ksqd(4)
++        ksferun(5)=ksqd(5)
++        ksferun(6)=ksqd(6)
++        nsferun=6
+ ccc
+         gg1=3.d0
+         gg2=3.d0
+@@ -911,7 +1097,9 @@ ccc
+         endif
+ ccc
+         if(itype(1).ge.ivtype(ku).and.(iifam(2)-iifam(1)).ne.1) then
++c============================================================
+ ccc input:   \tilde{u}(i) \tilde{d}^*_1,2(j)  i.ne.j
++c============================================================
+ ccc
+ ccc fermion channels: 
+ ccc    neutrino(j) lepton^+(j) -- same family j \in (1,2,3)
+@@ -919,18 +1107,20 @@ ccc    up-type quark(j) down-type antiqu
+ ccc
+ ccc    up-type quark(i) down-type antiquark(i) -- same family 
+ ccc       as in the initial state
+-        do f1=1,3
+-          kp3=ku+2*(f1-1) ! up-type quark
+-          if(ivfam(kp3).eq.iifam(1)) then
+-            fsave=f1
+-          endif
+-        enddo
+-        do f2=1,3
+-          kp4=kd+2*(f2-1) ! down-type quark
+-          if(ivfam(kp4).eq.iifam(2)) then
+-            f2save=f2
+-          endif
+-        enddo
++c...JE CORR. This is not needed           
++c        do f1=1,3
++c          kp3=ku+2*(f1-1) ! up-type quark
++c          if(ivfam(kp3).eq.iifam(1)) then
++c            fsave=f1
++c          endif
++c        enddo
++c        do f2=1,3
++c          kp4=kd+2*(f2-1) ! down-type quark
++c          if(ivfam(kp4).eq.iifam(2)) then
++c            f2save=f2
++c          endif
++c        enddo
++
+ ccc
+ ccc gauge boson channels:
+ ccc
+@@ -938,18 +1128,49 @@ ccc
+ ccc
+ ccc t- and u-channels:
+ ccc
+-        ksfertc(1)=ksqd(f2save)
+-        ksfertc(2)=ksqd(f2save+3)
+-        nsfertc=2
+-        ksferuc(1)=ksqu(fsave)
+-        ksferuc(2)=ksqu(fsave+3)
+-        nsferuc=2
+-        ksfertn(1)=ksqu(fsave)
+-        ksfertn(2)=ksqu(fsave+3)
+-        nsfertn=2
+-        ksferun(1)=ksqd(f2save)
+-        ksferun(2)=ksqd(f2save+3)
+-        nsferun=2
++c        ksfertc(1)=ksqd(f2save)
++c        ksfertc(2)=ksqd(f2save+3)
++c        nsfertc=2
++        ksfertc(1)=ksqd(1) ! JE CORR all 6
++        ksfertc(2)=ksqd(2)
++        ksfertc(3)=ksqd(3)
++        ksfertc(4)=ksqd(4)
++        ksfertc(5)=ksqd(5)
++        ksfertc(6)=ksqd(6)
++        nsfertc=6
++        
++c        ksferuc(1)=ksqu(fsave)
++c        ksferuc(2)=ksqu(fsave+3)
++c        nsferuc=2
++        ksferuc(1)=ksqu(1) ! JE CORR all 6
++        ksferuc(2)=ksqu(2)
++        ksferuc(3)=ksqu(3)
++        ksferuc(4)=ksqu(4)
++        ksferuc(5)=ksqu(5)
++        ksferuc(6)=ksqu(6)
++        nsferuc=6
++        
++c        ksfertn(1)=ksqu(fsave)
++c        ksfertn(2)=ksqu(fsave+3)
++c        nsfertn=2
++        ksfertn(1)=ksqu(1) ! JE CORR all 6
++        ksfertn(2)=ksqu(2)
++        ksfertn(3)=ksqu(3)
++        ksfertn(4)=ksqu(4)
++        ksfertn(5)=ksqu(5)
++        ksfertn(6)=ksqu(6)
++        nsfertn=6
++
++c        ksferun(1)=ksqd(f2save)
++c        ksferun(2)=ksqd(f2save+3)
++c        nsferun=2
++        ksferun(1)=ksqd(1) ! JE CORR all 6
++        ksferun(2)=ksqd(2)
++        ksferun(3)=ksqd(3)
++        ksferun(4)=ksqd(4)
++        ksferun(5)=ksqd(5)
++        ksferun(6)=ksqd(6)
++        nsferun=6
+ ccc
+         gg1=3.d0
+         gg2=3.d0
+@@ -968,7 +1189,7 @@ ccc
+ ***** state and in the final state; for sleptons flavour mixing for 
+ ***** quarks in the final state:
+ *****
+-        if(chcol.eq.1) then
++        if(chcol.eq.1) then ! sleptons in initial state
+ ***** first the lepton final states:
+           do f=1,3
+             kp3=knue+2*(f-1)
+@@ -977,6 +1198,16 @@ ccc
+             call dsasfer(kp1i,kp2i,kp3,kp4,icase,result)
+             prtial(f)=result
+           enddo
++
++c...Now the mixed ones
++          do i=34,39
++             kp3=kp3in(i)
++             kp4=kp4in(i)
++             icase=2
++             call dsasfer(kp1i,kp2i,kp3,kp4,icase,result)
++             prtial(i)=result
++          enddo
++
+ ***** then the quark final states:
+           i=0
+           do f1=1,3
+@@ -990,7 +1221,7 @@ ccc
+             prtial(3+i)=result
+           enddo
+           enddo
+-        else
++        else ! squarks in initial state
+ ***** first the lepton final states:
+           do f=1,3
+             kp3=knue+2*(f-1)
+@@ -1018,16 +1249,18 @@ ccc
+ ***** state and in the final state
+ *****
+ ***** first the lepton final states:
+-        if(chcol.eq.1) then
+-          i=13
+-          kp3=kp3in(i)
+-          kp4=kp4in(i)
+-          icase=2
+-          call dsasfere(kp1i,kp2i,kp3,kp4,icase,result)
+-          prtial(13)=result
++        if(chcol.eq.1) then     ! slepton initial state
++          do i=13,21
++             kp3=kp3in(i)
++             kp4=kp4in(i)
++             icase=2
++             call dsasfere(kp1i,kp2i,kp3,kp4,icase,result)
++
++             prtial(i)=result
++          enddo
+ *****
+ ***** then the quark final states:
+-        else
++        else ! squark initial state
+         i=0
+         do f1=1,3
+         do f2=1,3
+@@ -1122,21 +1355,21 @@ ccc
+         w=w+prtial(4)            ! sfu sfd* -> u dbar
+         w=w+prtial(5)            ! sfu sfd* -> u sbar
+         w=w+prtial(6)            ! sfu sfd* -> u bbar
+-        w=w+prtial(7)            ! sfu sfd* -> c ubar
++        w=w+prtial(7)            ! sfu sfd* -> c dbar
+         w=w+prtial(8)            ! sfu sfd* -> c sbar
+         w=w+prtial(9)            ! sfu sfd* -> c bbar
+         w=w+prtial(10)           ! sfu sfd* -> t dbar
+         w=w+prtial(11)           ! sfu sfd* -> t sbar
+         w=w+prtial(12)           ! sfu sfd* -> t bbar
+-        w=w+prtial(13)           ! sfu sfd -> u d
+-        w=w+prtial(14)           ! sfu sfd -> u s
+-        w=w+prtial(15)           ! sfu sfd -> u b
+-        w=w+prtial(16)           ! sfu sfd -> c d
+-        w=w+prtial(17)           ! sfu sfd -> c s
+-        w=w+prtial(18)           ! sfu sfd -> c b
+-        w=w+prtial(19)           ! sfu sfd -> t d
+-        w=w+prtial(20)           ! sfu sfd -> t s
+-        w=w+prtial(21)           ! sfu sfd -> t b
++        w=w+prtial(13)           ! sfu sfd -> u d or nu_e e-
++        w=w+prtial(14)           ! sfu sfd -> u s or nu_e mu-
++        w=w+prtial(15)           ! sfu sfd -> u b or nu_e tau-
++        w=w+prtial(16)           ! sfu sfd -> c d or nu_mu e-
++        w=w+prtial(17)           ! sfu sfd -> c s or nu_mu mu-
++        w=w+prtial(18)           ! sfu sfd -> c b or nu_mu tau-
++        w=w+prtial(19)           ! sfu sfd -> t d or nu_tau e-
++        w=w+prtial(20)           ! sfu sfd -> t s or nu_tau mu-
++        w=w+prtial(21)           ! sfu sfd -> t b or nu_tau tau-
+         w=w+prtial(22)           ! sfu sfd* -> w+ z
+         w=w+prtial(23)           ! sfu sfd* -> w+ gamma
+         w=w+prtial(24)           ! sfu sfd* -> w+ h
+@@ -1149,8 +1382,20 @@ ccc
+         w=w+prtial(31)           ! sfu sfd* -> h+ a
+         w=w+prtial(32)           ! sfu sfd* -> W+ g
+         w=w+prtial(33)           ! sfu sfd* -> g H+
+-c
+-c check for large negative terms in the fermion final states
++        w=w+prtial(34)           ! sfu sfd* -> nu_e mu+
++        w=w+prtial(35)           ! sfu sfd* -> nu_e tau+
++        w=w+prtial(36)           ! sfu sfd* -> nu_mu e+
++        w=w+prtial(37)           ! sfu sfd* -> nu_mu tau+
++        w=w+prtial(38)           ! sfu sfd* -> nu_tau e+
++        w=w+prtial(39)           ! sfu sfd* -> nu_tau mu+
++
++c        do i=1,39               ! JE TMP
++c           write(*,*) 'sfsf case 2: i=',i,prtial(i)
++c        enddo
++        
++        
++C
++C Check for large negative terms in the fermion final states
+ c
+         wok=.true.
+         do i=1,21
+@@ -1163,6 +1408,18 @@ c
+             endif  
+           endif  
+         enddo
++
++        do i=34,39
++          if (prtial(i).lt.0.0d0) then
++            if (dabs(prtial(i)/w).gt.fertoll) then
++              wok=.false.
++            else
++              w=w-prtial(i)
++              prtial(i)=0.0d0
++            endif  
++          endif  
++        enddo
++
+ c
+ c write error message:
+ c
+@@ -1172,7 +1429,7 @@ c
+           write(*,*) 'DS: large negative term in dsasdwdcossfsf'
+           write(*,*) 'DS: called with kp1i=',kp1i,' kp2i=',kp2i
+           write(*,*) 'DS: p=',p,' costh=',costhe,' w=',w
+-          do i=1,33
++          do i=1,39
+             write(*,*) 'DS: i=',i,' prtial=',prtial(i)
+           enddo
+         endif
+@@ -1180,13 +1437,22 @@ c
+ c
+         dsasdwdcossfsf = w*0.5d0 ! 0.5d0 <- we should return weff for 
+               ! sf sf ann with sf combined part. and anti-particle state
++c======================================================================
++c======================================================================
+ ************************************************************************
+ *****
+-***** 3) 2 sleptons in different families or
+-*****    one squark + one slepton
+-      else   
++***** 3) one squark + one slepton
++***** JE CORR. Note. Before this case was used also for sleptons in
++***** different families, but this is handled above instead.
++***** This part is almost entirely rewritten by J. Edsjo
++c======================================================================
++c======================================================================
++      else
++c...The final state particles can be different for both the first
++c...and second outgoing particles.
++c...JE CORR. Changed 9 final states to 27.         
+ c        write(*,*) 'Now in case 3...'
+-        do i=1,12
++        do i=1,27
+           prtial(i)=0.0d0
+         enddo
+ ccc
+@@ -1195,29 +1461,48 @@ ccc
+         if(kp1i.ne.kp1s.or.kp2i.ne.kp2s) then
+         kp1s=kp1i
+         kp2s=kp2i
+-        do i=1,12
++        do i=1,27
+           chon(i)=.false.
+         enddo
+ ***** identify particles in initial and final state
++c============================================================
++c=== up squark - slepton
++c============================================================        
+ ***** the first only can be a up-type squark:
+         if(itype(1).eq.ivtype(ku)) then
+           i=0
+-          do f=1,3
+-            kp3=ku+2*(f-1)
+-            if(iifam(1).eq.ivfam(kp3)) then
+-              i=i+1
+-              kp3in(i)=kp3
+-              chon(i)=.true.
+-              kp3in(i+3)=kp3
+-              chon(i+3)=.true.
+-            endif
++          do f1=1,3
++             kp3=ku+2*(f1-1) ! the different kinds of up quarks
++             do f2=1,3
++                i=i+1
++                if (itype(2).eq.ivtype(ksnue)) then ! sneutrino
++                   kp4=knu(f2)
++                else            ! charged slepton
++                   kp4=kl(f2)
++                endif
++                kp3in(i)=kp3 ! squ sl* -> u l-bar
++                kp4in(i)=kp4
++                chon(i)=.true.
++                kp3in(i+9)=kp3 ! squ sl -> u l
++                kp4in(i+9)=kp4
++                chon(i+9)=.true.
++             enddo
+           enddo
+-          i=6
+-          do f=1,3
+-            kp3=kd+2*(f-1)
+-            i=i+1
+-            kp3in(i)=kp3
+-            chon(i)=.true.
++
++          i=18
++          do f1=1,3
++             kp3=kd+2*(f1-1)
++             do f2=1,3
++                i=i+1
++                if (itype(2).eq.ivtype(ksnue)) then ! sneutrino
++                   kp4=kl(f2)
++                else            ! charged slepton
++                   kp4=knu(f2)
++                endif
++                kp3in(i)=kp3
++                kp4in(i)=kp4
++                chon(i)=.true.
++             enddo
+           enddo
+           ick1=1
+ ***** 1 squark and 1 slepton
+@@ -1226,25 +1511,44 @@ ccc
+           chcol=1
+           cfactini=3.d0
+           cfactfin=1.d0
++c============================================================
++c=== down squark - slepton
++c============================================================        
+ ***** ... or a down-type squark:
+         elseif(itype(1).eq.ivtype(kd)) then
+           i=0
+-          do f=1,3
+-            kp3=kd+2*(f-1)
+-            if(iifam(1).eq.ivfam(kp3)) then
+-              i=i+1
+-              kp3in(i)=kp3
+-              chon(i)=.true.
+-              kp3in(i+3)=kp3
+-              chon(i+3)=.true.
+-            endif
++          do f1=1,3
++             kp3=kd+2*(f1-1)
++             do f2=1,3
++                i=i+1
++                if (itype(2).eq.ivtype(ksnue)) then ! sneutrino
++                   kp4=knu(f2)
++                else            ! charged slepton
++                   kp4=kl(f2)
++                endif
++                kp3in(i)=kp3 ! sqd sl* -> d l-bar
++                kp4in(i)=kp4
++                chon(i)=.true.
++                kp3in(i+9)=kp3 ! sqd sl -> d l
++                kp4in(i+9)=kp4
++                chon(i+9)=.true.
++             enddo
+           enddo
+-          i=6
+-          do f=1,3
+-            kp3=ku+2*(f-1)
+-            i=i+1
+-            kp3in(i)=kp3
+-            chon(i)=.true.
++
++          i=18
++          do f1=1,3             
++             kp3=ku+2*(f1-1)
++             do f2=1,3
++                i=i+1
++                if (itype(2).eq.ivtype(ksnue)) then ! sneutrino
++                   kp4=kl(f2)
++                else            ! charged slepton
++                   kp4=knu(f2)
++                endif
++                kp3in(i)=kp3
++                kp4in(i)=kp4
++                chon(i)=.true.
++             enddo
+           enddo
+           ick1=2
+ ***** 1 squark and 1 slepton
+@@ -1253,71 +1557,32 @@ ccc
+           chcol=1
+           cfactini=3.d0
+           cfactfin=1.d0
+-***** ... or it is slepton:
++        endif
++       
++***** identify the second slepton.
++        if (itype(2).eq.ivtype(knue)) then
++           ick2=1
+         else
+-          i=0
+-          do f=1,3
+-            if(itype(1).eq.ivtype(knue+2*(f-1))) then
+-              kp3=knue+2*(f-1)
+-              i=i+1
+-              kp3in(i)=kp3
+-              chon(i)=.true.
+-              kp3in(i+3)=kp3
+-              chon(i+3)=.true.
+-              kp3=ke+2*(f-1)
+-              kp3in(i+6)=kp3
+-              chon(i+6)=.true.
+-              ick1=1
+-            elseif(itype(1).eq.ivtype(ke+2*(f-1))) then
+-              kp3=ke+2*(f-1)
+-              i=i+1
+-              kp3in(i)=kp3
+-              chon(i)=.true.
+-              kp3in(i+3)=kp3
+-              chon(i+3)=.true.
+-              kp3=knue+2*(f-1)
+-              kp3in(i+6)=kp3
+-              chon(i+6)=.true.
+-              ick1=2
+-            endif
+-          enddo 
+-***** 2 sleptons
+-          gg1=1.d0 
+-          gg2=1.d0
+-          chcol=1
+-          cfactini=1.d0
+-          cfactfin=3.d0
++           ick2=2
+         endif
+-***** identify the second slepton:
+-        do f=1,3
+-          if(itype(2).eq.ivtype(knue+2*(f-1))) then
+-            kf2=knue+2*(f-1)
+-            kf2o=ke+2*(f-1)
+-            ick2=1
+-          elseif(itype(2).eq.ivtype(ke+2*(f-1))) then
+-            kf2=ke+2*(f-1)
+-            kf2o=knue+2*(f-1)
+-            ick2=2
+-          endif
+-        enddo
+ ccc
+         endif
+ *****
+ *************************************************** sf1 sf2* -> f1 f2bar
+-        do i=1,3
++        do i=1,9
+           if(chon(i)) then
+             kp3=kp3in(i)
+-            kp4=kf2
++            kp4=kp4in(i)
+             icase=3
+             call dsasfer(kp1i,kp2i,kp3,kp4,icase,result)
+             prtial(i)=result*cfactini
+           endif
+         enddo  
+ ******************************************************* sf1 sf2 -> f1 f2
+-        do i=4,6
++        do i=10,18
+           if(chon(i)) then
+             kp3=kp3in(i)
+-            kp4=kf2
++            kp4=kp4in(i)
+             icase=3
+             call dsasfere(kp1i,kp2i,kp3,kp4,icase,result)
+             prtial(i)=result*cfactini
+@@ -1325,11 +1590,11 @@ ccc
+         enddo  
+ *************************************************** sf1 sf2* -> f3 f4bar
+ **************************************************** or sf1 sf2 -> f3 f4
+-*****  f1 and f3 in the same doublet,  f2 and f4 in the same doublet
+-        do i=6,9
++*****  f1 and f3 switched up/down, f2 and f4 switched up/down
++        do i=19,27
+           if(chon(i)) then
+             kp3=kp3in(i)
+-            kp4=kf2o
++            kp4=kp4in(i)
+             if(ick1.eq.ick2) then
+               icase=3
+               call dsasfer(kp1i,kp2i,kp3,kp4,icase,result)
+@@ -1341,21 +1606,41 @@ ccc
+           endif  
+         enddo
+ **************************************************** sum partial results
+-        w=0.d0
+-        w=w+prtial(1)            ! sq1(sl1) sl2* -> q1_1(l1) l2bar
+-        w=w+prtial(2)            ! sq1 sl2* -> q1_2 l2bar
+-        w=w+prtial(3)            ! sq1 sl2* -> q1_3 l2bar
+-        w=w+prtial(4)            ! sq1(sl1) sl2 -> q1_1(l1) l2
+-        w=w+prtial(5)            ! sq1 sl2 -> q1_2 l2
+-        w=w+prtial(6)            ! sq1 sl2 -> q1_3 l2
+-        w=w+prtial(7)            ! sf1(sl1) sf2*(sf2) -> f3_1(l3) f2bar(f2) 
+-        w=w+prtial(8)            ! sf1 sf2*(sf2) -> f3_2 f2bar(f2) 
+-        w=w+prtial(9)            ! sf1 sf2*(sf2) -> f3_3 f2bar(f2) 
++        w=0.d0 ! JE CORR, more states below (9->27)
++        w=w+prtial(1)           ! sq1 sl2* -> q1_1 lbar_1
++        w=w+prtial(2)           ! sq1 sl2* -> q1_1 lbar_2
++        w=w+prtial(3)           ! sq1 sl2* -> q1_1 lbar_3
++        w=w+prtial(4)           ! sq1 sl2* -> q1_2 lbar_1
++        w=w+prtial(5)           ! sq1 sl2* -> q1_2 lbar_2
++        w=w+prtial(6)           ! sq1 sl2* -> q1_2 lbar_3
++        w=w+prtial(7)           ! sq1 sl2* -> q1_3 lbar_1
++        w=w+prtial(8)           ! sq1 sl2* -> q1_3 lbar_2
++        w=w+prtial(9)           ! sq1 sl2* -> q1_3 lbar_3
++        w=w+prtial(10)          ! sq1 sl2 -> q1_1 l_1
++        w=w+prtial(11)          ! sq1 sl2 -> q1_1 l_2
++        w=w+prtial(12)          ! sq1 sl2 -> q1_1 l_3
++        w=w+prtial(13)          ! sq1 sl2 -> q1_2 l_1
++        w=w+prtial(14)          ! sq1 sl2 -> q1_2 l_2
++        w=w+prtial(15)          ! sq1 sl2 -> q1_2 l_3
++        w=w+prtial(16)          ! sq1 sl2 -> q1_3 l_1
++        w=w+prtial(17)          ! sq1 sl2 -> q1_3 l_2
++        w=w+prtial(18)          ! sq1 sl2 -> q1_3 l_3
++c...States with final states switched w.r.t initial state regarding up/down
++        w=w+prtial(19)          ! sq1 sl2* -> q1'_1 l'_1
++        w=w+prtial(20)          ! sq1 sl2* -> q1'_1 l'_2
++        w=w+prtial(21)          ! sq1 sl2* -> q1'_1 l'_3
++        w=w+prtial(22)          ! sq1 sl2* -> q1'_2 l'_1
++        w=w+prtial(23)          ! sq1 sl2* -> q1'_2 l'_2
++        w=w+prtial(24)          ! sq1 sl2* -> q1'_2 l'_3
++        w=w+prtial(25)          ! sq1 sl2* -> q1'_3 l'_1
++        w=w+prtial(26)          ! sq1 sl2* -> q1'_3 l'_2
++        w=w+prtial(27)          ! sq1 sl2* -> q1'_3 l'_3
++
+ c
+ c check for large negative terms in the fermion final states
+ c
+         wok=.true.
+-        do i=1,9
++        do i=1,27
+           if (prtial(i).lt.0.0d0) then
+             if (dabs(prtial(i)/w).gt.fertoll) then
+               wok=.false.
+diff -rupN darksusy-5.1.3/src/as/dsasgbhb.f installed/darksusy/5.1.3/src/as/dsasgbhb.f
+--- darksusy-5.1.3/src/as/dsasgbhb.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/as/dsasgbhb.f	2016-11-17 19:11:07.851530036 +0000
+@@ -20,6 +20,9 @@
+ *** added by Mia Schelke Jan 2007                          ***
+ *** modified: Piero Ullio to include a new labelling of    ***
+ *** states, 08-05-30                                       ***
++*** Modified: Joakim Edsjo to allow for family mixing      ***
++*** (assumptions were made on family belonging that were   ***
++*** not general enough). 2016-11-13                        ***      
+ **************************************************************
+ 
+       SUBROUTINE dsasgbhb(kp1,kp2,kp3,kp4,icase,result)
+@@ -147,13 +150,14 @@ c      endif
+      &          *gl(kgb,kp2,ksferuc(i))
+         enddo
+ ***** h^+ in s-channel ****************************************
+-        if(kp1-kp2.ge.-3) then
++c        if(kp1-kp2.ge.-3) then !  JE CORR
++        ! JE CORR 161115 always include this s-channel
+         khs=khc
+         A1=A1-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &          *gl(kgb,khb,khs)
+         A2=A2-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &          *gl(kgb,khb,khs)
+-        endif
++c        endif ! JE CORR
+ ***** W^+ in s-channel ****************************************
+         kgs=kw
+         Aaux=gl(kgs,kp2,kp1)*mass(kw)*gl(khb,kgb,kgs)
+@@ -181,13 +185,14 @@ c      endif
+         enddo
+         endif
+ ***** h^+ in s-channel ****************************************
+-        if(kp1-kp2.ge.-3) then
++c        if(kp1-kp2.ge.-3) then ! JE CORR
++        ! JE CORR 161115 always include this s-channel
+         khs=khc
+         A1=A1-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &          *gl(kgb,khb,khs)
+         A2=A2-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &          *gl(kgb,khb,khs)
+-        endif
++c        endif ! JE CORR
+         goto 600
+       endif
+ *****
+@@ -202,7 +207,7 @@ c      endif
+           A2=A2+2.d0*dsasdepro(Uvar,ksferuc(i))*gl(khb,kp1,ksferuc(i))
+      &          *gl(kgb,ksferuc(i),kp2)       
+         enddo   
+-        if(abs(kp1-kp2).le.1) then
++c        if(abs(kp1-kp2).le.1) then ! JE CORR
+ ***** h1 in s-channel  ****************************************
+         khs=kh1
+         A1=A1-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+@@ -222,7 +227,7 @@ c      endif
+      &          *gl(kgb,khb,khs)
+           A2=A2-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &          *gl(kgb,khb,khs)
+-        endif
++c        endif ! JE CORR
+         endif
+         goto 600
+       endif
+@@ -238,7 +243,7 @@ c      endif
+           A1=A1-2.d0*dsasdepro(Tvar,ksfertc(i))*gl(khb,kp2,ksfertc(i))
+      &          *gl(kgb,ksfertc(i),kp1)
+         enddo
+-        if(abs(kp1-kp2).le.1) then
++c        if(abs(kp1-kp2).le.1) then ! JE CORR
+ ***** h1 in s-channel  ****************************************
+         khs=kh1
+         A1=A1-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+@@ -257,7 +262,7 @@ c      endif
+      &        *gl(kgb,khb,khs)
+         A2=A2-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &        *gl(kgb,khb,khs)
+-        endif
++c        endif ! JE CORR
+         goto 600
+       endif
+ *****
+@@ -298,7 +303,7 @@ c      endif
+           A2=A2+2.d0*dsasdepro(Uvar,ksferun(i))*gl(khb,ksferun(i),kp1)
+      &          *gl(kgb,kp2,ksferun(i))
+         enddo
+-        if(abs(kp1-kp2).le.1) then
++c        if(abs(kp1-kp2).le.1) then ! JE CORR
+         if(nosneutrinov) then
+ ***** (H^0_3 can not couple to a pair of sneutrinos as far as there 
+ *****  are no right-handed sneutrinos)
+@@ -315,7 +320,7 @@ c      endif
+      &        *dsasdepro(Svar,kgs)
+         A1=A1+(1.d0-(mass1**2-mass2**2)/mass(kgs)**2)*Aaux
+         A2=A2+(-1.d0-(mass1**2-mass2**2)/mass(kgs)**2)*Aaux
+-        endif
++c        endif ! JE CORR
+         goto 600
+       endif
+ *****
+@@ -338,7 +343,7 @@ c      endif
+      &          *gl(kgb,kp2,ksferun(i))
+         enddo
+         endif
+-        if(abs(kp1-kp2).le.1) then
++c        if(abs(kp1-kp2).le.1) then ! JE CORR
+ ***** h1 in s-channel  ****************************************
+         khs=kh1
+         A1=A1-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+@@ -351,7 +356,7 @@ c      endif
+      &          *gl(kgb,khb,khs)
+         A2=A2-2.d0*dsasdepro(Svar,khs)*gl(khs,kp2,kp1)
+      &          *gl(kgb,khb,khs)
+-        endif
++c        endif ! JE CORR
+         goto 600
+       endif
+ *****
+diff -rupN darksusy-5.1.3/src/ib/dsIBffdxdy.f installed/darksusy/5.1.3/src/ib/dsIBffdxdy.f
+--- darksusy-5.1.3/src/ib/dsIBffdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ib/dsIBffdxdy.f	2016-11-15 13:30:13.738328528 +0000
 @@ -259,14 +259,14 @@ c       endif
  
  c...check that result is positive
@@ -1199,9 +4111,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBffdxdy.f darksusy/5.1.3/src/ib/dsI
          return
        endif
  
-diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBfsrdxdy.f darksusy/5.1.3/src/ib/dsIBfsrdxdy.f
---- darksusy-5.1.3.pristine/src/ib/dsIBfsrdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ib/dsIBfsrdxdy.f	2016-10-09 01:39:40.982406792 +0100
+diff -rupN darksusy-5.1.3/src/ib/dsIBfsrdxdy.f installed/darksusy/5.1.3/src/ib/dsIBfsrdxdy.f
+--- darksusy-5.1.3/src/ib/dsIBfsrdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ib/dsIBfsrdxdy.f	2016-11-15 13:30:13.738328528 +0000
 @@ -62,10 +62,10 @@ c... from a full analytical calculation
  
  c...check that result is positive
@@ -1217,9 +4129,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBfsrdxdy.f darksusy/5.1.3/src/ib/ds
          dsIBfsrdxdy=0d0
          return
        endif
-diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBhhdxdy.f darksusy/5.1.3/src/ib/dsIBhhdxdy.f
---- darksusy-5.1.3.pristine/src/ib/dsIBhhdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ib/dsIBhhdxdy.f	2016-10-09 01:39:40.982406792 +0100
+diff -rupN darksusy-5.1.3/src/ib/dsIBhhdxdy.f installed/darksusy/5.1.3/src/ib/dsIBhhdxdy.f
+--- darksusy-5.1.3/src/ib/dsIBhhdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ib/dsIBhhdxdy.f	2016-11-15 13:30:13.738328528 +0000
 @@ -80,15 +80,15 @@ c...import full IB expression for |M|**2
  
  c...check that the result is positive
@@ -1245,9 +4157,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBhhdxdy.f darksusy/5.1.3/src/ib/dsI
          return
        endif
  
-diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBwhdxdy.f darksusy/5.1.3/src/ib/dsIBwhdxdy.f
---- darksusy-5.1.3.pristine/src/ib/dsIBwhdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ib/dsIBwhdxdy.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/src/ib/dsIBwhdxdy.f installed/darksusy/5.1.3/src/ib/dsIBwhdxdy.f
+--- darksusy-5.1.3/src/ib/dsIBwhdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ib/dsIBwhdxdy.f	2016-11-15 13:30:13.738328528 +0000
 @@ -205,14 +205,14 @@ c       endif
  
  c...check that result is positive
@@ -1271,9 +4183,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBwhdxdy.f darksusy/5.1.3/src/ib/dsI
          return
        endif
  
-diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBwwdxdy.f darksusy/5.1.3/src/ib/dsIBwwdxdy.f
---- darksusy-5.1.3.pristine/src/ib/dsIBwwdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ib/dsIBwwdxdy.f	2016-10-09 01:39:40.986406792 +0100
+diff -rupN darksusy-5.1.3/src/ib/dsIBwwdxdy.f installed/darksusy/5.1.3/src/ib/dsIBwwdxdy.f
+--- darksusy-5.1.3/src/ib/dsIBwwdxdy.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ib/dsIBwwdxdy.f	2016-11-15 13:30:13.738328528 +0000
 @@ -137,14 +137,14 @@ c       endif
  
  c...check that result is positive
@@ -1297,9 +4209,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ib/dsIBwwdxdy.f darksusy/5.1.3/src/ib/dsI
          return
        endif
  
-diff -rupN darksusy-5.1.3.pristine/src/ini/dsdirname.c.in darksusy/5.1.3/src/ini/dsdirname.c.in
---- darksusy-5.1.3.pristine/src/ini/dsdirname.c.in	2008-02-21 16:08:34.000000000 +0000
-+++ darksusy/5.1.3/src/ini/dsdirname.c.in	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/src/ini/dsdirname.c.in installed/darksusy/5.1.3/src/ini/dsdirname.c.in
+--- darksusy-5.1.3/src/ini/dsdirname.c.in	2008-02-21 16:08:34.000000000 +0000
++++ installed/darksusy/5.1.3/src/ini/dsdirname.c.in	1970-01-01 01:00:00.000000000 +0100
 @@ -1,25 +0,0 @@
 -/* #include "../../config.h" */
 -#include <string.h>
@@ -1326,9 +4238,50 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dsdirname.c.in darksusy/5.1.3/src/ini
 -  strcpy(name,DSROOTNAME);
 -  return;
 -}
-diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f darksusy/5.1.3/src/ini/dssetdsinstall.f
---- darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ini/dssetdsinstall.f	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/src/ini/dsinit.f installed/darksusy/5.1.3/src/ini/dsinit.f
+--- darksusy-5.1.3/src/ini/dsinit.f	2013-02-10 06:43:34.000000000 +0000
++++ installed/darksusy/5.1.3/src/ini/dsinit.f	2016-11-15 13:30:13.738328528 +0000
+@@ -299,16 +299,27 @@ c... numbers are conventional, no physic
+       ivtype(ksnue)=11
+       ivtype(kse1)=12
+       ivtype(kse2)=12
+-      ivtype(knumu)=21
+-      ivtype(kmu)=22
+-      ivtype(ksnumu)=21
+-      ivtype(ksmu1)=22
+-      ivtype(ksmu2)=22
+-      ivtype(knutau)=31
+-      ivtype(ktau)=32
+-      ivtype(ksnutau)=31
+-      ivtype(kstau1)=32
+-      ivtype(kstau2)=32
++c      ivtype(knumu)=21
++c      ivtype(kmu)=22
++c      ivtype(ksnumu)=21
++c      ivtype(ksmu1)=22
++c      ivtype(ksmu2)=22
++c      ivtype(knutau)=31
++c      ivtype(ktau)=32
++c      ivtype(ksnutau)=31
++c      ivtype(kstau1)=32
++c      ivtype(kstau2)=32
++      ivtype(knumu)=11 ! JE CORRECTION
++      ivtype(kmu)=12
++      ivtype(ksnumu)=11
++      ivtype(ksmu1)=12
++      ivtype(ksmu2)=12
++      ivtype(knutau)=11
++      ivtype(ktau)=12
++      ivtype(ksnutau)=11
++      ivtype(kstau1)=12
++      ivtype(kstau2)=12
++
+       ivtype(ku)=41
+       ivtype(kd)=42
+       ivtype(ksu1)=41
+diff -rupN darksusy-5.1.3/src/ini/dssetdsinstall.f installed/darksusy/5.1.3/src/ini/dssetdsinstall.f
+--- darksusy-5.1.3/src/ini/dssetdsinstall.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ini/dssetdsinstall.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,17 +0,0 @@
 -      subroutine dssetdsinstall
 -      implicit none
@@ -1347,9 +4300,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsinstall.f darksusy/5.1.3/src/i
 -      stop
 -c      write (*,*) dsinstall
 -      end
-diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsversion.f darksusy/5.1.3/src/ini/dssetdsversion.f
---- darksusy-5.1.3.pristine/src/ini/dssetdsversion.f	2008-02-21 16:08:34.000000000 +0000
-+++ darksusy/5.1.3/src/ini/dssetdsversion.f	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/src/ini/dssetdsversion.f installed/darksusy/5.1.3/src/ini/dssetdsversion.f
+--- darksusy-5.1.3/src/ini/dssetdsversion.f	2008-02-21 16:08:34.000000000 +0000
++++ installed/darksusy/5.1.3/src/ini/dssetdsversion.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,15 +0,0 @@
 -      subroutine dssetdsversion
 -      implicit none
@@ -1366,9 +4319,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dssetdsversion.f darksusy/5.1.3/src/i
 -      dsversion=name(:i)
 -c      write (*,*) dsversion
 -      end
-diff -rupN darksusy-5.1.3.pristine/src/ini/dsvername.c.in darksusy/5.1.3/src/ini/dsvername.c.in
---- darksusy-5.1.3.pristine/src/ini/dsvername.c.in	2008-02-21 16:08:34.000000000 +0000
-+++ darksusy/5.1.3/src/ini/dsvername.c.in	1970-01-01 01:00:00.000000000 +0100
+diff -rupN darksusy-5.1.3/src/ini/dsvername.c.in installed/darksusy/5.1.3/src/ini/dsvername.c.in
+--- darksusy-5.1.3/src/ini/dsvername.c.in	2008-02-21 16:08:34.000000000 +0000
++++ installed/darksusy/5.1.3/src/ini/dsvername.c.in	1970-01-01 01:00:00.000000000 +0100
 @@ -1,25 +0,0 @@
 -/* #include "../../config.h" */
 -#include <string.h>
@@ -1395,9 +4348,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/dsvername.c.in darksusy/5.1.3/src/ini
 -  strcpy(name,DSVERNAME);
 -  return;
 -}
-diff -rupN darksusy-5.1.3.pristine/src/ini/makefile.in darksusy/5.1.3/src/ini/makefile.in
---- darksusy-5.1.3.pristine/src/ini/makefile.in	2011-11-04 23:48:05.000000000 +0000
-+++ darksusy/5.1.3/src/ini/makefile.in	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/ini/makefile.in installed/darksusy/5.1.3/src/ini/makefile.in
+--- darksusy-5.1.3/src/ini/makefile.in	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/ini/makefile.in	2016-11-15 13:30:13.742328528 +0000
 @@ -22,7 +22,7 @@ dswacom.h
  vpath %.h $(DINC)
  
@@ -1407,9 +4360,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ini/makefile.in darksusy/5.1.3/src/ini/ma
  
  OBJ = $(patsubst %.f,$(DOBJ)/%.o,$(SRC))
  
-diff -rupN darksusy-5.1.3.pristine/src/makefile.in darksusy/5.1.3/src/makefile.in
---- darksusy-5.1.3.pristine/src/makefile.in	2015-04-07 10:23:05.000000000 +0100
-+++ darksusy/5.1.3/src/makefile.in	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/makefile.in installed/darksusy/5.1.3/src/makefile.in
+--- darksusy-5.1.3/src/makefile.in	2015-04-07 10:23:05.000000000 +0100
++++ installed/darksusy/5.1.3/src/makefile.in	2016-11-15 13:30:13.742328528 +0000
 @@ -10,9 +10,11 @@
  #### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
  ###############################################
@@ -1447,9 +4400,9 @@ diff -rupN darksusy-5.1.3.pristine/src/makefile.in darksusy/5.1.3/src/makefile.i
  clean : 
  	rm -f $(BUILD)/*.o
  
-diff -rupN darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f darksusy/5.1.3/src/nt/dsntmuonyield.f
---- darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f	2013-01-31 21:46:16.000000000 +0000
-+++ darksusy/5.1.3/src/nt/dsntmuonyield.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/nt/dsntmuonyield.f installed/darksusy/5.1.3/src/nt/dsntmuonyield.f
+--- darksusy-5.1.3/src/nt/dsntmuonyield.f	2013-01-31 21:46:16.000000000 +0000
++++ installed/darksusy/5.1.3/src/nt/dsntmuonyield.f	2016-11-15 13:30:13.742328528 +0000
 @@ -78,21 +78,16 @@ c      call wirate(6,6,1)
           stop
        endif
@@ -1472,9 +4425,371 @@ diff -rupN darksusy-5.1.3.pristine/src/nt/dsntmuonyield.f darksusy/5.1.3/src/nt/
  
        end
  
-diff -rupN darksusy-5.1.3.pristine/src/ucmh/dsucmh_aontsq.f darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f
---- darksusy-5.1.3.pristine/src/ucmh/dsucmh_aontsq.f	2015-04-07 14:12:14.000000000 +0100
-+++ darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f	2016-10-09 01:44:12.882401922 +0100
+diff -rupN darksusy-5.1.3/src/slha/dsfromslha.F installed/darksusy/5.1.3/src/slha/dsfromslha.F
+--- darksusy-5.1.3/src/slha/dsfromslha.F	2013-01-31 21:46:16.000000000 +0000
++++ installed/darksusy/5.1.3/src/slha/dsfromslha.F	2016-11-17 19:03:50.911537000 +0000
+@@ -8,6 +8,7 @@
+ ***         More options on how to treat redundant information, e.g.
+ ***         should Yukawas from SLHA file be used instead of letting
+ ***         DarkSUSY run them (as is currently done).
++*** Modified: 2016-11-11 Joakim Edsjo, fixed lsp setting      
+ **********************************************************************
+       subroutine dsfromSLHA
+       implicit none
+@@ -465,6 +466,12 @@ c...Block VMIX - V matrix for chargino m
+          enddo
+       enddo
+ 
++c...JE CORR 161111, make sue we set lsp correctly with SLHA read masses
++      lsp = kn(kln)
++      do i=21,48
++         if (abs(mass(i)).lt.abs(mass(lsp))) lsp = i
++      enddo
++      
+ c...BLOCK alpha
+       call dssetfromslha(Alpha_Alpha,alpha,0,'')
+ 
+@@ -768,6 +775,7 @@ c...are added. In particular, we need to
+ c...widths. In the future, we should read these from the SLHA file instead
+ c...and only calculate here if they are not present in the file.
+ 
++      call dsorder_flavour ! Order flavours, still needed for IB routines
+       call dsvertx
+       call dshigwid
+       call dsspwid
+@@ -775,4 +783,3 @@ c...and only calculate here if they are
+ 
+       return
+       end
+-
+diff -rupN darksusy-5.1.3/src/su/dsorder_flavour.f installed/darksusy/5.1.3/src/su/dsorder_flavour.f
+--- darksusy-5.1.3/src/su/dsorder_flavour.f	1970-01-01 01:00:00.000000000 +0100
++++ installed/darksusy/5.1.3/src/su/dsorder_flavour.f	2016-11-17 19:03:50.911537000 +0000
+@@ -0,0 +1,277 @@
++*******************************************************************************
++*** This routine orders all sfermions according to flavour. For sleptons,   ***
++*** e.g. this implies the following for the internal particle code ksl:     ***
++***                                                                         ***
++***       ksl(1) = kse(1) = lightest selectron-like sfermion                ***
++***       ksl(2) = ksmu(1) = lightest smuon-like sfermion                   ***
++***       ksl(3) = kstau(1) = lightest stau-like sfermion                   ***
++***       ksl(4) = kse(2) = heavier selectron-like sfermion                 ***
++***       ksl(5) = ksmu(2) = heavier smuon-like sfermion                    ***
++***       ksl(6) = kstau(2) = heavier stau-like sfermion                    ***
++***                                                                         ***
++*** Here, the two "most selectron-like" particles are defined as those that ***
++*** mix strongest with the light- and right-handed selectron, respectively. ***
++*** For squarks, the analogous applies, while for sneutrinos only the first ***
++*** 3 entries in the above table exist.                                     ***
++***                                                                         ***
++***       output: translation from new to old channel numbers (1..6) is     ***                                                                  
++***               stored in common block variables flavsortsl etc.        ***
++***                                                                         ***
++*** NB: This routine assumes that both the mixing and mass common blocks    ***
++***     have already been set, but it must be called ONCE, *before*         ***
++***     initializing the vertex rules.                                      ***
++***                                                                         ***
++*** date:   2016-11-15                                                      ***
++*** author: torsten.bringmannl@fys.uio.no,                                  ***
++*******************************************************************************
++
++      subroutine dsorder_flavour
++      implicit none
++
++      include 'dsmssm.h'
++      
++      integer i, j, ktmp, kflav(6)
++      real*8 masstmp(6), mixtmpl(6,3), mixtmpr(6,3)
++
++c...FIXME. If the re-order arrays are to be used, this routine should only
++c...be called once for each model. This is currently not checked for. The
++c...reordering will work even if the routine is called many times, but the
++c...reordering arrays will be meaningless if the routine is called many times.
++      
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++ccc re-order down-type sleptons as i -> kflav(i)
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++      do i=1,6
++        kflav(i)=1
++      enddo  
++
++      do i=2,6                                                        ! find the slepton that
++        if (abs(sldlmx(i,1)).gt.abs(sldlmx(kflav(1),1))) kflav(1) = i ! looks most like a left-
++      enddo                                                           ! handed selectron
++      do i=2,6                                               
++        if ((i.ne.kflav(1)).and.                           ! find the (remaining!) slepton 
++     &      (abs(sldrmx(i,1)).gt.abs(sldrmx(kflav(4),1)))) ! that looks most like a right- 
++     &      kflav(4) = i                                   ! handed selectron
++      enddo                                                          
++
++      do i=2,6 ! now repeat this for smuons
++        if ((i.ne.kflav(1).and.i.ne.kflav(4)).and.                         
++     &     (abs(sldlmx(i,2)).gt.abs(sldlmx(kflav(2),2)))) kflav(2) = i 
++      enddo                                                           
++      do i=2,6                                               
++        if ((i.ne.kflav(1).and.i.ne.kflav(4).and.i.ne.kflav(2)).and.                            
++     &      (abs(sldrmx(i,2)).gt.abs(sldrmx(kflav(5),2)))) kflav(5) = i                                   
++      enddo                                                          
++
++      i=0 ! the remaining ones must be stau-like... 
++ 10   i = i+1
++      if (i.eq.kflav(1).or.i.eq.kflav(2).or.i.eq.kflav(4).or.
++     &      i.eq.kflav(5)) goto 10
++      kflav(3) = i
++ 20   i = i+1
++      if (i.eq.kflav(1).or.i.eq.kflav(2).or.i.eq.kflav(3).or.
++     &      i.eq.kflav(4).or.i.eq.kflav(5)) goto 20 
++      kflav(6) = i     
++
++      do i=1,3 ! change mass order if necessary
++        if (mass(ksl(kflav(i+3))).lt.mass(ksl(kflav(i)))) then 
++          ktmp = kflav(i)
++          kflav(i) = kflav(i+3)
++          kflav(i+3) = ktmp
++        endif
++      enddo
++
++c... we write this translation from old to new ordering to common blocks
++      do i=1,6
++        flavsortsl(i) = kflav(i)
++      enddo
++ 
++c... now we have to update the masses and mixing matrices to these new conventions:
++      do i=1,6
++        masstmp(i) = mass(ksl(i)) 
++        do j=1,3
++          mixtmpl(i,j) = sldlmx(i,j)
++          mixtmpr(i,j) = sldrmx(i,j)
++        enddo
++      enddo
++      do i=1,6         
++        mass(ksl(i)) = masstmp(kflav(i))
++        do j=1,3
++          sldlmx(i,j) = mixtmpl(kflav(i),j)
++          sldrmx(i,j) = mixtmpr(kflav(i),j)
++        enddo
++      enddo
++  
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++ccc re-order sneutrinos as i -> kflav(i)
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++      do i=1,3
++        kflav(i)=1
++      enddo  
++
++      do i=2,3 ! find the sneutrino that looks most like a snu_e
++        if (abs(slulmx(i,1)).gt.abs(slulmx(kflav(1),1))) kflav(1) = i
++      enddo  
++      do i=2,3 ! find the sneutrino that looks most like a snu_mu
++        if ((i.ne.kflav(1)).and.                         
++     &     (abs(slulmx(i,2)).gt.abs(slulmx(kflav(2),2)))) kflav(2) = i 
++      enddo                                                           
++      do i=2,3 ! find the sneutrino that looks most like a snu_tau 
++        if (i.ne.kflav(1).and.i.ne.kflav(2)) kflav(3) = i  
++      enddo
++c... we write this translation from old to new ordering to common blocks
++      do i=1,3
++        flavsortsnu(i) = kflav(i)
++      enddo
++c... now we have to update the masses and mixing matrices to these new conventions:
++      do i=1,3
++        masstmp(i) = mass(ksnu(i)) 
++        do j=1,3
++          mixtmpl(i,j) = slulmx(i,j)
++        enddo
++      enddo
++      do i=1,3         
++        mass(ksnu(i)) = masstmp(kflav(i))
++        do j=1,3
++          slulmx(i,j) = mixtmpl(kflav(i),j)
++        enddo
++      enddo
++
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++ccc re-order down-type squarks as i -> kflav(i)
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++      do i=1,6
++        kflav(i)=1
++      enddo  
++
++      do i=2,6                                                        ! find the squark that
++        if (abs(sqdlmx(i,1)).gt.abs(sqdlmx(kflav(1),1))) kflav(1) = i ! looks most like a left-
++      enddo                                                           ! handed down-squark
++      do i=2,6                                               
++        if ((i.ne.kflav(1)).and.                           ! find the (remaining!) squark 
++     &      (abs(sqdrmx(i,1)).gt.abs(sqdrmx(kflav(4),1)))) ! that looks most like a right- 
++     &      kflav(4) = i                                   ! handed down-squark
++      enddo                                                          
++
++      do i=2,6 ! now repeat this for s-strange
++        if ((i.ne.kflav(1).and.i.ne.kflav(4)).and.                         
++     &     (abs(sqdlmx(i,2)).gt.abs(sqdlmx(kflav(2),2)))) kflav(2) = i 
++      enddo                                                           
++      do i=2,6                                               
++        if ((i.ne.kflav(1).and.i.ne.kflav(4).and.i.ne.kflav(2)).and.                            
++     &      (abs(sqdrmx(i,2)).gt.abs(sqdrmx(kflav(5),2)))) kflav(5) = i                                   
++      enddo                                                          
++
++      i=0 ! the remaining ones must be sbottom-like...  
++ 30   i = i+1
++      if (i.eq.kflav(1).or.i.eq.kflav(2).or.i.eq.kflav(4).or.
++     &      i.eq.kflav(5)) goto 30
++      kflav(3) = i
++ 40   i = i+1
++      if (i.eq.kflav(1).or.i.eq.kflav(2).or.i.eq.kflav(3).or.
++     &      i.eq.kflav(4).or.i.eq.kflav(5)) goto 40 
++      kflav(6) = i     
++
++      do i=1,3 ! change mass order if necessary
++        if (mass(ksqd(kflav(i+3))).lt.mass(ksqd(kflav(i)))) then 
++          ktmp = kflav(i)
++          kflav(i) = kflav(i+3)
++          kflav(i+3) = ktmp
++        endif
++      enddo
++ 
++c... we write this translation from old to new ordering to common blocks
++      do i=1,6
++        flavsortsqd(i) = kflav(i)
++      enddo
++
++c... now we have to update the masses and mixing matrices to these new conventions:
++      do i=1,6
++        masstmp(i) = mass(ksqd(i)) 
++        do j=1,3
++          mixtmpl(i,j) = sqdlmx(i,j)
++          mixtmpr(i,j) = sqdrmx(i,j)
++        enddo
++      enddo
++      do i=1,6         
++        mass(ksqd(i)) = masstmp(kflav(i))
++        do j=1,3
++          sqdlmx(i,j) = mixtmpl(kflav(i),j)
++          sqdrmx(i,j) = mixtmpr(kflav(i),j)
++        enddo
++      enddo
++  
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++ccc re-order up-type squarks as i -> kflav(i)
++ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
++      do i=1,6
++        kflav(i)=1
++      enddo  
++
++      do i=2,6                                                        ! find the squark that
++        if (abs(squlmx(i,1)).gt.abs(squlmx(kflav(1),1))) kflav(1) = i ! looks most like a left-
++      enddo                                                           ! handed up-squark
++      do i=2,6                                               
++        if ((i.ne.kflav(1)).and.                           ! find the (remaining!) squark 
++     &      (abs(squrmx(i,1)).gt.abs(squrmx(kflav(4),1)))) ! that looks most like a right- 
++     &      kflav(4) = i                                   ! handed up-squark
++      enddo                                                          
++
++      do i=2,6 ! now repeat this for charm-squark
++        if ((i.ne.kflav(1).and.i.ne.kflav(4)).and.                         
++     &     (abs(squlmx(i,2)).gt.abs(squlmx(kflav(2),2)))) kflav(2) = i 
++      enddo                                                           
++      do i=2,6                                               
++        if ((i.ne.kflav(1).and.i.ne.kflav(4).and.i.ne.kflav(2)).and.                            
++     &      (abs(squrmx(i,2)).gt.abs(squrmx(kflav(5),2)))) kflav(5) = i                                   
++      enddo                                                          
++
++      i=0 ! the remaining ones must be stau-like...  
++ 50   i = i+1
++      if (i.eq.kflav(1).or.i.eq.kflav(2).or.i.eq.kflav(4).or.
++     &      i.eq.kflav(5)) goto 50
++      kflav(3) = i
++ 60   i = i+1
++      if (i.eq.kflav(1).or.i.eq.kflav(2).or.i.eq.kflav(3).or.
++     &      i.eq.kflav(4).or.i.eq.kflav(5)) goto 60 
++      kflav(6) = i     
++
++      do i=1,3 ! change mass order if necessary
++        if (mass(ksqu(kflav(i+3))).lt.mass(ksqu(kflav(i)))) then 
++          ktmp = kflav(i)
++          kflav(i) = kflav(i+3)
++          kflav(i+3) = ktmp
++        endif
++      enddo
++ 
++c... we write this translation from old to new ordering to common blocks
++      do i=1,6
++        flavsortsqu(i) = kflav(i)
++      enddo
++
++c... now we have to update the masses and mixing matrices to these new conventions:
++      do i=1,6
++        masstmp(i) = mass(ksqu(i)) 
++        do j=1,3
++          mixtmpl(i,j) = squlmx(i,j)
++          mixtmpr(i,j) = squrmx(i,j)
++        enddo
++      enddo
++      do i=1,6         
++        mass(ksqu(i)) = masstmp(kflav(i))
++        do j=1,3
++          squlmx(i,j) = mixtmpl(kflav(i),j)
++          squrmx(i,j) = mixtmpr(kflav(i),j)
++        enddo
++      enddo
++  
++
++      return
++      end
++
++
++
++
++
++        
++
+diff -rupN darksusy-5.1.3/src/su/dssuconst_yukawa_running.f installed/darksusy/5.1.3/src/su/dssuconst_yukawa_running.f
+--- darksusy-5.1.3/src/su/dssuconst_yukawa_running.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/su/dssuconst_yukawa_running.f	2016-11-15 13:30:13.742328528 +0000
+@@ -20,6 +20,9 @@ c=======================================
+       mscale=2.d0*mass(lsp)
+       alph3=dsralph3(mscale)
+       g3stro=sqrt(4.d0*pi*alph3)
++c      write(*,*) 'lsp = ',lsp
++c      write(*,*) 'mass(lsp) = ',mass(lsp)
++c      write(*,*) 'mscale=',mscale
+ c      write(*,*) 'alpha3=',alph3,' alph3mz=',alph3mz
+       aux = g2weak/dsqrt(2.d0)/mass(kw)
+       yukawa(ktau)= aux*dsrmq(mscale,ktau)/cosbe
+diff -rupN darksusy-5.1.3/src/su/dsvertx1.f installed/darksusy/5.1.3/src/su/dsvertx1.f
+--- darksusy-5.1.3/src/su/dsvertx1.f	2011-11-04 23:48:05.000000000 +0000
++++ installed/darksusy/5.1.3/src/su/dsvertx1.f	2016-11-15 13:30:13.742328528 +0000
+@@ -616,11 +616,11 @@ c       neutrinos
+           gjll=-(g2weak*neunmx(j,2)-gyweak*neunmx(j,1))/sqrt(2.0d0)
+           do k=1,3
+             gl(ksnu(k),kn(j),knu(g))=conjg(gjll)*slulmx(k,g)
+-            gl(kn(j),ksnu(g),knu(g))=gl(ksnu(g),kn(j),knu(g))
+-            gl(kn(j),knu(g),ksnu(g))=gl(ksnu(g),kn(j),knu(g))
++            gl(kn(j),ksnu(k),knu(g))=gl(ksnu(k),kn(j),knu(g)) !JE corr 161030
++            gl(kn(j),knu(g),ksnu(k))=gl(ksnu(k),kn(j),knu(g)) !JE corr 161030
+             gr(ksnu(k),knu(g),kn(j))=conjg(gl(ksnu(k),kn(j),knu(g)))
+-            gr(knu(g),ksnu(g),kn(j))=gr(ksnu(g),knu(g),kn(j))
+-            gr(knu(g),kn(j),ksnu(g))=gr(ksnu(g),knu(g),kn(j))
++            gr(knu(g),ksnu(k),kn(j))=gr(ksnu(k),knu(g),kn(j)) !JE corr 161030
++            gr(knu(g),kn(j),ksnu(k))=gr(ksnu(k),knu(g),kn(j)) !JE corr 161030
+           enddo
+ 
+ c       charged leptons
+diff -rupN darksusy-5.1.3/src/su/makefile.in installed/darksusy/5.1.3/src/su/makefile.in
+--- darksusy-5.1.3/src/su/makefile.in	2013-01-31 21:46:16.000000000 +0000
++++ installed/darksusy/5.1.3/src/su/makefile.in	2016-11-17 19:13:00.447528019 +0000
+@@ -32,7 +32,7 @@ dsrmq4loop.f dssfesct.f dsspectrum.f dss
+ dssuconst_ckm.f dssuconst_couplings.f dssuconst_higgs.f \
+ dssuconst_yukawa.f dssuconst_yukawa_running.f dssusy.f dsvertx.f \
+ dsvertx1.f dsvertx3.f dswhwarn.f dswspectrum.f dswunph.f dswvertx.f \
+-dswwidth.f g4p.f dsgive_model25.f
++dswwidth.f g4p.f dsgive_model25.f dsorder_flavour.f
+ 
+ OBJ = $(patsubst %.f,$(DOBJ)/%.o,$(SRC))
+ 
+diff -rupN darksusy-5.1.3/src/ucmh/dsucmh_aontsq.f installed/darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f
+--- darksusy-5.1.3/src/ucmh/dsucmh_aontsq.f	2015-04-07 14:12:14.000000000 +0100
++++ installed/darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f	2016-11-15 13:30:13.742328528 +0000
 @@ -6,37 +6,42 @@
  !Date: 2011
  !
@@ -1527,9 +4842,9 @@ diff -rupN darksusy-5.1.3.pristine/src/ucmh/dsucmh_aontsq.f darksusy/5.1.3/src/u
  
        end function dsucmh_aontsq
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswadydth.f darksusy/5.1.3/src/wa/dswadydth.f
---- darksusy-5.1.3.pristine/src/wa/dswadydth.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy/5.1.3/src/wa/dswadydth.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswadydth.f installed/darksusy/5.1.3/src/wa/dswadydth.f
+--- darksusy-5.1.3/src/wa/dswadydth.f	2015-12-20 21:43:06.000000000 +0000
++++ installed/darksusy/5.1.3/src/wa/dswadydth.f	2016-11-15 13:30:13.742328528 +0000
 @@ -8,7 +8,6 @@
        real*8 function dswadydth(cth, phim0,phim1,phim2,phie0,phieth,phithm,
       & phichi,phiwh,phifk,phifv)
@@ -1538,9 +4853,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswadydth.f darksusy/5.1.3/src/wa/dswa
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswaemean.f darksusy/5.1.3/src/wa/dswaemean.f
---- darksusy-5.1.3.pristine/src/wa/dswaemean.f	2009-03-30 13:08:08.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswaemean.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswaemean.f installed/darksusy/5.1.3/src/wa/dswaemean.f
+--- darksusy-5.1.3/src/wa/dswaemean.f	2009-03-30 13:08:08.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswaemean.f	2016-11-15 13:30:13.742328528 +0000
 @@ -8,8 +8,6 @@
  
        real*8 function dswaemean(e0,m0,m1,m2)
@@ -1550,9 +4865,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswaemean.f darksusy/5.1.3/src/wa/dswa
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswaifind.f darksusy/5.1.3/src/wa/dswaifind.f
---- darksusy-5.1.3.pristine/src/wa/dswaifind.f	2008-04-07 22:27:47.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswaifind.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswaifind.f installed/darksusy/5.1.3/src/wa/dswaifind.f
+--- darksusy-5.1.3/src/wa/dswaifind.f	2008-04-07 22:27:47.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswaifind.f	2016-11-15 13:30:13.742328528 +0000
 @@ -6,7 +6,6 @@
        subroutine dswaifind(value,array,ipl,ii,imin,imax)
        implicit none
@@ -1561,9 +4876,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswaifind.f darksusy/5.1.3/src/wa/dswa
        include 'dsidtag.h'
  
        integer imin,imax,i,inew,imint,imaxt,iold,ii
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswainit.f darksusy/5.1.3/src/wa/dswainit.f
---- darksusy-5.1.3.pristine/src/wa/dswainit.f	2013-01-27 15:37:53.000000000 +0000
-+++ darksusy/5.1.3/src/wa/dswainit.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswainit.f installed/darksusy/5.1.3/src/wa/dswainit.f
+--- darksusy-5.1.3/src/wa/dswainit.f	2013-01-27 15:37:53.000000000 +0000
++++ installed/darksusy/5.1.3/src/wa/dswainit.f	2016-11-15 13:30:13.742328528 +0000
 @@ -271,9 +271,9 @@ c     &            k,mfi
  
  c...Create mixed tables, differential in energy, integrated in theta
@@ -1584,9 +4899,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswainit.f darksusy/5.1.3/src/wa/dswai
        data waftype/'b'/
  c      data wabase/'we-res-b-full'/
  c      data wabase/'we-res-may2012'/
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield.f darksusy/5.1.3/src/wa/dswayield.f
---- darksusy-5.1.3.pristine/src/wa/dswayield.f	2011-05-24 09:54:48.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswayield.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayield.f installed/darksusy/5.1.3/src/wa/dswayield.f
+--- darksusy-5.1.3/src/wa/dswayield.f	2011-05-24 09:54:48.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswayield.f	2016-11-15 13:30:13.742328528 +0000
 @@ -59,8 +59,6 @@
        real*8 function dswayield(mneu,e,theta,wh,kind,type,istat)
        implicit none
@@ -1596,9 +4911,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield.f darksusy/5.1.3/src/wa/dswa
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldf.f darksusy/5.1.3/src/wa/dswayieldf.f
---- darksusy-5.1.3.pristine/src/wa/dswayieldf.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy/5.1.3/src/wa/dswayieldf.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayieldf.f installed/darksusy/5.1.3/src/wa/dswayieldf.f
+--- darksusy-5.1.3/src/wa/dswayieldf.f	2015-12-20 21:43:06.000000000 +0000
++++ installed/darksusy/5.1.3/src/wa/dswayieldf.f	2016-11-15 13:30:13.742328528 +0000
 @@ -52,11 +52,13 @@
  
        real*8 function dswayieldf(mwimp,e,theta,chi,wh,kind,
@@ -1636,9 +4951,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldf.f darksusy/5.1.3/src/wa/dsw
        endif
  
        dswayieldf=0.0d0
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldfth.f darksusy/5.1.3/src/wa/dswayieldfth.f
---- darksusy-5.1.3.pristine/src/wa/dswayieldfth.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy/5.1.3/src/wa/dswayieldfth.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayieldfth.f installed/darksusy/5.1.3/src/wa/dswayieldfth.f
+--- darksusy-5.1.3/src/wa/dswayieldfth.f	2015-12-20 21:43:06.000000000 +0000
++++ installed/darksusy/5.1.3/src/wa/dswayieldfth.f	2016-11-15 13:30:13.742328528 +0000
 @@ -6,7 +6,7 @@
  *****************************************************************************
  
@@ -1669,9 +4984,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldfth.f darksusy/5.1.3/src/wa/d
          endif
          dswayieldfth=sum*1.0d-15
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy/5.1.3/src/wa/dswayield_int.f
---- darksusy-5.1.3.pristine/src/wa/dswayield_int.f	2015-12-20 21:43:06.000000000 +0000
-+++ darksusy/5.1.3/src/wa/dswayield_int.f	2016-10-09 01:43:39.738402516 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayield_int.f installed/darksusy/5.1.3/src/wa/dswayield_int.f
+--- darksusy-5.1.3/src/wa/dswayield_int.f	2015-12-20 21:43:06.000000000 +0000
++++ installed/darksusy/5.1.3/src/wa/dswayield_int.f	2016-11-15 13:30:13.742328528 +0000
 @@ -1,5 +1,5 @@
        real*8 function dswayield_int(f,a,b,phichi,phiwh,phim0,phim1,phim2,
 -     & phie0,phieth,phithm,phifk,phifv)        
@@ -1709,9 +5024,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayield_int.f darksusy/5.1.3/src/wa/
        dswayield_int=0.0d0
  
        end
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldone.f darksusy/5.1.3/src/wa/dswayieldone.f
---- darksusy-5.1.3.pristine/src/wa/dswayieldone.f	2013-01-31 21:46:16.000000000 +0000
-+++ darksusy/5.1.3/src/wa/dswayieldone.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayieldone.f installed/darksusy/5.1.3/src/wa/dswayieldone.f
+--- darksusy-5.1.3/src/wa/dswayieldone.f	2013-01-31 21:46:16.000000000 +0000
++++ installed/darksusy/5.1.3/src/wa/dswayieldone.f	2016-11-15 13:30:13.742328528 +0000
 @@ -105,16 +105,16 @@
  *****************************************************************************
  
@@ -1866,9 +5181,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayieldone.f darksusy/5.1.3/src/wa/d
          istat=ibset(istat,2)
        endif
  
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields2.f darksusy/5.1.3/src/wa/dswayields2.f
---- darksusy-5.1.3.pristine/src/wa/dswayields2.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswayields2.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayields2.f installed/darksusy/5.1.3/src/wa/dswayields2.f
+--- darksusy-5.1.3/src/wa/dswayields2.f	2009-05-08 09:54:47.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswayields2.f	2016-11-15 13:30:13.742328528 +0000
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
@@ -2155,9 +5470,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields2.f darksusy/5.1.3/src/wa/ds
          endif
  
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields3.f darksusy/5.1.3/src/wa/dswayields3.f
---- darksusy-5.1.3.pristine/src/wa/dswayields3.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswayields3.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayields3.f installed/darksusy/5.1.3/src/wa/dswayields3.f
+--- darksusy-5.1.3/src/wa/dswayields3.f	2009-05-08 09:54:47.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswayields3.f	2016-11-15 13:30:13.742328528 +0000
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
@@ -2444,9 +5759,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields3.f darksusy/5.1.3/src/wa/ds
          endif
  
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields4.f darksusy/5.1.3/src/wa/dswayields4.f
---- darksusy-5.1.3.pristine/src/wa/dswayields4.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswayields4.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayields4.f installed/darksusy/5.1.3/src/wa/dswayields4.f
+--- darksusy-5.1.3/src/wa/dswayields4.f	2009-05-08 09:54:47.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswayields4.f	2016-11-15 13:30:13.742328528 +0000
 @@ -8,7 +8,7 @@
  *****************************************************************************
  
@@ -2586,9 +5901,9 @@ diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields4.f darksusy/5.1.3/src/wa/ds
          endif
  
        endif
-diff -rupN darksusy-5.1.3.pristine/src/wa/dswayields.f darksusy/5.1.3/src/wa/dswayields.f
---- darksusy-5.1.3.pristine/src/wa/dswayields.f	2009-05-08 09:54:47.000000000 +0100
-+++ darksusy/5.1.3/src/wa/dswayields.f	2016-10-09 01:39:40.978406792 +0100
+diff -rupN darksusy-5.1.3/src/wa/dswayields.f installed/darksusy/5.1.3/src/wa/dswayields.f
+--- darksusy-5.1.3/src/wa/dswayields.f	2009-05-08 09:54:47.000000000 +0100
++++ installed/darksusy/5.1.3/src/wa/dswayields.f	2016-11-15 13:30:13.742328528 +0000
 @@ -8,14 +8,14 @@
  *****************************************************************************
  

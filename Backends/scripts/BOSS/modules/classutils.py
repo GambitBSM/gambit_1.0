@@ -387,20 +387,21 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += ' '*(n_indents+2)*indent + abstr_class_name['short'] + '& operator=(const ' + abstr_class_name['short'] + '&) { return *this; }\n'
 
     # - Function init_wrapper() 
-    class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + 'virtual void init_wrapper()\n'
-    class_decl += ' '*(n_indents+2)*indent + '{\n'
     if file_for_gambit:
-        boss_warning = general_boss_warning % (class_name['long'], gb.gambit_backend_name_full, abstr_class_name['short'], 'init_wrapper()')
-        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "' + boss_warning + '" << std::endl;\n'
+        class_decl += '\n'
+        class_decl += ' '*(n_indents+2)*indent + 'virtual void init_wrapper() =0;\n'
     else:
+        class_decl += '\n'
+        class_decl += ' '*(n_indents+2)*indent + 'virtual void init_wrapper()\n'
+        class_decl += ' '*(n_indents+2)*indent + '{\n'
         class_decl += ' '*(n_indents+3)*indent + 'if (wptr == 0)\n'
         class_decl += ' '*(n_indents+3)*indent + '{\n'
         class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
         # class_decl += ' '*(n_indents+4)*indent + 'wrapper_creator(this);\n'
         class_decl += ' '*(n_indents+4)*indent + 'delete_wrapper = true;\n'
         class_decl += ' '*(n_indents+3)*indent + '}\n'
-    class_decl += ' '*(n_indents+2)*indent + '}\n'
+        class_decl += ' '*(n_indents+2)*indent + '}\n'
+
 
     # - Function get_init_wptr()
     class_decl += '\n'
@@ -419,13 +420,13 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += ' '*(n_indents+2)*indent + '}\n'
 
     # - Destructor
-    class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name['short'] + '()\n'
-    class_decl += ' '*(n_indents+2)*indent + '{\n'
     if file_for_gambit:
-        boss_warning = general_boss_warning % (class_name['long'], gb.gambit_backend_name_full, abstr_class_name['short'], '~'+abstr_class_name['short'] )
-        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "' + boss_warning + '" << std::endl;\n'
+        class_decl += '\n'
+        class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name['short'] + '() =0;\n'
     else:
+        class_decl += '\n'
+        class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name['short'] + '()\n'
+        class_decl += ' '*(n_indents+2)*indent + '{\n'
         if gb.debug_mode:
             class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (BEGIN)" << std::endl;\n' 
         class_decl += ' '*(n_indents+3)*indent + 'if (wptr != 0)\n'
@@ -444,7 +445,7 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
         class_decl += ' '*(n_indents+3)*indent + '}\n'
         if gb.debug_mode:
             class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (END)" << std::endl;\n' 
-    class_decl += ' '*(n_indents+2)*indent + '}\n'
+        class_decl += ' '*(n_indents+2)*indent + '}\n'
 
 
     # - Close the class body

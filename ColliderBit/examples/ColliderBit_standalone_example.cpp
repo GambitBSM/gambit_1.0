@@ -1,13 +1,13 @@
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
-///  
+///
 ///  Example of GAMBIT ColliderBit standalone
 ///  main program.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  Martin White (martin.white@adelaide.edu.au)
 ///  January 2016
 ///
@@ -48,16 +48,16 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
-      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName, Spectrum::mc_info(), Spectrum::mr_info());
     }
-    
+
     void createDecays(DecayTable& outDecays)
     {
       // This function makes a decay table from an input SLHA file
       const Spectrum& spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
       outDecays = DecayTable(inputFileName, spec.PDG_translator(), 0, true);
     }
-    
+
     void createZDecays(DecayTable::Entry& result)
     {
       // This function extracts the Z decay entry
@@ -67,10 +67,9 @@ namespace Gambit
       result.set_BF(0.03363, 0.00004, "e+", "e-");
       result.set_BF(0.03366, 0.00007, "mu+", "mu-");
       result.set_BF(0.03370, 0.00008, "tau+", "tau-");
-      result.set_BF(0.6991, 0.0006, "hadron", "hadron");      
+      result.set_BF(0.6991, 0.0006, "hadron", "hadron");
     }
-    
-    
+
     void createSelDecays(DecayTable::Entry& outSelDecays)
     {
       // This function extracts the left-handed selectron decay table
@@ -99,7 +98,7 @@ namespace Gambit
       str x = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
       outSmulDecays = (*Pipes::createSmulDecays::Dep::decay_rates)(x);
     }
-    
+
     void createSmurDecays(DecayTable::Entry& outSmurDecays)
     {
       //This function extracts the right-handed smuon decay table
@@ -108,7 +107,7 @@ namespace Gambit
       str x = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
       outSmurDecays = (*Pipes::createSmurDecays::Dep::decay_rates)(x);
     }
-    
+
     void createStau1Decays(DecayTable::Entry& outStau1Decays)
     {
       //This function extracts the stau1 decay table
@@ -129,7 +128,7 @@ namespace Gambit
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
       outStau2Decays = (*Pipes::createStau2Decays::Dep::decay_rates)(stau2_string);
     }
-    
+
   }
 }
 
@@ -137,19 +136,19 @@ int main()
 {
 
   try{
-    
-    // Initialise logs  
+
+    // Initialise logs
     initialise_standalone_logs("runs/ColliderBit_standalone/logs/");
     logger()<<"Running ColliderBit standalone example"<<LogTags::info<<EOM;
-    
-    // ---- Check that required backends are present    
+
+    // ---- Check that required backends are present
     if (not Backends::backendInfo().works["Pythia8.212.EM"]) backend_error().raise(LOCAL_INFO, "Pythia 8.212.EM is missing!");
     if (not Backends::backendInfo().works["nulike1.0.3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
 
     std::cout << std::endl << "My name is " << name() << std::endl;
     std::cout << " I can calculate: " << endl << iCanDo << std::endl;
     std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
-    
+
     // We now set up the module functions that we wish use
     // Dependencies and backend requirements of module functions are resolved by hand
     // WARNING: DO NOT EDIT UNLESS YOU ARE AN EXPERT
@@ -183,7 +182,7 @@ int main()
     runCMSAnalyses.resolveLoopManager(&operateLHCLoop);
     std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFastATLAS, &getBuckFastCMS, &getATLASAnalysisContainer, &getCMSAnalysisContainer, &generatePythia8Event, &smearEventATLAS, &smearEventCMS, &runATLASAnalyses, &runCMSAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
-          
+
     // ALEPH selectron limits
     ALEPH_Selectron_Conservative_LLike.notifyOfModel("MSSM30atQ");
     createSpectrum.notifyOfModel("MSSM30atQ");
@@ -346,11 +345,11 @@ int main()
     std::cout << std::endl << "My function generatePythia8Event has had its dependency on HardScatteringSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.origin() << "::";
     std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.name() << std::endl;
-    
+
     // Set Module function options here
     // User can edit this section to configure ColliderBit
     // See the ColiderBit manual for available options
-    
+
 
 
     // First we have the LHC options - here we choose to run only one ATLAS analysis
@@ -384,26 +383,26 @@ int main()
 
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
     operateLHCLoop.setOption<int>("nEvents",5000.); // specify the number of simulated LHC events
-    
+
 
 
     // Start running here
-    
+
     {
-      
-      // Call the initialisation functions for all backends that are in use. 
+
+      // Call the initialisation functions for all backends that are in use.
       nulike_1_0_3_init.reset_and_calculate();
 
-      
+
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();
       calc_LHC_LogLike.reset_and_calculate();
-      
+
 
       // Retrieve and print the LHC likelihood
       double loglike = calc_LHC_LogLike(0);
       std::cout << "LHC log likelihood is " << loglike << std::endl;
-  
+
       // Call the ALEPH slepton likelihoods
       createSpectrum.reset_and_calculate();
       createDecays.reset_and_calculate();
@@ -426,7 +425,7 @@ int main()
       LEP205_SLHA1_convention_xsec_smursmurbar.reset_and_calculate();
       LEP205_SLHA1_convention_xsec_stau1stau1bar.reset_and_calculate();
       LEP205_SLHA1_convention_xsec_stau2stau2bar.reset_and_calculate();
-      
+
       ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
       ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
       ALEPH_Stau_Conservative_LLike.reset_and_calculate();
@@ -438,14 +437,14 @@ int main()
       std::cout << "L3 slepton log likes " << L3_Selectron_Conservative_LLike(0) << " " << L3_Smuon_Conservative_LLike(0) << " " << L3_Stau_Conservative_LLike(0) << std::endl;
 
       // Gaugino LL
-      
+
       LEP188_SLHA1_convention_xsec_chi00_12.reset_and_calculate();
       LEP188_SLHA1_convention_xsec_chi00_13.reset_and_calculate();
       LEP188_SLHA1_convention_xsec_chi00_14.reset_and_calculate();
       L3_Neutralino_All_Channels_Conservative_LLike.reset_and_calculate();
-      
+
       std::cout << "L3 neutralino log likes " << L3_Neutralino_All_Channels_Conservative_LLike(0) << std::endl;
-     
+
     }
   }
   catch (std::exception& e)

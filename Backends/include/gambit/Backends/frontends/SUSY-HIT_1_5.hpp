@@ -22,7 +22,7 @@
 // Let's go.
 LOAD_LIBRARY
 
-// SUSY-HIT only works with diagonal MSSM models where first and second generation sfermions are degenerate. 
+// SUSY-HIT only works with diagonal MSSM models where first and second generation sfermions are degenerate.
 BE_ALLOW_MODELS(NUHM2, MSSM20atQ)
 
 // Functions
@@ -84,7 +84,7 @@ BE_VARIABLE(sd_mbmb, sd_mbmb_type, "sd_mbmb_", "cb_sd_mbmb")
 BE_VARIABLE(sd_selectron, sd_selectron_type, "sd_selectron_", "cb_sd_selectron")
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, int*), "susy_hit_backend_level_init")
+BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double), "susy_hit_backend_level_init")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, Spectrum)

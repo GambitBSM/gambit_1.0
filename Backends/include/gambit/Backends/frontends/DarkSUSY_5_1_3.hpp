@@ -4,18 +4,18 @@
 ///
 ///  Fronted header for the DarkSUSY backend
 ///
-///  Compile-time registration of available 
+///  Compile-time registration of available
 ///  functions and variables from this backend.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Mar
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr
 ///        2015 Mar
@@ -28,7 +28,7 @@
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jul, 2014 Mar, 2015 May
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar
 ///
@@ -74,9 +74,17 @@ BE_FUNCTION(dsntmuonyield, double, (const double&, const double&, const char&, c
 BE_FUNCTION(dswspectrum, void, (int&), "dswspectrum_", "dswspectrum")
 BE_FUNCTION(dswwidth, void, (int&), "dswwidth_", "dswwidth")
 BE_FUNCTION(dssuconst, void, (), "dssuconst_", "dssuconst")
+BE_FUNCTION(dsmssmzero, void, (), "dsmssmzero_", "dsmssmzero")
 BE_FUNCTION(dsvertx, void, (), "dsvertx_", "dsvertx")
+BE_FUNCTION(dsorder_flavour, void, (), "dsorder_flavour_", "dsorder_flavour")
 BE_FUNCTION(dshigwid, void, (), "dshigwid_", "dshigwid")
 BE_FUNCTION(dsspwid, void, (), "dsspwid_", "dsspwid")
+BE_FUNCTION(dsfindmtmt, void, (), "dsfindmtmt_", "dsspwid")
+BE_FUNCTION(dssuconst_ckm, void, (), "dssuconst_ckm_", "dssuconst_ckm")
+BE_FUNCTION(dssuconst_yukawa_running, void, (), "dssuconst_yukawa_running_", "dssuconst_yukawa_running")
+BE_FUNCTION(dsmqpole4loop, double, (int&, double&), "dsmqpole4loop_", "dsmqpole4loop")
+BE_FUNCTION(dsspectrum, void, (int&, int&), "dsspectrum_", "dsspectrum")
+BE_FUNCTION(dsgf2s2thw, double, (const double&, const double&, const double&, const double&, const int&), "dsgf2s2thw_", "dsgf2s2thw")
 
 // Variables
 BE_VARIABLE(pacodes, DS_PACODES, "pacodes_", "pacodes")
@@ -102,13 +110,13 @@ BE_VARIABLE(rdmgev, DS_RDMGEV,     "rdmgev_",    "rdmgev")    // Contains inform
 BE_VARIABLE(rdpth, DS_RDPTH,       "rdpth_",     "rdpth")     // gRD thresholds
 BE_VARIABLE(rddof, DS_RDDOF,       "rddof_",     "rddof")     // gRD dofs
 BE_VARIABLE(rderrors, DS_RDERRORS, "rderrors_", "rderrors")   // gRD errors
-BE_VARIABLE(rdpars, DS_RDPARS,     "rdpars_",    "rdpars")    // gRD Parameters 
+BE_VARIABLE(rdpars, DS_RDPARS,     "rdpars_",    "rdpars")    // gRD Parameters
 BE_VARIABLE(rdswitch, DS_RDSWITCH, "rdswitch_",  "rdswitch")  // gRD Switches
 BE_VARIABLE(rdlun, DS_RDLUN,       "rdlun_",     "rdlun")     // gRD I/O
 BE_VARIABLE(rdpadd, DS_RDPADD,     "rdpadd_",    "rdpadd")    // gRD I/O
 // IB stuff
 BE_VARIABLE(IBintvars, DS_IBINTVARS,"ibintvars_", "IBintvars")
-// Direct detection 
+// Direct detection
 BE_VARIABLE(ddcom, DS_DDCOM, "ddcom_",    "ddcom")
 // Neutrino detection
 BE_VARIABLE(wabranch, DS_NUCOM, "wabranch_", "nu_common_block")
@@ -120,7 +128,7 @@ BE_VARIABLE(dshmnoclue, DS_HMNOCLUE, "dshmnoclue_", "dshmnoclue")
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")
-BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double(&)[29][3], const double(&)[15], 
+BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double(&)[29][3], const double(&)[15],
                                                const double(&)[3], const double&, const double&, const double&,
                                                const double&, const double&), "nuyield_setup")
 BE_CONV_FUNCTION(DSparticle_code, int, (const str&), "particle_code")

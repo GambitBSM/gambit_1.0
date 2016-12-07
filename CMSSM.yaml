@@ -450,8 +450,6 @@ Rules:
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:
-      #This defaults to true; set it false to ignore all these analyses
-      useATLAS: true
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                            "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                            "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
@@ -460,8 +458,6 @@ Rules:
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:
-      #This defaults to true; set it false to ignore all these analyses
-      useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
@@ -513,6 +509,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+
 
   likelihood:
     model_invalid_for_lnlike_below: -5e5

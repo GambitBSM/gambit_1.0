@@ -28,7 +28,7 @@
 ///  \date 2014 Jan
 ///  \date 2015 Nov
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
@@ -51,7 +51,7 @@
 namespace Gambit
 {
   using namespace LogTags;
-  
+
   // Functor class methods
 
     /// Constructor
@@ -545,7 +545,7 @@ namespace Gambit
       if (candidates.empty()) return "";
       // If found just one, return it with no further questions.
       if (candidates.size() == 1) return candidates[0];
-      // If found more than one, choose the one closest to the model passed in. 
+      // If found more than one, choose the one closest to the model passed in.
       str result = candidates.front();
       for (std::vector<str>::iterator it = candidates.begin()+1; it != candidates.end(); ++it)
       {
@@ -567,6 +567,7 @@ namespace Gambit
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
     : functor                  (func_name, func_capability, result_type, origin_name, claw),
+      myTimingPrintFlag        (false),
       start                    (NULL),
       end                      (NULL),
       point_exception_raised   (false),
@@ -589,7 +590,7 @@ namespace Gambit
       myLogTag = Logging::str2tag(myOrigin);
       if (not claw.model_exists(origin_name)) check_missing_LogTag();
     }
-            
+
     /// Destructor
     module_functor_common::~module_functor_common()
     {
@@ -619,6 +620,20 @@ namespace Gambit
     double module_functor_common::getRuntimeAverage()
     {
       return runtime_average;
+    }
+
+    /// Setter for indicating if the timing data for this function's execution should be printed
+    void module_functor_common::setTimingPrintRequirement(bool flag)
+    {
+      if (this == NULL) failBigTime("setTimingPrintRequirement");
+      myTimingPrintFlag = flag;
+    }
+
+    /// Getter indicating if the timing data for this function's execution should be printed
+    bool module_functor_common::requiresTimingPrinting() const
+    {
+      if (this == NULL) failBigTime("requiresTimingPrinting");
+      return myTimingPrintFlag;
     }
 
     /// Reset functor for all threads
@@ -1423,7 +1438,7 @@ namespace Gambit
           if (myClaw->downstream_of(model, activation_candidate))
           {
             // Found an activation candidate that the model being scanned can be cast to.
-            // Assume for now that the candidate will indeed be activated. 
+            // Assume for now that the candidate will indeed be activated.
             it->second = true;
             // Compare with models that have already been activated, to avoid activating multiple models of the same lineage.
             for (auto jt = activeModelFlags.begin(); jt != activeModelFlags.end(); ++jt)
@@ -1570,8 +1585,8 @@ namespace Gambit
       {
         std::ostringstream ss;
         ss << "Sorry, the backend initialisation function " << name()
-        << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";                 
-        backend_error().raise(LOCAL_INFO, ss.str());    
+        << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";
+        backend_error().raise(LOCAL_INFO, ss.str());
       }
       boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
       int thread_num = omp_get_thread_num();
@@ -1595,10 +1610,10 @@ namespace Gambit
             this->finishTiming(thread_num);
             leaving_multithreaded_region();
             throw(e);
-          } 
+          }
         }
         this->finishTiming(thread_num);
-        logger().leaving_module();         
+        logger().leaving_module();
         leaving_multithreaded_region();
       }
     }

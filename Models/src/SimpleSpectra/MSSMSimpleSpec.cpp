@@ -5,18 +5,22 @@
 //
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Apr 
+///  \date 2015 Apr
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2016 Oct
 ///
 ///  *********************************************
 
-#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp" 
-#include "gambit/Utils/util_functions.hpp" 
-#include "gambit/Utils/variadic_functions.hpp" 
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Logs/logger.hpp"
 
 #include <boost/lexical_cast.hpp>
@@ -28,11 +32,11 @@ namespace Gambit
 
       /// Helper function for sorting int, double pairs according to the double
       bool orderer (std::pair<int, double> a, std::pair<int, double> b) { return a.second < b.second; }
- 
+
       /// @{ Member functions for SLHAeaModel class
-           
+
       /// Default Constructor
-      MSSMea::MSSMea() 
+      MSSMea::MSSMea()
         : SLHAeaModel()
       {}
 
@@ -46,12 +50,12 @@ namespace Gambit
         logger() << LogTags::utils;
 
         // Work out if this SLHAea object is SLHA1 or SLHA2
-        if (data.find(blocks[0]) == data.end() or 
+        if (data.find(blocks[0]) == data.end() or
             data.find(blocks[1]) == data.end() or
             data.find(blocks[2]) == data.end() or
             data.find(blocks[3]) == data.end() )
         {
-          if (data.find(gen3mix[0]) == data.end() or 
+          if (data.find(gen3mix[0]) == data.end() or
               data.find(gen3mix[1]) == data.end() or
               data.find(gen3mix[2]) == data.end() )
           {
@@ -61,7 +65,7 @@ namespace Gambit
 
           //Looks like it is SLHA1, so convert it to SLHA2.
           int lengths[4] = {6, 6, 6, 3};
-          str names[4] = {"~d_", "~u_", "~l_", "~nu_"};  
+          str names[4] = {"~d_", "~u_", "~l_", "~nu_"};
           std::vector<int> pdg[4];
           std::vector< std::pair<int, double> > masses[4];
           pdg[0] = initVector<int>(1000001, 1000003, 1000005, 2000001, 2000003, 2000005); // d-type squarks
@@ -71,7 +75,7 @@ namespace Gambit
           for (int j = 0; j < 4; j++)
           {
             // Get the masses
-            for (int i = 0; i < lengths[j]; i++) masses[j].push_back(std::pair<int, double>(pdg[j][i], getdata("MASS",pdg[j][i]))); 
+            for (int i = 0; i < lengths[j]; i++) masses[j].push_back(std::pair<int, double>(pdg[j][i], getdata("MASS",pdg[j][i])));
 
             // Sort them
             std::sort(masses[j].begin(), masses[j].end(), orderer);
@@ -90,7 +94,7 @@ namespace Gambit
             {
               double datum;
               if (lengths[j] == 3 or (k != 2 and k != 5)) // first or second generation (or neutrinos)
-              { 
+              {
                 datum = (slha1to2.at(pdg[j][k]) == pdg[j][i]) ? 1.0 : 0.0;
               }
               else // third generation => need to use the 2x2 SLHA1 mixing matrices.
@@ -119,11 +123,11 @@ namespace Gambit
 
         }
 
-        else logger() << "SLHA for setting up simple spectrum is SLHA2.  *living in the future*" << EOM;       
+        else logger() << "SLHA for setting up simple spectrum is SLHA2.  *living in the future*" << EOM;
 
       }
 
-      /// @{ Getters for MSSM information 
+      /// @{ Getters for MSSM information
 
       double MSSMea::get_Mu()      const { return getdata("HMIX",1); }
       double MSSMea::get_BMu()     const { return getdata("HMIX",101); }
@@ -154,7 +158,7 @@ namespace Gambit
       double MSSMea::get_Yd(int i, int j) const { return getdata("Yd",i,j); }
       double MSSMea::get_Yu(int i, int j) const { return getdata("Yu",i,j); }
       double MSSMea::get_Ye(int i, int j) const { return getdata("Ye",i,j); }
-   
+
       double MSSMea::get_g1() const { return getdata("GAUGE",1); }
       double MSSMea::get_g2() const { return getdata("GAUGE",2); }
       double MSSMea::get_g3() const { return getdata("GAUGE",3); }
@@ -163,17 +167,17 @@ namespace Gambit
         double sg1 = 0.6 * Utils::sqr(get_g1());
         return sg1 / (sg1 + Utils::sqr(get_g2()));
       }
-  
+
       double MSSMea::get_MGlu_pole() const { return getdata("MASS",1000021); }
 
       double MSSMea::get_Mhh_pole_slha(int i) const
-      { 
+      {
          if      (i==1){ return getdata("MASS",25); } // Neutral Higgs(1)
          else if (i==2){ return getdata("MASS",35); } // Neutral Higgs(2)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_Mhh_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
-      } 
-      double MSSMea::get_MAh_pole () const { return getdata("MASS",36); }  
-      double MSSMea::get_MHpm_pole() const { return getdata("MASS",37); }   
+      }
+      double MSSMea::get_MAh_pole () const { return getdata("MASS",36); }
+      double MSSMea::get_MHpm_pole() const { return getdata("MASS",37); }
 
       double MSSMea::get_MCha_pole_slha(int i) const
       {
@@ -228,7 +232,7 @@ namespace Gambit
          else if (i==4){ return getdata("MASS",1000035); } // Neutralino(4)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MChi_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
-      
+
       // Pole Mixings
       double MSSMea::get_ZD_pole_slha(int i, int j) const { return getdata("DSQMIX",i,j); }
       double MSSMea::get_ZU_pole_slha(int i, int j) const { return getdata("USQMIX",i,j); }
@@ -244,16 +248,16 @@ namespace Gambit
 
       double MSSMea::get_UM_pole_slha(int i, int j) const { return getdata("UMIX",i,j); }
       double MSSMea::get_UP_pole_slha(int i, int j) const { return getdata("VMIX",i,j); }
-      
+
       /// @}
 
 
       /// @{ Member functions for MSSMSimpleSpec class
 
-      /// @{ Constructors 
- 
+      /// @{ Constructors
+
       /// Default Constructor
-      MSSMSimpleSpec::MSSMSimpleSpec(double uncert) 
+      MSSMSimpleSpec::MSSMSimpleSpec(double uncert)
       {
         set_pole_mass_uncertainties(uncert);
       }
@@ -272,16 +276,22 @@ namespace Gambit
         set_pole_mass_uncertainties(uncert);
       }
 
-      /// @}  
+      /// @}
 
       /// Ofset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
-      int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
+      int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions. (because Peter is god, he knows user assumptions before they do.)
 
       /// Retrieve SLHAea object
-      SLHAea::Coll MSSMSimpleSpec::getSLHAea(bool) const { return slhawrap.getSLHAea(); } 
+      SLHAea::Coll MSSMSimpleSpec::getSLHAea(int slha_version) const
+      {
+        return slhawrap.getSLHAea(slha_version);
+      }
 
       /// Add SLHAea object to another
-      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha, bool) const { return slhawrap.add_to_SLHAea(slha); } 
+      void MSSMSimpleSpec::add_to_SLHAea(int slha_version, SLHAea::Coll& slha) const
+      {
+        return slhawrap.add_to_SLHAea(slha_version, slha);
+      }
 
       /// Retrieve the PDG translation map
       const std::map<int, int>& MSSMSimpleSpec::PDG_translator() const { return slhawrap.PDG_translator(); }
@@ -294,7 +304,7 @@ namespace Gambit
         const std::vector<int> i1234      = initVector(1,2,3,4);
         const std::vector<int> i123456    = initVector(1,2,3,4,5,6);
         const std::vector<str> sbosons1   = initVector<str>("~g","A0","H+","H-","W+","W-");
-        const std::vector<str> sbosons2   = initVector<str>("~chi+","~chi-","h0"); 
+        const std::vector<str> sbosons2   = initVector<str>("~chi+","~chi-","h0");
         const std::vector<str> sfermions1 = initVector<str>("~u","~d","~e-","~ubar","~dbar","~e+");
         const std::vector<str> sfermions2 = initVector<str>("~nu","~nubar");
         set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions1, i123456, true);
@@ -307,17 +317,17 @@ namespace Gambit
         set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons2, i12, true);
         set_override_vector(Par::Pole_Mass_1srd_high, uncert, "~chi0", i1234, true);
         set_override_vector(Par::Pole_Mass_1srd_low,  uncert, "~chi0", i1234, true);
-      } 
+      }
 
-      // Map fillers    
+      // Map fillers
 
       MSSMSimpleSpec::GetterMaps MSSMSimpleSpec::fill_getter_maps()
       {
-         GetterMaps map_collection; 
-         
+         GetterMaps map_collection;
+
          typedef MTget::FInfo1 FInfo1;
          typedef MTget::FInfo2 FInfo2;
-   
+
          // Can't use c++11 initialiser lists, se have to initialise the index sets like this.
          static const int i12v[] = {1,2};
          static const std::set<int> i12(i12v, Utils::endA(i12v));
@@ -330,7 +340,7 @@ namespace Gambit
 
          static const int i123456v[] = {1,2,3,4,5,6};
          static const std::set<int> i123456(i123456v, Utils::endA(i123456v));
- 
+
          // Running parameters
          {
             MTget::fmap0 tmp_map;
@@ -388,11 +398,11 @@ namespace Gambit
          // "Physical" parameters
          {
             MTget::fmap0 tmp_map;
-            tmp_map["~g"] = &Model::get_MGlu_pole; 
-            tmp_map["A0"] = &Model::get_MAh_pole;   
-            tmp_map["H+"] = &Model::get_MHpm_pole;   
-            // Antiparticle label 
-            tmp_map["H-"] = &Model::get_MHpm_pole;   
+            tmp_map["~g"] = &Model::get_MGlu_pole;
+            tmp_map["A0"] = &Model::get_MAh_pole;
+            tmp_map["H+"] = &Model::get_MHpm_pole;
+            // Antiparticle label
+            tmp_map["H-"] = &Model::get_MHpm_pole;
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
          {
@@ -404,7 +414,7 @@ namespace Gambit
             tmp_map["h0"] =    FInfo1( &Model::get_Mhh_pole_slha, i12 );
             tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i12 );
             tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i1234 );
-      
+
             // Antiparticles (same getters, just different string name)
             tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i123456 );
             tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i123456 );
@@ -422,7 +432,7 @@ namespace Gambit
             tmp_map["h0"] =    FInfo2( &Model::get_ZH_pole_slha, i12, i12);
             tmp_map["A0"] =    FInfo2( &Model::get_ZA_pole_slha, i12, i12);
             tmp_map["H+"] =    FInfo2( &Model::get_ZP_pole_slha, i12, i12);
-            tmp_map["~chi0"] = FInfo2( &Model::get_ZN_pole_slha, i1234, i1234); 
+            tmp_map["~chi0"] = FInfo2( &Model::get_ZN_pole_slha, i1234, i1234);
             tmp_map["~chi-"] = FInfo2( &Model::get_UM_pole_slha, i12, i12);
             tmp_map["~chi+"] = FInfo2( &Model::get_UP_pole_slha, i12, i12);
             map_collection[Par::Pole_Mixing].map2 = tmp_map;
@@ -430,8 +440,8 @@ namespace Gambit
 
          return map_collection;
       }
-     
-      
+
+
 } // end Gambit namespace
 
 

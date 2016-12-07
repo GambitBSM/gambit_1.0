@@ -14,7 +14,7 @@
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
 ///  \date 2015 Aug
-///  
+///
 ///  *********************************************
 
 #include <string>
@@ -40,7 +40,7 @@ namespace Gambit
     /// @{ Non-Gambit helper functions
     //  =======================================================================
     //  These are not known to Gambit, but they do basically all the real work.
-    //  The Gambit module functions merely wrap the functions here and hook 
+    //  The Gambit module functions merely wrap the functions here and hook
     //  them up to their dependencies, and input parameters.
 
     /// Initialise QedQcd object from SMInputs data
@@ -60,7 +60,7 @@ namespace Gambit
       oneset.setAlpha(softsusy::ALPHA, 1./sminputs.alphainv);
       oneset.setAlpha(softsusy::ALPHAS, sminputs.alphaS);
       /// NOTE! These assume the input electron and muon pole masses are "close
-      /// enough" to MSbar masses at MZ. The object does the same with its 
+      /// enough" to MSbar masses at MZ. The object does the same with its
       /// default values so I guess it is ok.
       oneset.setMass(softsusy::mElectron, sminputs.mE);
       oneset.setMass(softsusy::mMuon,     sminputs.mMu);
@@ -69,8 +69,8 @@ namespace Gambit
 
     /// @} End module convenience functions
 
-  
-    /// @{ Gambit module functions 
+
+    /// @{ Gambit module functions
     //  =======================================================================
     //  These are wrapped up in Gambit functor objects according to the
     //  instructions in the rollcall header
@@ -82,8 +82,8 @@ namespace Gambit
     void get_SMINPUTS(SMInputs &result)
     {
       namespace myPipe = Pipes::get_SMINPUTS;
-      SMInputs sminputs; 
-      
+      SMInputs sminputs;
+
       // Get values from Params pipe
       // (as defined in SLHA2)
       if(myPipe::ModelInUse("StandardModel_SLHA2"))
@@ -92,7 +92,7 @@ namespace Gambit
          sminputs.GF       = *myPipe::Param["GF"      ];
          sminputs.alphaS   = *myPipe::Param["alphaS"  ];
 
-         sminputs.mZ       = *myPipe::Param["mZ"      ]; 
+         sminputs.mZ       = *myPipe::Param["mZ"      ];
 
          sminputs.mE       = *myPipe::Param["mE"      ];
          sminputs.mMu      = *myPipe::Param["mMu"     ];
@@ -106,7 +106,7 @@ namespace Gambit
          sminputs.mU       = *myPipe::Param["mU"      ];
          sminputs.mS       = *myPipe::Param["mS"      ];
          sminputs.mCmC     = *myPipe::Param["mCmC"    ];
-         sminputs.mBmB     = *myPipe::Param["mBmB"    ]; 
+         sminputs.mBmB     = *myPipe::Param["mBmB"    ];
          sminputs.mT       = *myPipe::Param["mT"      ];
 
          // CKM
@@ -114,14 +114,23 @@ namespace Gambit
          sminputs.CKM.A        = *myPipe::Param["CKM_A" ];
          sminputs.CKM.rhobar   = *myPipe::Param["CKM_rhobar" ];
          sminputs.CKM.etabar   = *myPipe::Param["CKM_etabar" ];
-               
-         // PMNS 
+
+         // PMNS
          sminputs.PMNS.theta12 = *myPipe::Param["theta12"];
          sminputs.PMNS.theta23 = *myPipe::Param["theta23"];
          sminputs.PMNS.theta13 = *myPipe::Param["theta13"];
          sminputs.PMNS.delta13 = *myPipe::Param["delta13"];
          sminputs.PMNS.alpha1  = *myPipe::Param["alpha1"];
          sminputs.PMNS.alpha2  = *myPipe::Param["alpha2"];
+
+         // W mass.  Stick with the observed value (set in the default constructor) unless instructed otherwise.
+         if (myPipe::runOptions->getValueOrDef<bool>(false,"enforce_tree_level_MW"))
+         {
+           // Calculate MW from alpha, mZ and G_F, assuming the tree-level relation.
+           const double pionroot2 = pi * pow(2,-0.5);
+           double cosW2 = 0.5 + pow(0.25 - pionroot2 / (sminputs.alphainv * sminputs.GF * pow(sminputs.mZ,2.0)), 0.5);
+           sminputs.mW = sminputs.mZ * pow(cosW2,0.5);
+         }
 
       }
       else
@@ -131,7 +140,7 @@ namespace Gambit
          errmsg << "Perhaps you have added a new model to the ALLOWED_MODELS of this ";
          errmsg << "module function but have not added a corresponding case in the ";
          errmsg << "function source (here)." << std::endl;
-         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
+         SpecBit_error().raise(LOCAL_INFO,errmsg.str());
       }
       // Return filled struct
       result = sminputs;

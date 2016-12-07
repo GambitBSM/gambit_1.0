@@ -43,7 +43,7 @@
 
 #define square(x) ((x) * (x))  // square a number
 
-#define DARKSUSY_DEBUG
+//#define DARKSUSY_DEBUG
 
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
@@ -120,7 +120,7 @@ END_BE_INI_FUNCTION
 BE_NAMESPACE
 {
 
-  /// Some DarkSUSY-specific shortcuts for dealing with SLHA blocks
+  /// Shortcut for dealing with SLHA blocks
   void required_block(const std::string& name, const SLHAea::Coll& slha)
   {
     if (slha.find(name) != slha.end()) return;
@@ -201,11 +201,11 @@ BE_NAMESPACE
         piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayield_int didn't converge. This occasionally happens "
                                            "due to finite statistics in the nu yield tables from Pythia. "
                                            "This is benign (the missing integrals are always negligible).");
-    }    
+    }
     if (istat > 4)
     {
       std::ostringstream err;
-      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;      
+      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;
       piped_errors.request(LOCAL_INFO, err.str());
     }
     return result;
@@ -323,21 +323,18 @@ BE_NAMESPACE
     return kpart;
   }
 
-  /// Initialise an MSSM model in DarkSUSY from an SLHAea object and a DecayTable
+  /// Initialise an MSSM model in DarkSUSY from an SLHAea object and a DecayTable.
+  /// Closely mimics the DarkSUSY routine in dsfromslha.F, except that it
+  /// hands over a better b pole mass, explicit decay info, and a better
+  /// approximation of the CKM matrix from Wolfenstein parameters.  Throughout
+  /// this routine, there are pieces of code commented out that would need to be
+  /// re-added to emulate dsfromslha.F exactly, if and only if the decays are not
+  /// set by GAMBIT.
   int init_diskless(const SLHAstruct &mySLHA, const DecayTable &myDecays)
   {
     using SLHAea::to;
     const std::complex<double> imagi(0.0, 1.0);
     DS_PACODES *DSpart = &(*pacodes);
-
-    /*
-    // FIXME: Joakim --> would this be need for anything / should this be
-    // checked?
-    SLHAea::Block modsel_block("MODSEL");
-    modsel_block.push_back("BLOCK MODSEL");
-    modsel_block.push_back("6 3 # FV");
-    mySLHA.push_back(modsel_block);
-    */
 
     // Define required blocks and raise an error if a block is missing
     required_block("SMINPUTS", mySLHA);
@@ -368,11 +365,18 @@ BE_NAMESPACE
     // Make sure the b pole mass is present in the MASS block
     if (mySLHA.at("MASS").find(initVector<str>("5")) == mySLHA.at("MASS").end())
       backend_error().raise(LOCAL_INFO, "DarkSUSY init_diskless needs b pole mass entry (5) in SLHA(ea) MASS block.");
-    
+
+    // Do some initial DarkSUSY housekeeping.
+    dsmssmzero();            // zero all the MSSM parameters and variables
+    mssmtype->modeltype = 0; // tell DarkSUSY that we are working in the general MSSM
+    // To match the DarkSUSY SLHAreader, you would need to also set
+    // mssmswitch->higwid = 1;  // tell DarkSUSY not to use FeynHiggs for Higgs widths.
+
     // Block SMINPUTS
-    couplingconstants->alphem   = 1./to<double>(mySLHA.at("SMINPUTS").at(1).at(1)); // 1/alpha_{QED}
-    smruseful->alph3mz          = to<double>(mySLHA.at("SMINPUTS").at(3).at(1));    // alpha_s @ MZ
-    smruseful->gfermi           = to<double>(mySLHA.at("SMINPUTS").at(2).at(1));    // Fermi constant
+    couplingconstants->alphem           = 1./to<double>(mySLHA.at("SMINPUTS").at(1).at(1)); // 1/alpha_{QED}
+    smruseful->alph3mz                  = to<double>(mySLHA.at("SMINPUTS").at(3).at(1));    // alpha_s @ MZ
+    smruseful->gfermi                   = to<double>(mySLHA.at("SMINPUTS").at(2).at(1));    // Fermi constant
+    mspctm->mass(DSparticle_code("Z0")) = to<double>(mySLHA.at("SMINPUTS").at(4).at(1));    // Z boson mass
 
     // Here we set the masses to be used in DarkSUSY.  Note that all masses in the mspctm->mass block
     // must match those in the ProcessCatalog in DarkBit, as these are used to define the kinematic
@@ -387,23 +391,25 @@ BE_NAMESPACE
     mspctm->mass(DSpart->knu(2)) = to<double>(mySLHA.at("SMINPUTS").at(14).at(1));  // nu_2 pole mass
     mspctm->mass(DSpart->knu(3)) = to<double>(mySLHA.at("SMINPUTS").at(8).at(1));   // nu_3 pole mass
 
-    // Quark masses
+    // Quark masses as defined in SLHA2
     mspctm->mu2gev               = to<double>(mySLHA.at("SMINPUTS").at(22).at(1)); // up quark mass @ 2 GeV
-    mspctm->mass(DSpart->kqu(1)) = mspctm->mu2gev;                                 // use as proxy for pole
     mspctm->md2gev               = to<double>(mySLHA.at("SMINPUTS").at(21).at(1)); // down quark mass @ 2 GeV
-    mspctm->mass(DSpart->kqd(1)) = mspctm->md2gev;                                 // use as proxy for pole
-    mspctm->mcmc                 = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
-    mspctm->mass(DSpart->kqu(2)) = mspctm->mcmc;                                   // use as proxy for pole
     mspctm->ms2gev               = to<double>(mySLHA.at("SMINPUTS").at(23).at(1)); // stange mass @ 2 GeV
-    mspctm->mass(DSpart->kqd(2)) = mspctm->ms2gev;                                 // use as proxy for pole
+    mspctm->mcmc                 = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
     mspctm->mbmb                 = to<double>(mySLHA.at("SMINPUTS").at(5).at(1));  // bottom mass at m_b
-    mspctm->mass(DSpart->kqd(3)) = to<double>(mySLHA.at("MASS").at(5).at(1));      // bottom pole mass
     mspctm->mass(DSpart->kqu(3)) = to<double>(mySLHA.at("SMINPUTS").at(6).at(1));  // top pole mass
 
+    // Do the DarkSUSY-style sin^2 theta_W calculation (will be overwritten later).
+    smruseful->s2thw=dsgf2s2thw(smruseful->gfermi, couplingconstants->alphem, mspctm->mass(DSparticle_code("Z0")), mspctm->mass(DSpart->kqu(3)),1);
 
-    // Weinberg angle will be dealt with later using this W mass (need to respect tree level relation)
-    mspctm->mass(DSparticle_code("W+"))  = to<double>(mySLHA.at("MASS").at(24).at(1));    // W boson mass
-    mspctm->mass(DSparticle_code("Z0"))  = to<double>(mySLHA.at("SMINPUTS").at(4).at(1)); // Z boson mass
+    // Set other internal quark masses for DarkSUSY
+    dsfindmtmt();                                                                  // top mass at mt
+    mspctm->mass(DSpart->kqu(1)) = mspctm->mu2gev;                                 // use 2GeV u mass as proxy for pole
+    mspctm->mass(DSpart->kqd(1)) = mspctm->md2gev;                                 // use 2GeV d mass as proxy for pole
+    mspctm->mass(DSpart->kqd(2)) = mspctm->ms2gev;                                 // use 2GeV s mass as proxy for pole
+    mspctm->mass(DSpart->kqu(2)) = dsmqpole4loop(DSpart->kqu(2),mspctm->mcmc);     // use DarkSUSY internal routine to get mc pole
+    mspctm->mass(DSpart->kqd(3)) = to<double>(mySLHA.at("MASS").at(5).at(1));      // the GAMBIT way to get the bottom pole mass
+    //mspctm->mass(DSpart->kqd(3)) = dsmqpole4loop(DSpart->kqd(3),mspctm->mbmb);   // the DarkSUSY SLHAreader way to get mb pole
 
     // Block MINPAR we skip, it is not needed
 
@@ -431,11 +437,17 @@ BE_NAMESPACE
     mssmpar->mu = to<double>(mySLHA.at("HMIX").at(1).at(1));
     mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
 
-    // Block ALPHA
-    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").back().at(0));  // Higgs mixing angle
+    // A boson mass
+    mspctm->mass(DSparticle_code("A0")) = to<double>(mySLHA.at("MASS").at(36).at(1));
+    mssmpar->ma = mspctm->mass(DSparticle_code("A0"));
 
     // Now set up some defaults (part of it will be overwritten later)
     dssuconst();
+    mssmiuseful->lsp = DSpart->kn(1);
+    mssmiuseful->kln = 1;
+    // To match the DS SLHAreader, you would then need to call
+    // int unphys, hwarning;
+    // dsspectrum(unphys, hwarning);
 
     // CKM matrix read from VCKMIN - Wolfenstein parameters.
     double lambda = to<double>(mySLHA.at("VCKMIN").at(1).at(1));   // Wolfenstein lambda
@@ -452,6 +464,14 @@ BE_NAMESPACE
     mixing->ckm(3,1) = Spectrum::Wolf2V_td(lambda,A,rhobar,etabar);
     mixing->ckm(3,2) = Spectrum::Wolf2V_ts(lambda,A,rhobar,etabar);
     mixing->ckm(3,3) = Spectrum::Wolf2V_tb(lambda,A,rhobar,etabar);
+    // The lower-order DarkSUSY SLHAreader way of doing it; not as good, but this is what you'd need to use to match DS exactly.
+    //sckm->ckms12 = lambda;
+    //sckm->ckms23 = A*pow(sckm->ckms12,2);
+    //std::complex<double> aux(rhobar, etabar);
+    //aux = aux * (sckm->ckms23/pow(sckm->ckms12,2)) * pow(sckm->ckms12,3);
+    //sckm->ckms13 = std::norm(aux);
+    //sckm->ckmdelta = std::arg(aux);
+    //dssuconst_ckm();
 
     // In principle, we might want to change to VCKM instead of VCKMIN, if VCKM is present. Like this:
     // sckm->ckms12 = to<double>(mySLHA.at("VCKM").at(1).at(1));
@@ -466,17 +486,18 @@ BE_NAMESPACE
     // We then have a choice of calculating both sin^2 theta_W and MW
     // from alpha, MZ and GF as we normally do in DarkSUSY. This line would
     // enforce that:
-    //   mspctm->mass(DSpart->kw)=mass(DSpart->kz)*sqrt(1.0-smruseful->s2thw)
+    //  mspctm->mass(DSparticle_code("W+"))=mspctm->mass(DSparticle_code("Z0"))*sqrt(1.0-smruseful->s2thw);
     // However, it is more prudent to take the value of MW from the SLHA file
     // as given (read in earlier), and instead enforce the tree-level condition
     // by redefining sin^2 theta_W. That we do here:
+    mspctm->mass(DSparticle_code("W+"))  = to<double>(mySLHA.at("MASS").at(24).at(1));    // W boson mass
     smruseful->s2thw=1.0-square(mspctm->mass(DSparticle_code("W+")))/square(mspctm->mass(DSparticle_code("Z0")));
 
-    // Higgs bosons. Note h1_0 is the lightest, and h2_0 the heavier CP even
-    mspctm->mass(DSparticle_code("h0_1")) =  to<double>(mySLHA.at("MASS").at(25).at(1));
-    mspctm->mass(DSparticle_code("h0_2")) =  to<double>(mySLHA.at("MASS").at(35).at(1));
-    mspctm->mass(DSparticle_code("A0"))   =  to<double>(mySLHA.at("MASS").at(36).at(1));
-    mspctm->mass(DSparticle_code("H+"))   =  to<double>(mySLHA.at("MASS").at(37).at(1));
+    // Higgs masses. Note h0_1 is the lightest CP-even neutral higgs, and h2_0 the heavier.
+    mspctm->mass(DSparticle_code("h0_1")) = to<double>(mySLHA.at("MASS").at(25).at(1));
+    mspctm->mass(DSparticle_code("h0_2")) = to<double>(mySLHA.at("MASS").at(35).at(1));
+    mspctm->mass(DSparticle_code("H+"))   = to<double>(mySLHA.at("MASS").at(37).at(1));
+    mspctm->mass(DSparticle_code("A0"))   = to<double>(mySLHA.at("MASS").at(36).at(1));
 
     // SUSY particles
     mspctm->mass(DSpart->ksnu(1)) =  to<double>(mySLHA.at("MASS").at(1000012).at(1));
@@ -557,6 +578,12 @@ BE_NAMESPACE
       }
     }
 
+    // Block ALPHA
+    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").back().at(0));  // Higgs mixing angle
+
+    //If you want to exactly match the DarkSUSY SLHAreader, you should also now run
+    //dssuconst_yukawa_running();
+
     // Block YE, YU, YD - Yukawas
     for (int i=1; i<=3; i++)
     {
@@ -573,6 +600,14 @@ BE_NAMESPACE
       mssmpar->mass2q(i) = to<double>(mySLHA.at("MSQ2").at(i,i).at(2));
       mssmpar->mass2u(i) = to<double>(mySLHA.at("MSU2").at(i,i).at(2));
       mssmpar->mass2d(i) = to<double>(mySLHA.at("MSD2").at(i,i).at(2));
+    }
+
+    // BLOCK TE, TU and TD. I read these instead of AE, AU, AD.
+    for (int i=1; i<=3; i++)
+    {
+      mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
+      mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
+      mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     }
 
     // Block SNUMIX
@@ -614,20 +649,16 @@ BE_NAMESPACE
       }
     }
 
-    // BLOCK TE, TU and TD. I read these instead of AE, AU, AD.
-    for (int i=1; i<=3; i++)
-    {
-      mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
-      mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
-      mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
-    }
-
+    // Do flavour reordering for SLHA2 compatibility
+    dsorder_flavour();
     // Set up SUSY vertices
-    mssmtype->modeltype = 0;
-    mssmiuseful->lsp = DSpart->kn(1);
-    mssmiuseful->kln = 1;
     dsvertx();
-    
+
+    // At this point, if you wanted to match the DarkSUSY SLHAreader, you would also call
+    // dshigwid();
+    // dsspwid();
+    // which just fudge a few widths...but we won't do that, because we can get real decay widths from DecayBit.
+
     // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
     widths->width(DSparticle_code("h0_1")) = myDecays.at(std::pair<int,int>(25,0)).width_in_GeV;
     widths->width(DSparticle_code("h0_2")) = myDecays.at(std::pair<int,int>(35,0)).width_in_GeV;
@@ -667,7 +698,7 @@ BE_NAMESPACE
     widths->width(DSparticle_code("tau-")) = myDecays.at(std::pair<int,int>(15,1)).width_in_GeV;
 
     // Set up SM gauge boson widths
-    widths->width(DSparticle_code("W+")) = myDecays.at(std::pair<int,int>(24,0)).width_in_GeV; 
+    widths->width(DSparticle_code("W+")) = myDecays.at(std::pair<int,int>(24,0)).width_in_GeV;
     widths->width(DSparticle_code("Z0")) = myDecays.at(std::pair<int,int>(23,0)).width_in_GeV;
 
     // Set up sfermion widths
@@ -720,7 +751,7 @@ BE_NAMESPACE
     }
 
     #ifdef DARKSUSY_DEBUG
-      // Spit out spectrum and width files for debug purposes. 
+      // Spit out spectrum and width files for debug purposes.
       int u1 = 50;
       int u2 = 100050;
       #ifdef WITH_MPI

@@ -26,8 +26,10 @@
 #include "gambit/Utils/util_functions.hpp"
 
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
 //#define DARKBIT_DEBUG
 //#define DARKBIT_RD_DEBUG
@@ -555,7 +557,7 @@ namespace Gambit {
         if ( runtime > 30. )
         {
           std::cout << "Duration [ms]: " << runtime << std::endl;
-//          SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea();
+//          SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea(2);
 //          std::ofstream ofs("RelicDensity_debug.slha");
 //          ofs << mySLHA;
 //          ofs.close();

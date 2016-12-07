@@ -315,14 +315,14 @@ namespace Gambit {
             if(pID!=null_PPID and pID==PPID_of_last_append)
             {
                std::ostringstream errmsg;
-               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" but supplied PPID matches PPID_of_last_append, i.e. the previous append was to the same point! This indicates a bug in the buffer calling code.";
+               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" (vID="<<this->get_vertexID()<<", index="<<this->get_index()<<") but supplied PPID matches PPID_of_last_append, i.e. the previous append was to the same point! This indicates a bug in the buffer calling code.";
                printer_error().raise(LOCAL_INFO, errmsg.str());
             }
 
             if(sync_buffer_is_full())
             {
                std::ostringstream errmsg;
-               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" but the sync buffer is full! It should have been sent to the master node via MPI or written to disk before now.";
+               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" (vID="<<this->get_vertexID()<<", index="<<this->get_index()<<") but the sync buffer is full! It should have been sent to the master node via MPI or written to disk before now.";
                printer_error().raise(LOCAL_INFO, errmsg.str());
             }
 
