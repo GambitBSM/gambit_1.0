@@ -56,15 +56,15 @@ BE_NAMESPACE
     results.q2_min=Q2_min;
     results.q2_max=Q2_max;
 
-    results.FL=obs[2]/(Q2_max - Q2_min);
-    results.AFB=obs[1]/(Q2_max - Q2_min);
+    results.FL=obs[2];
+    results.AFB=obs[1];
 
-    results.S3=obs[25]/(Q2_max - Q2_min);
-    results.S4=obs[26]/(Q2_max - Q2_min);
-    results.S5=obs[27]/(Q2_max - Q2_min);
-    results.S7=obs[28]/(Q2_max - Q2_min);
-    results.S8=obs[29]/(Q2_max - Q2_min);
-    results.S9=obs[30]/(Q2_max - Q2_min);
+    results.S3=obs[25];
+    results.S4=obs[26];
+    results.S5=obs[27];
+    results.S7=obs[28];
+    results.S8=obs[29];
+    results.S9=obs[30];
 
     return results;
   }
