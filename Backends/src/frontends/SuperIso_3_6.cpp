@@ -56,16 +56,15 @@ BE_NAMESPACE
     results.q2_min=Q2_min;
     results.q2_max=Q2_max;
 
-    results.FL=obs[2];
-    double Fl=obs[2];
-    results.AFB=obs[1];
+    results.FL=obs[2]/(Q2_max - Q2_min);
+    results.AFB=obs[1]/(Q2_max - Q2_min);
 
-    results.S3=obs[5]*(1.-Fl)/2.; // this is ok
-    results.S4=obs[17]*sqrt(Fl*(1.-Fl))/(2.);
-    results.S5=obs[18]*sqrt(Fl*(1.-Fl));
-    results.S7=(-1.)*obs[19]*sqrt(Fl*(1.-Fl));
-    results.S8=obs[21]*sqrt(Fl*(1.-Fl))/(2.);
-    results.S9=(-1.)*obs[15]*(1.-Fl); // this is ok
+    results.S3=obs[25]/(Q2_max - Q2_min);
+    results.S4=obs[26]/(Q2_max - Q2_min);
+    results.S5=obs[27]/(Q2_max - Q2_min);
+    results.S7=obs[28]/(Q2_max - Q2_min);
+    results.S8=obs[29]/(Q2_max - Q2_min);
+    results.S9=obs[30]/(Q2_max - Q2_min);
 
     return results;
   }
@@ -120,15 +119,14 @@ BE_NAMESPACE
     results.q2_max=Q2_max;
 
     results.FL=obs[2];
-    double Fl=obs[2];
     results.AFB=obs[1];
 
-    results.S3=obs[5]*(1.-Fl)/2.; // this is ok
-    results.S4=obs[17]*sqrt(Fl*(1.-Fl))/(2.);
-    results.S5=obs[18]*sqrt(Fl*(1.-Fl));
-    results.S7=(-1.)*obs[19]*sqrt(Fl*(1.-Fl));
-    results.S8=obs[21]*sqrt(Fl*(1.-Fl))/(2.);
-    results.S9=(-1.)*obs[15]*(1.-Fl); // this is ok
+    results.S3=obs[25];      
+    results.S4=obs[26];      
+    results.S5=obs[27];      
+    results.S7=obs[28];      
+    results.S8=obs[29];      
+    results.S9=obs[30];      
 
     
     return results;
@@ -146,27 +144,27 @@ BE_NAMESPACE
       double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
       std::complex<double> CQpb[3];
       
-      cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl; 
-      cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;                                     
-      cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;                                     
+      //cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl; 
+      //cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;                                     
+      //cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;                                     
       
-      cout<<"Cross check NO WC: "<<param->alphas_MZ<<" "<<param->mass_Z<<" "<<param->mass_b<<" "<<param->mass_top_pole<<" "<<param->mass_mu<<" "<<param->mass_s<<" "<<mu_W<<endl;
+      //cout<<"Cross check NO WC: "<<param->alphas_MZ<<" "<<param->mass_Z<<" "<<param->mass_b<<" "<<param->mass_top_pole<<" "<<param->mass_mu<<" "<<param->mass_s<<" "<<mu_W<<endl;
 
-      cout<<"Cross check NO WC mu_b: "<<mu_b<<endl;
-      cout<<"Cross check NO WC: "<<param->mass_d<<" "<<param->mass_u<<" "<<param->mass_s<<" "<<param->mass_c<<" "<<param->mass_t<<" "<<param->mass_e<<" "<<param->mass_nue<<" "<<param->mass_mu<<" "<<param->mass_num<<" "<<param->mass_tau<<" "<<param->mass_nut<<endl;     
+      //cout<<"Cross check NO WC mu_b: "<<mu_b<<endl;
+      //cout<<"Cross check NO WC: "<<param->mass_d<<" "<<param->mass_u<<" "<<param->mass_s<<" "<<param->mass_c<<" "<<param->mass_t<<" "<<param->mass_e<<" "<<param->mass_nue<<" "<<param->mass_mu<<" "<<param->mass_num<<" "<<param->mass_tau<<" "<<param->mass_nut<<endl;     
 
       CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
-      cout<<"Checking NO WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
+      //cout<<"Checking NO WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
       C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
-      cout<<"Checking NO WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
+      //cout<<"Checking NO WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
       Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
 
-      cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;  
+      //cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;  
 
       //result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
       result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
     }
-    std::cout<<"CONV function bs-> gamma BR (NO WC): "<<result<<endl;  
+    //std::cout<<"CONV function bs-> gamma BR (NO WC): "<<result<<endl;  
 
     return result;
   }
@@ -196,20 +194,20 @@ BE_NAMESPACE
 	//double Im_DeltaCQ2=param->Im_DeltaCQ2;
 
 	//superIso doesn't handle imaginary part of WC
-	cout<<"Cross check WC: "<<param->alphas_MZ<<" "<<param->mass_Z<<" "<<param->mass_b<<" "<<param->mass_top_pole<<" "<<param->mass_mu<<" "<<param->mass_s<<" "<<mu_W<<endl;
+	//cout<<"Cross check WC: "<<param->alphas_MZ<<" "<<param->mass_Z<<" "<<param->mass_b<<" "<<param->mass_top_pole<<" "<<param->mass_mu<<" "<<param->mass_s<<" "<<mu_W<<endl;
 
-	cout<<"Cross check WC mu_b: "<<mu_b<<endl;
-	cout<<"Cross check NO WC: "<<param->mass_d<<" "<<param->mass_u<<" "<<param->mass_s<<" "<<param->mass_c<<" "<<param->mass_t<<" "<<param->mass_e<<" "<<param->mass_nue<<" "<<param->mass_mu<<" "<<param->mass_num<<" "<<param->mass_tau<<" "<<param->mass_nut<<endl;
+	//cout<<"Cross check WC mu_b: "<<mu_b<<endl;
+	//cout<<"Cross check NO WC: "<<param->mass_d<<" "<<param->mass_u<<" "<<param->mass_s<<" "<<param->mass_c<<" "<<param->mass_t<<" "<<param->mass_e<<" "<<param->mass_nue<<" "<<param->mass_mu<<" "<<param->mass_num<<" "<<param->mass_tau<<" "<<param->mass_nut<<endl;
 
 	// now this has to be got from paramenters, need Nazila to answere the email
-	cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
-	cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;
-	cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;
+	//cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
+	//cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;
+	//cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;
 	
 	CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param); // since param.SM=1 we calcule WC at SM
-	cout<<"Checking WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
+	//cout<<"Checking WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
 	C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param); // calculating them at mu_b mass
-	cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
+	//cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
 	Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
 	// the prime WC I don't care about :P
 	//now hacking the WC:
@@ -219,8 +217,8 @@ BE_NAMESPACE
 	//CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
 	//CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
-	cout<<"E_t: "<<E_t<<endl;
-	cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;
+	//	cout<<"E_t: "<<E_t<<endl;
+	//cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;
 	//result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
 	result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
 	std::cout<<"CONV function bs-> gamma BR: "<<result<<endl;

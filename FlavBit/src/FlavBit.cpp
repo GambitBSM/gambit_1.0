@@ -2193,7 +2193,7 @@ namespace Gambit
       M_th(46,0)=obs_out_17_19.S8;
       M_th(47,0)=obs_out_17_19.S9;
 
-      measurement_assym.LL_name="b2ll_likelihood";
+      measurement_assym.LL_name="b2sll_likelihood";
 
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp=M_cov;
