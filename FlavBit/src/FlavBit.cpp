@@ -2238,6 +2238,8 @@ namespace Gambit
       vector<double> diff;
       diff=measurement_assym.diff;
 
+      cout<<cov<<endl;
+
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
 
