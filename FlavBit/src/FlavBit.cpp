@@ -2123,8 +2123,12 @@ namespace Gambit
       //cov matirces
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
+      //cout<<M_cov<<endl;
+      
 
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
+
+      
 
       // We assert that the experiments and the observables are the same size
       assert(! ( M_exp.size1() != observables.size()  ));
@@ -2232,14 +2236,14 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
       // Add theory covariance
-      cov+=measurement_assym.cov_th;
+      //cov+=measurement_assym.cov_th;
 
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-
-      cout<<cov<<endl;
-
+      //      cout<<"Cov matrix:"<<endl;
+      //cout<<cov<<endl;
+      //cout<<"End cov matrix"<<endl;
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
 
