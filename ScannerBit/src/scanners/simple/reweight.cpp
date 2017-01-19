@@ -206,7 +206,7 @@ scanner_plugin(reweight, version(1, 0, 0))
     std::pair<unsigned int,unsigned long> current_point = reader->get_next_point();
     int loopi = 0; // DEBUG
     std::cout << "Starting loop over old points" << std::endl;
-    while(not reader->eoi()) // while not end of input
+    while(not reader->eoi() and not loopi>100000) // while not end of input
     {
       // DEBUG
       std::cout << "loop "<<loopi<<std::endl;
@@ -219,7 +219,15 @@ scanner_plugin(reweight, version(1, 0, 0))
  
       // Get the previously computed likelihood value for this point
       double old_LogL;
-      reader->retrieve(old_LogL, old_loglike_label);
+      bool   is_valid;
+      is_valid = reader->retrieve(old_LogL, old_loglike_label);
+
+      // If no valid likelihood existed for the old point, just skip it
+      // (perhaps not desired behaviour for other "post-processing" scanners)
+      if(not is_valid)
+      {
+         continue;
+      }
 
       // Extract the model parameters
       // ModelParameters params;

@@ -158,9 +158,9 @@ namespace Gambit
 
         // retrieve function dispatch
         template<typename T>
-        void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
-          _retrieve(out, label, rank, pointID);
+          return _retrieve(out, label, rank, pointID);
         }
 
       protected:

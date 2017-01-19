@@ -44,11 +44,11 @@ namespace Gambit {
          virtual std::pair<uint, ulong> get_next_point(); // Get next rank/ptID pair in data file
          virtual std::pair<uint, ulong> get_current_point(); // Get current rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
-         void _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(ModelParameters& out,    const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(ModelParameters& out,    const std::string& label, const uint rank, const ulong pointID);
          /// @}
 
        private:

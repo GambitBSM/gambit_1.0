@@ -220,18 +220,21 @@ namespace Gambit
         /// in different cases...
         ///
         /// Note, cannot overload based on return type, so need to use an "out" parameter
+        /// In addition, there may not be a valid result printed for a given entry, so
+        /// an extra output flag "out_valid" must be set to indicate whether the entry
+        /// was marked invalid in the old output. Use the return value for this.
         template<typename T>
-        void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
-          _retrieve(out, label, rank, pointID);
+          return _retrieve(out, label, rank, pointID);
         }
 
         /// Overload for 'retrieve' that uses the current point as the input for rank/pointID
         template<typename T>
-        void retrieve(T& out, const std::string& label)
+        bool retrieve(T& out, const std::string& label)
         {
           std::pair<uint, ulong> pt = get_current_point();
-          retrieve(out, label, pt.first, pt.second);
+          return retrieve(out, label, pt.first, pt.second);
         }
 
       protected:
@@ -239,7 +242,7 @@ namespace Gambit
         /// function matching the type of the attempted retrieval is
         /// found.        
         template<typename T>
-        void _retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool _retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
           std::ostringstream err;                               
                                                                 
@@ -253,6 +256,7 @@ namespace Gambit
               << "\n   Label      : " << label                  
               << "\n   Type       : " << STRINGIFY(T);       
           printer_error().raise(LOCAL_INFO,err.str());         
+          return false;
         }
       
         #define SCANNER_RETRIEVABLE_TYPES  \
@@ -264,7 +268,7 @@ namespace Gambit
 
         // Virtual retrieval methods for base printer classes
         #define VRETRIEVE(r,data,elem)            \
-        virtual void _retrieve(elem& /*output*/,  \
+        virtual bool _retrieve(elem& /*output*/,  \
                        const std::string& label,  \
                        const uint /*rank*/,       \
                        const ulong /*pointID*/    \
@@ -279,6 +283,7 @@ namespace Gambit
               << "\n   Label      : " << label                    \
               << "\n   Type       : " << STRINGIFY(elem);         \
           printer_warning().raise(LOCAL_INFO,err.str());          \
+          return false;                                           \
         }
 
         #define ADD_VIRTUAL_RETRIEVALS(TYPES) BOOST_PP_SEQ_FOR_EACH(VRETRIEVE, _, TYPES)

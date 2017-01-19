@@ -249,8 +249,11 @@ namespace Gambit {
 
     /// Everything is a string in the output file, so use this as the 'master' retrieve function, and the others
     /// just wrap it in various ways
-    void asciiReader::_retrieve(std::string& out, const std::string& label, const uint rank, const ulong pointID)
+    bool asciiReader::_retrieve(std::string& out, const std::string& label, const uint rank, const ulong pointID)
     {
+      // return value
+      bool is_valid = true;
+
       /// Advance read-head position until the target point is found (or throw an error if it cannot be found)
       /// Will be fastest if we are already at the right position or only have to go forward a small number of slots
       /// Going backwards will involve traversing the whole file forwards and looping back around from the start!
@@ -292,23 +295,38 @@ namespace Gambit {
          err << "Error! asciiReader failed to read line '"<<current_row+1<<"', column '"<<i+1<<"' from the wrapped output file '"<<dataFile_name<<"'! The file may be corrupt, or may contain fewer columns than expected (was planning to iterate up to column '"<<target_col<<"').";
          printer_error().raise(LOCAL_INFO,err.str());     
       }
+      if(out=="none")
+      {
+         // Valid data was not recorded for this quantity at this pointID. 
+         is_valid = false;
+      }
       /// done!
+      return is_valid;
     }
 
-    void asciiReader::_retrieve(double& out, const std::string& label, const uint rank, const ulong pointID)
+    bool asciiReader::_retrieve(double& out, const std::string& label, const uint rank, const ulong pointID)
     {
       /// Get requested quantity as a string, then convert it to a double
       std::string temp_out;
-      _retrieve(temp_out, label, rank, pointID);
-      std::istringstream iss(temp_out);
-      iss >> out;
-      if(!iss)
+      bool is_valid;
+      is_valid = _retrieve(temp_out, label, rank, pointID);
+      if(is_valid)
       {
-         std::ostringstream err;
-         err << "Error! asciiReader retrieved an element of '"<<label<<"' from the data file '"<<dataFile_name<<"', but failed to convert it to type 'double'. The data file may be corrupted, or you may have tried to use an inappropriate 'retrieve' type for this data. Error occurred while reading from row '"<<current_row<<"'. Retrieved string value was '"<<temp_out<<"'.";
-         printer_error().raise(LOCAL_INFO,err.str());     
+        std::istringstream iss(temp_out);
+        iss >> out;
+        if(!iss)
+        {
+           std::ostringstream err;
+           err << "Error! asciiReader retrieved an element of '"<<label<<"' from the data file '"<<dataFile_name<<"', which is not marked as 'invalid', but failed to convert it to type 'double'. The data file may be corrupted, or you may have tried to use an inappropriate 'retrieve' type for this data. Error occurred while reading from row '"<<current_row<<"'. Retrieved string value was '"<<temp_out<<"'.";
+           printer_error().raise(LOCAL_INFO,err.str());     
+        }
+      }
+      else
+      {
+        out = 0; // but also marked invalid, so default number is unimportant.
       }
       /// done!
+      return is_valid;
     }
 
     /// local helper function for the ModelParameters '_retrieve' function
@@ -359,8 +377,9 @@ namespace Gambit {
     ///Note:
     ///label=("#"+func_capability+" @"+origin_name+"::"+func_name)
     ///
-    void asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
+    bool asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
     {
+      bool is_valid = true;
       //std::cout<<"Attempting to retrieve ModelParameters for model '"<<modelname<<"'"<<std::endl;
       /// Work out all the output labels which correspond to the input modelname
       bool found_at_least_one(false);
@@ -375,10 +394,21 @@ namespace Gambit {
           out._definePar(param_name);
           // Get the corresponding value out of the data file
           double value; // *output* of retrieve function
-          _retrieve(value, it->first, rank, pointID);
-          out.setValue(param_name, value);
-          //std::cout<<"Extracted parameter "<<param_name<<", value="<<value<<std::endl;
+          bool tmp_is_valid;
+          tmp_is_valid = _retrieve(value, it->first, rank, pointID);
           found_at_least_one = true;
+          if(tmp_is_valid)
+          {
+             out.setValue(param_name, value);
+             //std::cout<<"Extracted parameter "<<param_name<<", value="<<value<<std::endl;
+          }
+          else
+          {
+             // If one parameter value is 'invalid' then we cannot reconstruct 
+             // the ModelParameters object, so we mark the whole thing invalid.
+             out.setValue(param_name, 0);
+             is_valid = false;           
+          }
         }
       }
 
@@ -390,12 +420,13 @@ namespace Gambit {
          printer_error().raise(LOCAL_INFO,err.str());     
       }
       /// done!
+      return is_valid;
     }
 
-    void asciiReader::_retrieve(std::vector<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
-    void asciiReader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
+    bool asciiReader::_retrieve(std::vector<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
+    bool asciiReader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
 
     /// @}
 
