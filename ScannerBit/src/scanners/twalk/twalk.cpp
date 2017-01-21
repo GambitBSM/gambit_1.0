@@ -50,7 +50,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                         pdim,
                         get_inifile_value<double>("gaussian_distance", 2.4),
                         get_inifile_value<double>("walk_distance", 2.5),
-                        get_inifile_value<double>("transverse_distance", 6.0),
+                        get_inifile_value<double>("traverse_distance", 6.0),
                         get_inifile_value<long long>("ran_seed", 0),
                         get_inifile_value<double>("sqrtR", 1.001),
                         get_inifile_value<int>("chain_number", 1 + pdim + numtasks),
