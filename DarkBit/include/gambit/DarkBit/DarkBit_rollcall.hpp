@@ -142,8 +142,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
-        DEPENDENCY(RD_eff_annrate_DSprep, int)
-        BACKEND_REQ(dsanwx, (), double, (double&))
+      DEPENDENCY(RD_spectrum, DarkBit::RD_spectrum_type)
+      DEPENDENCY(RD_eff_annrate_DSprep, int)
+      BACKEND_REQ(dsanwx, (), double, (double&))
     #undef FUNCTION
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)

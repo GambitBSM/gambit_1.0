@@ -351,13 +351,13 @@ namespace Gambit
       }
       // similar for other BEs...
 
-      // FIXME: test for m_WIMP/100 instead and then comment in!
-//      double peff = 0.1;
-//      if ( Utils::isnan((*result)(peff)) )
-//      {
-//        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
-//        invalid_point().raise("Weff is nan in RD_eff_annrate_SUSY.");
-//      }
+      RD_spectrum_type specres = *Dep::RD_spectrum;
+      double peff = 0.01*fabs(specres.coannihilatingParticles[0].mass);
+      if ( Utils::isnan((*result)(peff)) )
+      {
+        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
+        invalid_point().raise("Weff is NaN in RD_eff_annrate_SUSY.");
+      }
 
     } // function RD_eff_annrate_SUSY
 
