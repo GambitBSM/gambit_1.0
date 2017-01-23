@@ -50,8 +50,11 @@ namespace Gambit
 
     class BaseBasePrinter  
     {
+      private:
+        int rank;
+
       public:
-        BaseBasePrinter(): printer_enabled(true) {}
+        BaseBasePrinter(): rank(0), printer_enabled(true) {}
         virtual ~BaseBasePrinter() {}
         /// Function to signal to the printer to write buffer contents to disk
         //virtual void flush() {}; // TODO: needed?
@@ -59,8 +62,9 @@ namespace Gambit
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
         virtual void reset(bool force=false) = 0;
 
-        /// Retrieve MPI rank
-        virtual int getRank() = 0;
+        /// Retrieve/Set MPI rank (setting is useful for e.g. the postprocessor to re-print points from other ranks)
+        int  getRank() {return rank;}
+        void setRank(int r) {rank = r;}
 
         /// Signal printer that scan is finished, and final output needs to be performed
         virtual void finalise(bool abnormal=false) = 0;
@@ -202,6 +206,8 @@ namespace Gambit
       public:
         virtual ~BaseBaseReader() {};
 
+        virtual void reset() = 0; // Reset 'read head' position to first entry
+        virtual ulong get_dataset_length() = 0; // Get length of input dataset (used e.g. by postprocessor to divide post-processing workload via MPI)
         virtual std::pair<uint, ulong> get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
         virtual std::pair<uint, ulong> get_next_point() = 0; // Get next rank/ptID pair in data file
         virtual bool eoi() = 0; // Check if 'current point' is past the end of the data file (and thus invalid!)

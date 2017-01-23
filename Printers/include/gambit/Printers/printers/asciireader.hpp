@@ -40,7 +40,10 @@ namespace Gambit {
          /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
          void advance_to_point(const std::pair<uint,ulong>& target_point);
    
+
          /// @{ Base class virtual interface functions
+         virtual void reset(); // Reset 'read head' position to first entry
+         virtual ulong get_dataset_length(); // Get length of input dataset
          virtual std::pair<uint, ulong> get_next_point(); // Get next rank/ptID pair in data file
          virtual std::pair<uint, ulong> get_current_point(); // Get current rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
@@ -58,6 +61,7 @@ namespace Gambit {
          const uint col_rank;
          const uint col_ptID;
          std::ifstream dataFile;
+         ulong                 dataset_length;
          ulong                 current_row;
          std::pair<uint,ulong> current_point;
          std::string           current_line;

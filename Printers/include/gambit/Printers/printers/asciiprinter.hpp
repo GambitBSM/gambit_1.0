@@ -36,6 +36,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 // Code!
 namespace Gambit
@@ -100,7 +101,6 @@ namespace Gambit
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
         void reset(bool force=false);
-        int getRank();
         void finalise(bool abnormal=false);
 
         /// Ask the printer for the highest ID number known for a given rank
@@ -200,10 +200,9 @@ namespace Gambit
         //std::map<std::pair<int,int>,Record> buffer;  
         Buffer buffer; 
 
-        /// Map recording which model point each process is working on 
+        /// Recording of which model point each process is working on 
         // Need this so that we can compute when (at least initial) writing to a model point has ceased
-        // Key: rank; Value: last pointID sent by that rank.
-        std::map<int,int> lastPointID;
+        PPIDpair lastPointID;
 
         // Record of number of slots occupied by each printer item.
         // If this changes after the first buffer dump an error will occur. Functors which return mutable output are not currently supported by this printer type, and may never be since it is pretty hard to deal with in an ascii table. Actually strictly speaking a functor can use fewer slots than it uses in the first buffer dump (the max of its first 'bufferlength' uses), but not more.

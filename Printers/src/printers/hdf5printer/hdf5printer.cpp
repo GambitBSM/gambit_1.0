@@ -596,6 +596,7 @@ namespace Gambit
     // Constructor
     HDF5Printer::HDF5Printer(const Options& options, BasePrinter* const primary)
     : BasePrinter(primary,options.getValueOrDef<bool>(false,"auxilliary"))
+    , lastPointID(nullpoint) 
     , printer_name("Primary printer")
     , myRank(0)
     , mpiSize(1)
@@ -610,10 +611,16 @@ namespace Gambit
     void HDF5Printer::common_constructor(const Options& options)
     {
 #ifdef WITH_MPI
+      // Note; here 'myRank' is the REAL mpi rank. Used
+      // for process-specific actions.
+      // the inherited 'getRank' function should be used for
+      // printing "as if" this process is from that rank,
+      // i.e. mostly just for setting point ID codes.
+      // 'myRank' will not change, but getRank() may be
+      // changed by the scanner (e.g. postprocessor).
       myRank = myComm.Get_rank();
+      this->setRank(myRank);
 #endif
-      // Initialise "lastPointID" map to -1 (i.e. no last point)
-      lastPointID[myRank] = -1;
 
       if(not this->is_auxilliary_printer())
       {
@@ -895,6 +902,7 @@ namespace Gambit
       // Now that communicator is set up, get its properties.
 #ifdef WITH_MPI
       myRank = myComm.Get_rank();
+      this->setRank(myRank);
       mpiSize = myComm.Get_size();
 #endif
     }
@@ -1294,9 +1302,6 @@ namespace Gambit
       return RA_location_id;
     }
 
-    /// Retrieve MPI rank
-    int HDF5Printer::getRank() {return myRank;}
-
     /// Add a pointer to a new buffer to the global list for this printer
     /// and also register it with the list global to all printers.
     void HDF5Printer::insert_buffer(VBIDpair& key, VertexBufferBase& newbuffer)
@@ -1685,22 +1690,25 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 
     /// Check whether printing to a new parameter space point is about to occur
     // and perform adjustments needed to prepare the printer.
-    void HDF5Printer::check_for_new_point(const unsigned long candidate_newpoint, const unsigned int mpirank)
+    void HDF5Printer::check_for_new_point(const PPIDpair& candidate_newpoint)
     {
       if(is_auxilliary_printer())
       {
         // Redirect task to primary printer
-        primary_printer->check_for_new_point(candidate_newpoint, mpirank);
+        primary_printer->check_for_new_point(candidate_newpoint);
       }
 
-      //std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
-
       // Check if we have changed target PointIDs since the last print call
-      if(candidate_newpoint!=lastPointID.at(myRank))
+      if(lastPointID == nullpoint)
+      {
+        // No previous point; add current point
+        lastPointID = candidate_newpoint;
+      }
+      else if(candidate_newpoint!=lastPointID)
       {
 
 #ifdef MPI_DEBUG
-        std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
+        std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
         std::cout<<"rank "<<myRank<<": sync_pos="<<get_sync_pos()<<std::endl;
 #endif
 
@@ -1743,7 +1751,7 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 #endif
 
         // Yep the scanner has moved on, at least as far as the current process sees
-        lastPointID[myRank] = candidate_newpoint;
+        lastPointID = candidate_newpoint;
 
         // Check if the buffers are full and waiting to be emptied
         // (this will trigger MPI sends if needed)
@@ -1790,6 +1798,10 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
         /// Need to deal with duplicate print attempts better.
         //_print(candidate_newpoint, "pointID", -1000, myRank, candidate_newpoint);
         //_print(myRank,             "MPIrank", -1001, myRank, candidate_newpoint);
+      }
+      else
+      {
+        // no action required
       }
     }
 

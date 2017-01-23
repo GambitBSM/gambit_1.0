@@ -16,6 +16,10 @@
 ///
 ///  *********************************************
 
+#ifdef WITH_MPI
+#include "mpi.h" // Not using the GAMBIT MPI wrappers since they are overkill for this scanner.
+#endif
+
 #include <vector>
 #include <string>
 #include <cmath>
@@ -164,6 +168,20 @@ scanner_plugin(reweight, version(1, 0, 0))
   {
     std::cout << "running demo 'reweight' plugin for scannerbit." << std::endl;
 
+    int numtasks;
+    int rank;
+    
+    // Get MPI data. No communication is needed, we just need to know how to
+    // split up the workload. Just a straight division among all processes is
+    // used, nothing fancy.    
+#ifdef WITH_MPI
+    MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#else
+    numtasks = 1;
+    rank = 0;
+#endif
+
     // Retrieve the external likelihood calculator
     like_ptr LogLike;
     LogLike = get_purpose(get_inifile_value<std::string>("LogLike"));
@@ -201,33 +219,58 @@ scanner_plugin(reweight, version(1, 0, 0))
 
     // Retrieve the reader object
     Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
+    unsigned long long total_length = reader->get_dataset_length();
+
+    // Compute which points this process is supposed to process. Divide total
+    // by number of MPI tasks.
+    unsigned long long my_length = total_length / numtasks;
+    unsigned long long r = total_length % numtasks;
+    // Offset from beginning for this task assuming equal lengths in each task
+    unsigned long long start = my_length * rank;
+    // Divide up the remainder amongst the tasks and adjust offsets to account for these
+    if(rank<r)
+    {
+      my_length++;
+      start+=rank;
+    }
+    else
+    {
+      start+=r;
+    }
+    unsigned long long end = start + my_length - 1; // Minus 1 for the zero indexing
 
     // Loop over the old points
-    std::pair<unsigned int,unsigned long> current_point = reader->get_next_point();
-    int loopi = 0; // DEBUG
-    std::cout << "Starting loop over old points" << std::endl;
-    while(not reader->eoi() and not loopi>100000) // while not end of input
+    std::pair<unsigned int,unsigned long> current_point = reader->get_next_point(); // Get first point
+    unsigned long long loopi = 0;
+    std::cout << "Starting loop over old points ("<<total_length<<" in total)" << std::endl;
+    std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<start<<" through to "<<end<<"." << std::endl;
+
+    // Disable auto-incrementing of pointID's in the likelihood container. We will set these manually.
+    Gambit::Printers::auto_increment() = false;
+
+    while(not reader->eoi()) // while not end of input
     {
       // DEBUG
-      std::cout << "loop "<<loopi<<std::endl;
+      std::cout << "rank "<<rank<<": loop "<<loopi<<std::endl;
       loopi++;
 
-      // NOTE: don't need this anymore, reader can figure it out automatically
-      // Get the ID information for the current point
-      //unsigned int  MPIrank = current_point.first;
-      //unsigned long pointID = current_point.second;
- 
-      // Get the previously computed likelihood value for this point
-      double old_LogL;
-      bool   is_valid;
-      is_valid = reader->retrieve(old_LogL, old_loglike_label);
-
-      // If no valid likelihood existed for the old point, just skip it
-      // (perhaps not desired behaviour for other "post-processing" scanners)
-      if(not is_valid)
+      // Skip loop ahead to the batch of points we are assigned to process
+      if(loopi<start)
       {
+         current_point = reader->get_next_point();
          continue;
       }
+
+      // Cancel processing of iterations beyoud our assigned range
+      if(loopi>end)
+      {
+         std::cout << "This task (rank "<<rank<<") has reached the end of its batch, cancelling file iteration." << std::endl;
+         break;
+      }
+
+      // Data about current point in input file
+      unsigned int       MPIrank = current_point.first;
+      unsigned long long pointID = current_point.second;
 
       // Extract the model parameters
       // ModelParameters params;
@@ -281,16 +324,19 @@ scanner_plugin(reweight, version(1, 0, 0))
       std::unordered_map<std::string, double> outputMap;
 
       // Extract the model parameters
+      bool valid_modelparams = true;
       for(auto it=req_models.begin(); it!=req_models.end(); ++it)
       {
+
         ModelParameters modelparameters;
         std::string model = it->first;
-        reader->retrieve(modelparameters, model);
-  
+        bool is_valid = reader->retrieve(modelparameters, model);
+        if(not is_valid) 
+        {
+           valid_modelparams = false;
+           std::cout << "ModelParameters marked 'invalid' for model "<<model<<"; point will be skipped." << std::endl;
+        }
         /// @{ Debugging; show what was actually retrieved from the output file
-        std::pair<unsigned int,unsigned long> current_point = reader->get_current_point();
-        unsigned int  MPIrank = current_point.first;
-        unsigned long pointID = current_point.second;
         std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
         std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
         const std::vector<std::string> names = modelparameters.getKeys();
@@ -322,6 +368,14 @@ scanner_plugin(reweight, version(1, 0, 0))
         }
       }
    
+      // Check if valid model parameters were extracted. If not, something may be wrong with the input file, or we could just be at the end of a buffer (e.g. in HDF5 case). Can't tell the difference, so just skip the point and continue.
+      if(not valid_modelparams)
+      {
+         std::cout << "Skipping point..." <<std::endl;
+         current_point = reader->get_next_point();
+         continue;
+      }   
+
       /// @{ More debugging: show what we are returning to the likelihood container
       std::cout << "Final retrieved parameters:" << std::endl;
       for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
@@ -334,6 +388,18 @@ scanner_plugin(reweight, version(1, 0, 0))
 
       /// @}
 
+      // Before calling the likelihood function, we need to set up the printer to
+      // output correctly. The auto-incrementing of pointID's cannot be used,
+      // because we need to match the old scan results. So we must set it manually.
+      // This is currently a little clunky but it works. Make sure to have turned
+      // off auto incrementing (see above).
+      // The printer should still print to files split according to the actual rank, this
+      // should only change the assigned pointID pair tag. Which should already be
+      // properly unambiguous if the original scan was done properly.
+      // Note: This might fail for merged datasets from separate runs. Not sure what the solution
+      // for that is.
+      LogLike->setRank(MPIrank); // For purposes of printing only
+      LogLike->setPtID(pointID);
 
       // Call the likelihood function to compute new component
       // Must use "reweight_prior" as the prior!!
@@ -342,12 +408,19 @@ scanner_plugin(reweight, version(1, 0, 0))
       // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
       double partial_logL = LogLike(outputMap); // Here we supply *only* the map; no parameters to transform.
 
-      // Combine with the old logL value and output
-      double combined_logL = old_LogL + partial_logL;
-      unsigned int  MPIrank = current_point.first;
-      unsigned long pointID = current_point.second;
-      get_printer().get_stream()->print( combined_logL, "reweighted_LogL", MPIrank, pointID);
- 
+      // Get the previously computed likelihood value for this point
+      double old_LogL;
+      bool   is_valid;
+      is_valid = reader->retrieve(old_LogL, old_loglike_label);
+
+      if(is_valid)
+      {
+         // Combine with the old logL value and output
+         double combined_logL = old_LogL + partial_logL;
+         get_printer().get_stream()->print( combined_logL, "reweighted_LogL", MPIrank, pointID);
+      }
+      // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+
       /// TODO: There are currently some issues to solve regarding the output
       ///  For asciiPrinter it is kind of ok to just re-output everything, it will have
       ///  to go into a new file anyway, and analysis tools will have to worry about
@@ -367,10 +440,19 @@ scanner_plugin(reweight, version(1, 0, 0))
       ///  Would need the reader to provide virtual functions for retrieving all the
       ///  observable metadata from the output files.
 
+      //static int tmp = 0;
+      //if(tmp>3)
+      //{
+      //   exit(0);
+      //}
+      //else
+      //{
+      //   tmp++;
+      //}
       /// Go to next point
       current_point = reader->get_next_point();
     } 
-    std::cout << "Done!" << std::endl;
+    std::cout << "Done! (rank "<<rank<<")" << std::endl;
 
     return 0;
   }

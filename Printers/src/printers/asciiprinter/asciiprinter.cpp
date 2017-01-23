@@ -39,7 +39,7 @@
 
 // Switch for debugging output (manual at the moment)
 
-//#define AP_DEBUG_MODE
+#define AP_DEBUG_MODE
 
 #ifdef AP_DEBUG_MODE 
   #define AP_DBUG(x) x
@@ -126,28 +126,17 @@ namespace Gambit
       info_file = finfo.str();
 
       #ifdef WITH_MPI
-      myRank = myComm.Get_rank();
+      this->setRank(myComm.Get_rank());
       mpiSize = myComm.Get_size();
 
       // Append mpi rank to file names to avoid collisions between processes
       std::ostringstream fout;
       std::ostringstream finfo2;
-      fout << output_file <<"_"<<myRank;
-      finfo2<< info_file  <<"_"<<myRank;
+      fout << output_file <<"_"<<this->getRank();
+      finfo2<< info_file  <<"_"<<this->getRank();
       output_file = fout.str();
       info_file = finfo2.str();
       #endif
-
-
-      // Initialise "lastPointID" map to -1 (i.e. no last point)
-      #ifdef WITH_MPI
-      for(uint i=0; i<mpiSize; i++)
-      {
-        lastPointID[i] = -1;
-      }
-      #else
-      lastPointID[myRank] = -1;
-      #endif 
 
       // Erase contents of output_file and info_file if they already exist
       std::ofstream output;
@@ -167,7 +156,6 @@ namespace Gambit
       , bufferlength(100) 
       , global(false)
       , printer_name("")
-      , myRank(0)
      #ifdef WITH_MPI
       , myComm() // attaches to MPI_COMM_WORLD, beware collisions with e.g. scanning algorithms.
       , mpiSize(1)
@@ -217,19 +205,8 @@ namespace Gambit
       open_output_file(my_fstream, output_file, std::ofstream::trunc);
       my_fstream.close();
       erase_buffer();
-      lastPointID.clear();
-      #ifdef WITH_MPI
-      for(uint i=0; i<mpiSize; i++)
-      {
-        lastPointID[i] = -1;
-      }
-      #else
-      lastPointID[myRank] = -1;
-      #endif 
+      lastPointID = nullpoint;
     }
-
-    /// Retrieve MPI rank
-    int asciiPrinter::getRank() {return myRank;}
  
     /// Clear buffer
     void asciiPrinter::erase_buffer()
@@ -280,42 +257,48 @@ namespace Gambit
 
       // Key for accessing buffer
       std::pair<int,int> bkey = std::make_pair(rank,pointID);
- 
+      PPIDpair ppid(pointID,rank); // This is a bit clunky because I added PPIDpairs later, so not all asciiprinter internals have been updated to use these instead of simple pairs.
+
       // Register <pointID> as coming from process <rank>.
-      AP_DBUG( std::cout << "My rank is (reported) " << rank << std::endl; )
-      if(lastPointID.at(rank)==pointID)
+      AP_DBUG( std::cout << "Rank "<<this->getRank()<<": adding datapoint from (rank,ptID) (" << rank <<", "<<pointID<<")"<<std::endl; )
+      if(lastPointID == nullpoint)
       {
-        // Don't need to do anything
+        // No previous point; add current point
+        lastPointID = ppid;
       }
-      else if(lastPointID.at(rank)==-1)
+      else if(lastPointID == ppid)
       {
-        lastPointID.at(rank) = pointID;
+        // Don't need to do anything; staying on same point
       }
       else
       {
-        std::pair<int,int> prevbkey = std::make_pair(rank,lastPointID[rank]);
-        // Set previous model point accessed by this rank as ready to print
+        // Moving to new point; set previous point data as "ready to print".
+        std::pair<int,int> prevbkey = std::make_pair(rank,lastPointID.pointID);
         buffer.at(prevbkey).readyToPrint = true;
-        lastPointID.at(rank) = pointID;
+        lastPointID = ppid;
 
         // Check whether it is time to dump the (completed) buffer points to disk
-        if(buffer.size()>bufferlength) {
+        if(buffer.size()>=bufferlength) {
           AP_DBUG( std::cout << "asciiPrinter: Buffer full ("<< buffer.size() <<" records), running buffer dump"<<std::endl; )
           dump_buffer();
         }
       }
 
-      AP_DBUG( std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl; )
-      AP_DBUG( std::cout << "... at slot <rank=" << rank << ", pointID=" << pointID << ">" << std::endl;; )
+      //AP_DBUG( std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl; )
+      //AP_DBUG( std::cout << "... at slot <rank=" << rank << ", pointID=" << pointID << ">" << std::endl;; )
 
       if( buffer.find(bkey)!=buffer.end() and buffer.at(bkey).readyToPrint==true )
       {
-         std::string errmsg = "Error! Attempted to write to \"old\" model point \
+         std::ostringstream err;
+         err << "Error! Attempted to write to \"old\" model point \
 buffer! Bug in asciiprinter.cpp somewhere. Buffer records are initialised with \
 readyToPrint=false, and should not be written to again after this flag is set to \
 true. The records are destroyed upon writing their contents to disk, and there \
-is a unique record for every rank/pointID pair.";
-         printer_error().raise(LOCAL_INFO, errmsg);
+is a unique record for every rank/pointID pair.\n\
+Debug info:\n\
+   functor label: "<< functor_labels << "\n\
+   slot (rank,pointID): "<< rank <<", "<<pointID<<std::endl;
+         printer_error().raise(LOCAL_INFO, err.str());
       }
 
       // Assign to buffer, adding keys if needed

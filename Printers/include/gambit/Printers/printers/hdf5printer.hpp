@@ -153,7 +153,6 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void flush();
         void reset(bool force=false);
-        int getRank();
         void finalise(bool abnormal=false);
 
         ///@}
@@ -210,7 +209,7 @@ namespace Gambit
 
         /// Check whether printing to a new parameter space point is about to occur
         // and perform adjustments needed to prepare the printer.
-        void check_for_new_point(const unsigned long, const unsigned int);
+        void check_for_new_point(const PPIDpair&);
  
         /// Function used by print functions to retrieve their local buffer manager object
         template<class BuffType>
@@ -296,7 +295,7 @@ namespace Gambit
                 in "synchronised" mode. */                                         \
              if(synchronised)                                                      \
              {                                                                     \
-               check_for_new_point(pointID, mpirank);                              \
+               check_for_new_point(PPIDpair(pointID, mpirank));                    \
              }                                                                     \
              return CAT(hdf5_localbufferman_,NAME);                                \
           }
@@ -442,10 +441,9 @@ namespace Gambit
         // Note: Each buffer contains a bool to indicate whether it has done an "append" for the point "lastPointID"
         BaseBufferMap all_my_buffers;
 
-        /// Map recording which model point this process is working on
+        /// ID of the point that this printer is currently working on.
         // Need this so that we can compute when (at least initial) writing to a model point has ceased
-        // Key: rank; Value: last pointID sent by that rank.
-        std::map<unsigned int,unsigned long> lastPointID;
+        PPIDpair lastPointID; 
 
         /// Current absolute dataset index
         // i.e. this location in the output dataset is currently the target of print functions

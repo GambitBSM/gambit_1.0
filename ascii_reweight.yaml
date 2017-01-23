@@ -32,6 +32,7 @@ Printer:
   printer: ascii
   options:
     output_file: "results.txt"
+    buffer_length: 1
 
 #======== Scanner setup ========
 Scanner:

@@ -114,7 +114,10 @@ namespace Gambit
             ret operator () (const args&... params)
             {
                 Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
-                ++Gambit::Printers::get_point_id();
+                if(Gambit::Printers::auto_increment()) // This is slightly hacky, but I need to be able to disable the auto-incrementing in the post-processor scanner. Need to manually set the point ID.
+                {
+                  ++Gambit::Printers::get_point_id();
+                }
                 ret ret_val = main(params...);
                 Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
 
@@ -129,9 +132,11 @@ namespace Gambit
             std::vector<std::string> getParameters() {return prior->getParameters();}
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
+            void setRank(int r) {rank = r;} // Needed by postprocessor; should not use otherwise.
             double getPurposeOffset() const { return purpose_offset; }
             void setPurposeOffset(double os) { purpose_offset = os; }
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
+            void setPtID(unsigned long long int pID) {Gambit::Printers::get_point_id() = pID;} // Needed by postprocessor; should not use otherwise.
             unsigned long long int getNextPtID() const {return getPtID()+1;} // Needed if PtID required by plugin *before* operator() is called. See e.g. GreAT plugin.
 
             /// Tell ScannerBit that we are aborting the scan and it should tell the scanner plugin to stop, and return control to the calling code.
@@ -293,6 +298,7 @@ namespace Gambit
 
             double operator()(const std::vector<double> &vec)
             {
+                std::cout << "operator() vec" << std::endl;
                 static int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
@@ -308,6 +314,7 @@ namespace Gambit
 
             double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
             {
+                std::cout << "operator() map/vec" << std::endl;
                 static int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);

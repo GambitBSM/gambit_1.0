@@ -46,7 +46,10 @@ namespace Gambit {
       , column_map( get_column_info(infoFile_name) )
       , col_rank( safe_col_lookup("MPIrank", column_map, infoFile_name) )
       , col_ptID( safe_col_lookup("pointID", column_map, infoFile_name) )
+      , dataset_length(0)
       , current_row(0)
+      , current_point(0,0)
+      , current_line("")
     {
       logger() << LogTags::info << "asciiReader: Constructing 'asciiReader' for performing retrieval from previous output. File to be accessed is:"<<std::endl;
       logger() << "  data file: " << dataFile_name << std::endl;
@@ -55,6 +58,54 @@ namespace Gambit {
 
       /// Open output data file
       dataFile.open(dataFile_name);
+
+      if( dataFile.fail() )
+      {
+        std::ostringstream err;
+        err << "Error! asciiReader failed to open 'data' file '"<<dataFile_name<<"' for reading past scan output. OS message was: "<<strerror(errno);
+        printer_error().raise(LOCAL_INFO,err.str());
+      }
+
+      /// Scan through file and figure out how many points are in the dataset
+      get_next_point();
+      dataset_length++;
+      if(eoi())
+      {
+        std::ostringstream err;
+        err << "Error! asciiReader reached end of input file '"<<dataFile_name<<"' immediately (file seems to be empty?). Please check the path specified in the YAML config file for this run." << std::endl;
+        printer_error().raise(LOCAL_INFO,err.str());
+      }
+
+      while(not eoi())
+      {
+        get_next_point();
+        dataset_length++;
+      }
+      // Note, there is an extra iteration here (one past the end), so the length is indeed the actual length (since we started counting at zero), not the index of the last entry. 
+      reset();
+    }
+
+    /// Get total length of dataset
+    ulong asciiReader::get_dataset_length()
+    {
+      return dataset_length;
+    }
+
+    /// Reset read head position to zero
+    void asciiReader::reset()
+    {
+      dataFile.close();
+      dataFile.open(dataFile_name);
+
+      if( dataFile.fail() )
+      {
+        std::ostringstream err;
+        err << "Error! asciiReader failed to re-open 'data' file '"<<dataFile_name<<"' for reading previous output while resetting read-head position. OS message was: "<<strerror(errno);
+        printer_error().raise(LOCAL_INFO,err.str());
+      }
+
+      /// Reset row count
+      current_row = 0;
     }
 
     // Get current rank/ptID pair in data file
@@ -210,17 +261,8 @@ namespace Gambit {
 
              /// Presumably we have reached the end of the file; so close it and reopen it,
              /// to wrap around and search for the desired point from the beginning.
-             dataFile.close();
-             dataFile.open(dataFile_name);
+             reset();
 
-             if ( dataFile.fail() )
-             {
-               std::ostringstream err;
-               err << "Error! asciiReader failed to re-open 'data' file '"<<dataFile_name<<"' for reading previous output while performing a search for a point. OS message was: "<<strerror(errno);
-               printer_error().raise(LOCAL_INFO,err.str());
-             }
-             /// Reset row count
-             current_row = 0;
              // Get first row data
              next_row();
              if(eoi()) // If it is still eoi() there is probably nothing in the file...

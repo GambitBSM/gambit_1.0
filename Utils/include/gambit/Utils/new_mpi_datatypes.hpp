@@ -24,6 +24,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include <ostream>
 
 // Code!
 namespace Gambit
@@ -96,7 +97,13 @@ namespace Gambit
     bool operator<(const PPIDpair& l, const PPIDpair& r);
     bool operator==(const PPIDpair& l, const PPIDpair& r);
     bool operator!=(const PPIDpair& l, const PPIDpair& r);
-   
+
+    // stream overloads (for easy std::out)
+    //std::ostream& operator<<(std::ostream&, const PPIDpair&);
+
+    // Null pointID object, use for unassigned pointIDs
+    const PPIDpair nullpoint(-1,0);
+
   } // end namespace Printers
 
   #ifdef WITH_MPI

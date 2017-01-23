@@ -27,6 +27,9 @@ namespace Gambit
 {
     namespace Printers
     { 
+        /// Global flag to indicate if auto-incrementing of the PointID by the likelihood container is allowed
+        bool &auto_increment();
+
         /// Returns unigue pointid;
         unsigned long long int &get_point_id();
         
