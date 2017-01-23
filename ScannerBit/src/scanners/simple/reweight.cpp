@@ -168,8 +168,8 @@ scanner_plugin(reweight, version(1, 0, 0))
   {
     std::cout << "running demo 'reweight' plugin for scannerbit." << std::endl;
 
-    int numtasks;
-    int rank;
+    unsigned int numtasks;
+    unsigned int rank;
     
     // Get MPI data. No communication is needed, we just need to know how to
     // split up the workload. Just a straight division among all processes is
