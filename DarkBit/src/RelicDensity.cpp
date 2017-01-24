@@ -345,19 +345,13 @@ namespace Gambit
     {
       using namespace Pipes::RD_eff_annrate_SUSY;
 
-      // This is supposed to specify that BE=DS is used to determine Weff
-      if (1==1) {
+      if (BEreq::dsanwx.origin() == "DarkSUSY")
+      {
         result=BEreq::dsanwx.pointer();
       }
-      // similar for other BEs...
-
       RD_spectrum_type specres = *Dep::RD_spectrum;
       double peff = 0.01*fabs(specres.coannihilatingParticles[0].mass);
-      if ( Utils::isnan((*result)(peff)) )
-      {
-        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
-        invalid_point().raise("Weff is NaN in RD_eff_annrate_SUSY.");
-      }
+      if ( Utils::isnan((*result)(peff)) ) DarkBit_error().raise(LOCAL_INFO, "Weff is NaN!");
 
     } // function RD_eff_annrate_SUSY
 
@@ -584,7 +578,7 @@ namespace Gambit
          =widthheavyHiggs;
 
       //Check for NAN result.
-      if (yend!=yend) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
+      if ( Utils::isnan(yend) ) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
 
       result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 

@@ -114,9 +114,6 @@ scanner_plugin(MultiNest, version(3, 10))
 
       // TODO: check what happens if resume mode is active but multinest native output is not written. I guess it will resume writing to the printer output, but actually start a new scan?
 
-      std::cout << IS << " " << mmodal << " " << ceff << " " << fb << " " << outfile << std::endl;
-      exit(0);
-
       // Root for output files
       std::string root_str;
       std::string defpath = Gambit::Utils::ensure_path_exists(
