@@ -119,7 +119,7 @@ namespace Gambit
      /// Stream operator overloads
      std::ostream& operator<<(std::ostream& stream, const PPIDpair& ppid) 
      {
-       stream << "(" << ppid.rank << ", " << ppid.pointID << ")";
+       stream << "(" << ppid.pointID << ", " << ppid.rank << ")";
        return stream;
      }
 

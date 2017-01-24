@@ -160,6 +160,7 @@ namespace Gambit
       , myComm() // attaches to MPI_COMM_WORLD, beware collisions with e.g. scanning algorithms.
       , mpiSize(1)
      #endif
+      , lastPointID(nullpoint)
     {
       common_constructor(options);
     }
@@ -260,7 +261,10 @@ namespace Gambit
       PPIDpair ppid(pointID,rank); // This is a bit clunky because I added PPIDpairs later, so not all asciiprinter internals have been updated to use these instead of simple pairs.
 
       // Register <pointID> as coming from process <rank>.
-      AP_DBUG( std::cout << "Rank "<<this->getRank()<<": adding datapoint from (rank,ptID) (" << rank <<", "<<pointID<<")"<<std::endl; )
+      AP_DBUG( std::cout << "Rank "<<this->getRank()<<": adding datapoint from (ptID,rank) "<<ppid<<std::endl; )
+      AP_DBUG( std::cout << "Rank "<<this->getRank()<<": last point was from (ptID,rank) "<<lastPointID<<std::endl; )
+      //AP_DBUG( std::cout << "Rank "<<this->getRank()<<": Note: nullpoint is (ptID,rank) "<<nullpoint<<std::endl; )
+
       if(lastPointID == nullpoint)
       {
         // No previous point; add current point
