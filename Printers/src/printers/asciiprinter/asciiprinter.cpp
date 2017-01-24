@@ -39,7 +39,7 @@
 
 // Switch for debugging output (manual at the moment)
 
-#define AP_DEBUG_MODE
+//#define AP_DEBUG_MODE
 
 #ifdef AP_DEBUG_MODE 
   #define AP_DBUG(x) x
@@ -126,14 +126,15 @@ namespace Gambit
       info_file = finfo.str();
 
       #ifdef WITH_MPI
-      this->setRank(myComm.Get_rank());
+      myRealRank = myComm.Get_rank();
+      this->setRank(myRealRank);
       mpiSize = myComm.Get_size();
 
       // Append mpi rank to file names to avoid collisions between processes
       std::ostringstream fout;
       std::ostringstream finfo2;
-      fout << output_file <<"_"<<this->getRank();
-      finfo2<< info_file  <<"_"<<this->getRank();
+      fout << output_file <<"_"<<myRealRank;
+      finfo2<< info_file  <<"_"<<myRealRank;
       output_file = fout.str();
       info_file = finfo2.str();
       #endif
@@ -261,8 +262,8 @@ namespace Gambit
       PPIDpair ppid(pointID,rank); // This is a bit clunky because I added PPIDpairs later, so not all asciiprinter internals have been updated to use these instead of simple pairs.
 
       // Register <pointID> as coming from process <rank>.
-      AP_DBUG( std::cout << "Rank "<<this->getRank()<<": adding datapoint from (ptID,rank) "<<ppid<<std::endl; )
-      AP_DBUG( std::cout << "Rank "<<this->getRank()<<": last point was from (ptID,rank) "<<lastPointID<<std::endl; )
+      AP_DBUG( std::cout << "Rank "<<myRealRank<<": adding data from (ptID,rank) "<<ppid<<"; labels="<<functor_labels<<std::endl; )
+      AP_DBUG( std::cout << "Rank "<<myRealRank<<": last point was from (ptID,rank) "<<lastPointID<<std::endl; )
       //AP_DBUG( std::cout << "Rank "<<this->getRank()<<": Note: nullpoint is (ptID,rank) "<<nullpoint<<std::endl; )
 
       if(lastPointID == nullpoint)
@@ -277,7 +278,16 @@ namespace Gambit
       else
       {
         // Moving to new point; set previous point data as "ready to print".
-        std::pair<int,int> prevbkey = std::make_pair(rank,lastPointID.pointID);
+        std::pair<int,int> prevbkey = std::make_pair(lastPointID.rank,lastPointID.pointID);
+        if(buffer.find(prevbkey)==buffer.end())
+        {
+           std::ostringstream err;
+           err << "Tried to move asciiPrinter buffer to new point '"<<ppid<<"', however the *previous* point '"<<lastPointID<<"' could not be found in the buffer (we need to set it as 'finished'). This probably means that the old point was never actually entered into the buffer, which must mean there is a bug in the asciiPrinter. Please report this.\n Debug data:\
+     functor label: "<< functor_labels << "\n\
+     slot (rank,pointID): "<< rank <<", "<<pointID<<std::endl;
+           printer_error().raise(LOCAL_INFO, err.str());
+        }
+
         buffer.at(prevbkey).readyToPrint = true;
         lastPointID = ppid;
 
@@ -435,9 +445,9 @@ Debug info:\n\
       for (Buffer::iterator 
         bufentry = buffer.begin(); bufentry != buffer.end(); /* Will increment in loop */ )
       {
-        std::pair<int,int> bkey = bufentry->first;
+        //std::pair<int, int> bkey = bufentry->first;
         Record& record = bufentry->second; 
-        AP_DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bkey.first<<", pointID="<<bkey.second<<">"<< std::endl; )
+        AP_DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bufentry->first.first<<", pointID="<<bufentry->first.second<<">"<< std::endl; )
         if(force or record.readyToPrint)
         {
           AP_DBUG( std::cout << "asciiPrinter: readyToPrint -- writing output..." << std::endl; )
@@ -519,7 +529,7 @@ Debug info:\n\
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
    
-    /// Template for print functions of "easy" types
+    /// Template for print functions of "simple" types
     template<class T>
     void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
@@ -528,31 +538,45 @@ Debug info:\n\
       addtobuffer(vdvalue,labels,IDcode,thread,pointID);       
     }
 
-    void asciiPrinter::_print(int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    { template_print(value,label,IDcode,thread,pointID); }
-    void asciiPrinter::_print(bool const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    { template_print(value,label,IDcode,thread,pointID); }
-   void asciiPrinter::_print(double const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    { template_print(value,label,IDcode,thread,pointID); }
-    #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
-    void asciiPrinter::_print(unsigned int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    { template_print(value,label,IDcode,thread,pointID); }
-    #endif 
-    // etc. as needed... 
-
-    void asciiPrinter::_print(std::vector<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    /// Template for print functions of vectors of "simple" types
+    template<class T>
+    void asciiPrinter::template_print_vec(std::vector<T> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::vector<std::string> labels;
+      std::vector<double> d_values; // Values need to be converted to doubles for printing with asciiPrinter.
       labels.reserve(value.size());
+      d_values.reserve(value.size());
       for(unsigned int i=0;i<value.size();i++)
       {
         // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
         std::stringstream ss;
         ss<<label<<"["<<i<<"]"; 
         labels.push_back(ss.str());
+        d_values.push_back(value.at(i)); // Convert to double
       }
-      addtobuffer(value,labels,IDcode,thread,pointID);
+      addtobuffer(d_values,labels,IDcode,thread,pointID);
     }
+
+    /// Macros to add all the simple print functions that just use the above templates
+    #define ASIMPLEPRINT(r,data,elem) \
+      void asciiPrinter::_print(elem const& value, const std::string& label, \
+                           const int IDcode, const uint rank, \
+                           const ulong pointID) \
+      { \
+        template_print(value,label,IDcode,rank,pointID); \
+      }
+    #define ASIMPLEPRINT_VEC(r,data,elem) \
+      void asciiPrinter::_print(elem const& value, const std::string& label, \
+                           const int IDcode, const uint rank, \
+                           const ulong pointID) \
+      { \
+        template_print_vec(value,label,IDcode,rank,pointID); \
+      }
+
+    #define ADD_ASCII_SIMPLE_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(ASIMPLEPRINT, _, TYPES)
+    #define ADD_ASCII_VECTOR_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(ASIMPLEPRINT_VEC, _, TYPES)
+    ADD_ASCII_SIMPLE_PRINTS(SCANNER_SIMPLE_TYPES)
+    ADD_ASCII_VECTOR_PRINTS(SCANNER_VECTOR_TYPES)
    
     void asciiPrinter::_print(triplet<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {

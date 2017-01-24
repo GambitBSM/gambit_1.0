@@ -138,19 +138,20 @@ namespace Gambit
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
 
-        // Scanner-friendly types to print
-        void _print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(bool const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        /// Macro to add all the simple print functions that just print via a simple template function
+        #define ASIMPLEPRINT_DECL(r,data,elem) \
+          void _print(elem const&, const std::string&, const int, const uint, const ulong);
+    
+        #define DECL_ASCII_SIMPLE_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(ASIMPLEPRINT_DECL, _, TYPES)
+        DECL_ASCII_SIMPLE_PRINTS(SCANNER_SIMPLE_TYPES)
+        DECL_ASCII_SIMPLE_PRINTS(SCANNER_VECTOR_TYPES)
+
+        // Extra Scanner-friendly types to print
         void _print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
         #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
-        // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
-        // fancier types need to be disabled.
         void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
         #endif      
 
         /// Helper print functions
@@ -158,6 +159,8 @@ namespace Gambit
         // (useful since there is no automatic type conversion possible)
         template<class T>
         void template_print(T const&, const std::string&, const int, const uint, const ulong);
+        template<class T>
+        void template_print_vec(std::vector<T> const&, const std::string&, const int, const uint, const ulong);
 
       private:
         /// Output file
@@ -184,11 +187,10 @@ namespace Gambit
         std::string printer_name;
 
         /// MPI rank
-        uint myRank;  // Needed even without MPI available, for some default behaviour.
         #ifdef WITH_MPI
         // Gambit MPI communicator context for use within the printer system
         GMPI::Comm myComm;
- 
+        uint myRealRank;  // The actual MPI rank of the process. Use for stdout/log messages. Use getRank for 'virtual' rank, i.e. for printing "as if" from a particular rank.
         uint mpiSize;
         #endif
  

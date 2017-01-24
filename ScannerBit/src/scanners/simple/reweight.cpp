@@ -170,17 +170,21 @@ scanner_plugin(reweight, version(1, 0, 0))
 
     unsigned int numtasks;
     unsigned int rank;
+    int s_numtasks;
+    int s_rank;
     
     // Get MPI data. No communication is needed, we just need to know how to
     // split up the workload. Just a straight division among all processes is
     // used, nothing fancy.    
 #ifdef WITH_MPI
-    MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &s_numtasks); // MPI requires unsigned ints here, so we'll just convert afterwards
+    MPI_Comm_rank(MPI_COMM_WORLD, &s_rank);
 #else
-    numtasks = 1;
-    rank = 0;
+    s_numtasks = 1;
+    s_rank = 0;
 #endif
+    numtasks = s_numtasks;
+    rank = s_rank;
 
     // Retrieve the external likelihood calculator
     like_ptr LogLike;

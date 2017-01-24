@@ -46,6 +46,8 @@ namespace Gambit
     // Convenienece typedefs for printers
     typedef unsigned int      uint;
     typedef unsigned long int ulong;
+    typedef long long int          longlong;
+    typedef unsigned long long int ulonglong;
     typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
 
     class BaseBasePrinter  
@@ -126,14 +128,29 @@ namespace Gambit
         }
 
         /// Declarations of minimal print functions needed by ScannerBit
-        #define SCANNER_PRINTABLE_TYPES \
+        //  Covers just basic types, vectors of those types, and 
+        //  a couple of extras needed by scanners.
+        #define SCANNER_SIMPLE_TYPES \
           (bool)                     \
           (int)(uint)(long)(ulong)   \
-          (float)(double)            \
-          (std::vector<bool>)        \
-          (std::vector<int>)         \
-          (std::vector<double>)      \
-          (map_str_dbl)              \
+          (longlong)(ulonglong)      \
+          (float)(double)            
+
+        #define SCANNER_VECTOR_TYPES  \
+          (std::vector<bool>)         \
+          (std::vector<int>)          \
+          (std::vector<uint>)         \
+          (std::vector<long>)         \
+          (std::vector<ulong>)        \
+          (std::vector<longlong>)     \
+          (std::vector<ulonglong>)    \
+          (std::vector<float>)        \
+          (std::vector<double>)      
+
+        #define SCANNER_PRINTABLE_TYPES \
+          SCANNER_SIMPLE_TYPES       \
+          SCANNER_VECTOR_TYPES       \
+          (map_str_dbl)              
 
         // Virtual print methods for base printer classes
         #define VPRINT(r,data,elem)                                \

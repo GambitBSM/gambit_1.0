@@ -47,8 +47,9 @@ Scanner:
       reader:
         # This determines what old output file is to be read and whose parameter points are to be used
         type: ascii
-        info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
-        data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
+        # Currently the asciiReader only works on one file, so they need to be combined before postprocessing. Just cat-ing them together should work.
+        info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_1"
+        data_filename: "runs/largetest_multinest+ascii/samples/results.txt_1"
 
 #  objectives:
 #

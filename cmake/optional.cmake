@@ -141,6 +141,12 @@ if(HDF5_FOUND)
   #   message("${BoldRed}   HDF5 C libraries found, but h5py is missing. Excluding hdf5printer from GAMBIT configuration.${ColourReset}")
   #   set (itch "${itch}" "hdf5printer")
   # endif()
+  include_directories(${HDF5_INCLUDE_DIR})  # deprecated
+  include_directories(${HDF5_INCLUDE_DIRS}) # new
+  message("-- Found HDF5 libraries:" ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR})
+  #if (VERBOSE)
+    message(STATUS ${HDF5_LIBRARIES})
+  #endif()
 else()
   message("${BoldRed}   No HDF5 C libraries found. Excluding hdf5printer from GAMBIT configuration.${ColourReset}")
   set (itch "${itch}" "hdf5printer")
