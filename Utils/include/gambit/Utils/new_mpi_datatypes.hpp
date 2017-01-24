@@ -84,13 +84,14 @@ namespace Gambit
       long int pointID;
       unsigned int rank;
       PPIDpair() 
-        : pointID(0)
+        : pointID(-1)
         , rank(0)
       {}
       PPIDpair(const long int p, const int r)
         : pointID(p)
         , rank(r)
       {}
+      friend std::ostream& operator<<(std::ostream&, const PPIDpair&);
     };
 
     // Needed by std::map for comparison of keys of type VBIDpair
@@ -99,10 +100,8 @@ namespace Gambit
     bool operator!=(const PPIDpair& l, const PPIDpair& r);
 
     // stream overloads (for easy std::out)
-    //std::ostream& operator<<(std::ostream&, const PPIDpair&);
-
     // Null pointID object, use for unassigned pointIDs
-    const PPIDpair nullpoint(-1,0);
+    const PPIDpair nullpoint;
 
   } // end namespace Printers
 
