@@ -29,6 +29,7 @@
 /// POSIX filesystem libraries
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <libgen.h>
 
@@ -139,7 +140,19 @@ namespace Gambit
       }
       return s;
     }
+   
+    /// Check if a string represents an integer
+    /// From: http://stackoverflow.com/a/2845275/1447953
+    bool isInteger(const std::string & s)
+    {
+       if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
     
+       char * p ;
+       strtol(s.c_str(), &p, 10) ;
+    
+       return (*p == 0) ;
+    }
+
     /// Copy a std::string to a character array, stripping the null termination character.  Good for sending to Fortran.
     void strcpy2f(char* arr, int len, str s)
     {
@@ -158,6 +171,15 @@ namespace Gambit
        std::string prefix = path.substr(0,found);
        recursive_mkdir( prefix.c_str() );
        return path;
+    }
+
+    /// Check if a file exists
+    bool file_exists(const std::string& filename)
+    { 
+        //std::ifstream file(filename);
+        //return not file.fail();
+        struct stat buffer;
+        return (stat(filename.c_str(), &buffer) == 0);
     }
 
     /// Return a vector of strings listing the contents of a directory (POSIX)
