@@ -1699,12 +1699,7 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
       }
 
       // Check if we have changed target PointIDs since the last print call
-      if(lastPointID == nullpoint)
-      {
-        // No previous point; add current point
-        lastPointID = candidate_newpoint;
-      }
-      else if(candidate_newpoint!=lastPointID)
+      if(candidate_newpoint!=lastPointID)
       {
 
 #ifdef MPI_DEBUG

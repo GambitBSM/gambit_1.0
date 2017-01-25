@@ -29,11 +29,19 @@ Parameters:
 
 #======== Output setup ========
 Printer:
-  printer: ascii
+  #printer: ascii
+  #options:
+  #  output_file: "results.txt"
+  #  buffer_length: 1
+  # Output can be re-printed into a different format via the reweight scanner
+  printer: hdf5
   options:
-    output_file: "results.txt"
-    buffer_length: 1
-
+    output_file: "results.hdf5"
+    group: "/reweight_data"
+    delete_file_on_restart: true
+    # Current a special setting is required here to allow the postproccessing scanner to print to points in an erratic order.
+    #postproccess_mode: true
+ 
 #======== Scanner setup ========
 Scanner:
   use_scanner: reweight
