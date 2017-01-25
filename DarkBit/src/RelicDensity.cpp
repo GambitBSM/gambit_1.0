@@ -521,18 +521,24 @@ namespace Gambit
       if (widthheavyHiggs<0.1)
         (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
+      // always check that invariant rate is OK at least at one point
+      double peff = mwimp/100;
+      double weff = (*Dep::RD_eff_annrate)(peff);
+      if (Utils::isnan(weff))
+            DarkBit_error().raise(LOCAL_INFO, "Weff is NaN in RD_Oh2_general. This means that the function\n"
+                                            "pointed to by RD_eff_annrate returned NaN for the invariant rate\n"
+                                            "entering the relic density calculation.");      
+
       #ifdef DARKBIT_RD_DEBUG
         // Dump Weff info on screen
         std::cout << "xstart = " << xstart << std::endl;
-        for ( double peff = mwimp/1000;  peff < mwimp; peff = peff*1.5 )
+        for ( peff = mwimp/1000;  peff < mwimp; peff = peff*1.5 )
         {
-          double weff = (*Dep::RD_eff_annrate)(peff);
+          weff = (*Dep::RD_eff_annrate)(peff);
           std::cout << "Weff(" << peff << ") = " << weff << std::endl;
           // Check that the invariant rate is OK.
           if (Utils::isnan(weff))
-            DarkBit_error().raise(LOCAL_INFO, "Weff is NaN in RD_Oh2_general. This means that the function\n"
-                                            "pointed to by RD_eff_annrate returned NaN for the invariant rate\n"
-                                            "entering the relic density calculation.");
+            DarkBit_error().raise(LOCAL_INFO, "RD debug: Weff is NaN in RD_Oh2_general.");
         }
         // Set up timing
         std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -540,6 +546,8 @@ namespace Gambit
         logger() << "Tabulating RD_eff_annrate..." << EOM;
         std::cout << "Starting dsrdtab..." << std::endl;
       #endif
+
+            
 
       // Tabulate the invariant rate
       BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
