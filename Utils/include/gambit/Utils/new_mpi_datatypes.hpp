@@ -99,6 +99,19 @@ namespace Gambit
     bool operator==(const PPIDpair& l, const PPIDpair& r);
     bool operator!=(const PPIDpair& l, const PPIDpair& r);
 
+    // To use PPIDpairs in std::unordered_map/set, need to provide hashing and equality functions
+    struct PPIDHash{ 
+      size_t operator()(const PPIDpair &key) const { 
+        return std::hash<long int>()(key.pointID) ^ std::hash<unsigned int>()(key.rank);
+      }
+    };
+
+    struct PPIDEqual{
+      bool operator()(const PPIDpair &lhs, const PPIDpair &rhs) const {
+        return lhs == rhs; // use the operator we already defined (why doesn't the STL do this?)
+      }
+    };
+
     // stream overloads (for easy std::out)
     // Null pointID object, use for unassigned pointIDs
     const PPIDpair nullpoint;

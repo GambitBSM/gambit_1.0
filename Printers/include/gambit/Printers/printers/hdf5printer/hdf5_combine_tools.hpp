@@ -23,12 +23,14 @@
 #include <vector>
 #include <sstream>
 #include <unordered_set>
+#include <unordered_map> 
 #include <hdf5.h>
 
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/local_info.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 namespace Gambit
 {
@@ -101,20 +103,20 @@ namespace Gambit
             struct ra_copy_hdf5
             {
                 template <typename U>
-                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, unsigned long long size, std::vector<unsigned long long> &sizes, std::vector<std::vector <unsigned long long> > &pointid, std::vector<std::vector <unsigned long long> > &rank, std::vector<unsigned long long> &aux_sizes, hid_t &old_dataset, hid_t &old_dataset2, unsigned long long pt_min)
+                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, const unsigned long long size, const std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual>& RA_write_hash, const std::vector<std::vector <unsigned long long> > &pointid, const std::vector<std::vector <unsigned long long> > &rank, const std::vector<unsigned long long> &aux_sizes, hid_t &old_dataset, hid_t &old_dataset2)
                 {
-                    unsigned long long j = 0;
+                    //unsigned long long j = 0;
                     std::vector<U> output(size, 0);
                     std::vector<int> valids(size, 0);
 
                     if (old_dataset >= 0 && old_dataset2 >= 0)
                     {
-                        hid_t space = H5Dget_space(old_dataset);
-                        hsize_t dim_t = H5Sget_simple_extent_npoints(space);
-                        H5Sclose(space);
+                        //hid_t space = H5Dget_space(old_dataset);
+                        //hsize_t dim_t = H5Sget_simple_extent_npoints(space);
+                        //H5Sclose(space);
                         H5Dread(old_dataset, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
                         H5Dread(old_dataset2, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
-                        j = dim_t;
+                        //j = dim_t;
                     }
                     
                     auto st = aux_sizes.begin();
@@ -146,21 +148,51 @@ namespace Gambit
                           {
                               if (valid[i])
                               {
-                                  std::cout << "i="<<i<<", j="<<j << ", (*ra)[i]=" <<(*ra)[i]<< ", sizes[(*ra)[i]]="<<sizes[(*ra)[i]]<<", (*pt)[i]="<<(*pt)[i]<<", pt_min="<<pt_min<<std::endl;
-                                  unsigned long long temp = j + sizes[(*ra)[i]] + (*pt)[i] - pt_min;
-                                  std::cout << "temp="<<temp<<", size="<<size<<std::endl;
-                                  if (temp < size)
+                                  //std::cout << "i="<<i<<", j="<<j << ", (*ra)[i]=" <<(*ra)[i]<< ", cum_sizes[(*ra)[i]]="<<cum_sizes[(*ra)[i]]<<", (*pt)[i]="<<(*pt)[i]<<", pt_min="<<pt_min<<std::endl;
+                                  //unsigned long long temp = j + cum_sizes[(*ra)[i]] + (*pt)[i] - pt_min;
+                                  //std::cout << "temp="<<temp<<", size="<<size<<std::endl;
+                                  //if (temp < size)
+                                  //{
+                                  //    output[temp] = data[i];
+                                  //    valids[temp] = 1;
+                                  //}
+                                  //else
+                                  //{
+                                  //    std::ostringstream errmsg;
+                                  //    errmsg << "Error copying random access parameter.  "
+                                  //    << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
+                                  //    << " is targeted for insertion outside the bounds of the target dataset"
+                                  //    << "(at position " << temp << ", while output dataset only"
+                                  //    << " has length "<<size<<")";
+                                  //    printer_error().raise(LOCAL_INFO, errmsg.str());
+                                  //}
+                          
+                                  // Look up target for write in hash map
+                                  std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual>::const_iterator ihash = RA_write_hash.find(PPIDpair((*pt)[i],(*ra)[i]));
+                                  if(ihash != RA_write_hash.end())
                                   {
+                                      // found hash key, copy data
+                                      unsigned long long temp = ihash->second;
+                                      if(temp > size)
+                                      {
+                                          std::ostringstream errmsg;
+                                          errmsg << "Error copying random access parameter. The hash entry for "
+                                          << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
+                                          << " targets the point outside the size of the output dataset ("<<temp<<" > "<<size<<")." 
+                                          << "This indicates"
+                                          << " a bug in the hash generation, please report it."; 
+                                          printer_error().raise(LOCAL_INFO, errmsg.str());
+                                      }
                                       output[temp] = data[i];
                                       valids[temp] = 1;
                                   }
                                   else
                                   {
-                                      std::ostringstream errmsg;
-                                      errmsg << "Error copying random access parameter.  "
-                                      << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
-                                      << " does not exist.";
-                                      printer_error().raise(LOCAL_INFO, errmsg.str());
+                                     std::ostringstream errmsg;
+                                     errmsg << "Error copying random access parameter. Could not find "
+                                     << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
+                                     << " in the output dataset (hash entry was not found).";
+                                     printer_error().raise(LOCAL_INFO, errmsg.str());
                                   }
                               }
                           }
@@ -268,6 +300,10 @@ namespace Gambit
                 
                 stuff.Enter_Aux_Paramters(file_output, resume);
             }
+  
+            // Helper function to compute target point hash for RA combination
+            std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual> get_RA_write_hash(hid_t, std::unordered_set<PPIDpair,PPIDHash,PPIDEqual>&);
+
         }
     }
 }

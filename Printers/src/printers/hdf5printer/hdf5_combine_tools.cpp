@@ -26,6 +26,7 @@
 
 #include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
 #include "gambit/Utils/util_functions.hpp"
   
 namespace Gambit 
@@ -34,6 +35,7 @@ namespace Gambit
     {
         namespace HDF5 
         { 
+
             inline hsize_t getGroupNum(hid_t group_id)
             {
                 H5G_info_t group_info;
@@ -162,6 +164,8 @@ namespace Gambit
                 std::vector<bool> temp;
                 std::unordered_set<std::string> param_set, aux_param_set;
                 //herr_t status;
+
+                // Loop over the temporary files from each rank and perform some setup computations.
                 for (int i = 0; i < num; i++)
                 {
                     std::stringstream ss;
@@ -255,7 +259,7 @@ namespace Gambit
                     
                     if (i == num - 1)
                     {
-                        size_tot_l = size_tot + size;
+                        size_tot_l = size_tot + size; // Last?
                     }
                     
                     for (auto it = valids.end()-1; size > 0; --it)
@@ -400,7 +404,31 @@ namespace Gambit
                     HDF5::closeDataset(dataset_out);
                     HDF5::closeDataset(dataset2_out);
                 }
-                
+
+                // Ben: NEW. Before copying RA points, we need to figure out a map between them
+                // and their targets in the output dataset. That means we need to read through
+                // the output dataset and read in all the pointID/MPI pairs.
+                // We only need to do this once and create a big hash table to use while copying.
+                // It would be better to do all the copying in chunks, and then we would also
+                // only need chunks of this hash table at a time, but Greg didn't write this
+                // code with chunked writing in mind. TODO: Should modify the code to do this.
+
+                // We already know all the RA rank/ptID pairs, so just need to scan the output
+                // datasets for the matching pairs, and record their indices.
+
+                // Start with a list of ID pairs to be matched
+                std::unordered_set<PPIDpair,PPIDHash,PPIDEqual> left_to_match;
+                for(std::size_t i=0; i<ranks.size(); i++)
+                {
+                   for(std::size_t j=0; j<ranks[i].size(); i++)
+                   {
+                      left_to_match.insert(PPIDpair(ptids[i][j],ranks[i][j]));
+                   }
+                }
+
+                std::unordered_map<PPIDpair, unsigned long long, PPIDHash,PPIDEqual> RA_write_hash(get_RA_write_hash(new_group, left_to_match));
+ 
+                /// Now copy the RA datasets
                 for (auto it = aux_param_names.begin(), end = aux_param_names.end(); it != end; ++it)
                 {
                     std::vector<hid_t> datasets, datasets2;
@@ -430,10 +458,10 @@ namespace Gambit
                     }
 
                     hid_t dataset_out, dataset2_out, dataspace, dataspace2;
-                    setup_hdf5_points(new_group, H5Dget_type(datasets[0]), H5Dget_type(datasets2[0]), size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it);
+                    setup_hdf5_points(new_group, H5Dget_type(datasets[0]), H5Dget_type(datasets2[0]), size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it); 
                     
-                    Enter_HDF5<ra_copy_hdf5>(dataset_out, dataset2_out, datasets, datasets2, size_tot, cum_sizes, ptids, ranks, aux_sizes, old_dataset, old_dataset2, pt_min);
-                    
+                    Enter_HDF5<ra_copy_hdf5>(dataset_out, dataset2_out, datasets, datasets2, size_tot, RA_write_hash, ptids, ranks, aux_sizes, old_dataset, old_dataset2);
+                   
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
                         // Some datasets may never have been opened, so check this before trying to close them.
@@ -459,6 +487,126 @@ namespace Gambit
                 }
             }
         }
+
+        /// Helper function to create output hash map for RA points
+        /// note: left_to_match points will be erased as we go, and are passed by reference, so will be erased in calling context also.
+        std::unordered_map<PPIDpair, unsigned long long, PPIDHash,PPIDEqual> get_RA_write_hash(hid_t group_id, std::unordered_set<PPIDpair,PPIDHash,PPIDEqual>& left_to_match)
+        {
+           std::unordered_map<PPIDpair, unsigned long long, PPIDHash,PPIDEqual> output_hash;
+
+           // Chunking variables
+           static const std::size_t CHUNKLENGTH = 1000; // Should be a reasonable value
+           
+           // Interfaces for the datasets
+           // Make sure the types used here don't get out of sync with the types used to write the original datasets
+           // We open the datasets in "resume" mode to access existing dataset, and make "const" to disable writing of new data. i.e. "Read-only" mode.
+           // TODO: this can probably be streamlined once I write the HDF5 reader, can consolidate some reading routines.
+           const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "pointID", true);        
+           const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "pointID_isvalid", true);
+           const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "MPIrank", true); 
+           const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "MPIrank_isvalid", true); 
+
+           // Error check lengths. This should already have been done for all datasets in the group, but
+           // we will double-check these four here.
+           const std::size_t dset_length  = pointIDs.dset_length();
+           const std::size_t dset_length2 = pointIDs_isvalid.dset_length();
+           const std::size_t dset_length3 = mpiranks.dset_length();
+           const std::size_t dset_length4 = mpiranks_isvalid.dset_length();
+           if( (dset_length  != dset_length2)
+            or (dset_length3 != dset_length4)
+            or (dset_length  != dset_length3) )
+           {
+             std::ostringstream errmsg;
+             errmsg << "Error scanning combined output for RA point locations! Unequal dataset lengths detected in pointID and MPIrank datasets:" <<std::endl;
+             errmsg << "  pointIDs.dset_length()         = " << dset_length << std::endl;
+             errmsg << "  pointIDs_isvalid.dset_length() = " << dset_length2 << std::endl;
+             errmsg << "  mpiranks.dset_length()         = " << dset_length3 << std::endl;
+             errmsg << "  mpiranks_isvalid.dset_length() = " << dset_length4 << std::endl;
+             errmsg << "This indicates either a bug in the HDF5 combine code, please report it.";
+             printer_error().raise(LOCAL_INFO, errmsg.str());
+           }
+ 
+           // Compute number of chunks
+           const std::size_t NCHUNKS = dset_length / CHUNKLENGTH; // Number of FULL chunks
+           const std::size_t REMAINDER = dset_length - (NCHUNKS*CHUNKLENGTH); // leftover after last full chunk
+
+           std::size_t NCHUNKIT; // Number of chunk iterations to perform
+           if(REMAINDER==0) { NCHUNKIT = NCHUNKS; }
+           else             { NCHUNKIT = NCHUNKS+1; } // Need an extra iteration to deal with incomplete chunk
+
+           // Iterate through dataset in chunks
+           for(std::size_t i=0; i<NCHUNKIT; ++i)
+           {
+              std::size_t offset = i*CHUNKLENGTH; 
+              std::size_t length;
+
+              if(i==NCHUNKS){ length = REMAINDER; }
+              else          { length = CHUNKLENGTH; }
+
+              const std::vector<unsigned long> pID_chunk = pointIDs.get_chunk(offset,length);
+              const std::vector<int> pIDvalid_chunk  = pointIDs_isvalid.get_chunk(offset,length);
+              const std::vector<int> rank_chunk      =         mpiranks.get_chunk(offset,length);
+              const std::vector<int> rankvalid_chunk = mpiranks_isvalid.get_chunk(offset,length);
+             
+              // Check that retrieved lengths make sense
+              if (pID_chunk.size() != CHUNKLENGTH)
+              {
+                if(not (i==NCHUNKS and pID_chunk.size()==REMAINDER) )
+                {
+                  std::ostringstream errmsg;
+                  errmsg << "Error scanning combined pointID and MPIrank datasets! Size of chunk vector retrieved from pointID dataset ("<<pID_chunk.size()<<") does not match CHUNKLENGTH ("<<CHUNKLENGTH<<"), nor the expected remainder for the last chunk ("<<REMAINDER<<"). This probably indicates a bug in the DataSetInterfaceScalar.get_chunk routine, please report it. Error occurred while reading chunk i="<<i<<std::endl;
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+              }   
+              if( (pID_chunk.size() != pIDvalid_chunk.size())
+               or (rank_chunk.size() != rankvalid_chunk.size())
+               or (pID_chunk.size() != rank_chunk.size()) )
+              {
+                std::ostringstream errmsg;
+                errmsg << "Error preparing to combine RA points into output dataset! Unequal chunk lengths retrieved while iterating through in pointID and MPIrank datasets:" <<std::endl;
+                errmsg << "  pID_chunk.size()      = " << pID_chunk.size() << std::endl;
+                errmsg << "  pIDvalid_chunk.size() = " << pIDvalid_chunk.size() << std::endl;
+                errmsg << "  rank_chunk.size()     = " << rank_chunk.size() << std::endl;
+                errmsg << "  rankvalid_chunk.size()= " << rankvalid_chunk.size() << std::endl;
+                errmsg << "  CHUNKLENGTH           = " << CHUNKLENGTH << std::endl;
+                errmsg << "This indicates a bug in the HDF5 combine code, please report it. Error occurred while reading chunk i="<<i<<std::endl;
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+              }
+
+              // Iterate within the chunk
+              for(std::size_t j=0; j<length; ++j)
+              { 
+                //Check validity flags agree
+                if(pIDvalid_chunk[j] != rankvalid_chunk[j])
+                {
+                  std::ostringstream errmsg;
+                  errmsg << "Error! Incompatible validity flags detected in pointID_isvalid and MPIrank_isvalid datasets at position j="<<j<<" in chunk i="<<i<<"(with CHUNKLENGTH="<<CHUNKLENGTH<<"). Specifically:"<<std::endl;
+                  errmsg << "  pIDvalid_chunk[j]  = " << pIDvalid_chunk[j] << std::endl;
+                  errmsg << "  rankvalid_chunk[j] = " << rankvalid_chunk[j] << std::endl;
+                  errmsg << "This most likely indicates a bug in the HDF5 combine code, please report it.";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+ 
+                // Check for hash match if entry is marked as "valid"
+                if(rankvalid_chunk[j])
+                {
+                  // Check if this point is in our list of points to be matched
+                  PPIDpair this_point(pID_chunk[j],rank_chunk[j]);
+                  std::unordered_set<PPIDpair,PPIDHash,PPIDEqual>::iterator match = left_to_match.find(this_point);
+                  if(match != left_to_match.end())
+                  {
+                     // Found a match! Add its index to the hash.
+                     output_hash[*match] = offset + j;                     
+                     // Delete it from the list of points that need to be matched (note, multiple entries in output file not allowed)
+                     left_to_match.erase(match);
+                  }
+                } 
+                // else continue iteration
+              }
+           }
+           return output_hash;
+        }
+
     }
 }
 
