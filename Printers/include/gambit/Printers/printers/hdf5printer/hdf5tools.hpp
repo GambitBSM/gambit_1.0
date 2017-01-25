@@ -131,7 +131,13 @@ namespace Gambit
          /// @}
 
          /// @{ Dataset and dataspace manipulation
- 
+
+         /// Open dataset
+         hid_t openDataset(hid_t dset_id, const std::string& name, bool error_off=false);
+
+         /// Close dataset
+         hid_t closeDataset(hid_t dset_id); 
+
          /// @}
 
       }

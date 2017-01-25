@@ -186,9 +186,7 @@ namespace Gambit
                     // Extract dataset names from the group
                     std::vector<std::string> names;
                     H5Literate (group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func, (void *) &names);
-                    
-                    // Set names extract from tmp file 0 as the 'standard', make sure all other files also contain this data.
-                    // (TODO: relax this requirement? some files just may not print certain things)
+                   
                     if (i == 0)
                     {
                         param_names = names;
@@ -200,22 +198,18 @@ namespace Gambit
                         {
                             if (param_set.find(*it) == param_set.end())
                             {
-                                std::ostringstream errmsg;
-                                errmsg << "Parameter '" << *it << "' exists, but not in file " << i << ".";
-                                printer_error().raise(LOCAL_INFO, errmsg.str());
+                                // New parameter name found; add it to the list to be processed.
+                                param_names.push_back(*it);
+                                param_set.insert(*it);
                             }
                         }
                     }
                     
-                    //hid_t aux_group_id = H5Gopen2(file_id, (group_name + "/RA").c_str(), H5P_DEFAULT);
-                    //if(checkGroupReadable(file_id, group_name+"/RA"))
                     // Get RA dataset names
-                    // TODO: is this expect RA datasets in every tmp file? This will certainly not be the case...   
                     hid_t aux_group_id = HDF5::openGroup(file_id, group_name+"/RA", true);
                     aux_groups.push_back(aux_group_id);                     
                     std::vector<std::string> aux_names;
                     H5Literate (aux_group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func_aux, (void *) &aux_names);
-                    
                     
                     if (i == 0)
                     {
@@ -228,15 +222,15 @@ namespace Gambit
                         {
                             if (aux_param_set.find(*it) != aux_param_set.end())
                             {
-                                std::ostringstream errmsg;
-                                errmsg << "Random access parameter '" << *it << "' exists, but not in file " << i << ".";
-                                printer_error().raise(LOCAL_INFO, errmsg.str());
+                                // New aux parameter name found; add it to the list to be processed.
+                                aux_param_names.push_back(*it);
+                                aux_param_set.insert(*it);
                             }
                         }
                     }
 
-                    hid_t dataset = H5Dopen2(group_id, "pointID", H5P_DEFAULT);
-                    hid_t dataset2 = H5Dopen2(group_id, "pointID_isvalid", H5P_DEFAULT);
+                    hid_t dataset  = HDF5::openDataset(group_id, "pointID");
+                    hid_t dataset2 = HDF5::openDataset(group_id, "pointID_isvalid");
                     hid_t dataspace = H5Dget_space(dataset);
                     hid_t dataspace2 = H5Dget_space(dataset2);
                     hssize_t size = H5Sget_simple_extent_npoints(dataspace);
@@ -280,11 +274,19 @@ namespace Gambit
                     size_tot += size;
                     
                     H5Sclose(dataspace);
-                    H5Dclose(dataset);
-                    H5Dclose(dataset2);
+                    HDF5::closeDataset(dataset);
+                    HDF5::closeDataset(dataset2);
                 }
             }
-             
+ 
+            hdf5_stuff::~hdf5_stuff()
+            {
+                for(std::vector<hid_t>::iterator it=files.begin(); it!=files.end(); ++it)
+                {
+                   HDF5::closeFile(*it);
+                }
+            } 
+            
             void hdf5_stuff::Enter_Aux_Paramters(const std::string &file, bool resume)
             {
                 std::vector<std::vector<unsigned long long>> ranks, ptids;
@@ -297,11 +299,12 @@ namespace Gambit
                     old_file = H5Fopen((file + ".temp.bak").c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
                     old_group = H5Gopen2(old_file, group_name.c_str(), H5P_DEFAULT);
                     
-                    hid_t old_dataset = H5Dopen2(old_group, "pointID", H5P_DEFAULT);
+                    hid_t old_dataset = HDF5::openDataset(old_group, "pointID");
                     hid_t space = H5Dget_space(old_dataset);
                     hsize_t extra = H5Sget_simple_extent_npoints(space);
                     H5Sclose(space);
-                    
+                    HDF5::closeDataset(old_dataset); 
+ 
                     size_tot += extra;
                 }
                 
@@ -312,43 +315,53 @@ namespace Gambit
                 {
                     std::vector<unsigned long long> rank, ptsid;
 
-                    hid_t dataset = H5Dopen2(*itg, "RA_MPIrank", H5P_DEFAULT);
-                    hid_t dataset2 = H5Dopen2(*itg, "RA_pointID", H5P_DEFAULT);
-                    hid_t dataset3 = H5Dopen2(*itg, "RA_pointID_isvalid", H5P_DEFAULT);
-                    Enter_HDF5<read_hdf5>(dataset, rank);
-                    Enter_HDF5<read_hdf5>(dataset2, ptsid);
-                    ranks.push_back(rank);
-                    ptids.push_back(ptsid);
+                    HDF5::errorsOff();
+                    hid_t dataset  = HDF5::openDataset(*itg, "RA_MPIrank", true);
+                    HDF5::errorsOn();
+                    if(dataset < 0) // If key dataset doesn't exist, set aux size to zero for this rank
+                    {
+                       //aux_sizes.push_back(0); // Or don't need it at all?
+                    }
+                    else
+                    {
+                       hid_t dataset2 = HDF5::openDataset(*itg, "RA_pointID");
+                       hid_t dataset3 = HDF5::openDataset(*itg, "RA_pointID_isvalid");
 
-                    hid_t dataspace = H5Dget_space(dataset2);
-                    hid_t dataspace2 = H5Dget_space(dataset3);
-                    hssize_t size = H5Sget_simple_extent_npoints(dataspace);
-                    hssize_t size2 = H5Sget_simple_extent_npoints(dataspace2);
-                    
-                    
-                    std::vector<bool> valids;
-                    Enter_HDF5<read_hdf5>(dataset3, valids);
-                    
-                    if (size != size2)
-                    {
-                        std::ostringstream errmsg;
-                        errmsg << "RA_pointID and RA_pointID_isvalid are not the same size.";
-                        printer_error().raise(LOCAL_INFO, errmsg.str());
+                       Enter_HDF5<read_hdf5>(dataset, rank);
+                       Enter_HDF5<read_hdf5>(dataset2, ptsid);
+                       ranks.push_back(rank);
+                       ptids.push_back(ptsid);
+
+                       hid_t dataspace = H5Dget_space(dataset2);
+                       hid_t dataspace2 = H5Dget_space(dataset3);
+                       hssize_t size = H5Sget_simple_extent_npoints(dataspace);
+                       hssize_t size2 = H5Sget_simple_extent_npoints(dataspace2);
+                       
+                       
+                       std::vector<bool> valids;
+                       Enter_HDF5<read_hdf5>(dataset3, valids);
+                       
+                       if (size != size2)
+                       {
+                           std::ostringstream errmsg;
+                           errmsg << "RA_pointID and RA_pointID_isvalid are not the same size.";
+                           printer_error().raise(LOCAL_INFO, errmsg.str());
+                       }
+                       
+                       for (auto it = valids.end()-1; size > 0; --it)
+                       {
+                           if (*it)
+                               break;
+                           else
+                               --size;
+                       }
+                       aux_sizes.push_back(size);
+                       
+                       H5Sclose(dataspace);
+                       HDF5::closeDataset(dataset);
+                       HDF5::closeDataset(dataset2);
+                       HDF5::closeDataset(dataset3);
                     }
-                    
-                    for (auto it = valids.end()-1; size > 0; --it)
-                    {
-                        if (*it)
-                            break;
-                        else
-                            --size;
-                    }
-                    aux_sizes.push_back(size);
-                    
-                    H5Sclose(dataspace);
-                    H5Dclose(dataset);
-                    H5Dclose(dataset2);
-                    H5Dclose(dataset3);
                 }
 
                 for (auto it = param_names.begin(), end = param_names.end(); it != end; ++it)
@@ -356,8 +369,9 @@ namespace Gambit
                     std::vector<hid_t> datasets, datasets2;
                     for (int i = 0, end = groups.size(); i < end; i++)
                     {
-                        hid_t dataset = H5Dopen2(groups[i], it->c_str(), H5P_DEFAULT);
-                        hid_t dataset2 = H5Dopen2(groups[i], (*it + "_isvalid").c_str(), H5P_DEFAULT);
+                        hid_t dataset  = HDF5::openDataset(groups[i], *it);
+                        hid_t dataset2 = HDF5::openDataset(groups[i], *it + "_isvalid");
+
                         datasets.push_back(dataset);
                         datasets2.push_back(dataset2);
                     }
@@ -365,8 +379,8 @@ namespace Gambit
                     hid_t old_dataset = -1, old_dataset2 = -1;
                     if (resume)
                     {
-                        old_dataset = H5Dopen2(old_group, it->c_str(), H5P_DEFAULT);
-                        old_dataset2 = H5Dopen2(old_group, (*it + "_isvalid").c_str(), H5P_DEFAULT);
+                        old_dataset  = HDF5::openDataset(old_group, *it);
+                        old_dataset2 = HDF5::openDataset(old_group, *it + "_isvalid");
                     }
                     
                     hid_t dataset_out, dataset2_out, dataspace, dataspace2;
@@ -377,15 +391,14 @@ namespace Gambit
                     
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
-                        
-                        H5Dclose(datasets[i]);
-                        H5Dclose(datasets2[i]);
+                        HDF5::closeDataset(datasets[i]);
+                        HDF5::closeDataset(datasets2[i]);
                     }
                     
                     H5Sclose(dataspace);
                     H5Sclose(dataspace2);
-                    H5Dclose(dataset_out);
-                    H5Dclose(dataset2_out);
+                    HDF5::closeDataset(dataset_out);
+                    HDF5::closeDataset(dataset2_out);
                 }
                 
                 for (auto it = aux_param_names.begin(), end = aux_param_names.end(); it != end; ++it)
@@ -394,8 +407,13 @@ namespace Gambit
                     
                     for (int i = 0, end = aux_groups.size(); i < end; i++)
                     {
-                        hid_t dataset = H5Dopen2(aux_groups[i], it->c_str(), H5P_DEFAULT);
-                        hid_t dataset2 = H5Dopen2(aux_groups[i], (*it + "_isvalid").c_str(), H5P_DEFAULT);
+                        // Dataset may not exist, and thus fail to open. We will check its status
+                        // later on and ignore it where needed.
+                        HDF5::errorsOff();
+                        hid_t dataset  = HDF5::openDataset(aux_groups[i], *it, true);
+                        hid_t dataset2 = HDF5::openDataset(aux_groups[i], *it + "_isvalid", true);
+                        HDF5::errorsOn();
+
                         datasets.push_back(dataset);
                         datasets2.push_back(dataset2);
                     }
@@ -403,13 +421,12 @@ namespace Gambit
                     hid_t old_dataset = -1, old_dataset2 = -1;
                     if (resume)
                     {
-                        H5E_auto2_t old_func;
-                        void *old_client_data;
-                        H5Eget_auto2(H5E_DEFAULT, &old_func, &old_client_data);
-                        H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-                        old_dataset = H5Dopen2(old_group, it->c_str(), H5P_DEFAULT);
-                        old_dataset2 = H5Dopen2(old_group, (*it + "_isvalid").c_str(), H5P_DEFAULT);
-                        H5Eset_auto2(H5E_DEFAULT, old_func, old_client_data);
+                        // Dataset may not exist, and thus fail to open. We will check its status
+                        // later on and ignore it where needed.
+                        HDF5::errorsOff();
+                        old_dataset  = HDF5::openDataset(old_group, *it, true);
+                        old_dataset2 = HDF5::openDataset(old_group, *it + "_isvalid", true);
+                        HDF5::errorsOn();
                     }
 
                     hid_t dataset_out, dataset2_out, dataspace, dataspace2;
@@ -419,8 +436,9 @@ namespace Gambit
                     
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
-                        H5Dclose(datasets[i]);
-                        H5Dclose(datasets2[i]);
+                        // Some datasets may never have been opened, so check this before trying to close them.
+                        if(datasets[i]>=0)  HDF5::closeDataset(datasets[i]);
+                        if(datasets2[i]>=0) HDF5::closeDataset(datasets2[i]);
                     }
                 }
                 

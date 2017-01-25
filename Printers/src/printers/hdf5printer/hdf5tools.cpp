@@ -260,6 +260,13 @@ namespace Gambit {
       /// Close hdf5 file
       void closeFile(hid_t file_id)
       {
+         if(file_id < 0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error closing HDF5 file! The supplied file_id does not point to a successfully opened file!";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
          herr_t status = H5Fclose(file_id);
          if(status<0)
          {
@@ -272,6 +279,13 @@ namespace Gambit {
       /// Close hdf5 group
       void closeGroup(hid_t group_id)
       {
+         if(group_id < 0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error closing HDF5 group! The supplied group_id does not point to a successfully opened group!";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
          herr_t status = H5Gclose(group_id);
          if(status<0)
          {
@@ -311,6 +325,52 @@ namespace Gambit {
          H5Eset_auto2(H5E_DEFAULT, old_func, old_client_data);
       }
 
+      /// @{ Dataset manipulations
+
+      /// Open dataset
+      // Set error_off=true to manually check for successful dataset opening.
+      hid_t openDataset(hid_t group_id, const std::string& name, bool error_off)
+      {
+         hid_t dset_id;
+ 
+         if(group_id < 0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error opening HDF5 dataset '"<<name<<"'. The supplied group_id in which the dataset should be located does not point to a successfully opened group!";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         dset_id = H5Dopen2(group_id, name.c_str(), H5P_DEFAULT);
+         if(dset_id<0 and not error_off)
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error opening HDF5 dataset '"<<name<<"'. Dataset may not exist at the specified location.";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         return dset_id;
+      }
+
+      /// Close dataset
+      hid_t closeDataset(hid_t dset_id)
+      {
+         if(dset_id < 0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error closing HDF5 dataset! The supplied dset_id does not point to a successfully opened dataset!";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         herr_t status = H5Dclose(dset_id);
+         if(status<0)
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error encountered while closing HDF5 dataset with id '"<<dset_id<<"'!";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         return status;
+      }
+
+      /// @}
     }
  
   }

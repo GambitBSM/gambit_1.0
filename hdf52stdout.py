@@ -56,13 +56,16 @@ def printcontents(item,prelines):
 printcontents(f,'')
 
 ### test extraction:
-## import numpy as np
-## group = f["/test/test2"]
-## ainv       = group["#StandardModel_SLHA2_parameters @StandardModel_SLHA2::primary_parameters::alphainv"]
-## ainv_isvalid = np.array(group["#StandardModel_SLHA2_parameters @StandardModel_SLHA2::primary_parameters::alphainv_isvalid"],dtype=np.bool)
-## print ainv
-## print ainv_isvalid
-## print ainv[ainv_isvalid]
+import numpy as np
+group = f["/"]
+pid  = group["pointID"]
+rank = group["MPIrank"]
+pid_isvalid  = np.array(group["pointID_isvalid"],dtype=np.bool)
+rank_isvalid = np.array(group["MPIrank_isvalid"],dtype=np.bool)
+m = (pid_isvalid & rank_isvalid)
+for p,r in zip(pid[m],rank[m]):
+  if p==2281 and r==0:
+     print "point (",p,",",r,") exists!"
                                         
 quit()
 

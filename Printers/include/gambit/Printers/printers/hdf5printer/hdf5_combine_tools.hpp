@@ -121,40 +121,50 @@ namespace Gambit
                     auto pt = pointid.begin(), ra = rank.begin();
                     for (auto it = datasets.begin(), itv = datasets2.begin(), end = datasets.end(); it != end; ++it, ++itv, ++pt, ++ra, ++st)
                     {
-                        hid_t space = H5Dget_space(*it);
-                        hssize_t dim_t = H5Sget_simple_extent_npoints(space);
-                        std::vector<U> data(dim_t);
-                        std::vector<bool> valid;
-                        Enter_HDF5<read_hdf5> (*itv, valid);
-                        H5Dread(*it, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[0]);
-                        
-                        if((unsigned long long)dim_t < *st)
-                        {
-                            std::ostringstream errmsg;
-                            errmsg << "Error copying aux parameter.  Input file smaller than required.";
-                            printer_error().raise(LOCAL_INFO, errmsg.str());
-                        }
+                       if(*it < 0)
+                       {
+                          // Dataset wasn't opened, probably some RA parameter just happened to not 
+                          // exist in a certain temporary file. Skip this dataset.
+                       }
+                       else
+                       {
+                          hid_t space = H5Dget_space(*it);
+                          hssize_t dim_t = H5Sget_simple_extent_npoints(space);
+                          std::vector<U> data(dim_t);
+                          std::vector<bool> valid;
+                          Enter_HDF5<read_hdf5> (*itv, valid);
+                          H5Dread(*it, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[0]);
+                          
+                          if((unsigned long long)dim_t < *st)
+                          {
+                              std::ostringstream errmsg;
+                              errmsg << "Error copying aux parameter.  Input file smaller than required.";
+                              printer_error().raise(LOCAL_INFO, errmsg.str());
+                          }
 
-                        for (int i = 0, end = *st; i < end; i++)
-                        {
-                            if (valid[i])
-                            {
-                                unsigned long long temp = j + sizes[(*ra)[i]] + (*pt)[i] - pt_min;
-                                if (temp < size)
-                                {
-                                    output[temp] = data[i];
-                                    valids[temp] = 1;
-                                }
-                                else
-                                {
-                                    std::ostringstream errmsg;
-                                    errmsg << "Error copying random access parameter.  "
-                                    << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
-                                    << " does not exist.";
-                                    printer_error().raise(LOCAL_INFO, errmsg.str());
-                                }
-                            }
-                        }
+                          for (int i = 0, end = *st; i < end; i++)
+                          {
+                              if (valid[i])
+                              {
+                                  std::cout << "i="<<i<<", j="<<j << ", (*ra)[i]=" <<(*ra)[i]<< ", sizes[(*ra)[i]]="<<sizes[(*ra)[i]]<<", (*pt)[i]="<<(*pt)[i]<<", pt_min="<<pt_min<<std::endl;
+                                  unsigned long long temp = j + sizes[(*ra)[i]] + (*pt)[i] - pt_min;
+                                  std::cout << "temp="<<temp<<", size="<<size<<std::endl;
+                                  if (temp < size)
+                                  {
+                                      output[temp] = data[i];
+                                      valids[temp] = 1;
+                                  }
+                                  else
+                                  {
+                                      std::ostringstream errmsg;
+                                      errmsg << "Error copying random access parameter.  "
+                                      << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
+                                      << " does not exist.";
+                                      printer_error().raise(LOCAL_INFO, errmsg.str());
+                                  }
+                              }
+                          }
+                       } // end if
                     }
                     
                     H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
@@ -248,7 +258,7 @@ namespace Gambit
                 
             public:
                 hdf5_stuff(const std::string &file_name, const std::string &group_name, int num);
-                
+                ~hdf5_stuff(); // close files on destruction                
                 void Enter_Aux_Paramters(const std::string &file, bool resume = false);
             };
 
