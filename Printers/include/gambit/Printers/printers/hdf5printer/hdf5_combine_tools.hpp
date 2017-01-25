@@ -2,24 +2,18 @@
 //   *********************************************
 ///  \file
 ///
-///  A collection of tools for interacting with
-///  HDF5 databases.
-///
-///  Currently I am using the C++ bindings for 
-///  HDF5, however they are a bit crap and it may
-///  be better to just write our own.
+///  Greg's code for combining HDF5 output of
+///  multiple MPI processes. Replaces the old
+///  Python script
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Ben Farmer
-///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 May
+///  
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date ???
 ///
-///  \author Pat Scott
-///          (p.scott@imperial.ac.uk)
-///  \date 2015 Jul
 ///
 ///  *********************************************
  

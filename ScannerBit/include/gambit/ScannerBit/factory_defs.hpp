@@ -70,6 +70,7 @@ namespace Gambit
             printer *main_printer;
             Priors::BasePrior *prior;
             std::string purpose;
+            int myRealRank; // the actual MPI rank of the process, use for process dependent setup etc. getRank() is for printing only.
 
             /// Variable to store some offset to be removed when printing out the return value of the function.
             double purpose_offset;
@@ -88,8 +89,12 @@ namespace Gambit
             virtual const std::type_info & type() const {return typeid(ret (args...));}
 
         public:
-            Function_Base(double offset = 0.) : purpose_offset(offset), use_alternate_min_LogL(false), _scanner_can_quit(false)
+            Function_Base(double offset = 0.) : myRealRank(0), purpose_offset(offset), use_alternate_min_LogL(false), _scanner_can_quit(false)
             {
+                #ifdef WITH_MPI
+                GMPI::Comm world;
+                myRealRank = world.Get_rank();
+                #endif
                 // Check if we should be using the alternative min_LogL from the very beginning
                 // (for example if we are resuming from a run where we already switched to this)
                 if (Gambit::Scanner::Plugins::plugin_info.resume_mode())
@@ -101,7 +106,7 @@ namespace Gambit
                    // New scan; delete any old persistence file
                    // But only do this if we are process 0, otherwise I think race conditions can occur.
                    // (TODO do we need to ensure a sync here in case other processes than 0 get too far ahead?)
-                   if(rank==0) Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
+                   if(myRealRank==0) Gambit::Scanner::Plugins::plugin_info.clear_alt_min_LogL_state();
                 }
             }
 
@@ -296,7 +301,7 @@ namespace Gambit
 
             double operator()(const std::vector<double> &vec)
             {
-                std::cout << "operator() vec" << std::endl;
+                //std::cout << "operator() vec" << std::endl;
                 int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
@@ -312,7 +317,7 @@ namespace Gambit
 
             double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
             {
-                std::cout << "operator() map/vec" << std::endl;
+                //std::cout << "operator() map/vec" << std::endl;
                 int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);

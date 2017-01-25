@@ -73,6 +73,7 @@ def printcontents(item,prelines):
         for name,subitem in item.attrs.items():
             print prelines+'    '+name+': '+str(subitem)
 
+print ' /'
 printcontents(f,'')
                                         
 quit()

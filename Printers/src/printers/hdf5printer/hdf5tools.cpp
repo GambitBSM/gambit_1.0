@@ -196,48 +196,63 @@ namespace Gambit {
       {
          hid_t group_id;
  
+         if(file_id < 0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error opening HDF5 group '"<<name<<"'. The supplied file_id does not point to a successfully opened file!";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
          // User does not want to create group
          if(nocreate) //accessmode & H5Utils::DONOTCREATE)
          {
-            group_id = H5Gcreate2(file_id, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+            group_id = H5Gopen2(file_id, name.c_str(), H5P_DEFAULT);
             if(group_id<0)
             {
               std::ostringstream errmsg;
               errmsg << "Error opening HDF5 group '"<<name<<"'. Group (probably) does not exist, and 'nocreate' flag is set to 'true', so we will not attempt to create one";
               printer_error().raise(LOCAL_INFO, errmsg.str());
             } 
-            H5Gclose(group_id);
          }
-         // Possibly create group and parent groups
-         std::stringstream ss(name);
-         std::stringstream path;
-         std::string gp_name;
-         while(std::getline(ss, gp_name, '/')) 
+         else
          {
-            path << "/" << gp_name;
-            errorsOff();
-            group_id = H5Gopen2(file_id, path.str().c_str(), H5P_DEFAULT);
-            errorsOn();
-            if(group_id<0)
+            // Possibly create group and parent groups
+            std::stringstream ss(name);
+            std::stringstream path;
+            std::string gp_name;
+            while(std::getline(ss, gp_name, '/')) 
             {
-               /* doesn't exist; try to create it */
-               group_id = H5Gcreate2(file_id, path.str().c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+               path << "/" << gp_name;
+               errorsOff();
+               group_id = H5Gopen2(file_id, path.str().c_str(), H5P_DEFAULT);
+               errorsOn();
                if(group_id<0)
                {
-                 std::ostringstream errmsg;
-                 errmsg << "Error while recursively creating/opening group '"<<name<<"'. Failed to create group '"<<path.str()<<"'";
-                 printer_error().raise(LOCAL_INFO, errmsg.str());
+                  /* doesn't exist; try to create it */
+                  group_id = H5Gcreate2(file_id, path.str().c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+                  if(group_id<0)
+                  {
+                    std::ostringstream errmsg;
+                    errmsg << "Error while recursively creating/opening group '"<<name<<"'. Failed to create group '"<<path.str()<<"'";
+                    printer_error().raise(LOCAL_INFO, errmsg.str());
+                  }
+               }          
+               herr_t err = H5Gclose(group_id);
+               if(err<0)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "Error closing group '"<<name<<"'!";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
                }
-            }          
-            H5Gclose(group_id);
-        }
-        // Should exist now; open the group and return the handle
-        group_id = H5Gopen2(file_id, name.c_str(), H5P_DEFAULT);
-        if(group_id<0)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error opening HDF5 group '"<<name<<"' after recursive creation supposedly succeeded! There must be a bug in this routine, please fix.";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+            // Should exist now; open the group and return the handle
+            group_id = H5Gopen2(file_id, name.c_str(), H5P_DEFAULT);
+            if(group_id<0)
+            {
+              std::ostringstream errmsg;
+              errmsg << "Error opening HDF5 group '"<<name<<"' after recursive creation supposedly succeeded! There must be a bug in this routine, please fix.";
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
         } 
         return group_id;
       }

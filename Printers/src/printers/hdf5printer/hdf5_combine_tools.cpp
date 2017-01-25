@@ -2,24 +2,30 @@
 //   *********************************************
 ///  \file
 ///
-///  A collection of tools for interacting with
-///  HDF5 databases.
+///  Greg's code for combining HDF5 output of
+///  multiple MPI processes. Replaces the old
+///  Python script
 ///
-///  Currently I am using the C++ bindings for 
-///  HDF5, however they are a bit crap and it may
-///  be better to just write our own.
+///  Ben: I have updated this to use my HDF5
+///  wrappers (due to their error checking
+///  functionality).
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///  
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date ???
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 May
+///  \date 2017 Jan
 ///
 ///  *********************************************
 
 #include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Utils/util_functions.hpp"
   
 namespace Gambit 
@@ -161,15 +167,28 @@ namespace Gambit
                     std::stringstream ss;
                     ss << i;
                     //H5::H5File file((file_name + "_" + ss.str()).c_str());
-                    hid_t file_id = H5Fopen((file_name + "_temp_" + ss.str()).c_str(), H5F_ACC_RDWR, H5P_DEFAULT); // bjf> Read only?
+                    std::string fname = file_name + "_temp_" + ss.str();
+                    hid_t file_id = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+                    if(file_id<0)
+                    {
+                        /* Still no good; error */
+                        std::ostringstream errmsg;
+                        errmsg << "Error combining temporary HDF5 output! Failed to open expected temporary file '"<<fname<<"'.";
+                        printer_error().raise(LOCAL_INFO, errmsg.str());
+                    }
+
                     files.push_back(file_id);
                     
-                    hid_t group_id = H5Gopen2(file_id, group_name.c_str(), H5P_DEFAULT);
+                    //hid_t group_id = H5Gopen2(file_id, group_name.c_str(), H5P_DEFAULT);
+                    hid_t group_id = HDF5::openGroup(file_id, group_name, true); // final argument prevents group from being created
                     groups.push_back(group_id);
                     
+                    // Extract dataset names from the group
                     std::vector<std::string> names;
                     H5Literate (group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func, (void *) &names);
                     
+                    // Set names extract from tmp file 0 as the 'standard', make sure all other files also contain this data.
+                    // (TODO: relax this requirement? some files just may not print certain things)
                     if (i == 0)
                     {
                         param_names = names;
@@ -188,11 +207,15 @@ namespace Gambit
                         }
                     }
                     
-                    hid_t aux_group_id = H5Gopen2(file_id, (group_name + "/RA").c_str(), H5P_DEFAULT);
-                    aux_groups.push_back(aux_group_id);
-                    
+                    //hid_t aux_group_id = H5Gopen2(file_id, (group_name + "/RA").c_str(), H5P_DEFAULT);
+                    //if(checkGroupReadable(file_id, group_name+"/RA"))
+                    // Get RA dataset names
+                    // TODO: is this expect RA datasets in every tmp file? This will certainly not be the case...   
+                    hid_t aux_group_id = HDF5::openGroup(file_id, group_name+"/RA", true);
+                    aux_groups.push_back(aux_group_id);                     
                     std::vector<std::string> aux_names;
                     H5Literate (aux_group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func_aux, (void *) &aux_names);
+                    
                     
                     if (i == 0)
                     {
@@ -283,12 +306,7 @@ namespace Gambit
                 }
                 
                 hid_t new_file = H5Fcreate(file.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-                hid_t new_group = new_file;
-                auto new_groups = getGroups(group_name);
-                for (auto it = new_groups.begin(), end = new_groups.end(); it != end; ++it)
-                {
-                    new_group = H5Gcreate2(new_group, it->c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-                }
+                hid_t new_group = HDF5::openGroup(new_file, group_name); // Recursively creates required group structure
                 
                 if (aux_param_names.size() > 0) for (auto itg = aux_groups.begin(), endg = aux_groups.end(); itg != endg; ++itg)
                 {
@@ -407,8 +425,8 @@ namespace Gambit
                 }
                 
                 H5Fflush(new_file, H5F_SCOPE_GLOBAL);
-                H5Gclose(new_group);
-                H5Fclose(new_file);
+                HDF5::closeGroup(new_group);
+                HDF5::closeFile(new_file);
                 
                 if (resume)
                 {
