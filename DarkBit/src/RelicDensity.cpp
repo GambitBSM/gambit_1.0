@@ -351,7 +351,12 @@ namespace Gambit
       }
       RD_spectrum_type specres = *Dep::RD_spectrum;
       double peff = 0.01*fabs(specres.coannihilatingParticles[0].mass);
-      if ( Utils::isnan((*result)(peff)) ) DarkBit_error().raise(LOCAL_INFO, "Weff is NaN!");
+      if ( Utils::isnan((*result)(peff)) )
+        DarkBit_error().raise(LOCAL_INFO,
+              "Weff is NaN in RD_eff_annrate_SUSY. This means that the backend\n"
+              " (in this case DarkSUSY) returned NaN for the invariant rate\n"
+              " entering the relic density calculation."
+              );      
 
     } // function RD_eff_annrate_SUSY
 
