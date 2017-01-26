@@ -84,7 +84,7 @@ namespace Gambit
          hid_t openFile(const std::string& fname, bool overwrite=false);
 
          /// Close hdf5 file
-         void closeFile(hid_t file);
+         hid_t closeFile(hid_t file);
 
          /// Check if hdf5 file exists and can be opened in read/write mode
          bool checkFileReadable(const std::string& fname, std::string& msg);
@@ -126,7 +126,7 @@ namespace Gambit
          hid_t openGroup(hid_t file_id, const std::string& name, bool nocreate=false);
  
          /// Close group
-         void closeGroup(hid_t group);
+         hid_t closeGroup(hid_t group);
 
          /// @}
 
@@ -137,6 +137,15 @@ namespace Gambit
 
          /// Close dataset
          hid_t closeDataset(hid_t dset_id); 
+
+         /// Get dataspace
+         hid_t getSpace(hid_t dset_id);
+
+         /// Close dataspace
+         hid_t closeSpace(hid_t space_id);
+
+         /// Get simple dataspace extent
+         hssize_t getSimpleExtentNpoints(hid_t dset_it);
 
          /// @}
 

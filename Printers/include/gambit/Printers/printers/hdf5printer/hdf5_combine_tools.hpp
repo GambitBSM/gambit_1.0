@@ -105,28 +105,65 @@ namespace Gambit
                 template <typename U>
                 static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, const unsigned long long size, const std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual>& RA_write_hash, const std::vector<std::vector <unsigned long long> > &pointid, const std::vector<std::vector <unsigned long long> > &rank, const std::vector<unsigned long long> &aux_sizes, hid_t &old_dataset, hid_t &old_dataset2)
                 {
-                    //unsigned long long j = 0;
                     std::vector<U> output(size, 0);
                     std::vector<int> valids(size, 0);
 
                     if (old_dataset >= 0 && old_dataset2 >= 0)
                     {
-                        //hid_t space = H5Dget_space(old_dataset);
-                        //hsize_t dim_t = H5Sget_simple_extent_npoints(space);
-                        //H5Sclose(space);
-                        H5Dread(old_dataset, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
-                        H5Dread(old_dataset2, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
-                        //j = dim_t;
+                        hid_t space  = HDF5::getSpace(old_dataset);
+                        hid_t space2 = HDF5::getSpace(old_dataset2);
+                        hsize_t old_size  = H5Sget_simple_extent_npoints(space);
+                        hsize_t old_size2 = H5Sget_simple_extent_npoints(space2);
+                        HDF5::closeSpace(space);
+                        HDF5::closeSpace(space2);
+                        if(old_size > size or old_size2 > size)
+                        {
+                           std::ostringstream errmsg;
+                           errmsg << "Error copying old dataset into buffer! The old dataset has a larger size than has been allocated for new data! (old_size="<<old_size<<", old_size2="<<old_size2<<", new_size="<<size<<")";
+                           printer_error().raise(LOCAL_INFO, errmsg.str()); \
+                        }
+                        H5Dread(old_dataset,  get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
+                        H5Dread(old_dataset2, get_hdf5_data_type<int>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
                     }
-                    
+
+                    // Check that all the input given is consistent in length
+                    size_t ndsets = datasets.size();
+                    #define DSET_SIZE_CHECK(VEC) \
+                    if(VEC.size()!=ndsets) \
+                    { \
+                       std::ostringstream errmsg; \
+                       errmsg << STRINGIFY(VEC) << " vector has inconsistent size! ("<<VEC.size()<<", should be "<<ndsets<<"). This is a bug, please report it."; \
+                       printer_error().raise(LOCAL_INFO, errmsg.str()); \
+                    }
+                    DSET_SIZE_CHECK(datasets2)
+                    DSET_SIZE_CHECK(aux_sizes)
+                    DSET_SIZE_CHECK(pointid)
+                    DSET_SIZE_CHECK(rank)
+                    #undef DSET_SIZE_CHECK
+ 
+                    // Additional iterators to be iterated in sync with dataset iteration
+                    // We are actually only copying over one 'parameter' in this function,
+                    // but are looping over matching datasets from the temp files from
+                    // each rank. So each iteration goes to the next file, but remains
+                    // targeting the same parameter.
                     auto st = aux_sizes.begin();
-                    auto pt = pointid.begin(), ra = rank.begin();
-                    for (auto it = datasets.begin(), itv = datasets2.begin(), end = datasets.end(); it != end; ++it, ++itv, ++pt, ++ra, ++st)
+                    auto pt = pointid.begin(); 
+                    auto ra = rank.begin();
+                    auto itv = datasets2.begin();
+                    for (auto it = datasets.begin(); it != datasets.end(); 
+                         ++it, ++itv, ++pt, ++ra, ++st)
                     {
                        if(*it < 0)
                        {
                           // Dataset wasn't opened, probably some RA parameter just happened to not 
-                          // exist in a certain temporary file. Skip this dataset.
+                          // exist in a certain temporary file. Skip this dataset. Though check that
+                          // Dataset2 also wasn't opened.
+                          if(*itv >= 0)
+                          {
+                              std::ostringstream errmsg;
+                              errmsg << "dataset2 iterator ('isvalid') points to an open dataset, while dataset iterator (main dataset) does not. This is inconsistent and indicates either a bug in this combine code, or in the code which generated the datasets, please report it.";
+                              printer_error().raise(LOCAL_INFO, errmsg.str());
+                          }
                        }
                        else
                        {
@@ -148,25 +185,6 @@ namespace Gambit
                           {
                               if (valid[i])
                               {
-                                  //std::cout << "i="<<i<<", j="<<j << ", (*ra)[i]=" <<(*ra)[i]<< ", cum_sizes[(*ra)[i]]="<<cum_sizes[(*ra)[i]]<<", (*pt)[i]="<<(*pt)[i]<<", pt_min="<<pt_min<<std::endl;
-                                  //unsigned long long temp = j + cum_sizes[(*ra)[i]] + (*pt)[i] - pt_min;
-                                  //std::cout << "temp="<<temp<<", size="<<size<<std::endl;
-                                  //if (temp < size)
-                                  //{
-                                  //    output[temp] = data[i];
-                                  //    valids[temp] = 1;
-                                  //}
-                                  //else
-                                  //{
-                                  //    std::ostringstream errmsg;
-                                  //    errmsg << "Error copying random access parameter.  "
-                                  //    << "pt number " << (*pt)[i] << " of rank " << (*ra)[i]  
-                                  //    << " is targeted for insertion outside the bounds of the target dataset"
-                                  //    << "(at position " << temp << ", while output dataset only"
-                                  //    << " has length "<<size<<")";
-                                  //    printer_error().raise(LOCAL_INFO, errmsg.str());
-                                  //}
-                          
                                   // Look up target for write in hash map
                                   std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual>::const_iterator ihash = RA_write_hash.find(PPIDpair((*pt)[i],(*ra)[i]));
                                   if(ihash != RA_write_hash.end())

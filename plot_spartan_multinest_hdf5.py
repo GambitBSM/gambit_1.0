@@ -13,7 +13,7 @@ import plottools #Some handy bits and pieces I wrote for plotting stuff
 
 
 f = h5py.File("runs/spartan_multinest_hdf5/samples/results.hdf5",'r')
-group = f["/gambit_data"]
+group = f["/"]
 
 mu = group["#NormalDist_parameters @NormalDist::primary_parameters::mu"]
 mu_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_parameters::mu_isvalid"],dtype=np.bool)

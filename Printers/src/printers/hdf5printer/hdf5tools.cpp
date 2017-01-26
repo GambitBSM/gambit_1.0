@@ -30,6 +30,27 @@ namespace Gambit {
   namespace Printers {
 
     namespace HDF5 { 
+ 
+      /// Macro to define simple wrappers with error checking for basic HDF5 tasks
+      #define SIMPLE_CALL(IDTYPE_OUT, FNAME, IDTYPE_IN, H5FUNCTION, VERB, OUTPUTNAME, INPUTNAME) \
+      IDTYPE_OUT FNAME(IDTYPE_IN id) \
+      { \
+         if(id < 0) \
+         { \
+            std::ostringstream errmsg; \
+            errmsg << "Failed to "<<VERB<<" "<<OUTPUTNAME<<" for HDF5 dataset! The supplied id does not point to a successfully opened "<<INPUTNAME<<"!"; \
+            printer_error().raise(LOCAL_INFO, errmsg.str()); \
+         } \
+         IDTYPE_OUT out_id = H5FUNCTION(id); \
+         if(out_id < 0) \
+         { \
+            std::ostringstream errmsg; \
+            errmsg << "Failed to "<<VERB<<" "<<OUTPUTNAME<<" for HDF5 dataset! See HDF5 error output for more details."; \
+            printer_error().raise(LOCAL_INFO, errmsg.str()); \
+         } \
+         return out_id; \
+      } \
+ 
       /// Create or open hdf5 file (ignoring feedback regarding whether file already existed)
       hid_t openFile(const std::string& fname, bool overwrite)
       {
@@ -258,42 +279,10 @@ namespace Gambit {
       }
 
       /// Close hdf5 file
-      void closeFile(hid_t file_id)
-      {
-         if(file_id < 0)
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error closing HDF5 file! The supplied file_id does not point to a successfully opened file!";
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-
-         herr_t status = H5Fclose(file_id);
-         if(status<0)
-         {
-           std::ostringstream errmsg;
-           errmsg << "Error encountered while closing HDF5 file with id '"<<file_id<<"'!";
-           printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-      }
+      SIMPLE_CALL(hid_t, closeFile,  hid_t, H5Fclose, "close", "file", "file")
 
       /// Close hdf5 group
-      void closeGroup(hid_t group_id)
-      {
-         if(group_id < 0)
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error closing HDF5 group! The supplied group_id does not point to a successfully opened group!";
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-
-         herr_t status = H5Gclose(group_id);
-         if(status<0)
-         {
-           std::ostringstream errmsg;
-           errmsg << "Error encountered while closing HDF5 group with id '"<<group_id<<"'!";
-           printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-      }
+      SIMPLE_CALL(hid_t, closeGroup,  hid_t, H5Gclose, "close", "group", "group")
 
       /// global error variables (handler)
       H5E_auto2_t old_func;
@@ -351,29 +340,20 @@ namespace Gambit {
       }
 
       /// Close dataset
-      hid_t closeDataset(hid_t dset_id)
-      {
-         if(dset_id < 0)
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error closing HDF5 dataset! The supplied dset_id does not point to a successfully opened dataset!";
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
+      SIMPLE_CALL(hid_t, closeDataset,  hid_t, H5Dclose, "close", "dataset", "dataset")
+ 
+      /// Open/close dataspace; input dataset, output dataspace
+      SIMPLE_CALL(hid_t, getSpace,  hid_t, H5Dget_space, "get", "dataspace", "dataset")
+      SIMPLE_CALL(hid_t, closeSpace, hid_t, H5Sclose, "close", "dataspace", "dataspace")
 
-         herr_t status = H5Dclose(dset_id);
-         if(status<0)
-         {
-           std::ostringstream errmsg;
-           errmsg << "Error encountered while closing HDF5 dataset with id '"<<dset_id<<"'!";
-           printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-         return status;
-      }
+      /// Get simple dataspace extent (number of points); input dataspace, output data extent (size)
+      SIMPLE_CALL(hssize_t, getSimpleExtentNpoints,  hid_t, H5Sget_simple_extent_npoints, "get", "simple_extent_npoints", "dataspace")
 
       /// @}
     }
  
   }
 }
+
 
 
