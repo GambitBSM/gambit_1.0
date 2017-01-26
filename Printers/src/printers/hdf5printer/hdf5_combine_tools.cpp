@@ -378,9 +378,13 @@ namespace Gambit
                        HDF5::closeDataset(dataset3);
                     }
                 }
-
-                for (auto it = param_names.begin(), end = param_names.end(); it != end; ++it)
+  
+                int counter = 1;
+                for (auto it = param_names.begin(), end = param_names.end(); it != end; ++it, ++counter)
                 {
+                    // Simple Progress monitor
+                    std::cout << " Combining primary datasets... "<<int(100*counter/param_names.size())<<"%         \r";
+
                     std::vector<hid_t> datasets, datasets2;
                     for (int i = 0, end = groups.size(); i < end; i++)
                     {
@@ -415,6 +419,7 @@ namespace Gambit
                     HDF5::closeDataset(dataset_out);
                     HDF5::closeDataset(dataset2_out);
                 }
+                std::cout << " Combining primary datasets... Done.                 "<<std::endl;
 
                 // Ben: NEW. Before copying RA points, we need to figure out a map between them
                 // and their targets in the output dataset. That means we need to read through
@@ -442,6 +447,7 @@ namespace Gambit
                 /// Now copy the RA datasets
                 for (auto it = aux_param_names.begin(), end = aux_param_names.end(); it != end; ++it)
                 {
+                    std::cout << " Combining auxilliary datasets... "<<int(100*counter/aux_param_names.size())<<"%         \r";
                     std::vector<hid_t> datasets, datasets2;
                     
                     for (int i = 0, end = aux_groups.size(); i < end; i++)
@@ -480,6 +486,7 @@ namespace Gambit
                         if(datasets2[i]>=0) HDF5::closeDataset(datasets2[i]);
                     }
                 }
+                std::cout << " Combining auxilliary datasets... Done.                 "<<std::endl;
                 
                 H5Fflush(new_file, H5F_SCOPE_GLOBAL);
                 HDF5::closeGroup(new_group);
