@@ -128,6 +128,8 @@ namespace Gambit
          /// Close group
          hid_t closeGroup(hid_t group);
 
+         /// List object names in a group
+         std::vector<std::string> lsGroup(hid_t group_id);
          /// @}
 
          /// @{ Dataset and dataspace manipulation

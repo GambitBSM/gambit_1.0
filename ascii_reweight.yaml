@@ -54,10 +54,12 @@ Scanner:
       old_LogLike: LogLike
       reader:
         # This determines what old output file is to be read and whose parameter points are to be used
-        type: ascii
+        type: hdf5
         # Currently the asciiReader only works on one file, so they need to be combined before postprocessing. Just cat-ing them together should work.
-        info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_1"
-        data_filename: "runs/largetest_multinest+ascii/samples/results.txt_1"
+        #info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_1"
+        #data_filename: "runs/largetest_multinest+ascii/samples/results.txt_1"
+        file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
+        group: "/"
 
 #  objectives:
 #

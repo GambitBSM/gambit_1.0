@@ -78,12 +78,21 @@ namespace Gambit
                     
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
-                        H5Dread(datasets[i], get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[j]);
-                        
-                        hid_t space = H5Dget_space(datasets[i]);
-                        hsize_t dim_t = H5Sget_simple_extent_npoints(space);
-                        H5Sclose(space);
-                        
+                        hsize_t dim_t;
+                        if(datasets[i] >= 0)
+                        {
+                           H5Dread(datasets[i], get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[j]);
+                           
+                           hid_t space = H5Dget_space(datasets[i]);
+                           dim_t = H5Sget_simple_extent_npoints(space);
+                           H5Sclose(space);
+                        }
+                        else
+                        {
+                           // dataset didn't exist for this file, skip it.
+                           dim_t = 0;
+                        }
+                       
                         if (dim_t >= sizes[i])
                         {
                             j += sizes[i];
@@ -103,28 +112,56 @@ namespace Gambit
             struct ra_copy_hdf5
             {
                 template <typename U>
-                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, const unsigned long long size, const std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual>& RA_write_hash, const std::vector<std::vector <unsigned long long> > &pointid, const std::vector<std::vector <unsigned long long> > &rank, const std::vector<unsigned long long> &aux_sizes, hid_t &old_dataset, hid_t &old_dataset2)
+                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, const unsigned long long size, const std::unordered_map<PPIDpair, unsigned long long, PPIDHash, PPIDEqual>& RA_write_hash, const std::vector<std::vector <unsigned long long> > &pointid, const std::vector<std::vector <unsigned long long> > &rank, const std::vector<unsigned long long> &aux_sizes, hid_t &/*old_dataset*/, hid_t &/*old_dataset2*/)
                 {
                     std::vector<U> output(size, 0);
                     std::vector<int> valids(size, 0);
 
-                    if (old_dataset >= 0 && old_dataset2 >= 0)
+                    // Should no longer need the old datasets, they should have already been copied during "copy_hdf5"
+                    // if (old_dataset >= 0 && old_dataset2 >= 0)
+                    // {
+                    //     hid_t space  = HDF5::getSpace(old_dataset);
+                    //     hid_t space2 = HDF5::getSpace(old_dataset2);
+                    //     hsize_t old_size  = H5Sget_simple_extent_npoints(space);
+                    //     hsize_t old_size2 = H5Sget_simple_extent_npoints(space2);
+                    //     HDF5::closeSpace(space);
+                    //     HDF5::closeSpace(space2);
+                    //     if(old_size > size or old_size2 > size)
+                    //     {
+                    //        std::ostringstream errmsg;
+                    //        errmsg << "Error copying old dataset into buffer! The old dataset has a larger size than has been allocated for new data! (old_size="<<old_size<<", old_size2="<<old_size2<<", new_size="<<size<<")";
+                    //        printer_error().raise(LOCAL_INFO, errmsg.str());
+                    //     }
+                    //     H5Dread(old_dataset,  get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
+                    //     H5Dread(old_dataset2, get_hdf5_data_type<int>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
+                    // }
+
+                    // Instead we just need to read in the recently-copied primary points and replace
+                    // entries as needed (TODO: would use much less memory if we just write individual replacements
+                    // straight to disk)
+                    if (dataset_out >= 0 && dataset2_out >= 0)
                     {
-                        hid_t space  = HDF5::getSpace(old_dataset);
-                        hid_t space2 = HDF5::getSpace(old_dataset2);
-                        hsize_t old_size  = H5Sget_simple_extent_npoints(space);
-                        hsize_t old_size2 = H5Sget_simple_extent_npoints(space2);
+                        hid_t space  = HDF5::getSpace(dataset_out);
+                        hid_t space2 = HDF5::getSpace(dataset2_out);
+                        hsize_t out_size  = HDF5::getSimpleExtentNpoints(space);
+                        hsize_t out_size2 = HDF5::getSimpleExtentNpoints(space2);
                         HDF5::closeSpace(space);
                         HDF5::closeSpace(space2);
-                        if(old_size > size or old_size2 > size)
+                        if(out_size > size or out_size2 > size)
                         {
                            std::ostringstream errmsg;
-                           errmsg << "Error copying old dataset into buffer! The old dataset has a larger size than has been allocated for new data! (old_size="<<old_size<<", old_size2="<<old_size2<<", new_size="<<size<<")";
-                           printer_error().raise(LOCAL_INFO, errmsg.str()); \
+                           errmsg << "Error copying dataset into buffer for RA replacements! The dataset has a larger size than has been allocated for new data! (out_size="<<out_size<<", out_size2="<<out_size2<<", expected_size="<<size<<")";
+                           printer_error().raise(LOCAL_INFO, errmsg.str());
                         }
-                        H5Dread(old_dataset,  get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
-                        H5Dread(old_dataset2, get_hdf5_data_type<int>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
+                        H5Dread(dataset_out,  get_hdf5_data_type<U>::type(),   H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
+                        H5Dread(dataset2_out, get_hdf5_data_type<int>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
                     }
+                    else
+                    {
+                        std::ostringstream errmsg;
+                        errmsg << "Error copying datasets into buffer for RA replacements! Could not open datasets (were they created properly during 'copy_hdf5' operation?).";
+                        printer_error().raise(LOCAL_INFO, errmsg.str());
+                    } 
 
                     // Check that all the input given is consistent in length
                     size_t ndsets = datasets.size();
@@ -225,9 +262,29 @@ namespace Gambit
             template <class U, typename... T>
             inline void Enter_HDF5(hid_t dataset, T&... params)
             {
+                if(dataset<0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "Invalid dataset supplied to Enter_HDF5 routine!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+
                 hid_t dtype = H5Dget_type(dataset);
+                if(dtype<0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "Failed to detect type for dataset provides as argument for Enter_HDF5 routine!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+
                 //H5T_class_t cl = H5Tget_class(dtype);
                 hid_t type = H5Tget_native_type(dtype, H5T_DIR_DESCEND);
+                if(type<0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "Failed to detect native type for dataset provides as argument for Enter_HDF5 routine!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
 
                 if (H5Tequal(type, get_hdf5_data_type<float>::type()))
                 {
@@ -296,6 +353,7 @@ namespace Gambit
             private:
                 std::string group_name;
                 std::vector<std::string> param_names, aux_param_names;
+                std::unordered_set<std::string> param_set, aux_param_set; // for easier finding
                 std::vector<hid_t> files;
                 std::vector<hid_t> groups;
                 std::vector<hid_t> aux_groups;

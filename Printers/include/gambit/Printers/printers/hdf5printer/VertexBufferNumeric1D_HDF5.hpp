@@ -97,6 +97,7 @@ namespace Gambit {
              , const bool sync
              , const bool silence
              , const bool resume
+             , const char access
              );
      
            /// Destructor
@@ -242,6 +243,7 @@ namespace Gambit {
         , const bool sync
         , const bool silence
         , const bool resume
+        , char access
         )
         : VertexBufferNumeric1D<T,CHUNKLENGTH>(
             name
@@ -250,6 +252,7 @@ namespace Gambit {
           , sync
           , silence
           , resume
+          , access
           )
         , _dsetvalid()
         , _dsetdata()
@@ -271,7 +274,7 @@ namespace Gambit {
           {
              logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'...";
           }
-          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location_id, name+"_isvalid", resume);
+          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location_id, name+"_isvalid", resume, this->access_mode());
 
           if(resume) 
           { 
@@ -281,7 +284,7 @@ namespace Gambit {
           {
              logger()<<std::endl<<LogTags::printers<<"Creating new dataset '"<<name<<"'...";
           }
-          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location_id, name, resume);
+          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location_id, name, resume, this->access_mode());
 
           logger()<<EOM; // Leave this to calling function
         }

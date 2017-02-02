@@ -30,22 +30,12 @@ namespace Gambit {
      {
        public:
          asciiReader(const Options& options);
-
-         /// Get column descriptions from an info file
-         std::map<std::string,uint> get_column_info(const std::string& info_filename);
-
-         /// Move 'read head' forward to next row
-         void next_row();
-
-         /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
-         void advance_to_point(const std::pair<uint,ulong>& target_point);
    
-
          /// @{ Base class virtual interface functions
          virtual void reset(); // Reset 'read head' position to first entry
          virtual ulong get_dataset_length(); // Get length of input dataset
-         virtual std::pair<uint, ulong> get_next_point(); // Get next rank/ptID pair in data file
-         virtual std::pair<uint, ulong> get_current_point(); // Get current rank/ptID pair in data file
+         virtual PPIDpair get_next_point(); // Get next rank/ptID pair in data file
+         virtual PPIDpair get_current_point(); // Get current rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
          bool _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
          bool _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
@@ -61,10 +51,20 @@ namespace Gambit {
          const uint col_rank;
          const uint col_ptID;
          std::ifstream dataFile;
-         ulong                 dataset_length;
-         ulong                 current_row;
-         std::pair<uint,ulong> current_point;
-         std::string           current_line;
+         ulong       dataset_length;
+         ulong       current_row;
+         PPIDpair    current_point;
+         std::string current_line;
+
+         /// Get column descriptions from an info file
+         std::map<std::string,uint> get_column_info(const std::string& info_filename);
+
+         /// Move 'read head' forward to next row
+         void next_row();
+
+         /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
+         void advance_to_point(const PPIDpair& target_point);
+
      };
 
     // Register reader so it can be constructed via inifile instructions

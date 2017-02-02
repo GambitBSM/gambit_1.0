@@ -278,6 +278,42 @@ namespace Gambit {
         return group_id;
       }
 
+      // Iterator function for listing datasets in a group 
+      herr_t group_ls(hid_t g_id, const char *name, const H5L_info_t *info, void *op_data)
+      {
+          //std::cout<<"group_ls: "<<name<<std::endl;
+          //std::cout<<info->type<<" "<<H5G_DATASET<<std::endl;
+          std::vector<std::string>* out = static_cast<std::vector<std::string>*>(op_data);  
+          // Only add names that correspond to datasets 
+          H5G_stat_t statbuf;
+          H5Gget_objinfo(g_id, name, false, &statbuf);
+          if(statbuf.type == H5G_DATASET) out->push_back(name);
+          return 0;
+      }
+
+      /// List object names in a group
+      std::vector<std::string> lsGroup(hid_t group_id)
+      {
+         if(group_id<0)
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error inspecting HDF5 group. The supplied group_id does not point to an open group object!";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+        
+         std::vector<std::string> out; 
+         herr_t err = H5Literate(group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, group_ls, &out);
+
+         if(err<0)
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error encountering while iterating through HDF5 group! See HDF5 error for more details (stderr).";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         return out;
+      }
+
       /// Close hdf5 file
       SIMPLE_CALL(hid_t, closeFile,  hid_t, H5Fclose, "close", "file", "file")
 

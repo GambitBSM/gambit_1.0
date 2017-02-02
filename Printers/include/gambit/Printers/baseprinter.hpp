@@ -62,6 +62,10 @@ namespace Gambit
 {
   namespace Printers
   {
+    
+    // Helper function for parsing ModelParameters label strings.
+    // Defined in asciiReader.cpp
+    bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out);
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Printer class declarations                          %

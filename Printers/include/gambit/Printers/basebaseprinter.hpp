@@ -35,6 +35,7 @@
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 namespace Gambit
 {
@@ -136,6 +137,12 @@ namespace Gambit
           (longlong)(ulonglong)      \
           (float)(double)            
 
+        // Bool has weird behaviour in vectors, so need a version without bool.
+        #define SCANNER_SIMPLE_TYPES_NOBOOL \
+          (int)(uint)(long)(ulong)   \
+          (longlong)(ulonglong)      \
+          (float)(double)            
+
         #define SCANNER_VECTOR_TYPES  \
           (std::vector<bool>)         \
           (std::vector<int>)          \
@@ -225,8 +232,8 @@ namespace Gambit
 
         virtual void reset() = 0; // Reset 'read head' position to first entry
         virtual ulong get_dataset_length() = 0; // Get length of input dataset (used e.g. by postprocessor to divide post-processing workload via MPI)
-        virtual std::pair<uint, ulong> get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
-        virtual std::pair<uint, ulong> get_next_point() = 0; // Get next rank/ptID pair in data file
+        virtual PPIDpair get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
+        virtual PPIDpair get_next_point() = 0; // Get next rank/ptID pair in data file
         virtual bool eoi() = 0; // Check if 'current point' is past the end of the data file (and thus invalid!)
 
         /// Printer-retrieve dispatch function. If a virtual function override exists for
@@ -256,8 +263,8 @@ namespace Gambit
         template<typename T>
         bool retrieve(T& out, const std::string& label)
         {
-          std::pair<uint, ulong> pt = get_current_point();
-          return retrieve(out, label, pt.first, pt.second);
+          PPIDpair pt = get_current_point();
+          return retrieve(out, label, pt.rank, pt.pointID);
         }
 
       protected:

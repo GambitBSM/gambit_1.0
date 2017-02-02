@@ -110,13 +110,13 @@ namespace Gambit {
 
     // Get current rank/ptID pair in data file
     // Make sure get_next_point has been called first! Otherwise we may not have a current point to get
-    std::pair<uint, ulong> asciiReader::get_current_point()
+    PPIDpair asciiReader::get_current_point()
     {
       return current_point;
     }
 
     /// Get next rank/ptID pair
-    std::pair<uint, ulong> asciiReader::get_next_point()
+    PPIDpair asciiReader::get_next_point()
     {
       next_row();
       // Point will get returned, but check eoi() before using it! If eoi() then we didn't actually get a new point, this should still just be the previous point.
@@ -224,8 +224,7 @@ namespace Gambit {
              printer_error().raise(LOCAL_INFO,err.str());
          }
          // Set new position data
-         current_point = std::make_pair(MPIrank,pointID);
-         //std::cout<<"new current_point = "<<current_point.first<<", "<<current_point.second<<std::endl;
+         current_point = PPIDpair(pointID,MPIrank);
          current_row++;
          // Before trying to access stuff from this row, check for end of file via eoi() function!
        }
@@ -234,7 +233,7 @@ namespace Gambit {
 
 
     /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
-    void asciiReader::advance_to_point(const std::pair<uint,ulong>& target_point)
+    void asciiReader::advance_to_point(const PPIDpair& target_point)
     {
       // Check if we are at the right place for the point already
       if(current_point!=target_point)
@@ -299,7 +298,7 @@ namespace Gambit {
       /// Advance read-head position until the target point is found (or throw an error if it cannot be found)
       /// Will be fastest if we are already at the right position or only have to go forward a small number of slots
       /// Going backwards will involve traversing the whole file forwards and looping back around from the start!
-      advance_to_point(std::make_pair(rank,pointID));
+      advance_to_point(PPIDpair(pointID,rank));
       
       /// Check which column is supposed to correspond with 'label'
       uint target_col;

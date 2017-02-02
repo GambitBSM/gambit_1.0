@@ -362,10 +362,10 @@ namespace Gambit
        // Interfaces for the datasets
        // Make sure the types used here don't get out of sync with the types used to write the original datasets
        // We open the datasets in "resume" mode to access existing dataset, and make "const" to disable writing of new data. i.e. "Read-only" mode.
-       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "pointID", true);        
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "pointID_isvalid", true);
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "MPIrank", true); 
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "MPIrank_isvalid", true); 
+       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "pointID", true, 'r');        
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "pointID_isvalid", true, 'r');
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "MPIrank", true, 'r'); 
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "MPIrank_isvalid", true, 'r'); 
 
        // Error check lengths. This should already have been done for all datasets in the group, but
        // we will double-check these four here.
@@ -562,6 +562,7 @@ namespace Gambit
                                       , synchronised
                                       , silence
                                       , false /*printer->get_resume() -- In this new version of the HDF5Printer we write temporary files and then combine them at the end of the scan, so each individual buffer no longer needs to be in 'resume' mode, it can just start anew and be combined with the old data later on */
+                                      , access /* r/w mode. Buffers can now be used for reading also. */
                                       );
 
         // Get the new (possibly silenced) buffer back out of the map
@@ -1328,7 +1329,7 @@ namespace Gambit
 
 
     /// Retrieve pointer to HDF5 location to which datasets are added
-    hid_t HDF5Printer::get_location()
+    hid_t HDF5Printer::get_location() const
     {
       if(location_id==-1)
       {
@@ -1339,7 +1340,7 @@ namespace Gambit
       return location_id;
     }
 
-    hid_t HDF5Printer::get_RA_location()
+    hid_t HDF5Printer::get_RA_location() const
     {
       if(RA_location_id==-1)
       {
@@ -1362,7 +1363,7 @@ namespace Gambit
     }
 
     /// Check if an output stream is already managed by some buffer in any printer.
-    bool HDF5Printer::is_stream_managed(VBIDpair& key)
+    bool HDF5Printer::is_stream_managed(VBIDpair& key) const
     {
       bool answer = true;
       if( primary_printer->all_buffers.find(key)
@@ -1852,8 +1853,19 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
     // PRINT FUNCTIONS
     //----------------------------
     // Need to define one of these for every type we want to print!
-    // Could use macros again to generate identical print functions
-    // for all types that have a << operator already defined.
+
+    // Templatable print functions
+    #define PRINT(TYPE) _print(TYPE const& value, const std::string& label, const int vID, const uint rank, const ulong pID) \
+       { template_print(value,label,vID,rank,pID); }
+    void HDF5Printer::PRINT(int      ) 
+    void HDF5Printer::PRINT(uint     ) 
+    void HDF5Printer::PRINT(long     ) 
+    void HDF5Printer::PRINT(ulong    ) 
+    void HDF5Printer::PRINT(longlong ) 
+    void HDF5Printer::PRINT(ulonglong)
+    void HDF5Printer::PRINT(float    ) 
+    void HDF5Printer::PRINT(double   ) 
+    #undef PRINT
 
     // Bools can't quite use the template print function directly, since there
     // are some issues with bools and MPI/HDF5 types. Easier to just convert
@@ -1868,11 +1880,8 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
     {
       // We will write to several 'double' buffers, rather than a single vector buffer.
       // Change this once a vector buffer is actually available
-      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-
-      // Retrieve the buffer manager for buffers with this type
-      typedef H5P_LocalBufferManager<BuffType> BuffMan;
-      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      // Retrieve the buffer manager for buffers with the desired output type
+      auto& buffer_manager = get_mybuffermanager<double>(pointID,mpirank);
 
 #ifdef HDEBUG_MODE
       std::cout<<"printing vector<double>: "<<label<<std::endl;
@@ -1909,9 +1918,7 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
     void HDF5Printer::_print(const triplet<double>& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
       // Retrieve the buffer manager for buffers with this type
-      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-      typedef H5P_LocalBufferManager<BuffType> BuffMan;
-      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      auto& buffer_manager = get_mybuffermanager<double>(pointID,mpirank);
 
 #ifdef HDEBUG_MODE
       std::cout<<"printing triplet<double>: "<<label<<std::endl;
@@ -1949,12 +1956,8 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 
     void HDF5Printer::_print(const std::map<std::string,double>& map, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
-      // We will write to one 'double' buffer for each map entry
-      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-
       // Retrieve the buffer manager for buffers with this type
-      typedef H5P_LocalBufferManager<BuffType> BuffMan;
-      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      auto& buffer_manager = get_mybuffermanager<double>(pointID,mpirank);
 
       unsigned int i=0; // index for each buffer
       for (std::map<std::string, double>::const_iterator

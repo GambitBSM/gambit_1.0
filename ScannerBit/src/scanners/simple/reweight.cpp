@@ -30,8 +30,10 @@
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/Utils/model_parameters.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 using namespace Gambit;
+using Gambit::Printers::PPIDpair;
 
 // Deprecated!
 
@@ -244,7 +246,7 @@ scanner_plugin(reweight, version(1, 0, 0))
     unsigned long long end = start + my_length - 1; // Minus 1 for the zero indexing
 
     // Loop over the old points
-    std::pair<unsigned int,unsigned long> current_point = reader->get_next_point(); // Get first point
+    PPIDpair current_point = reader->get_next_point(); // Get first point
     unsigned long long loopi = 0;
     std::cout << "Starting loop over old points ("<<total_length<<" in total)" << std::endl;
     std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<start<<" through to "<<end<<"." << std::endl;
@@ -273,8 +275,8 @@ scanner_plugin(reweight, version(1, 0, 0))
       }
 
       // Data about current point in input file
-      unsigned int       MPIrank = current_point.first;
-      unsigned long long pointID = current_point.second;
+      unsigned int       MPIrank = current_point.rank;
+      unsigned long long pointID = current_point.pointID;
 
       // Extract the model parameters
       // ModelParameters params;

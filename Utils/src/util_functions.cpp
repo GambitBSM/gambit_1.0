@@ -328,7 +328,20 @@ namespace Gambit
     {
       return a * a;
     }
-    
+ 
+    /// Checks whether `str' ends with `suffix'
+    // credit: http://stackoverflow.com/a/41041484/1447953
+    bool endsWith(const std::string& str, const std::string& suffix) 
+    {
+      if (&suffix == &str) return true; // str and suffix are the same string
+      if (suffix.length() > str.length()) return false;
+      size_t delta = str.length() - suffix.length();
+      for (size_t i = 0; i < suffix.length(); ++i) {
+          if (suffix[i] != str[delta + i]) return false;
+      }
+      return true;
+    }     
+   
     
   }
 

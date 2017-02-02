@@ -89,6 +89,9 @@ namespace Gambit
     /// Copy a str to a character array, stripping the null termination character.
     void strcpy2f(char*, int, str);
 
+    /// Checks whether `str' ends with `suffix'
+    bool endsWith(const std::string& str, const std::string& suffix); 
+
     /// Get pointers to beginning and end of array. 
     // Useful for initialising vectors with arrays, e.g.
     //   int vv[] = { 12,43 };

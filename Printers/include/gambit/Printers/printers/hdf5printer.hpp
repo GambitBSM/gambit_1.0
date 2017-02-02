@@ -27,9 +27,6 @@
 #include <fstream>
 #include <iomanip>
 
-// Boost
-#include <boost/preprocessor/seq/for_each_i.hpp>
-
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
@@ -78,7 +75,7 @@ namespace Gambit
        }
        else {
           std::ostringstream errmsg;
-          errmsg << "Error! Supplied key for a VertexBuffer already exists in map (tag="<<tag<<")! This is a bug in the HDF5Printer class, please report it.";
+          errmsg << "Error! Supplied key for a VertexBuffer already exists in map (tag="<<tag<<")! This is a bug in the HDF5Printer (or Reader) class, please report it.";
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
     }
@@ -108,11 +105,15 @@ namespace Gambit
         /// i.e. couples buffers to the scanner iteration synchronisation.
         bool synchronised;
 
+        /// Buffer access mode ('r'/'w')
+        char access;
+
       public:
         /// Constructor
         H5P_LocalBufferManager() 
           : printer(NULL) 
           , synchronised(true)
+          , access('w')
         {} 
 
         /// Initialise the buffer (attach it to a printer and set its behaviour)
@@ -156,18 +157,65 @@ namespace Gambit
         void finalise(bool abnormal=false);
 
         ///@}
-     
+
+        ///@{ Print functions
+
+        /// Templatable print functions
+        void _print(int       const&, const std::string&, const int, const uint, const ulong);
+        void _print(uint      const&, const std::string&, const int, const uint, const ulong);
+        void _print(long      const&, const std::string&, const int, const uint, const ulong);
+        void _print(ulong     const&, const std::string&, const int, const uint, const ulong);
+        void _print(longlong  const&, const std::string&, const int, const uint, const ulong);
+        void _print(ulonglong const&, const std::string&, const int, const uint, const ulong);
+        void _print(float     const&, const std::string&, const int, const uint, const ulong);
+        void _print(double    const&, const std::string&, const int, const uint, const ulong);
+        /// 'Custom' print functions
+        void _print(std::vector<double> const&, const std::string&, const int, const uint, const ulong);
+        void _print(ModelParameters     const&, const std::string&, const int, const uint, const ulong);
+        void _print(triplet<double>     const&, const std::string&, const int, const uint, const ulong);
+        void _print(bool                const&, const std::string&, const int, const uint, const ulong);
+        void _print(map_str_dbl         const&, const std::string&, const int, const uint, const ulong);
+
+        ///@}
+
         /// @{ HDF5Printer-specific functions
 
+        /// Check if an output stream is already managed by some buffer in some printer
+        bool is_stream_managed(VBIDpair& key) const;
+
         /// Retrieve pointer to HDF5 location to which datasets are added
-        hid_t get_location();
-        hid_t get_RA_location();
+        hid_t get_location() const;
+        hid_t get_RA_location() const;
 
         /// Add a pointer to a new buffer to the global list
         void insert_buffer(VBIDpair& key, VertexBufferBase& newbuffer);
 
-        /// Check if an output stream is already managed by some buffer in some printer
-        bool is_stream_managed(VBIDpair& key);
+        /// Get the number of pointIDs know to this printer
+        /// (should correspond to the number of "appends" each active buffer has received)
+        unsigned long get_sync_pos() const { return sync_pos; }
+
+     private:
+
+        /// Buffer manager objects
+        //  Need one for every directly retrievable type, and a specialisation
+        //  of 'get_mybuffermanager' to access it. But the latter have to be
+        //  defined outside the class declaration, so they can be found below.
+        //  Could create all these with a macro, but I am sick of macros so
+        //  will just do it the "old-fashioned" way.
+        #define BT(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
+        H5P_LocalBufferManager<BT(int      )> hdf5_localbufferman_int;
+        H5P_LocalBufferManager<BT(uint     )> hdf5_localbufferman_uint;
+        H5P_LocalBufferManager<BT(long     )> hdf5_localbufferman_long;
+        H5P_LocalBufferManager<BT(ulong    )> hdf5_localbufferman_ulong;
+        H5P_LocalBufferManager<BT(longlong )> hdf5_localbufferman_longlong;
+        H5P_LocalBufferManager<BT(ulonglong)> hdf5_localbufferman_ulonglong;
+        H5P_LocalBufferManager<BT(float    )> hdf5_localbufferman_float;
+        H5P_LocalBufferManager<BT(double   )> hdf5_localbufferman_double;
+
+        /// Function used by print functions to retrieve their local buffer manager object
+        template<class T>
+        H5P_LocalBufferManager<BT(T)>& get_mybuffermanager(ulong, uint);
+        #undef BT
 
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
@@ -211,12 +259,8 @@ namespace Gambit
         // and perform adjustments needed to prepare the printer.
         void check_for_new_point(const PPIDpair&);
  
-        /// Function used by print functions to retrieve their local buffer manager object
-        template<class BuffType>
-        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(unsigned long pointID, unsigned int mpirank);
-
         /// Retrieve index from global lookup table, with error checking
-        unsigned long get_global_index(const unsigned long pointID, const unsigned int mpirank);
+        unsigned long get_global_index(const ulong pointID, const uint mpirank);
  
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
@@ -227,9 +271,7 @@ namespace Gambit
         /// printer no longer tracks all of the IDs for every RA write command.
         unsigned long get_N_RApointIDs() { return primary_printer->reverse_global_index_lookup.size() + primary_printer->RA_dset_offset; }
 
-        /// Get the number of pointIDs know to this printer
-        /// (should correspond to the number of "appends" each active buffer has received)
-        unsigned long get_sync_pos() { return sync_pos; }
+        /// Move head dataset sync position
         void increment_sync_pos() { sync_pos+=1; }
 
         /// Retrieve the "resume" flag
@@ -263,77 +305,8 @@ namespace Gambit
         void combine_output_py(const std::vector<std::string> tmp_files, const bool finalcombine); // Python version
         void combine_output(const std::vector<std::string> tmp_files, const bool finalcombine); // Greg version
 
-        /// Retrieve a pointer to the primary printer object
-        /// This is stored in the base class (BaseBasePrinter) as a pointer of type
-        /// BaseBasePrinter, so we need to  
-
-
-
-        /// Macro to help declare new buffer managers for various types
-        #define NEW_BUFFMAN(BUFFTYPE,NAME)     \
-          /* Note: NAME can be anything, but it needs to be unique since it §
-             helps to name the buffer manager object */                        \
-          H5P_LocalBufferManager<BUFFTYPE> CAT(hdf5_localbufferman_,NAME);     \
-
-        /// Macro to help define the buffer manager getter functions
-        // Need to use it outside the class body
-        // 
-        // The getter functions serve to both retrieve the buffer matching an
-        // output stream, and to handle creation of those buffers.
-        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME)                               \
-         template<>                                                                \
-          inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
-           HDF5Printer::get_mybuffermanager<BUFFTYPE>(unsigned long pointID, unsigned int mpirank) \
-          {                                                                        \
-             /* If the buffermanger hasn't been initialised, do so now */          \
-             if( not CAT(hdf5_localbufferman_,NAME).ready() )                      \
-             {                                                                     \
-                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);            \
-             }                                                                     \
-                                                                                   \
-             /* While we are at it, check if the buffers need to be                \
-                synchronised to a new point. But only if this printer is running   \
-                in "synchronised" mode. */                                         \
-             if(synchronised)                                                      \
-             {                                                                     \
-               check_for_new_point(PPIDpair(pointID, mpirank));                    \
-             }                                                                     \
-             return CAT(hdf5_localbufferman_,NAME);                                \
-          }
-
         /// @}
 
-        // PRINT FUNCTIONS
-        //----------------------------
-        // Need to define one of these for every type we want to print!
-        // Could use macros again to generate identical print functions 
-        // for all types that have a << operator already defined.
-
-        // Types compatible with the template print function
-        #define TEMPLATE_TYPES  \
-         ALL_INT_TYPES \
-         (float)\
-         (double)\
-
-        // Types for which custom print functions are defined
-        typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
-        #define NON_TEMPLATE_TYPES \
-          (std::vector<double>)    \
-          (ModelParameters)        \
-          (triplet<double>)        \
-          (map_str_dbl)\
-          (bool)
-          /*(std::vector<bool>)        \
-             (std::vector<int>)        */
-
-        // All printable types
-        #define HDF5_PRINTABLE_TYPES TEMPLATE_TYPES NON_TEMPLATE_TYPES
-
-        #define DECLARE_PRINT(r,data,ELEM) \
-          void _print(ELEM const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID); \
-                                                                              
-        #define DECLARE_PRINT_FUNCTIONS(TYPES) BOOST_PP_SEQ_FOR_EACH(DECLARE_PRINT, _, TYPES)
-        DECLARE_PRINT_FUNCTIONS(NON_TEMPLATE_TYPES)       
 
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads 
@@ -341,15 +314,11 @@ namespace Gambit
         template<class T>
         void template_print(T const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID)
         {
-           // Define what output format will be used for this type (by choosing an appropriate buffer type)  
-           typedef VertexBufferNumeric1D_HDF5<T,BUFFERLENGTH> BuffType;
-          
            // Retrieve the buffer manager for buffers with this type
-           typedef H5P_LocalBufferManager<BuffType> BuffMan;
-           BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+           auto& buffer_manager = get_mybuffermanager<T>(pointID,mpirank);
 
            // Extract a buffer from the manager corresponding to this 
-           BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
+           auto& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
 
            // { debug
            //if(label=="pointID") std::cout << "rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<label<<" = "<<value<<std::endl;
@@ -378,42 +347,6 @@ namespace Gambit
            }
         }
  
-        /// @{ Helper macros to write all the print functions which can use the "easy" template
-
-        // The type of the template print function buffers
-        #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
-
-        #define TEMPLATE_PRINT(r,data,i,elem)                                   \
-          NEW_BUFFMAN(TEMPLATE_BUFFTYPE(elem),CAT(template_,i))                 \
-          void _print(elem const& value, const std::string& label, const int vID, \
-                       const unsigned int mpirank, const unsigned long pointID) \
-          {                                                                     \
-            template_print(value,label,vID,mpirank,pointID);                    \
-          }                                                          
-
-        #define ADD_TEMPLATE_PRINTS                                             \
-          BOOST_PP_SEQ_FOR_EACH_I(TEMPLATE_PRINT, _, TEMPLATE_TYPES)
-
-        #define TEMPLATE_BUFFMAN(r,data,i,elem)                                 \
-          DEFINE_BUFFMAN_GETTER(TEMPLATE_BUFFTYPE(elem),CAT(template_,i))                          
- 
-        #define DEFINE_TEMPLATE_BUFFMAN_GETTERS                                 \
-          BOOST_PP_SEQ_FOR_EACH_I(TEMPLATE_BUFFMAN, _, TEMPLATE_TYPES)
-
-        ADD_TEMPLATE_PRINTS
-        /// @}
-
-        // Add any extra buffermanger declarations here:
-        // NEW_BUFFMAN(BUFFTYPE1,NAME1)
-        // NEW_BUFFMAN(BUFFTYPE2,NAME2)
-        // etc...
-
-        /// Regular print functions
-        // Now already declared in macro above
-        //void _print(std::vector<double> const&, const std::string&, const int, const unsigned int, const unsigned long);
-        //void _print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
-        //void _print(triplet<double> const&,     const std::string&, const int, const unsigned int, const unsigned long);
-
       private:
         // String names for output file and group
         std::string tmp_comb_file; // temporary combined output filename
@@ -507,35 +440,42 @@ namespace Gambit
 
     };
 
-    /// Macros which define the getter functions for the buffer managers
-    //  Need one of these for every buffer type used by a print function
-    //  However, some of them are automatically created by the 
-    //  DEFINE_TEMPLATE_BUFFMAN_GETTERS macro, specifically buffer for
-    //  the types listed
-    //  in the TEMPLATE_TYPES list. It will be an error to define the
-    //  getter twice for a buffer type, so check that any new buffer 
-    //  types are not already covered.
-    //  Note that the buffer type is different from the data type, e.g.
-    //  the buffer for single doubles used in the template print function
-    //  is:
-    //
-    //    typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-    //
-    //  Note also that new buffer types will need to have the buffer manager
-    //  getter declared in the HDF5Printer class body, using the 
-    //  NEW_BUFFMAN macro.
-    //  If this is done correctly, you can then retrieve the buffermanager
-    //  for your buffer type using:
-    //
-    //   typedef H5P_LocalBufferManager<BuffType> BuffMan;
-    //   BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
-    //
+    /// Macro to help define the buffer manager getter functions
+    // Need to use it outside the class body, and be sure to typedef
+    // types which can not form part of a valid variable name.
+    #define DEFINE_BUFFMAN_GETTER(TYPE)                                        \
+      template<>                                                               \
+      inline H5P_LocalBufferManager<VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>>& \
+       HDF5Printer::get_mybuffermanager<TYPE>(ulong pointID, uint mpirank) \
+      {                                                                        \
+         /* If the buffermanger hasn't been initialised, do so now */          \
+         if( not CAT(hdf5_localbufferman_,TYPE).ready() )                      \
+         {                                                                     \
+            CAT(hdf5_localbufferman_,TYPE).init(this,synchronised);            \
+         }                                                                     \
+                                                                               \
+         /* While we are at it, check if the buffers need to be                \
+            synchronised to a new point. But only if this printer is running   \
+            in "synchronised" mode. */                                         \
+         if(synchronised)                                                      \
+         {                                                                     \
+           check_for_new_point(PPIDpair(pointID, mpirank));                    \
+         }                                                                     \
+         return CAT(hdf5_localbufferman_,TYPE);                                \
+      }
 
-    // Define the buffermanager getter specialisations
-    DEFINE_TEMPLATE_BUFFMAN_GETTERS
-    // DEFINE_BUFFMAN_GETTER(BUFFTYPE1,NAME1)
-    // DEFINE_BUFFMAN_GETTER(BUFFTYPE2,NAME2)
-    // etc..
+    DEFINE_BUFFMAN_GETTER(int      )
+    DEFINE_BUFFMAN_GETTER(uint     )
+    DEFINE_BUFFMAN_GETTER(long     )
+    DEFINE_BUFFMAN_GETTER(ulong    )
+    DEFINE_BUFFMAN_GETTER(longlong )
+    DEFINE_BUFFMAN_GETTER(ulonglong)
+    DEFINE_BUFFMAN_GETTER(float    )
+    DEFINE_BUFFMAN_GETTER(double   )
+
+    // Avoid cluttering up "macro namespace"
+    #undef DEFINE_BUFFMAN_GETTER
+    #undef BT
 
     // Register printer so it can be constructed via inifile instructions
     // First argument is string label for inifile access, second is class from which to construct printer

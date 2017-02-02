@@ -59,6 +59,9 @@ namespace Gambit {
             /// Different printers can use different modes.
             bool MPImode;
 
+            /// flag to indicate the buffer access mode (i.e. read/write)
+            char access;
+   
          protected:
             /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
             bool sync_buffer_full = false;
@@ -79,7 +82,7 @@ namespace Gambit {
               #endif
             }   
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode, const char a) 
               : label(l)
               , vertexID(vID)
               , index(i)
@@ -87,6 +90,7 @@ namespace Gambit {
               , silenced(sil)
               , resume(r)
               , MPImode(mode)
+              , access(a)
             {
               #ifdef HDF5_DEBUG
               std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
@@ -106,6 +110,7 @@ namespace Gambit {
             std::string get_label()   { return label; }
 
             /// @{ Buffer status getters
+            char access_mode()        { return access; }
             bool sync_buffer_is_full(){ return sync_buffer_full; }
             bool sync_buffer_is_empty(){ return sync_buffer_empty; }
             bool is_synchronised()    { return synchronised; }
