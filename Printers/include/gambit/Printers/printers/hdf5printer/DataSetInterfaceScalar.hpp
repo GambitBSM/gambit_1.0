@@ -411,15 +411,19 @@ namespace Gambit {
         std::size_t chunk_start = (index / CHUNKLENGTH) * CHUNKLENGTH;
         std::size_t chunk_relative_index = index % CHUNKLENGTH;
 
+        #ifdef HDF5_DEBUG
         std::cout << "index      :" << index << std::endl;
         std::cout << "chunk_start:" << chunk_start << std::endl;
         std::cout << "chunk_rel  :" << chunk_relative_index << std::endl;
+        #endif
 
         // Figure out whether entry is already in the read buffer
         if(read_buffer.size()==0 or read_buffer_start!=chunk_start)
         {
            // Nope, don't have it, read in the appropriate chunk
+           #ifdef HDF5_DEBUG
            std::cout << "extracting new chunk starting from "<<chunk_start<< std::endl;
+           #endif
            // Make sure we don't try to read past the end of the dataset
            std::size_t length = CHUNKLENGTH; 
            if(chunk_start+length > this->dset_length())
