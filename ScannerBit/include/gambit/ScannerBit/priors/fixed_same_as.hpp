@@ -32,7 +32,7 @@ namespace Gambit
         private:
             std::vector<double> value;
             mutable int iter;
-                
+
         public:
             FixedPrior(const std::vector<std::string>& param, const Options& options) : BasePrior(param), iter(0)
             {
@@ -42,7 +42,7 @@ namespace Gambit
                     {
                         value.push_back(options.getValue<double>("fixed_value"));
                     }
-                    else if (options.getNode("fixed").IsSequence())
+                    else if (options.getNode("fixed_value").IsSequence())
                     {
                         value = options.getValue<std::vector<double>>("fixed_value");
                     }
@@ -56,7 +56,7 @@ namespace Gambit
                     scan_err << "Did not give fixed_value for parameter " << param_names[0] << "..." << scan_end;
                 }
             }
-            
+
             FixedPrior(const std::string& param, const Options& options) : BasePrior(param), iter(0)
             {
                 if (options.getNode().IsScalar())
@@ -72,27 +72,27 @@ namespace Gambit
                     scan_err << "fixed_value input for parameter " << param_names[0] << " is neither scalar nor sequence" << scan_end;
                 }
             }
-                
+
             FixedPrior(const std::string &name, double value) : BasePrior(name), value(1, value), iter(0) {}
-            
+
             void transform(const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
             {
                 for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
                 {
                     outputMap[*it] = value[iter];
                 }
-                
+
                 iter = (iter + 1)%value.size();
             }
         };
-        
+
         //if the parameter shares multiple different parameters
         class MultiPriors : public BasePrior
         {
         private:
             std::string name;
             std::vector<double> scale, shift;
-                
+
         public:
             MultiPriors(const std::vector<std::string>& param, const Options& options) : BasePrior(param), scale(param.size(), 1.0), shift(param.size(), 0.0)
             {
@@ -105,18 +105,18 @@ namespace Gambit
                     std::stringstream err;
                     scan_err << "Did not give same_as parameters for parameter " << name << scan_end;
                 }
-                
+
                 if (options.hasKey("scale"))
                 {
                     scale = options.getValue<std::vector<double>>("scale");
                 }
-                
+
                 if (options.hasKey("shift"))
                 {
                     shift = options.getValue<std::vector<double>>("shift");
                 }
             }
-                
+
             MultiPriors(std::string name_in, std::unordered_map<std::string, std::pair<double, double> > &map_in)
             {
                 std::string::size_type pos_old = 0;
@@ -138,15 +138,15 @@ namespace Gambit
                     pos_old = pos + 1;
                     pos = name_in.find("+", pos_old);
                 }
-                
+
                 name = name_in.substr(pos_old);
                 param_names.push_back(name_in);
             }
-            
+
             void transform (const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
             {
                 double value = outputMap[name];
-                
+
                 auto it1 = scale.begin(), it2 = shift.begin();
                 for (auto it = param_names.begin(), end = param_names.end(); it != end; ++it, ++it1, ++it2)
                 {
@@ -154,8 +154,8 @@ namespace Gambit
                 }
             }
         };
-        
-        LOAD_PRIOR(fixed, FixedPrior)
+
+        LOAD_PRIOR(fixed_value, FixedPrior)
         LOAD_PRIOR(same_as, MultiPriors)
     }
 }
