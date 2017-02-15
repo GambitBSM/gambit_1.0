@@ -57,10 +57,8 @@ ALL_INT_TYPES            \
 (map_str_dbl)            \
 
 // Types that can be retrieved from Gambit printer output (if printer plugin is properly equipped)
+// NEW: needs to be the same as the printable types, i.e. should be able to retrieve everything.
 #define RETRIEVABLE_TYPES  \
-(double)                   \
-(std::vector<double>)      \
-(Gambit::ModelParameters)  \
-(map_str_dbl)              \
+  PRINTABLE_TYPES
 
 #endif // defined __printable_types_hpp__

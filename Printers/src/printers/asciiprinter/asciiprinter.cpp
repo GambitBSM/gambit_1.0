@@ -318,14 +318,14 @@ Debug info:\n\
       // Assign to buffer, adding keys if needed
       buffer[bkey].data[vID] = functor_data;
 
-      if ( info_file_written == false )
+      //if ( info_file_written == false )
+      //{
+      if ( label_record.find(vID)==label_record.end() or functor_labels.size()>label_record.at(vID).size() )
       {
-        if ( label_record.find(vID)==label_record.end() or functor_labels.size()>label_record.at(vID).size() )
-        {
-           // Assume the new, longer label list is better to use. This variation of functor_data length from point to point is kind of dangerous for an ascii output file though and we might want to forbid it. There is some probability that my method of allocating the columns according to the longest used by each functor in the first buffer dump will fail.
-           label_record[vID] = functor_labels;
-        }
+         // Assume the new, longer label list is better to use. This variation of functor_data length from point to point is kind of dangerous for an ascii output file though and we might want to forbid it. There is some probability that my method of allocating the columns according to the longest used by each functor in the first buffer dump will fail.
+         label_record[vID] = functor_labels;
       }
+      //}
     }
  
     // write the printer buffer to file       
@@ -391,6 +391,7 @@ Debug info:\n\
             increased_lengths.push_back(it->first);    
           }
         }
+
         if(new_vIDs.size()!=0)
         {
           errmsg << "   The following vertexIDs are new since the last buffer dump (i.e. they did not try to print themselves during filling of any previous buffer):" <<std::endl;
@@ -399,6 +400,7 @@ Debug info:\n\
             errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
           }
         }
+
         if(increased_lengths.size()!=0)
         {
           errmsg << "   The following vertexIDs tried to print longer data vectors than were seen during filling of the first (and any other) previous buffer:" <<std::endl;

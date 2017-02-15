@@ -92,6 +92,9 @@ namespace Gambit
     /// Checks whether `str' ends with `suffix'
     bool endsWith(const std::string& str, const std::string& suffix); 
 
+    /// Checks whether `str' begins with `prefix'
+    bool startsWith(const std::string& str, const std::string& prefix); 
+
     /// Get pointers to beginning and end of array. 
     // Useful for initialising vectors with arrays, e.g.
     //   int vv[] = { 12,43 };

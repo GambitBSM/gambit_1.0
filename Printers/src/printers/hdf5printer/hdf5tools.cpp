@@ -25,7 +25,10 @@
 
 #include <stdio.h>
 #include <iostream>
-  
+ 
+// Boost
+#include <boost/preprocessor/seq/for_each.hpp>
+ 
 namespace Gambit {
   namespace Printers {
 
@@ -279,7 +282,7 @@ namespace Gambit {
       }
 
       // Iterator function for listing datasets in a group 
-      herr_t group_ls(hid_t g_id, const char *name, const H5L_info_t *info, void *op_data)
+      herr_t group_ls(hid_t g_id, const char *name, const H5L_info_t* /*info*/, void *op_data)
       {
           //std::cout<<"group_ls: "<<name<<std::endl;
           //std::cout<<info->type<<" "<<H5G_DATASET<<std::endl;
@@ -312,6 +315,21 @@ namespace Gambit {
          }
 
          return out;
+      }
+
+      /// Get type of a dataset in a group
+      hid_t getH5DatasetType(hid_t group_id, const std::string& dset_name)
+      {
+          hid_t dataset_id = openDataset(group_id, dset_name);
+          hid_t type_id = H5Dget_type(dataset_id);
+          if(type_id<0)
+          {
+            std::ostringstream errmsg;
+            errmsg << "Failed to get HDF5 type of dataset '"<<dset_name<<"'. See stderr output for more details.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+          }    
+          closeDataset(dataset_id);
+          return type_id;
       }
 
       /// Close hdf5 file
@@ -388,6 +406,16 @@ namespace Gambit {
       /// @}
     }
  
+    /// DEBUG: print to stdout all HDF5 type IDs
+    void printAllH5Types(void)
+    {
+       std::cout << "Types known to get_hdf5_data_type<T>::type() function:" << std::endl;
+       #define PRINTTYPEID(r,data,elem) \
+         std::cout << "  Type: " << STRINGIFY(elem) << ", H5 type code: " << get_hdf5_data_type<elem>::type() << std::endl;
+       BOOST_PP_SEQ_FOR_EACH(PRINTTYPEID, _, H5_OUTPUT_TYPES)
+       #undef PRINTTYPEID
+    }
+
   }
 }
 

@@ -37,6 +37,11 @@ namespace Gambit {
          virtual PPIDpair get_next_point(); // Get next rank/ptID pair in data file
          virtual PPIDpair get_current_point(); // Get current rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
+         /// Get type information for a data entry, i.e. defines the C++ type which this should be
+         /// retrieved as, not what it is necessarily literally stored as in the output.
+         /// For ASCIIPrinter, everything is currently a double.
+         virtual std::size_t get_type(const std::string&) { return getTypeID<double>(); }
+         virtual std::set<std::string> get_all_labels(); // Get all output column labels
          bool _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
          bool _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
          bool _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);

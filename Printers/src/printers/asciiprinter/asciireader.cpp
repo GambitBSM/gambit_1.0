@@ -37,7 +37,7 @@ namespace Gambit {
       return it->second;
     }
 
-    /// @{ Members of 'asciiReader'
+    /// @{ General members of 'asciiReader'
 
     /// Constructor
     asciiReader::asciiReader(const Options& options)
@@ -130,8 +130,9 @@ namespace Gambit {
       //std::cout << "eoi()? " << tmp << std::endl;
       //if(!dataFile) { std::cout << "At end of file!" << std::endl; }
       return !dataFile;
-    } 
-    /// @}
+    }
+
+ 
 
     /// Open an 'info' file and figure out what column is what
     std::map<std::string,uint> asciiReader::get_column_info(const std::string& info_filename)
@@ -285,6 +286,17 @@ namespace Gambit {
       // Else Already at the right place! No need to do anything.
     } // end function
 
+    /// Get all output column labels
+    std::set<std::string> asciiReader::get_all_labels()
+    {
+       std::set<std::string> out;
+       for(auto it = column_map.begin(); it!=column_map.end(); ++it)
+       {
+         out.insert(it->first);
+       }
+       return out;
+    }
+    /// @}
 
     /// @{ Retrieval functions
 

@@ -342,6 +342,17 @@ namespace Gambit
       return true;
     }     
    
+    // Inspired by the above. Checks whether 'str' begins with 'prefix'
+    bool startsWith(const std::string& str, const std::string& prefix) 
+    {
+      if (&prefix == &str) return true; // str and prefix are the same string
+      if (prefix.length() > str.length()) return false;
+      for (size_t i = 0; i < prefix.length(); ++i) {
+          if (prefix[i] != str[i]) return false;
+      }
+      return true;
+    }     
+   
     
   }
 

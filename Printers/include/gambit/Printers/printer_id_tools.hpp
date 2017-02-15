@@ -32,12 +32,22 @@ namespace Gambit
 
         /// Returns unigue pointid;
         unsigned long long int &get_point_id();
-        
-        /// Returns unique postive parameter id
+ 
+        /// Consolidated 'get id' function, for both main and aux
+        int get_param_id(const std::string& name, bool& is_new);
+        int get_param_id(const std::string& name);
+        /// Get names of all parameters known to printer system (vector index corresponds to ID number)
+        std::vector<std::string> get_all_params();
+
+        /// Returns unique postive parameter id (UPDATE! Now just a thin wrapper for get_param_id)
         int get_main_param_id(const std::string &);
+        /// Extra argument returns true if new ID was assigned
+        int get_main_param_id(const std::string &, bool& is_new);
         
-        /// Returns unique negative parameter id
+        /// Returns unique negative parameter id (UPDATE! Now just a thin wrapper for get_param_id)
         int get_aux_param_id(const std::string &);
+        /// Extra argument returns true if new ID was assigned
+        int get_aux_param_id(const std::string &, bool& is_new);
     }
 }
 

@@ -1423,8 +1423,12 @@ namespace Gambit
       unsigned long pointID = ppid.pointID; // unsigned versions were coming out gibberish in python...
       unsigned int mpirank = ppid.rank;
       //std::cout << "rank "<<myRank<<": adding new RA PPID to list: (" << pointID << "," << mpirank << ")" << std::endl;
-      _print(pointID, "RA_pointID", -2000, mpirank, pointID); //TODO should get these ID numbers from the ScannerBit ID assignment system
-      _print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
+ 
+      // The ID numbers will be obtained via the 'aux' parameter system, but I think that is fine.
+      // The call is a little bizarre because these are template functions from the base class, which
+      // require this weird notation to resolve a compiler abiguity.
+      this->print(pointID, "RA_pointID", mpirank, pointID);
+      this->print(mpirank, "RA_MPIrank", mpirank, pointID);
     }
 
     /// Completely reset the PPIDlists

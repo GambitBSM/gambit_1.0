@@ -271,7 +271,6 @@ namespace Gambit
                     hid_t dataset2 = HDF5::openDataset(group_id, "pointID_isvalid", true);
                     HDF5::errorsOn();
                     hssize_t size; // To be measured
-                    std::cout <<"a: "<<size <<std::endl;
                     if(dataset<0 and dataset2<0)
                     {
                        // Probably the sync group is empty for this file, just skip it
@@ -280,7 +279,6 @@ namespace Gambit
                        {
                            size_tot_l = size_tot + size; // Last?
                        }
-                       std::cout <<"b: "<< size <<std::endl;
                     } 
                     else if(dataset<0 or dataset2<0)
                     {
@@ -296,7 +294,6 @@ namespace Gambit
                        hid_t dataspace2 = H5Dget_space(dataset2);
                        size           = H5Sget_simple_extent_npoints(dataspace); // Use variable declared outside the if block
                        hssize_t size2 = H5Sget_simple_extent_npoints(dataspace2);
-                       std::cout <<"c: "<< size <<std::endl;
                        
                        std::vector<bool> valids;
                        Enter_HDF5<read_hdf5>(dataset2, valids);
@@ -327,7 +324,6 @@ namespace Gambit
                            else
                                --size;
                        }
-                       std::cout<<"d: " << size <<std::endl;
 
                        H5Sclose(dataspace);
                        H5Sclose(dataspace2);
@@ -340,10 +336,8 @@ namespace Gambit
                         cum_sizes[j] += size;
                     }
                     sizes[i] = size;
-                    std::cout <<"sizes["<<i<<"] = "<<sizes[i]<<" ("<<size<<")"<<std::endl;
                     size_tot += size;
                 }
-                std::cout <<"size_tot = "<<size_tot<<std::endl;
             }
  
             hdf5_stuff::~hdf5_stuff()
@@ -577,7 +571,7 @@ namespace Gambit
                     
                     // Create datasets
                     setup_hdf5_points(new_group, type, type2, size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it);
-                    std::cout<<"(theoretically) created dataset '"<<*it<<"' in file:group "<<file<<":"<<group_name<<std::endl;
+                    //std::cout<<"(theoretically) created dataset '"<<*it<<"' in file:group "<<file<<":"<<group_name<<std::endl;
  
                     // Reopen dataset for writing
                     dataset_out   = HDF5::openDataset(new_group, *it);

@@ -55,17 +55,17 @@ def printcontents(item,prelines):
 
 printcontents(f,'')
 
-### test extraction:
-import numpy as np
-group = f["/"]
-pid  = group["pointID"]
-rank = group["MPIrank"]
-pid_isvalid  = np.array(group["pointID_isvalid"],dtype=np.bool)
-rank_isvalid = np.array(group["MPIrank_isvalid"],dtype=np.bool)
-m = (pid_isvalid & rank_isvalid)
-for p,r in zip(pid[m],rank[m]):
-  if p==2281 and r==0:
-     print "point (",p,",",r,") exists!"
+# ### test extraction:
+# import numpy as np
+# group = f["/"]
+# pid  = group["pointID"]
+# rank = group["MPIrank"]
+# pid_isvalid  = np.array(group["pointID_isvalid"],dtype=np.bool)
+# rank_isvalid = np.array(group["MPIrank_isvalid"],dtype=np.bool)
+# m = (pid_isvalid & rank_isvalid)
+# for p,r in zip(pid[m],rank[m]):
+#   if p==2281 and r==0:
+#      print "point (",p,",",r,") exists!"
                                         
 quit()
 

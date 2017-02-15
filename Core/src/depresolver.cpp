@@ -853,20 +853,20 @@ namespace Gambit
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
         // (so that later on they can pass this to the printer object to identify themselves)
-        //masterGraph[*vi]->setVertexID(index[*vi]); // Ugh cannot do this, needs to be consistent with get_main_param_id
+        //masterGraph[*vi]->setVertexID(index[*vi]); // Ugh cannot do this, needs to be consistent with get_param_id
         std::string label = masterGraph[*vi]->label();
-        masterGraph[*vi]->setVertexID(Printers::get_main_param_id(label));
+        masterGraph[*vi]->setVertexID(Printers::get_param_id(label));
         // Same for timing output ID, but get ID number from printer system
         std::string timing_label = masterGraph[*vi]->timingLabel();
-        masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));
+        masterGraph[*vi]->setTimingVertexID(Printers::get_param_id(timing_label));
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
         //       how it should be in the end.
         if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
         {
-          functors_to_print.push_back(index[*vi]);
-
+          functors_to_print.push_back(index[*vi]); // TODO: This may be obsolete
+          boundPrinter->addToPrintList(label); // Needed mainly by postprocessor.
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
           //logger() << LogTags::dependency_resolver << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
@@ -888,7 +888,7 @@ namespace Gambit
       // Similarly for extra results, i.e. from any functors not in this
       // initial list, whose "requiresPrinting" flag later gets set to 'true'
       // somehow.)
-      boundPrinter->initialise(functors_to_print);
+      boundPrinter->initialise(functors_to_print); // TODO: May be obsolete
     }
 
     std::vector<DRes::VertexID> DependencyResolver::closestCandidateForModel(std::vector<DRes::VertexID> candidates)

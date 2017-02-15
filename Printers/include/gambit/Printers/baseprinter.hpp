@@ -33,10 +33,6 @@
 #include "gambit/Utils/factory_registry.hpp"
 #include "gambit/Utils/model_parameters.hpp"
 
-// Boost
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/punctuation/comma_if.hpp>
-
 // Printable types
 #ifndef STANDALONE
    // If we are in a main gambit executable, we need to know all the GAMBIT printable types
@@ -66,6 +62,10 @@ namespace Gambit
     // Helper function for parsing ModelParameters label strings.
     // Defined in asciiReader.cpp
     bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out);
+
+    /// For debugging; print to stdout all the typeIDs for all types.
+    void printAllTypeIDs(void);
+
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Printer class declarations                          %
@@ -140,6 +140,16 @@ namespace Gambit
           if(printer_enabled) _print(in, label, vertexID, rank, pointID);
         }
 
+        // Overload which automatically determines a unique ID code
+        // based on the label.
+        template<typename T>
+        void print(T const& in, const std::string& label,
+                   const uint rank,
+                   const ulong pointID)
+        {
+          if(printer_enabled) _print(in, label, rank, pointID);
+        }
+
       protected:
         using BaseBasePrinter::_print; //unhide the default function in the base class
 
@@ -166,6 +176,9 @@ namespace Gambit
         {
           return _retrieve(out, label, rank, pointID);
         }
+
+        /// Retrieve and directly print data to new output
+        bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID);
 
       protected:
         using BaseBaseReader::_retrieve; //unhide the default function in the base class

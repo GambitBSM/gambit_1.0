@@ -42,13 +42,16 @@ struct Chunk
 {
   std::size_t start; // Index of first point in this chunk
   std::size_t end;   // Index of last point in this chunk
+  std::size_t eff_length; // Number of points in the chunk that are not marked to be skipped
   Chunk(std::size_t s, std::size_t e)
    : start(s)
    , end(e)
+   , eff_length(0)
   {}
   Chunk()
    : start(0)
    , end(0)
+   , eff_length(0)
   {}
   // Function to check if a given dataset index was processed in this chunk
   bool iContain(std::size_t index) const
@@ -80,9 +83,33 @@ typedef std::unordered_set<Chunk,ChunkHash,ChunkEqual> ChunkSet;
 // The reweigher Scanner plugin
 scanner_plugin(reweight, version(1, 0, 0))
 {
-  reqd_inifile_entries("old_LogLike"); // label for loglike entry in info file
+  reqd_inifile_entries("LogLike"); // Purpose name for the likelihood container plugin
 
-  /// The constructor to run when the MultiNest plugin is loaded.
+  /// Number of iterations between progress reports. '0' means no updates
+  std::size_t update_interval;
+
+  /// Labels of all output datasets
+  std::set<std::string> data_labels;
+
+  /// Labels of output datasets to be copied
+  std::set<std::string> data_labels_copy;
+
+  /// List of likelihoods in old output to be added to the newly computed likelihood
+  std::vector<std::string> add_to_logl;
+
+  /// List of likelihoods in old output to be subtracted from the newly computed likelihood
+  std::vector<std::string> subtract_from_logl;
+
+  /// The likelihood container plugin
+  like_ptr LogLike;
+
+  /// The "Purpose" string for the likelihood container plugin (will be its printed output name)
+  std::string logl_purpose_name;
+
+  /// Path to save resume files
+  std::string root;
+ 
+  /// The constructor to run when the plugin is loaded.
   plugin_constructor
   {
      std::cout << "Initialising 'reweight' plugin for ScannerBit..." << std::endl;
@@ -95,6 +122,43 @@ scanner_plugin(reweight, version(1, 0, 0))
     Gambit::Options reader_options = get_inifile_node("reader");
     // Initialise reader object
     get_printer().new_reader("old_points",reader_options);
+
+    // Get names of all the output data labels
+    data_labels = get_printer().get_reader("old_points")->get_all_labels();
+
+    // Set up other options for the plugin
+    update_interval = get_inifile_value<std::size_t>("update_interval", 1000);
+    add_to_logl = get_inifile_value<std::vector<std::string>>("add_to_LogLike", std::vector<std::string>());
+    subtract_from_logl = get_inifile_value<std::vector<std::string>>("subtract_from_LogLike", std::vector<std::string>());
+
+    // Finally, there is the 'Purpose' value of the likelihood container. This may well clash
+    // with the old name used in the input file, so better check for this and make the user
+    // change their choice if so.
+    logl_purpose_name = get_inifile_value<std::string>("LogLike");
+    bool discard_old_logl = get_inifile_value<bool>("permit_discard_old_LogLike",false);
+    if(not discard_old_logl)
+    {
+       if(std::find(data_labels.begin(), data_labels.end(), logl_purpose_name)
+            != data_labels.end())
+       {
+          std::ostringstream err;
+          err << "Error starting postprocessing run! The 'purpose' name selected for the likelihood to be computed ('"<<logl_purpose_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'LogLike', or set 'permit_discard_old_LogLike' to 'true' to allow the old data to be replaced in the new output."; 
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+    }
+
+    // Retrieve the external likelihood calculator
+    LogLike = get_purpose(logl_purpose_name);
+
+    // Do not allow GAMBIT's own likelihood calculator to directly shut down the scan.
+    // This scanner plugin will assume responsibility for this process, triggered externally by
+    // the 'plugin_info.early_shutdown_in_progress()' function.
+    LogLike->disable_external_shutdown();
+
+    // Path to save resume files
+    std::string defpath = get_inifile_value<std::string>("default_output_path");
+    root = Utils::ensure_path_exists(defpath+"/reweight/resume");
+    std::cout << "root: " << root << std::endl;
   }
 
   /// @{ Helper functions for performing resume related tasks
@@ -158,6 +222,7 @@ scanner_plugin(reweight, version(1, 0, 0))
     // Convert effective chunk to real dataset indices (i.e. add in the 'skipped' indices)
     std::size_t count = 0;
     Chunk realchunk;
+    realchunk.eff_length = eff_chunk.length(); // Record real number of points that will be processed from this chunk
     for(std::size_t i=0; i<dset_length; ++i)
     {
        if(not point_done(done_chunks, i)) 
@@ -272,20 +337,71 @@ scanner_plugin(reweight, version(1, 0, 0))
     numtasks = s_numtasks;
     rank = s_rank;
 
-    // Retrieve the external likelihood calculator
-    like_ptr LogLike;
-    LogLike = get_purpose(get_inifile_value<std::string>("LogLike"));
+    /// @{ Determine what data needs to be copied from the input file to the new output dataset
+    // Get labels of functors listed for printing from the primary printer.
+    std::set<std::string> all_params = get_printer().get_stream()->getPrintList();
+    // There are some extra items that will also be automatically printed in all scans,
+    // so we need to avoid copying those:
+    all_params.insert("unitCubeParameters"); // It would be better to keep the originals here, but currently cannot turn off the printing from within like_ptr.
+    all_params.insert("MPIrank"); // These should be re-printed the same as they were anyway
+    all_params.insert("pointID");
+    all_params.insert(logl_purpose_name); // If there is a name clash and the run was not aborted, we are to discard the old data under this name.
+    std::set<std::string> new_params = all_params; // Parameters not present in the input file
 
-    // Do not allow GAMBIT's own likelihood calculator to directly shut down the scan.
-    // This scanner plugin will assume responsibility for this process, triggered externally by
-    // the 'plugin_info.early_shutdown_in_progress()' function.
-    LogLike->disable_external_shutdown();
+    std::cout << "Determining which data is to be copied from input file to new output file, and which will be recomputed..." <<std::endl;
+    std::cout << " Datasets found in input file: " << std::endl;
+    for(auto it = data_labels.begin(); it!=data_labels.end(); ++it)
+    {
+       // Check if any parameters we plan to copy have already been registered by the
+       // printer system.
+       // This is actually a little tricky, since names of parameters can be modified
+       // in the output depending on what printer was used. So far we have kept a certain
+       // consistency that can be exploited, but it isn't enforced. Should note this somewhere
+       // in the printer documentation.
+       // For example, when printing ModelParameters, they have their actual parameter names
+       // appended and they are output as separate datasets/columns. Likewise for vector
+       // components. But this appending rule is so far consistent, so I think we can just
+       // check that no prefix substring of the proposed copy has already been registered.
+       // Not sure if this has a danger of observable names just by accident being prefixes of
+       // some other name?
+       bool is_new = true;
+       for(auto jt = all_params.begin(); jt!=all_params.end(); ++jt)
+       {
+          if( ( (*it)==(*jt) )
+              or Gambit::Utils::startsWith(*it,(*jt)+":")
+              or Gambit::Utils::startsWith(*it,(*jt)+"[")
+              or Gambit::Utils::startsWith(*it,(*jt)+"{")
+              or Gambit::Utils::startsWith(*it,(*jt)+"%")
+              or Gambit::Utils::startsWith(*it,(*jt)+"#")
+            ) // if not [input data label] starts with [existing parameter] (plus append seperator character, for extra info like parameter name or index)
+          {
+             // Then it is not new. Not allowed to copy this, the likelihood container is already printing it anew.
+             new_params.erase(*jt);
+             is_new = false;
+             break;
+          }
+       }
 
-    // Path to save resume files
-    std::string defpath = get_inifile_value<std::string>("default_output_path");
-    std::string root = Utils::ensure_path_exists(defpath+"/reweight/resume");
+       if(is_new)
+       {
+          data_labels_copy.insert(*it); // Not otherwise printed; schedule for copying
+          std::cout << "   copy     : "<< (*it) <<std::endl;
+       }
+       else
+       {
+          std::cout << "   recompute: "<< (*it) <<std::endl;
+       }
+    }
+    // Might as well also list what new stuff is listed for creation
+    std::cout << " New datasets to be added: " << std::endl;
+    for(auto it = new_params.begin(); it!=new_params.end(); ++it)
+    {
+       std::cout << "   " << *it << std::endl;
+    }
 
-    std::cout << "root: " << root << std::endl;
+    std::cout << "Copy analysis complete." <<std::endl;
+    /// @}
+
 
     // Storage for names of models and parameters.
     std::map<std::string,std::vector<std::string>> req_models; // All the required model+parameter names
@@ -315,9 +431,6 @@ scanner_plugin(reweight, version(1, 0, 0))
     int dims = get_dimension();
     std::vector<double> unitcube(dims);
 
-    // Get label that the input data file uses for the LogLikelihood entries
-    std::string old_loglike_label = get_inifile_value<std::string>("old_LogLike");
-
     // Points which have already been processed in a previous (aborted) run
     ChunkSet done_chunks; // Empty by default
 
@@ -330,7 +443,6 @@ scanner_plugin(reweight, version(1, 0, 0))
       done_chunks = get_done_points(root);
     }
 
-
     // Retrieve the reader object
     Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
     unsigned long long total_length = reader->get_dataset_length();
@@ -341,10 +453,11 @@ scanner_plugin(reweight, version(1, 0, 0))
 
     // Loop over the old points
     PPIDpair current_point = reader->get_next_point(); // Get first point
-    unsigned long long loopi = 0;
+    std::size_t loopi = 0; // track true index of input file
+    std::size_t ppi = 0; // track number of points actually processed
     std::cout << "Starting loop over old points ("<<total_length<<" in total)" << std::endl;
-    std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<mychunk.start<<" through to "<<mychunk.end<<"." << std::endl;
-    std::cout << "(excluding any points that may have already been processed as recorded by resume data)" <<std::endl;
+    std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<mychunk.start<<" through to "<<mychunk.end<<", excluding any points that may have already been processed as recorded by resume data." <<std::endl;
+    std::cout << "This leaves "<<mychunk.eff_length<<" points for this rank to process."<<std::endl;
 
     // Disable auto-incrementing of pointID's in the likelihood container. We will set these manually.
     Gambit::Printers::auto_increment() = false;
@@ -352,14 +465,12 @@ scanner_plugin(reweight, version(1, 0, 0))
     bool quit = false; // Flag to abort 'scan' early.
     while(not reader->eoi() and not quit) // while not end of input
     {
-      // DEBUG
-      //std::cout << "rank "<<rank<<": loop "<<loopi<<std::endl;
       loopi++;
 
       // Cancel processing of iterations beyoud our assigned range
       if(loopi>mychunk.end)
       {
-         std::cout << "This task (rank "<<rank<<") has reached the end of its batch, cancelling file iteration." << std::endl;
+         std::cout << "Rank "<<rank<<" has reached the end of its batch, stopping iteration." << std::endl;
          break;
       }
 
@@ -370,6 +481,13 @@ scanner_plugin(reweight, version(1, 0, 0))
          current_point = reader->get_next_point();
          continue;
       }
+
+      if((ppi % update_interval) == 0)
+      {
+         // Progress report
+         std::cout << "Rank "<<rank<<" has proccessed "<<ppi<<" of "<<mychunk.eff_length<<" points ("<<100*ppi/mychunk.eff_length<<"%)"<<std::endl;
+      }
+      ppi++; // Processing is go, update counter. 
 
       // Data about current point in input file
       unsigned int       MPIrank = current_point.rank;
@@ -462,7 +580,7 @@ scanner_plugin(reweight, version(1, 0, 0))
               == retrieved_pars.end())
           {
              std::ostringstream err;
-             err << "Error! asciiReader did not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
+             err << "Error! Reader could not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
              scan_error().raise(LOCAL_INFO,err.str());
           }
   
@@ -509,20 +627,68 @@ scanner_plugin(reweight, version(1, 0, 0))
       //double partial_logL = LogLike(unitcube);
 
       // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
-      double partial_logL = LogLike(outputMap); // Here we supply *only* the map; no parameters to transform.
+      double new_logL = LogLike(outputMap); // Here we supply *only* the map; no parameters to transform.
 
-      // Get the previously computed likelihood value for this point
-      double old_LogL;
+      // Add old likelihood components as requested in the inifile
+      double combined_logL = new_logL;
       bool   is_valid;
-      is_valid = reader->retrieve(old_LogL, old_loglike_label);
-
-      if(is_valid)
+      for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
       {
-         // Combine with the old logL value and output
-         double combined_logL = old_LogL + partial_logL;
-         get_printer().get_stream()->print( combined_logL, "reweighted_LogL", MPIrank, pointID);
+          std::string old_logl = *it;
+          if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+              == data_labels.end())
+          {
+             std::ostringstream err;
+             err << "In the input YAML file, you requested to 'add_to_LogLike' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+          if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
+          {
+             std::ostringstream err;
+             err << "In the input YAML file, you requested 'add_to_LogLike' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+          
+          double old_logl_value;
+          is_valid = reader->retrieve(old_logl_value, old_logl);
+          if(is_valid)
+          {
+             // Combine with the new logL component
+             combined_logL += old_logl_value;
+          }
+          // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
       }
-      // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+
+      // Now do the same thing for the components we want to subtract.
+      for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
+      {
+          std::string old_logl = *it;
+          if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+              == data_labels.end())
+          {
+             std::ostringstream err;
+             err << "In the input YAML file, you requested to 'subtract_from_LogLike' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+          if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
+          {
+             std::ostringstream err;
+             err << "In the input YAML file, you requested 'subtract_from_LogLike' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+          
+          double old_logl_value;
+          is_valid = reader->retrieve(old_logl_value, old_logl);
+          if(is_valid)
+          {
+             // Combine with the new logL component, subtracting this time
+             combined_logL -= old_logl_value;
+          }
+          // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+      }
+
+      // Output the new reweighted likelihood (if all components were valid)
+      if(is_valid) get_printer().get_stream()->print( combined_logL, "reweighted_LogL", MPIrank, pointID);
 
       /// TODO: There are currently some issues to solve regarding the output
       ///  For asciiPrinter it is kind of ok to just re-output everything, it will have
@@ -542,6 +708,16 @@ scanner_plugin(reweight, version(1, 0, 0))
       ///  would take quite a bit of setting up I think...
       ///  Would need the reader to provide virtual functions for retrieving all the
       ///  observable metadata from the output files.
+      ///
+      ///  UPDATE: TODO: What happens in case of invalid point? Does this copying etc. just get skipped?
+      ///  Or do I need to check that the output LogL was valid somehow?
+     
+      /// Copy selected data from input file
+      for(std::set<std::string>::iterator it = data_labels_copy.begin(); it!=data_labels_copy.end(); ++it)
+      {
+         //std::cout << "Copying data for "<<*it<<", point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
+         reader->retrieve_and_print(*it, *(get_printer().get_stream()), MPIrank, pointID);
+      }
 
       // Check whether the calling code wants us to shut down early
       quit = Gambit::Scanner::Plugins::plugin_info.early_shutdown_in_progress();

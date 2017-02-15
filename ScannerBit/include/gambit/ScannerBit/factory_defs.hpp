@@ -287,6 +287,14 @@ namespace Gambit
             }
         };
 
+        // TODO (Ben): I am just flagging a possible issue here. In principle, can't
+        // two like_ptrs be active in the one scan? I.e. we could calculate two separate
+        // likelihood functions at the one point (no scanners currently allow this, but
+        // in-principle they could). If so, then there is a printer issue here to worry
+        // about, namely, and error will be thrown if we attempt to print MPIrank, pointID,
+        // and unitCubeParameters twice for the same point, which it seems is what would
+        // happen. So we need to change something here so that they only get printed once
+        // per point, no matter how many like_ptr's may be "active" at once.
         class like_ptr : public scan_ptr<double (std::unordered_map<std::string, double> &)>
         {
         private:
