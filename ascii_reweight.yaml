@@ -1,4 +1,4 @@
-# Test YAML file for running the 'reweight' scanner plugin, for testing
+# Test YAML file for running the 'postprocessor' scanner plugin, for testing
 # out point reweighting
 #
 # To test this out, first run:
@@ -12,7 +12,7 @@
  
 #======== Input parameter declarations =======
 Parameters: 
-  # Prior type is "none" because reweight scanner will read in old points
+  # Prior type is "none" because postprocessor 'scanner' will read in old points
   NormalDist:
     mu:
       prior_type: none
@@ -33,7 +33,7 @@ Printer:
   #options:
   #  output_file: "results.txt"
   #  buffer_length: 1
-  # Output can be re-printed into a different format via the reweight scanner
+  # Output can be re-printed into a different format via the postprocessor
   printer: hdf5
   options:
     output_file: "results.hdf5"
@@ -44,12 +44,12 @@ Printer:
  
 #======== Scanner setup ========
 Scanner:
-  use_scanner: reweight
+  use_scanner: postprocess
 
   scanners:
 
-    reweight:
-      plugin: reweight
+    postprocess:
+      plugin: postprocessor
       # 'purpose' name assigned to log-likelihood for this 'scan'
       LogLike: LogLike2
       # If the purpose name above collides with an entry in the selected input file 
@@ -108,7 +108,7 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/ascii_reweight/"
+  default_output_path: "runs/postprocessor_test/"
 
   print_timing_data: false
 

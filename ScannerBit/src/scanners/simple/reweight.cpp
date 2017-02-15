@@ -2,9 +2,12 @@
 //  *********************************************
 ///  \file
 ///
-///  Toy reweighting sampler to demo functioning
-///  of 'reader' classes, which allow data to
-///  be read in from previous output.
+///  "Postprocessing" scanner plugin. Reads points
+///  from old scan output and re-runs a likelihood
+///  containing plugin for those same point.
+///  Can perform some simple addition/subtraction
+///  operations of likelihood components from
+///  the new plugin output.
 ///
 ///  *********************************************
 ///
@@ -12,7 +15,7 @@
 //
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
-///  \date 2016 Mar
+///  \date 2016 Mar, 2017 Jan, Feb
 ///
 ///  *********************************************
 
@@ -81,7 +84,7 @@ struct ChunkEqual{
 typedef std::unordered_set<Chunk,ChunkHash,ChunkEqual> ChunkSet;
 
 // The reweigher Scanner plugin
-scanner_plugin(reweight, version(1, 0, 0))
+scanner_plugin(postprocessor, version(1, 0, 0))
 {
   reqd_inifile_entries("LogLike"); // Purpose name for the likelihood container plugin
 
@@ -108,11 +111,31 @@ scanner_plugin(reweight, version(1, 0, 0))
 
   /// Path to save resume files
   std::string root;
+
+  /// MPI data
+  unsigned int numtasks;
+  unsigned int rank;
  
   /// The constructor to run when the plugin is loaded.
   plugin_constructor
   {
-     std::cout << "Initialising 'reweight' plugin for ScannerBit..." << std::endl;
+    int s_numtasks;
+    int s_rank;
+    
+    // Get MPI data. No communication is needed, we just need to know how to
+    // split up the workload. Just a straight division among all processes is
+    // used, nothing fancy.    
+#ifdef WITH_MPI
+    MPI_Comm_size(MPI_COMM_WORLD, &s_numtasks); // MPI requires unsigned ints here, so we'll just convert afterwards
+    MPI_Comm_rank(MPI_COMM_WORLD, &s_rank);
+#else
+    s_numtasks = 1;
+    s_rank = 0;
+#endif
+    numtasks = s_numtasks;
+    rank = s_rank;
+
+    if(rank==0) std::cout << "Initialising 'postprocessor' plugin for ScannerBit..." << std::endl;
 
     // Get options for setting up the reader (these live in the inifile under:
     // Scanners:
@@ -157,8 +180,8 @@ scanner_plugin(reweight, version(1, 0, 0))
 
     // Path to save resume files
     std::string defpath = get_inifile_value<std::string>("default_output_path");
-    root = Utils::ensure_path_exists(defpath+"/reweight/resume");
-    std::cout << "root: " << root << std::endl;
+    root = Utils::ensure_path_exists(defpath+"/postprocessor/resume");
+    if(rank==0) std::cout << "root: " << root << std::endl;
   }
 
   /// @{ Helper functions for performing resume related tasks
@@ -317,25 +340,7 @@ scanner_plugin(reweight, version(1, 0, 0))
   /// Main run function
   int plugin_main()
   {
-    std::cout << "Running 'reweight' plugin for ScannerBit." << std::endl;
-
-    unsigned int numtasks;
-    unsigned int rank;
-    int s_numtasks;
-    int s_rank;
-    
-    // Get MPI data. No communication is needed, we just need to know how to
-    // split up the workload. Just a straight division among all processes is
-    // used, nothing fancy.    
-#ifdef WITH_MPI
-    MPI_Comm_size(MPI_COMM_WORLD, &s_numtasks); // MPI requires unsigned ints here, so we'll just convert afterwards
-    MPI_Comm_rank(MPI_COMM_WORLD, &s_rank);
-#else
-    s_numtasks = 1;
-    s_rank = 0;
-#endif
-    numtasks = s_numtasks;
-    rank = s_rank;
+    if(rank==0) std::cout << "Running 'postprocessor' plugin for ScannerBit." << std::endl;
 
     /// @{ Determine what data needs to be copied from the input file to the new output dataset
     // Get labels of functors listed for printing from the primary printer.
@@ -348,8 +353,8 @@ scanner_plugin(reweight, version(1, 0, 0))
     all_params.insert(logl_purpose_name); // If there is a name clash and the run was not aborted, we are to discard the old data under this name.
     std::set<std::string> new_params = all_params; // Parameters not present in the input file
 
-    std::cout << "Determining which data is to be copied from input file to new output file, and which will be recomputed..." <<std::endl;
-    std::cout << " Datasets found in input file: " << std::endl;
+    if(rank==0) std::cout << "Determining which data is to be copied from input file to new output file, and which will be recomputed..." <<std::endl;
+    if(rank==0) std::cout << " Datasets found in input file: " << std::endl;
     for(auto it = data_labels.begin(); it!=data_labels.end(); ++it)
     {
        // Check if any parameters we plan to copy have already been registered by the
@@ -385,21 +390,23 @@ scanner_plugin(reweight, version(1, 0, 0))
        if(is_new)
        {
           data_labels_copy.insert(*it); // Not otherwise printed; schedule for copying
-          std::cout << "   copy     : "<< (*it) <<std::endl;
+          if(rank==0) std::cout << "   copy     : "<< (*it) <<std::endl;
        }
        else
        {
-          std::cout << "   recompute: "<< (*it) <<std::endl;
+          if(rank==0) std::cout << "   recompute: "<< (*it) <<std::endl;
        }
     }
     // Might as well also list what new stuff is listed for creation
-    std::cout << " New datasets to be added: " << std::endl;
-    for(auto it = new_params.begin(); it!=new_params.end(); ++it)
+    if(rank==0)
     {
-       std::cout << "   " << *it << std::endl;
+      std::cout << " New datasets to be added: " << std::endl;
+      for(auto it = new_params.begin(); it!=new_params.end(); ++it)
+      {
+         std::cout << "   " << *it << std::endl;
+      }
     }
-
-    std::cout << "Copy analysis complete." <<std::endl;
+    if(rank==0) std::cout << "Copy analysis complete." <<std::endl;
     /// @}
 
 
@@ -408,15 +415,15 @@ scanner_plugin(reweight, version(1, 0, 0))
     std::map<std::string,std::map<std::string,std::string>> longname; // Retrieve the "model::parameter" version of the name
   
     // Retrieve parameter and model names
-    std::cout << "Constructing prior plugin for reweight scanner" << std::endl;
+    if(rank==0) std::cout << "Constructing prior plugin for postprocessor" << std::endl;
     std::vector<std::string> keys = LogLike->getPrior().getParameters(); // use to use get_keys() in the objective (prior) plugin;
     //set_dimension(keys.size());
     
     // Pull the keys apart into model-name, parameter-name pairs
-    std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
+    if(rank==0) std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
     for(auto it=keys.begin(); it!=keys.end(); ++it)
     {
-       std::cout << "   " << *it << std::endl;
+       if(rank==0) std::cout << "   " << *it << std::endl;
        std::vector<std::string> splitkey = Utils::delimiterSplit(*it, "::");
        std::string model = splitkey[0];
        std::string par   = splitkey[1];
@@ -455,9 +462,8 @@ scanner_plugin(reweight, version(1, 0, 0))
     PPIDpair current_point = reader->get_next_point(); // Get first point
     std::size_t loopi = 0; // track true index of input file
     std::size_t ppi = 0; // track number of points actually processed
-    std::cout << "Starting loop over old points ("<<total_length<<" in total)" << std::endl;
-    std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<mychunk.start<<" through to "<<mychunk.end<<", excluding any points that may have already been processed as recorded by resume data." <<std::endl;
-    std::cout << "This leaves "<<mychunk.eff_length<<" points for this rank to process."<<std::endl;
+    if(rank==0) std::cout << "Starting loop over old points ("<<total_length<<" in total)" << std::endl;
+    std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<mychunk.start<<" through to "<<mychunk.end<<", excluding any points that may have already been processed as recorded by resume data. This leaves "<<mychunk.eff_length<<" points for this rank to process."<<std::endl;
 
     // Disable auto-incrementing of pointID's in the likelihood container. We will set these manually.
     Gambit::Printers::auto_increment() = false;
@@ -726,7 +732,7 @@ scanner_plugin(reweight, version(1, 0, 0))
       {
          // Need to save data about which points have been processed, so we
          // can resume processing from here.
-         std::cerr << "Reweight scanner received quit signal! Writing resume data and aborting run." << std::endl;
+         std::cerr << "Postprocessor (rank "<<rank<<") received quit signal! Writing resume data and aborting run." << std::endl;
          Chunk mydonechunk(mychunk.start,loopi);
          record_done_points(done_chunks, mydonechunk, root, rank, numtasks);
       }
