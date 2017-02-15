@@ -181,7 +181,6 @@ namespace Gambit
                     if (options.getValue<std::string>("scale") == "degrees")
                     {
                         scale = 0.0174532925199;
-                        scale_out = scale;
                     }
                     else
                     {
@@ -194,12 +193,8 @@ namespace Gambit
                     shift = options.getValue<double>("shift");
                 }
 
+                // If the user has specifically set output_scaled_values = false, then remove any scale and shift before outputting.
                 if (options.hasKey("output_scaled_values") and not options.getValue<bool>("output_scaled_values"))
-                {
-                    scale_out = 1.0;
-                    shift_out = 0.0;
-                }
-                else
                 {
                     scale_out = scale;
                     shift_out = shift;
