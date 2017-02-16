@@ -33,6 +33,7 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 
 // Gambit
+#include "gambit/ScannerBit/printable_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
@@ -41,6 +42,8 @@ namespace Gambit
 {
   // Forward declarations needed for some of the _print/_retrieve functions
   class ModelParameters;
+  typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
+
 
   namespace Printers 
   {
@@ -49,18 +52,12 @@ namespace Gambit
     typedef unsigned long int ulong;
     typedef long long int          longlong;
     typedef unsigned long long int ulonglong;
-    typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
 
     /// Helper template functions to retrieve type IDs for a type.
     /// ID is just a unique integer for each printable type
     template<class T>
-    std::size_t getTypeID(void)
-    {
-      std::ostringstream err;
-      err << "This type is not printable! No TypeID defined!";
-      printer_warning().raise(LOCAL_INFO,err.str());
-      return 0;
-    }
+    std::size_t getTypeID(void) { return 0; }
+    // ID of zero means no ID assigned
 
     class BaseBasePrinter  
     {
@@ -155,36 +152,6 @@ namespace Gambit
            _print(in,label,rank,pointID);
         }
 
-        /// Declarations of minimal print functions needed by ScannerBit
-        //  Covers just basic types, vectors of those types, and 
-        //  a couple of extras needed by scanners.
-        #define SCANNER_SIMPLE_TYPES \
-          (bool)                     \
-          (int)(uint)(long)(ulong)   \
-          (longlong)(ulonglong)      \
-          (float)(double)            
-
-        // Bool has weird behaviour in vectors, so need a version without bool.
-        #define SCANNER_SIMPLE_TYPES_NOBOOL \
-          (int)(uint)(long)(ulong)   \
-          (longlong)(ulonglong)      \
-          (float)(double)            
-
-        #define SCANNER_VECTOR_TYPES  \
-          (std::vector<bool>)         \
-          (std::vector<int>)          \
-          (std::vector<uint>)         \
-          (std::vector<long>)         \
-          (std::vector<ulong>)        \
-          (std::vector<longlong>)     \
-          (std::vector<ulonglong>)    \
-          (std::vector<float>)        \
-          (std::vector<double>)      
-
-        #define SCANNER_PRINTABLE_TYPES \
-          SCANNER_SIMPLE_TYPES       \
-          SCANNER_VECTOR_TYPES       \
-          (map_str_dbl)              
 
         // Virtual print methods for base printer classes
         #define VPRINT(r,data,elem)                                \
@@ -346,13 +313,6 @@ namespace Gambit
           return false;
         }
       
-        #define SCANNER_RETRIEVABLE_TYPES  \
-        (double)                   \
-        (std::string)              \
-        (std::vector<double>)      \
-        (map_str_dbl)              \
-        (ModelParameters)          \
-
         // Virtual retrieval methods for base printer classes
         #define VRETRIEVE(r,data,elem)            \
         virtual bool _retrieve(elem& /*output*/,  \

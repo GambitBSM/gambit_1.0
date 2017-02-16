@@ -412,9 +412,9 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,dir_exclude_set
     # Locate the header in the GAMBIT directory structure...
     # (we should technically search all the include paths in the make file; could pass these in to this script)
     # Ignores any headers that cannot be found (assumed to be external libraries, etc.)
-    for root,dirs,files in os.walk("."):
-       # Delete any directories from the traverse list if they are in the exclude this
-       dirs[:] = [d for d in dirs if d not in dir_exclude_set]
+    for root,dirs,files in os.walk(".",topdown=True):
+       # Delete any directories from the traverse list if they are in the exclude list
+       [dirs.remove(d) for d in list(dirs) if d in dir_exclude_set]
        for name in files:
           for header in header_set:
                 if os.path.join(root,name).endswith(header):
@@ -447,7 +447,9 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,dir_exclude_set
 def retrieve_rollcall_headers(verbose,install_dir,excludes):
     rollcall_headers=[]
     core_exists = False
-    for root,dirs,files in os.walk(install_dir):
+    exclude_dirs=["build",".git","runs","scratch","contrib","Backends"]
+    for root,dirs,files in os.walk(install_dir,topdown=True):
+        [dirs.remove(d) for d in list(dirs) if d in exclude_dirs] # bit confusing, but avoids descending into excluded directories
         if (not core_exists and root == install_dir+"/Core/include/gambit/Core"): core_exists = True 
         for name in files:
             prefix = re.sub("_rollcall\.h.*", "", name)
@@ -467,7 +469,9 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
 #Search the source tree to determine which modules type headers are present. 
 def retrieve_module_type_headers(verbose,install_dir,excludes):
     type_headers=[]
-    for root,dirs,files in os.walk(install_dir):
+    exclude_dirs=["build",".git","runs","scratch","contrib","Backends"]
+    for root,dirs,files in os.walk(install_dir,topdown=True):
+        [dirs.remove(d) for d in list(dirs) if d in exclude_dirs] # bit confusing, but avoids descending into excluded directories
         for name in files:
             if ( (name.lower().endswith("_types.hpp") or
                   name.lower().endswith("_types.h")   or

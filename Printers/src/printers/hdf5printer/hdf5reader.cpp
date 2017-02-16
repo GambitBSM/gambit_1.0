@@ -25,6 +25,11 @@
 namespace Gambit {
   namespace Printers {
 
+     // It's a little clumsy, but need to declare these type checking functions as extern templates here
+     #define externGETTYPEID(r,data,i,elem) extern template std::size_t getTypeID<elem>();
+     BOOST_PP_SEQ_FOR_EACH_I(externGETTYPEID, _, PRINTABLE_TYPES)
+     #undef externGETTYPEID
+
      hid_t openfile_read(std::string file)
      {
         hid_t file_id = H5Fopen(file.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -198,6 +203,12 @@ namespace Gambit {
           err << "Did not recognise retrieved HDF5 type for data label '"<<label<<"'! This may indicate a bug in the Reader class you are using, please report it."; 
           printer_error().raise(LOCAL_INFO,err.str());         
         }
+        if(typeID==0)
+        {
+          std::ostringstream err;                               
+          err << "Did not recognise retrieved Printer type for data label '"<<label<<"'! This may indicate a bug in the Printer system, please report it."; 
+          printer_error().raise(LOCAL_INFO,err.str());         
+        }
         return typeID;
      }
 
@@ -248,11 +259,13 @@ namespace Gambit {
         /// Work out all the output labels which correspond to the input modelname
         bool found_at_least_one(false);
  
+        //std::cout << "Searching for ModelParameters of model '"<<modelname<<"'"<<std::endl;
         // Iterate through names in HDF5 group
         for(std::vector<std::string>::const_iterator 
             it = all_datasets.begin();
             it!= all_datasets.end(); ++it)
         {
+          //std::cout << "Candidate: " <<*it<<std::endl;
           std::string param_name; // *output* of parsing function
           if(parse_label_for_ModelParameters(*it, modelname, param_name))
           {

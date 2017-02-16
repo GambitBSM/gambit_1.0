@@ -382,42 +382,6 @@ namespace Gambit {
       return is_valid;
     }
 
-    /// local helper function for the ModelParameters '_retrieve' function
-    bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out)
-    {
-       bool result = false;
-       std::istringstream iss(fulllabel);
-       std::string capability;
-       std::string rest; 
-       iss >> capability;
-       iss >> rest;
-       if(!iss)
-       {
-         // Weren't two elements to the label, so this can't be a match
-         result = false; // failed to match
-       }
-       else
-       {
-         //capability is "#NormalDist_parameters", for example
-         capability.erase(0,1); // cut off the first character (hash, in all potentially matching cases)
-         std::vector<str> split_cap = Utils::delimiterSplit(capability, "_");
-         if(split_cap[0]==modelname)
-         {
-            // So far so good, check 'rest', which is, e.g. @NormalDist::primary_parameters::mu
-            // Split 'rest' into a vector of strings, using a delimiter
-            rest.erase(0,1); // cut off the first character (@, in all potentially matching cases)
-            std::vector<str> split_rest = Utils::delimiterSplit(rest, "::");
-            if(split_rest[0]==modelname and split_rest.size()==3)
-            {
-              // Ok! We have a match!
-              out = split_rest[2];
-              result = true;
-            } else { result = false; }
-         } else { result = false; }        
-       }
-       return result;
-    }
-
     /// This one is fancy, gets ALL the ModelParameters matching a certain model name
     /// So say the labels for two parameters are:
     ///

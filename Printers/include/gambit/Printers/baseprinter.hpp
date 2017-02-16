@@ -39,12 +39,12 @@
    #include "gambit/Elements/printable_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   //#include "gambit/ScannerBit/printable_types.hpp"
+   #include "gambit/ScannerBit/printable_types.hpp"
 
    // Already dealt with in basebaseprinter? Can possibly do this to deal with
    // lack of new types, rest will be inherited anyway.
-   #define PRINTABLE_TYPES (double)
-   #define RETRIEVABLE_TYPES (double)
+   #define PRINTABLE_TYPES SCANNER_PRINTABLE_TYPES
+   #define RETRIEVABLE_TYPES SCANNER_RETRIEVABLE_TYPES
 #endif
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
@@ -60,7 +60,6 @@ namespace Gambit
   {
     
     // Helper function for parsing ModelParameters label strings.
-    // Defined in asciiReader.cpp
     bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out);
 
     /// For debugging; print to stdout all the typeIDs for all types.

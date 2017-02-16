@@ -16,6 +16,7 @@
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -27,12 +28,11 @@ namespace Gambit
 {
   namespace Printers
   {
-
      /// Specialisations of type ID getters
+     /// ID zero reserved for null ID
      #define GETTYPEID(r,data,i,elem) \
      template<> \
-     constexpr std::size_t getTypeID<elem>(void) {return i;}
- 
+     std::size_t getTypeID<elem>(void) {return i+1;}
      BOOST_PP_SEQ_FOR_EACH_I(GETTYPEID, _, PRINTABLE_TYPES)
      #undef GETTYPEID
 
@@ -54,30 +54,63 @@ namespace Gambit
         /// Also need to check if the type matches what the printer expects, and decide what to do in case
         /// of mismatch.
         bool valid = false; // Switch to true if value is successfully retrieved for this point
-        switch( get_type(label) ) 
+        #define TYPE_CASES(r,data,elem) \
+        if( get_type(label) == getTypeID<elem>()) \
+        { \
+            elem buffer; \
+            valid = retrieve(buffer, label, rank, pointID); \
+            if(valid) \
+            { \
+               printer.print(buffer, label, rank, pointID); \
+            } \
+        } else
+        BOOST_PP_SEQ_FOR_EACH(TYPE_CASES, _, PRINTABLE_TYPES)
+        #undef TYPE_CASES
         {
-           #define TYPE_CASES(r,data,elem) \
-           case getTypeID<elem>(): \
-           { \
-               elem buffer; \
-               valid = retrieve(buffer, label, rank, pointID); \
-               if(valid) \
-               { \
-                  printer.print(buffer, label, rank, pointID); \
-               } \
-               break; \
-           }
-           BOOST_PP_SEQ_FOR_EACH(TYPE_CASES, _, PRINTABLE_TYPES)
-           #undef TYPE_CASES
-           default:
-           {
-             std::ostringstream err;                               
-             err << "Did not recognise retrieved type for data label '"<<label<<"'! This may indicate a bug in the Reader class you are using, please report it."; 
-             printer_error().raise(LOCAL_INFO,err.str());         
-             break;
-           }
+          std::ostringstream err;                               
+          err << "Did not recognise retrieved type for data label '"<<label<<"'! This may indicate a bug in the Reader class you are using, please report it."; 
+          printer_error().raise(LOCAL_INFO,err.str());         
         }
         return valid;
+     }
+
+     /// Helper function for the ModelParameters '_retrieve' functions
+     bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out)
+     {
+        bool result = false;
+        std::istringstream iss(fulllabel);
+        std::string capability;
+        std::string rest; 
+        iss >> capability;
+        iss >> rest;
+        if(!iss)
+        {
+          // Weren't two elements to the label, so this can't be a match
+          result = false; // failed to match
+        }
+        else
+        {
+          //capability is "#NormalDist_parameters", for example
+          capability.erase(0,1); // cut off the first character (hash, in all potentially matching cases)
+          if(Utils::startsWith(capability,modelname))
+          {
+             // Cut off the modelname which matched
+             capability.erase(0,modelname.size());
+             if(Utils::startsWith(capability,"_parameters"))
+             {
+                // Still good so far, check 'rest', should be something like @NormalDist::primary_parameters::mu
+                rest.erase(0,1); // cut off the first character (@, in all potentially matching cases)
+                std::vector<str> split_rest = Utils::delimiterSplit(rest, "::");
+                if(split_rest[0]==modelname and split_rest.size()==3)
+                {
+                  // Ok! We have a match!
+                  out = split_rest[2];
+                  result = true;
+                } else { result = false; }
+             } else { result = false; }
+          } else { result = false; }        
+        }
+        return result;
      }
 
   }

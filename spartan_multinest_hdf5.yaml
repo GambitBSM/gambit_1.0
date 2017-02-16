@@ -39,8 +39,8 @@ Scanner:
       nlive: 1000
       updInt: 500
       tol: 0.1
-      IS: 0
-      mmodal: 0
+      IS: false
+      mmodal: false
 
     de:
       plugin: Diver
