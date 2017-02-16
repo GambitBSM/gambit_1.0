@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  Class to hold details of scanner plugins and
-///  define simple comparison operations on them. 
+///  define simple comparison operations on them.
 ///
 ///  *********************************************
 ///
@@ -15,7 +15,7 @@
 ///  \date 2014 Feb
 ///
 ///  \author Pat Scott
-///          (p.scott@imperial.ac.uk)   
+///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Dec
 ///
 ///  *********************************************
@@ -41,10 +41,10 @@ namespace Gambit
             Plugin_Details::Plugin_Details(const std::string &str) : full_string(str)
             {
                 status= "ok";
-                
+
                 std::string::size_type posMid = str.rfind("__v__");
                 version = str.substr(posMid + 5);
-                
+
                 std::string::size_type posLast = str.rfind("__t__", posMid - 1);
                 type = str.substr(posLast + 5, posMid - posLast - 5);
                 plugin = str.substr(0, posLast);
@@ -56,14 +56,14 @@ namespace Gambit
                 patch_version = StringToInt(version.substr(posMid + 1, posLast - posMid - 1));
                 release_version = version.substr(posLast + 1);
                 version = IntToString(major_version) + "." + IntToString(minor_version) + "." + IntToString(patch_version);
-                if (release_version != "") 
+                if (release_version != "")
                     version += "-" + release_version;
             }
-            
+
             void Plugin_Details::get_status(const YAML::Node &libNode, const YAML::Node &plugNode, const YAML::Node &flagNode)
             {
                 std::vector<std::string> linked_libs_plug, found_incs_plug;
-                
+
                 if (plugNode.IsMap())
                 {
                     if (plugNode[type] && plugNode[type][plugin] && plugNode[type][plugin][version] && plugNode[type][plugin][version].IsMap())
@@ -78,14 +78,14 @@ namespace Gambit
                             reqd_incs_not_found = plugNode[type][plugin][version]["reqd_include_paths"].as<std::vector<std::string>>();
                         if (plugNode[type][plugin][version]["not_found_include_paths"].IsSequence())
                             ini_incs_not_found = plugNode[type][plugin][version]["not_found_include_paths"].as<std::vector<std::string>>();
-                        
+
                         if (plugNode[type][plugin][version]["linked_libraries"].IsSequence())
                             linked_libs_plug = plugNode[type][plugin][version]["linked_libraries"].as<std::vector<std::string>>();
                         if (plugNode[type][plugin][version]["found_include_paths"].IsSequence())
                             found_incs_plug = plugNode[type][plugin][version]["found_include_paths"].as<std::vector<std::string>>();
                     }
                 }
-                
+
                 std::string lib = path.substr(path.rfind("/") + 1);
                 if (libNode.IsMap())
                 {
@@ -99,14 +99,14 @@ namespace Gambit
                                 linked_libs_temp.insert(std::pair<std::string, std::string>(it->first.as<std::string>(), it->second.as<std::string>()));
                             }
                         }
-                                
+
                         for (auto it = linked_libs_plug.begin(), end = linked_libs_plug.end(); it != end; ++it)
                         {
                             auto range = linked_libs_temp.equal_range(*it);
                             if (range.first != range.second)
                                 linked_libs.insert(range.first, range.second);
                         }
-                        
+
                         std::vector<std::string> linked_temp;
                         for (auto it = reqd_not_linked_libs.begin(), end = reqd_not_linked_libs.end(); it != end; ++it)
                         {
@@ -121,16 +121,16 @@ namespace Gambit
                                 linked_libs.insert(range.first, range.second);
                             }
                         }
-                        
+
                         reqd_not_linked_libs = linked_temp;
-                        
+
                         std::multimap<std::string, std::string> found_incs_temp;
                         if (libNode[lib]["found_incs"] and libNode[lib]["found_incs"].IsMap())
                         {
                             for (auto it = libNode[lib]["found_incs"].begin(), end = libNode[lib]["found_incs"].end(); it != end; ++it)
                                 found_incs_temp.insert(std::pair<std::string, std::string>(it->first.as<std::string>(), it->second.as<std::string>()));
                         }
-                                
+
                         for (auto it = found_incs_plug.begin(), end = found_incs_plug.end(); it != end; it++)
                         {
                             cout << *it << endl;
@@ -149,11 +149,11 @@ namespace Gambit
                                 found_incs.insert(range.first, range.second);
                             }
                         }
-                        
+
                         reqd_incs_not_found = found_temp;
                     }
                 }
-                
+
                 if (flagNode.IsMap())
                 {
                     if (flagNode[type] && flagNode[type][plugin] && flagNode[type][plugin][version] && flagNode[type][plugin][version].IsMap())
@@ -161,38 +161,38 @@ namespace Gambit
                         flags = flagNode[type][plugin][version];
                     }
                 }
-                
+
                 if (status != "excluded")
                 {
                     if (reqd_incs_not_found.size() > 0)
                     {
-                        status = "reqd file(s) not found";
+                        status = "reqd header file(s) not found";
                     }
                     else if (reqd_not_linked_libs.size() > 0)
                     {
-                        status = "reqd lib(s) not linked";
+                        status = "reqd lib(s) not found";
                     }
                     else if (ini_libs_not_found.size() > 0)
                     {
-                        status = "inifile lib(s) not found";
+                        status = "invalid lib path(s) in locations file";
                     }
                     else if (ini_incs_not_found.size() > 0)
                     {
-                        status = "inifile folder(s) not found";
+                        status = "invalid include dir(s) in locations file";
                     }
                 }
             }
-                    
+
             std::string Plugin_Details::printMin() const
             {
                 std::stringstream out;
                 out << "plugin:  " << plugin << std::endl;
                 out << "version:  " << version << std::endl;
                 out << "type:  " << type << std::endl;
-                
+
                 return out.str();
             }
-                    
+
             std::string Plugin_Details::print() const
             {
                 std::stringstream out;
@@ -203,14 +203,14 @@ namespace Gambit
                 out << "\tpatch version:  " << patch_version << std::endl;
                 out << "\tplugin path:  " << path << std::endl;
                 out << "\ttype:  " << type << std::endl;
-                
+
                 return out.str();
             }
-            
+
             std::string Plugin_Details::printFull() const
             {
                 std::stringstream out;
-                
+
                 /*table_formatter table(type + " PLUGIN", "VERSION", "STATUS");
                 table.capitalize_title();
                 table.padding(1);
@@ -219,9 +219,9 @@ namespace Gambit
                     table.green() << status;
                 else
                     table.red() << status;
-                
+
                 out << table.str();*/
-                
+
                 out << "\n\x1b[01m\x1b[04mGENERAL PLUGIN INFO\x1b[0m" << std::endl;
                 out << "\nname:     " << plugin;
                 out << "\ntype:     " << type;
@@ -231,16 +231,16 @@ namespace Gambit
                     out << "\x1b[32;01m" << status << "\x1b[0m" << std::endl;
                 else
                     out << "\x1b[31;01m" << status << "\x1b[0m" << std::endl;
-                
+
                 if (reason.size() > 0)
                 {
                     out << "\nreason for exclusion:\n";
                     for (auto it = reason.begin(), end = reason.end(); it != end; ++it)
                         out << "    " << *it << std::endl;
                 }
-                
+
                 out << std::endl;
-                
+
                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
                 out << "\nrequired inifile entries:  ";
                 if (reqd_inifile_entries.size() == 0)
@@ -250,9 +250,9 @@ namespace Gambit
                 out << "\n\x1b[04mlink status\x1b[0m:" << std::endl;
                 //out << "-----------" << std::endl;
                 if (reqd_not_linked_libs.size() != 0)
-                    out << "    missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
+                    out << "    could not find libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
                 if (ini_libs_not_found.size() != 0)
-                    out << "    missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
+                    out << "    could not find libraries specified in *locations.yaml:: " << ini_libs_not_found << std::endl;
                 out << "    linked libraries:";
                 if (linked_libs.size() == 0)
                 {
@@ -264,13 +264,13 @@ namespace Gambit
                     for (auto it = linked_libs.begin(), end = linked_libs.end(); it != end; ++it)
                             out << "        " << it->first << ": " << it->second << std::endl;
                 }
-                
+
                 out << "\n\x1b[04minclude header status\x1b[0m:" << std::endl;
                 //out << "---------------------" << std::endl;
                 if (reqd_incs_not_found.size() != 0)
-                    out << "    missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
+                    out << "    could not find headers requested by plugin: " << reqd_incs_not_found << std::endl;
                 if (ini_incs_not_found.size() != 0)
-                    out << "    missing headers specified in inifile: " << ini_incs_not_found << std::endl;
+                    out << "    could not find include paths specified in *locations.yaml: " << ini_incs_not_found << std::endl;
                 out << "    headers found:";
                 if (found_incs.size() == 0)
                 {
@@ -282,11 +282,11 @@ namespace Gambit
                     for (auto it = found_incs.begin(), end = found_incs.end(); it != end; ++it)
                             out << "        " << it->first << ": " << it->second << std::endl;
                 }
-                
+
                 out << std::endl;
-                
+
                 out << "\n\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
-                
+
                 std::string p_str, description;
                 std::string path = GAMBIT_DIR "/config/";
                 if (FILE* p_f = popen((std::string("ls ") + path + std::string(" | grep \".dat\" | grep \""+ type + "\"")).c_str(), "r"))
@@ -306,15 +306,15 @@ namespace Gambit
                             }
                         }
                     }
-                        
+
                     pclose(p_f);
                 }
-                
+
                 out << description << std::endl;
-                
+
                 return out.str();
             }
-            
+
             bool Plugin_Version_Supersedes(const Plugin_Details &plug1, const Plugin_Details &plug2)
             {
                 if (plug1.major_version > plug2.major_version)
@@ -342,10 +342,10 @@ namespace Gambit
                         }
                     }
                 }
-                
+
                 return false;
             }
-                                
+
         }
 
     }
