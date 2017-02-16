@@ -79,11 +79,11 @@ namespace Gambit
           RD_coannihilating_particle(DSpart->kn(1),
           myintdof->kdof(DSpart->kn(1)),mymspctm->mass(DSpart->kn(1))));
 
-#ifdef DARKBIT_DEBUG
-      std::cout << "WIMP : "<< DSpart->kn(1) << " " <<
-          myintdof->kdof(DSpart->kn(1)) << " " << mymspctm->mass(DSpart->kn(1))
-          << std::endl;
-#endif
+      #ifdef DARKBIT_DEBUG
+        std::cout << "WIMP : "<< DSpart->kn(1) << " " <<
+            myintdof->kdof(DSpart->kn(1)) << " " << mymspctm->mass(DSpart->kn(1))
+            << std::endl;
+      #endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
       // (i.e. SUSY particle conventions should follow GAMBUT, not DS etc)!
@@ -203,11 +203,11 @@ namespace Gambit
       // FIXME: coannihilation thresholds have to be added once they are included
       // in the process catalog
 
-#ifdef DARKBIT_DEBUG
-      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
-//      std::cout << "Test : " << BEreq::particle_code("d_3")
-//      << " " << BEreq::particle_code("u_3") << std::endl;
-#endif
+      #ifdef DARKBIT_DEBUG
+        std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
+        // std::cout << "Test : " << BEreq::particle_code("d_3")
+        //           << " " << BEreq::particle_code("u_3") << std::endl;
+      #endif
 
 
     } // function RD_spectrum_from_ProcessCatalog
@@ -320,17 +320,17 @@ namespace Gambit
             myrdmgev.kcoann(j)=itmp;
           }
         }
-#ifdef DARKBIT_RD_DEBUG
-      std::cout << "co : "<< myrdmgev.kcoann(i) << " " <<
-          myrdmgev.mco(i) << " " << myrdmgev.mdof(i)
-          << std::endl;
-#endif
+      #ifdef DARKBIT_RD_DEBUG
+        std::cout << "co : "<< myrdmgev.kcoann(i) << " " <<
+            myrdmgev.mco(i) << " " << myrdmgev.mdof(i)
+            << std::endl;
+      #endif
       }
-#ifdef DARKBIT_RD_DEBUG
-      std::cout << "co : "<< myrdmgev.kcoann(myrdmgev.nco) << " " <<
-          myrdmgev.mco(myrdmgev.nco) << " " << myrdmgev.mdof(myrdmgev.nco)
-          << std::endl;
-#endif
+      #ifdef DARKBIT_RD_DEBUG
+        std::cout << "co : "<< myrdmgev.kcoann(myrdmgev.nco) << " " <<
+            myrdmgev.mco(myrdmgev.nco) << " " << myrdmgev.mdof(myrdmgev.nco)
+            << std::endl;
+      #endif
 
       *BEreq::rdmgev = myrdmgev;
 
@@ -345,20 +345,10 @@ namespace Gambit
     {
       using namespace Pipes::RD_eff_annrate_SUSY;
 
-      // This is supposed to specify that BE=DS is used to determine Weff
-      if (1==1) {
+      if (BEreq::dsanwx.origin() == "DarkSUSY")
+      {
         result=BEreq::dsanwx.pointer();
       }
-      // similar for other BEs...
-
-      // FIXME: test for m_WIMP/100 instead and then comment in!
-//      double peff = 0.1;
-//      if ( Utils::isnan((*result)(peff)) )
-//      {
-//        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
-//        invalid_point().raise("Weff is nan in RD_eff_annrate_SUSY.");
-//      }
-
     } // function RD_eff_annrate_SUSY
 
 
@@ -531,11 +521,25 @@ namespace Gambit
       if (widthheavyHiggs<0.1)
         (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
+      // always check that invariant rate is OK at least at one point
+      double peff = mwimp/100;
+      double weff = (*Dep::RD_eff_annrate)(peff);
+      if (Utils::isnan(weff))
+            DarkBit_error().raise(LOCAL_INFO, "Weff is NaN in RD_Oh2_general. This means that the function\n"
+                                            "pointed to by RD_eff_annrate returned NaN for the invariant rate\n"
+                                            "entering the relic density calculation.");      
+
       #ifdef DARKBIT_RD_DEBUG
         // Dump Weff info on screen
         std::cout << "xstart = " << xstart << std::endl;
-        for ( double peff = mwimp/1000;  peff < mwimp; peff = peff*1.5 )
-          std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
+        for ( peff = mwimp/1000;  peff < mwimp; peff = peff*1.5 )
+        {
+          weff = (*Dep::RD_eff_annrate)(peff);
+          std::cout << "Weff(" << peff << ") = " << weff << std::endl;
+          // Check that the invariant rate is OK.
+          if (Utils::isnan(weff))
+            DarkBit_error().raise(LOCAL_INFO, "RD debug: Weff is NaN in RD_Oh2_general.");
+        }
         // Set up timing
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
@@ -543,7 +547,9 @@ namespace Gambit
         std::cout << "Starting dsrdtab..." << std::endl;
       #endif
 
-      // Tabulate invariant rate
+            
+
+      // Tabulate the invariant rate
       BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
 
       #ifdef DARKBIT_RD_DEBUG
@@ -557,10 +563,10 @@ namespace Gambit
         if ( runtime > 30. )
         {
           std::cout << "Duration [ms]: " << runtime << std::endl;
-//          SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea(2);
-//          std::ofstream ofs("RelicDensity_debug.slha");
-//          ofs << mySLHA;
-//          ofs.close();
+          //SLHAstruct mySLHA = Dep::MSSM_spectrum->getSLHAea(2);
+          //std::ofstream ofs("RelicDensity_debug.slha");
+          //ofs << mySLHA;
+          //ofs.close();
           tbtest=true;
         }
       #endif
@@ -584,7 +590,7 @@ namespace Gambit
          =widthheavyHiggs;
 
       //Check for NAN result.
-      if (yend!=yend) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
+      if ( Utils::isnan(yend) ) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
 
       result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 
@@ -593,8 +599,12 @@ namespace Gambit
       #ifdef DARKBIT_DEBUG
         std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
         std::cout << "Oh2     = " << result << std::endl << std::endl;
+      #endif
+
+      #ifdef DARKBIT_RD_DEBUG
         if (tbtest) exit(1);
       #endif
+
 
     } // function RD_oh2_general
 
