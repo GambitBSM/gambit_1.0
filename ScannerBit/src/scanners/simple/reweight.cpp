@@ -89,7 +89,7 @@ typedef std::unordered_set<Chunk,ChunkHash,ChunkEqual> ChunkSet;
 // The reweigher Scanner plugin
 scanner_plugin(postprocessor, version(1, 0, 0))
 {
-  reqd_inifile_entries("LogLike"); // Purpose name for the likelihood container plugin
+  reqd_inifile_entries("loglike","reader");
 
   /// Number of iterations between progress reports. '0' means no updates
   std::size_t update_interval;
@@ -154,21 +154,21 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
     // Set up other options for the plugin
     update_interval = get_inifile_value<std::size_t>("update_interval", 1000);
-    add_to_logl = get_inifile_value<std::vector<std::string>>("add_to_LogLike", std::vector<std::string>());
-    subtract_from_logl = get_inifile_value<std::vector<std::string>>("subtract_from_LogLike", std::vector<std::string>());
+    add_to_logl = get_inifile_value<std::vector<std::string>>("add_to_loglike", std::vector<std::string>());
+    subtract_from_logl = get_inifile_value<std::vector<std::string>>("subtract_from_loglike", std::vector<std::string>());
 
     // Finally, there is the 'Purpose' value of the likelihood container. This may well clash
     // with the old name used in the input file, so better check for this and make the user
     // change their choice if so.
-    logl_purpose_name = get_inifile_value<std::string>("LogLike");
-    bool discard_old_logl = get_inifile_value<bool>("permit_discard_old_LogLike",false);
+    logl_purpose_name = get_inifile_value<std::string>("loglike");
+    bool discard_old_logl = get_inifile_value<bool>("permit_discard_old_loglike",false);
     if(not discard_old_logl)
     {
        if(std::find(data_labels.begin(), data_labels.end(), logl_purpose_name)
             != data_labels.end())
        {
           std::ostringstream err;
-          err << "Error starting postprocessing run! The 'purpose' name selected for the likelihood to be computed ('"<<logl_purpose_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'LogLike', or set 'permit_discard_old_LogLike' to 'true' to allow the old data to be replaced in the new output."; 
+          err << "Error starting postprocessing run! The 'purpose' name selected for the likelihood to be computed ('"<<logl_purpose_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'loglike', or set 'permit_discard_old_loglike' to 'true' to allow the old data to be replaced in the new output."; 
           scan_error().raise(LOCAL_INFO,err.str());
        }
     }
@@ -648,13 +648,13 @@ scanner_plugin(postprocessor, version(1, 0, 0))
               == data_labels.end())
           {
              std::ostringstream err;
-             err << "In the input YAML file, you requested to 'add_to_LogLike' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+             err << "In the input YAML file, you requested to 'add_to_loglike' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
              scan_error().raise(LOCAL_INFO,err.str());
           }
           if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
           {
              std::ostringstream err;
-             err << "In the input YAML file, you requested 'add_to_LogLike' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+             err << "In the input YAML file, you requested 'add_to_loglike' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
              scan_error().raise(LOCAL_INFO,err.str());
           }
           
@@ -676,13 +676,13 @@ scanner_plugin(postprocessor, version(1, 0, 0))
               == data_labels.end())
           {
              std::ostringstream err;
-             err << "In the input YAML file, you requested to 'subtract_from_LogLike' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+             err << "In the input YAML file, you requested to 'subtract_from_loglike' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
              scan_error().raise(LOCAL_INFO,err.str());
           }
           if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
           {
              std::ostringstream err;
-             err << "In the input YAML file, you requested 'subtract_from_LogLike' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+             err << "In the input YAML file, you requested 'subtract_from_loglike' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
              scan_error().raise(LOCAL_INFO,err.str());
           }
           
@@ -697,7 +697,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
       }
 
       // Output the new reweighted likelihood (if all components were valid)
-      if(is_valid) get_printer().get_stream()->print( combined_logL, "reweighted_LogL", MPIrank, pointID);
+      if(is_valid) get_printer().get_stream()->print( combined_logL, "reweighted_loglike", MPIrank, pointID);
 
       /// TODO: There are currently some issues to solve regarding the output
       ///  For asciiPrinter it is kind of ok to just re-output everything, it will have
