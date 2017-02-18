@@ -4,13 +4,17 @@ Parameters:
     StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml  
 
     WC:
-      Re_DeltaC7: 0
+      Re_DeltaC7: 
+         range: [-1, 1]
+         prior_type: flat
       Im_DeltaC7: 0
       Re_DeltaC9: 
          range: [-4, 4]
          prior_type: flat
       Im_DeltaC9:  0
-      Re_DeltaC10: 0
+      Re_DeltaC10: 
+         range: [-4, 4]
+         prior_type: flat
       Im_DeltaC10:  0
       Re_DeltaCQ1:  0
       Im_DeltaCQ1:  0
