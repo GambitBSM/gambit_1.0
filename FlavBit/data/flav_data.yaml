@@ -3,7 +3,7 @@
   value: 2.8e-9
   exp_stat_error: 0.7e-9
   exp_sys_error: 0.0e-9
-  th_error: 0.0
+  th_error: 0.28e-9
   source: Nature 522
   error_type: M
   correlation:
@@ -14,7 +14,7 @@
   value: 3.9e-10
   exp_stat_error: 1.5e-10
   exp_sys_error: 0.0e-10
-  th_error: 0.0
+  th_error: 0.3e-10
   source: Nature 522
   error_type: M
   correlation:

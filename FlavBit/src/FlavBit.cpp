@@ -822,34 +822,6 @@ namespace Gambit
     }
 
     // *************************************************
-    /// Calculating Br in B0->mumu decays
-    /// WC case
-    // *************************************************
-    /*
-    void SI_Bdmumu_WC(double &result)
-    {
-      using namespace Pipes::SI_Bdmumu_WC;
-
-      if(flav_debug)  cout<<"Starting SI_Bdmumu WC"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-
-      int flav=2;
-      if(param.model<0)
-	{
-	  result=0.;
-	}
-      else
-	{
-	  result=BEreq::Bdll_CONV_WC(&param, byVal(flav));
-	}
-
-      if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bdmumu WC"<<endl;
-    }
-    */
-
-    // *************************************************
     /// Calculating Br in B->tau nu_tau decays
     // *************************************************
 
@@ -2241,15 +2213,15 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-      cout<<"Cov matrix:"<<endl;
-      cout<<cov<<endl;
-      cout<<"End cov matrix"<<endl;
+      //cout<<"Cov matrix:"<<endl;
+      //cout<<cov<<endl;
+      //cout<<"End cov matrix"<<endl;
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
 
-      cout<<"Cov^-1 matrix:"<<endl;
-      cout<<cov_inv<<endl;
-      cout<<"End cov^-1 matrix"<<endl;
+      //cout<<"Cov^-1 matrix:"<<endl;
+      //cout<<cov_inv<<endl;
+      //cout<<"End cov^-1 matrix"<<endl;
 
       double Chi2=0;
 
@@ -2261,7 +2233,6 @@ namespace Gambit
         }
       }
 
-      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2sll_likelihood"<<endl;
@@ -2414,10 +2385,9 @@ namespace Gambit
         }
       }
 
-      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
-      cout<<"Likelihood b->sll: "<<result<<endl;
+      //cout<<"Likelihood b->sll: "<<result<<endl;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
@@ -2537,7 +2507,6 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
@@ -2714,7 +2683,6 @@ namespace Gambit
         }
       }
 
-      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished SL_likelihood"<<endl;
