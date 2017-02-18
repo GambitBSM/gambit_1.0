@@ -5,16 +5,12 @@ Parameters:
 
     WC:
       Re_DeltaC7: 0
-#         range: [-4, 4]
-#         prior_type: flat
       Im_DeltaC7: 0
       Re_DeltaC9: 
          range: [-4, 4]
          prior_type: flat
       Im_DeltaC9:  0
       Re_DeltaC10: 0
-#         range: [-4, 4]
-#         prior_type: flat
       Im_DeltaC10:  0
       Re_DeltaCQ1:  0
       Im_DeltaCQ1:  0

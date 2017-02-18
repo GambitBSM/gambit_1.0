@@ -2241,11 +2241,15 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-      //      cout<<"Cov matrix:"<<endl;
-      //cout<<cov<<endl;
-      //cout<<"End cov matrix"<<endl;
+      cout<<"Cov matrix:"<<endl;
+      cout<<cov<<endl;
+      cout<<"End cov matrix"<<endl;
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
+
+      cout<<"Cov^-1 matrix:"<<endl;
+      cout<<cov_inv<<endl;
+      cout<<"End cov^-1 matrix"<<endl;
 
       double Chi2=0;
 
@@ -2253,11 +2257,11 @@ namespace Gambit
       {
         for(int j=0; j<measurement_assym.dim; ++j)
         {
-          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+          Chi2+= diff[i] * cov_inv(i,j)*diff[j] ;
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
+      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2sll_likelihood"<<endl;
@@ -2410,8 +2414,10 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
+      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
+
+      cout<<"Likelihood b->sll: "<<result<<endl;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
@@ -2708,7 +2714,7 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
+      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished SL_likelihood"<<endl;
