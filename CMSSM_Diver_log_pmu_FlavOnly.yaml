@@ -3,19 +3,6 @@ Parameters:
   #SM parameters.
   StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
 
-  #Nuclear matrix parameters.
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      range:  [19, 67]
-    sigmal:
-      range:  [31, 85]
-    deltau:
-      fixed_value:  0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
-
   #SUSY parameters.
   CMSSM:
     M0:
@@ -44,7 +31,7 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "CMSSM.hdf5"
+    output_file: "CMSSM_FlavOnly.hdf5"
     group: "/CMSSM"
 
 Scanner:
@@ -124,19 +111,6 @@ Rules:
   - capability: lnL_FermiLATdwarfs
     function:  lnL_FermiLATdwarfs_gamLike
 
-  # Choose to use DarkSUSY yield tables for indirect detection
-  - capability: SimYieldTable
-    function: SimYieldTable_DarkSUSY
-    options:
-      allow_yield_extrapolation: true
-
-  # Use DarkSUSY for calculating direct detection couplings
-  - capability: DD_couplings
-    function: DD_couplings_DarkSUSY
-
-  # Choose to get decays from DecayBit proper, not from an SLHA file.
-  - capability: decay_rates
-    function: all_decays
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   # Options set to match benchmark point specified in SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
