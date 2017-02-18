@@ -48,6 +48,14 @@ namespace Gambit {
     }
 
 
+    template <typename NUM1, typename NUM2>
+    inline size_t binIndex(NUM1 val, const std::vector<NUM2>& binedges, bool allow_overflow=false) {
+      if (val < binedges.front()) return -1; ///< Below/out of histo range
+      if (val >= binedges.back()) return allow_overflow ? int(binedges.size())-1 : -1; ///< Above/out of histo range
+      return std::distance(binedges.begin(), --std::upper_bound(binedges.begin(), binedges.end(), val));
+    }
+
+
     /// Make a vector of central bin values from a vector of bin edge values using linear interpolation
     inline std::vector<double> makeBinValues(const std::vector<double>& binEdgeValues) {
       std::vector<double> results;
@@ -65,6 +73,27 @@ namespace Gambit {
       for (const HEPUtils::Jet* j : e.jets())
         if (j->pT() > ptmin && HEPUtils::in_range(HEPUtils::deltaR_eta(p4, *j), rmin, rmax)) return true;
       return false;
+    }
+
+
+    /// Non-iterator version of std::all_of
+    template <typename CONTAINER, typename FN>
+    inline bool all_of(const CONTAINER& c, const FN& f) {
+      return std::all_of(std::begin(c), std::end(c), f);
+    }
+
+
+    /// Non-iterator version of std::any_of
+    template <typename CONTAINER, typename FN>
+    inline bool any_of(const CONTAINER& c, const FN& f) {
+      return std::any_of(std::begin(c), std::end(c), f);
+    }
+
+
+    /// Non-iterator version of std::none_of
+    template <typename CONTAINER, typename FN>
+    inline bool none_of(const CONTAINER& c, const FN& f) {
+      return std::none_of(std::begin(c), std::end(c), f);
     }
 
 
