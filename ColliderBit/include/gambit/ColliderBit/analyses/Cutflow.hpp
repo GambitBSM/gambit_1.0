@@ -165,6 +165,14 @@ namespace Gambit {
         for (Cutflow& cf : cfs) cf.fillinit();
       }
 
+      /// @brief Fill the @a {icut}'th post-cut counter for all contained Cutflows, starting at icut=1 for first cut
+      ///
+      /// @note Returns the cut result to allow 'side-effect' cut-flow filling in an if-statement
+      bool fill(size_t icut, bool cutresult=true) {
+        for (Cutflow& cf : cfs) cf.fill(icut, cutresult);
+        return cutresult;
+      }
+
       /// Create a string representation
       string str() const {
         stringstream ss;
