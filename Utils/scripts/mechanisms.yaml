@@ -1,0 +1,51 @@
+drawing_order: [focus_point, chargino_coannihilation, stau_coannihilation, sbottom_coannihilation, stop_coannihilation, A0-H0_funnel, Z-h0_funnel]
+
+focus_point:
+  extra_1D_plots: "112 11 105"
+  datastream: "'#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::Mu mass1':11 'np.abs(safe_ratio($11,$105))':112"
+  cut: "112:{0.7,1.3}"
+  label: "11:'$\\mu$ (GeV)' 112:'$\\mu / m_{\\chi^0_1}$'"
+  colour: blue
+
+chargino_coannihilation:
+  extra_1D_plots: "112 106 105"
+  datastream: "'safe_ratio($106,$105)':112"
+  cut: "112:{1.0,1.2}"
+  label: "112:'$m_{\\chi^\\pm_1} / m_{\\chi^0_1}$'"
+  colour: yellow
+  contour_style: Dots
+
+stau_coannihilation:
+  extra_1D_plots: "112 110 105"
+  datastream: "'safe_ratio($110,$105)':112"
+  cut: "112:{1.0,1.2}"
+  label: "112:'$m_{\\\\tilde{\\\\tau}_1} / m_{\\chi^0_1}$'"
+  colour: purple
+
+sbottom_coannihilation:
+  extra_1D_plots: "112 109 105"
+  datastream: "'safe_ratio($109,$105)':112"
+  cut: "112:{1.0,1.2}"
+  label: "112:'$m_{\\\\tilde{b}_1} / m_{\\chi^0_1}$'"
+  colour: cyan
+
+stop_coannihilation:
+  extra_1D_plots: "112 108 105"
+  datastream: "'safe_ratio($108,$105)':112"
+  cut: "112:{1.0,1.2}"
+  label: "112:'$m_{\\\\tilde{t}_1} / m_{\\chi^0_1}$'"
+  colour: red
+
+A0-H0_funnel:
+  extra_1D_plots: "112 113 114 101 103 105"
+  datastream: "'safe_ratio($101,$105)':112 'safe_ratio($103,$105)':113 'closest_to(2.0,$112,$113)':114"
+  cut: "114:{1.6,2.4}"
+  label: "112:'$m_{A^0} / m_{\\chi^0_1}$' 113:'$m_{H^0} / m_{\\chi^0_1}$' 114:'$m_{\textrm{heavy boson}} / m_{\\chi^0_1}$'"
+  colour: orange
+
+Z-h0_funnel:
+  extra_1D_plots: "112 113 114 11 102 105"
+  datastream: "'#StandardModel_SLHA2_parameters @StandardModel_SLHA2::primary_parameters::mZ':11 'safe_ratio($11,$105)':112 'safe_ratio($102,$105)':113 'closest_to(2.0,$112,$113)':114"
+  cut: "114:{1.6,2.4}"
+  label: "11:'$m_{Z}$ (GeV)' 112:'$m_{Z} / m_{\\chi^0_1}$' 113:'$m_{h^0} / m_{\\chi^0_1}$' 114:'$m_{\textrm{light boson}} / m_{\\chi^0_1}$'"
+  colour: pink
