@@ -21,9 +21,11 @@ namespace Gambit {
       // Numbers passing cuts
       static const size_t NUMSR = 160;
       double _srnums[NUMSR];
+      Cutflow _cutflow;
 
-
-      Analysis_CMS_13TeV_0LEP_13invfb() {
+      Analysis_CMS_13TeV_0LEP_13invfb() :
+              _cutflow("CMS 0-lep 13 TeV", {"Njet >= 3", "HT > 300", "HTmiss > 300", "Nmuon = 0", "Nelectron = 0", "Nhadron = 0 (no-op)", "Dphi_htmiss_j1", "Dphi_htmiss_j2", "Dphi_htmiss_j3", "Dphi_htmiss_j4"})
+      {
         set_luminosity(12.9);
       }
 
@@ -31,13 +33,12 @@ namespace Gambit {
       void analyze(const Event* event) {
 
         HEPUtilsAnalysis::analyze(event);
+        _cutflow.fillinit();
 
         // FinalState isofs(Cuts::abseta < 3.0 && Cuts::abspid != PID::ELECTRON && Cuts::abspid != PID::MUON);
         // FinalState cfs(Cuts::abseta < 2.5 && Cuts::abscharge != 0);
 
         // Get baseline jets
-        /// @todo Drop b-tag if pT < 50 GeV or |eta| > 2.5?
-        /// @note b-tag effs: b: 0.55, c: 0.12, l: 0.016
         vector<const Jet*> jets24, jets50;
         for (const Jet* jet : event->jets()) {
           if (jet->pT() < 30) continue;
@@ -45,18 +46,21 @@ namespace Gambit {
           if (jet->abseta() < 5.0) jets50.push_back(jet);
         }
         if (jets24.size() < 3) return;
+        _cutflow.fill(1);
 
         // HT cut
         double sumptj = 0;
         for (const Jet* j : jets24) sumptj += j->pT();
         const double ht = sumptj;
         if (ht < 300) return;
+        _cutflow.fill(2);
 
         // HTmiss cut, from full set of jets
         P4 htvec;
         for (const Jet* jet : jets50) htvec += jet->mom();
         const double htmiss = htvec.pT();
         if (htmiss < 300) return;
+        _cutflow.fill(3);
 
 
         // Get baseline electrons
@@ -94,8 +98,10 @@ namespace Gambit {
         }
 
         // Veto the event if there are any remaining baseline leptons
-        if (!elecs.empty()) return;
         if (!muons.empty()) return;
+        _cutflow.fill(4);
+        if (!elecs.empty()) return;
+        _cutflow.fill(5);
 
 
         /// @todo Need access to charged hadrons to do this isolation
@@ -119,13 +125,18 @@ namespace Gambit {
         //   const double mT = sqrt( t.mass2() + 2*(t.Et()*ptmiss - t->pT()*ptmiss*cos(deltaPhi(t,ptmissvec))) );
         //   if (mT < 100 && t->pT() < ptcut) vetoEvent;
         // }
+        _cutflow.fill(6);
 
 
         // Lead jets isolation from Htmiss
         if (deltaPhi(-htvec, jets24[0]->mom()) < 0.5) return;
+        _cutflow.fill(7);
         if (deltaPhi(-htvec, jets24[1]->mom()) < 0.5) return;
+        _cutflow.fill(8);
         if (deltaPhi(-htvec, jets24[2]->mom()) < 0.3) return;
+        _cutflow.fill(9);
         if (jets24.size() >= 4 && deltaPhi(-htvec, jets24[3]->mom()) < 0.3) return;
+        _cutflow.fill(10);
 
 
         ////////
@@ -140,7 +151,8 @@ namespace Gambit {
         const size_t inj = binIndex(nj, njedges, true);
         size_t nbj = 0;
         for (const Jet* j : jets24)
-          if (j->btag()) nbj += 1;
+          /// @note b-tag effs: b: 0.55, c: 0.12, l: 0.016
+          if (j->btag() && j->pT() > 50 && j->abseta() < 2.5 && rand01() < 0.55) nbj += 1;
         const size_t inbj = binIndex(nbj, njbedges, true);
         // HTmiss vs HT 2D bin
         int iht = 0;
@@ -176,6 +188,8 @@ namespace Gambit {
 
       /// Register results objects with the results for each SR; obs & bkg numbers from the CONF note
       void collect_results() {
+        cout << _cutflow << endl;
+
         static const string ANAME = "Analysis_CMS_13TeV_0LEP_13invfb";
         static const double OBSNUM[NUMSR] = {};
         static const double BKGNUM[NUMSR] = {};
