@@ -35,9 +35,9 @@ from multiprocessing import cpu_count
 verbose = False
 default_contour = 95.4
 default_contour_style = "Solid"
-default_contour_width = 3
+default_contour_width = 2
 default_colour = "blue"
-default_n_contours = 100
+default_n_contours = 150
 n_threads = cpu_count()
 
 # Checks for the presence of one or more keys in a YAML node
@@ -245,7 +245,7 @@ def combine(region_file, pip_file):
       min_contours.append(min_contour)
 
     # Extract the axis styles from the last regional script
-    axis_styles = re.findall('\s\s--axis-style.*\n', regional_script)
+    axis_styles = re.findall('\s\s--axis-style\s.*[^y]*\n', regional_script)
 
     # Read in the original script
     base_script = file(script_dir+'/'+script_name, 'r').readlines()

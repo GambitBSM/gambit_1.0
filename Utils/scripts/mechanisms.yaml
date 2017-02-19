@@ -13,7 +13,7 @@ chargino_coannihilation:
   cut: "112:{1.0,1.2}"
   label: "112:'$m_{\\chi^\\pm_1} / m_{\\chi^0_1}$'"
   colour: yellow
-  contour_style: Dots
+  contour_style: Solid
 
 stau_coannihilation:
   extra_1D_plots: "112 110 105"
