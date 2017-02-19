@@ -245,7 +245,7 @@ def combine(region_file, pip_file):
       min_contours.append(min_contour)
 
     # Extract the axis styles from the last regional script
-    axis_styles = re.findall('\s\s--axis-style\s.*[^y]*\n', regional_script)
+    axis_styles = re.findall('\s\s--axis-style\s*[^y]*\n', regional_script)
 
     # Read in the original script
     base_script = file(script_dir+'/'+script_name, 'r').readlines()
