@@ -227,18 +227,18 @@ namespace Gambit {
           const static std::vector<double> bineffs_eta  = { 0.950, 0.965, 0.955, 0.885, 0.950, 0.935, 0.90 };
           const static HEPUtils::BinnedFn1D<double> _eff_eta(binedges_eta, bineffs_eta);
           // Et eff histogram (10-20 GeV bin added by hand)
-          const static std::vector<double> binedges_et = { 10,   20,   25,   30,   35,   40,    45,    50,   60,  80 };
-          const static std::vector<double> bineffs_et  = { 0.90, 0.91, 0.92, 0.94, 0.95, 0.955, 0.965, 0.97, 0.98 };
+          const static std::vector<double> binedges_et = { 10,   20,   25,   30,   35,   40,    45,    50,   60,  80, 10000 };
+          const static std::vector<double> bineffs_et  = { 0.90, 0.91, 0.92, 0.94, 0.95, 0.955, 0.965, 0.97, 0.98, 0.98 };
           const static HEPUtils::BinnedFn1D<double> _eff_et(binedges_et, bineffs_et);
 
           auto keptElectronsEnd = std::remove_if(electrons.begin(), electrons.end(),
                                                  [](const HEPUtils::Particle* electron) {
-                                                   const double e_pt = electron->pT();
+						   const double e_pt = electron->pT();
                                                    const double e_eta = electron->abseta();
-                                                   if (e_eta > 2.47 || e_pt < 10) return true;
-                                                   const double eff1 = _eff_eta.get_at(e_eta), eff2 = _eff_et.get_at(e_pt);
-                                                   const double eff = std::min(eff1 * eff2 / 0.95, 1.0); //< norm factor as approximate double differential
-                                                   return random_bool(1-eff);
+						   if (e_eta > 2.47 || e_pt < 10) return true;
+						   const double eff1 = _eff_eta.get_at(e_eta), eff2 = _eff_et.get_at(e_pt);
+						   const double eff = std::min(eff1 * eff2 / 0.95, 1.0); //< norm factor as approximate double differential
+						   return random_bool(1-eff);
                                                  } );
           electrons.erase(keptElectronsEnd, electrons.end());
         }
