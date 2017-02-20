@@ -150,9 +150,12 @@ namespace Gambit {
         static const vector<double> njbedges = {0., 1., 2., 3.};
         const size_t inj = binIndex(nj, njedges, true);
         size_t nbj = 0;
-        for (const Jet* j : jets24)
-          /// @note b-tag effs: b: 0.55, c: 0.12, l: 0.016
-          if (j->btag() && j->pT() > 50 && j->abseta() < 2.5 && rand01() < 0.55) nbj += 1;
+        for (const Jet* j : jets24) {
+          if (j->pT() < 50 && j->abseta() > 2.5) continue;
+          // b-tag effs: b: 0.55, c: 0.12, l: 0.016
+          const bool btagged = rand01() < (j->btag() ? 0.55 : j->ctag() ? 0.12 : 0.016);
+          if (btagged) nbj += 1;
+        }
         const size_t inbj = binIndex(nbj, njbedges, true);
         // HTmiss vs HT 2D bin
         int iht = 0;
@@ -190,14 +193,22 @@ namespace Gambit {
       void collect_results() {
         cout << _cutflow << endl;
 
-        static const string ANAME = "Analysis_CMS_13TeV_0LEP_13invfb";
-        static const double OBSNUM[NUMSR] = {};
-        static const double BKGNUM[NUMSR] = {};
-        static const double BKGERR[NUMSR] = {};
-        for (size_t ibin = 0; ibin < NUMSR; ++ibin) {
-          stringstream ss; ss << "sr-" << ibin;
-          add_result(SignalRegionData(ANAME, ss.str(), OBSNUM[ibin], {_srnums[ibin],  0.}, {BKGNUM[ibin], BKGERR[ibin]}));
-        }
+        // static const string ANAME = "Analysis_CMS_13TeV_0LEP_13invfb";
+        // static const double OBSNUM[NUMSR] = {
+        //   5180, 1780, 146, 2834, 2819, 202, 1070,  93, 134, 11, 1009, 411, 35, 512, 607, 47, 200, 27, 30, 4,   195, 77, 2    65, 109,  9,   22,   6,   2,   1,    10,   3,   0,    3,   12,   2,   2,   0,   0,   0,
+        //   316,   566, 104,  111,  644, 129,  160,  60,  23, 7.5, 151, 279, 54, 46,  265, 53,  48, 24,  8, 2.7,  51,132, 19,  18, 105, 17,   12,   6.7, 1.5, 0.3,  3.4,  22,  2.5,  0.96,12.9, 4.7, 0.8, 0.5, 0.36,0.02 };
+        // static const double BKGNUM[NUMSR] = {
+        //   4942, 1671, 140, 2722, 2768, 205,  979, 104, 124,  7, 1081, 412, 38, 551, 563, 50, 181, 24, 22, 1.2, 164, 82, 6.2, 70, 116, 10.9, 19.6, 4.4, 2.2, 0.19, 13.6, 8.6, 1.03, 5.1, 11.0, 1.0, 1.3, 0.3, 0.2, 0.01,
+        //   334,   603,  93,  163,  734, 121,  149,  76,  32,  4,  164, 309, 43, 58,  293, 52,  54, 26,  6, 0,    54,133, 4,   11,  97, 14,    9,   9,   4,   1,    11,   13,  4,    1,   13,   3,   1,   2,   0,   0
+        // };
+        // static const double BKGERR[NUMSR] = {
+        //   280,  119,  17,  153,  149,  22,   71,  13,  20, 2.6,  84,  39,  6,  48,  46, 7.6, 19,  5, 4.4,1.4,  21, 12, 2.8, 12, 14.5, 3.6,  4.5, 2.4, 1.7, 1.4,   5.1, 3.5, 2.0,  3.5,  4.5, 1.5, 2.0, 1.5, 1.5, 1.3,
+
+        // };
+        // for (size_t ibin = 0; ibin < NUMSR; ++ibin) {
+        //   stringstream ss; ss << "sr-" << ibin;
+        //   add_result(SignalRegionData(ANAME, ss.str(), OBSNUM[ibin], {_srnums[ibin],  0.}, {BKGNUM[ibin], BKGERR[ibin]}));
+        // }
       }
 
     };
