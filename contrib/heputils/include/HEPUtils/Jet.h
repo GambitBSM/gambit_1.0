@@ -22,8 +22,8 @@ namespace HEPUtils {
     //@{
     /// Momentum vector
     P4 _p4;
-    /// B tag
-    bool _isB;
+    /// B and C tags
+    bool _isB, _isC;
     //@}
 
 
@@ -33,12 +33,12 @@ namespace HEPUtils {
     //@{
 
     /// Constructor for a light jet without explicit constituents
-    Jet(const P4& mom, bool isB=false)
-      : _p4(mom), _isB(isB) {  }
+    Jet(const P4& mom, bool isB=false, bool isC=false)
+      : _p4(mom), _isB(isB), _isC(isC) {  }
 
     /// "Cartesian" constructor
-    Jet(double px, double py, double pz, double E, bool isB=false)
-      : _p4(px, py, pz, E), _isB(isB) {  }
+    Jet(double px, double py, double pz, double E, bool isB=false, bool isC=false)
+      : _p4(px, py, pz, E), _isB(isB), _isC(isC) {  }
 
     //@}
 
@@ -102,6 +102,12 @@ namespace HEPUtils {
     bool btag() const { return _isB; }
     /// Set BTag value
     void set_btag(bool isb) { _isB = isb; }
+
+    /// Is this particle tagged as a c?
+    /// @note Can be simultaneously btag()'d -- analyses should probably only use if fallback from b-tag.
+    bool ctag() const { return /* !btag() && */ _isC; }
+    /// Set CTag value
+    void set_ctag(bool isc) { _isC = isc; }
 
     /// @todo Generalize for charm tags, tau tags, multiple tags of a single type?
 

@@ -40,6 +40,7 @@ namespace Gambit
      return name;
    }
 
+   #ifdef WITH_MPI
    /// Translate shutdown codes to strings
    std::string SignalData::shutdown_name(int code)
    {
@@ -51,6 +52,7 @@ namespace Gambit
      }
      return name;
    }
+   #endif
 
    /// @{ SignalData member functions
   
@@ -175,8 +177,8 @@ namespace Gambit
    /// Attempt to synchronise all processes, but abort if it takes too long
    bool SignalData::all_processes_ready()
    {
-     logger() << "Waiting up to "<<timeout/1000<<" seconds for all processes to sync..." << EOM;
      #ifdef WITH_MPI
+       logger() << "Waiting up to "<<timeout/1000<<" seconds for all processes to sync..." << EOM;
        // sleep setup
        bool timedout = false;
        std::chrono::milliseconds bar_timeout(std::lround(timeout)); 
@@ -483,7 +485,6 @@ namespace Gambit
        #endif
      }
    }
-  
    #endif
 
    /// @}

@@ -44,7 +44,7 @@ namespace Gambit
           #ifdef WITH_MPI
             int rank = GMPI::Comm().Get_rank();
           #else
-            rank = 0;
+            int rank = 0;
           #endif
           YAML::Node import;
           std::string filename = node.as<std::string>();
@@ -99,7 +99,7 @@ namespace Gambit
         #ifdef WITH_MPI
           int rank = GMPI::Comm().Get_rank();
         #else
-          rank = 0;
+          int rank = 0;
         #endif
         if (rank == 0)
         {

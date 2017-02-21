@@ -49,6 +49,7 @@ namespace Gambit
     /// Check if a width is negative or suspiciously large and raise an error.
     void check_width(const str& info, double& w, bool raise_invalid_pt_negative_width = false, bool raise_invalid_pt_large_width = false)
     {
+      if (Utils::isnan(w)) DecayBit_error().raise(info, "Decay width is NaN!");
       if (w < 0)
       {
         str nwiderr("Negative width returned!");

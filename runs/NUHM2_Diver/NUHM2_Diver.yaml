@@ -268,12 +268,7 @@ Rules:
   - capability: RD_oh2
     function: RD_oh2_general
     options:
-      # for all calculations
       fast: 1
-      # used by RD_oh2_DarkSUSY only
-      #omtype: 1
-      # used by RD_oh2_MicrOmegas only
-      #Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood from gamlike
   - capability: lnL_FermiLATdwarfs
