@@ -1,6 +1,6 @@
-diff -rupN darksusy-5.1.3/configure installed/darksusy/5.1.3/configure
+diff -rupN darksusy-5.1.3/configure darksusy-5.1.3.patched/configure
 --- darksusy-5.1.3/configure	2015-04-07 10:23:05.000000000 +0100
-+++ installed/darksusy/5.1.3/configure	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/configure	2017-02-11 20:01:26.155863534 +0000
 @@ -3337,11 +3337,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
  if test "${FCSET}" = "false" ; then
    if test "${FC}" = "ifort"; then
@@ -15,9 +15,9 @@ diff -rupN darksusy-5.1.3/configure installed/darksusy/5.1.3/configure
    fi
  fi
  
-diff -rupN darksusy-5.1.3/configure.ac installed/darksusy/5.1.3/configure.ac
+diff -rupN darksusy-5.1.3/configure.ac darksusy-5.1.3.patched/configure.ac
 --- darksusy-5.1.3/configure.ac	2015-04-07 10:23:05.000000000 +0100
-+++ installed/darksusy/5.1.3/configure.ac	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/configure.ac	2017-02-11 20:01:26.155863534 +0000
 @@ -28,11 +28,11 @@ AC_PROG_FC([ifort gfortran])
  if test "${FCSET}" = "false" ; then
    if test "${FC}" = "ifort"; then 
@@ -32,9 +32,9 @@ diff -rupN darksusy-5.1.3/configure.ac installed/darksusy/5.1.3/configure.ac
    fi
  fi
  
-diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in
+diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in darksusy-5.1.3.patched/contrib/FeynHiggs-2.9.4/makefile.in
 --- darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2013-02-10 06:43:34.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/makefile.in	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/FeynHiggs-2.9.4/makefile.in	2017-02-11 20:01:26.155863534 +0000
 @@ -31,6 +31,9 @@ ARGS = $(PARALLEL) \
  default all lib frontend mma: force
  	cd $(BLD) && $(MAKE) $(ARGS) $@
@@ -45,9 +45,9 @@ diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/makefile.in installed/darksusy
  install: default
  	-mkdir "$(PREFIX)"
  	-mkdir "$(LIBDIR)" "$(INCLUDEDIR)" "$(BINDIR)"
-diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F
+diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F darksusy-5.1.3.patched/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F
 --- darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2013-02-10 06:43:34.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F	2017-02-11 20:01:26.155863534 +0000
 @@ -27,7 +27,7 @@
  #define EpsL(x,y)  vec_(x,y, 3, i)
  #define EpsTL(x,y) vec_(x,y, 4, i)
@@ -57,9 +57,9 @@ diff -rupN darksusy-5.1.3/contrib/FeynHiggs-2.9.4/src/Decays/VecSet.F installed/
  	equivalence (vec, spi_)
  
  #define Spi(hel,om,x) spi_(x, om, hel+6, i)
-diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in darksusy-5.1.3.patched/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in
 --- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2015-04-07 10:23:05.000000000 +0100
-+++ installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksusy.in	2017-02-11 20:01:26.155863534 +0000
 @@ -106,10 +106,10 @@ OBJSsubroutines =  $(OBJSbasic) \
  default: HiggsBounds
  
@@ -104,9 +104,9 @@ diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/makefile_darksus
  	rm -f example_programs/HBwithFH
  	rm -f example_programs/HBwithCPsuperH
  	rm -f example_programs/example-SM_vs_4thGen
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/aldata.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/aldata.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/aldata.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/aldata.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/aldata.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/aldata.f	2017-02-11 20:01:26.159863534 +0000
 @@ -155,8 +155,8 @@ C          LUXSET=.TRUE. after RLUXGO ha
       $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
        SAVE /Q1Q2/
@@ -118,9 +118,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/aldata.f installed/dark
        CHARACTER*24 XSEED
  C          SUSY parameters
  C          AMGLSS               = gluino mass
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/func.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/func.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,189 +0,0 @@
 -
 -******************************************************************
@@ -311,9 +311,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func.f installed/darksu
 - 
 -      return
 -      end
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/func_int.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/func_int.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/func_int.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,69 +0,0 @@
 -
 -
@@ -384,9 +384,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/func_int.f installed/da
 -      
 -      RETURN
 -      END
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/gettot.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/gettot.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/gettot.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/gettot.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/gettot.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/gettot.f	2017-02-11 20:01:26.159863534 +0000
 @@ -77,8 +77,8 @@ C          Jet limits
        COMMON/IDRUN/IDVER,IDG(2),IEVT,IEVGEN
        SAVE /IDRUN/
@@ -398,9 +398,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/gettot.f installed/dark
        CHARACTER*24 XSEED
        COMMON/PRIMAR/NJET,SCM,HALFE,ECM,IDIN(2),NEVENT,NTRIES,NSIGMA,
       $WRTLHE
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/isared.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/isared.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/isared.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,391 +0,0 @@
 -CDECK  ID>, ISARED.
 -cccccccccccccccccccccccccccccccccccccccccccccc
@@ -793,9 +793,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/isared.f installed/dark
 -
 -      RETURN
 -      END
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/makefile.in
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/makefile.in	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/makefile.in	2017-02-11 20:01:26.159863534 +0000
 @@ -6,9 +6,6 @@
  FF=@F77@
  FOPT=@FOPT@
@@ -837,9 +837,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/makefile.in installed/d
  
  clean:
  	rm -f *.o
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtevt.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtevt.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/prtevt.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/prtevt.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtevt.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/prtevt.f	2017-02-11 20:01:26.159863534 +0000
 @@ -84,8 +84,8 @@ C
        COMMON/WSIG/SIGLLQ
        SAVE /WSIG/
@@ -851,9 +851,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtevt.f installed/dark
        CHARACTER*24 XSEED
  C
  C          LABELS ARE CHARACTER*8
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtlim.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtlim.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/prtlim.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/prtlim.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/prtlim.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/prtlim.f	2017-02-11 20:01:26.163863534 +0000
 @@ -79,8 +79,8 @@ C          KKGravity common
        COMMON/PRTOUT/NEVPRT,NJUMP
        SAVE /PRTOUT/
@@ -865,18 +865,18 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/prtlim.f installed/dark
        CHARACTER*24 XSEED
        INTEGER MXTYPE
        PARAMETER (MXTYPE=8)
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfgt.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfgt.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/ranfgt.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfgt.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfgt.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/ranfgt.f	2017-02-11 20:01:26.163863534 +0000
 @@ -1,4 +1,4 @@
  C
 -      SUBROUTINE RANFGT(SEED)
 +      SUBROUTINE RANFGT(SEEDg)
        RETURN
        END
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfst.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfst.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/ranfst.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfst.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ranfst.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/ranfst.f	2017-02-11 20:01:26.163863534 +0000
 @@ -1,4 +1,4 @@
 -      SUBROUTINE RANFST(SEED)
 -      DOUBLE PRECISION SEED
@@ -884,9 +884,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ranfst.f installed/dark
 +      DOUBLE PRECISION SEEDg
        RETURN
        END
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/readin.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/readin.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/readin.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/readin.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/readin.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/readin.f	2017-02-11 20:01:26.163863534 +0000
 @@ -73,8 +73,8 @@ C          KKGravity common
        COMMON/PRTOUT/NEVPRT,NJUMP
        SAVE /PRTOUT/
@@ -907,9 +907,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/readin.f installed/dark
  C
  C          Overlapping variable flags.
        DATA NLAP/1,2,3, 1,2,7 ,1,2,8, 1,3,5, 1,3,6, 1,3,7, 1,3,8, 1,5,7,
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/reset.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/reset.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/reset.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/reset.f	2011-11-03 14:34:52.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/reset.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/reset.f	2017-02-11 20:01:26.163863534 +0000
 @@ -84,8 +84,8 @@ C          Jet limits
       $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
        SAVE /Q1Q2/
@@ -921,9 +921,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/reset.f installed/darks
        CHARACTER*24 XSEED
  C          SUSY parameters
  C          AMGLSS               = gluino mass
-diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f
+diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/ssid.f
 --- darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f	1970-01-01 01:00:00.000000000 +0100
-+++ installed/darksusy/5.1.3/contrib/isajet781-for-darksusy/ssid.f	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/isajet781-for-darksusy/ssid.f	2017-02-11 20:01:26.167863534 +0000
 @@ -0,0 +1,80 @@
 +      CHARACTER*5 FUNCTION SSID(ID)
 +C-----------------------------------------------------------------------
@@ -1005,9 +1005,9 @@ diff -rupN darksusy-5.1.3/contrib/isajet781-for-darksusy/ssid.f installed/darksu
 +      SSID=LABEL(ID)
 +      RETURN
 +      END
-diff -rupN darksusy-5.1.3/contrib/TSPACK/makefile.in installed/darksusy/5.1.3/contrib/TSPACK/makefile.in
+diff -rupN darksusy-5.1.3/contrib/TSPACK/makefile.in darksusy-5.1.3.patched/contrib/TSPACK/makefile.in
 --- darksusy-5.1.3/contrib/TSPACK/makefile.in	2013-02-10 06:43:34.000000000 +0000
-+++ installed/darksusy/5.1.3/contrib/TSPACK/makefile.in	2016-11-15 13:30:13.730328528 +0000
++++ darksusy-5.1.3.patched/contrib/TSPACK/makefile.in	2017-02-11 20:01:26.167863534 +0000
 @@ -9,8 +9,7 @@ FOPT=@FOPT@
  # Dependencies and libraries
  DINC=../../include
@@ -1033,9 +1033,9 @@ diff -rupN darksusy-5.1.3/contrib/TSPACK/makefile.in installed/darksusy/5.1.3/co
  
  clean:
  	rm -f tspack.f *.o
-diff -rupN darksusy-5.1.3/include/dsandwcom.h installed/darksusy/5.1.3/include/dsandwcom.h
+diff -rupN darksusy-5.1.3/include/dsandwcom.h darksusy-5.1.3.patched/include/dsandwcom.h
 --- darksusy-5.1.3/include/dsandwcom.h	2010-08-06 09:27:44.000000000 +0100
-+++ installed/darksusy/5.1.3/include/dsandwcom.h	2016-11-15 13:30:13.734328528 +0000
++++ darksusy-5.1.3.patched/include/dsandwcom.h	2017-02-11 20:01:26.167863534 +0000
 @@ -23,7 +23,7 @@ c....dwcom - common block needed for the
        save /dwcom1/,/dwcom2/
  
@@ -1045,9 +1045,9 @@ diff -rupN darksusy-5.1.3/include/dsandwcom.h installed/darksusy/5.1.3/include/d
        common /partials/ prtial
  
  ***                                                                 ***
-diff -rupN darksusy-5.1.3/include/dsascom.h installed/darksusy/5.1.3/include/dsascom.h
+diff -rupN darksusy-5.1.3/include/dsascom.h darksusy-5.1.3.patched/include/dsascom.h
 --- darksusy-5.1.3/include/dsascom.h	2008-06-23 22:39:47.000000000 +0100
-+++ installed/darksusy/5.1.3/include/dsascom.h	2016-11-15 13:30:13.734328528 +0000
++++ darksusy-5.1.3.patched/include/dsascom.h	2017-02-11 20:01:26.167863534 +0000
 @@ -44,10 +44,10 @@ c some roundoff terms
  
  c dsasdwdcossfsf final/intermediate state arrays/variables
@@ -1075,9 +1075,9 @@ diff -rupN darksusy-5.1.3/include/dsascom.h installed/darksusy/5.1.3/include/dsa
       & kcfersv,ncferd,kcferd,ncsfert,kcsfertn,ncsfertc,kcsfertc,
       & cgammain,cgluonin
  
-diff -rupN darksusy-5.1.3/include/dsmssm.h installed/darksusy/5.1.3/include/dsmssm.h
+diff -rupN darksusy-5.1.3/include/dsmssm.h darksusy-5.1.3.patched/include/dsmssm.h
 --- darksusy-5.1.3/include/dsmssm.h	2013-01-31 21:46:16.000000000 +0000
-+++ installed/darksusy/5.1.3/include/dsmssm.h	2016-11-17 19:09:26.531531850 +0000
++++ darksusy-5.1.3.patched/include/dsmssm.h	2017-02-11 20:01:26.167863534 +0000
 @@ -140,9 +140,12 @@ c
        complex*16 neunmx(4,4),chaumx(2,2),chavmx(2,2),
       & slulmx(3,3),sldlmx(6,3),sldrmx(6,3),
@@ -1092,9 +1092,9 @@ diff -rupN darksusy-5.1.3/include/dsmssm.h installed/darksusy/5.1.3/include/dsms
  * msugra variables
        real*8 m0var,mhfvar,a0var,tgbetavar,sgnmuvar
        common/sugrainput/m0var,mhfvar,a0var,tgbetavar,sgnmuvar
-diff -rupN darksusy-5.1.3/include/dswacom.h installed/darksusy/5.1.3/include/dswacom.h
+diff -rupN darksusy-5.1.3/include/dswacom.h darksusy-5.1.3.patched/include/dswacom.h
 --- darksusy-5.1.3/include/dswacom.h	2015-12-20 21:43:06.000000000 +0000
-+++ installed/darksusy/5.1.3/include/dswacom.h	2016-11-15 13:30:13.734328528 +0000
++++ darksusy-5.1.3.patched/include/dswacom.h	2017-02-11 20:01:26.167863534 +0000
 @@ -18,30 +18,26 @@ c...to 52.
        integer wamax,walast(2),wanm
        parameter(wamax=6) ! number of tables to load simultaneously
@@ -1146,10 +1146,21 @@ diff -rupN darksusy-5.1.3/include/dswacom.h installed/darksusy/5.1.3/include/dsw
  ***                                                                 ***
  ************************** end of muoncom.h ***************************
  
-diff -rupN darksusy-5.1.3/makefile.in installed/darksusy/5.1.3/makefile.in
+diff -rupN darksusy-5.1.3/makefile.in darksusy-5.1.3.patched/makefile.in
 --- darksusy-5.1.3/makefile.in	2015-04-07 10:23:05.000000000 +0100
-+++ installed/darksusy/5.1.3/makefile.in	2016-11-15 13:30:13.734328528 +0000
-@@ -82,7 +82,11 @@ config_paths config :
++++ darksusy-5.1.3.patched/makefile.in	2017-02-11 20:10:37.283871075 +0000
+@@ -60,7 +60,9 @@ HBDIR=@HIGGSBOUNDSDIR@
+ SLHADIR=@SLHADIR@
+ TSPACKDIR=@TSPACKDIR@
+ 
+-LIB=${DS_INSTALL}/lib
++DS_LIB=${DS_ROOT}/lib
++
++export DS_LIB
+ 
+ ###############################################
+ #### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
+@@ -82,7 +84,11 @@ config_paths config :
  
  darksusy_lib dslib : tspack
  	mkdir -p lib
@@ -1158,11 +1169,11 @@ diff -rupN darksusy-5.1.3/makefile.in installed/darksusy/5.1.3/makefile.in
 +
 +darksusy_lib_shared dslib_shared : tspack libisajet_shared feynhiggs_shared higgsbounds_shared
 +	mkdir -p lib
-+	cd $(DS_ROOT)/src; make DS_LIB="$(DS_INSTALL)/lib" libdarksusy.so
++	cd $(DS_ROOT)/src; make libdarksusy.so
  
  install : install_builds install_tables
  
-@@ -139,15 +143,27 @@ install_tables :
+@@ -139,15 +145,27 @@ install_tables :
  	cd $(DS_ROOT)/share/DarkSUSY; make all
  
  libisajet :
@@ -1170,7 +1181,7 @@ diff -rupN darksusy-5.1.3/makefile.in installed/darksusy/5.1.3/makefile.in
 +	cd $(ISAJETDIR); make libisajet.a
 +
 +libisajet_shared :
-+	cd $(ISAJETDIR); make DS_LIB="$(DS_INSTALL)/lib" libisajet.so
++	cd $(ISAJETDIR); make libisajet.so
  
  tspack:
  	cd $(TSPACKDIR); make
@@ -1178,8 +1189,224 @@ diff -rupN darksusy-5.1.3/makefile.in installed/darksusy/5.1.3/makefile.in
  feynhiggs :
  	cd $(FEYNHIGGSDIR); \
 -	make lib ; \
+-	cp -p build/libFH.a $(DS_ROOT)/lib/ ; \
 +	make FC="$(FF)" FFLAGS="$(FOPT)" CFLAGS="-fPIC" lib ; \
- 	cp -p build/libFH.a $(DS_ROOT)/lib/ ; \
++	cp -p build/libFH.a $(DS_LIB)/ ;
++	make copy_feynhiggs_headers
++
++feynhiggs_shared :
++	cd $(FEYNHIGGSDIR); \
++	make FC="$(FF)" FFLAGS="$(FOPT)" CFLAGS="-fPIC" lib_shared
++	make copy_feynhiggs_headers
++
++copy_feynhiggs_headers :
++	cd $(FEYNHIGGSDIR); \
+ 	cp -p build/include/FHCouplings.h $(DS_ROOT)/include/ ;  \
+ 	cp -p build/include/SLHA.h $(DS_ROOT)/include/  ; \
+ 	cp -p build/include/SLHADefs.h $(DS_ROOT)/include/  ; \
+@@ -156,7 +174,11 @@ feynhiggs :
+ higgsbounds :
+ 	cd $(HBDIR); \
+ 	make -f makefile_darksusy libHB ; \
+-	cp -p libHB.a $(DS_ROOT)/lib/
++	cp -p libHB.a $(DS_LIB)/
++
++higgsbounds_shared :
++	cd $(HBDIR); \
++	make -f makefile_darksusy libHB_shared ; \
+ 
+ # SLHA is currently not built, as feynhiggs includes slhalib
+ slha :
+@@ -184,7 +206,7 @@ clean :
+ 	cd $(DS_ROOT)/contrib/galprop/v50p; $(MAKE) clean
+ 	cd $(FEYNHIGGSDIR); $(MAKE) clean ; rm -fr ds
+ 	cd $(SLHADIR); $(MAKE) clean ; rm -fr ds
+-	cd $(HBDIR); $(MAKE) -f makefile_darksusy -i veryclean; $(MAKE) -f makefile_darksusy -i hyperclean
++	cd $(HBDIR); $(MAKE) -f makefile_darksusy -i clean
+ 	cd $(TSPACKDIR); $(MAKE) clean
+ 
+ 
+@@ -198,6 +220,11 @@ rmmore:
+ 	rm -f $(DS_ROOT)/lib/libFH.a
+ 	rm -f $(DS_ROOT)/lib/libSLHA.a
+ 	rm -f $(DS_ROOT)/lib/libHB.a
++	rm -f $(DS_INSTALL)/lib/libdarksusy.so
++	rm -f $(DS_INSTALL)/lib/libisajet.so
++	rm -f $(DS_INSTALL)/lib/libFH.so
++	rm -f $(DS_INSTALL)/lib/libSLHA.so
++	rm -f $(DS_INSTALL)/lib/libHB.so
+ 	rm -f $(DS_ROOT)/lib/aldata.o
+ 	rm -f $(DS_ROOT)/lib/libcfitsio.a
+ 	rm -f $(DS_ROOT)/share/DarkSUSY/ascii2bin
+@@ -229,6 +256,7 @@ rmmore:
+ # If it is, we know that DS_INSTALL must point to DS_ROOT.
+ uninstall:
+ 	rm -f $(DS_INSTALL)/lib/libdarksusy.a
++	rm -f $(DS_INSTALL)/lib/libdarksusy.so
+ 	rm -f $(DS_INSTALL)/lib/aldata.o
+ 	if [ ! -f $(DS_INSTALL)/makefile.in ] ; then \
+ 		echo 'The install directory is different from DS_ROOT' ; \
+diff -rupN darksusy-5.1.3/makefile.in~ darksusy-5.1.3.patched/makefile.in~
+--- darksusy-5.1.3/makefile.in~	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/makefile.in~	2017-02-11 20:01:26.167863534 +0000
+@@ -0,0 +1,287 @@
++# Main makefile for DarkSUSY. 
++# Technical questions about this makefile should be directed to
++# Joakim Edsjo, edsjo@physto.se
++# Date: June 23, 2006
++# Additions for FeynHiggs by Paolo Gondolo 2002/06/14.
++
++# This file will create libdarksusy.a
++# It will also create binary tables from the supplied ascii tables
++# to speed up particle yield calculations.
++# This file is created from makefile.in by running ./configure.
++# Type 'make' to make DarkSUSY
++# Type 'make install' to install (default is in /usr/local)
++
++########################################################
++### READ THROUGH AND CHANGE THE DEFAULT VALUES BELOW ###
++### BEFORE COMPILING.                                ###
++########################################################
++
++###### Compiler and compiler options                     ######
++###### DarkSUSY root directory and Feynhiggs directories ######
++
++# DS_ROOT is the root directory of DarkSUSY.
++# DS_INSTALL is the install directory. When DarkSUSY is installed, you
++# can in principle delete the DarkSUSY root directory if you wish.
++
++# Note that, on some systems (e.g. Mac OS X), the files in 
++# src/xfeynhiggs need the option -femulate-complex, so define
++# separate compilation options for these files using the variable FOPTFH. 
++# It doesn't seem necessary to compile the full FeynHiggs package with these
++# options (the compile is extremeley slow in this case).
++
++### GNU fortran g77 ###
++# NOTE: One some systems, the -ffast-math option causes problems. If this
++# is the case, please take it away, execute 'make clobber' to clean up and
++# redo the 'make'
++FF=@F77@
++FOPT=@FOPT@
++FFLAGS=$(FOPT)
++FOPTFH = @FOPT@
++
++# Determine where to install stuff (prefix is set in configure)
++prefix=@prefix@
++# DS_INSTALL is where the library and data files will be installed
++DS_INSTALL=${prefix}
++# DS_ROOT is where the root of the distribution is
++DS_ROOT=$(PWD)
++
++#### Contributed packages #####
++# The actual versions of these contributed packages to use are set
++# in configure.ac (that is transferred to configure with autoconf).
++# To change these permanently, edit configure.ac and rerun autoconf
++# To change temporarily, the preferred way is to run configure
++# giving your preferred version as an argument, e.g.on the form
++# ./configure ISAJETDIR=/data1/edsjo/DarkSUSY/library/trunk/contrib/isajet778-for-darksusy
++# You can also modify the makefile directly, but those changes will be
++# overwritten the next time you run configure.
++FEYNHIGGSDIR=@FEYNHIGGSDIR@
++ISAJETDIR=@ISAJETDIR@
++HBDIR=@HIGGSBOUNDSDIR@
++SLHADIR=@SLHADIR@
++TSPACKDIR=@TSPACKDIR@
++
++LIB=${DS_INSTALL}/lib
++
++###############################################
++#### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
++###############################################
++
++#all : feynhiggs higgsbounds darksusy libisajet galprop mains_if_loc
++all : feynhiggs higgsbounds darksusy libisajet mains_if_loc
++
++default: darksusy libisajet mains_if_loc
++
++#darksusy : darksusy_lib dsgalprop inst_tab_if_loc
++darksusy : darksusy_lib inst_tab_if_loc
++
++mains :
++	cd test; make
++
++config_paths config :
++	perl $(DS_ROOT)/scr/config2.pl $(DS_ROOT) $(DS_INSTALL)
++
++darksusy_lib dslib : tspack
++	mkdir -p lib
++	cd $(DS_ROOT)/src; make libdarksusy.a
++
++darksusy_lib_shared dslib_shared : tspack libisajet_shared feynhiggs_shared higgsbounds_shared
++	mkdir -p lib
++	cd $(DS_ROOT)/src; make DS_LIB="$(DS_INSTALL)/lib" libdarksusy.so
++
++install : install_builds install_tables
++
++# This target creates binary tables and main programs right away if 
++# install is local i.e. make install not needed afterwards in this case
++inst_tab_if_loc : 
++	if [ -f $(DS_INSTALL)/makefile.in ] ; then \
++		make install_tables ; \
++	fi
++
++mains_if_loc : 
++	if [ -f $(DS_INSTALL)/makefile.in ] ; then \
++		cd test ; make ; \
++	fi
++
++
++# Only install builds if DS_INSTALL points to some other directory
++# than DS_ROOT
++install_builds:
++	if [ ! -f $(DS_INSTALL)/makefile.in ] ; then \
++		echo 'The install directory is different from DS_ROOT' ; \
++		echo 'Will install libraries and major data files.' ; \
++		mkdir -p $(DS_INSTALL) ; \
++		tar cf - lib share include --exclude .svn | (cd $(DS_INSTALL); tar xvf -) ; \
++	fi
++
++
++dsgalprop:
++	if [ `ar t $(DS_ROOT)/lib/libdarksusy.a dsgalprop.o` ] ; then \
++	cd $(DS_ROOT)/src/xgalprop ; make full ; \
++	else \
++	cd $(DS_ROOT)/src/xgalprop ; make fast ; \
++	fi
++
++cfitsio:
++	cd $(DS_ROOT)/contrib/cfitsio ; make ; \
++	cp libcfitsio.a $(DS_INSTALL)/lib/
++
++test:
++	cd $(DS_ROOT)/test; make all
++
++really_all : all install_tables
++
++check:
++	echo "this should run the test programs"
++
++installcheck:
++	echo "this should test the installation"
++
++really_all : all install_tables
++
++install_tables :
++	mkdir -p $(DS_INSTALL)/share/DarkSUSY
++	cd $(DS_ROOT)/share/DarkSUSY; make all
++
++libisajet :
++	cd $(ISAJETDIR); make libisajet.a
++
++libisajet_shared :
++	cd $(ISAJETDIR); make DS_LIB="$(DS_INSTALL)/lib" libisajet.so
++
++tspack:
++	cd $(TSPACKDIR); make
++
++feynhiggs :
++	cd $(FEYNHIGGSDIR); \
++	make FC="$(FF)" FFLAGS="$(FOPT)" CFLAGS="-fPIC" lib ; \
++	cp -p build/libFH.a $(DS_ROOT)/lib/ ; \
 +	make copy_feynhiggs_headers
 +
 +feynhiggs_shared :
@@ -1189,52 +1416,130 @@ diff -rupN darksusy-5.1.3/makefile.in installed/darksusy/5.1.3/makefile.in
 +
 +copy_feynhiggs_headers :
 +	cd $(FEYNHIGGSDIR); \
- 	cp -p build/include/FHCouplings.h $(DS_ROOT)/include/ ;  \
- 	cp -p build/include/SLHA.h $(DS_ROOT)/include/  ; \
- 	cp -p build/include/SLHADefs.h $(DS_ROOT)/include/  ; \
-@@ -158,6 +174,10 @@ higgsbounds :
- 	make -f makefile_darksusy libHB ; \
- 	cp -p libHB.a $(DS_ROOT)/lib/
- 
++	cp -p build/include/FHCouplings.h $(DS_ROOT)/include/ ;  \
++	cp -p build/include/SLHA.h $(DS_ROOT)/include/  ; \
++	cp -p build/include/SLHADefs.h $(DS_ROOT)/include/  ; \
++	cp -p build/include/PDG.h $(DS_ROOT)/include/ 
++
++higgsbounds :
++	cd $(HBDIR); \
++	make -f makefile_darksusy libHB ; \
++	cp -p libHB.a $(DS_ROOT)/lib/
++
 +higgsbounds_shared :
 +	cd $(HBDIR); \
 +	make -f makefile_darksusy DS_LIB="$(DS_INSTALL)/lib" libHB_shared ; \
 +
- # SLHA is currently not built, as feynhiggs includes slhalib
- slha :
- 	cd $(SLHADIR); \
-@@ -184,7 +204,7 @@ clean :
- 	cd $(DS_ROOT)/contrib/galprop/v50p; $(MAKE) clean
- 	cd $(FEYNHIGGSDIR); $(MAKE) clean ; rm -fr ds
- 	cd $(SLHADIR); $(MAKE) clean ; rm -fr ds
--	cd $(HBDIR); $(MAKE) -f makefile_darksusy -i veryclean; $(MAKE) -f makefile_darksusy -i hyperclean
++# SLHA is currently not built, as feynhiggs includes slhalib
++slha :
++	cd $(SLHADIR); \
++	make ; \
++	make install ; \
++	cp -p ds/lib/libSLHA.a $(DS_ROOT)/lib/ ; \
++	cp -p ds/include/SLHA.h $(DS_ROOT)/include/ ; \
++	cp -p ds/include/SLHADefs.h $(DS_ROOT)/include/ ; \
++	cp -p ds/include/PDG.h $(DS_ROOT)/include/ 
++
++galprop:
++	cd $(DS_ROOT)/src/xgalprop ; make full
++#	cd $(DS_ROOT)/contrib/galprop/v42.3ds; make
++	cd $(DS_ROOT)/contrib/galprop/v50p; make
++	cd $(DS_ROOT); if [ -f .no_cfitsio ]; then\
++		make cfitsio; rm .no_cfitsio; fi
++
++clean :
++	cd $(DS_ROOT)/src; $(MAKE) clean
++	cd $(DS_ROOT)/share/DarkSUSY; $(MAKE) clean
++	cd $(DS_ROOT)/docs; rm -f *.aux; rm -f *.log; rm -f *.dvi
++	cd $(ISAJETDIR); $(MAKE) clean
++#	cd $(DS_ROOT)/contrib/galprop/v42.3ds; $(MAKE) clean
++	cd $(DS_ROOT)/contrib/galprop/v50p; $(MAKE) clean
++	cd $(FEYNHIGGSDIR); $(MAKE) clean ; rm -fr ds
++	cd $(SLHADIR); $(MAKE) clean ; rm -fr ds
 +	cd $(HBDIR); $(MAKE) -f makefile_darksusy -i clean
- 	cd $(TSPACKDIR); $(MAKE) clean
- 
- 
-@@ -198,6 +218,11 @@ rmmore:
- 	rm -f $(DS_ROOT)/lib/libFH.a
- 	rm -f $(DS_ROOT)/lib/libSLHA.a
- 	rm -f $(DS_ROOT)/lib/libHB.a
++	cd $(TSPACKDIR); $(MAKE) clean
++
++
++clobber distclean : clean rmmore
++
++# rmmore removes things added in the DarkSUSY root during configure
++# and build
++rmmore:
++	rm -f $(DS_ROOT)/lib/libdarksusy.a
++	rm -f $(DS_ROOT)/lib/libisajet.a
++	rm -f $(DS_ROOT)/lib/libFH.a
++	rm -f $(DS_ROOT)/lib/libSLHA.a
++	rm -f $(DS_ROOT)/lib/libHB.a
 +	rm -f $(DS_ROOT)/lib/libdarksusy.so
 +	rm -f $(DS_ROOT)/lib/libisajet.so
 +	rm -f $(DS_ROOT)/lib/libFH.so
 +	rm -f $(DS_ROOT)/lib/libSLHA.so
 +	rm -f $(DS_ROOT)/lib/libHB.so
- 	rm -f $(DS_ROOT)/lib/aldata.o
- 	rm -f $(DS_ROOT)/lib/libcfitsio.a
- 	rm -f $(DS_ROOT)/share/DarkSUSY/ascii2bin
-@@ -229,6 +254,7 @@ rmmore:
- # If it is, we know that DS_INSTALL must point to DS_ROOT.
- uninstall:
- 	rm -f $(DS_INSTALL)/lib/libdarksusy.a
++	rm -f $(DS_ROOT)/lib/aldata.o
++	rm -f $(DS_ROOT)/lib/libcfitsio.a
++	rm -f $(DS_ROOT)/share/DarkSUSY/ascii2bin
++	rm -f $(DS_ROOT)/share/DarkSUSY/we-res*.bin
++	rm -f $(DS_ROOT)/share/DarkSUSY/sim*.bin
++	rm -f $(DS_ROOT)/include/{SLHA,SLHADefs,PDG}.h
++	find . -name '#*' -exec rm -f {} \;
++	find . -name '*~' -exec rm -f {} \;
++	find . -name '._*' -exec rm -f {} \;
++	find . -name '*.o' -exec rm -f {} \;
++	find test -perm +u=x -type f -exec rm -f {} \;
++	rm -f `find . -name makefile.in | sed s/\.in//`
++	rm -f `find . -name makefile_darksusy.in | sed s/\.in//`
++	rm -f config.log config.status
++	rm -fr autom4te.cache
++	rm -f src/ini/dsversion.h
++	rm -f src/ini/dsdir.h
++	rm -f contrib/galprop/v42.3ds/Configure.cc
++	rm -f contrib/galprop/v42.3ds/nuc_package.cc
++	rm -f contrib/galprop/v42.3ds/WNEWTR_FUNC_aws.f
++	rm -f .no_cfitsio
++	cd contrib/cfitsio; make -k distclean; cd $(DS_ROOT)
++#	find . -name '.[a-z,A-Z,#]*' -exec rm -f {} \;
++
++# uninstall removes things in the install directory
++# Note, we have to check if the install directory is the current working
++# directory, in which case some things should be kept
++# We do this by checking if makefile.in is in the install directory.
++# If it is, we know that DS_INSTALL must point to DS_ROOT.
++uninstall:
++	rm -f $(DS_INSTALL)/lib/libdarksusy.a
 +	rm -f $(DS_INSTALL)/lib/libdarksusy.so
- 	rm -f $(DS_INSTALL)/lib/aldata.o
- 	if [ ! -f $(DS_INSTALL)/makefile.in ] ; then \
- 		echo 'The install directory is different from DS_ROOT' ; \
-diff -rupN darksusy-5.1.3/misc/makefile.in installed/darksusy/5.1.3/misc/makefile.in
++	rm -f $(DS_INSTALL)/lib/aldata.o
++	if [ ! -f $(DS_INSTALL)/makefile.in ] ; then \
++		echo 'The install directory is different from DS_ROOT' ; \
++		echo 'Will clean up the install directory.' ; \
++		rm -f `find include -name '*.h' | sed s#^#${DS_INSTALL}/#` ; \
++		rm -fr $(DS_INSTALL)/share/DarkSUSY ; \
++	fi
++
++docs: pdf-manual
++
++pdf-manual pdf-Manual :
++	scr/headers2tex.pl
++	cd $(DS_ROOT)/docs; latex Manual; latex Manual; latex Manual
++	cd $(DS_ROOT)/docs; dvips -o Manual.ps Manual
++	cd $(DS_ROOT)/docs; ps2pdf Manual.ps
++
++pdf-manual-short pdf-Manual-short :
++	scr/headers2tex.pl --no-headers
++	cd $(DS_ROOT)/docs; \
++	latex Manual-short; latex Manual-short; latex Manual-short
++	cd $(DS_ROOT)/docs; dvips -o Manual-short.ps Manual-short
++	cd $(DS_ROOT)/docs; ps2pdf Manual-short.ps
++
++html-manual :
++	scr/headers2tex.pl
++	cd $(DS_ROOT)/docs; latex2html -white Manual.tex
++
++.PHONY: all config_paths darksusy_lib dslib private install_tables \
++	clean clobber uninstall rmmore libisajet pdf-manual html-manual \
++	darksusy feynhiggs higgsbounds
+diff -rupN darksusy-5.1.3/misc/makefile.in darksusy-5.1.3.patched/misc/makefile.in
 --- darksusy-5.1.3/misc/makefile.in	2013-02-15 17:58:12.000000000 +0000
-+++ installed/darksusy/5.1.3/misc/makefile.in	2016-11-15 13:30:13.734328528 +0000
++++ darksusy-5.1.3.patched/misc/makefile.in	2017-02-11 20:01:26.167863534 +0000
 @@ -26,6 +26,10 @@ caprates : caprates.f $(LIB)/libdarksusy
  	$(FF) $(FOPT) $(INC) -L$(LIB) -o caprates caprates.f \
          -ldarksusy -lHB -lFH
@@ -1246,9 +1551,9 @@ diff -rupN darksusy-5.1.3/misc/makefile.in installed/darksusy/5.1.3/misc/makefil
  caprates_ea : caprates_ea.f $(LIB)/libdarksusy.a
  	$(FF) $(FOPT) $(INC) -L$(LIB) -o caprates_ea caprates_ea.f \
          -ldarksusy -lHB -lFH
-diff -rupN darksusy-5.1.3/misc/oh2test.f installed/darksusy/5.1.3/misc/oh2test.f
+diff -rupN darksusy-5.1.3/misc/oh2test.f darksusy-5.1.3.patched/misc/oh2test.f
 --- darksusy-5.1.3/misc/oh2test.f	1970-01-01 01:00:00.000000000 +0100
-+++ installed/darksusy/5.1.3/misc/oh2test.f	2016-11-17 19:03:50.899537000 +0000
++++ darksusy-5.1.3.patched/misc/oh2test.f	2017-02-11 20:01:26.167863534 +0000
 @@ -0,0 +1,294 @@
 +      program oh2test
 +c
@@ -1544,9 +1849,9 @@ diff -rupN darksusy-5.1.3/misc/oh2test.f installed/darksusy/5.1.3/misc/oh2test.f
 +      write(*,*) 'sl_1 sl_2 wx = ',wx
 +      
 +      end
-diff -rupN darksusy-5.1.3/src/as/dsaschicasea.f installed/darksusy/5.1.3/src/as/dsaschicasea.f
+diff -rupN darksusy-5.1.3/src/as/dsaschicasea.f darksusy-5.1.3.patched/src/as/dsaschicasea.f
 --- darksusy-5.1.3/src/as/dsaschicasea.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsaschicasea.f	2016-11-15 13:30:13.734328528 +0000
++++ darksusy-5.1.3.patched/src/as/dsaschicasea.f	2017-02-11 20:01:26.167863534 +0000
 @@ -177,9 +177,13 @@ c....mass symbols used in form-code
            kchiu(k+2)=0
          enddo
@@ -1607,9 +1912,9 @@ diff -rupN darksusy-5.1.3/src/as/dsaschicasea.f installed/darksusy/5.1.3/src/as/
          nfers=ncferd
          do i=1,nfers
            kfers(i)=kcferd(i)
-diff -rupN darksusy-5.1.3/src/as/dsaschicaseb.f installed/darksusy/5.1.3/src/as/dsaschicaseb.f
+diff -rupN darksusy-5.1.3/src/as/dsaschicaseb.f darksusy-5.1.3.patched/src/as/dsaschicaseb.f
 --- darksusy-5.1.3/src/as/dsaschicaseb.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsaschicaseb.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/as/dsaschicaseb.f	2017-02-11 20:01:26.167863534 +0000
 @@ -171,9 +171,13 @@ c....mass symbols used in form-code
            kchiu(k+2)=0
          enddo
@@ -1669,9 +1974,9 @@ diff -rupN darksusy-5.1.3/src/as/dsaschicaseb.f installed/darksusy/5.1.3/src/as/
  ***** no s-channel:
          nfers=0
          goto 200
-diff -rupN darksusy-5.1.3/src/as/dsaschicasec.f installed/darksusy/5.1.3/src/as/dsaschicasec.f
+diff -rupN darksusy-5.1.3/src/as/dsaschicasec.f darksusy-5.1.3.patched/src/as/dsaschicasec.f
 --- darksusy-5.1.3/src/as/dsaschicasec.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsaschicasec.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/as/dsaschicasec.f	2017-02-11 20:01:26.167863534 +0000
 @@ -227,9 +227,13 @@ c....mass symbols used in form-code
            kchiu(k+2)=0
          enddo
@@ -1731,9 +2036,9 @@ diff -rupN darksusy-5.1.3/src/as/dsaschicasec.f installed/darksusy/5.1.3/src/as/
          nfers=ncferd
          do i=1,nfers
            kfers(i)=kcferd(i)
-diff -rupN darksusy-5.1.3/src/as/dsaschicased.f installed/darksusy/5.1.3/src/as/dsaschicased.f
+diff -rupN darksusy-5.1.3/src/as/dsaschicased.f darksusy-5.1.3.patched/src/as/dsaschicased.f
 --- darksusy-5.1.3/src/as/dsaschicased.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsaschicased.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/as/dsaschicased.f	2017-02-11 20:01:26.167863534 +0000
 @@ -194,9 +194,13 @@ c....mass symbols used in form-code
            kchiu(k+2)=0
          enddo
@@ -1793,9 +2098,9 @@ diff -rupN darksusy-5.1.3/src/as/dsaschicased.f installed/darksusy/5.1.3/src/as/
  ***** no s-channel:
          nfers=0
          goto 400
-diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfchi.f installed/darksusy/5.1.3/src/as/dsasdwdcossfchi.f
+diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfchi.f darksusy-5.1.3.patched/src/as/dsasdwdcossfchi.f
 --- darksusy-5.1.3/src/as/dsasdwdcossfchi.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsasdwdcossfchi.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/as/dsasdwdcossfchi.f	2017-02-11 20:01:26.167863534 +0000
 @@ -15,6 +15,8 @@
  ***   final state quarks in selected cases, June 2006, Jan 2007      ***
  *** modified: Piero Ullio to include a new labelling of states,      ***
@@ -2380,9 +2685,9 @@ diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfchi.f installed/darksusy/5.1.3/src/
  ********
          else
            write(*,*) 'DS: wrong ciaux value =',ciaux
-diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfsf.f installed/darksusy/5.1.3/src/as/dsasdwdcossfsf.f
+diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfsf.f darksusy-5.1.3.patched/src/as/dsasdwdcossfsf.f
 --- darksusy-5.1.3/src/as/dsasdwdcossfsf.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsasdwdcossfsf.f	2016-11-17 19:03:50.907537000 +0000
++++ darksusy-5.1.3.patched/src/as/dsasdwdcossfsf.f	2017-02-11 20:01:26.167863534 +0000
 @@ -19,6 +19,11 @@
  *** modified: Piero Ullio to include mixing in fermion final states  ***
  ***   and a new labelling of states                                  ***
@@ -3966,9 +4271,9 @@ diff -rupN darksusy-5.1.3/src/as/dsasdwdcossfsf.f installed/darksusy/5.1.3/src/a
            if (prtial(i).lt.0.0d0) then
              if (dabs(prtial(i)/w).gt.fertoll) then
                wok=.false.
-diff -rupN darksusy-5.1.3/src/as/dsasgbhb.f installed/darksusy/5.1.3/src/as/dsasgbhb.f
+diff -rupN darksusy-5.1.3/src/as/dsasgbhb.f darksusy-5.1.3.patched/src/as/dsasgbhb.f
 --- darksusy-5.1.3/src/as/dsasgbhb.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/as/dsasgbhb.f	2016-11-17 19:11:07.851530036 +0000
++++ darksusy-5.1.3.patched/src/as/dsasgbhb.f	2017-02-11 20:01:26.171863534 +0000
 @@ -20,6 +20,9 @@
  *** added by Mia Schelke Jan 2007                          ***
  *** modified: Piero Ullio to include a new labelling of    ***
@@ -4085,9 +4390,9 @@ diff -rupN darksusy-5.1.3/src/as/dsasgbhb.f installed/darksusy/5.1.3/src/as/dsas
          goto 600
        endif
  *****
-diff -rupN darksusy-5.1.3/src/ib/dsIBffdxdy.f installed/darksusy/5.1.3/src/ib/dsIBffdxdy.f
+diff -rupN darksusy-5.1.3/src/ib/dsIBffdxdy.f darksusy-5.1.3.patched/src/ib/dsIBffdxdy.f
 --- darksusy-5.1.3/src/ib/dsIBffdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ib/dsIBffdxdy.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/ib/dsIBffdxdy.f	2017-02-11 20:01:26.171863534 +0000
 @@ -259,14 +259,14 @@ c       endif
  
  c...check that result is positive
@@ -4111,9 +4416,9 @@ diff -rupN darksusy-5.1.3/src/ib/dsIBffdxdy.f installed/darksusy/5.1.3/src/ib/ds
          return
        endif
  
-diff -rupN darksusy-5.1.3/src/ib/dsIBfsrdxdy.f installed/darksusy/5.1.3/src/ib/dsIBfsrdxdy.f
+diff -rupN darksusy-5.1.3/src/ib/dsIBfsrdxdy.f darksusy-5.1.3.patched/src/ib/dsIBfsrdxdy.f
 --- darksusy-5.1.3/src/ib/dsIBfsrdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ib/dsIBfsrdxdy.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/ib/dsIBfsrdxdy.f	2017-02-11 20:01:26.171863534 +0000
 @@ -62,10 +62,10 @@ c... from a full analytical calculation
  
  c...check that result is positive
@@ -4129,9 +4434,9 @@ diff -rupN darksusy-5.1.3/src/ib/dsIBfsrdxdy.f installed/darksusy/5.1.3/src/ib/d
          dsIBfsrdxdy=0d0
          return
        endif
-diff -rupN darksusy-5.1.3/src/ib/dsIBhhdxdy.f installed/darksusy/5.1.3/src/ib/dsIBhhdxdy.f
+diff -rupN darksusy-5.1.3/src/ib/dsIBhhdxdy.f darksusy-5.1.3.patched/src/ib/dsIBhhdxdy.f
 --- darksusy-5.1.3/src/ib/dsIBhhdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ib/dsIBhhdxdy.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/ib/dsIBhhdxdy.f	2017-02-11 20:01:26.171863534 +0000
 @@ -80,15 +80,15 @@ c...import full IB expression for |M|**2
  
  c...check that the result is positive
@@ -4157,9 +4462,9 @@ diff -rupN darksusy-5.1.3/src/ib/dsIBhhdxdy.f installed/darksusy/5.1.3/src/ib/ds
          return
        endif
  
-diff -rupN darksusy-5.1.3/src/ib/dsIBwhdxdy.f installed/darksusy/5.1.3/src/ib/dsIBwhdxdy.f
+diff -rupN darksusy-5.1.3/src/ib/dsIBwhdxdy.f darksusy-5.1.3.patched/src/ib/dsIBwhdxdy.f
 --- darksusy-5.1.3/src/ib/dsIBwhdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ib/dsIBwhdxdy.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/ib/dsIBwhdxdy.f	2017-02-11 20:01:26.171863534 +0000
 @@ -205,14 +205,14 @@ c       endif
  
  c...check that result is positive
@@ -4183,9 +4488,9 @@ diff -rupN darksusy-5.1.3/src/ib/dsIBwhdxdy.f installed/darksusy/5.1.3/src/ib/ds
          return
        endif
  
-diff -rupN darksusy-5.1.3/src/ib/dsIBwwdxdy.f installed/darksusy/5.1.3/src/ib/dsIBwwdxdy.f
+diff -rupN darksusy-5.1.3/src/ib/dsIBwwdxdy.f darksusy-5.1.3.patched/src/ib/dsIBwwdxdy.f
 --- darksusy-5.1.3/src/ib/dsIBwwdxdy.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ib/dsIBwwdxdy.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/ib/dsIBwwdxdy.f	2017-02-11 20:01:26.171863534 +0000
 @@ -137,14 +137,14 @@ c       endif
  
  c...check that result is positive
@@ -4209,9 +4514,9 @@ diff -rupN darksusy-5.1.3/src/ib/dsIBwwdxdy.f installed/darksusy/5.1.3/src/ib/ds
          return
        endif
  
-diff -rupN darksusy-5.1.3/src/ini/dsdirname.c.in installed/darksusy/5.1.3/src/ini/dsdirname.c.in
+diff -rupN darksusy-5.1.3/src/ini/dsdirname.c.in darksusy-5.1.3.patched/src/ini/dsdirname.c.in
 --- darksusy-5.1.3/src/ini/dsdirname.c.in	2008-02-21 16:08:34.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ini/dsdirname.c.in	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/src/ini/dsdirname.c.in	1970-01-01 01:00:00.000000000 +0100
 @@ -1,25 +0,0 @@
 -/* #include "../../config.h" */
 -#include <string.h>
@@ -4238,9 +4543,9 @@ diff -rupN darksusy-5.1.3/src/ini/dsdirname.c.in installed/darksusy/5.1.3/src/in
 -  strcpy(name,DSROOTNAME);
 -  return;
 -}
-diff -rupN darksusy-5.1.3/src/ini/dsinit.f installed/darksusy/5.1.3/src/ini/dsinit.f
+diff -rupN darksusy-5.1.3/src/ini/dsinit.f darksusy-5.1.3.patched/src/ini/dsinit.f
 --- darksusy-5.1.3/src/ini/dsinit.f	2013-02-10 06:43:34.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ini/dsinit.f	2016-11-15 13:30:13.738328528 +0000
++++ darksusy-5.1.3.patched/src/ini/dsinit.f	2017-02-11 20:01:26.171863534 +0000
 @@ -299,16 +299,27 @@ c... numbers are conventional, no physic
        ivtype(ksnue)=11
        ivtype(kse1)=12
@@ -4279,9 +4584,9 @@ diff -rupN darksusy-5.1.3/src/ini/dsinit.f installed/darksusy/5.1.3/src/ini/dsin
        ivtype(ku)=41
        ivtype(kd)=42
        ivtype(ksu1)=41
-diff -rupN darksusy-5.1.3/src/ini/dssetdsinstall.f installed/darksusy/5.1.3/src/ini/dssetdsinstall.f
+diff -rupN darksusy-5.1.3/src/ini/dssetdsinstall.f darksusy-5.1.3.patched/src/ini/dssetdsinstall.f
 --- darksusy-5.1.3/src/ini/dssetdsinstall.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ini/dssetdsinstall.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/src/ini/dssetdsinstall.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,17 +0,0 @@
 -      subroutine dssetdsinstall
 -      implicit none
@@ -4300,9 +4605,9 @@ diff -rupN darksusy-5.1.3/src/ini/dssetdsinstall.f installed/darksusy/5.1.3/src/
 -      stop
 -c      write (*,*) dsinstall
 -      end
-diff -rupN darksusy-5.1.3/src/ini/dssetdsversion.f installed/darksusy/5.1.3/src/ini/dssetdsversion.f
+diff -rupN darksusy-5.1.3/src/ini/dssetdsversion.f darksusy-5.1.3.patched/src/ini/dssetdsversion.f
 --- darksusy-5.1.3/src/ini/dssetdsversion.f	2008-02-21 16:08:34.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ini/dssetdsversion.f	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/src/ini/dssetdsversion.f	1970-01-01 01:00:00.000000000 +0100
 @@ -1,15 +0,0 @@
 -      subroutine dssetdsversion
 -      implicit none
@@ -4319,9 +4624,9 @@ diff -rupN darksusy-5.1.3/src/ini/dssetdsversion.f installed/darksusy/5.1.3/src/
 -      dsversion=name(:i)
 -c      write (*,*) dsversion
 -      end
-diff -rupN darksusy-5.1.3/src/ini/dsvername.c.in installed/darksusy/5.1.3/src/ini/dsvername.c.in
+diff -rupN darksusy-5.1.3/src/ini/dsvername.c.in darksusy-5.1.3.patched/src/ini/dsvername.c.in
 --- darksusy-5.1.3/src/ini/dsvername.c.in	2008-02-21 16:08:34.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ini/dsvername.c.in	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/src/ini/dsvername.c.in	1970-01-01 01:00:00.000000000 +0100
 @@ -1,25 +0,0 @@
 -/* #include "../../config.h" */
 -#include <string.h>
@@ -4348,9 +4653,9 @@ diff -rupN darksusy-5.1.3/src/ini/dsvername.c.in installed/darksusy/5.1.3/src/in
 -  strcpy(name,DSVERNAME);
 -  return;
 -}
-diff -rupN darksusy-5.1.3/src/ini/makefile.in installed/darksusy/5.1.3/src/ini/makefile.in
+diff -rupN darksusy-5.1.3/src/ini/makefile.in darksusy-5.1.3.patched/src/ini/makefile.in
 --- darksusy-5.1.3/src/ini/makefile.in	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/ini/makefile.in	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/ini/makefile.in	2017-02-11 20:01:26.171863534 +0000
 @@ -22,7 +22,7 @@ dswacom.h
  vpath %.h $(DINC)
  
@@ -4360,10 +4665,10 @@ diff -rupN darksusy-5.1.3/src/ini/makefile.in installed/darksusy/5.1.3/src/ini/m
  
  OBJ = $(patsubst %.f,$(DOBJ)/%.o,$(SRC))
  
-diff -rupN darksusy-5.1.3/src/makefile.in installed/darksusy/5.1.3/src/makefile.in
+diff -rupN darksusy-5.1.3/src/makefile.in darksusy-5.1.3.patched/src/makefile.in
 --- darksusy-5.1.3/src/makefile.in	2015-04-07 10:23:05.000000000 +0100
-+++ installed/darksusy/5.1.3/src/makefile.in	2016-11-15 13:30:13.742328528 +0000
-@@ -10,9 +10,11 @@
++++ darksusy-5.1.3.patched/src/makefile.in	2017-02-11 20:04:21.463865933 +0000
+@@ -10,14 +10,16 @@
  #### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
  ###############################################
  
@@ -4376,6 +4681,12 @@ diff -rupN darksusy-5.1.3/src/makefile.in installed/darksusy/5.1.3/src/makefile.
  INC=../include
  TSPACKDIR=@TSPACKDIR@
  BUILD=../build
+ 
+-vpath %.a $(LIB)
++vpath %.a $(DS_LIB)
+ 
+ DIRS = ac bsg an an1l anstu as dd ep	\
+ ge ha hm hr ib ini mh wa nt pb db rd rge rn su ucmh xcern	\
 @@ -32,18 +34,22 @@ all-local : make-lib
  make-lib :
  	cd ..; make dslib
@@ -4384,25 +4695,88 @@ diff -rupN darksusy-5.1.3/src/makefile.in installed/darksusy/5.1.3/src/makefile.
 +all : libdarksusy.a libdarksusy.so
  
  libdarksusy.a : $(DOBJ)
- 	ar rS $(LIB)/libdarksusy.a $(BUILD)/*.o
- 	ranlib $(LIB)/libdarksusy.a
- 
+-	ar rS $(LIB)/libdarksusy.a $(BUILD)/*.o
+-	ranlib $(LIB)/libdarksusy.a
++	ar rS $(DS_LIB)/libdarksusy.a $(BUILD)/*.o
++	ranlib $(DS_LIB)/libdarksusy.a
++
 +libdarksusy.so : $(DOBJ)
 +	 $(FF) $(FOPT) -shared $(BUILD)/*.o $(DS_LIB)/libFH.so $(DS_LIB)/libHB.so $(DS_LIB)/libisajet.so -o $(DS_LIB)/libdarksusy.so 
-+
+ 
  $(DOBJ) : 
  	cd $(@:_obj=) ; make all
  
  .PHONY: clean distclean $(DOBJ)
  distclean : clean
- 	rm $(LIB)/libdarksusy.a
-+	rm $(LIB)/libdarksusy.so
+-	rm $(LIB)/libdarksusy.a
++	rm $(DS_LIB)/libdarksusy.a
++	rm $(DS_LIB)/libdarksusy.so
  clean : 
  	rm -f $(BUILD)/*.o
  
-diff -rupN darksusy-5.1.3/src/nt/dsntmuonyield.f installed/darksusy/5.1.3/src/nt/dsntmuonyield.f
+diff -rupN darksusy-5.1.3/src/makefile.in~ darksusy-5.1.3.patched/src/makefile.in~
+--- darksusy-5.1.3/src/makefile.in~	1970-01-01 01:00:00.000000000 +0100
++++ darksusy-5.1.3.patched/src/makefile.in~	2017-02-11 20:01:26.171863534 +0000
+@@ -0,0 +1,56 @@
++# Makefile for the DarkSUSY library
++# Technical questions about this makefile should be directed to
++# Joakim Edsjo, edsjo@physto.se
++# Date: August 29, 2000.
++
++# You shouldn't have to change anything in this file.
++# You should only change in the makefile in the DarkSUSY root directory.
++
++###############################################
++#### DO NOT CHANGE ANYTHING BELOW THIS LINE ###
++###############################################
++
++FF=@F77@
++FOPT=@FOPT@
++
++# Here we set where the library goes and where include files are.
++
++INC=../include
++TSPACKDIR=@TSPACKDIR@
++BUILD=../build
++
++vpath %.a $(LIB)
++
++DIRS = ac bsg an an1l anstu as dd ep	\
++ge ha hm hr ib ini mh wa nt pb db rd rge rn su ucmh xcern	\
++xcmlib ep2 xdiag xfeynhiggs xhiggsbounds slha
++
++
++DOBJ = $(DIRS:%=%_obj)
++
++# Trick to call main makefile in case make is called in src directory.
++all-local : make-lib
++
++make-lib :
++	cd ..; make dslib
++
++all : libdarksusy.a libdarksusy.so
++
++libdarksusy.a : $(DOBJ)
++	ar rS $(LIB)/libdarksusy.a $(BUILD)/*.o
++	ranlib $(LIB)/libdarksusy.a
++
++libdarksusy.so : $(DOBJ)
++	 $(FF) $(FOPT) -shared $(BUILD)/*.o $(DS_LIB)/libFH.so $(DS_LIB)/libHB.so $(DS_LIB)/libisajet.so -o $(DS_LIB)/libdarksusy.so 
++
++$(DOBJ) : 
++	cd $(@:_obj=) ; make all
++
++.PHONY: clean distclean $(DOBJ)
++distclean : clean
++	rm $(LIB)/libdarksusy.a
++	rm $(LIB)/libdarksusy.so
++clean : 
++	rm -f $(BUILD)/*.o
++
++
+diff -rupN darksusy-5.1.3/src/nt/dsntmuonyield.f darksusy-5.1.3.patched/src/nt/dsntmuonyield.f
 --- darksusy-5.1.3/src/nt/dsntmuonyield.f	2013-01-31 21:46:16.000000000 +0000
-+++ installed/darksusy/5.1.3/src/nt/dsntmuonyield.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/nt/dsntmuonyield.f	2017-02-11 20:01:26.171863534 +0000
 @@ -78,21 +78,16 @@ c      call wirate(6,6,1)
           stop
        endif
@@ -4425,9 +4799,9 @@ diff -rupN darksusy-5.1.3/src/nt/dsntmuonyield.f installed/darksusy/5.1.3/src/nt
  
        end
  
-diff -rupN darksusy-5.1.3/src/slha/dsfromslha.F installed/darksusy/5.1.3/src/slha/dsfromslha.F
+diff -rupN darksusy-5.1.3/src/slha/dsfromslha.F darksusy-5.1.3.patched/src/slha/dsfromslha.F
 --- darksusy-5.1.3/src/slha/dsfromslha.F	2013-01-31 21:46:16.000000000 +0000
-+++ installed/darksusy/5.1.3/src/slha/dsfromslha.F	2016-11-17 19:03:50.911537000 +0000
++++ darksusy-5.1.3.patched/src/slha/dsfromslha.F	2017-02-11 20:01:26.171863534 +0000
 @@ -8,6 +8,7 @@
  ***         More options on how to treat redundant information, e.g.
  ***         should Yukawas from SLHA file be used instead of letting
@@ -4462,9 +4836,9 @@ diff -rupN darksusy-5.1.3/src/slha/dsfromslha.F installed/darksusy/5.1.3/src/slh
        return
        end
 -
-diff -rupN darksusy-5.1.3/src/su/dsorder_flavour.f installed/darksusy/5.1.3/src/su/dsorder_flavour.f
+diff -rupN darksusy-5.1.3/src/su/dsorder_flavour.f darksusy-5.1.3.patched/src/su/dsorder_flavour.f
 --- darksusy-5.1.3/src/su/dsorder_flavour.f	1970-01-01 01:00:00.000000000 +0100
-+++ installed/darksusy/5.1.3/src/su/dsorder_flavour.f	2016-11-17 19:03:50.911537000 +0000
++++ darksusy-5.1.3.patched/src/su/dsorder_flavour.f	2017-02-11 20:01:26.171863534 +0000
 @@ -0,0 +1,277 @@
 +*******************************************************************************
 +*** This routine orders all sfermions according to flavour. For sleptons,   ***
@@ -4743,9 +5117,9 @@ diff -rupN darksusy-5.1.3/src/su/dsorder_flavour.f installed/darksusy/5.1.3/src/
 +
 +        
 +
-diff -rupN darksusy-5.1.3/src/su/dssuconst_yukawa_running.f installed/darksusy/5.1.3/src/su/dssuconst_yukawa_running.f
+diff -rupN darksusy-5.1.3/src/su/dssuconst_yukawa_running.f darksusy-5.1.3.patched/src/su/dssuconst_yukawa_running.f
 --- darksusy-5.1.3/src/su/dssuconst_yukawa_running.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/su/dssuconst_yukawa_running.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/su/dssuconst_yukawa_running.f	2017-02-11 20:01:26.171863534 +0000
 @@ -20,6 +20,9 @@ c=======================================
        mscale=2.d0*mass(lsp)
        alph3=dsralph3(mscale)
@@ -4756,9 +5130,9 @@ diff -rupN darksusy-5.1.3/src/su/dssuconst_yukawa_running.f installed/darksusy/5
  c      write(*,*) 'alpha3=',alph3,' alph3mz=',alph3mz
        aux = g2weak/dsqrt(2.d0)/mass(kw)
        yukawa(ktau)= aux*dsrmq(mscale,ktau)/cosbe
-diff -rupN darksusy-5.1.3/src/su/dsvertx1.f installed/darksusy/5.1.3/src/su/dsvertx1.f
+diff -rupN darksusy-5.1.3/src/su/dsvertx1.f darksusy-5.1.3.patched/src/su/dsvertx1.f
 --- darksusy-5.1.3/src/su/dsvertx1.f	2011-11-04 23:48:05.000000000 +0000
-+++ installed/darksusy/5.1.3/src/su/dsvertx1.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/su/dsvertx1.f	2017-02-11 20:01:26.171863534 +0000
 @@ -616,11 +616,11 @@ c       neutrinos
            gjll=-(g2weak*neunmx(j,2)-gyweak*neunmx(j,1))/sqrt(2.0d0)
            do k=1,3
@@ -4775,9 +5149,9 @@ diff -rupN darksusy-5.1.3/src/su/dsvertx1.f installed/darksusy/5.1.3/src/su/dsve
            enddo
  
  c       charged leptons
-diff -rupN darksusy-5.1.3/src/su/makefile.in installed/darksusy/5.1.3/src/su/makefile.in
+diff -rupN darksusy-5.1.3/src/su/makefile.in darksusy-5.1.3.patched/src/su/makefile.in
 --- darksusy-5.1.3/src/su/makefile.in	2013-01-31 21:46:16.000000000 +0000
-+++ installed/darksusy/5.1.3/src/su/makefile.in	2016-11-17 19:13:00.447528019 +0000
++++ darksusy-5.1.3.patched/src/su/makefile.in	2017-02-11 20:01:26.171863534 +0000
 @@ -32,7 +32,7 @@ dsrmq4loop.f dssfesct.f dsspectrum.f dss
  dssuconst_ckm.f dssuconst_couplings.f dssuconst_higgs.f \
  dssuconst_yukawa.f dssuconst_yukawa_running.f dssusy.f dsvertx.f \
@@ -4787,9 +5161,9 @@ diff -rupN darksusy-5.1.3/src/su/makefile.in installed/darksusy/5.1.3/src/su/mak
  
  OBJ = $(patsubst %.f,$(DOBJ)/%.o,$(SRC))
  
-diff -rupN darksusy-5.1.3/src/ucmh/dsucmh_aontsq.f installed/darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f
+diff -rupN darksusy-5.1.3/src/ucmh/dsucmh_aontsq.f darksusy-5.1.3.patched/src/ucmh/dsucmh_aontsq.f
 --- darksusy-5.1.3/src/ucmh/dsucmh_aontsq.f	2015-04-07 14:12:14.000000000 +0100
-+++ installed/darksusy/5.1.3/src/ucmh/dsucmh_aontsq.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/ucmh/dsucmh_aontsq.f	2017-02-11 20:01:26.171863534 +0000
 @@ -6,37 +6,42 @@
  !Date: 2011
  !
@@ -4842,9 +5216,9 @@ diff -rupN darksusy-5.1.3/src/ucmh/dsucmh_aontsq.f installed/darksusy/5.1.3/src/
  
        end function dsucmh_aontsq
  
-diff -rupN darksusy-5.1.3/src/wa/dswadydth.f installed/darksusy/5.1.3/src/wa/dswadydth.f
+diff -rupN darksusy-5.1.3/src/wa/dswadydth.f darksusy-5.1.3.patched/src/wa/dswadydth.f
 --- darksusy-5.1.3/src/wa/dswadydth.f	2015-12-20 21:43:06.000000000 +0000
-+++ installed/darksusy/5.1.3/src/wa/dswadydth.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswadydth.f	2017-02-11 20:01:26.171863534 +0000
 @@ -8,7 +8,6 @@
        real*8 function dswadydth(cth, phim0,phim1,phim2,phie0,phieth,phithm,
       & phichi,phiwh,phifk,phifv)
@@ -4853,9 +5227,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswadydth.f installed/darksusy/5.1.3/src/wa/dsw
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3/src/wa/dswaemean.f installed/darksusy/5.1.3/src/wa/dswaemean.f
+diff -rupN darksusy-5.1.3/src/wa/dswaemean.f darksusy-5.1.3.patched/src/wa/dswaemean.f
 --- darksusy-5.1.3/src/wa/dswaemean.f	2009-03-30 13:08:08.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswaemean.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswaemean.f	2017-02-11 20:01:26.171863534 +0000
 @@ -8,8 +8,6 @@
  
        real*8 function dswaemean(e0,m0,m1,m2)
@@ -4865,9 +5239,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswaemean.f installed/darksusy/5.1.3/src/wa/dsw
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3/src/wa/dswaifind.f installed/darksusy/5.1.3/src/wa/dswaifind.f
+diff -rupN darksusy-5.1.3/src/wa/dswaifind.f darksusy-5.1.3.patched/src/wa/dswaifind.f
 --- darksusy-5.1.3/src/wa/dswaifind.f	2008-04-07 22:27:47.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswaifind.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswaifind.f	2017-02-11 20:01:26.171863534 +0000
 @@ -6,7 +6,6 @@
        subroutine dswaifind(value,array,ipl,ii,imin,imax)
        implicit none
@@ -4876,9 +5250,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswaifind.f installed/darksusy/5.1.3/src/wa/dsw
        include 'dsidtag.h'
  
        integer imin,imax,i,inew,imint,imaxt,iold,ii
-diff -rupN darksusy-5.1.3/src/wa/dswainit.f installed/darksusy/5.1.3/src/wa/dswainit.f
+diff -rupN darksusy-5.1.3/src/wa/dswainit.f darksusy-5.1.3.patched/src/wa/dswainit.f
 --- darksusy-5.1.3/src/wa/dswainit.f	2013-01-27 15:37:53.000000000 +0000
-+++ installed/darksusy/5.1.3/src/wa/dswainit.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswainit.f	2017-02-11 20:01:26.171863534 +0000
 @@ -271,9 +271,9 @@ c     &            k,mfi
  
  c...Create mixed tables, differential in energy, integrated in theta
@@ -4899,9 +5273,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswainit.f installed/darksusy/5.1.3/src/wa/dswa
        data waftype/'b'/
  c      data wabase/'we-res-b-full'/
  c      data wabase/'we-res-may2012'/
-diff -rupN darksusy-5.1.3/src/wa/dswayield.f installed/darksusy/5.1.3/src/wa/dswayield.f
+diff -rupN darksusy-5.1.3/src/wa/dswayield.f darksusy-5.1.3.patched/src/wa/dswayield.f
 --- darksusy-5.1.3/src/wa/dswayield.f	2011-05-24 09:54:48.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswayield.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayield.f	2017-02-11 20:01:26.171863534 +0000
 @@ -59,8 +59,6 @@
        real*8 function dswayield(mneu,e,theta,wh,kind,type,istat)
        implicit none
@@ -4911,9 +5285,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayield.f installed/darksusy/5.1.3/src/wa/dsw
  
  c------------------------ variables ------------------------------------
  
-diff -rupN darksusy-5.1.3/src/wa/dswayieldf.f installed/darksusy/5.1.3/src/wa/dswayieldf.f
+diff -rupN darksusy-5.1.3/src/wa/dswayieldf.f darksusy-5.1.3.patched/src/wa/dswayieldf.f
 --- darksusy-5.1.3/src/wa/dswayieldf.f	2015-12-20 21:43:06.000000000 +0000
-+++ installed/darksusy/5.1.3/src/wa/dswayieldf.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayieldf.f	2017-02-11 20:01:26.171863534 +0000
 @@ -52,11 +52,13 @@
  
        real*8 function dswayieldf(mwimp,e,theta,chi,wh,kind,
@@ -4951,9 +5325,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayieldf.f installed/darksusy/5.1.3/src/wa/ds
        endif
  
        dswayieldf=0.0d0
-diff -rupN darksusy-5.1.3/src/wa/dswayieldfth.f installed/darksusy/5.1.3/src/wa/dswayieldfth.f
+diff -rupN darksusy-5.1.3/src/wa/dswayieldfth.f darksusy-5.1.3.patched/src/wa/dswayieldfth.f
 --- darksusy-5.1.3/src/wa/dswayieldfth.f	2015-12-20 21:43:06.000000000 +0000
-+++ installed/darksusy/5.1.3/src/wa/dswayieldfth.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayieldfth.f	2017-02-11 20:01:26.171863534 +0000
 @@ -6,7 +6,7 @@
  *****************************************************************************
  
@@ -4984,9 +5358,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayieldfth.f installed/darksusy/5.1.3/src/wa/
          endif
          dswayieldfth=sum*1.0d-15
        endif
-diff -rupN darksusy-5.1.3/src/wa/dswayield_int.f installed/darksusy/5.1.3/src/wa/dswayield_int.f
+diff -rupN darksusy-5.1.3/src/wa/dswayield_int.f darksusy-5.1.3.patched/src/wa/dswayield_int.f
 --- darksusy-5.1.3/src/wa/dswayield_int.f	2015-12-20 21:43:06.000000000 +0000
-+++ installed/darksusy/5.1.3/src/wa/dswayield_int.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayield_int.f	2017-02-11 20:01:26.171863534 +0000
 @@ -1,5 +1,5 @@
        real*8 function dswayield_int(f,a,b,phichi,phiwh,phim0,phim1,phim2,
 -     & phie0,phieth,phithm,phifk,phifv)        
@@ -5024,9 +5398,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayield_int.f installed/darksusy/5.1.3/src/wa
        dswayield_int=0.0d0
  
        end
-diff -rupN darksusy-5.1.3/src/wa/dswayieldone.f installed/darksusy/5.1.3/src/wa/dswayieldone.f
+diff -rupN darksusy-5.1.3/src/wa/dswayieldone.f darksusy-5.1.3.patched/src/wa/dswayieldone.f
 --- darksusy-5.1.3/src/wa/dswayieldone.f	2013-01-31 21:46:16.000000000 +0000
-+++ installed/darksusy/5.1.3/src/wa/dswayieldone.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayieldone.f	2017-02-11 20:01:26.171863534 +0000
 @@ -105,16 +105,16 @@
  *****************************************************************************
  
@@ -5181,9 +5555,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayieldone.f installed/darksusy/5.1.3/src/wa/
          istat=ibset(istat,2)
        endif
  
-diff -rupN darksusy-5.1.3/src/wa/dswayields2.f installed/darksusy/5.1.3/src/wa/dswayields2.f
+diff -rupN darksusy-5.1.3/src/wa/dswayields2.f darksusy-5.1.3.patched/src/wa/dswayields2.f
 --- darksusy-5.1.3/src/wa/dswayields2.f	2009-05-08 09:54:47.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswayields2.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayields2.f	2017-02-11 20:01:26.171863534 +0000
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
@@ -5470,9 +5844,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayields2.f installed/darksusy/5.1.3/src/wa/d
          endif
  
        endif
-diff -rupN darksusy-5.1.3/src/wa/dswayields3.f installed/darksusy/5.1.3/src/wa/dswayields3.f
+diff -rupN darksusy-5.1.3/src/wa/dswayields3.f darksusy-5.1.3.patched/src/wa/dswayields3.f
 --- darksusy-5.1.3/src/wa/dswayields3.f	2009-05-08 09:54:47.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswayields3.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayields3.f	2017-02-11 20:01:26.175863534 +0000
 @@ -8,14 +8,14 @@
  *****************************************************************************
  
@@ -5759,9 +6133,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayields3.f installed/darksusy/5.1.3/src/wa/d
          endif
  
        endif
-diff -rupN darksusy-5.1.3/src/wa/dswayields4.f installed/darksusy/5.1.3/src/wa/dswayields4.f
+diff -rupN darksusy-5.1.3/src/wa/dswayields4.f darksusy-5.1.3.patched/src/wa/dswayields4.f
 --- darksusy-5.1.3/src/wa/dswayields4.f	2009-05-08 09:54:47.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswayields4.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayields4.f	2017-02-11 20:01:26.175863534 +0000
 @@ -8,7 +8,7 @@
  *****************************************************************************
  
@@ -5901,9 +6275,9 @@ diff -rupN darksusy-5.1.3/src/wa/dswayields4.f installed/darksusy/5.1.3/src/wa/d
          endif
  
        endif
-diff -rupN darksusy-5.1.3/src/wa/dswayields.f installed/darksusy/5.1.3/src/wa/dswayields.f
+diff -rupN darksusy-5.1.3/src/wa/dswayields.f darksusy-5.1.3.patched/src/wa/dswayields.f
 --- darksusy-5.1.3/src/wa/dswayields.f	2009-05-08 09:54:47.000000000 +0100
-+++ installed/darksusy/5.1.3/src/wa/dswayields.f	2016-11-15 13:30:13.742328528 +0000
++++ darksusy-5.1.3.patched/src/wa/dswayields.f	2017-02-11 20:01:26.175863534 +0000
 @@ -8,14 +8,14 @@
  *****************************************************************************
  

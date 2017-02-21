@@ -76,15 +76,15 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 4000
-      tol: 0.5
+      nlive: 5000
+      tol: 0.1
       updInt: 1
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 14400
-      convthresh: 1e-4
+      NP: 19200
+      convthresh: 1e-5
       verbosity: 1
 
 ObsLikes:
@@ -268,11 +268,12 @@ Rules:
     options:
       mode: leq_one
 
-  # Use the DarkBit native calculator for the relic density
+  # Use MicrOmegas for the relic density; DarkSUSY is too slow for this model
   - capability: RD_oh2
-    function: RD_oh2_general
+    function: RD_oh2_MicrOmegas
     options:
       fast: 1
+      Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood from gamlike
   - capability: lnL_FermiLATdwarfs
@@ -309,6 +310,8 @@ Rules:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
+      # Only consider neutralino masses > 2.7 GeV, as anything less will be invalidated by the gamma-ray routines anyway.
+      mass_cut: [ ["|~chi0_1|", 2.7, 1e6] ]
 
   # Choose where to get the precision spectrum from
   - capability: MSSM_spectrum

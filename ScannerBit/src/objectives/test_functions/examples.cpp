@@ -26,7 +26,7 @@
 
 objective_plugin(uniform, version(1,0,0))
 {
-    double plugin_main (std::unordered_map<std::string, double> &map)
+    double plugin_main (std::unordered_map<std::string, double> /*&map*/)
     {
         return 0;
     }
