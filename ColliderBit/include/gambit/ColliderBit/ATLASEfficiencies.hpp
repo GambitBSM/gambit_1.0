@@ -26,8 +26,8 @@ namespace Gambit {
 
         /// Randomly filter the supplied particle list by parameterised electron tracking efficiency
         inline void applyElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
-          static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 10.}}, //< |eta|
-                                                            {{0, 0.1, 1.0, 100, 10000}}, //< pT
+          static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, DBL_MAX}}, //< |eta|
+                                                            {{0, 0.1, 1.0, 100, DBL_MAX}}, //< pT
                                                             {{0., 0.73, 0.95, 0.99,
                                                               0., 0.5,  0.83, 0.90,
                                                               0., 0.,   0.,   0.}});
@@ -38,7 +38,7 @@ namespace Gambit {
         /// Randomly filter the supplied particle list by parameterised electron efficiency
         /// @note Should be applied after the electron energy smearing
         inline void applyElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
-          static HEPUtils::BinnedFn2D<double> _elEff2d({{0,1.5,2.5,10.}}, {{0,10.,10000.}},
+          static HEPUtils::BinnedFn2D<double> _elEff2d({{0,1.5,2.5,DBL_MAX}}, {{0,10.,DBL_MAX}},
                                                        {{0., 0.95,
                                                          0., 0.85,
                                                          0.,0.}});
@@ -48,7 +48,7 @@ namespace Gambit {
 
         /// Randomly filter the supplied particle list by parameterised muon tracking efficiency
         inline void applyMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
-          static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,10000.}},
+          static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0,1.5,2.5,DBL_MAX}}, {{0,0.1,1.0,DBL_MAX}},
                                                             {{0., 0.75, 0.99,
                                                               0.,0.70,0.98,
                                                               0.,0.,0.}});
@@ -58,7 +58,7 @@ namespace Gambit {
 
         /// Randomly filter the supplied particle list by parameterised muon efficiency
         inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
-          static HEPUtils::BinnedFn2D<double> _muEff2d({{0,1.5,2.7,10.}}, {{0,10.0,10000.}},
+          static HEPUtils::BinnedFn2D<double> _muEff2d({{0,1.5,2.7,DBL_MAX}}, {{0,10.0,DBL_MAX}},
                                                        {{0., 0.95,
                                                          0.,0.85,
                                                          0.,0.}});
@@ -108,25 +108,26 @@ namespace Gambit {
           std::mt19937 gen(rd());
 
           static HEPUtils::BinnedFn2D<double> coeffE2({{0, 2.5, 3., 5.}}, //< |eta|
-                                                      {{0, 0.1, 25., 100000.}}, //< pT
+                                                      {{0, 0.1, 25., DBL_MAX}}, //< pT
                                                       {{0.,          0.015*0.015, 0.005*0.005,
                                                         0.005*0.005, 0.005*0.005, 0.005*0.005,
                                                         0.107*0.107, 0.107*0.107, 0.107*0.107}});
 
           static HEPUtils::BinnedFn2D<double> coeffE({{0, 2.5, 3., 5.}}, //< |eta|
-                                                     {{0, 0.1, 25., 100000.}}, //< pT
+                                                     {{0, 0.1, 25., DBL_MAX}}, //< pT
                                                      {{0.,        0.,        0.05*0.05,
                                                        0.05*0.05, 0.05*0.05, 0.05*0.05,
                                                        2.08*2.08, 2.08*2.08, 2.08*2.08}});
 
           static HEPUtils::BinnedFn2D<double> coeffC({{0, 2.5, 3., 5.}}, //< |eta|
-                                                     {{0, 0.1, 25., 100000.}}, //< pT
+                                                     {{0, 0.1, 25., DBL_MAX}}, //< pT
                                                      {{0.,       0.,       0.25*0.25,
                                                        0.25*0.25,0.25*0.25,0.25*0.25,
                                                        0.,       0.,       0.}});
 
           // Now loop over the electrons and smear the 4-vectors
           for (HEPUtils::Particle* e : electrons) {
+            if (e->abseta() > 5) continue;
 
             // Look up / calculate resolution
             const double c1 = coeffE2.get_at(e->abseta(), e->pT());
@@ -154,12 +155,15 @@ namespace Gambit {
           std::random_device rd;
           std::mt19937 gen(rd());
 
-          static HEPUtils::BinnedFn2D<double> _muEff({{0,1.5,2.5}}, {{0,0.1,1.,10.,200.,10000.}},
+          static HEPUtils::BinnedFn2D<double> _muEff({{0,1.5,2.5}},
+                                                     {{0,0.1,1.,10.,200.,DBL_MAX}},
                                                      {{0.,0.03,0.02,0.03,0.05,
-                                                           0.,0.04,0.03,0.04,0.05}});
+                                                       0.,0.04,0.03,0.04,0.05}});
 
           // Now loop over the muons and smear the 4-vectors
           for (HEPUtils::Particle* mu : muons) {
+            if (mu->abseta() > 2.5) continue;
+
             // Look up resolution
             const double resolution = _muEff.get_at(mu->abseta(), mu->pT());
 
@@ -223,22 +227,22 @@ namespace Gambit {
           if (electrons.empty()) return;
 
           // Manually symmetrised eta eff histogram
-          const static std::vector<double> binedges_eta = { 0.0,   0.1,   0.8,   1.37,  1.52,  2.01,  2.37,  2.47 };
-          const static std::vector<double> bineffs_eta  = { 0.950, 0.965, 0.955, 0.885, 0.950, 0.935, 0.90 };
+          const static std::vector<double> binedges_eta = { 0.0,   0.1,   0.8,   1.37,  1.52,  2.01,  2.37,  2.47, DBL_MAX };
+          const static std::vector<double> bineffs_eta  = { 0.950, 0.965, 0.955, 0.885, 0.950, 0.935, 0.90, 0 };
           const static HEPUtils::BinnedFn1D<double> _eff_eta(binedges_eta, bineffs_eta);
           // Et eff histogram (10-20 GeV bin added by hand)
-          const static std::vector<double> binedges_et = { 10,   20,   25,   30,   35,   40,    45,    50,   60,  80, 10000 };
+          const static std::vector<double> binedges_et = { 10,   20,   25,   30,   35,   40,    45,    50,   60,  80, DBL_MAX };
           const static std::vector<double> bineffs_et  = { 0.90, 0.91, 0.92, 0.94, 0.95, 0.955, 0.965, 0.97, 0.98, 0.98 };
           const static HEPUtils::BinnedFn1D<double> _eff_et(binedges_et, bineffs_et);
 
           auto keptElectronsEnd = std::remove_if(electrons.begin(), electrons.end(),
                                                  [](const HEPUtils::Particle* electron) {
-						   const double e_pt = electron->pT();
-                                                   const double e_eta = electron->abseta();
-						   if (e_eta > 2.47 || e_pt < 10) return true;
-						   const double eff1 = _eff_eta.get_at(e_eta), eff2 = _eff_et.get_at(e_pt);
-						   const double eff = std::min(eff1 * eff2 / 0.95, 1.0); //< norm factor as approximate double differential
-						   return random_bool(1-eff);
+                                                   const double e_pt = electron->pT();
+                                                   const double e_aeta = electron->abseta();
+                                                   if (e_aeta > 2.47 || e_pt < 10) return true;
+                                                   const double eff1 = _eff_eta.get_at(e_aeta), eff2 = _eff_et.get_at(e_pt);
+                                                   const double eff = std::min(eff1 * eff2 / 0.95, 1.0); //< norm factor as approximate double differential
+                                                   return random_bool(1-eff);
                                                  } );
           electrons.erase(keptElectronsEnd, electrons.end());
         }
