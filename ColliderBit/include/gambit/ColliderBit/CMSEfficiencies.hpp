@@ -24,11 +24,11 @@ namespace Gambit {
 
       /// @name CMS detector efficiency functions
       //@{
-        
+
       /// Randomly filter the supplied particle list by parameterised electron tracking efficiency
       inline void applyElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
-        static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
-                                                          {{0, 0.1, 1.0, 100000}}, //< pT
+        static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, DBL_MAX}}, //< |eta|
+                                                          {{0, 0.1, 1.0, DBL_MAX}}, //< pT
                                                           {{0., 0.70, 0.95, // |eta| 0.1-1.5
                                                             0., 0.60, 0.85, // |eta| 1.5-2.5
                                                             0., 0.,   0.}}); // |eta| > 2.5
@@ -40,8 +40,8 @@ namespace Gambit {
       /// @note Should be applied after the electron energy smearing
       /// @note Eff values currently identical to those in ATLAS (AB, 2016-01-24)
       inline void applyElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
-        static HEPUtils::BinnedFn2D<double> _elEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
-                                                     {{0, 10., 100000.}}, //< pT
+        static HEPUtils::BinnedFn2D<double> _elEff2d({{0, 1.5, 2.5, DBL_MAX}}, //< |eta|
+                                                     {{0, 10., DBL_MAX}}, //< pT
                                                      {{0., 0.95, // |eta| 0.1-1.5
                                                        0., 0.85, // |eta| 1.5-2.5
                                                        0., 0.}}); // |eta| > 2.5
@@ -52,8 +52,8 @@ namespace Gambit {
       /// Randomly filter the supplied particle list by parameterised muon tracking efficiency
       /// @note Eff values currently identical to those in ATLAS (AB, 2016-01-24)
       inline void applyMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
-        static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
-                                                          {{0, 0.1, 1.0, 100000.}}, //< pT
+        static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0, 1.5, 2.5, DBL_MAX}}, //< |eta|
+                                                          {{0, 0.1, 1.0, DBL_MAX}}, //< pT
                                                           {{0, 0.75, 0.99, // |eta| 0.1-1.5
                                                             0, 0.70, 0.98, // |eta| 1.5-2.5
                                                             0, 0,    0}}); // |eta| > 2.5
