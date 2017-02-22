@@ -232,6 +232,9 @@ add_custom_target(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen d
 # Work out which modules to include in the compile
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 
+# Set up targets to make standalone tarballs of the different modules
+add_standalone_tarballs("${GAMBIT_BITS}")
+
 # Include contributed packages
 include(cmake/contrib.cmake)
 

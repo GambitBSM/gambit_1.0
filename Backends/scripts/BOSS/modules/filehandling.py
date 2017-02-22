@@ -109,7 +109,7 @@ def moveFilesAround():
     #
     files_list  = []
 
-    # -- abstract class headers    
+    # -- abstract class headers
     files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension) )
 
     # -- wrapper class headers
@@ -125,10 +125,10 @@ def moveFilesAround():
     # files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
 
     # -- identification.hpp
-    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]
 
     for cp_source in files_list:
-        cp_target = os.path.join(gb.backend_types_dir_complete, os.path.basename(cp_source)) 
+        cp_target = os.path.join(gb.backend_types_dir_complete, os.path.basename(cp_source))
         shutil.copy(cp_source, cp_target)
 
 
@@ -137,7 +137,7 @@ def moveFilesAround():
     #
     files_list  = []
 
-    # -- abstract class headers    
+    # -- abstract class headers
     files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension + '.FOR_GAMBIT') )
 
     # -- wrapper class headers
@@ -153,10 +153,10 @@ def moveFilesAround():
     # files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
 
     # -- identification.hpp
-    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]
 
     for cp_source in files_list:
-        cp_target = os.path.join(gb.for_gambit_backend_types_dir_complete, os.path.basename(cp_source).rstrip('.FOR_GAMBIT')) 
+        cp_target = os.path.join(gb.for_gambit_backend_types_dir_complete, os.path.basename(cp_source).rstrip('.FOR_GAMBIT'))
         shutil.copy(cp_source, cp_target)
 
 
@@ -166,7 +166,7 @@ def moveFilesAround():
     #
     files_list  = []
 
-    # -- abstract class headers    
+    # -- abstract class headers
     files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension) )
     files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*' + cfg.header_extension + '.FOR_GAMBIT') )
 
@@ -183,7 +183,7 @@ def moveFilesAround():
     # files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
 
     # -- identification.hpp
-    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+    files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]
 
     for rm_target in files_list:
         os.remove(rm_target)
@@ -192,7 +192,7 @@ def moveFilesAround():
     # # - To gb.backend_types_dir_complete
     # move_files_list  = []
 
-    # # -- abstract class headers    
+    # # -- abstract class headers
     # move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*') )
 
     # # -- wrapper class headers
@@ -208,7 +208,7 @@ def moveFilesAround():
     # # move_files_list += [ os.path.join(cfg.extra_output_dir, gb.enum_decls_wrp_fname + cfg.header_extension) ]
 
     # # -- identification.hpp
-    # move_files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]    
+    # move_files_list += [ os.path.join(cfg.extra_output_dir, 'identification.hpp') ]
 
     # for mv_file in move_files_list:
     #     shutil.move(mv_file, gb.backend_types_dir_complete)
@@ -226,7 +226,7 @@ def createCommonHeaders():
 
     # - abstractbase.hpp
     if len(gb.classes_done) > 0:
-        source_file_name = 'common_headers/abstractbase.hpp'
+        source_file_name = gb.boss_dir+'/common_headers/abstractbase.hpp'
         target_file_name = os.path.join(cfg.extra_output_dir, 'abstractbase.hpp')
         shutil.copy(source_file_name, target_file_name)
 
@@ -234,7 +234,7 @@ def createCommonHeaders():
     # - wrapperbase.hpp
 
     if len(gb.classes_done) > 0:
-        source_file_name = 'common_headers/wrapperbase.hpp'
+        source_file_name = gb.boss_dir+'/common_headers/wrapperbase.hpp'
         target_file_name = os.path.join(cfg.extra_output_dir, 'wrapperbase.hpp')
 
         new_content = utils.replaceCodeTags(source_file_name, file_input=True)
@@ -246,7 +246,7 @@ def createCommonHeaders():
 
     # - identification.hpp
 
-    source_file_name = 'common_headers/identification.hpp'
+    source_file_name = gb.boss_dir+'/common_headers/identification.hpp'
     target_file_name = os.path.join(cfg.extra_output_dir, 'identification.hpp')
 
     new_content = utils.replaceCodeTags(source_file_name, file_input=True)
@@ -258,23 +258,23 @@ def createCommonHeaders():
 
     # - cats.hpp
 
-    source_file_name = 'common_headers/cats.hpp'
-    target_file_name = os.path.join(cfg.extra_output_dir, 'cats.hpp')    
-    shutil.copy(source_file_name, target_file_name)    
-    
+    source_file_name = gb.boss_dir+'/common_headers/cats.hpp'
+    target_file_name = os.path.join(cfg.extra_output_dir, 'cats.hpp')
+    shutil.copy(source_file_name, target_file_name)
+
 
     # - backend_undefs.hpp
 
-    source_file_name = 'common_headers/backend_undefs.hpp'
-    target_file_name = os.path.join(cfg.extra_output_dir, 'backend_undefs.hpp')    
-    shutil.copy(source_file_name, target_file_name)    
+    source_file_name = gb.boss_dir+'/common_headers/backend_undefs.hpp'
+    target_file_name = os.path.join(cfg.extra_output_dir, 'backend_undefs.hpp')
+    shutil.copy(source_file_name, target_file_name)
 
 
     # - function_return_utils.hpp
     if len(gb.functions_done) > 0:
-        source_file_name = 'common_headers/function_return_utils.hpp'
-        target_file_name = os.path.join(cfg.extra_output_dir, 'function_return_utils.hpp')    
-        shutil.copy(source_file_name, target_file_name)    
+        source_file_name = gb.boss_dir+'/common_headers/function_return_utils.hpp'
+        target_file_name = os.path.join(cfg.extra_output_dir, 'function_return_utils.hpp')
+        shutil.copy(source_file_name, target_file_name)
 
 
 # ====== END: createCommonHeaders ========
@@ -290,9 +290,9 @@ def createCommonSourceFiles():
 
     # - function_return_utils.cpp
     if len(gb.functions_done) > 0:
-        source_file_name = 'common_source_files/function_return_utils.cpp'
-        target_file_name = os.path.join(cfg.extra_output_dir, gb.func_return_utils_fname + cfg.source_extension)    
-        shutil.copy(source_file_name, target_file_name)    
+        source_file_name = gb.boss_dir+'/common_source_files/function_return_utils.cpp'
+        target_file_name = os.path.join(cfg.extra_output_dir, gb.func_return_utils_fname + cfg.source_extension)
+        shutil.copy(source_file_name, target_file_name)
 
 
 # ====== END: createCommonSourceFiles ========
@@ -362,7 +362,7 @@ def copyFilesToSourceTree(verbose=False):
     # Construct a list of (source,target) tuples for all copy operations.
     source_target_tuples = []
 
-    # Lists of file paths. One list for original files that BOSS edit, 
+    # Lists of file paths. One list for original files that BOSS edit,
     # and one for new files created by BOSS.
     manipulated_files = []
     new_files = []
@@ -417,7 +417,7 @@ def copyFilesToSourceTree(verbose=False):
     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'abstractbase.hpp')
     source_target_tuples.append( (cp_source, cp_target) )
     new_files.append(cp_target)
-    
+
     # -- abstracttypedefs.hpp
     cp_source = os.path.join(cfg.extra_output_dir, gb.abstract_typedefs_fname + cfg.header_extension)
     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension)
@@ -478,9 +478,9 @@ def copyFilesToSourceTree(verbose=False):
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
-    # - Add all files in the backend_types/ directory. 
+    # - Add all files in the backend_types/ directory.
     #   Will create a similar directory in the include path of the original source tree
-    if len(gb.classes_done) > 0:    
+    if len(gb.classes_done) > 0:
         source_dir = os.path.join(cfg.extra_output_dir, gb.backend_types_basedir, gb.gambit_backend_name_full)
         target_dir = os.path.join(cfg.header_files_to, gb.backend_types_basedir, gb.gambit_backend_name_full)
         source_files = [ os.path.join(source_dir,f) for f in os.listdir(source_dir) if os.path.isfile( os.path.join(source_dir,f) ) ]
@@ -497,7 +497,7 @@ def copyFilesToSourceTree(verbose=False):
         is_dir = False
         if os.path.isfile(cp_source):
             target_dir_name = os.path.dirname(cp_target)
-            if not os.path.exists(target_dir_name): 
+            if not os.path.exists(target_dir_name):
                 os.makedirs(target_dir_name)
             shutil.copy(cp_source, cp_target)
 
@@ -508,7 +508,7 @@ def copyFilesToSourceTree(verbose=False):
         else:
             continue
 
-        if verbose: 
+        if verbose:
             n_spaces = 2
             sep = 50
             while n_spaces == 2:
@@ -518,11 +518,11 @@ def copyFilesToSourceTree(verbose=False):
 
 
     # Construct list of new directories
-    new_dirs = [ 
+    new_dirs = [
                   os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir),
                   os.path.join(cfg.header_files_to, gb.gambit_utils_incl_dir),
                   os.path.join(cfg.header_files_to, gb.backend_types_basedir, gb.gambit_backend_name_full),
-               ]    
+               ]
 
     # Return the list of manipulated file, new files and new directories
     return manipulated_files, new_files, new_dirs
@@ -534,7 +534,7 @@ def copyFilesToSourceTree(verbose=False):
 # ====== parseFactoryFunctionFiles ========
 
 # Parse the factory function source files using castxml.
-# The harvested information will later be used to 
+# The harvested information will later be used to
 # generate the file loaded_types.hpp
 
 def parseFactoryFunctionFiles():
@@ -569,15 +569,15 @@ def parseFactoryFunctionFiles():
         factory_xml_files[class_name['long']] = xml_output_path
 
     return factory_xml_files
-    
+
 # ====== END: parseFactoryFunctionFiles ========
 
 
 
 # ====== createLoadedTypesHeader ========
 
-# Generate the header file loaded_types.hpp. This header will 
-# contain the symbol names and function signatures for all 
+# Generate the header file loaded_types.hpp. This header will
+# contain the symbol names and function signatures for all
 # the generated factory functions.
 
 def createLoadedTypesHeader(factory_xml_files_dict):
@@ -605,7 +605,7 @@ def createLoadedTypesHeader(factory_xml_files_dict):
 
             factory_el = factory_func_elements[ info_dict['name'] ]
             info_dict['symbol'] = factory_el.get('mangled')
-    
+
     # Generate the code for loaded_types.hpp
     loaded_types_header_content = utils.constrLoadedTypesHeaderContent()
 
@@ -622,7 +622,7 @@ def createLoadedTypesHeader(factory_xml_files_dict):
 # ====== parseFunctionSourceFiles ========
 
 # Parse the global function source files using castxml.
-# The harvested information will later be used to 
+# The harvested information will later be used to
 # generate the GAMBIT frontend header file.
 
 def parseFunctionSourceFiles():
@@ -658,15 +658,15 @@ def parseFunctionSourceFiles():
         function_xml_files[func_name['long_templ_args']] = xml_output_path
 
     return function_xml_files
-    
+
 # ====== END: parseFunctionSourceFiles ========
 
 
 
 # ====== createFrontendHeader ========
 
-# Generate the header file loaded_types.hpp. This header will 
-# contain the symbol names and function signatures for all 
+# Generate the header file loaded_types.hpp. This header will
+# contain the symbol names and function signatures for all
 # the generated factory functions.
 
 def createFrontendHeader(function_xml_files_dict):
@@ -694,7 +694,7 @@ def createFrontendHeader(function_xml_files_dict):
         else:
 
             class_typedef_code = ''
-            
+
             class_namespace, class_name_short = utils.removeNamespace(class_name['long'], return_namespace=True)
 
             if class_namespace == '':
@@ -727,8 +727,8 @@ def createFrontendHeader(function_xml_files_dict):
         if xml_file != gb.xml_file_name:
             gb.xml_file_name = xml_file
             utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
-    
-       
+
+
         # Get wrapper function element
         tree = ET.parse(xml_file)
         root = tree.getroot()
@@ -748,7 +748,7 @@ def createFrontendHeader(function_xml_files_dict):
         pointerness   = return_type_dict['pointerness']
         is_ref        = return_type_dict['is_reference']
         return_kw     = return_type_dict['cv_qualifiers']
-        
+
         return_kw_str = ' '.join(return_kw) + ' '*bool(len(return_kw))
 
         return_type   = return_type_dict['name'] + '*'*pointerness + '&'*is_ref
@@ -761,8 +761,8 @@ def createFrontendHeader(function_xml_files_dict):
         # symbol = wr_func_el.get('mangled')
         symbol = wr_func_el.get('name')
 
-        be_function_macro_code += 'BE_FUNCTION(' 
-        be_function_macro_code += func_name['short'] + ', ' 
+        be_function_macro_code += 'BE_FUNCTION('
+        be_function_macro_code += func_name['short'] + ', '
         be_function_macro_code += return_type + ', '
         be_function_macro_code += args_bracket + ', '
         be_function_macro_code += '"' + symbol + '"' + ', '
@@ -784,7 +784,7 @@ def createFrontendHeader(function_xml_files_dict):
     # - Include statement for the identification header
     frontend_content += '\n'
     frontend_content += '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
-   
+
     # - LOAD_LIBRARY macro
     frontend_content += '\n'
     frontend_content += 'LOAD_LIBRARY\n'
@@ -809,7 +809,7 @@ def createFrontendHeader(function_xml_files_dict):
     frontend_content += 'BE_INI_FUNCTION{} END_BE_INI_FUNCTION\n'
     frontend_content += '\n'
     frontend_content += '// Convenience functions (definitions)\n'
-    
+
     # - Include statement for backend_undefs.hpp
     frontend_content += '\n'
     frontend_content += '// End\n'
@@ -864,7 +864,7 @@ def resetSourceCode(reset_info_file_name):
                 raise e
 
         # If backup exists, use it to replace target file
-        shutil.move(backup_file_path, target_path)            
+        shutil.move(backup_file_path, target_path)
         print "  Restored %s from %s" % (target_path, backup_file_path)
 
 

@@ -1,26 +1,26 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Cmake configuration script to add clean info
-#  for GAMBIT.  
-#    
+#  for GAMBIT.
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
 #
 #  \author Ben Farmer
 #          (benjamin.farmer@fysik.su.se)
-#  \date 2015 Feb       
-#                                        
+#  \date 2015 Feb
+#
 #************************************************
 
 ##### clean ########
@@ -82,6 +82,10 @@ add_dependencies(distclean clean-scanners clean-scanners-lib)
 add_custom_target(clean-scratch COMMAND ${CMAKE_COMMAND} -E remove_directory scratch WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_dependencies(distclean clean-scratch)
 
+# Ensure that distclean sweeps out ScannerBit bin directory
+add_custom_target(clean-scannerbit-bin COMMAND ${CMAKE_COMMAND} -E remove_directory bin WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ScannerBit)
+add_dependencies(distclean clean-scannerbit-bin)
+
 # Ensure that distclean removes .pyc files
 add_custom_target(clean-pyc COMMAND ${CMAKE_COMMAND} -E remove *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_dependencies(distclean clean-pyc)
@@ -92,7 +96,7 @@ add_dependencies(distclean clean-backup)
 
 # Add clean targets for doxygen
 add_custom_target(clean-docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                             COMMAND ${CMAKE_COMMAND} -E remove_directory doc/html 
+                             COMMAND ${CMAKE_COMMAND} -E remove_directory doc/html
                              COMMAND ${CMAKE_COMMAND} -E remove doc/*.tmp)
 add_dependencies(distclean clean-docs)
 
@@ -104,6 +108,6 @@ add_custom_target(clean-backend-download COMMAND ${CMAKE_COMMAND} -E remove_dire
 add_custom_target(clean-backend-install COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_custom_target(nuke-backends DEPENDS clean-backend-download clean-backend-install) 
-add_custom_target(nuke-scanners DEPENDS clean-scanner-download clean-scanner-install) 
-add_custom_target(nuke-all DEPENDS distclean nuke-backends nuke-scanners) 
+add_custom_target(nuke-backends DEPENDS clean-backend-download clean-backend-install)
+add_custom_target(nuke-scanners DEPENDS clean-scanner-download clean-scanner-install)
+add_custom_target(nuke-all DEPENDS distclean nuke-backends nuke-scanners)

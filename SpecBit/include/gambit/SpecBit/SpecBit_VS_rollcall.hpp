@@ -22,13 +22,13 @@
 
 
   #define CAPABILITY vacuum_stability
-  START_CAPABILITY                          
+  START_CAPABILITY
 
     #define FUNCTION find_min_lambda
     START_FUNCTION(triplet<double>)
     DEPENDENCY(SMINPUTS, SMInputs)
     //DEPENDENCY(SingletDM_pole_mh, double)
-    DEPENDENCY(SingletDM_spectrum,/*TAG*/ Spectrum)
+    DEPENDENCY(SingletDM_spectrum, Spectrum)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SingletDMZ3)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running,SingletDMZ3))
@@ -41,7 +41,7 @@
 
 
   #define CAPABILITY VS_likelihood
-  START_CAPABILITY                          
+  START_CAPABILITY
 
     #define FUNCTION get_likelihood
     START_FUNCTION(double)

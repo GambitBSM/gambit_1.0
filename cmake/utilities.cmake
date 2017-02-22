@@ -348,6 +348,46 @@ function(add_standalone executablename)
 endfunction()
 
 
+# Function to add all standalone tarballs as targets
+function(add_standalone_tarballs modules)
+
+  add_custom_target(standalone_tarballs)
+
+  foreach(module ${modules})
+
+    set(dirname "${module}_tarball")
+
+    if ("${module}" STREQUAL "ScannerBit")
+      add_custom_target(${module}.tar COMMAND ${CMAKE_COMMAND} -E remove_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E make_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/CMakeLists.txt ${dirname}/
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/${module} ${dirname}/${module}
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Logs ${dirname}/Logs
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Utils ${dirname}/Utils
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Printers ${dirname}/Printers
+                                      COMMAND ${CMAKE_COMMAND} -E remove -f ${module}.tar
+                                      COMMAND ${CMAKE_COMMAND} -E tar c ${module}.tar ${dirname})
+    else()
+      add_custom_target(${module}.tar COMMAND ${CMAKE_COMMAND} -E remove_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E make_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/CMakeLists.txt ${dirname}/
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/${module} ${dirname}/${module}
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Logs ${dirname}/Logs
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Utils ${dirname}/Utils
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Models ${dirname}/Models
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Elements ${dirname}/Elements
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Backends ${dirname}/Backends
+                                      COMMAND ${CMAKE_COMMAND} -E tar c ${module}.tar ${dirname})
+    endif()
+
+    add_dependencies(${module}.tar nuke-all)
+    add_dependencies(standalone_tarballs ${module}.tar)
+
+  endforeach()
+
+endfunction()
+
+
 # Simple function to find specific Python modules
 macro(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
@@ -391,10 +431,10 @@ macro(BOSS_backend name backend_version)
     endif()
     ExternalProject_Add_Step(${name}_${ver} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} ${name}_${backend_version_safe}
+      COMMAND python ${BOSS_dir}/boss.py ${BOSS_includes} ${name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
-      COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
-      COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${name_in_frontend}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp
+      COMMAND cp -r BOSS_output/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
+      COMMAND cp BOSS_output/frontends/${name_in_frontend}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp
       DEPENDEES patch
       DEPENDERS configure
     )
