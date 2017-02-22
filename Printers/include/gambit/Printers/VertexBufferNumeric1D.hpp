@@ -209,7 +209,8 @@ namespace Gambit {
               , const bool sync
               , const bool sil
               , const bool resume
-           ): VertexBufferBase(label,vID,i,sync,sil,resume,false)
+              , const char access
+           ): VertexBufferBase(label,vID,i,sync,sil,resume,false,access)
             , buffer_valid() 
             , buffer_entries()
             #ifdef WITH_MPI

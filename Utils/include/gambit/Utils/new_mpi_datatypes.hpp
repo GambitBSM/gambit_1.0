@@ -24,6 +24,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include <ostream>
 
 // Code!
 namespace Gambit
@@ -83,20 +84,38 @@ namespace Gambit
       long int pointID;
       unsigned int rank;
       PPIDpair() 
-        : pointID(0)
+        : pointID(-1)
         , rank(0)
       {}
       PPIDpair(const long int p, const int r)
         : pointID(p)
         , rank(r)
       {}
+      friend std::ostream& operator<<(std::ostream&, const PPIDpair&);
     };
 
     // Needed by std::map for comparison of keys of type VBIDpair
     bool operator<(const PPIDpair& l, const PPIDpair& r);
     bool operator==(const PPIDpair& l, const PPIDpair& r);
     bool operator!=(const PPIDpair& l, const PPIDpair& r);
-   
+
+    // To use PPIDpairs in std::unordered_map/set, need to provide hashing and equality functions
+    struct PPIDHash{ 
+      size_t operator()(const PPIDpair &key) const { 
+        return std::hash<long int>()(key.pointID) ^ std::hash<unsigned int>()(key.rank);
+      }
+    };
+
+    struct PPIDEqual{
+      bool operator()(const PPIDpair &lhs, const PPIDpair &rhs) const {
+        return lhs == rhs; // use the operator we already defined (why doesn't the STL do this?)
+      }
+    };
+
+    // stream overloads (for easy std::out)
+    // Null pointID object, use for unassigned pointIDs
+    const PPIDpair nullpoint;
+
   } // end namespace Printers
 
   #ifdef WITH_MPI

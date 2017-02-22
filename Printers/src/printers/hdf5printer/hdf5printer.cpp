@@ -98,6 +98,7 @@
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
 
@@ -361,10 +362,10 @@ namespace Gambit
        // Interfaces for the datasets
        // Make sure the types used here don't get out of sync with the types used to write the original datasets
        // We open the datasets in "resume" mode to access existing dataset, and make "const" to disable writing of new data. i.e. "Read-only" mode.
-       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "pointID", true);        
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "pointID_isvalid", true);
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "MPIrank", true); 
-       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "MPIrank_isvalid", true); 
+       const DataSetInterfaceScalar<unsigned long, CHUNKLENGTH> pointIDs(group_id, "pointID", true, 'r');        
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> pointIDs_isvalid  (group_id, "pointID_isvalid", true, 'r');
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks          (group_id, "MPIrank", true, 'r'); 
+       const DataSetInterfaceScalar<int, CHUNKLENGTH> mpiranks_isvalid  (group_id, "MPIrank_isvalid", true, 'r'); 
 
        // Error check lengths. This should already have been done for all datasets in the group, but
        // we will double-check these four here.
@@ -561,6 +562,7 @@ namespace Gambit
                                       , synchronised
                                       , silence
                                       , false /*printer->get_resume() -- In this new version of the HDF5Printer we write temporary files and then combine them at the end of the scan, so each individual buffer no longer needs to be in 'resume' mode, it can just start anew and be combined with the old data later on */
+                                      , access /* r/w mode. Buffers can now be used for reading also. */
                                       );
 
         // Get the new (possibly silenced) buffer back out of the map
@@ -596,6 +598,7 @@ namespace Gambit
     // Constructor
     HDF5Printer::HDF5Printer(const Options& options, BasePrinter* const primary)
     : BasePrinter(primary,options.getValueOrDef<bool>(false,"auxilliary"))
+    , lastPointID(nullpoint) 
     , printer_name("Primary printer")
     , myRank(0)
     , mpiSize(1)
@@ -610,10 +613,16 @@ namespace Gambit
     void HDF5Printer::common_constructor(const Options& options)
     {
 #ifdef WITH_MPI
+      // Note; here 'myRank' is the REAL mpi rank. Used
+      // for process-specific actions.
+      // the inherited 'getRank' function should be used for
+      // printing "as if" this process is from that rank,
+      // i.e. mostly just for setting point ID codes.
+      // 'myRank' will not change, but getRank() may be
+      // changed by the scanner (e.g. postprocessor).
       myRank = myComm.Get_rank();
+      this->setRank(myRank);
 #endif
-      // Initialise "lastPointID" map to -1 (i.e. no last point)
-      lastPointID[myRank] = -1;
 
       if(not this->is_auxilliary_printer())
       {
@@ -895,6 +904,7 @@ namespace Gambit
       // Now that communicator is set up, get its properties.
 #ifdef WITH_MPI
       myRank = myComm.Get_rank();
+      this->setRank(myRank);
       mpiSize = myComm.Get_size();
 #endif
     }
@@ -919,7 +929,7 @@ namespace Gambit
           // Matches format of temporary file! Extract the rank that produced it
           std::stringstream ss;
           ss << it->substr(tmp_base.length());
-          if(ss.str()!="combined") // don't count the temporary combined file in this list
+          if(Utils::isInteger(ss.str())) // Only do this for files where the remainder of the string is just an integer (i.e. not the combined files etc.)
           {
             int rank;
             ss >> rank;
@@ -1201,8 +1211,9 @@ namespace Gambit
       } //end if(is_primary_printer)
     }
 
-    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-    void HDF5Printer::combine_output(const std::vector<std::string> tmp_files, const bool finalcombine)
+    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file
+    /// This version operates via the python script 'combine_hdf5.py'
+    void HDF5Printer::combine_output_py(const std::vector<std::string> tmp_files, const bool finalcombine)
     {
       std::ostringstream command;
       std::ostringstream tmp_file_list;
@@ -1271,8 +1282,54 @@ namespace Gambit
       }
     }
 
+    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file
+    /// This version operates via Greg's C++ routines.
+    void HDF5Printer::combine_output(const std::vector<std::string> tmp_files, const bool finalcombine)
+    {
+      logger() << LogTags::printers << "Running HDF5 data combination..." << EOM;
+      // Do combination
+      int num = tmp_files.size(); // We don't actually use their names here, Greg's code assumes that they
+                                  // follow a fixed format and they all exist. We check for this before 
+                                  // running this function, so this should be fine.
+
+      // If we set the final flag 'true' then Greg's code will assume that a '_temp_combined' output file
+      // exists, and it will crash if it doesn't. So we need to first check if such a file exists.
+      bool combined_file_exists = Utils::file_exists(tmp_comb_file); // We already check this externally; pass in as flag?
+      std::cout<<"combined_file_exists? "<<combined_file_exists<<std::endl;
+      HDF5::combine_hdf5_files(tmp_comb_file, finalfile, group, num, combined_file_exists);
+
+      // This is just left the same as the combine_output_py version!
+      if(finalcombine)
+      {
+        // This happens only at the end of the run; copy data to user-requested filename
+        // TODO! This does not permit adding different runs into the same hdf5 file
+        // Need to make sure Greg's combine code can do this.
+        std::ostringstream command2;
+        command2 <<"cp "<<tmp_comb_file<<" "<<finalfile<<" && rm "<<tmp_comb_file; // Note, deletes old file if successful
+        logger() << LogTags::printers << LogTags::info << "Running shell command: " << command2.str() << EOM;
+        FILE* fp = popen(command2.str().c_str(), "r");
+        if(fp==NULL)
+        {
+          // Error running popen
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final location during HDF5Printer finalise()! popen failed to run the specified copy (and delete) command (command was '"<<command2.str()<<"')";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        else if(pclose(fp)!=0)
+        {
+          // Command returned exit code!=0, or pclose failed
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final location during HDF5Printer finalise()! Shell command failed to execute successfully, please check stderr (command was '"<<command2.str()<<"').";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        // Success!
+      }
+
+    }
+
+
     /// Retrieve pointer to HDF5 location to which datasets are added
-    hid_t HDF5Printer::get_location()
+    hid_t HDF5Printer::get_location() const
     {
       if(location_id==-1)
       {
@@ -1283,7 +1340,7 @@ namespace Gambit
       return location_id;
     }
 
-    hid_t HDF5Printer::get_RA_location()
+    hid_t HDF5Printer::get_RA_location() const
     {
       if(RA_location_id==-1)
       {
@@ -1293,9 +1350,6 @@ namespace Gambit
       }
       return RA_location_id;
     }
-
-    /// Retrieve MPI rank
-    int HDF5Printer::getRank() {return myRank;}
 
     /// Add a pointer to a new buffer to the global list for this printer
     /// and also register it with the list global to all printers.
@@ -1309,7 +1363,7 @@ namespace Gambit
     }
 
     /// Check if an output stream is already managed by some buffer in any printer.
-    bool HDF5Printer::is_stream_managed(VBIDpair& key)
+    bool HDF5Printer::is_stream_managed(VBIDpair& key) const
     {
       bool answer = true;
       if( primary_printer->all_buffers.find(key)
@@ -1369,8 +1423,12 @@ namespace Gambit
       unsigned long pointID = ppid.pointID; // unsigned versions were coming out gibberish in python...
       unsigned int mpirank = ppid.rank;
       //std::cout << "rank "<<myRank<<": adding new RA PPID to list: (" << pointID << "," << mpirank << ")" << std::endl;
-      _print(pointID, "RA_pointID", -2000, mpirank, pointID); //TODO should get these ID numbers from the ScannerBit ID assignment system
-      _print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
+ 
+      // The ID numbers will be obtained via the 'aux' parameter system, but I think that is fine.
+      // The call is a little bizarre because these are template functions from the base class, which
+      // require this weird notation to resolve a compiler abiguity.
+      this->print(pointID, "RA_pointID", mpirank, pointID);
+      this->print(mpirank, "RA_MPIrank", mpirank, pointID);
     }
 
     /// Completely reset the PPIDlists
@@ -1685,22 +1743,20 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 
     /// Check whether printing to a new parameter space point is about to occur
     // and perform adjustments needed to prepare the printer.
-    void HDF5Printer::check_for_new_point(const unsigned long candidate_newpoint, const unsigned int mpirank)
+    void HDF5Printer::check_for_new_point(const PPIDpair& candidate_newpoint)
     {
       if(is_auxilliary_printer())
       {
         // Redirect task to primary printer
-        primary_printer->check_for_new_point(candidate_newpoint, mpirank);
+        primary_printer->check_for_new_point(candidate_newpoint);
       }
 
-      //std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
-
       // Check if we have changed target PointIDs since the last print call
-      if(candidate_newpoint!=lastPointID.at(myRank))
+      if(candidate_newpoint!=lastPointID)
       {
 
 #ifdef MPI_DEBUG
-        std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
+        std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
         std::cout<<"rank "<<myRank<<": sync_pos="<<get_sync_pos()<<std::endl;
 #endif
 
@@ -1743,7 +1799,7 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 #endif
 
         // Yep the scanner has moved on, at least as far as the current process sees
-        lastPointID[myRank] = candidate_newpoint;
+        lastPointID = candidate_newpoint;
 
         // Check if the buffers are full and waiting to be emptied
         // (this will trigger MPI sends if needed)
@@ -1791,14 +1847,29 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
         //_print(candidate_newpoint, "pointID", -1000, myRank, candidate_newpoint);
         //_print(myRank,             "MPIrank", -1001, myRank, candidate_newpoint);
       }
+      else
+      {
+        // no action required
+      }
     }
 
 
     // PRINT FUNCTIONS
     //----------------------------
     // Need to define one of these for every type we want to print!
-    // Could use macros again to generate identical print functions
-    // for all types that have a << operator already defined.
+
+    // Templatable print functions
+    #define PRINT(TYPE) _print(TYPE const& value, const std::string& label, const int vID, const uint rank, const ulong pID) \
+       { template_print(value,label,vID,rank,pID); }
+    void HDF5Printer::PRINT(int      ) 
+    void HDF5Printer::PRINT(uint     ) 
+    void HDF5Printer::PRINT(long     ) 
+    void HDF5Printer::PRINT(ulong    ) 
+    void HDF5Printer::PRINT(longlong ) 
+    void HDF5Printer::PRINT(ulonglong)
+    void HDF5Printer::PRINT(float    ) 
+    void HDF5Printer::PRINT(double   ) 
+    #undef PRINT
 
     // Bools can't quite use the template print function directly, since there
     // are some issues with bools and MPI/HDF5 types. Easier to just convert
@@ -1813,11 +1884,8 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
     {
       // We will write to several 'double' buffers, rather than a single vector buffer.
       // Change this once a vector buffer is actually available
-      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-
-      // Retrieve the buffer manager for buffers with this type
-      typedef H5P_LocalBufferManager<BuffType> BuffMan;
-      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      // Retrieve the buffer manager for buffers with the desired output type
+      auto& buffer_manager = get_mybuffermanager<double>(pointID,mpirank);
 
 #ifdef HDEBUG_MODE
       std::cout<<"printing vector<double>: "<<label<<std::endl;
@@ -1854,9 +1922,7 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
     void HDF5Printer::_print(const triplet<double>& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
       // Retrieve the buffer manager for buffers with this type
-      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-      typedef H5P_LocalBufferManager<BuffType> BuffMan;
-      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      auto& buffer_manager = get_mybuffermanager<double>(pointID,mpirank);
 
 #ifdef HDEBUG_MODE
       std::cout<<"printing triplet<double>: "<<label<<std::endl;
@@ -1894,12 +1960,8 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 
     void HDF5Printer::_print(const std::map<std::string,double>& map, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
-      // We will write to one 'double' buffer for each map entry
-      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
-
       // Retrieve the buffer manager for buffers with this type
-      typedef H5P_LocalBufferManager<BuffType> BuffMan;
-      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      auto& buffer_manager = get_mybuffermanager<double>(pointID,mpirank);
 
       unsigned int i=0; // index for each buffer
       for (std::map<std::string, double>::const_iterator

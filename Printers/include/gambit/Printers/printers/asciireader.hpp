@@ -30,25 +30,23 @@ namespace Gambit {
      {
        public:
          asciiReader(const Options& options);
-
-         /// Get column descriptions from an info file
-         std::map<std::string,uint> get_column_info(const std::string& info_filename);
-
-         /// Move 'read head' forward to next row
-         void next_row();
-
-         /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
-         void advance_to_point(const std::pair<uint,ulong>& target_point);
    
          /// @{ Base class virtual interface functions
-         virtual std::pair<uint, ulong> get_next_point(); // Get next rank/ptID pair in data file
-         virtual std::pair<uint, ulong> get_current_point(); // Get current rank/ptID pair in data file
+         virtual void reset(); // Reset 'read head' position to first entry
+         virtual ulong get_dataset_length(); // Get length of input dataset
+         virtual PPIDpair get_next_point(); // Get next rank/ptID pair in data file
+         virtual PPIDpair get_current_point(); // Get current rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
-         void _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID);
-         void _retrieve(ModelParameters& out,    const std::string& label, const uint rank, const ulong pointID);
+         /// Get type information for a data entry, i.e. defines the C++ type which this should be
+         /// retrieved as, not what it is necessarily literally stored as in the output.
+         /// For ASCIIPrinter, everything is currently a double.
+         virtual std::size_t get_type(const std::string&) { return getTypeID<double>(); }
+         virtual std::set<std::string> get_all_labels(); // Get all output column labels
+         bool _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(ModelParameters& out,    const std::string& label, const uint rank, const ulong pointID);
          /// @}
 
        private:
@@ -58,9 +56,20 @@ namespace Gambit {
          const uint col_rank;
          const uint col_ptID;
          std::ifstream dataFile;
-         ulong                 current_row;
-         std::pair<uint,ulong> current_point;
-         std::string           current_line;
+         ulong       dataset_length;
+         ulong       current_row;
+         PPIDpair    current_point;
+         std::string current_line;
+
+         /// Get column descriptions from an info file
+         std::map<std::string,uint> get_column_info(const std::string& info_filename);
+
+         /// Move 'read head' forward to next row
+         void next_row();
+
+         /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
+         void advance_to_point(const PPIDpair& target_point);
+
      };
 
     // Register reader so it can be constructed via inifile instructions

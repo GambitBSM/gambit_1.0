@@ -138,7 +138,7 @@ namespace Gambit
   }
 
   /// Evaluate total likelihood function
-  double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
+  double Likelihood_Container::main(std::unordered_map<std::string, double> &in)
   {
     logger() << LogTags::core << LogTags::debug << "Entered Likelihood_Container::main" << EOM;
 

@@ -51,17 +51,17 @@ Scanner:
     postprocess:
       plugin: postprocessor
       # 'purpose' name assigned to log-likelihood for this 'scan'
-      LogLike: LogLike2
+      loglike: LogLike2
       # If the purpose name above collides with an entry in the selected input file 
       # (e.g. an old likelihood from the original scan), should the old data be discarded?
-      permit_discard_old_LogLike: true
+      permit_discard_old_logLike: true
       # List of labels in old output to treat as likelihoods to be added to the newly computed LogLike.
       # It is assumed that these are stored as doubles. If they aren't, something unexpected may happen...
-      add_to_LogLike: [LogLike, LogLike]
+      add_to_loglike: [LogLike, LogLike]
       # List of labels in old output to treat as likelihoods to be subtracted from the newly computed LogLike.
       # (for example if you recompute a new likelihood component with a different tool, you may want to
       #  subtract the old component here)
-      subtract_from_LogLike: [LogLike, LogLike]
+      subtract_from_loglike: [LogLike, LogLike]
       # Note, there is no protection from adding then subtracting the same component, or from adding the same component twice etc.
       # More complicated arrangements of old + new likelihood components go beyond the goals of this scanner.
       # Use plotting tools for that kind of thing.
@@ -70,13 +70,13 @@ Scanner:
       #update_interval: 1000
       reader:
         # This determines what old output file is to be read and whose parameter points are to be used
-        #type: hdf5
-        type: ascii
+        type: hdf5
+        #type: ascii
         # Currently the asciiReader only works on one file, so they need to be combined before postprocessing. Just cat-ing them together should work.
-        info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_1"
-        data_filename: "runs/largetest_multinest+ascii/samples/results.txt_1"
-        #file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
-        #group: "/"
+        #info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
+        #data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
+        file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
+        group: "/"
 
 #  objectives:
 #

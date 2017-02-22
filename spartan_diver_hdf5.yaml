@@ -42,7 +42,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 1000
+      NP: 1000000
       verbosity: 2
 
 #======== Observables of interest ========

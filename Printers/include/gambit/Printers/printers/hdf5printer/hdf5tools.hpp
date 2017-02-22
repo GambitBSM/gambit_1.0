@@ -26,16 +26,21 @@
 #ifndef __hdf5tools_hpp__
 #define __hdf5tools_hpp__
 
+// Standard library
 #include <cstdint>
 #include <memory>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 
+// GAMBIT
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 
+// HDF5
 #include <hdf5.h>
+
+// Boost
 #include <boost/utility/enable_if.hpp>
 
 
@@ -84,7 +89,7 @@ namespace Gambit
          hid_t openFile(const std::string& fname, bool overwrite=false);
 
          /// Close hdf5 file
-         void closeFile(hid_t file);
+         hid_t closeFile(hid_t file);
 
          /// Check if hdf5 file exists and can be opened in read/write mode
          bool checkFileReadable(const std::string& fname, std::string& msg);
@@ -126,12 +131,33 @@ namespace Gambit
          hid_t openGroup(hid_t file_id, const std::string& name, bool nocreate=false);
  
          /// Close group
-         void closeGroup(hid_t group);
+         hid_t closeGroup(hid_t group);
+
+         /// List object names in a group
+         std::vector<std::string> lsGroup(hid_t group_id);
+ 
+         /// Get type of an object in a group
+         hid_t getH5DatasetType(hid_t group_id, const std::string& dset_name);
 
          /// @}
 
          /// @{ Dataset and dataspace manipulation
- 
+
+         /// Open dataset
+         hid_t openDataset(hid_t dset_id, const std::string& name, bool error_off=false);
+
+         /// Close dataset
+         hid_t closeDataset(hid_t dset_id); 
+
+         /// Get dataspace
+         hid_t getSpace(hid_t dset_id);
+
+         /// Close dataspace
+         hid_t closeSpace(hid_t space_id);
+
+         /// Get simple dataspace extent
+         hssize_t getSimpleExtentNpoints(hid_t dset_it);
+
          /// @}
 
       }
@@ -160,6 +186,27 @@ namespace Gambit
       // Bools are a bit trickier because C has no built-in boolean type (until recently; anyway 
       // the HDF5 libraries were written in C before this existed). We also want something that
       // will be recognised as a bool by h5py. For now we just use an unsigned int.
+
+      // Macro sequence for iterating over all allowed output types
+      #define H5_OUTPUT_TYPES \
+        (char) \
+        (short) \
+        (int) \
+        (long) \
+        (long long) \
+        (unsigned char) \
+        (unsigned short) \
+        (unsigned int) \
+        (unsigned long) \
+        (unsigned long long) \
+        (float) \
+        (double) \
+        (long double) \
+        (bool)
+
+      /// DEBUG: print to stdout all HDF5 type IDs
+      void printAllH5Types(void);
+
       /// @}
 
       /// Typedef'd types; enabled only where they differ from the true types.

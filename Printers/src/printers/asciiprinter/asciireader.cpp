@@ -37,7 +37,7 @@ namespace Gambit {
       return it->second;
     }
 
-    /// @{ Members of 'asciiReader'
+    /// @{ General members of 'asciiReader'
 
     /// Constructor
     asciiReader::asciiReader(const Options& options)
@@ -46,7 +46,10 @@ namespace Gambit {
       , column_map( get_column_info(infoFile_name) )
       , col_rank( safe_col_lookup("MPIrank", column_map, infoFile_name) )
       , col_ptID( safe_col_lookup("pointID", column_map, infoFile_name) )
+      , dataset_length(0)
       , current_row(0)
+      , current_point(0,0)
+      , current_line("")
     {
       logger() << LogTags::info << "asciiReader: Constructing 'asciiReader' for performing retrieval from previous output. File to be accessed is:"<<std::endl;
       logger() << "  data file: " << dataFile_name << std::endl;
@@ -55,17 +58,65 @@ namespace Gambit {
 
       /// Open output data file
       dataFile.open(dataFile_name);
+
+      if( dataFile.fail() )
+      {
+        std::ostringstream err;
+        err << "Error! asciiReader failed to open 'data' file '"<<dataFile_name<<"' for reading past scan output. OS message was: "<<strerror(errno);
+        printer_error().raise(LOCAL_INFO,err.str());
+      }
+
+      /// Scan through file and figure out how many points are in the dataset
+      get_next_point();
+      dataset_length++;
+      if(eoi())
+      {
+        std::ostringstream err;
+        err << "Error! asciiReader reached end of input file '"<<dataFile_name<<"' immediately (file seems to be empty?). Please check the path specified in the YAML config file for this run." << std::endl;
+        printer_error().raise(LOCAL_INFO,err.str());
+      }
+
+      while(not eoi())
+      {
+        get_next_point();
+        dataset_length++;
+      }
+      // Note, there is an extra iteration here (one past the end), so the length is indeed the actual length (since we started counting at zero), not the index of the last entry. 
+      reset();
+    }
+
+    /// Get total length of dataset
+    ulong asciiReader::get_dataset_length()
+    {
+      return dataset_length;
+    }
+
+    /// Reset read head position to zero
+    void asciiReader::reset()
+    {
+      dataFile.close();
+      dataFile.open(dataFile_name);
+
+      if( dataFile.fail() )
+      {
+        std::ostringstream err;
+        err << "Error! asciiReader failed to re-open 'data' file '"<<dataFile_name<<"' for reading previous output while resetting read-head position. OS message was: "<<strerror(errno);
+        printer_error().raise(LOCAL_INFO,err.str());
+      }
+
+      /// Reset row count
+      current_row = 0;
     }
 
     // Get current rank/ptID pair in data file
     // Make sure get_next_point has been called first! Otherwise we may not have a current point to get
-    std::pair<uint, ulong> asciiReader::get_current_point()
+    PPIDpair asciiReader::get_current_point()
     {
       return current_point;
     }
 
     /// Get next rank/ptID pair
-    std::pair<uint, ulong> asciiReader::get_next_point()
+    PPIDpair asciiReader::get_next_point()
     {
       next_row();
       // Point will get returned, but check eoi() before using it! If eoi() then we didn't actually get a new point, this should still just be the previous point.
@@ -79,8 +130,9 @@ namespace Gambit {
       //std::cout << "eoi()? " << tmp << std::endl;
       //if(!dataFile) { std::cout << "At end of file!" << std::endl; }
       return !dataFile;
-    } 
-    /// @}
+    }
+
+ 
 
     /// Open an 'info' file and figure out what column is what
     std::map<std::string,uint> asciiReader::get_column_info(const std::string& info_filename)
@@ -173,8 +225,7 @@ namespace Gambit {
              printer_error().raise(LOCAL_INFO,err.str());
          }
          // Set new position data
-         current_point = std::make_pair(MPIrank,pointID);
-         //std::cout<<"new current_point = "<<current_point.first<<", "<<current_point.second<<std::endl;
+         current_point = PPIDpair(pointID,MPIrank);
          current_row++;
          // Before trying to access stuff from this row, check for end of file via eoi() function!
        }
@@ -183,7 +234,7 @@ namespace Gambit {
 
 
     /// Advance the 'read head' position for output retrieval until the requested rank/pointID entry is found
-    void asciiReader::advance_to_point(const std::pair<uint,ulong>& target_point)
+    void asciiReader::advance_to_point(const PPIDpair& target_point)
     {
       // Check if we are at the right place for the point already
       if(current_point!=target_point)
@@ -210,17 +261,8 @@ namespace Gambit {
 
              /// Presumably we have reached the end of the file; so close it and reopen it,
              /// to wrap around and search for the desired point from the beginning.
-             dataFile.close();
-             dataFile.open(dataFile_name);
+             reset();
 
-             if ( dataFile.fail() )
-             {
-               std::ostringstream err;
-               err << "Error! asciiReader failed to re-open 'data' file '"<<dataFile_name<<"' for reading previous output while performing a search for a point. OS message was: "<<strerror(errno);
-               printer_error().raise(LOCAL_INFO,err.str());
-             }
-             /// Reset row count
-             current_row = 0;
              // Get first row data
              next_row();
              if(eoi()) // If it is still eoi() there is probably nothing in the file...
@@ -244,17 +286,31 @@ namespace Gambit {
       // Else Already at the right place! No need to do anything.
     } // end function
 
+    /// Get all output column labels
+    std::set<std::string> asciiReader::get_all_labels()
+    {
+       std::set<std::string> out;
+       for(auto it = column_map.begin(); it!=column_map.end(); ++it)
+       {
+         out.insert(it->first);
+       }
+       return out;
+    }
+    /// @}
 
     /// @{ Retrieval functions
 
     /// Everything is a string in the output file, so use this as the 'master' retrieve function, and the others
     /// just wrap it in various ways
-    void asciiReader::_retrieve(std::string& out, const std::string& label, const uint rank, const ulong pointID)
+    bool asciiReader::_retrieve(std::string& out, const std::string& label, const uint rank, const ulong pointID)
     {
+      // return value
+      bool is_valid = true;
+
       /// Advance read-head position until the target point is found (or throw an error if it cannot be found)
       /// Will be fastest if we are already at the right position or only have to go forward a small number of slots
       /// Going backwards will involve traversing the whole file forwards and looping back around from the start!
-      advance_to_point(std::make_pair(rank,pointID));
+      advance_to_point(PPIDpair(pointID,rank));
       
       /// Check which column is supposed to correspond with 'label'
       uint target_col;
@@ -292,59 +348,38 @@ namespace Gambit {
          err << "Error! asciiReader failed to read line '"<<current_row+1<<"', column '"<<i+1<<"' from the wrapped output file '"<<dataFile_name<<"'! The file may be corrupt, or may contain fewer columns than expected (was planning to iterate up to column '"<<target_col<<"').";
          printer_error().raise(LOCAL_INFO,err.str());     
       }
+      if(out=="none")
+      {
+         // Valid data was not recorded for this quantity at this pointID. 
+         is_valid = false;
+      }
       /// done!
+      return is_valid;
     }
 
-    void asciiReader::_retrieve(double& out, const std::string& label, const uint rank, const ulong pointID)
+    bool asciiReader::_retrieve(double& out, const std::string& label, const uint rank, const ulong pointID)
     {
       /// Get requested quantity as a string, then convert it to a double
       std::string temp_out;
-      _retrieve(temp_out, label, rank, pointID);
-      std::istringstream iss(temp_out);
-      iss >> out;
-      if(!iss)
+      bool is_valid;
+      is_valid = _retrieve(temp_out, label, rank, pointID);
+      if(is_valid)
       {
-         std::ostringstream err;
-         err << "Error! asciiReader retrieved an element of '"<<label<<"' from the data file '"<<dataFile_name<<"', but failed to convert it to type 'double'. The data file may be corrupted, or you may have tried to use an inappropriate 'retrieve' type for this data. Error occurred while reading from row '"<<current_row<<"'. Retrieved string value was '"<<temp_out<<"'.";
-         printer_error().raise(LOCAL_INFO,err.str());     
+        std::istringstream iss(temp_out);
+        iss >> out;
+        if(!iss)
+        {
+           std::ostringstream err;
+           err << "Error! asciiReader retrieved an element of '"<<label<<"' from the data file '"<<dataFile_name<<"', which is not marked as 'invalid', but failed to convert it to type 'double'. The data file may be corrupted, or you may have tried to use an inappropriate 'retrieve' type for this data. Error occurred while reading from row '"<<current_row<<"'. Retrieved string value was '"<<temp_out<<"'.";
+           printer_error().raise(LOCAL_INFO,err.str());     
+        }
+      }
+      else
+      {
+        out = 0; // but also marked invalid, so default number is unimportant.
       }
       /// done!
-    }
-
-    /// local helper function for the ModelParameters '_retrieve' function
-    bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out)
-    {
-       bool result = false;
-       std::istringstream iss(fulllabel);
-       std::string capability;
-       std::string rest; 
-       iss >> capability;
-       iss >> rest;
-       if(!iss)
-       {
-         // Weren't two elements to the label, so this can't be a match
-         result = false; // failed to match
-       }
-       else
-       {
-         //capability is "#NormalDist_parameters", for example
-         capability.erase(0,1); // cut off the first character (hash, in all potentially matching cases)
-         std::vector<str> split_cap = Utils::delimiterSplit(capability, "_");
-         if(split_cap[0]==modelname)
-         {
-            // So far so good, check 'rest', which is, e.g. @NormalDist::primary_parameters::mu
-            // Split 'rest' into a vector of strings, using a delimiter
-            rest.erase(0,1); // cut off the first character (@, in all potentially matching cases)
-            std::vector<str> split_rest = Utils::delimiterSplit(rest, "::");
-            if(split_rest[0]==modelname and split_rest.size()==3)
-            {
-              // Ok! We have a match!
-              out = split_rest[2];
-              result = true;
-            } else { result = false; }
-         } else { result = false; }        
-       }
-       return result;
+      return is_valid;
     }
 
     /// This one is fancy, gets ALL the ModelParameters matching a certain model name
@@ -359,8 +394,9 @@ namespace Gambit {
     ///Note:
     ///label=("#"+func_capability+" @"+origin_name+"::"+func_name)
     ///
-    void asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
+    bool asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
     {
+      bool is_valid = true;
       //std::cout<<"Attempting to retrieve ModelParameters for model '"<<modelname<<"'"<<std::endl;
       /// Work out all the output labels which correspond to the input modelname
       bool found_at_least_one(false);
@@ -375,10 +411,21 @@ namespace Gambit {
           out._definePar(param_name);
           // Get the corresponding value out of the data file
           double value; // *output* of retrieve function
-          _retrieve(value, it->first, rank, pointID);
-          out.setValue(param_name, value);
-          //std::cout<<"Extracted parameter "<<param_name<<", value="<<value<<std::endl;
+          bool tmp_is_valid;
+          tmp_is_valid = _retrieve(value, it->first, rank, pointID);
           found_at_least_one = true;
+          if(tmp_is_valid)
+          {
+             out.setValue(param_name, value);
+             //std::cout<<"Extracted parameter "<<param_name<<", value="<<value<<std::endl;
+          }
+          else
+          {
+             // If one parameter value is 'invalid' then we cannot reconstruct 
+             // the ModelParameters object, so we mark the whole thing invalid.
+             out.setValue(param_name, 0);
+             is_valid = false;           
+          }
         }
       }
 
@@ -390,12 +437,13 @@ namespace Gambit {
          printer_error().raise(LOCAL_INFO,err.str());     
       }
       /// done!
+      return is_valid;
     }
 
-    void asciiReader::_retrieve(std::vector<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
-    void asciiReader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
+    bool asciiReader::_retrieve(std::vector<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
+    bool asciiReader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
 
     /// @}
 

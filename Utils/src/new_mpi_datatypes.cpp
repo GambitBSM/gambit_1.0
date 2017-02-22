@@ -116,6 +116,13 @@ namespace Gambit
      }
      #endif
 
+     /// Stream operator overloads
+     std::ostream& operator<<(std::ostream& stream, const PPIDpair& ppid) 
+     {
+       stream << "(" << ppid.pointID << ", " << ppid.rank << ")";
+       return stream;
+     }
+
   }
 
   /// Definition needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
