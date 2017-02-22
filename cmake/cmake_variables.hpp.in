@@ -42,9 +42,10 @@
 
 /// Version info
 /// @{
-#cmakedefine GAMBIT_VERSION_MAJOR    1
-#cmakedefine GAMBIT_VERSION_MINOR    0
-#cmakedefine GAMBIT_VERSION_REVISION 0
+#cmakedefine GAMBIT_VERSION_MAJOR    @GAMBIT_VERSION_MAJOR
+#cmakedefine GAMBIT_VERSION_MINOR    @GAMBIT_VERSION_MINOR
+#cmakedefine GAMBIT_VERSION_REVISION @GAMBIT_VERSION_REVISION
+#cmakedefine GAMBIT_VERSION_PATCH    "@GAMBIT_VERSION_PATCH"
 /// @}
 
 #endif //// #defined__cmake_variables_hpp__

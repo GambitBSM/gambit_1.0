@@ -348,6 +348,15 @@ function(add_standalone executablename)
 endfunction()
 
 
+# Function to retrieve version number from git
+function(get_version_from_git major minor revision patch full)
+
+  execute_command(git describe --tags --abbrev=0 OUTPUT full)
+
+
+endfunction()
+
+
 # Function to add all standalone tarballs as targets
 function(add_standalone_tarballs modules)
 
