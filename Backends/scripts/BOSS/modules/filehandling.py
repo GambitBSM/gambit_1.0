@@ -367,51 +367,7 @@ def copyFilesToSourceTree(verbose=False):
     manipulated_files = []
     new_files = []
 
-    # - Add all manipulated original files
-    for original_file_short_name, original_file_full_path in gb.original_file_paths.items():
-
-        cp_source = os.path.join(cfg.extra_output_dir,original_file_short_name)
-        cp_target = original_file_full_path
-        source_target_tuples.append( (cp_source, cp_target) )
-        manipulated_files.append(cp_target)
-
-    # - Add factory source files
-    for class_name in gb.classes_done:
-
-        factory_source_fname_short = gb.factory_file_prefix + class_name['short'] + cfg.source_extension
-
-        cp_source = os.path.join(cfg.extra_output_dir, factory_source_fname_short)
-        cp_target = os.path.join(cfg.src_files_to, factory_source_fname_short)
-        source_target_tuples.append( (cp_source, cp_target) )
-        new_files.append(cp_target)
-
-    # - Add source files for wrapper versions of global functions
-    for func_name in gb.functions_done:
-
-        source_file_path = gb.function_file_dict[func_name['long_templ_args']]
-        source_file_name = os.path.basename(source_file_path)
-
-        # function_source_fname_short = gb.function_files_prefix + func_name['short'] + gb.code_suffix + cfg.source_extension
-
-        # cp_source = os.path.join(cfg.extra_output_dir, function_source_fname_short)
-        cp_source = os.path.join(source_file_path)
-        # cp_target = os.path.join(cfg.src_files_to, function_source_fname_short)
-        cp_target = os.path.join(cfg.src_files_to, source_file_name)
-        source_target_tuples.append( (cp_source, cp_target) )
-        new_files.append(cp_target)
-
-    # - Add 'extras' source files (containing implementations for the helper functions that BOSS adds to the original classes)
-    for class_name in gb.classes_done:
-
-        extra_source_fname_short = gb.general_src_file_prefix + class_name['short'] + cfg.source_extension
-
-        cp_source = os.path.join(cfg.extra_output_dir, extra_source_fname_short)
-        cp_target = os.path.join(cfg.src_files_to, extra_source_fname_short)
-        source_target_tuples.append( (cp_source, cp_target) )
-        new_files.append(cp_target)
-
     # - Add standard BOSS files that are to be copied to the original source tree
-
     # -- abstractbase.hpp
     cp_source = os.path.join(cfg.extra_output_dir, 'abstractbase.hpp')
     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'abstractbase.hpp')
@@ -490,6 +446,50 @@ def copyFilesToSourceTree(verbose=False):
             cp_target = os.path.join(cfg.header_files_to, gb.backend_types_basedir, gb.gambit_backend_name_full, target_file_name)
             source_target_tuples.append( (cp_source, cp_target) )
             new_files.append(cp_target)
+
+
+    # - Add all manipulated original files
+    for original_file_short_name, original_file_full_path in gb.original_file_paths.items():
+
+        cp_source = os.path.join(cfg.extra_output_dir,original_file_short_name)
+        cp_target = original_file_full_path
+        source_target_tuples.append( (cp_source, cp_target) )
+        manipulated_files.append(cp_target)
+
+    # - Add factory source files
+    for class_name in gb.classes_done:
+
+        factory_source_fname_short = gb.factory_file_prefix + class_name['short'] + cfg.source_extension
+
+        cp_source = os.path.join(cfg.extra_output_dir, factory_source_fname_short)
+        cp_target = os.path.join(cfg.src_files_to, factory_source_fname_short)
+        source_target_tuples.append( (cp_source, cp_target) )
+        new_files.append(cp_target)
+
+    # - Add source files for wrapper versions of global functions
+    for func_name in gb.functions_done:
+
+        source_file_path = gb.function_file_dict[func_name['long_templ_args']]
+        source_file_name = os.path.basename(source_file_path)
+
+        # function_source_fname_short = gb.function_files_prefix + func_name['short'] + gb.code_suffix + cfg.source_extension
+
+        # cp_source = os.path.join(cfg.extra_output_dir, function_source_fname_short)
+        cp_source = os.path.join(source_file_path)
+        # cp_target = os.path.join(cfg.src_files_to, function_source_fname_short)
+        cp_target = os.path.join(cfg.src_files_to, source_file_name)
+        source_target_tuples.append( (cp_source, cp_target) )
+        new_files.append(cp_target)
+
+    # - Add 'extras' source files (containing implementations for the helper functions that BOSS adds to the original classes)
+    for class_name in gb.classes_done:
+
+        extra_source_fname_short = gb.general_src_file_prefix + class_name['short'] + cfg.source_extension
+
+        cp_source = os.path.join(cfg.extra_output_dir, extra_source_fname_short)
+        cp_target = os.path.join(cfg.src_files_to, extra_source_fname_short)
+        source_target_tuples.append( (cp_source, cp_target) )
+        new_files.append(cp_target)
 
     # Perform copy operations
     for cp_source, cp_target in source_target_tuples:

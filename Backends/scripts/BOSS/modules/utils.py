@@ -633,6 +633,7 @@ def findType(el_input):
         prev_tag = ''
         while ('type' in el.keys()) or ('returns' in el.keys()):
 
+
             # Get xml id to move further through the xml file
             if el.tag in ['FunctionType', 'Function', 'Method', 'OperatorMethod']:
 
@@ -641,6 +642,10 @@ def findType(el_input):
                 type_id = el.get('returns')
             else:
                 type_id = el.get('type')
+
+            # id='_0' refer to elements not resolved by CastXML. Should be safe to stop here.
+            if type_id == '_0':
+                break
 
             # Check for reference or pointer type
             if el.tag == 'ReferenceType':
