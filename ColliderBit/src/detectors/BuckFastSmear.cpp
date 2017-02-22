@@ -24,13 +24,13 @@ namespace Gambit {
 
       // Electron smearing and efficiency
       /// @todo Run-dependence?
-      //ATLAS::applyElectronTrackingEff(eventOut.electrons());
+      ATLAS::applyElectronTrackingEff(eventOut.electrons());
       ATLAS::smearElectronEnergy(eventOut.electrons());
       ATLAS::applyElectronEff(eventOut.electrons());
 
       // Muon smearing and efficiency
       /// @todo Run-dependence?
-      //ATLAS::applyMuonTrackEff(eventOut.muons());
+      ATLAS::applyMuonTrackEff(eventOut.muons());
       ATLAS::smearMuonMomentum(eventOut.muons());
       ATLAS::applyMuonEff(eventOut.muons());
 
@@ -58,12 +58,12 @@ namespace Gambit {
 
       //MJW debug- make this the same as ATLAS temporarily
       // Electron smearing and efficiency
-      //CMS::applyElectronTrackingEff(eventOut.electrons());
+      CMS::applyElectronTrackingEff(eventOut.electrons());
       CMS::smearElectronEnergy(eventOut.electrons());
       CMS::applyElectronEff(eventOut.electrons());
 
       // Muon smearing and efficiency
-      //CMS::applyMuonTrackEff(eventOut.muons());
+      CMS::applyMuonTrackEff(eventOut.muons());
       CMS::smearMuonMomentum(eventOut.muons());
       CMS::applyMuonEff(eventOut.muons());
 
