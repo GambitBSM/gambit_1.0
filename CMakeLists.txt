@@ -221,10 +221,9 @@ endif()
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
 
-# Set the version number (later to come directly from git tag)
-set(GAMBIT_VERSION_MAJOR 1)
-set(GAMBIT_VERSION_MINOR 0)
-set(GAMBIT_VERSION_REVISION 0)
+# Set the version number directly from git tag
+get_version_from_git(GAMBIT_VERSION_MAJOR GAMBIT_VERSION_MINOR GAMBIT_VERSION_REVISION
+                     GAMBIT_VERSION_PATCH GAMBIT_VERSION_FULL)
 
 # Add doxygen build as an external project
 add_custom_target(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
@@ -233,7 +232,7 @@ add_custom_target(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen d
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 
 # Set up targets to make standalone tarballs of the different modules
-add_standalone_tarballs("${GAMBIT_BITS}")
+add_standalone_tarballs("${GAMBIT_BITS}" "${GAMBIT_VERSION_FULL}")
 
 # Include contributed packages
 include(cmake/contrib.cmake)

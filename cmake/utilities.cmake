@@ -349,22 +349,59 @@ endfunction()
 
 
 # Function to retrieve version number from git
-function(get_version_from_git major minor revision patch full)
+macro(get_version_from_git major minor revision patch full)
 
-  execute_command(git describe --tags --abbrev=0 OUTPUT full)
+  set(${major} "")
+  set(${minor} "")
+  set(${revision} "")
+  set(${patch} "")
+  set(${full} "")
 
+  execute_process(COMMAND git describe --tags --abbrev=0 OUTPUT_VARIABLE ${full})
 
-endfunction()
+  string(REGEX MATCH "v([0-9]*)\\." ${major} "${${full}}")
+  if ("${${major}}" STREQUAL "")
+    string(REGEX MATCH "^([0-9]*)\\." ${major} "${${full}}")
+    string(REGEX REPLACE "^([0-9]*)\\." "\\1" ${major} "${${major}}")
+  else()
+    string(REGEX REPLACE "v([0-9]*)\\." "\\1" ${major} "${${major}}")
+  endif()
+
+  string(REGEX MATCH "\\.([0-9]*)\\." ${minor} "${${full}}")
+  if ("${${minor}}" STREQUAL "")
+    string(REGEX MATCH "\\.([0-9]*)" ${minor} "${${full}}")
+    string(REGEX REPLACE "\\.([0-9]*)" "\\1" ${minor} "${${minor}}")
+    set(${revision} "0")
+  else()
+    string(REGEX REPLACE "\\.([0-9]*)\\." "\\1" ${minor} "${${minor}}")
+    string(REGEX MATCH "\\.([0-9]*)-" ${revision} "${${full}}")
+    if ("${${revision}}" STREQUAL "")
+      string(REGEX MATCH "\\.([0-9]*)\n" ${revision} "${${full}}")
+      string(REGEX REPLACE "\\.([0-9]*)\n" "\\1" ${revision} "${${revision}}")
+    else()
+      string(REGEX REPLACE "\\.([0-9]*)-" "\\1" ${revision} "${${revision}}")
+    endif()
+  endif()
+  string(REGEX MATCH "-(.*)\n" ${patch} "${${full}}")
+  string(REGEX REPLACE "-(.*)\n" "\\1" ${patch} "${${patch}}")
+
+  if ("${${patch}}" STREQUAL "")
+    set(${full} "${${major}}.${${minor}}.${${revision}}")
+  else()
+    set(${full} "${${major}}.${${minor}}.${${revision}}-${${patch}}")
+  endif()
+
+endmacro()
 
 
 # Function to add all standalone tarballs as targets
-function(add_standalone_tarballs modules)
+function(add_standalone_tarballs modules version)
 
   add_custom_target(standalone_tarballs)
 
   foreach(module ${modules})
 
-    set(dirname "${module}_tarball")
+    set(dirname "${module}_${version}")
 
     if ("${module}" STREQUAL "ScannerBit")
       add_custom_target(${module}.tar COMMAND ${CMAKE_COMMAND} -E remove_directory ${dirname}
