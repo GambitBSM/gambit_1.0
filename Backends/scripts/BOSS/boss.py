@@ -732,8 +732,11 @@ def main():
 
     manipulated_files, new_files, new_dirs = filehandling.copyFilesToSourceTree(verbose=True)
 
+    # Create the reset dir if it does not exist
+    filehandling.createOutputDirectories(selected_dirs=['reset'])
+
     # Save source_target_tuples to be able to undo the changes at a later time
-    reset_info_file_name = 'reset_info.' + gb.gambit_backend_name_full + '.boss'
+    reset_info_file_name = gb.boss_reset_dir+'/reset_info.' + gb.gambit_backend_name_full + '.boss'
     with open(reset_info_file_name, 'w') as f:
         pickle.dump([manipulated_files, new_files, new_dirs], f)
 
