@@ -374,6 +374,15 @@ def main():
         sys.exit()
 
 
+
+
+    #
+    # TODO: Check if the source code has already been BOSSed.
+    #
+
+
+
+
     #
     # Analyse types and functions
     #
