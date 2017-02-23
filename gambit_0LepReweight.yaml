@@ -6,7 +6,7 @@
 # Ben Farmer <ben.farmer@gmail.com>
 # Dec 2013
 #
- 
+
 ###################################
 # Input parameter declarations
 ###################################
@@ -47,7 +47,7 @@ Printer:
   # This options node is passed on wholesale to
   # the printer object; required options may
   # therefore vary according to the selected
-  # printer. 
+  # printer.
   options:
     # name of output file
     output_file: "runs/example_minimal_test/samples/gambit_output.txt"
@@ -72,13 +72,13 @@ Scanner:
       point_number: 1
       files:
         output_file: "weights ..."
-        
+
     square_grid:
       plugin: square_grid
       version: ">=1.0"
       like: LogLike
       grid_pts: 3 #NxN grid
-            
+
     grid:
       plugin: grid
       version: ">=1.0"
@@ -113,7 +113,7 @@ ObsLikes:
 Rules:
 
 
- # Choose to get decays from DecayBit proper, not from an SLHA file.
+  # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
     function: all_decays
 
@@ -162,11 +162,10 @@ Rules:
   - capability: Higgs_Couplings
     function: MSSM_higgs_couplings_pwid
 
- # Choose which type of marginalised Poisson likelihood to use for LHC likelihoods
+  # Choose which type of marginalised Poisson likelihood to use for LHC likelihoods
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
 
   # ATLAS detector simulation
   - capability: SimpleSmearingSim
@@ -195,13 +194,12 @@ Rules:
     function: getCMSAnalysisContainer
     options:
       analysisNamesCMS: ["CMS_13TeV_0LEP_13invfb"]
-      
+
   # Choose Monte Carlo event simulator and number of events to run.
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
       nEvents: 5000
-      #SLHA_filenames: ["gg_0_1800.slha"]
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
 
   # Define Monte Carlo event simulator and associated options.
