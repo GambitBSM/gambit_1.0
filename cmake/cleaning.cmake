@@ -55,10 +55,18 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit/test_function_rollcall.hpp")
 
+# Arrange for the removal of generated source files with "make clean"
+foreach(bit ${ALL_GAMBIT_BITS})
+  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+endforeach()
+
+
 #Arrange for removal of other scanner-related generated files upon "make clean".
-set(clean_files ${clean_files} "${PROJECT_BINARY_DIR}/linkedout.cmake")
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/scanbit_reqd_entries.yaml")
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/scanbit_flags.yaml")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  set(clean_files ${clean_files} "${PROJECT_BINARY_DIR}/linkedout.cmake")
+  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/scanbit_reqd_entries.yaml")
+  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/scanbit_flags.yaml")
+endif()
 
 # Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
