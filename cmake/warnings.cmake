@@ -52,6 +52,11 @@ if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 endif()
 
+CHECK_CXX_COMPILER_FLAG("-Wno-misleading-indentation" CXX_SUPPORTS_WNO_MISLEADING_INDENTATION)
+if (CXX_SUPPORTS_WNO_MISLEADING_INDENTATION)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-misleading-indentation")
+endif()
+
 # suppress complaints from OpenMPI library with C++11 (on Ubuntu 15.10, at least)
 CHECK_CXX_COMPILER_FLAG("-Wno-literal-suffix" CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
 if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
