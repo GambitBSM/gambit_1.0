@@ -27,6 +27,7 @@ namespace Gambit {
         _cutflow("CMS 0-lep 13 TeV", {"Njet >= 3", "HT > 300", "HTmiss > 300", "Nmuon = 0", "Nelectron = 0", "Nhadron = 0 (no-op)", "Dphi_htmiss_j1", "Dphi_htmiss_j2", "Dphi_htmiss_j3", "Dphi_htmiss_j4"})
       {
         set_luminosity(12.9);
+        for (size_t i = 0; i < NUMSR; ++i) _srnums[i] = 0;
       }
 
 
