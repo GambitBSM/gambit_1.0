@@ -1192,6 +1192,9 @@ namespace Gambit
 #ifdef WITH_MPI
           logger() << LogTags::printers << "We are in normal shutdown mode, meaning that the run has finished and output files should be combined. However, the master process must wait for all workers to write their output to disk before attempting the combination. We are now entering this barrier; if we are master we will wait here; all other processes will just register entry and then continue." << EOM;
           myComm.masterWaitForAll(FINAL_SYNC);
+          // TODO! What if the master finishes before other processes? Then it will sit here. But what then if an abnormal shutdown signal is received?? Then the other processes will not enter the barrier! This is bad.
+          // To avoid the problem we'd have to make the wait able to monitor for termination signals.
+          // Also could just turn off the auto-combination and make the user "continue" the scan one final time to trigger the combination?
 #endif
 
           logger() << LogTags::printers << "Passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;

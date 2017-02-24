@@ -605,7 +605,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
       // Check if valid model parameters were extracted. If not, something may be wrong with the input file, or we could just be at the end of a buffer (e.g. in HDF5 case). Can't tell the difference, so just skip the point and continue.
       if(not valid_modelparams)
       {
-         //std::cout << "Skipping point..." <<std::endl;
+         std::cout << "Skipping point "<<loopi<<" as it has no valid ModelParameters" <<std::endl;
          current_point = reader->get_next_point();
          continue;
       }   
@@ -728,18 +728,26 @@ scanner_plugin(postprocessor, version(1, 0, 0))
       {
          // Need to save data about which points have been processed, so we
          // can resume processing from here.
-         std::cerr << "Postprocessor (rank "<<rank<<") received quit signal! Writing resume data and aborting run." << std::endl;
-         Chunk mydonechunk(mychunk.start,loopi);
-         record_done_points(done_chunks, mydonechunk, root, rank, numtasks);
-      }
+         std::cout << "Postprocessor (rank "<<rank<<") received quit signal! Aborting run." << std::endl;
+      } 
       else
       {
          /// Go to next point
          current_point = reader->get_next_point();
       }
-    } 
-    std::cout << "Done! (rank "<<rank<<")" << std::endl;
+    }
+  
+    // Check if we finished because of reaching the end of the input    
+    if(reader->eoi())
+    {
+       std::cout << "Postprocessor (rank "<<rank<<") reached the end of the input file! (debug: was this the end of our batch? (loopi="<<loopi<<", mychunk.end="<<mychunk.end<<")"<<std::endl;
+    }
 
+    // Write resume data (even if we finished; other processes might not have)
+    std::cout<<"Writing resume data (rank "<<rank<<")...."<< std::endl;
+    Chunk mydonechunk(mychunk.start,loopi);
+    record_done_points(done_chunks, mydonechunk, root, rank, numtasks);
+    std::cout << "Done! (rank "<<rank<<")" << std::endl;
     return 0;
   }
 }
