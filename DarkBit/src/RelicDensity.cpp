@@ -527,7 +527,7 @@ namespace Gambit
       if (Utils::isnan(weff))
             DarkBit_error().raise(LOCAL_INFO, "Weff is NaN in RD_Oh2_general. This means that the function\n"
                                             "pointed to by RD_eff_annrate returned NaN for the invariant rate\n"
-                                            "entering the relic density calculation.");      
+                                            "entering the relic density calculation.");
 
       #ifdef DARKBIT_RD_DEBUG
         // Dump Weff info on screen
@@ -547,7 +547,7 @@ namespace Gambit
         std::cout << "Starting dsrdtab..." << std::endl;
       #endif
 
-            
+
 
       // Tabulate the invariant rate
       BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
@@ -663,10 +663,5 @@ namespace Gambit
       logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
     }
 
-    void RD_fraction_fixed(double &result)
-    {
-      using namespace Pipes::RD_fraction_fixed;
-      result = 1;
-    }
   }
 }
