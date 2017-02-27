@@ -51,9 +51,9 @@ Scanner:
     postprocess:
       plugin: postprocessor
       # 'purpose' name assigned to log-likelihood for this 'scan'
-      like: LogLike2
+      like: LogLike3
       # label given to result of likelihood reweighting. Can overwrite old name, if 'permit_discard_old_likes' is 'true'.
-      reweighted_like: reweighted_LogLike
+      reweighted_like: reweighted_LogLike2
       # If the purpose name above collides with an entry in the selected input file 
       # (e.g. an old likelihood from the original scan), should the old data be discarded?
       permit_discard_old_like: true
@@ -77,7 +77,8 @@ Scanner:
         # Currently the asciiReader only works on one file, so they need to be combined before postprocessing. Just cat-ing them together should work.
         #info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
         #data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
-        file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
+        #file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
+        file: "tmp.hdf5"
         group: "/"
 
 #  objectives:
@@ -88,7 +89,7 @@ Scanner:
                    
 #======== Observables of interest ========
 ObsLikes:
-  - purpose:      LogLike2
+  - purpose:      LogLike3
     capability:   normaldist_loglike
     module:       ExampleBit_A
     type:         double

@@ -81,6 +81,7 @@ namespace Gambit
                         hsize_t dim_t;
                         if(datasets[i] >= 0)
                         {
+                           // Read the dataset in to buffer
                            H5Dread(datasets[i], get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[j]);
                            
                            hid_t space = H5Dget_space(datasets[i]);
@@ -93,14 +94,24 @@ namespace Gambit
                            dim_t = 0;
                         }
                        
+                        // Check size consistency
                         if (dim_t >= sizes[i])
                         {
+                            // Data had expected size, no problem
+                            // NOTE: Why can dim_t be larger than expected? Possible padding at end or something?
+                            j += sizes[i];
+                        }
+                        else if(dim_t==0)
+                        {
+                            // Data was missing, but also probably fine, just skip it
                             j += sizes[i];
                         }
                         else
                         {
+                            // Data has some other unexpected size, error!
                             std::ostringstream errmsg;
-                            errmsg << "Error copying parameter.  Input file " << i << " smaller than required";
+                            errmsg << "Error copying parameter "".  Dataset in input file " << i << " did not have the expected size" <<std::endl;
+                            errmsg << "(sizes["<<i<<"] = "<<sizes[i]<<" was less than dim_t = "<<dim_t<<")";
                             printer_error().raise(LOCAL_INFO, errmsg.str());
                         }
                     }

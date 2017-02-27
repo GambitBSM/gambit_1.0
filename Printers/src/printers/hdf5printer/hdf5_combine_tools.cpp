@@ -525,7 +525,7 @@ namespace Gambit
                               printer_error().raise(LOCAL_INFO, errmsg.str());
                            }
                         }
-                      
+
                         datasets.push_back(dataset);
                         datasets2.push_back(dataset2);
                     }
@@ -576,6 +576,7 @@ namespace Gambit
                     // Reopen dataset for writing
                     dataset_out   = HDF5::openDataset(new_group, *it);
                     dataset2_out  = HDF5::openDataset(new_group, (*it)+"_isvalid");
+                    std::cout << "Copying parameter "<<*it<<std::endl; // debug
                     Enter_HDF5<copy_hdf5>(dataset_out, datasets, size_tot_l, sizes, old_dataset);
                     Enter_HDF5<copy_hdf5>(dataset2_out, datasets2, size_tot_l, sizes, old_dataset2);
                     

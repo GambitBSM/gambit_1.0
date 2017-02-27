@@ -86,6 +86,7 @@ struct ChunkEqual{
 
 typedef std::unordered_set<Chunk,ChunkHash,ChunkEqual> ChunkSet;
 
+
 // The reweigher Scanner plugin
 scanner_plugin(postprocessor, version(1, 0, 0))
 {
@@ -124,6 +125,15 @@ scanner_plugin(postprocessor, version(1, 0, 0))
   /// MPI data
   unsigned int numtasks;
   unsigned int rank;
+
+  /// Models required by the scan
+  std::map<std::string,std::vector<std::string>> req_models;
+
+  /// Map to retrieve the "model::parameter" version of the parameter name
+  std::map<std::string,std::map<std::string,std::string>> longname;
+
+  /// The reader object in use for the scan
+  Gambit::Printers::BaseBaseReader* reader;
  
   /// The constructor to run when the plugin is loaded.
   plugin_constructor
@@ -220,6 +230,55 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     return answer;
   }
   
+  // Extract model parameters from a reader 
+  bool get_ModelParameters(std::unordered_map<std::string, double>& outputMap)
+  {
+     bool valid_modelparams = true;
+     for(auto it=req_models.begin(); it!=req_models.end(); ++it)
+     {
+     
+       ModelParameters modelparameters;
+       std::string model = it->first;
+       bool is_valid = reader->retrieve(modelparameters, model);
+       if(not is_valid) 
+       {
+          valid_modelparams = false;
+          //std::cout << "ModelParameters marked 'invalid' for model "<<model<<"; point will be skipped." << std::endl;
+       }
+       /// @{ Debugging; show what was actually retrieved from the output file
+       //std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
+       //std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
+       //const std::vector<std::string> names = modelparameters.getKeys();
+       //for(std::vector<std::string>::const_iterator
+       //    kt = names.begin();
+       //    kt!= names.end(); ++kt)
+       //{
+       //  std::cout << "    " << *kt << " : " << modelparameters[*kt] << std::endl;
+       //}
+       /// @}
+     
+       // Check that all the required parameters were retrieved
+       // Could actually do this in the constructor for the scanner plugin, would be better, but a little more complicated. TODO: do this later.
+       std::vector<std::string> req_pars = it->second;
+       std::vector<std::string> retrieved_pars = modelparameters.getKeys();
+       for(auto jt = req_pars.begin(); jt != req_pars.end(); ++jt)
+       {
+         std::string par = *jt;
+         if(std::find(retrieved_pars.begin(), retrieved_pars.end(), par)
+             == retrieved_pars.end())
+         {
+            std::ostringstream err;
+            err << "Error! Reader could not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
+            scan_error().raise(LOCAL_INFO,err.str());
+         }
+     
+         // If it was found, add it to the return map
+         outputMap[ longname[model][par] ] = modelparameters[par];
+       }
+     }
+     return valid_modelparams;
+  }
+
   /// Get 'effective' start and end positions for a processing batch
   /// i.e. simply divides up an integer into the most even parts possible
   /// over a given number of processes
@@ -459,8 +518,8 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     }
 
     // Storage for names of models and parameters.
-    std::map<std::string,std::vector<std::string>> req_models; // All the required model+parameter names
-    std::map<std::string,std::map<std::string,std::string>> longname; // Retrieve the "model::parameter" version of the name
+    req_models.clear(); // All the required model+parameter names. Make sure it is empty
+    longname.clear(); // Retrieve the "model::parameter" version of the name
   
     // Retrieve parameter and model names
     if(rank==0) std::cout << "Constructing prior plugin for postprocessor" << std::endl;
@@ -499,7 +558,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     }
 
     // Retrieve the reader object
-    Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
+    reader = get_printer().get_reader("old_points");
     unsigned long long total_length = reader->get_dataset_length();
 
     // Compute which points this process is supposed to process. Divide up
@@ -558,49 +617,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
       std::unordered_map<std::string, double> outputMap;
 
       // Extract the model parameters
-      bool valid_modelparams = true;
-      for(auto it=req_models.begin(); it!=req_models.end(); ++it)
-      {
-
-        ModelParameters modelparameters;
-        std::string model = it->first;
-        bool is_valid = reader->retrieve(modelparameters, model);
-        if(not is_valid) 
-        {
-           valid_modelparams = false;
-           //std::cout << "ModelParameters marked 'invalid' for model "<<model<<"; point will be skipped." << std::endl;
-        }
-        /// @{ Debugging; show what was actually retrieved from the output file
-        //std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
-        //std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
-        //const std::vector<std::string> names = modelparameters.getKeys();
-        //for(std::vector<std::string>::const_iterator
-        //    kt = names.begin();
-        //    kt!= names.end(); ++kt)
-        //{
-        //  std::cout << "    " << *kt << " : " << modelparameters[*kt] << std::endl;
-        //}
-        /// @}
-  
-        // Check that all the required parameters were retrieved
-        // Could actually do this in the constructor for the scanner plugin, would be better, but a little more complicated. TODO: do this later.
-        std::vector<std::string> req_pars = it->second;
-        std::vector<std::string> retrieved_pars = modelparameters.getKeys();
-        for(auto jt = req_pars.begin(); jt != req_pars.end(); ++jt)
-        {
-          std::string par = *jt;
-          if(std::find(retrieved_pars.begin(), retrieved_pars.end(), par)
-              == retrieved_pars.end())
-          {
-             std::ostringstream err;
-             err << "Error! Reader could not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
-             scan_error().raise(LOCAL_INFO,err.str());
-          }
-  
-          // If it was found, add it to the return map
-          outputMap[ longname[model][par] ] = modelparameters[par];
-        }
-      }
+      bool valid_modelparams = get_ModelParameters(outputMap);
    
       // Check if valid model parameters were extracted. If not, something may be wrong with the input file, or we could just be at the end of a buffer (e.g. in HDF5 case). Can't tell the difference, so just skip the point and continue.
       if(not valid_modelparams)

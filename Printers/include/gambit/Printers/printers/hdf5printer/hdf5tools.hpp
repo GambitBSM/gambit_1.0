@@ -139,6 +139,9 @@ namespace Gambit
          /// Get type of an object in a group
          hid_t getH5DatasetType(hid_t group_id, const std::string& dset_name);
 
+         /// Release datatype identifier
+         hid_t closeType(hid_t type_id);
+
          /// @}
 
          /// @{ Dataset and dataspace manipulation
@@ -156,7 +159,10 @@ namespace Gambit
          hid_t closeSpace(hid_t space_id);
 
          /// Get simple dataspace extent
-         hssize_t getSimpleExtentNpoints(hid_t dset_it);
+         hssize_t getSimpleExtentNpoints(hid_t dset_id);
+
+         /// Get name of dataset
+         std::string getName(hid_t dset_id);
 
          /// @}
 

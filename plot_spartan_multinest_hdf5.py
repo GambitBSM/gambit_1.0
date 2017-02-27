@@ -15,9 +15,9 @@ import plottools #Some handy bits and pieces I wrote for plotting stuff
 #f = h5py.File("runs/spartan_multinest_hdf5/samples/results.hdf5",'r')
 #group = f["/"]
 #logl = "LogLike"
-f = h5py.File("runs/ascii_reweight/samples/results.hdf5",'r')
+f = h5py.File("runs/postprocessor_test/samples/results.hdf5",'r')
 group = f["/reweight_data"]
-logl = "reweighted_LogL"
+logl = "reweighted_LogLike2"
 
 do_posterior = False
 

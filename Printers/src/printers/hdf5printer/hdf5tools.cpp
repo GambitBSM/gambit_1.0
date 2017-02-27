@@ -318,6 +318,7 @@ namespace Gambit {
       }
 
       /// Get type of a dataset in a group
+      /// NOTE: Make sure to call closeType when the ID is no longer needed! 
       hid_t getH5DatasetType(hid_t group_id, const std::string& dset_name)
       {
           hid_t dataset_id = openDataset(group_id, dset_name);
@@ -331,6 +332,9 @@ namespace Gambit {
           closeDataset(dataset_id);
           return type_id;
       }
+
+      /// Close hdf5 type ID
+      SIMPLE_CALL(hid_t, closeType,  hid_t, H5Tclose, "close", "type ID", "type ID")
 
       /// Close hdf5 file
       SIMPLE_CALL(hid_t, closeFile,  hid_t, H5Fclose, "close", "file", "file")
@@ -402,6 +406,16 @@ namespace Gambit {
 
       /// Get simple dataspace extent (number of points); input dataspace, output data extent (size)
       SIMPLE_CALL(hssize_t, getSimpleExtentNpoints,  hid_t, H5Sget_simple_extent_npoints, "get", "simple_extent_npoints", "dataspace")
+
+      /// Get dataset name
+      std::string getName(hid_t dset_id)
+      {
+          size_t len = H5Iget_name(dset_id,NULL,0);
+          char buffer[len];
+          H5Iget_name(dset_id,buffer,len+1);
+          std::string n = buffer;
+          return n;
+      }
 
       /// @}
     }
