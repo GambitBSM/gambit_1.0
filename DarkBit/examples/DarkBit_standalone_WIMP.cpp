@@ -437,6 +437,8 @@ int main(int argc, char* argv[])
     SIMPLE_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     PICO_2L_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PICO_2L_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    SuperCDMS_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    SuperCDMS_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
 
     // Calculate direct detection likelihood for LUX 2016, PandaX 2016, LUX 2013, XENON100 2012, SIMPLE and PICO
     LUX_2016_prelim_GetLogLikelihood.resolveDependency(&LUX_2016_prelim_Calc);
@@ -463,6 +465,9 @@ int main(int argc, char* argv[])
     PICO_2L_GetLogLikelihood.resolveDependency(&PICO_2L_Calc);
     PICO_2L_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PICO_2L_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    SuperCDMS_2014_GetLogLikelihood.resolveDependency(&SuperCDMS_2014_Calc);
+    SuperCDMS_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    SuperCDMS_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
 
     // Set generic WIMP mass object
     mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -602,7 +607,7 @@ int main(int argc, char* argv[])
     {
       // Systematic parameter maps scattering
       std::cout << "Producing test maps." << std::endl;
-      double lnL1, lnL2, lnL3, lnL4;
+      double lnL1, lnL2, lnL3, lnL4, lnL5;
       double g, reduced_mass;
       //int mBins = 300;
       //int sBins = 200;
@@ -611,8 +616,9 @@ int main(int argc, char* argv[])
       const double mN = (m_proton + m_neutron) / 2;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
       std::vector<double> s_list;
-      boost::multi_array<double, 2> lnL_array1{boost::extents[mBins][sBins]}, lnL_array2{boost::extents[mBins][sBins]},
-          lnL_array3{boost::extents[mBins][sBins]}, lnL_array4{boost::extents[mBins][sBins]};
+      boost::multi_array<double, 2> lnL_array1{boost::extents[mBins][sBins]},
+          lnL_array2{boost::extents[mBins][sBins]}, lnL_array3{boost::extents[mBins][sBins]},
+          lnL_array4{boost::extents[mBins][sBins]}, lnL_array5{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
       TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
 
@@ -668,26 +674,42 @@ int main(int argc, char* argv[])
           XENON100_2012_GetLogLikelihood.reset_and_calculate();
           lnL4 = XENON100_2012_GetLogLikelihood(0);
 
-          std::cout << "LUX2016 lnL = " << lnL1 << std::endl;
+          // Re-initialize DDCalc with SUPER-CDMS halo parameters
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 231.7); // v_Earth = 244 km/s
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
+          ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          SuperCDMS_2014_Calc.reset_and_calculate();
+          SuperCDMS_2014_GetLogLikelihood.reset_and_calculate();
+          lnL5 = SuperCDMS_2014_GetLogLikelihood(0);
+
+          std::cout << "LUX2016 SI lnL = " << lnL1 << std::endl;
           std::cout << "PandaX lnL = " << lnL2 << std::endl;
           std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
-          std::cout << "XENON100_2012 = " << lnL4 << std::endl;
+          std::cout << "XENON100_2012 lnL = " << lnL4 << std::endl;
+          std::cout << "SuperCDMS_2014 lnL = " << lnL5 << std::endl;
 
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
           lnL_array4[i][j] = lnL4;
+          lnL_array5[i][j] = lnL5;
         }
       }
 
       //dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
-      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
+      dump_array_to_file("LUX_2016_SI_prelim_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
       dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
+      dump_array_to_file("SuperCDMS_2014_table.dat", lnL_array5, m_list, s_list);
 
       s_list = daFunk::logspace(-41., -35., sBins);
-      // Calculate array of sigma_SD,p and lnL values for PICO-60 and SIMPLE 2014, assuming gps=gns
+      // Calculate array of sigma_SD,p and lnL values for PICO-60, LUX 2013 and
+      // SIMPLE 2014, assuming gps=gns
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -735,13 +757,27 @@ int main(int argc, char* argv[])
           SIMPLE_2014_GetLogLikelihood.reset_and_calculate();
           lnL3 = SIMPLE_2014_GetLogLikelihood(0);
 
+          // Re-initialize DDCalc with LUX 2013 halo parameters
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 232.7); // v_Earth = 245 km/s
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
+          ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          LUX_2013_Calc.reset_and_calculate();
+          LUX_2013_GetLogLikelihood.reset_and_calculate();
+          lnL4 = LUX_2013_GetLogLikelihood(0);
+
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
+          lnL_array4[i][j] = lnL4;
 
           std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
           std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
           std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
+          std::cout << "LUX_2013 SD,p lnL = " << lnL4 << std::endl;
         }
       }
 
@@ -756,6 +792,7 @@ int main(int argc, char* argv[])
       dump_array_to_file("PICO_60_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PICO_2L_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("SIMPLE_2014_table.dat", lnL_array3, m_list, s_list);
+      dump_array_to_file("LUX_2013_SDp_table.dat", lnL_array4, m_list, s_list);
     }
   }
 
