@@ -1224,7 +1224,7 @@ namespace Gambit
       {
         tmp_file_list << *it << " ";
       }
-      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<tmp_comb_file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
+      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py --delete_tmp "<<tmp_comb_file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
       logger() << LogTags::printers << "Running HDF5 data combination script..." << std::endl;
       logger() << "> " << command.str() << std::endl;
       logger() << EOM;

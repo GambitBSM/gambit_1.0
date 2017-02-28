@@ -6,6 +6,7 @@ def sigint_handler(signum, frame):
     print 'CTRL+C is blocked while the HDF5Printer combine script runs! Signal received, but ignored.'
 signal.signal(signal.SIGINT, sigint_handler)
 
+from hdf5tools import *
 import math
 import numpy as np
 import h5py
@@ -21,99 +22,27 @@ def usage():
    print ("\n  Usage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
           "\n"
           "  Attempts to combine the data in a group of hdf5 files produced by HDF5Printer in separate processes during a GAMBIT run.\n"
+          "  Use --delete_tmp flag to delete input files upon successful combination.\n"
           "  Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)\n")
    exit(1)  
  
-def get_dset_lengths(d,group,dsets):
-   for itemname in group: 
-      item = group[itemname]
-      if isinstance(item,h5py.Dataset):
-         #print itemname,"is a Dataset"
-         dsets.add((itemname,item.dtype))
-         if itemname in d:
-            d[itemname] += item.shape[0]
-         else:
-            d[itemname] = item.shape[0]
-      if isinstance(item,h5py.Group):
-         #print itemname,"is a Group"
-         pass
-
-def check_lengths(d):
-   length = None
-   for key,value in d.items():
-      if length==None: 
-         length=value
-      elif length!=value:
-         raise ValueError("Length of dataset '{0}' is inconsistent with the others in the target group! (length was {1}; previous dataset had length={2})".format(key,value,length)) 
-   if length==None:
-      # No datasets found; manually set length to zero
-      length = 0
-   return length 
-
-def copy_dset(indset,outdset,nextempty):
-   lengthtocopy = indset.shape[0]
-   chunksleft = math.ceil(lengthtocopy/float(chunksize))
-   remainder = lengthtocopy % chunksize
-   start = 0
-   stride = chunksize
-   while(chunksleft!=0):
-      if(remainder!=0 and chunksleft==1):
-         stride=remainder
-      outdset[nextempty+start:nextempty+start+stride] = indset[start:start+stride]
-      start+=stride
-      chunksleft-=1
-
-# Combine two integers into one integer with unique mapping
-def cantor_pairing(x,y):
-   return (x+y)*(x+y+1)//2 + y
-
-# Check for duplicate entries in datasets
-def check_for_duplicates(fout,group):
-   pointIDs_out         = fout[group]["pointID"]
-   mpiranks_out         = fout[group]["MPIrank"]
-   pointIDs_isvalid_out = np.array(fout[group]["pointID_isvalid"][:],dtype=np.bool)
-   mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
-   mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
-   # convert entries to single values to facilitate fast comparison
-   IDs_out = cantor_pairing( 
-               np.array(pointIDs_out[mask_out],dtype=np.longlong),
-               np.array(mpiranks_out[mask_out],dtype=np.longlong)
-               )
-   ids  = IDs_out
-   pid  = pointIDs_out[mask_out]
-   rank = mpiranks_out[mask_out]
-   error = False
-   for ID,p,r in zip(ids,pid,rank):
-      if(p==1 and r==0):
-         print "   Spotted first entry ({0},{1})".format(r,p)
-      Nmatches = np.sum(ID==ids)
-      if Nmatches>1:
-         print "   Error! ID", ID, "is duplicated {0} times!".format(Nmatches)
-         error = True
-         matches = (p==pid) & (r==rank)
-         Nmatches2 = np.sum(matches)
-         if Nmatches2>1:
-           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(r,p,Nmatches2)
-           dup_locs = np.where(matches)
-           print "      Indices of duplicates are:", dup_locs
-         else:
-           print "   ...No duplicate pid and rank pairs detected! This seems to indicate that something is screwed up in the Cantor pairing"       
-  
-      if error==True:
-         raise ValueError("Duplicates detected in output dataset!")
-
-
 #====Begin "main"=================================
 
 #if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 #
 runchecks=False
+delete_tmp=False
 if len(sys.argv)<3:
       usage()
 
 # I dont think this works right...
 if "--runchecks" in sys.argv: 
   runchecks=True
+  sys.argv.remove("--runchecks")
+
+if "--delete_tmp" in sys.argv: 
+  delete_tmp=True
+  sys.argv.remove("--delete_tmp")
 
 outfname = sys.argv[1]
 group = sys.argv[2]
@@ -160,7 +89,9 @@ for i,fname in enumerate(fnames):
       get_dset_lengths(tmp_RA_dset_metadata,f[RA_group],RA_dsets[i])
       RA_lengths[i] = check_lengths(tmp_RA_dset_metadata)
    else:
-      raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
+      RA_lengths[i] = 0
+      # No RA data in this file, but that's ok, it happens sometimes.
+      #raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
    print "      ...done"
 
 print "sync_lengths: ", sync_lengths
@@ -264,7 +195,7 @@ for fname in fnames:
          if dset_length==None:
             dset_length=item.shape[0]        
          #Do the copy
-         copy_dset(item,gout[itemname],nextempty)
+         copy_dset_whole(item,gout[itemname],nextempty)
    if(dset_length==None):
       print "No sync dsets found! Nothing copied!"
    else:
@@ -276,7 +207,7 @@ for fname in fnames:
 # Copy data from RA datasets into combined dataset
 for fname in fnames:
    fin = files[fname]
-   if "RA_MPIrank" in fin[RA_group]:
+   if RA_group in fin and "RA_MPIrank" in fin[RA_group]:
       print "RA data detected in file:"
       print "   {0}".format(fname)
       print "Copying it to file:"
@@ -474,9 +405,10 @@ if runchecks:
    check_for_duplicates(fout,group) 
 
 # If everything has been successful, delete the temporary files
-print "Deleting temporary HDF5 files..."
-for fname in fnames:
-   print "   {0}".format(fname)
-   os.remove(fname)
+if delete_tmp:
+   print "Deleting temporary HDF5 files..."
+   for fname in fnames:
+      print "   {0}".format(fname)
+      os.remove(fname)
 
 print "Data combination completed"

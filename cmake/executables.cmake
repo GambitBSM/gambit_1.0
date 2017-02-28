@@ -78,3 +78,17 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   endif()
   add_dependencies(standalones ScannerBit_standalone)
 endif()
+
+# Add C++ hdf5 combine tool, if we have HDF5 libraries
+if(HDF5_FOUND)
+  if(EXISTS "${PROJECT_SOURCE_DIR}/Printers/")
+    if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/")
+       add_gambit_executable(hdf5_combine ${HDF5_LIBRARIES}
+                        SOURCES ${PROJECT_SOURCE_DIR}/Printers/examples/hdf5_combine_standalone.cpp
+                                ${GAMBIT_BASIC_COMMON_OBJECTS}
+       )
+       set_target_properties(hdf5_combine PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Printers/scripts")
+    endif()
+  endif()
+endif()
+
