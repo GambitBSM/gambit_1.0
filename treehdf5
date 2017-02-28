@@ -76,7 +76,7 @@ def printcontents(item,prelines):
             printcontents(subitem,prelines+nextpreline)
     except AttributeError:  #item is not a directory; assume it is a dataset and spit out its attributes instead
         sys.stdout.write(prelines+'    dtype: {0:<10} shape: {1:<10}'.format(item.dtype,item.shape))
-        if item.dtype == "uint8": sys.stdout.write(" Sum: {0:<10}".format(chunksum(item))) 
+        #if item.dtype == "uint8": sys.stdout.write(" Sum: {0:<10}".format(chunksum(item))) 
         sys.stdout.write('\n')
         for name,subitem in item.attrs.items():
             print prelines+'    '+name+': '+str(subitem)
