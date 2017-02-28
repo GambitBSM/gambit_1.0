@@ -207,10 +207,15 @@ def plotLUX():
     plt.clf()
     plt.figure(figsize=(5, 4))
 
+    luxsd = loadtxt("./LUX_2013_SDp_table.dat")
     pico60 = loadtxt("./PICO_60_F_table.dat")
     simple = loadtxt("./SIMPLE_2014_table.dat")
     pico2L = loadtxt("./PICO_2L_table.dat")
 
+    s_LUX = luxsd[1:, 0]
+    m_LUX = luxsd[0, 1:]
+    lnL_LUX = -luxsd[1:, 1:]
+    lnL_LUX -= lnL_LUX.min()
     s_PICO60 = pico60[1:, 0]
     m_PICO60 = pico60[0, 1:]
     lnL_PICO60 = -pico60[1:, 1:]
@@ -227,16 +232,21 @@ def plotLUX():
     #simple_lim = genfromtxt("./DarkBit/examples/limits/SIMPLE_2014_SDp.csv",delimiter=",")
     pico60_lim = genfromtxt("./DarkBit/examples/limits/PICO60_SDp_2015Oct16_90CL.csv",delimiter=",")
     pico2L_lim = genfromtxt("./DarkBit/examples/limits/PICO_2L_2016_SDp.txt")
+    luxsd_lim = genfromtxt("./DarkBit/examples/limits/LUX_2013_SD_proton.txt")
+
  
     # I'm not sure about the CL in the SIMPLE analysis!
     #simple_plt = plt.contour(m_SIMPLE, s_SIMPLE, lnL_SIMPLE, levels = [2.71/2], colors='r')
     #simple_plt.collections[0].set_label("SIMPLE")
+    lux_plt = plt.contour(m_LUX, s_LUX, lnL_LUX, levels = [2.71/2], colors='r')
+    lux_plt.collections[0].set_label("LUX")
     pico60_plt = plt.contour(m_PICO60, s_PICO60, lnL_PICO60, levels = [2.71/2], colors='g')
     pico60_plt.collections[0].set_label("PICO 60")
     pico2L_plt = plt.contour(m_PICO2L, s_PICO2L, lnL_PICO2L, levels = [2.71/2], colors='k')
     pico2L_plt.collections[0].set_label("PICO 2L")
 
     #plt.plot(simple_lim[:,0],simple_lim[:,1]*10**-36,ls="--", color='r')
+    plt.plot(luxsd_lim[:,0],luxsd_lim[:,1]*10**-36,ls="--", color='r')
     plt.plot(pico60_lim[:,0],pico60_lim[:,1]*10**-40,ls="--",color='g')
     plt.plot(pico2L_lim[:,0],pico2L_lim[:,1],ls="--",color='k')
 
