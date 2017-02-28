@@ -195,10 +195,12 @@ def plotLUX():
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=3,xmax=2000)
     plt.gca().set_ylim(ymin=10**-46,ymax=10**-42)
+    plt.gca().tick_params(which='both', direction='in',bottom='on',top='on',left='on',right='on')
     
     plt.xlabel(r'$m_\chi$ [GeV]')
     plt.ylabel(r'$\sigma_{{\rm SI},N}$ [${\rm cm^2}$]')
-    plt.legend(loc="best",frameon=False,fontsize='medium')
+    #plt.legend(loc="best",frameon=False,fontsize='medium')
+    plt.legend(bbox_to_anchor=(.5,.5),frameon=False,fontsize='medium')
 
     #plt.show()
     plt.savefig("DarkBit_SI_sigma_m.eps",bbox_inches="tight")
@@ -254,10 +256,12 @@ def plotLUX():
     plt.gca().set_yscale('log')
     plt.gca().set_xlim(xmin=3,xmax=2000)
     plt.gca().set_ylim(ymin=10**-40,ymax=10**-37)
+    plt.gca().tick_params(which='both', direction='in',bottom='on',top='on',left='on',right='on')
 
     plt.xlabel(r'$m_\chi$ [GeV]')
     plt.ylabel(r'$\sigma_{{\rm SD},p}$ [${\rm cm^2}$]')
-    plt.legend(loc='best',frameon=False,fontsize='medium')
+    #plt.legend(loc='best',frameon=False,fontsize='medium')
+    plt.legend(bbox_to_anchor=(.45,.65),frameon=False,fontsize='medium')
 
     #plt.show()
     plt.savefig("DarkBit_SD_sigma_m.eps",bbox_inches="tight")
