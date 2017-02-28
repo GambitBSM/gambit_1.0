@@ -703,7 +703,7 @@ int main(int argc, char* argv[])
       //dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
       dump_array_to_file("LUX_2016_SI_prelim_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
-      dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
+      dump_array_to_file("LUX_2013_SI_table.dat", lnL_array3, m_list, s_list);
       dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
       dump_array_to_file("SuperCDMS_2014_table.dat", lnL_array5, m_list, s_list);
 

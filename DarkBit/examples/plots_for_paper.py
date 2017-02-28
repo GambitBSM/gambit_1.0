@@ -137,10 +137,11 @@ def plotLUX():
 
     # SI scattering
 
-    lux2013 = loadtxt("./LUX_2013_table.dat")
-    lux2016 = loadtxt("./LUX_2016_prelim_table.dat")
+    lux2013 = loadtxt("./LUX_2013_SI_table.dat")
+    lux2016 = loadtxt("./LUX_2016_SI_prelim_table.dat")
     pandaX = loadtxt("./PandaX_2016_table.dat")
     xenon100 = loadtxt("./XENON100_2012_table.dat")
+    cdms = loadtxt("./SuperCDMS_2014_table.dat")
     
     s_LUX2013 = lux2013[1:, 0]
     m_LUX2013 = lux2013[0, 1:]
@@ -158,6 +159,10 @@ def plotLUX():
     m_XENON100 = xenon100[0, 1:]
     lnL_XENON100 = -xenon100[1:, 1:]
     lnL_XENON100 -= lnL_XENON100.min()
+    s_CDMS = cdms[1:, 0]
+    m_CDMS = cdms[0, 1:]
+    lnL_CDMS = -cdms[1:, 1:]
+    lnL_CDMS -= lnL_CDMS.min()
 
     plt.clf()
     plt.figure(figsize=(5, 4))
@@ -167,9 +172,12 @@ def plotLUX():
     lux2016_lim = genfromtxt("./DarkBit/examples/limits/LUX_2016_IDM_332d.txt")
     pandaX_lim = genfromtxt("./DarkBit/examples/limits/PandaX_2016_98d_SI_90CL.csv",delimiter = ",")
     xenon100_lim = genfromtxt("./DarkBit/examples/limits/Xenon100_2012_225d_SI_90CL.csv",delimiter = ",")
+    cdms_lim = genfromtxt("./DarkBit/examples/limits/SuperCDMS_Soudan_LT_90CL.txt")
 
     lux2013_plt = plt.contour(m_LUX2013, s_LUX2013, lnL_LUX2013, levels = [2.71/2], colors='r')
     lux2013_plt.collections[0].set_label("LUX 2013")
+    cdms_plt = plt.contour(m_CDMS, s_CDMS, lnL_CDMS, levels = [2.71/2], colors='k')
+    cdms_plt.collections[0].set_label("SuperCDMS")
     lux2016_plt = plt.contour(m_LUX2016, s_LUX2016, lnL_LUX2016, levels = [2.71/2], colors='g')
     lux2016_plt.collections[0].set_label("LUX 2016")
     pandaX_plt = plt.contour(m_PandaX, s_PandaX, lnL_PandaX, levels = [2.71/2], colors='b')
@@ -178,6 +186,7 @@ def plotLUX():
     #xenon100_plt.collections[0].set_label("XENON100 2012")
 
     plt.plot(lux2013_lim[:,0],lux2013_lim[:,1]*10**-44,ls="--", color='r')
+    plt.plot(cdms_lim[:,0],cdms_lim[:,1],ls="--",color='k')
     plt.plot(lux2016_lim[:,0],lux2016_lim[:,1]*10**-45,ls="--", color='g')
     plt.plot(pandaX_lim[:,0],pandaX_lim[:,1]*10**-44,ls="--", color='b')
     #plt.plot(xenon100_lim[:,0],xenon100_lim[:,1]*10**-44,ls="--", color='k')
