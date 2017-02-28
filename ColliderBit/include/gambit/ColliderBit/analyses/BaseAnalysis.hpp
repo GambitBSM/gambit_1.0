@@ -5,38 +5,68 @@
 ///
 ///  The BaseAnalysis class and SignalRegionData struct.
 
-#include <string>
-#include <sstream>
-#include <vector>
-
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 #include "gambit/ColliderBit/Utils.hpp"
 
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/Event.h"
 
+#include <string>
+#include <sstream>
+#include <vector>
+#include <cmath>
+#include <cfloat>
+#include <limits>
+#include <memory>
+#include <iomanip>
+#include <algorithm>
+
 namespace Gambit {
   namespace ColliderBit {
 
+
+    static const double GeV = 1, MeV = 1e-3, TeV = 1e3;
+
+
     /// A simple container for the result of one signal region from one analysis.
     struct SignalRegionData {
-      /// @name Analysis and signal region specification:
+
+      /// Constructor with {n,nsys} pair args
+      SignalRegionData(const std::string& name, const std::string& sr,
+                       double nobs, std::pair<double,double> nsig, std::pair<double,double> nbkg,
+                       double nsigatlumi=-1)
+        : SignalRegionData(name, sr, nobs, nsig.first, nbkg.first,
+                           nsig.second, nbkg.second, nsigatlumi)
+      {    }
+
+      /// Constructor with separate n & nsys args
+      SignalRegionData(const std::string& name, const std::string& sr,
+                       double nobs, double nsig, double nbkg,
+                       double syssig, double sysbkg, double nsigatlumi=-1)
+        : analysis_name(name), sr_label(sr),
+          n_observed(nobs), n_signal(nsig), n_signal_at_lumi(nsigatlumi), n_background(nbkg),
+          signal_sys(syssig), background_sys(sysbkg)
+      {    }
+
+      /// Default constructor
+      SignalRegionData() {}
+
+      /// @name Analysis and signal region specification
       //@{
-        std::string analysis_name; ///< The name of the analysis common to all signal regions.
-        std::string sr_label; ///< A label for the particular signal region of the analysis.
+      std::string analysis_name; ///< The name of the analysis common to all signal regions
+      std::string sr_label; ///< A label for the particular signal region of the analysis
       //@}
 
-      /// @name Signal region data:
+      /// @name Signal region data
       //@{
-        double n_observed; ///< The number of events passing selection for this signal region,
-                           ///< as reported by the experiment.
-        double n_signal; ///< The number of simulated model events passing selection for this signal region.
-        double n_signal_at_lumi; ///< n_signal, scaled to the experimental luminosity.
-        double n_background; ///< The number of standard model events expected to pass the selection for this signal
-                             ///< region, as reported by the experiment.
-        double signal_sys; ///< The absolute systematic error of n_signal.
-        double background_sys; ///< The absolute systematic error of n_background.
+      double n_observed = 0; ///< The number of events passing selection for this signal region as reported by the experiment
+      double n_signal = 0; ///< The number of simulated model events passing selection for this signal region
+      double n_signal_at_lumi = -1; ///< n_signal, scaled to the experimental luminosity
+      double n_background = 0; ///< The number of standard model events expected to pass the selection for this signal region, as reported by the experiment.
+      double signal_sys = 0; ///< The absolute systematic error of n_signal
+      double background_sys = 0; ///< The absolute systematic error of n_background
       //@}
+
     };
 
 

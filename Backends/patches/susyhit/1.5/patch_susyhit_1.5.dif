@@ -1,6 +1,6 @@
-diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
---- susyhit-1.5.pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ ../installed/susyhit/1.5/hdecay.f	2017-01-24 20:30:34.129620237 +0000
+diff -rupN susyhit_1.5_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
+--- susyhit_1.5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/hdecay.f	2017-02-22 18:45:30.380116023 +0000
 @@ -1,7 +1,7 @@
  C ==================================================================
  C ================= PROGRAM HDECAY: COMMENTS =======================
@@ -2081,7 +2081,31 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        ENDIF
        RETURN
        END
-@@ -8200,7 +8208,7 @@ C--REAL DILOGARITHM (SPENCE-FUNCTION)
+@@ -8180,6 +8188,23 @@ C--YY = ARRAY OF 4 DISCRETE FUNCTION-VAL
+       X1=DLOG(XX(2))
+       X2=DLOG(XX(3))
+       X3=DLOG(XX(4))
++C--REVERT TO LINEAR INTERPOLATION IF ANY NEGATIVE VALUES (PS Added to avoid NaN widths for H+->tb 22/2/2017)
++      IF (ANY(YY .LT. 0)) THEN
++        IF (YY(2) .GT. 0) THEN
++          I = 2
++        ELSE
++          IF (YY(1) .LT. 0.) STOP 'Too many negative YYs in FINT_HDEC'
++          I = 1
++        ENDIF
++        IF (YY(3) .GT. 0) THEN
++          J = 3
++        ELSE
++          IF (YY(4) .LT. 0.) STOP 'Too many negative YYs in FINT_HDEC'
++          J = 4
++        ENDIF
++        FINT_HDEC = YY(I)+(Z-XX(I))/(XX(J)-XX(I))*(YY(J)-YY(I))
++        RETURN
++      ENDIF
+       Y0=DLOG(YY(1))
+       Y1=DLOG(YY(2))
+       Y2=DLOG(YY(3))
+@@ -8200,7 +8225,7 @@ C--REAL DILOGARITHM (SPENCE-FUNCTION)
        SP_HDEC = DREAL(LI2_HDEC(CX))
        RETURN
        END
@@ -2090,7 +2114,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        COMPLEX*16 FUNCTION LI2_HDEC(X)
  C--COMPLEX DILOGARITHM (SPENCE-FUNCTION)
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-@@ -8242,7 +8250,7 @@ C--COMPLEX DILOGARITHM (SPENCE-FUNCTION)
+@@ -8242,7 +8267,7 @@ C--COMPLEX DILOGARITHM (SPENCE-FUNCTION)
          RETURN
        ENDIF
        END
@@ -2099,7 +2123,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        COMPLEX*16 FUNCTION CLI2_HDEC(X)
  C--TAYLOR-EXPANSION FOR COMPLEX DILOGARITHM (SPENCE-FUNCTION)
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-@@ -8258,7 +8266,7 @@ C--TAYLOR-EXPANSION FOR COMPLEX DILOGARI
+@@ -8258,7 +8283,7 @@ C--TAYLOR-EXPANSION FOR COMPLEX DILOGARI
        CLI2_HDEC=Z**2*CLI2_HDEC+Z
        RETURN
        END
@@ -2108,7 +2132,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        DOUBLE PRECISION FUNCTION FACTRL_HDEC(N)
  C--DOUBLE PRECISION VERSION OF FACTORIAL
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-@@ -8269,7 +8277,7 @@ C--DOUBLE PRECISION VERSION OF FACTORIAL
+@@ -8269,7 +8294,7 @@ C--DOUBLE PRECISION VERSION OF FACTORIAL
  999   CONTINUE
        RETURN
        END
@@ -2117,7 +2141,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        SUBROUTINE BERNINI_HDEC(N)
  C--INITIALIZATION OF COEFFICIENTS FOR POLYLOGARITHMS
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-@@ -8277,10 +8285,10 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
+@@ -8277,10 +8302,10 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
        COMMON/BERNOULLI_HDEC/B2(18),B12(18),B3(18)
        COMMON/CONST_HDEC/ZETA2,ZETA3
        COMMON/POLY_HDEC/NBER
@@ -2130,7 +2154,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        B(1)=-1.D0/2.D0
        B(2)=1.D0/6.D0
        B(3)=0.D0
-@@ -8301,7 +8309,7 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
+@@ -8301,7 +8326,7 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
        B(18)=43867.D0/798.D0
        ZETA2=PI**2/6.D0
        ZETA3=1.202056903159594D0
@@ -2139,7 +2163,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        DO 995 I=1,18
          B2(I)=B(I)/FACTRL_HDEC(I+1)
          B12(I)=DFLOAT(I+1)/FACTRL_HDEC(I+2)*B(I)/2.D0
-@@ -8314,7 +8322,7 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
+@@ -8314,7 +8339,7 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
          B3(I)=B3(I)+PB(J+1)*PB(I-J+1)/FACTRL_HDEC(I-J)/FACTRL_HDEC(J+1)
       .                                            /DFLOAT(I+1)
  996   CONTINUE
@@ -2148,7 +2172,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        RETURN
        END
  
-@@ -8485,7 +8493,7 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@ -8485,7 +8510,7 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  c     write(6,*)cof1,cof2+cof3
        RETURN
        END
@@ -2157,7 +2181,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
        SUBROUTINE BOTSUSY_HDEC(GLB,GHB,GAB,XGLB,XGHB,XGAB,SCALE,IL)
-@@ -8497,7 +8505,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -8497,7 +8522,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        XGAB = GAB*(1+DGAB)
        RETURN
        END
@@ -2166,7 +2190,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        SUBROUTINE DMBAPP_HDEC(ICASE,DGLB,DGHB,DGAB,SCALE,IL)
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        DIMENSION AMCHAR(2),AMNEUT(4),XMNEUT(4),
-@@ -8515,7 +8523,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -8515,7 +8540,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       .            GLPM,GHPM,B,A
        COMMON/BREAK_HDEC/AMEL,AMER,AMSQ,AMUR,AMDR,AL,AU,AD,AMU,AM2
        COMMON/SMASS_HDEC/AMNEUT,XMNEUT,AMCHAR,XMST,XMSB,AMSL,
@@ -2175,7 +2199,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        PI = 4*DATAN(1.D0)
        V  = 1/DSQRT(2*DSQRT(2D0)*GF)
        TANB = DTAN(B)
-@@ -8543,7 +8551,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -8543,7 +8568,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       .                  AMSU(1),AMSU(2),AMSD(1),AMSD(2))
         FQCD = 1+ASH/PI*CQCD
        ENDIF
@@ -2184,7 +2208,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        ASH = ALPHAS_HDEC(SCALQCD,2)
        IF(ICASE.EQ.0)THEN
         DELTAMB = 2*ASH/3/PI*AMG*AMU*TANB*T_HDEC(SBOT1,SBOT2,AMG)*FQCD
-@@ -8599,50 +8607,50 @@ c     write(6,*)'delta_b: ',deltamb, ash
+@@ -8599,50 +8624,50 @@ c     write(6,*)'delta_b: ',deltamb, ash
  
        RETURN
        END
@@ -2257,7 +2281,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  	    IF( DREAL(R).GT.0D0 ) THEN
  		ETAS_HDEC = DCMPLX(0D0,0D0)
  	    ELSE
-@@ -8654,7 +8662,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -8654,7 +8679,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       *					  )/4D0
  	    ENDIF
  	ENDIF
@@ -2266,7 +2290,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  
  ***********************************************************************
          FUNCTION SQE_HDEC(A,B,C)
-@@ -8663,7 +8671,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -8663,7 +8688,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  *---------------------------------------------------------------------*
  *       13.1.92  SD						      *
  ***********************************************************************
@@ -2275,7 +2299,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          COMPLEX*16 A,B,C,SQE_HDEC,X1,X2
  
  	X1=(-B+SQRT(B**2-4D0*A*C))/2D0/A
-@@ -8675,7 +8683,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -8675,7 +8700,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  	   SQE_HDEC=X2
  	ENDIF
  
@@ -2284,7 +2308,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  
  ************************************************************************
          FUNCTION D04_HDEC(P1,P2,P3,P4,P12,P23,M1,M2,M3,M4)
-@@ -9189,45 +9197,45 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+@@ -9189,45 +9214,45 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
  c ---------------------------------------------------------------------
        real*8 function B02_HDEC(s,m1,m2,mu2)
  
@@ -2345,7 +2369,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  
        return
        end
-@@ -9236,14 +9244,14 @@ c --------------------------------------
+@@ -9236,14 +9261,14 @@ c --------------------------------------
  
  c ---------------------------------------------------------------------
        real*8 function BP02_HDEC(s,m1,m2,mu2)
@@ -2365,7 +2389,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  
        zkappa=cdsqrt(dcmplx(s**2+m12**2+m22**2
       &                    -2.D0*(s*m12+s*m22+m12*m22)))
-@@ -9252,20 +9260,20 @@ c --------------------------------------
+@@ -9252,20 +9277,20 @@ c --------------------------------------
           if (m12.eq.m22) then
              BP02_HDEC=1.D0/(6.D0*m12)
           else
@@ -2393,7 +2417,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  
        return
        end
-@@ -9398,7 +9406,7 @@ C     RESPECTIVELY,  AND MU IS THE SUPER
+@@ -9398,7 +9423,7 @@ C     RESPECTIVELY,  AND MU IS THE SUPER
  C     HIGGS MASS PARAMETER. WE USE THE  CONVENTIONS FROM
  C     THE PHYSICS REPORT OF HABER AND KANE: LEFT RIGHT
  C     STOP MIXING TERM PROPORTIONAL TO (AU - MU/TANB).
@@ -2402,7 +2426,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  C     WE USE AS INPUT TANB DEFINED AT THE SCALE MTOP.
  
  C     OUTPUT: MH,HM,MCH, SA = SIN(ALPHA), CA= COS(ALPHA), TANBA
-@@ -9412,7 +9420,7 @@ c
+@@ -9412,7 +9437,7 @@ c
  c       Program based on the work by M. Carena, M. Quiros
  c       and C.E.M. Wagner, "Effective potential methods and
  c       the Higgs mass spectrum in the MSSM", Nucl. Phys.
@@ -2411,7 +2435,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  c
  cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
  
-@@ -9428,7 +9436,7 @@ cccccccccccccccccccccccccccccccccccccccc
+@@ -9428,7 +9453,7 @@ cccccccccccccccccccccccccccccccccccccccc
        MCHI = MCHI0
        TANBA = TANB
        TANBT = TANB
@@ -2420,7 +2444,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        PI = 4*DATAN(1D0)
        MZ = AMZ
        MW = AMW
-@@ -9526,10 +9534,10 @@ cccccccccccccccccccccccccccccccccccccccc
+@@ -9526,10 +9551,10 @@ cccccccccccccccccccccccccccccccccccccccc
        IF(MQ.GT.MD) DLAMBDA3 = -1./32./PI**2*G1**2*HD**2*TPD
        IF(MQ.LT.MD.OR.MQ.EQ.MD) DLAMBDA3 = 3./64./PI**2*HD**2*
       *(G2**2-G1**2/3.)*TPD
@@ -2434,7 +2458,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
       * 3./64./PI**2*HU**2*(G2**2+G1**2/3.)*TP
  
        IF(MQ.LT.MUR) DLAMBDA4 = -3./32./PI**2*G2**2*HU**2*TP
-@@ -9538,28 +9546,28 @@ cccccccccccccccccccccccccccccccccccccccc
+@@ -9538,28 +9563,28 @@ cccccccccccccccccccccccccccccccccccccccc
  C
        LAMBDA1 = ((G1**2 + G2**2)/4.)*
       *(1.-3.*HD**2*(TPD + TDPD)/8./PI**2)
@@ -2474,7 +2498,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  	LAMBDA5 = 0.
  	LAMBDA6 = 0.
  	LAMBDA7 = 0.
-@@ -9590,7 +9598,7 @@ C--EXTENSION OF CARENA ET AL.: TRAFO MAS
+@@ -9590,7 +9615,7 @@ C--EXTENSION OF CARENA ET AL.: TRAFO MAS
          LAMBDA4 = LAMBDA4+DLAM4
  C--END OF EXTENSION
   3790	CONTINUE
@@ -2483,7 +2507,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  
  
  C--EXTENSION OF CARENA ET AL.: TRAFO MASS MATRIX -> LAMBDA_I
-@@ -9604,7 +9612,7 @@ C--EXTENSION OF CARENA ET AL.: TRAFO MAS
+@@ -9604,7 +9629,7 @@ C--EXTENSION OF CARENA ET AL.: TRAFO MAS
        LAMBDA5 = LAMBDA5+DLAM5
        LAMBDA6 = LAMBDA6+DLAM6
        LAMBDA7 = LAMBDA7+DLAM7
@@ -2492,7 +2516,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        M2(1,1) = 2.*V**2*(LAMBDA1*COSB**2+2.*LAMBDA6*
       *COSB*SINB + LAMBDA5*SINB**2) + MA**2*SINB**2
        M2(2,2) = 2.*V**2*(LAMBDA5*COSB**2+2.*LAMBDA7*
-@@ -9629,16 +9637,16 @@ C !!!!!!!!!!!!!!!!!!!
+@@ -9629,16 +9654,16 @@ C !!!!!!!!!!!!!!!!!!!
        MCH2=MA**2+(LAMBDA5-LAMBDA4)*V**2
  C !!!!!!!!!!!!!!!!!!!
        MCH=DSQRT(MCH2)
@@ -2512,7 +2536,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        SQBMA = (SINB*CA - COSB*SA)**2
  
  5555  RETURN
-@@ -9660,7 +9668,7 @@ C
+@@ -9660,7 +9685,7 @@ C
          MD2   = MD**2
          TANBA = TANB
          SINBA = TANBA/DSQRT(TANBA**2+1.D0)
@@ -2521,7 +2545,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          SINB = TANB/DSQRT(TANB**2+1.D0)
          COSB = SINB/TANB
  
-@@ -9679,7 +9687,7 @@ C
+@@ -9679,7 +9704,7 @@ C
        G1 = DSQRT(ALPHA1*4.*PI)
        G2 = DSQRT(ALPHA2*4.*PI)
        G3 = DSQRT(ALPHA3*4.*PI)
@@ -2530,7 +2554,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          IF(MQ.GT.MUR) MST = MQ
          IF(MUR.GT.MQ.OR.MUR.EQ.MQ) MST = MUR
          MSUSYT = DSQRT(MST**2  + MTOP**2)
-@@ -9753,6 +9761,18 @@ c     * /(1.+deltamt)**4.
+@@ -9753,6 +9778,18 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
          MBOT2 = DSQRT(MBOT4)
@@ -2549,7 +2573,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          mb = mb/(1+deltamb)
  
          VH1(1,1) = 1./TANBST
-@@ -9824,11 +9844,11 @@ C***************************************
+@@ -9824,11 +9861,11 @@ C***************************************
       *  + MTOP4/(SINBT**4)*(AT**2/
       *    (STOP1**2-STOP2**2))**2*G(STOP12,STOP22)
       *  + MZ**2*(-2*MTOP2*F1T+MTOP2*AT**2*F2T)/SINBT**2
@@ -2563,7 +2587,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          DLAM3T = MTOP4/(SINBT**4)*
       *    MU**2/(STOP1**2-STOP2**2)*(LOG(STOP1**2/STOP2**2)/2.D0
       *  + AT**2/(STOP1**2-STOP2**2)*G(STOP12,STOP22))
-@@ -9972,7 +9992,7 @@ c       write(*,*) 'xyz',x,y,z
+@@ -9972,7 +10009,7 @@ c       write(*,*) 'xyz',x,y,z
          MD2   = MD**2
          TANBA = TANB
          SINBA = TANBA/DSQRT(TANBA**2+1.D0)
@@ -2572,7 +2596,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          SINB = TANB/DSQRT(TANB**2+1.D0)
          COSB = SINB/TANB
  
-@@ -9992,7 +10012,7 @@ c       write(*,*) 'xyz',x,y,z
+@@ -9992,7 +10029,7 @@ c       write(*,*) 'xyz',x,y,z
        G1 = DSQRT(ALPHA1*4.*PI)
        G2 = DSQRT(ALPHA2*4.*PI)
        G3 = DSQRT(ALPHA3*4.*PI)
@@ -2581,7 +2605,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
          IF(MQ.GT.MUR) MST = MQ
          IF(MUR.GT.MQ.OR.MUR.EQ.MQ) MST = MUR
          MSUSYT = DSQRT(MST**2  + MTOP**2)
-@@ -10051,26 +10071,37 @@ c     * /(1.+deltamt)**4.
+@@ -10051,26 +10088,37 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
  	MBOT2 = DSQRT(MBOT4)
@@ -2625,7 +2649,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
       *   - 1./8.*(G2**2+G1**2)*(H1B**2-H2B**2)
       *   - (((G1**2/3.-G2**2)/4.*(H1B**2-H2B**2) +
       *   MQ2 - MD2)**2*0.25 + MBOT2*(AB-MU*TANBSB)**2)**.5
-@@ -10124,26 +10155,37 @@ c     * /(1.+deltamt)**4.
+@@ -10124,26 +10172,37 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
  	MBOT2 = DSQRT(MBOT4)
@@ -2669,7 +2693,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
       *   - 1./8.*(G2**2+G1**2)*(H1B**2-H2B**2)
       *   - (((G1**2/3.-G2**2)/4.*(H1B**2-H2B**2) +
       *   MQ2 - MD2)**2*0.25 + MBOT2*(AB-MU*TANBSB)**2)**.5
-@@ -10369,9 +10411,9 @@ C>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@ -10369,9 +10428,9 @@ C>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  
  c change susyhit
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -2681,7 +2705,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
  c program package SUSYHIT.
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        double precision function t134p_hdec(am1,am2,mu)
-@@ -10404,9 +10446,9 @@ c cccccccccccccccccccccccccccccccccccccc
+@@ -10404,9 +10463,9 @@ c cccccccccccccccccccccccccccccccccccccc
        t134p_hdec = dummy/mu**2
        return
        end
@@ -2693,7 +2717,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        double precision function t134_hdec(am1,am2,am3,mu)
        implicit double precision (a-h,o-z)
        double precision m1,m2,m3,mu,ll1,ll2,ll3
-@@ -10441,9 +10483,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -10441,9 +10500,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        t134_hdec = dummy/mu**2
        return
        end
@@ -2705,7 +2729,7 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        double precision function
       .       felw_hdec(scale,amu,amg,amsb1,amsb2,amst1,amst2,amt)
        implicit double precision (b-h,o-q,s-z), complex*16 (a,r)
-@@ -10816,9 +10858,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -10816,9 +10875,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
        return
        end
@@ -2717,17 +2741,17 @@ diff -rupN susyhit-1.5.pristine/hdecay.f ../installed/susyhit/1.5/hdecay.f
        double precision function fqcd_hdec(scale,amt,amg,amsb1,amsb2,
       .                           amst1,amst2,amsu1,amsu2,amsd1,amsd2)
        implicit double precision (b-h,o-q,s-z), complex*16 (a,r)
-@@ -11353,5 +11395,5 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@@ -11353,5 +11412,5 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
        return
        end
 - 
 +
  c end change susyhit
-Binary files susyhit-1.5.pristine/libsusyhit.so and ../installed/susyhit/1.5/libsusyhit.so differ
-diff -rupN susyhit-1.5.pristine/lightst3bod.f ../installed/susyhit/1.5/lightst3bod.f
---- susyhit-1.5.pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ ../installed/susyhit/1.5/lightst3bod.f	2017-01-24 20:27:38.648714268 +0000
+Binary files susyhit_1.5_pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
+diff -rupN susyhit_1.5_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
+--- susyhit_1.5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst3bod.f	2017-02-22 17:36:33.632692012 +0000
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -2782,9 +2806,9 @@ diff -rupN susyhit-1.5.pristine/lightst3bod.f ../installed/susyhit/1.5/lightst3b
        COMMON/SD_coupewsb/alsew,g2ew,g1ew
        COMMON/SD_mwmzpole/amwp,amzp
  c---- ramona cahnged 2/2/15
-diff -rupN susyhit-1.5.pristine/lightst4bod.f ../installed/susyhit/1.5/lightst4bod.f
---- susyhit-1.5.pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ ../installed/susyhit/1.5/lightst4bod.f	2017-01-24 20:27:38.652712268 +0000
+diff -rupN susyhit_1.5_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
+--- susyhit_1.5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst4bod.f	2017-02-22 17:36:33.636692011 +0000
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -3019,9 +3043,9 @@ diff -rupN susyhit-1.5.pristine/lightst4bod.f ../installed/susyhit/1.5/lightst4b
        COMMON/SD_hmass/ama,aml,amh,amch,amar
  c----- ramona added 4/11/14
        COMMON/SD_mwmzpole/amwp,amzp
-diff -rupN susyhit-1.5.pristine/makefile ../installed/susyhit/1.5/makefile
---- susyhit-1.5.pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ ../installed/susyhit/1.5/makefile	2017-01-24 20:27:38.652712268 +0000
+diff -rupN susyhit_1.5_pristine/makefile installed/susyhit/1.5/makefile
+--- susyhit_1.5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/makefile	2017-02-22 17:36:33.636692011 +0000
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -3046,9 +3070,9 @@ diff -rupN susyhit-1.5.pristine/makefile ../installed/susyhit/1.5/makefile
 -	rm -f *.o
 \ No newline at end of file
 +	rm -f *.o
-diff -rupN susyhit-1.5.pristine/sdecay.f ../installed/susyhit/1.5/sdecay.f
---- susyhit-1.5.pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ ../installed/susyhit/1.5/sdecay.f	2017-01-24 20:27:38.664706268 +0000
+diff -rupN susyhit_1.5_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
+--- susyhit_1.5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/sdecay.f	2017-02-22 17:36:33.640692011 +0000
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
