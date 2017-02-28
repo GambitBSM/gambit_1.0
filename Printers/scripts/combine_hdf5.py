@@ -195,7 +195,7 @@ for fname in fnames:
          if dset_length==None:
             dset_length=item.shape[0]        
          #Do the copy
-         copy_dset(item,gout[itemname],nextempty)
+         copy_dset_whole(item,gout[itemname],nextempty)
    if(dset_length==None):
       print "No sync dsets found! Nothing copied!"
    else:
