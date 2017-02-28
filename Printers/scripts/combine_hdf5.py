@@ -22,6 +22,7 @@ def usage():
    print ("\n  Usage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
           "\n"
           "  Attempts to combine the data in a group of hdf5 files produced by HDF5Printer in separate processes during a GAMBIT run.\n"
+          "  Use --delete_tmp flag to delete input files upon successful combination.\n"
           "  Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)\n")
    exit(1)  
  
@@ -30,12 +31,18 @@ def usage():
 #if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 #
 runchecks=False
+delete_tmp=False
 if len(sys.argv)<3:
       usage()
 
 # I dont think this works right...
 if "--runchecks" in sys.argv: 
   runchecks=True
+  sys.argv.remove("--runchecks")
+
+if "--delete_tmp" in sys.argv: 
+  delete_tmp=True
+  sys.argv.remove("--delete_tmp")
 
 outfname = sys.argv[1]
 group = sys.argv[2]
@@ -82,7 +89,9 @@ for i,fname in enumerate(fnames):
       get_dset_lengths(tmp_RA_dset_metadata,f[RA_group],RA_dsets[i])
       RA_lengths[i] = check_lengths(tmp_RA_dset_metadata)
    else:
-      raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
+      RA_lengths[i] = 0
+      # No RA data in this file, but that's ok, it happens sometimes.
+      #raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
    print "      ...done"
 
 print "sync_lengths: ", sync_lengths
@@ -198,7 +207,7 @@ for fname in fnames:
 # Copy data from RA datasets into combined dataset
 for fname in fnames:
    fin = files[fname]
-   if "RA_MPIrank" in fin[RA_group]:
+   if RA_group in fin and "RA_MPIrank" in fin[RA_group]:
       print "RA data detected in file:"
       print "   {0}".format(fname)
       print "Copying it to file:"
@@ -396,9 +405,10 @@ if runchecks:
    check_for_duplicates(fout,group) 
 
 # If everything has been successful, delete the temporary files
-print "Deleting temporary HDF5 files..."
-for fname in fnames:
-   print "   {0}".format(fname)
-   os.remove(fname)
+if delete_tmp:
+   print "Deleting temporary HDF5 files..."
+   for fname in fnames:
+      print "   {0}".format(fname)
+      os.remove(fname)
 
 print "Data combination completed"
