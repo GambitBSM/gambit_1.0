@@ -209,6 +209,8 @@ namespace Gambit {
           err << "Did not recognise retrieved Printer type for data label '"<<label<<"'! This may indicate a bug in the Printer system, please report it."; 
           printer_error().raise(LOCAL_INFO,err.str());         
         }
+        /// Release HDF5 type ID number
+        HDF5::closeType(datatype_id);
         return typeID;
      }
 
