@@ -22,13 +22,13 @@ END=$(( ${START} + ${STEP} - 1 ))
 FILES=$(echo $(for (( i=${START} ; i<=${END} ; i++ )); do echo "${IN_NAME_BASE}_${i}"; done))
 
 echo
-echo "${PREFIX} : Will combine the following files: ${FILES}"
+echo "${PREFIX} Will combine the following files: ${FILES}"
 echo
 
 # Run combine_hdf5.py
 python ${COMBINE_HDF5_PATH} ${OUT_NAME_BASE}_${ID} /${MODEL} ${FILES}
 
 echo 
-echo "${PREFIX} : Done"
+echo "${PREFIX} Done"
 echo
 
