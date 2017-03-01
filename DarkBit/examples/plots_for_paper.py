@@ -279,6 +279,7 @@ def plotMSSM7():
 def spokePlots():
 
     import matplotlib
+    matplotlib.style.use('classic')
     matplotlib.rcParams['mathtext.fontset'] = 'stix'
     matplotlib.rcParams['font.family'] = 'STIXGeneral'
     matplotlib.rcParams['font.size'] = 15
@@ -311,62 +312,62 @@ def spokePlots():
     CMSSM1_2 = genfromtxt("runs/CMSSM_spoke/samples/M0.txt_0")
     CMSSM1_2_param = r'$M_0$'
 
-    mwimp_SingletDM1_1 = SingletDM1_1[:,51]
-    mwimp_SingletDM1_2 = SingletDM1_2[:,51]
-    sigma_SI_p_SingletDM1_1 = SingletDM1_1[:,53]
-    sigma_SI_p_SingletDM1_2 = SingletDM1_2[:,53]
-    sigma_SD_p_SingletDM1_1 = SingletDM1_1[:,55]
-    sigma_SD_p_SingletDM1_2 = SingletDM1_2[:,55]
-    sigmav_SingletDM1_1 = SingletDM1_1[:,52]
-    sigmav_SingletDM1_2 = SingletDM1_2[:,52]
-    LUXlnL_SingletDM1_1 = SingletDM1_1[:,58]
-    LUXlnL_SingletDM1_2 = SingletDM1_2[:,58]
-    FermiDwarflnL_SingletDM1_1 = SingletDM1_1[:,49]
-    FermiDwarflnL_SingletDM1_2 = SingletDM1_2[:,49]
-    IceCubelnL_SingletDM1_1 = SingletDM1_1[:,59]
-    IceCubelnL_SingletDM1_2 = SingletDM1_2[:,59]
-    RD_oh2_SingletDM1_1 = SingletDM1_1[:,48]
-    RD_oh2_SingletDM1_2 = SingletDM1_2[:,48]
-    lnL_oh2_SingletDM1_1 = SingletDM1_1[:,50]
-    lnL_oh2_SingletDM1_2 = SingletDM1_2[:,50]
+    mwimp_SingletDM1_1 = SingletDM1_1[:,50]
+    mwimp_SingletDM1_2 = SingletDM1_2[:,50]
+    sigma_SI_p_SingletDM1_1 = SingletDM1_1[:,52]
+    sigma_SI_p_SingletDM1_2 = SingletDM1_2[:,52]
+    sigma_SD_p_SingletDM1_1 = SingletDM1_1[:,54]
+    sigma_SD_p_SingletDM1_2 = SingletDM1_2[:,54]
+    sigmav_SingletDM1_1 = SingletDM1_1[:,51]
+    sigmav_SingletDM1_2 = SingletDM1_2[:,51]
+    LUXlnL_SingletDM1_1 = SingletDM1_1[:,57]
+    LUXlnL_SingletDM1_2 = SingletDM1_2[:,57]
+    FermiDwarflnL_SingletDM1_1 = SingletDM1_1[:,48]
+    FermiDwarflnL_SingletDM1_2 = SingletDM1_2[:,48]
+    IceCubelnL_SingletDM1_1 = SingletDM1_1[:,58]
+    IceCubelnL_SingletDM1_2 = SingletDM1_2[:,58]
+    RD_oh2_SingletDM1_1 = SingletDM1_1[:,47]
+    RD_oh2_SingletDM1_2 = SingletDM1_2[:,47]
+    lnL_oh2_SingletDM1_1 = SingletDM1_1[:,49]
+    lnL_oh2_SingletDM1_2 = SingletDM1_2[:,49]
 
-    mwimp_MSSM1_1 = MSSM1_1[:,57]
-    mwimp_MSSM1_2 = MSSM1_2[:,57]
-    sigma_SI_p_MSSM1_1 = MSSM1_1[:,59]
-    sigma_SI_p_MSSM1_2 = MSSM1_2[:,59]
-    sigma_SD_p_MSSM1_1 = MSSM1_1[:,60]
-    sigma_SD_p_MSSM1_2 = MSSM1_2[:,60]
-    sigmav_MSSM1_1 = MSSM1_1[:,58]
-    sigmav_MSSM1_2 = MSSM1_2[:,58]
-    LUXlnL_MSSM1_1 = MSSM1_1[:,61]
-    LUXlnL_MSSM1_2 = MSSM1_2[:,61]
-    FermiDwarflnL_MSSM1_1 = MSSM1_1[:,55]
-    FermiDwarflnL_MSSM1_2 = MSSM1_2[:,55]
-    IceCubelnL_MSSM1_1 = MSSM1_1[:,62]
-    IceCubelnL_MSSM1_2 = MSSM1_2[:,62]
-    RD_oh2_MSSM1_1 = MSSM1_1[:,54]
-    RD_oh2_MSSM1_2 = MSSM1_2[:,54]
-    lnL_oh2_MSSM1_1 = MSSM1_1[:,56]
-    lnL_oh2_MSSM1_2 = MSSM1_2[:,56]        
+    mwimp_MSSM1_1 = MSSM1_1[:,56]
+    mwimp_MSSM1_2 = MSSM1_2[:,56]
+    sigma_SI_p_MSSM1_1 = MSSM1_1[:,58]
+    sigma_SI_p_MSSM1_2 = MSSM1_2[:,58]
+    sigma_SD_p_MSSM1_1 = MSSM1_1[:,59]
+    sigma_SD_p_MSSM1_2 = MSSM1_2[:,59]
+    sigmav_MSSM1_1 = MSSM1_1[:,57]
+    sigmav_MSSM1_2 = MSSM1_2[:,57]
+    LUXlnL_MSSM1_1 = MSSM1_1[:,60]
+    LUXlnL_MSSM1_2 = MSSM1_2[:,60]
+    FermiDwarflnL_MSSM1_1 = MSSM1_1[:,54]
+    FermiDwarflnL_MSSM1_2 = MSSM1_2[:,54]
+    IceCubelnL_MSSM1_1 = MSSM1_1[:,61]
+    IceCubelnL_MSSM1_2 = MSSM1_2[:,61]
+    RD_oh2_MSSM1_1 = MSSM1_1[:,53]
+    RD_oh2_MSSM1_2 = MSSM1_2[:,53]
+    lnL_oh2_MSSM1_1 = MSSM1_1[:,55]
+    lnL_oh2_MSSM1_2 = MSSM1_2[:,55]        
 
-    mwimp_CMSSM1_1 = CMSSM1_1[:,53]
-    mwimp_CMSSM1_2 = CMSSM1_2[:,53]
-    sigma_SI_p_CMSSM1_1 = CMSSM1_1[:,55]
-    sigma_SI_p_CMSSM1_2 = CMSSM1_2[:,55]
-    sigma_SD_p_CMSSM1_1 = CMSSM1_1[:,56]
-    sigma_SD_p_CMSSM1_2 = CMSSM1_2[:,56]
-    sigmav_CMSSM1_1 = CMSSM1_1[:,54]
-    sigmav_CMSSM1_2 = CMSSM1_2[:,54]
-    LUXlnL_CMSSM1_1 = CMSSM1_1[:,57]
-    LUXlnL_CMSSM1_2 = CMSSM1_2[:,57]
-    FermiDwarflnL_CMSSM1_1 = CMSSM1_1[:,51]
-    FermiDwarflnL_CMSSM1_2 = CMSSM1_2[:,51]
-    IceCubelnL_CMSSM1_1 = CMSSM1_1[:,58]
-    IceCubelnL_CMSSM1_2 = CMSSM1_2[:,58]
-    RD_oh2_CMSSM1_1 = CMSSM1_1[:,50]
-    RD_oh2_CMSSM1_2 = CMSSM1_2[:,50]
-    lnL_oh2_CMSSM1_1 = CMSSM1_1[:,52]
-    lnL_oh2_CMSSM1_2 = CMSSM1_2[:,52] 
+    mwimp_CMSSM1_1 = CMSSM1_1[:,52]
+    mwimp_CMSSM1_2 = CMSSM1_2[:,52]
+    sigma_SI_p_CMSSM1_1 = CMSSM1_1[:,54]
+    sigma_SI_p_CMSSM1_2 = CMSSM1_2[:,54]
+    sigma_SD_p_CMSSM1_1 = CMSSM1_1[:,55]
+    sigma_SD_p_CMSSM1_2 = CMSSM1_2[:,55]
+    sigmav_CMSSM1_1 = CMSSM1_1[:,53]
+    sigmav_CMSSM1_2 = CMSSM1_2[:,53]
+    LUXlnL_CMSSM1_1 = CMSSM1_1[:,56]
+    LUXlnL_CMSSM1_2 = CMSSM1_2[:,56]
+    FermiDwarflnL_CMSSM1_1 = CMSSM1_1[:,50]
+    FermiDwarflnL_CMSSM1_2 = CMSSM1_2[:,50]
+    IceCubelnL_CMSSM1_1 = CMSSM1_1[:,57]
+    IceCubelnL_CMSSM1_2 = CMSSM1_2[:,57]
+    RD_oh2_CMSSM1_1 = CMSSM1_1[:,49]
+    RD_oh2_CMSSM1_2 = CMSSM1_2[:,49]
+    lnL_oh2_CMSSM1_1 = CMSSM1_1[:,51]
+    lnL_oh2_CMSSM1_2 = CMSSM1_2[:,51] 
 
     # Spin Independent Direct Detection
     plt.clf()
@@ -401,7 +402,7 @@ def spokePlots():
     sc3.set_clim([cmin,cmax])
 
     # Limit curves
-    limit = genfromtxt("DarkBit/examples/LUX_2013_85d_118kg_SI_95CL.txt")
+    limit = genfromtxt("DarkBit/examples/limits/LUX_2013_85d_118kg_SI_95CL.txt")
     plt.plot(limit[:,0],limit[:,1]*10**-36,label="LUX 2013 95% CL")
 
     # Axes, legend, and colorbar
@@ -417,7 +418,7 @@ def spokePlots():
     plt.text(mwimp_SingletDM1_2[8]*1.05,sigma_SI_p_SingletDM1_2[8]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[1]*1.05,sigma_SI_p_MSSM1_1[1]*.95,MSSM1_1_param)
     plt.text(mwimp_MSSM1_2[9]*1.05,sigma_SI_p_MSSM1_2[9]*.9,MSSM1_2_param)
-    plt.text(mwimp_CMSSM1_1[8]*1.05,sigma_SI_p_CMSSM1_1[8]*1.05,CMSSM1_1_param)
+    plt.text(mwimp_CMSSM1_1[6]*1.05,sigma_SI_p_CMSSM1_1[6]*1.05,CMSSM1_1_param)
     plt.text(mwimp_CMSSM1_2[8]*1.05,sigma_SI_p_CMSSM1_2[8]*1.05,CMSSM1_2_param)
     cbar = plt.colorbar(sc1)
     cbar.set_label(r'$\ln \, \mathcal{L}_{\rm LUX}$')
@@ -496,8 +497,8 @@ def spokePlots():
     sc3.set_clim([cmin,cmax])
 
     # Limit curves
-    bbSD = genfromtxt("DarkBit/examples/IC79_bb_SD.dat", comments="#")
-    tautauSD = genfromtxt("DarkBit/examples/IC79_tautau_SD.dat", comments="#")
+    bbSD = genfromtxt("DarkBit/examples/limits/IC79_bb_SD.dat", comments="#")
+    tautauSD = genfromtxt("DarkBit/examples/limits/IC79_tautau_SD.dat", comments="#")
     plt.plot(bbSD[:,0],bbSD[:,2], label=r"IceCube 79 $\barb b$ 90% CL")
     plt.plot(tautauSD[:,0],tautauSD[:,2], label=r"IceCube 79 $\tau^+ \tau^-$ 90% CL")
     
@@ -555,8 +556,8 @@ def spokePlots():
     sc3.set_clim([cmin,cmax])
 
     # Limit Curves
-    bb = genfromtxt("DarkBit/examples/FermiLAT_limits_bb.txt")
-    tautau = genfromtxt("DarkBit/examples/FermiLAT_limits_tautau.txt")
+    bb = genfromtxt("DarkBit/examples/limits/FermiLAT_limits_bb.txt")
+    tautau = genfromtxt("DarkBit/examples/limits/FermiLAT_limits_tautau.txt")
     plt.plot(bb[:,0],bb[:,26], label=r"Fermi 2015 $\bar b b$ 95% CL")
     plt.plot(tautau[:,0],tautau[:,26],label=r"Fermi 2015 $\tau^+ \tau^-$ 95% CL")
 
@@ -576,7 +577,7 @@ def spokePlots():
     plt.text(mwimp_MSSM1_1[4]*.85,sigmav_MSSM1_1[4]*1.05,MSSM1_1_param)
     plt.text(mwimp_MSSM1_2[10]*1.05,sigmav_MSSM1_2[10]*.8,MSSM1_2_param)
     plt.text(mwimp_CMSSM1_1[1]*1,sigmav_CMSSM1_1[1]*1.08,CMSSM1_1_param)
-    plt.text(mwimp_CMSSM1_2[9]*1.05,sigmav_CMSSM1_2[9]*1.05,CMSSM1_2_param)
+    plt.text(mwimp_CMSSM1_2[7]*1.05,sigmav_CMSSM1_2[7]*1.05,CMSSM1_2_param)
     plt.legend(loc="best",frameon=False,fontsize='medium')
 
     plt.savefig("Fermi_Spokes.eps")
@@ -636,7 +637,7 @@ def spokePlots():
     plt.text(mwimp_SingletDM1_2[3]*1.05,RD_oh2_SingletDM1_2[3]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[2]*1.05,RD_oh2_MSSM1_1[2]*1.05,MSSM1_1_param)
     plt.text(mwimp_MSSM1_2[2]*.85,RD_oh2_MSSM1_2[3]*1,MSSM1_2_param)
-    plt.text(mwimp_CMSSM1_1[2]*.9,RD_oh2_CMSSM1_1[2]*1.1,CMSSM1_1_param)
+    plt.text(mwimp_CMSSM1_1[2]*.85,RD_oh2_CMSSM1_1[2]*1.1,CMSSM1_1_param)
     plt.text(mwimp_CMSSM1_2[8]*1.05,RD_oh2_CMSSM1_2[8]*1,CMSSM1_2_param)
     plt.legend(handles=[sc1,sc2,sc3,l1[0],l2],loc="best",ncol=2,frameon=False,fontsize='medium')
 
@@ -645,8 +646,8 @@ def spokePlots():
 
 if __name__ == '__main__':
     #plotMSSM7()
-    #spokePlots()
+    spokePlots()
     #plotLimits()
     #plotSpectraValidation()
     #plotSpectraCascade()
-    plotLUX()
+    #plotLUX()
