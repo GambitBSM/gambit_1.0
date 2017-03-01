@@ -311,14 +311,6 @@ def spokePlots():
     CMSSM1_2 = genfromtxt("runs/CMSSM_spoke/samples/M0.txt_0")
     CMSSM1_2_param = r'$M_0$'
 
-    # mwimp_SingletDM1 = concatenate((SingletDM1_1[:,46], SingletDM1_2[:,46]))
-    # sigma_SI_p_SingletDM1 = concatenate((SingletDM1_1[:,48], SingletDM1_2[:,48]))
-    # sigma_SD_SingletDM1 = concatenate((SingletDM1_1[:,50], SingletDM1_2[:,50]))
-    # sigmav_SingletDM1 = concatenate((SingletDM1_1[:,47], SingletDM1_2[:,47]))
-    # LUXlnL_SingletDM1 = concatenate((SingletDM1_1[:,53], SingletDM1_2[:,53]))
-    # FermiDwarflnL_SingletDM1 = concatenate((SingletDM1_1[:,44], SingletDM1_2[:,44]))
-    # IceCubelnL_SingletDM1 = concatenate((SingletDM1_1[:,54], SingletDM1_2[:,54]))
-
     mwimp_SingletDM1_1 = SingletDM1_1[:,51]
     mwimp_SingletDM1_2 = SingletDM1_2[:,51]
     sigma_SI_p_SingletDM1_1 = SingletDM1_1[:,53]
@@ -338,23 +330,6 @@ def spokePlots():
     lnL_oh2_SingletDM1_1 = SingletDM1_1[:,50]
     lnL_oh2_SingletDM1_2 = SingletDM1_2[:,50]
 
-    # mwimp_MSSM1 = concatenate((MSSM1_1[:,54], MSSM1_2[:,54]))
-    # sigma_SI_p_MSSM1 = concatenate((MSSM1_1[:,56], MSSM1_2[:,56]))
-    # sigma_SD_p_MSSM1 = concatenate((MSSM1_1[:,58], MSSM1_2[:,58]))
-    # sigmav_MSSM1 = concatenate((MSSM1_1[:,55], MSSM1_2[:,55]))
-    # LUXlnL_MSSM1 = concatenate((MSSM1_1[:,61], MSSM1_2[:,61]))
-    # FermiDwarflnL_MSSM1 = concatenate((MSSM1_1[:,52], MSSM1_2[:,52]))
-    # SIMPLE_MSSM1 = concatenate((MSSM1_1[:,62], MSSM1_2[:,62]))
-    # IceCubelnL_MSSM1 = concatenate((MSSM1_1[:,63], MSSM1_2[:,63]))
-
-    # mwimp_MSSM1 = concatenate((MSSM1_1[:,57], MSSM1_2[:,57]))
-    # sigma_SI_p_MSSM1 = concatenate((MSSM1_1[:,59], MSSM1_2[:,59]))
-    # sigma_SD_p_MSSM1 = concatenate((MSSM1_1[:,60], MSSM1_2[:,60]))
-    # sigmav_MSSM1 = concatenate((MSSM1_1[:,58], MSSM1_2[:,58]))
-    # LUXlnL_MSSM1 = concatenate((MSSM1_1[:,61], MSSM1_2[:,61]))
-    # FermiDwarflnL_MSSM1 = concatenate((MSSM1_1[:,55], MSSM1_2[:,55]))
-    # IceCubelnL_MSSM1 = concatenate((MSSM1_1[:,62], MSSM1_2[:,62]))
-
     mwimp_MSSM1_1 = MSSM1_1[:,57]
     mwimp_MSSM1_2 = MSSM1_2[:,57]
     sigma_SI_p_MSSM1_1 = MSSM1_1[:,59]
@@ -373,23 +348,6 @@ def spokePlots():
     RD_oh2_MSSM1_2 = MSSM1_2[:,54]
     lnL_oh2_MSSM1_1 = MSSM1_1[:,56]
     lnL_oh2_MSSM1_2 = MSSM1_2[:,56]        
-
-    # mwimp_CMSSM1 = concatenate((CMSSM1_1[:,48], CMSSM1_2[:,48]))
-    # sigma_SI_p_CMSSM1 = concatenate((CMSSM1_1[:,50], CMSSM1_2[:,50]))
-    # sigma_SD_p_CMSSM1 = concatenate((CMSSM1_1[:,52], CMSSM1_2[:,52]))
-    # sigmav_CMSSM1 = concatenate((CMSSM1_1[:,49], CMSSM1_2[:,49]))
-    # LUXlnL_CMSSM1 = concatenate((CMSSM1_1[:,55], CMSSM1_2[:,55]))
-    # FermiDwarflnL_CMSSM1 = concatenate((CMSSM1_1[:,46], CMSSM1_2[:,46]))
-    # SIMPLE_CMSSM1 = concatenate((CMSSM1_1[:,56], CMSSM1_2[:,56]))
-    # IceCubelnL_CMSSM1 = concatenate((CMSSM1_1[:,57], CMSSM1_2[:,57]))
-
-    # mwimp_CMSSM1 = concatenate((CMSSM1_1[:,53], CMSSM1_2[:,53]))
-    # sigma_SI_p_CMSSM1 = concatenate((CMSSM1_1[:,55], CMSSM1_2[:,55]))
-    # sigma_SD_p_CMSSM1 = concatenate((CMSSM1_1[:,56], CMSSM1_2[:,56]))
-    # sigmav_CMSSM1 = concatenate((CMSSM1_1[:,54], CMSSM1_2[:,54]))
-    # LUXlnL_CMSSM1 = concatenate((CMSSM1_1[:,57], CMSSM1_2[:,57]))
-    # FermiDwarflnL_CMSSM1 = concatenate((CMSSM1_1[:,51], CMSSM1_2[:,51]))
-    # IceCubelnL_CMSSM1 = concatenate((CMSSM1_1[:,58], CMSSM1_2[:,58]))
 
     mwimp_CMSSM1_1 = CMSSM1_1[:,53]
     mwimp_CMSSM1_2 = CMSSM1_2[:,53]
@@ -416,17 +374,10 @@ def spokePlots():
     ax1 = fig.add_subplot(111)
 
     # Spokes
-#    cmin = min(concatenate((LUXlnL_SingletDM1,LUXlnL_MSSM1)))
     cmax = max(concatenate((LUXlnL_SingletDM1_1,LUXlnL_SingletDM1_2,
         LUXlnL_MSSM1_1,LUXlnL_MSSM1_2,LUXlnL_CMSSM1_1,LUXlnL_CMSSM1_2)))
     cmin = max(min(concatenate((LUXlnL_SingletDM1_1,LUXlnL_SingletDM1_2,
         LUXlnL_MSSM1_1,LUXlnL_MSSM1_2,LUXlnL_CMSSM1_2,LUXlnL_CMSSM1_2))),cmax-21)
-    # plt.plot(mwimp_SingletDM1[:9],sigma_SI_p_SingletDM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_SingletDM1[9:],sigma_SI_p_SingletDM1[9:],c='k',zorder=1,ls="--")
-    # plt.plot(mwimp_MSSM1[:9],sigma_SI_p_MSSM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_MSSM1[9:],sigma_SI_p_MSSM1[9:],c='k',zorder=1,ls="--")
-    # plt.plot(mwimp_CMSSM1[:9],sigma_SI_p_CMSSM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_CMSSM1[9:],sigma_SI_p_CMSSM1[9:],c='k',zorder=1,ls="--")
     plt.plot(mwimp_SingletDM1_1,sigma_SI_p_SingletDM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_SingletDM1_2,sigma_SI_p_SingletDM1_2,c='k',zorder=1,ls="--")
     plt.plot(mwimp_MSSM1_1,sigma_SI_p_MSSM1_1,c='k',zorder=1,ls="-.")
@@ -462,13 +413,6 @@ def spokePlots():
     plt.gca().set_ylim(ymin=3*10**-47,ymax=3*10**-43)
     plt.gca().set_xticks([60,70,80,90,100,200,300,400,500])
     plt.gca().set_xticklabels(["60","","80","","100","200","300","400","500"])
-    #plt.gca().set_xticklabels([50,100,500])
-    # plt.text(mwimp_SingletDM1[1]*1.1,sigma_SI_p_SingletDM1[1]*1.1,SingletDM1_1_param)
-    # plt.text(mwimp_SingletDM1[10]*1.1,sigma_SI_p_SingletDM1[10]*1.1,SingletDM1_2_param)
-    # plt.text(mwimp_MSSM1[1]*1.1,sigma_SI_p_MSSM1[1]*1.1,MSSM1_1_param)
-    # plt.text(mwimp_MSSM1[10]*1.1,sigma_SI_p_MSSM1[10]*1.1,MSSM1_2_param)
-    # plt.text(mwimp_CMSSM1[1]*1.1,sigma_SI_p_CMSSM1[1]*1.1,CMSSM1_1_param)
-    # plt.text(mwimp_CMSSM1[10]*1.1,sigma_SI_p_CMSSM1[10]*1.1,CMSSM1_2_param)
     plt.text(mwimp_SingletDM1_1[8]*1.05,sigma_SI_p_SingletDM1_1[8]*1.05,SingletDM1_1_param)
     plt.text(mwimp_SingletDM1_2[8]*1.05,sigma_SI_p_SingletDM1_2[8]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[1]*1.05,sigma_SI_p_MSSM1_1[1]*.95,MSSM1_1_param)
@@ -525,61 +469,6 @@ def spokePlots():
     # plt.legend()
 
     # plt.savefig("SD_DD.eps")
-    # plt.show()
-
-    # # Ice Cube
-    # plt.clf()
-    # fig = plt.figure()
-    # ax1 = fig.add_subplot(111)
-
-    # # Spokes
-    # #cmin = min(concatenate((IceCubelnL_SingletDM1,IceCubelnL_MSSM1)))
-    # cmax = max(concatenate((IceCubelnL_SingletDM1,IceCubelnL_MSSM1,IceCubelnL_CMSSM1)))
-    # cmin = max(min(concatenate((IceCubelnL_SingletDM1,IceCubelnL_MSSM1,IceCubelnL_CMSSM1))),(cmax-1)*10**2)
-    # plt.plot(mwimp_SingletDM1[:9],sigma_SI_p_SingletDM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_SingletDM1[9:],sigma_SI_p_SingletDM1[9:],c='k',zorder=1,ls="--")
-    # plt.plot(mwimp_MSSM1[:9],sigma_SD_p_MSSM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_MSSM1[9:],sigma_SD_p_MSSM1[9:],c='k',zorder=1,ls="--")
-    # plt.plot(mwimp_CMSSM1[:9],sigma_SD_p_CMSSM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_CMSSM1[9:],sigma_SD_p_CMSSM1[9:],c='k',zorder=1,ls="--")
-    # sc1 = ax1.scatter(mwimp_SingletDM1,sigma_SI_p_SingletDM1,c=IceCubelnL_SingletDM1,
-    #     s=40,zorder=2,edgecolors="none",marker="o",label="Singlet DM (sigma_SI)")
-    # sc2 = ax1.scatter(mwimp_MSSM1,sigma_SD_p_MSSM1,c=IceCubelnL_MSSM1,s=40,zorder=2,
-    #     edgecolors="none",marker="s",label="MSSM 11 (sigma_SD)")
-    # sc3 = ax1.scatter(mwimp_CMSSM1,sigma_SD_p_CMSSM1,c=IceCubelnL_CMSSM1,s=40,zorder=2,
-    #     edgecolors="none",marker="^",label="cMSSM (sigma_SD)")
-    # sc1.set_clim([cmin,cmax])
-    # sc2.set_clim([cmin,cmax])
-    # sc3.set_clim([cmin,cmax])
-
-    # # Limit curves
-    # bbSI = genfromtxt("DarkBit/examples/IC79_bb_SI.dat", comments="#")
-    # tautauSI = genfromtxt("DarkBit/examples/IC79_tautau_SI.dat", comments="#")
-    # bbSD = genfromtxt("DarkBit/examples/IC79_bb_SD.dat", comments="#")
-    # tautauSD = genfromtxt("DarkBit/examples/IC79_tautau_SD.dat", comments="#")
-    # plt.plot(bbSI[:,0],bbSI[:,2], label="IC SI bb")
-    # plt.plot(tautauSI[:,0],tautauSI[:,2], label="IC SI tau+ tau-")
-    # plt.plot(bbSD[:,0],bbSD[:,2], label="IC SD bb")
-    # plt.plot(tautauSD[:,0],tautauSD[:,2], label="IC SD tau+ tau-")
-    
-    # # Axes, legend, and colorbar
-    # cbar = plt.colorbar(sc1)
-    # cbar.set_label('ln L_Ice Cube 79')
-    # plt.xlabel("m [GeV]")
-    # plt.ylabel("sigma_p [cm^2]")
-    # plt.gca().set_xscale('log')
-    # plt.gca().set_yscale('log')
-    # plt.gca().set_xlim(xmin=5,xmax=10000)
-    # plt.gca().set_ylim(ymin=10**-49,ymax=10**-27)
-    # plt.text(mwimp_SingletDM1[1]*1.1,sigma_SI_p_SingletDM1[1]*1.1,SingletDM1_1_param)
-    # plt.text(mwimp_SingletDM1[10]*1.1,sigma_SI_p_SingletDM1[10]*1.1,SingletDM1_2_param)
-    # plt.text(mwimp_MSSM1[1]*1.1,sigma_SD_p_MSSM1[1]*1.1,MSSM1_1_param)
-    # plt.text(mwimp_MSSM1[10]*1.1,sigma_SD_p_MSSM1[10]*1.1,MSSM1_2_param)
-    # plt.text(mwimp_CMSSM1[1]*1.1,sigma_SD_p_CMSSM1[1]*1.1,CMSSM1_1_param)
-    # plt.text(mwimp_CMSSM1[10]*1.1,sigma_SD_p_CMSSM1[10]*1.1,CMSSM1_2_param)
-    # plt.legend()
-
-    # plt.savefig("IC.eps")
     # plt.show()
 
     # Ice Cube
@@ -643,12 +532,6 @@ def spokePlots():
         FermiDwarflnL_MSSM1_1,FermiDwarflnL_MSSM1_2,FermiDwarflnL_CMSSM1_1,FermiDwarflnL_CMSSM1_2)))
     cmin = max(min(concatenate((FermiDwarflnL_SingletDM1_1,FermiDwarflnL_SingletDM1_2,
         FermiDwarflnL_MSSM1_1,FermiDwarflnL_MSSM1_2,FermiDwarflnL_CMSSM1_1,FermiDwarflnL_CMSSM1_2))),cmax-21)
-    # plt.plot(mwimp_SingletDM1[:9],sigmav_SingletDM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_SingletDM1[9:],sigmav_SingletDM1[9:],c='k',zorder=1,ls="--")
-    # plt.plot(mwimp_MSSM1[:9],sigmav_MSSM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_MSSM1[9:],sigmav_MSSM1[9:],c='k',zorder=1,ls="--")
-    # plt.plot(mwimp_CMSSM1[:9],sigmav_CMSSM1[:9],c='k',zorder=1,ls="-")
-    # plt.plot(mwimp_CMSSM1[9:],sigmav_CMSSM1[9:],c='k',zorder=1,ls="--")
     plt.plot(mwimp_SingletDM1_1,sigmav_SingletDM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_SingletDM1_2,sigmav_SingletDM1_2,c='k',zorder=1,ls="--")
     plt.plot(mwimp_MSSM1_1,sigmav_MSSM1_1,c='k',zorder=1,ls="-.")
@@ -684,17 +567,10 @@ def spokePlots():
     plt.ylabel(r"$\langle \sigma v \rangle$ ${\rm [cm^3 / s]}$")
     plt.gca().set_xscale('log')
     plt.gca().set_yscale('log')
-    #plt.gca().set_xlim(xmin=5,xmax=10000)
     plt.gca().set_xlim(xmin=60,xmax=500)
     plt.gca().set_ylim(ymin=10**-28,ymax=10**-24)
     plt.gca().set_xticks([60,70,80,90,100,200,300,400,500])
     plt.gca().set_xticklabels(["60","","80","","100","200","300","400","500"])
-    # plt.text(mwimp_SingletDM1[1]*1.1,sigmav_SingletDM1[1]*1.1,SingletDM1_1_param)
-    # plt.text(mwimp_SingletDM1[10]*1.1,sigmav_SingletDM1[10]*1.1,SingletDM1_2_param)
-    # plt.text(mwimp_MSSM1[1]*1.1,sigmav_MSSM1[1]*1.1,MSSM1_1_param)
-    # plt.text(mwimp_MSSM1[10]*1.1,sigmav_MSSM1[10]*1.1,MSSM1_2_param)
-    # plt.text(mwimp_CMSSM1[1]*1.1,sigmav_CMSSM1[1]*1.1,CMSSM1_1_param)
-    # plt.text(mwimp_CMSSM1[10]*1.1,sigmav_CMSSM1[10]*1.1,CMSSM1_2_param)
     plt.text(mwimp_SingletDM1_1[8]*1.05,sigmav_SingletDM1_1[8]*1.05,SingletDM1_1_param)
     plt.text(mwimp_SingletDM1_2[8]*1.05,sigmav_SingletDM1_2[8]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[4]*.85,sigmav_MSSM1_1[4]*1.05,MSSM1_1_param)
