@@ -74,15 +74,6 @@ ObsLikes:
     - capability:  lnL_gm2
       purpose:     LogLike
 
-    # SM nuisance parameter likelihoods
-    - capability: lnL_t_mass
-      purpose:    LogLike
-
-    - capability: lnL_mbmb
-      purpose:    LogLike
-
-    - capability: lnL_alpha_s
-      purpose:    LogLike
 
 
 

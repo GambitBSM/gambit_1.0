@@ -822,34 +822,6 @@ namespace Gambit
     }
 
     // *************************************************
-    /// Calculating Br in B0->mumu decays
-    /// WC case
-    // *************************************************
-    /*
-    void SI_Bdmumu_WC(double &result)
-    {
-      using namespace Pipes::SI_Bdmumu_WC;
-
-      if(flav_debug)  cout<<"Starting SI_Bdmumu WC"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-
-      int flav=2;
-      if(param.model<0)
-	{
-	  result=0.;
-	}
-      else
-	{
-	  result=BEreq::Bdll_CONV_WC(&param, byVal(flav));
-	}
-
-      if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bdmumu WC"<<endl;
-    }
-    */
-
-    // *************************************************
     /// Calculating Br in B->tau nu_tau decays
     // *************************************************
 
@@ -2241,11 +2213,15 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-      //      cout<<"Cov matrix:"<<endl;
+      //cout<<"Cov matrix:"<<endl;
       //cout<<cov<<endl;
       //cout<<"End cov matrix"<<endl;
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
+
+      //cout<<"Cov^-1 matrix:"<<endl;
+      //cout<<cov_inv<<endl;
+      //cout<<"End cov^-1 matrix"<<endl;
 
       double Chi2=0;
 
@@ -2253,11 +2229,10 @@ namespace Gambit
       {
         for(int j=0; j<measurement_assym.dim; ++j)
         {
-          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+          Chi2+= diff[i] * cov_inv(i,j)*diff[j] ;
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2sll_likelihood"<<endl;
@@ -2410,8 +2385,9 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
+
+      //cout<<"Likelihood b->sll: "<<result<<endl;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
@@ -2531,7 +2507,6 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
@@ -2596,7 +2571,7 @@ namespace Gambit
       double theory_BDmunu=*Dep::BDmunu;
       // B-> D* mu nu
       double theory_BDstarmunu=*Dep::BDstarmunu;
-
+      
       // theory results;
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
 
@@ -2612,15 +2587,15 @@ namespace Gambit
 
       // hardcoded errors :( move it to include later
 
-      double theory_Btaunu_error=th_err(0,0);
-      double theory_BDtaunu_error=th_err(1,0);
-      double theory_BDstartaunu_error=th_err(2,0);
-      double theory_BDmunu_error=th_err(3,0);
-      double theory_BDstarmunu_error=th_err(4,0);
+      double theory_Btaunu_error=th_err(0,0)*theory_Btaunu;
+      double theory_BDtaunu_error=th_err(1,0)*theory_BDtaunu;
+      double theory_BDstartaunu_error=th_err(2,0)*theory_BDstartaunu;
+      double theory_BDmunu_error=th_err(3,0)*theory_BDmunu;
+      double theory_BDstarmunu_error=th_err(4,0)*theory_BDstarmunu;
 
-      double theory_Dstaunu_error=th_err(5,0);
-      double theory_Dsmunu_error=th_err(6,0);
-      double theory_Dmunu_error=th_err(7,0);
+      double theory_Dstaunu_error=th_err(5,0)*theory_Dstaunu;
+      double theory_Dsmunu_error=th_err(6,0)*theory_Dsmunu;
+      double theory_Dmunu_error=th_err(7,0)*theory_Dsmunu;
 
 
       // theory cov:
@@ -2708,7 +2683,6 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished SL_likelihood"<<endl;

@@ -88,9 +88,9 @@ scanner_plugin(MultiNest, version(3, 10))
       gl0 = gl0 + offset;
 
       // MultiNest algorithm options.
-      int IS (get_inifile_value<int>("IS", 1) );                // do Nested Importance Sampling?
-      int mmodal (get_inifile_value<int>("mmodal", 1) );        // do mode separation?
-      int ceff (get_inifile_value<int>("ceff", 0) );            // run in constant efficiency mode?
+      int IS (get_inifile_value<bool>("IS", true) );            // do Nested Importance Sampling?
+      int mmodal (get_inifile_value<bool>("mmodal", true) );    // do mode separation?
+      int ceff (get_inifile_value<bool>("ceff", false) );       // run in constant efficiency mode?
       int nlive (get_inifile_value<int>("nlive", 1000) );       // number of live points
       double efr (get_inifile_value<double>("efr", 0.8) );      // set the required efficiency
       double tol (get_inifile_value<double>("tol", 0.5) );      // tol, defines the stopping criteria
@@ -101,9 +101,9 @@ scanner_plugin(MultiNest, version(3, 10))
       double Ztol (get_inifile_value<double>("Ztol", -1E90) );  // all the modes with logZ < Ztol are ignored
       int maxModes (get_inifile_value<int>("maxModes", 100) );  // expected max no. of modes (used only for memory allocation)
       int seed (get_inifile_value<int>("seed", -1) );           // random no. generator seed, if < 0 then take the seed from system clock
-      int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
+      int fb (get_inifile_value<bool>("fb", true) );            // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
-      int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
+      int outfile (get_inifile_value<bool>("outfile", true) );  // write output files?
       double ln0 (get_inifile_value<double>("logZero",0.9999*gl0)); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
