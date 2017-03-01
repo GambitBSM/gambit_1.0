@@ -17,7 +17,7 @@ Parameters:
       flat_end: 1e2
       prior_type: double_log_flat_join
     TanBeta:
-      range: [3.0, 70]
+      range: [3.0, 70.]
     SignMu: 1
 
   #Dark matter halo parameters.
@@ -72,8 +72,8 @@ ObsLikes:
     - capability: lnL_W_mass
       purpose:    LogLike
 
-    - capability:  lnL_gm2
-      purpose:     LogLike
+#    - capability:  lnL_gm2
+#      purpose:     LogLike
 
 
 Rules:
@@ -254,4 +254,4 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e5
     model_invalid_for_lnlike_below_alt: -1e5
 
-  default_output_path: "./"
+  default_output_path: "runs/CMSSM/"
