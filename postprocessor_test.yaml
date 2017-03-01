@@ -36,7 +36,7 @@ Printer:
   # Output can be re-printed into a different format via the postprocessor
   printer: hdf5
   options:
-    output_file: "results.hdf5"
+    output_file: "results_<RANK>.hdf5"
     group: "/reweight_data"
     delete_file_on_restart: true
     # Current a special setting is required here to allow the postproccessing scanner to print to points in an erratic order.
@@ -67,6 +67,11 @@ Scanner:
       # Note, there is no protection from adding then subtracting the same component, or from adding the same component twice etc.
       # More complicated arrangements of old + new likelihood components go beyond the goals of this scanner.
       # Use plotting tools for that kind of thing.
+
+      # Postprocess points as if we are in an MPI process with rank=RANK and size=SIZE (set via environment variable)
+      # This lets a postprocessing batch be done completely in parallel
+      # Note that output files will be appended with RANK, and will need to be manually combined at the end.
+      use_virtual_rank: true 
 
       # Set interval between progress report messages to stdout (0 for no messages, default 1000)
       #update_interval: 1000
