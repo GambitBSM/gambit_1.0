@@ -15,24 +15,24 @@ module load plgrid/tools/python/2.7.9 plgrid/tools/cmake/3.3.2 plgrid/libs/boost
 
 model=MSSM7
 path_to_combine_hdf5=../../Printers/scripts/combine_hdf5.py
+path_to_run_array_combine=../../run_array_combine.sh
+
 
 # Combination step 1
 in_name_base=./samples/MSSM7.hdf5_temp
 out_name_base=./samples/MSSM7.hdf5_temp_step1
 file_n_min=0
 file_n_max=2399
-./run_array_combine.sh ${path_to_combine_hdf5} ${out_name_base} ${model} ${in_name_base} ${file_n_min} ${file_n_max}
-
 
 # Combination step 2
 # in_name_base=./samples/MSSM7.hdf5_temp_step1
 # out_name_base=./samples/MSSM7.hdf5_temp_step2
 # file_n_min=0
 # file_n_max=99
-# ./run_array_combine.sh ${path_to_combine_hdf5} ${out_name_base} ${model} ${in_name_base} ${file_n_min} ${file_n_max}
 
 
-# ...Add more steps as needed. Remeber to update input/output file names, min/max file numbers and the array job range at the top. 
-# Also, comment out previous combination steps!
+# Execute run_array_combine.sh
+${path_to_run_array_combine} ${path_to_combine_hdf5} ${out_name_base} ${model} ${in_name_base} ${file_n_min} ${file_n_max}
+
 
 
