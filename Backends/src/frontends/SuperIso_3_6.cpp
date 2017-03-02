@@ -47,7 +47,7 @@ BE_NAMESPACE
     C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
     CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
     Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
-    
+
 
     BRBKstarll(2,0,byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
 
@@ -110,7 +110,7 @@ BE_NAMESPACE
     CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
     CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
-    
+
     BRBKstarll(2,0,byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
 
     // filling results
@@ -121,14 +121,14 @@ BE_NAMESPACE
     results.FL=obs[2];
     results.AFB=obs[1];
 
-    results.S3=obs[25];      
-    results.S4=obs[26];      
-    results.S5=obs[27];      
-    results.S7=obs[28];      
-    results.S8=obs[29];      
-    results.S9=obs[30];      
+    results.S3=obs[25];
+    results.S4=obs[26];
+    results.S5=obs[27];
+    results.S7=obs[28];
+    results.S8=obs[29];
+    results.S9=obs[30];
 
-    
+
     return results;
   }
 
@@ -143,15 +143,15 @@ BE_NAMESPACE
       double mu_b=param->mass_b_1S/2.;
       double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
       std::complex<double> CQpb[3];
-      
-      //cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl; 
-      //cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;                                     
-      //cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;                                     
-      
+
+      //cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
+      //cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;
+      //cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;
+
       //cout<<"Cross check NO WC: "<<param->alphas_MZ<<" "<<param->mass_Z<<" "<<param->mass_b<<" "<<param->mass_top_pole<<" "<<param->mass_mu<<" "<<param->mass_s<<" "<<mu_W<<endl;
 
       //cout<<"Cross check NO WC mu_b: "<<mu_b<<endl;
-      //cout<<"Cross check NO WC: "<<param->mass_d<<" "<<param->mass_u<<" "<<param->mass_s<<" "<<param->mass_c<<" "<<param->mass_t<<" "<<param->mass_e<<" "<<param->mass_nue<<" "<<param->mass_mu<<" "<<param->mass_num<<" "<<param->mass_tau<<" "<<param->mass_nut<<endl;     
+      //cout<<"Cross check NO WC: "<<param->mass_d<<" "<<param->mass_u<<" "<<param->mass_s<<" "<<param->mass_c<<" "<<param->mass_t<<" "<<param->mass_e<<" "<<param->mass_nue<<" "<<param->mass_mu<<" "<<param->mass_num<<" "<<param->mass_tau<<" "<<param->mass_nut<<endl;
 
       CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
       //cout<<"Checking NO WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
@@ -159,12 +159,12 @@ BE_NAMESPACE
       //cout<<"Checking NO WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
       Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
 
-      //cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;  
+      //cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;
 
       //result = bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),param);
       result = bsgamma_Ecut(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W), E_t, param);
     }
-    //std::cout<<"CONV function bs-> gamma BR (NO WC): "<<result<<endl;  
+    //std::cout<<"CONV function bs-> gamma BR (NO WC): "<<result<<endl;
 
     return result;
   }
@@ -203,7 +203,7 @@ BE_NAMESPACE
 	//cout<<"Checking WC at W scale , C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
 	//cout<<"CHecking that the parameters are filled: WC"<<param->mass_b<<"  "<<param->CKM_lambda<<endl;
 	//cout<<"Params WC: "<<param->mtmt<<" "<<mu_W<<"  "<<param->mass_top_pole<<" "<<param->mass_b<<endl;
-	
+
 	CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param); // since param.SM=1 we calcule WC at SM
 	//cout<<"Checking WC at W scale, C7= "<<C0w[7]+C1w[7]+C2w[7]<<" ,C9= "<<C0w[9]+C1w[9]+C2w[9]<<" ,C10= "<<C0w[10]+C1w[10]+C2w[10]<<endl;
 	C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param); // calculating them at mu_b mass
@@ -224,7 +224,7 @@ BE_NAMESPACE
 	std::cout<<"CONV function bs-> gamma BR: "<<result<<endl;
       }
     std::cout<<"The model: "<<param->model<<endl;
-    std::cout<<"CONV function bs-> gamma BR: "<<result<<endl;  
+    std::cout<<"CONV function bs-> gamma BR: "<<result<<endl;
     return result;
 
   }
@@ -294,7 +294,7 @@ BE_NAMESPACE
 	CQ_calculator(flav,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
 	Cprime_calculator(flav,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
 
-	cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;  
+	cout<<"Checking WC at B scale, C7= "<<C0b[7]+C1b[7]+C2b[7]<<" ,C9= "<<C0b[9]+C1b[9]+C2b[9]<<" ,C10= "<<C0b[10]+C1b[10]+C2b[10]<<endl;
 
 
 	// the prime WC I don't care about :P
@@ -308,7 +308,7 @@ BE_NAMESPACE
 
 	result = Bsll_untag(flav,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param ,byVal(mu_b));
 	cout<<"Debug Bsll_untag WC BR: "<<result<<endl;
-	
+
       }
 
     return result;
@@ -392,7 +392,7 @@ BE_NAMESPACE
 	CQ0b[1]+=std::complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
 	CQ0b[2]+=std::complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
 
-	cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;   
+	cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;
 
 
 	result = Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
@@ -400,6 +400,535 @@ BE_NAMESPACE
 
     return result;
   }
-  
+
+  //###################################################################################
+  double BRBXsmumu_lowq2_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  //###################################################################################
+  double BRBXsmumu_lowq2_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+
+      }
+
+    return result;
+  }
+  //###################################################################################                                                       
+  double BRBXsmumu_highq2_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification                                                                                       
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;                                                                                                
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;                                                                                                
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;                                                                                              
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  //###################################################################################                                                      
+  double BRBXsmumu_highq2_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+
+      }
+
+    return result;
+  }
+  //###################################################################################
+  double A_BXsmumu_lowq2_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification                                                                                       
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;                                                                                                
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;                                                                                                
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;                                                                                              
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::A_BXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  //###################################################################################
+  double A_BXsmumu_lowq2_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&\
+				  param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::A_BXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+	
+      }
+    return results;
+  }
+  //###################################################################################
+  double A_BXsmumu_highq2_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification                                                                                       
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;                                                                                                
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;                                                                                                
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;                                                                                              
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::A_BXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  //###################################################################################
+  double A_BXsmumu_highq2_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&\
+				  param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::A_BXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+
+      }
+    return results;
+  }
+  //########################################################################################
+  double A_BXsmumu_zero_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification                                                                                      
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;                                                                                               
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;                                                                                               
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;                                                                                             
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::A_BXsll_zero(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  //###################################################################################                                                       
+  double A_BXsmumu_zero_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&\
+				  param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::A_BXsll_zero(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+
+      }
+    return results;
+  }
+  //###################################################################################
+  double BRBXstautau_highq2_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification                                                                                     
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;                                                                                              
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;                                                                                              
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;                                                                                            
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::BRBXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  //###################################################################################       
+  double BRBXstautau_highq2_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+	
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::BRBXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	
+      }
+    return result;
+  }
+  //###################################################################################                                                      
+  double A_BXstautau_highq2_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	// the WC will be done via Delta C modification                                                                                      
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;                                                                                               
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;                                                                                               
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;                                                                                             
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::A_BXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+      }
+    return result;
+  }
+  double A_BXstautau_highq2_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param->mass_W;
+	double mu_b=param->mass_b;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
+	std::complex<double> CQ0b[3],CQ1b[3];
+
+	BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+	BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+	BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::A_BXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+
+      }
+    return result;
+  }
+  double delta0_CONV_WC(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param.mass_W;
+	double mu_b=param.mass_b_1S/2.;
+
+	double lambda_h=0.5;
+	double mu_spec=sqrt(lambda_h*param.mass_b);
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
+	std::complex<double> CQpb[3];
+
+	// the WC will be done via Delta C modification     
+	double Re_DeltaC7=param->Re_DeltaC7;
+	//double Im_DeltaC7=param->Im_DeltaC7;              
+	double Re_DeltaC9=param->Re_DeltaC9;
+	//double Im_DeltaC9=param->Im_DeltaC9;              
+	double Re_DeltaC10=param->Re_DeltaC10;
+	//double Im_DeltaC10=param->Im_DeltaC10;            
+	double Re_DeltaCQ1=param->Re_DeltaCQ1;
+	double Im_DeltaCQ1=param->Im_DeltaCQ1;
+	double Re_DeltaCQ2=param->Re_DeltaCQ2;
+	double Im_DeltaCQ2=param->Im_DeltaCQ2;
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
+	BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+	result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),byVal(Cpb),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
+      }
+    return result;
+    
+  }
+  double delta0_CONV(struct parameters *param)
+  {
+    double result = 0.;
+
+    if(param->model<0)
+      {
+	result = 0.;
+      }
+    else
+      {
+	double mu_W=2.*param.mass_W;
+	double mu_b=param.mass_b_1S/2.;
+
+	double lambda_h=0.5;
+	double mu_spec=sqrt(lambda_h*param.mass_b);
+
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
+	std::complex<double> CQpb[3];
+
+	BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+	BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
+	BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
+	BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+        result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),byVal(Cpb),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
+      }
+    return result;
+
+  }	
+
+
+
 }
 END_BE_NAMESPACE

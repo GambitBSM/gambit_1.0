@@ -76,11 +76,27 @@ BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, dou
 BE_CONV_FUNCTION(bsgamma_CONV, double, (struct parameters*, double), "bsgamma_CONV", (MSSM63atQ, MSSM63atMGUT))
 BE_CONV_FUNCTION(Bsll_untag_CONV, double, (struct parameters*, int), "Bsll_untag_CONV", (MSSM63atQ, MSSM63atMGUT))
 BE_CONV_FUNCTION(Bdll_CONV, double, (struct parameters*, int), "Bdll_CONV", (MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(BRBXsmumu_lowq2_CONV, double, (struct parameters*), "BRBXsmumu_lowq2_CONV",(MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(BRBXsmumu_highq2_CONV, double, (struct parameters*), "BRBXsmumu_highq2_CONV",(MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(A_BXsmumu_lowq2_CONV, double, (struct parameters*), "A_BXsmumu_lowq2_CONV",(MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(A_BXsmumu_highq2_CONV, double, (struct parameters*), "A_BXsmumu_highq2_CONV",(MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(A_BXsmumu_zero_CONV, double, (struct parameters*), "A_BXsmumu_zero_CONV",(MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(BRBXstautau_highq2_CONV, double, (struct parameters*), "BRBXstautau_highq2_CONV", (MSSM63atQ, MSSM63atMGUT))
+BE_CONV_FUNCTION(A_BXstautau_highq2_CONV, double, (struct parameters*), "A_BXstautau_highq2_CONV", (MSSM63atQ, MSSM63atMGUT))
+
+
 
 BE_CONV_FUNCTION(BRBKstarmumu_CONV_WC, Flav_KstarMuMu_obs, (struct parameters*, double, double), "BRBKstarmumu_CONV", (WC))
 BE_CONV_FUNCTION(bsgamma_CONV_WC, double, (struct parameters*, double), "bsgamma_CONV", (WC))
 BE_CONV_FUNCTION(Bsll_untag_CONV_WC, double, (struct parameters*, int), "Bsll_untag_CONV", (WC))
 BE_CONV_FUNCTION(Bdll_CONV_WC, double, (struct parameters*, int), "Bdll_CONV", (WC))
+BE_CONV_FUNCTION(BRBXsmumu_lowq2_CONV_WC, double, (struct parameters*), "BRBXsmumu_lowq2_CONV",(WC))
+BE_CONV_FUNCTION(BRBXsmumu_highq2_CONV_WC, double, (struct parameters*), "BRBXsmumu_highq2_CONV",(WC))
+BE_CONV_FUNCTION(A_BXsmumu_lowq2_CONV_WC, double, (struct parameters*), "A_BXsmumu_lowq2_CONV",(WC))
+BE_CONV_FUNCTION(A_BXsmumu_highq2_CONV_WC, double, (struct parameters*), "A_BXsmumu_highq2_CONV",(WC))
+BE_CONV_FUNCTION(A_BXsmumu_zero_CONV_WC, double, (struct parameters*), "A_BXsmumu_zero_CONV",(WC))
+BE_CONV_FUNCTION(BRBXstautau_highq2_CONV_WC, double, (struct parameters*), "BRBXstautau_highq2_CONV", (WC))
+BE_CONV_FUNCTION(A_BXstautau_highq2_CONV_WC, double, (struct parameters*), "A_BXstautau_highq2_CONV", (WC))
 
 
 
