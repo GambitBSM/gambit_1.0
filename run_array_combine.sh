@@ -15,8 +15,16 @@ NJOBS=$(( ${SLURM_ARRAY_TASK_MAX}-${SLURM_ARRAY_TASK_MIN}+1 ))
 # Construct prefix for echo statements
 PREFIX="run_array_combine ${ID} :"
 
+# Check that the number of hdf5 files is divisble by the number of jobs.
+NFILES=$(( ${MAX}-${MIN}+1 ))
+if [ $(( ${NFILES}%${NJOBS} )) != 0 ] ;
+then
+    echo "${PREFIX} Error: The number of hdf5 files (${NFILES}) is not divisible by the number of array jobs (${NJOBS})."
+    exit 1
+fi
+
 # Construct list of input files
-STEP=$(( (${MAX}+1-${MIN})/${NJOBS} ))
+STEP=$(( ${NFILES}/${NJOBS} ))
 START=$(( ${MIN} + ${ID}*${STEP} ))
 END=$(( ${START} + ${STEP} - 1 ))
 FILES=$(echo $(for (( i=${START} ; i<=${END} ; i++ )); do echo "${IN_NAME_BASE}_${i}"; done))
