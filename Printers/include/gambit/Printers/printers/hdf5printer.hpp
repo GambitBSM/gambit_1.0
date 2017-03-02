@@ -371,6 +371,9 @@ namespace Gambit
         /// Flag to specify if this is the primary printer or not
         bool is_primary_printer = false;
 
+        /// Flag to disable combination of hdf5 output (user will have to run the combination routines manually)
+        bool disable_combine_routines = false;
+
         /// Map containing pointers to all VertexBuffers contained in this printer
         // Note: Each buffer contains a bool to indicate whether it has done an "append" for the point "lastPointID"
         BaseBufferMap all_my_buffers;
