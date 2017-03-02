@@ -284,6 +284,9 @@ def spokePlots():
     matplotlib.rcParams['font.family'] = 'STIXGeneral'
     matplotlib.rcParams['font.size'] = 15
 
+    # Arrows option doesn't work quite right for log plots yet
+    arrows_opt = False
+
 #    SingletDM1_1 = genfromtxt("DarkBit/examples/runs/DarkBitSpokeSingletDM/samples/SingletDM1.out_0")
     SingletDM1_1 = genfromtxt("runs/DarkBitSpokeSingletDM/samples/Small_mS.out_0")
     SingletDM1_1_param = r'$m_S$'
@@ -381,10 +384,20 @@ def spokePlots():
         LUXlnL_MSSM1_1,LUXlnL_MSSM1_2,LUXlnL_CMSSM1_2,LUXlnL_CMSSM1_2))),cmax-21)
     plt.plot(mwimp_SingletDM1_1,sigma_SI_p_SingletDM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_SingletDM1_2,sigma_SI_p_SingletDM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_SingletDM1_1, sigma_SI_p_SingletDM1_1, [2,7])
+        arrows(mwimp_SingletDM1_2, sigma_SI_p_SingletDM1_2, [2,7])
     plt.plot(mwimp_MSSM1_1,sigma_SI_p_MSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_MSSM1_2,sigma_SI_p_MSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_MSSM1_1,sigma_SI_p_MSSM1_1, [3])
+        arrows(mwimp_MSSM1_2,sigma_SI_p_MSSM1_2, [8])
     plt.plot(mwimp_CMSSM1_1,sigma_SI_p_CMSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_CMSSM1_2,sigma_SI_p_CMSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_CMSSM1_1,sigma_SI_p_CMSSM1_1, [2,7])
+        arrows(mwimp_CMSSM1_2,sigma_SI_p_CMSSM1_2, [2,7])
+
     sc1 = ax1.scatter(concatenate((mwimp_SingletDM1_1,mwimp_SingletDM1_2)),
         concatenate((sigma_SI_p_SingletDM1_1,sigma_SI_p_SingletDM1_2)),
         c=concatenate((LUXlnL_SingletDM1_1,LUXlnL_SingletDM1_2)),
@@ -483,8 +496,14 @@ def spokePlots():
     cmin = max(min(concatenate((IceCubelnL_MSSM1_1,IceCubelnL_MSSM1_2,IceCubelnL_CMSSM1_1,IceCubelnL_CMSSM1_2))),cmax-21)
     plt.plot(mwimp_MSSM1_1,sigma_SD_p_MSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_MSSM1_2,sigma_SD_p_MSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_MSSM1_1, sigma_SD_p_MSSM1_1, [3])
+        arrows(mwimp_MSSM1_2, sigma_SD_p_MSSM1_2, [8])
     plt.plot(mwimp_CMSSM1_1,sigma_SD_p_CMSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_CMSSM1_2,sigma_SD_p_CMSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_CMSSM1_1, sigma_SD_p_CMSSM1_1, [2,7])
+        arrows(mwimp_CMSSM1_2, sigma_SD_p_CMSSM1_2, [2,7])
     sc2 = ax1.scatter(concatenate((mwimp_MSSM1_1,mwimp_MSSM1_2)),
         concatenate((sigma_SD_p_MSSM1_1,sigma_SD_p_MSSM1_2)),
         c=concatenate((IceCubelnL_MSSM1_1,IceCubelnL_MSSM1_2)),s=40,zorder=2,
@@ -535,10 +554,19 @@ def spokePlots():
         FermiDwarflnL_MSSM1_1,FermiDwarflnL_MSSM1_2,FermiDwarflnL_CMSSM1_1,FermiDwarflnL_CMSSM1_2))),cmax-21)
     plt.plot(mwimp_SingletDM1_1,sigmav_SingletDM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_SingletDM1_2,sigmav_SingletDM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_SingletDM1_1,sigmav_SingletDM1_1,[2,7])
+        arrows(mwimp_SingletDM1_2,sigmav_SingletDM1_2,[2,7])
     plt.plot(mwimp_MSSM1_1,sigmav_MSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_MSSM1_2,sigmav_MSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_MSSM1_1,sigmav_MSSM1_1,[2,8])
+        arrows(mwimp_MSSM1_2,sigmav_MSSM1_2,[2,8])
     plt.plot(mwimp_CMSSM1_1,sigmav_CMSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_CMSSM1_2,sigmav_CMSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_CMSSM1_1,sigmav_CMSSM1_1,[2,7])
+        arrows(mwimp_CMSSM1_2,sigmav_CMSSM1_2,[2,7])
     sc1 = ax1.scatter(concatenate((mwimp_SingletDM1_1,mwimp_SingletDM1_2)),
         concatenate((sigmav_SingletDM1_1,sigmav_SingletDM1_2)),
         c=concatenate((FermiDwarflnL_SingletDM1_1,FermiDwarflnL_SingletDM1_2)),
@@ -594,10 +622,19 @@ def spokePlots():
     cmin = max(min(concatenate((lnL_oh2_SingletDM1_1,lnL_oh2_SingletDM1_2,lnL_oh2_MSSM1_1,lnL_oh2_MSSM1_2,lnL_oh2_CMSSM1_1,lnL_oh2_CMSSM1_2))),cmax-21)
     plt.plot(mwimp_SingletDM1_1,RD_oh2_SingletDM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_SingletDM1_2,RD_oh2_SingletDM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_SingletDM1_1,RD_oh2_SingletDM1_1,[2,7])
+        arrows(mwimp_SingletDM1_2,RD_oh2_SingletDM1_2,[2,7])
     plt.plot(mwimp_MSSM1_1,RD_oh2_MSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_MSSM1_2,RD_oh2_MSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_MSSM1_1,RD_oh2_MSSM1_1,[2,7])
+        arrows(mwimp_MSSM1_2,RD_oh2_MSSM1_2,[2,7])
     plt.plot(mwimp_CMSSM1_1,RD_oh2_CMSSM1_1,c='k',zorder=1,ls="-.")
     plt.plot(mwimp_CMSSM1_2,RD_oh2_CMSSM1_2,c='k',zorder=1,ls="--")
+    if arrows_opt == True:
+        arrows(mwimp_CMSSM1_1,RD_oh2_CMSSM1_1,[2,7])
+        arrows(mwimp_CMSSM1_2,RD_oh2_CMSSM1_2,[2,7])
     sc1 = ax1.scatter(concatenate((mwimp_SingletDM1_1,mwimp_SingletDM1_2)),
         concatenate((RD_oh2_SingletDM1_1,RD_oh2_SingletDM1_2)),
         c=concatenate((lnL_oh2_SingletDM1_1,lnL_oh2_SingletDM1_2)),
@@ -643,6 +680,18 @@ def spokePlots():
 
     plt.savefig("RD_Spokes.eps")
     plt.show()
+
+# Adds arrows along spokes
+# x: array of x values of data points
+# y: array of y values of data points
+# points: data points where arrows appear
+# Needs to be modified to work correctly on log plots
+def arrows(x, y, points):
+    for i in points:
+        norm = sqrt((x[i+1] - x[i])**2 + (y[i+1] - y[i])**2)
+        plt.quiver(x[i],y[i], (x[i+1] - x[i])/norm, (y[i+1] - y[i])/norm,
+            angles='xy', scale_units='inches', scale=7, headwidth=9, headaxislength=3)
+
 
 if __name__ == '__main__':
     #plotMSSM7()
