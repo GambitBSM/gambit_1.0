@@ -53,7 +53,7 @@ namespace Gambit
   {
     std::ostringstream ss;
     ss << gambit_version_major << "." << gambit_version_minor << "." << gambit_version_revision;
-    if (gambit_version_patch != "") ss << "-" << gambit_version_patch;
+    if (!gambit_version_patch.empty()) ss << "-" << gambit_version_patch;
     return ss.str();
   }
 
