@@ -842,7 +842,7 @@ namespace Gambit
 
 
     // *************************************************
-    /// Calculating  B->tau nu_tau / B-> D e nu_e decays
+    /// Calculating  B-> D tau nu_tau / B-> D e nu_e decays
     // *************************************************
 
     void SI_RD(double &result)
@@ -859,6 +859,26 @@ namespace Gambit
       if(flav_debug) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_RD"<<endl;
     }
+
+    // *************************************************                     
+    /// Calculating  B->D tau nu_tau / B-> D e nu_e decays                     
+    // *************************************************                     
+
+    void SI_RDstar(double &result)
+    {
+      using namespace Pipes::SI_RDstar;
+
+      if(flav_debug)  cout<<"Starting SI_RDstart"<<endl;
+
+      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      if(param.model<0) result=0.;
+      else result = BEreq::BDstartaunu_BDstarenu(&param);
+
+      if(flav_debug) printf("BR(B->D* tau nu)/BR(B->D* e nu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_RD*"<<endl;
+    }
+
 
     // *************************************************
     /// Calculating B->K mu nu / B-> pi mu nu

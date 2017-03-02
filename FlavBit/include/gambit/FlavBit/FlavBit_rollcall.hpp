@@ -147,6 +147,18 @@ START_MODULE
    #undef FUNCTION
   #undef CAPABILITY
 
+// Observable: BR(B->D tau nu)/BR(B->D e nu)                                  
+  #define CAPABILITY RDstar
+  START_CAPABILITY
+    #define FUNCTION SI_RDstar
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
+    BACKEND_REQ(BDstartaunu_BDstarenu, (libsuperiso), double, (struct parameters*))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+   #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Observable: BR(K->mu nu)/BR(pi->mu nu)
   #define CAPABILITY Kmunu_pimunu
   START_CAPABILITY
