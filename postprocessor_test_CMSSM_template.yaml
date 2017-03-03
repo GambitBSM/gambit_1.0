@@ -2,22 +2,90 @@
 # out point reweighting
 #
 # To test this out, first run:
-# ./gambit -f largetest_multinest+ascii.yaml
+# ./gambit -f CMSSM.yaml
 # to generate output to be reweighted.
 # Then run this file.
 #
 # Ben Farmer <benjamin.farmer@fysik.su.se>
-# Feb 2015
+# Feb 2017
 #
  
 #======== Input parameter declarations =======
 Parameters: 
-  # Prior type is "none" because postprocessor 'scanner' will read in old points
-  NormalDist:
-    mu:
-      prior_type: none
-    sigma:
-      prior_type: none
+  # Prior types are set to "none" (default) because postprocessor 'scanner' will read in old points
+  # TODO: would be nice to be able to set this automatically for all parameters in a model...
+  StandardModel_SLHA2:
+      alphainv:
+         prior_type: none
+      alphaS  :
+         prior_type: none
+               
+      mBmB    :
+         prior_type: none
+      mT      :
+         prior_type: none
+               
+      GF      :
+         prior_type: none
+      mZ      :
+         prior_type: none
+      mTau    :
+         prior_type: none
+      mNu3    :
+         prior_type: none
+      # SLHA2
+      mD      :
+         prior_type: none
+      mU      :
+         prior_type: none
+      mS      :
+         prior_type: none
+      mCmC    :
+         prior_type: none
+      mE      :
+         prior_type: none
+      mMu     :
+         prior_type: none
+      mNu1    :
+         prior_type: none
+      mNu2    :
+         prior_type: none
+      
+      # CKM
+      CKM_lambda  : 
+         prior_type: none
+      CKM_A       : 
+         prior_type: none
+      CKM_rhobar  : 
+         prior_type: none
+      CKM_etabar  : 
+         prior_type: none
+      
+      # PMNS
+      theta12 : 
+         prior_type: none
+      theta23 : 
+         prior_type: none
+      theta13 : 
+         prior_type: none
+      delta13 : 
+         prior_type: none
+      alpha1  : 
+         prior_type: none
+      alpha2  : 
+         prior_type: none
+
+  CMSSM:
+    M0:
+         prior_type: none
+    M12:
+         prior_type: none
+    A0:
+         prior_type: none
+    TanBeta:
+         prior_type: none
+    SignMu:
+         prior_type: none
 
 #======== Prior setup ========
 #Priors:
@@ -36,8 +104,8 @@ Printer:
   # Output can be re-printed into a different format via the postprocessor
   printer: hdf5
   options:
-    output_file: "results_<RANK>.hdf5"
-    group: "/reweight_data"
+    output_file: "CMSSM_postprocess_<RANK>.hdf5"
+    group: "/"
     delete_file_on_restart: true
     # Current a special setting is required here to allow the postproccessing scanner to print to points in an erratic order.
     #postproccess_mode: true
@@ -50,20 +118,19 @@ Scanner:
 
     postprocess:
       plugin: postprocessor
-      # 'purpose' name assigned to log-likelihood for this 'scan'
-      like: LogLike3
+      # 'purpose' name assigned to log-likelihood for this 'scan'. Can overwrite old name, if 'permit_discard_old_likes' is 'true'.
+      like: LogLike_new
       # label given to result of likelihood reweighting. Can overwrite old name, if 'permit_discard_old_likes' is 'true'.
-      reweighted_like: reweighted_LogLike2
+      reweighted_like: LogLike
       # If the purpose name above collides with an entry in the selected input file 
       # (e.g. an old likelihood from the original scan), should the old data be discarded?
-      permit_discard_old_like: true
+      permit_discard_old_likes: true
       # List of labels in old output to treat as likelihoods to be added to the newly computed LogLike.
-      # It is assumed that these are stored as doubles. If they aren't, something unexpected may happen...
-      add_to_like: [LogLike, LogLike]
+      # Here we just add the full likelihood from the last run
+      add_to_like: [LogLike]
       # List of labels in old output to treat as likelihoods to be subtracted from the newly computed LogLike.
-      # (for example if you recompute a new likelihood component with a different tool, you may want to
-      #  subtract the old component here)
-      subtract_from_like: [LogLike, LogLike]
+      # We are recomputing the gm2 likelihood, so let's remove the old one here.
+      subtract_from_like: ["#lnL_gm2 @PrecisionBit::lnL_gm2_chi2"]
       # Note, there is no protection from adding then subtracting the same component, or from adding the same component twice etc.
       # More complicated arrangements of old + new likelihood components go beyond the goals of this scanner.
       # Use plotting tools for that kind of thing.
@@ -74,17 +141,13 @@ Scanner:
       use_virtual_rank: true 
 
       # Set interval between progress report messages to stdout (0 for no messages, default 1000)
-      #update_interval: 1000
+      update_interval: 10
       reader:
         # This determines what old output file is to be read and whose parameter points are to be used
         type: hdf5
-        #type: ascii
-        # Currently the asciiReader only works on one file, so they need to be combined before postprocessing. Just cat-ing them together should work.
-        #info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
-        #data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
-        #file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
-        file: "tmp.hdf5"
-        group: "/"
+        # Here we test on output from GAMBIT R1 results
+        file: "/net/archive/groups/plgggambit/R1_archive/R1_GUT/CMSSM_Diver_flat_pmu/samples/CMSSM.hdf5"
+        group: "CMSSM"
 
 #  objectives:
 #
@@ -94,14 +157,18 @@ Scanner:
                    
 #======== Observables of interest ========
 ObsLikes:
-  - purpose:      LogLike3
-    capability:   normaldist_loglike
-    module:       ExampleBit_A
-    type:         double
+    - capability:  lnL_gm2
+      purpose:     LogLike_unused
 
 #======== Rule entries ========
 Rules:
-  # None required
+  # Choose to use FeynHiggs for g-2 (was gm2calc in original scan)
+  - capability: muon_gm2
+    function: FH_precision_gm2
+
+  - capability: muon_gm2_SM
+    function: gm2_SM_ee
+
 
 #======== Logging setup ========
 Logger:
@@ -116,7 +183,7 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/postprocessor_test/"
+  default_output_path: "runs/postprocessor_test_CMSSM/"
 
   print_timing_data: false
 

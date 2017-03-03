@@ -134,6 +134,30 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
   /// The reader object in use for the scan
   Gambit::Printers::BaseBaseReader* reader;
+
+  // Retrieve an integer from an environment variable
+  int getintenv(const std::string& name)
+  {
+     int x;
+     if(const char* env_p = std::getenv(name.c_str()))
+     {
+       std::stringstream env_s(env_p); 
+       env_s >> x;  
+       if (!env_s) 
+       {      
+          std::ostringstream err;
+          err << "Tried to retrieve value of environment variable "<<name<<" as an integer, but conversion failed! String retrieved was '"<<env_s.str()<<"'";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+     }
+     else
+     {
+       std::ostringstream err;
+       err << "Tried to retrieve value of environment variable "<<name<<" as an integer, but it does not seem to be defined!";
+       scan_error().raise(LOCAL_INFO,err.str());
+     }
+     return x;
+  }
  
   /// The constructor to run when the plugin is loaded.
   plugin_constructor
@@ -173,6 +197,27 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     add_to_logl = get_inifile_value<std::vector<std::string>>("add_to_like", std::vector<std::string>());
     subtract_from_logl = get_inifile_value<std::vector<std::string>>("subtract_from_like", std::vector<std::string>());
     reweighted_loglike_name = get_inifile_value<std::string>("reweighted_like");
+
+    // Use virtual rank system?
+    if(get_inifile_value<bool>("use_virtual_rank",false))
+    {
+        #ifdef WITH_MPI
+        if(numtasks>1)
+        {
+          std::ostringstream err;
+          err << "You have set the 'use_virtual_rank' option for the postprocessor scanner plugin to 'true', which will allow the plugin to act as if it is part of an MPI ensemble when it really isn't, however you are also running this task in an MPI batch with size > 1! You cannot use the virtual rank system at the same time as running a real MPI job! Please choose one configuration or the other and rerun the job.";
+          scan_error().raise(LOCAL_INFO,err.str());
+        }
+        #endif
+        rank     = getintenv("RANK");
+        numtasks = getintenv("SIZE");
+        if(rank>=numtasks)
+        {
+          std::ostringstream err;
+          err << "Environment variable RANK was larger than permitted by SIZE ("<<numtasks<<">="<<rank<<") while running postprocessor scanner plugin with 'use_virtual_rank=true' option. This is not a valid MPI configuration, so it is an illegal choice of virtual configuration.";
+          scan_error().raise(LOCAL_INFO,err.str());
+        }
+    }
 
     // Finally, there is the 'Purpose' value of the likelihood container. This may well clash
     // with the old name used in the input file, so better check for this and make the user

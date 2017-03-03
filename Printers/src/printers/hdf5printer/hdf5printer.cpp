@@ -624,6 +624,9 @@ namespace Gambit
       this->setRank(myRank);
 #endif
 
+      // Disable output combination routines?
+      disable_combine_routines = options.getValueOrDef<bool>(false,"disable_combine_routines");
+
       if(not this->is_auxilliary_printer())
       {
         // Set up this printer in primary mode
@@ -1006,50 +1009,61 @@ namespace Gambit
       else
       {
         logger() << LogTags::repeat_to_cout << LogTags::info << "...Found "<<tmp_files.size()<<" process-level temporary files from a previous run. " << EOM;
-        logger() << LogTags::info << " Will now check to see if they are readable." << EOM;
-        // Check if temporary files from previous run are readable.
-        for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+
+        // Check if we are allowed to run the combine routines
+        if(not disable_combine_routines)
         {
-          std::string msg2;
-          if(not HDF5::checkFileReadable(*it, msg2))
-          {
-            // We are supposed to be resuming, but no readable output file was found, so we can't.
-            std::ostringstream errmsg;
-            errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate/read all the required temporary files from the previous run (possibly there is no unfinished run to continue from). Resuming is therefore not possible; aborting run... (see below for IO error messages)";
-            errmsg << std::endl << "IO message for temporary combined output file read attempt: ";
-            errmsg << std::endl << "    " << msg;
-            errmsg << std::endl << "IO message for temporary uncombined output file read attempt: ";
-            errmsg << std::endl << "    " << msg2;
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-          }
-        }
-        // Ok all the temporary files exist: combine them
-        // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
-        std::ostringstream logmsg;
-        if(combined_file_readable)
-        {
-          logmsg << " Temporary combined output file detected" << std::endl; 
-          logmsg << "  (found "<<tmp_comb_file<<")"<<std::endl;
-          logmsg << "  Will merge temporary files from last run into this file"<<std::endl;
-          logmsg << "  If run completes, results will be moved to "<<finalfile<<std::endl;
+           logger() << LogTags::info << " Will now check to see if they are readable." << EOM;
+           // Check if temporary files from previous run are readable.
+           for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+           {
+             std::string msg2;
+             if(not HDF5::checkFileReadable(*it, msg2))
+             {
+               // We are supposed to be resuming, but no readable output file was found, so we can't.
+               std::ostringstream errmsg;
+               errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate/read all the required temporary files from the previous run (possibly there is no unfinished run to continue from). Resuming is therefore not possible; aborting run... (see below for IO error messages)";
+               errmsg << std::endl << "IO message for temporary combined output file read attempt: ";
+               errmsg << std::endl << "    " << msg;
+               errmsg << std::endl << "IO message for temporary uncombined output file read attempt: ";
+               errmsg << std::endl << "    " << msg2;
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
+           }
+           // Ok all the temporary files exist: combine them
+           // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
+           std::ostringstream logmsg;
+           if(combined_file_readable)
+           {
+             logmsg << " Temporary combined output file detected" << std::endl; 
+             logmsg << "  (found "<<tmp_comb_file<<")"<<std::endl;
+             logmsg << "  Will merge temporary files from last run into this file"<<std::endl;
+             logmsg << "  If run completes, results will be moved to "<<finalfile<<std::endl;
+           }
+           else
+           {
+             logmsg << " No temporary combined output file detected" << std::endl; 
+             logmsg << "  (searched for "<<tmp_comb_file<<")"<<std::endl;
+             logmsg << "  Will attempt to create it from temporary files from last run"<<std::endl;
+             logmsg << "  If run completes, results will be moved to "<<finalfile<<std::endl;
+           }
+           logmsg << " Detected the following temporary files: " << std::endl;
+           for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+           {
+             logmsg << "   " << *it << std::endl;
+           }
+           logmsg << " Attempting combination into: "<< std::endl;
+           logmsg << "   " << tmp_comb_file;
+           logger() << LogTags::printers << LogTags::info << logmsg.str() << EOM;
+           combine_output(tmp_files,false);
+           logger() << LogTags::repeat_to_cout << LogTags::printers << LogTags::info << "...Combination complete!" << EOM;
         }
         else
         {
-          logmsg << " No temporary combined output file detected" << std::endl; 
-          logmsg << "  (searched for "<<tmp_comb_file<<")"<<std::endl;
-          logmsg << "  Will attempt to create it from temporary files from last run"<<std::endl;
-          logmsg << "  If run completes, results will be moved to "<<finalfile<<std::endl;
+           std::ostringstream errmsg;
+           errmsg << " Process level temporary HDF5 output was detected, however the 'disable_combine_routines' option is set for the HDF5 printer plugin. The combine code is therefore not permitted to run, so this job cannot proceed. Please either manually combine the output files, restart the scan, or set this option to 'false'" << std::endl;
+           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
-        logmsg << " Detected the following temporary files: " << std::endl;
-        for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
-        {
-          logmsg << "   " << *it << std::endl;
-        }
-        logmsg << " Attempting combination into: "<< std::endl;
-        logmsg << "   " << tmp_comb_file;
-        logger() << LogTags::printers << LogTags::info << logmsg.str() << EOM;
-        combine_output(tmp_files,false);
-        logger() << LogTags::repeat_to_cout << LogTags::printers << LogTags::info << "...Combination complete!" << EOM;
       }
     }
 
@@ -1202,8 +1216,16 @@ namespace Gambit
           if(myRank==0)
           {
             // Make sure all datasets etc are closed before doing this or else errors may occur.
-            logger() << LogTags::printers << "We are the master process: beginning combination of output files." << EOM;
-            combine_output(find_temporary_files(true),true);
+         
+            if(not disable_combine_routines)
+            {
+               logger() << LogTags::printers << "We are the master process: beginning combination of output files." << EOM;
+               combine_output(find_temporary_files(true),true);
+            }
+            else
+            {
+               logger() << LogTags::printers << "We are the master process: but 'disable_combine_routines' is set to true. SKIPPING combination of output files." << EOM;
+            }
           }
         }
         else
