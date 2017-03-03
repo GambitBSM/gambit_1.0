@@ -103,8 +103,6 @@ ObsLikes:
       capability: MSSM_spectrum
       type:       map_str_dbl
      
-
-
     # Calculate the LEP likelihoods
     - purpose:    LogLike
       capability: ALEPH_Selectron_LLike
