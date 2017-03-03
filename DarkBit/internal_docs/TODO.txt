@@ -10,10 +10,6 @@ Before internal paper review:
 - Finalize/delete/shorten discussion about max-gap method [FK/PS]
 
 After internal paper review started:
-- Redo spoke plots: [JC]
-  —to reflect new relic density likelihood
-  —add +/- to spoke plots to show how parameters are changing.
-  —larger fonts?
 - Add SuperCDMS bounds to SI validation plot and LUX 2015 proton bounds to SD plots. [JC]
 - Add discussion of Table 24 disagreements (related to <sigma v>_eff plots) [JC/?]
 - Figure 3 “exemplary” -> “example” [?]
@@ -89,6 +85,10 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Redo spoke plots: [JC]
+  —to reflect new relic density likelihood
+  —add +/- to spoke plots to show how parameters are changing.
+  —larger fonts?
 - Add small note discussing low mass disagreement in DD validation plots [FK]
 - Clarify nucleon matrix element section [JC]
 - Fix DDCalc validation figures [JC]

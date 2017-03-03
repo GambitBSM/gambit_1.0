@@ -304,7 +304,7 @@ def spokePlots():
     #MSSM1_2=genfromtxt("DarkBit/examples/runs/MSSM9/JE56C_003717/samples/mf2.out_0")
     MSSM1_2=genfromtxt("runs/MSSM7_spoke/samples/mHd2.txt_0")
     #MSSM1_2_param = r'$M_1$'
-    MSSM1_2_param = r'${M_{H_d}}^2$'
+    MSSM1_2_param = r'${m^2_{H_d}}$'
 
     #CMSSM1_1 = genfromtxt("DarkBit/examples/runs/CMSSM/FMCp03000765/samples/M12.out_0")
     CMSSM1_1 = genfromtxt("runs/CMSSM_spoke/samples/M12.txt_0")
@@ -427,6 +427,7 @@ def spokePlots():
     plt.gca().set_ylim(ymin=3*10**-47,ymax=3*10**-43)
     plt.gca().set_xticks([60,70,80,90,100,200,300,400,500])
     plt.gca().set_xticklabels(["60","","80","","100","200","300","400","500"])
+    plt.tight_layout(pad=0.3)
     plt.text(mwimp_SingletDM1_1[8]*1.05,sigma_SI_p_SingletDM1_1[8]*1.05,SingletDM1_1_param)
     plt.text(mwimp_SingletDM1_2[8]*1.05,sigma_SI_p_SingletDM1_2[8]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[1]*1.05,sigma_SI_p_MSSM1_1[1]*.95,MSSM1_1_param)
@@ -532,6 +533,7 @@ def spokePlots():
     plt.gca().set_ylim(ymin=3*10**-42,ymax=10**-37)
     plt.gca().set_xticks([60,70,80,90,100,200,300,400,500])
     plt.gca().set_xticklabels(["60","","80","","100","200","300","400","500"])
+    plt.tight_layout(pad=0.3)
     plt.text(mwimp_MSSM1_1[3]*.87,sigma_SD_p_MSSM1_1[3]*1.05,MSSM1_1_param)
     plt.text(mwimp_MSSM1_2[10]*1.05,sigma_SD_p_MSSM1_2[10]*.8,MSSM1_2_param)
     plt.text(mwimp_CMSSM1_1[0]*1.05,sigma_SD_p_CMSSM1_1[0]*1.05,CMSSM1_1_param)
@@ -600,6 +602,7 @@ def spokePlots():
     plt.gca().set_ylim(ymin=10**-28,ymax=10**-24)
     plt.gca().set_xticks([60,70,80,90,100,200,300,400,500])
     plt.gca().set_xticklabels(["60","","80","","100","200","300","400","500"])
+    plt.tight_layout(pad=0.3)
     plt.text(mwimp_SingletDM1_1[8]*1.05,sigmav_SingletDM1_1[8]*1.05,SingletDM1_1_param)
     plt.text(mwimp_SingletDM1_2[8]*1.05,sigmav_SingletDM1_2[8]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[4]*.85,sigmav_MSSM1_1[4]*1.05,MSSM1_1_param)
@@ -670,6 +673,7 @@ def spokePlots():
     plt.gca().set_ylim(ymin=0.01,ymax=5.)
     plt.gca().set_xticks([60,70,80,90,100,200,300,400,500])
     plt.gca().set_xticklabels(["60","","80","","100","200","300","400","500"])
+    plt.tight_layout(pad=0.3)
     plt.text(mwimp_SingletDM1_1[9]*1.05,RD_oh2_SingletDM1_1[9]*.85,SingletDM1_1_param)
     plt.text(mwimp_SingletDM1_2[3]*1.05,RD_oh2_SingletDM1_2[3]*1.05,SingletDM1_2_param)
     plt.text(mwimp_MSSM1_1[2]*1.05,RD_oh2_MSSM1_1[2]*1.05,MSSM1_1_param)
