@@ -6,10 +6,18 @@ Parameters:
   # Specify CMSSM parameter ranges and priors here
 
   CMSSM:
-    M0: 70
-    M12: 350
-    A0: 0
-    TanBeta: 10
+    M0:
+      range: [100, 5000]
+      prior_type: log
+    M12:
+      range: [100, 5000]
+      prior_type: log
+    A0:
+      range: [-7000, 7000]
+      prior_type: flat
+    TanBeta:
+      range: [3.0, 70]
+      prior_type: flat
     SignMu: 1
 
 Priors:
@@ -41,7 +49,7 @@ Scanner:
   # Random scanner setup is given below (can switch by using use_scanner: random)
 
 
-  use_scanner: random
+  use_scanner: multinest
 
   scanners:
     multinest:
@@ -269,19 +277,23 @@ Rules:
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:  
-      analysisNamesATLAS: ["ATLAS_13TeV_0LEP_13invfb"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           "ATLAS_3LEPEW_20invfb"]
 
   # Specify the list of CMS analyses to run
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
-      analysisNamesCMS: ["CMS_13TeV_0LEP_13invfb"]
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
 
   # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: 10000
+      nEvents: 5000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
 
   # These options set various tolerances in the spectrum generation
@@ -296,7 +308,7 @@ Rules:
   # Note that you must specify the path to the xmldoc
   # Note also that you can use normal Pythia options here
   - capability:  HardScatteringSim
-    function:  getPythiaFileReader
+    function:  getPythia
     options:
       ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
       ###   backend. So, this must only be set if the user chooses a different Pythia.
@@ -307,10 +319,13 @@ Rules:
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
                              "SUSY:all = on",
-                             "TauDecays:mode = 0",
-			     "Beams:eCM = 13000"]
-      SLHA_filenames:
-        - gg_100_1400.slha
+                             "TauDecays:mode = 0"]
+      # Add this option for 13 TeV LHC running
+                      #  "Beams:eCM = 13000"]
+
+      # Uncomment these lines if you want to use getPythiaFileReader
+      #SLHA_filenames:
+      #  - gg_100_1400.slha
 
 
 
