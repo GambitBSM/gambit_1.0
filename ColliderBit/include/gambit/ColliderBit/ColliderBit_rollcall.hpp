@@ -122,6 +122,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+#ifndef EXCLUDE_DELPHES
+  #define CAPABILITY DetAnalysisContainer
+  START_CAPABILITY
+    #define FUNCTION getDetAnalysisContainer
+    START_FUNCTION(HEPUtilsAnalysisContainer)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    #undef FUNCTION
+  #undef CAPABILITY
+#endif // not defined EXCLUDE_DELPHES
 
   /// Event capabilities
   #define CAPABILITY HardScatteringEvent
@@ -180,6 +190,19 @@ START_MODULE
 
   // A capability that calculates the log likelihood
   // Runs all analyses and fills vector of analysis results
+#ifndef EXCLUDE_DELPHES
+  #define CAPABILITY DetAnalysisNumbers
+  START_CAPABILITY
+    #define FUNCTION runDetAnalyses
+    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    DEPENDENCY(DetAnalysisContainer, HEPUtilsAnalysisContainer)
+    #undef FUNCTION
+  #undef CAPABILITY
+#endif // not defined EXCLUDE_DELPHES
+
   #define CAPABILITY ATLASAnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runATLASAnalyses
@@ -209,6 +232,9 @@ START_MODULE
     START_FUNCTION(double)
     DEPENDENCY(ATLASAnalysisNumbers, ColliderLogLikes)
     DEPENDENCY(CMSAnalysisNumbers, ColliderLogLikes)
+#ifndef EXCLUDE_DELPHES
+    DEPENDENCY(DetAnalysisNumbers, ColliderLogLikes)
+#endif // not defined EXCLUDE_DELPHES
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_GROUP(lnlike_marg_poisson)

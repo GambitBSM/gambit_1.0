@@ -114,13 +114,18 @@ namespace Gambit
     bool eventsGenerated;
     int nEvents, seedBase;
     /// Analysis stuff
-    bool useATLAS;
+    bool useBuckFastATLASDetector;
     std::vector<std::string> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
-    bool useCMS;
+    bool useBuckFastCMSDetector;
     std::vector<std::string> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
-
+#ifndef EXCLUDE_DELPHES
+    bool useDelphesDetector;
+    std::vector<std::string> analysisNamesDet;
+    HEPUtilsAnalysisContainer globalAnalysesDet;
+#endif // not defined EXCLUDE_DELPHES
+    
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -148,7 +153,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0);
+      //std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -436,49 +441,58 @@ namespace Gambit
 
     /// *** Detector Simulators ***
 
-    #ifndef EXCLUDE_DELPHES
-      void getDelphes(Gambit::ColliderBit::DelphesVanilla &result)
-      {
-        using namespace Pipes::getDelphes;
-        std::vector<std::string> delphesOptions;
-        if (*Loop::iteration == START_SUBPROCESS)
-        {
-          result.clear();
-          // Reset Options
-          delphesOptions.clear();
-          std::string delphesConfigFile;
-          GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
-          delphesOptions.push_back(delphesConfigFile);
-          // Setup new Delphes
-          result.init(delphesOptions);
-        }
-      }
-    #endif
-
-
+#ifndef EXCLUDE_DELPHES
+    void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
+      using namespace Pipes::getDelphes;
+      std::vector<std::string> delphesOptions;
+      if (*Loop::iteration == BASE_INIT)
+        useDelphesDetector = runOptions->getValueOrDef<bool>(false, "useDelphesDetector");
+      if (*Loop::iteration == INIT and useDelphesDetector)
+	{
+	  result.clear();
+	  // Reset Options
+	  delphesOptions.clear();
+	  std::string delphesConfigFile;
+	  GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
+	  delphesOptions.push_back(delphesConfigFile);
+	  // Setup new Delphes
+	  result.init(delphesOptions);
+	}
+    }
+#endif // not defined EXCLUDE_DELPHES
+    
+  
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
-      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
-      if (*Loop::iteration == START_SUBPROCESS and useATLAS)
+      bool partonOnly;
+      double antiktR;
+      if (*Loop::iteration == BASE_INIT)
+        useBuckFastATLASDetector = runOptions->getValueOrDef<bool>(true, "useBuckFastATLASDetector");
+      if (*Loop::iteration == INIT and useBuckFastATLASDetector)
       {
-        // Setup new BuckFast:
         result.clear();
+        // Setup new BuckFast:
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
         result.init(partonOnly, antiktR);
       }
     }
 
 
-    void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
+   void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
     {
       using namespace Pipes::getBuckFastCMS;
-      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
-      if (*Loop::iteration == START_SUBPROCESS and useCMS)
+      bool partonOnly;
+      double antiktR;
+      if (*Loop::iteration == BASE_INIT)
+        useBuckFastCMSDetector = runOptions->getValueOrDef<bool>(true, "useBuckFastCMSDetector");
+      if (*Loop::iteration == INIT and useBuckFastCMSDetector)
       {
-        // Setup new BuckFast:
         result.clear();
+        // Setup new BuckFast
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
         result.init(partonOnly, antiktR);
       }
     }
@@ -487,32 +501,71 @@ namespace Gambit
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
     {
       using namespace Pipes::getBuckFastIdentity;
-      static bool partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-      static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
-      if (*Loop::iteration == START_SUBPROCESS)
-      {
-        // Setup new BuckFast:
-        result.clear();
-        result.init(partonOnly, antiktR);
-      }
+      bool partonOnly;
+      double antiktR;
+      if (*Loop::iteration == INIT)
+	{
+	  result.clear();
+	  // Setup new BuckFast
+	  partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+	  antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+	  result.init(partonOnly, antiktR);
+	}
     }
-
-
+    
+    
     /// *** Initialization for analyses ***
 
-    void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+#ifndef EXCLUDE_DELPHES
+    void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getDetAnalysisContainer;
+      if (!useDelphesDetector) return;
+      
+      if (*Loop::iteration == BASE_INIT) {
+        GET_COLLIDER_RUNOPTION(analysisNamesDet, std::vector<std::string>);
+        globalAnalysesDet.clear();
+        globalAnalysesDet.init(analysisNamesDet);
+        return;
+      }
+      
+      if (*Loop::iteration == START_SUBPROCESS)
+	{
+	  // Each thread gets its own Analysis container.
+	  // Thus, their initialization is *after* INIT, within omp parallel.
+	  result.clear();
+	  result.init(analysisNamesDet);
+	  return;
+	}
+      
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+	{
+	  const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+	  const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+	  result.add_xsec(xs_fb, xserr_fb);
+	  
+	  // Combine results from the threads together
+#pragma omp critical (access_globalAnalyses)
+	  {
+	    globalAnalysesDet.add(result);
+	    // Use improve_xsec to combine results from the same process type
+	    globalAnalysesDet.improve_xsec(result);
+	  }
+	  return;
+	}
+      
+    }
+#endif // not defined EXCLUDE_DELPHES
+    
+       void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
-      if (*Loop::iteration == BASE_INIT)
-      {
+      if (!useBuckFastATLASDetector) return;
+
+      if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
-        useATLAS = !analysisNamesATLAS.empty();
-        if (!useATLAS) return;
         globalAnalysesATLAS.clear();
         globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
       }
-
-      if (!useATLAS) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -543,17 +596,14 @@ namespace Gambit
 
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
-      if (*Loop::iteration == BASE_INIT)
-      {
+      if (!useBuckFastCMSDetector) return;
+
+      if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
-        useCMS = !analysisNamesCMS.empty();
-        if (!useCMS) return;
         globalAnalysesCMS.clear();
         globalAnalysesCMS.init(analysisNamesCMS);
         return;
       }
-
-      if (!useCMS) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -583,6 +633,7 @@ namespace Gambit
     }
 
 
+
     /// *** Hard Scattering Event Generators ***
 
     void generatePythia8Event(Pythia8::Event& result)
@@ -609,32 +660,40 @@ namespace Gambit
 
     /// *** Standard Event Format Functions ***
 
-    #ifndef EXCLUDE_DELPHES
-      void reconstructDelphesEvent(HEPUtils::Event& result) {
-        using namespace Pipes::reconstructDelphesEvent;
-        if (*Loop::iteration <= BASE_INIT) return;
-        result.clear();
+  #ifndef EXCLUDE_DELPHES
+    void reconstructDelphesEvent(HEPUtils::Event& result) {
+      using namespace Pipes::reconstructDelphesEvent;
+      if (*Loop::iteration <= BASE_INIT or !useDelphesDetector) return;
+      result.clear();
 
-        #pragma omp critical (Delphes)
-        {
+#pragma omp critical (Delphes)
+      {
+        try {
           (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
+        } catch (std::domain_error& e) {
+          std::cerr<<"\n== ColliderBit Warning ==";
+          std::cerr<<"\n   Event problem: "<<e.what();
+          std::cerr<<"\n   See ColliderBit log for event details.";
+          std::stringstream ss;
+          Dep::HardScatteringEvent->list(ss, 1);
+          logger() << ss.str() << EOM;
+	  throw e;
         }
       }
-    #endif
+    }
+#endif // not defined EXCLUDE_DELPHES
+    
 
-    void smearEventATLAS(HEPUtils::Event& result) {
+      void smearEventATLAS(HEPUtils::Event& result) {
       using namespace Pipes::smearEventATLAS;
-      if (*Loop::iteration <= BASE_INIT or !useATLAS) return;
+      if (*Loop::iteration <= BASE_INIT or !useBuckFastATLASDetector) return;
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      try
-      {
-        Dep::SimpleSmearingSim->processEvent(*Dep::HardScatteringEvent, result);
-      }
-      catch (std::domain_error& e)
-      {
-        #pragma omp critical (event_warning)
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
         {
           std::cerr<<"\n== ColliderBit Warning ==";
           std::cerr<<"\n   Event problem: "<<e.what();
@@ -649,17 +708,14 @@ namespace Gambit
 
     void smearEventCMS(HEPUtils::Event& result) {
       using namespace Pipes::smearEventCMS;
-      if (*Loop::iteration <= BASE_INIT or !useCMS) return;
+      if (*Loop::iteration <= BASE_INIT or !useBuckFastCMSDetector) return;
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      try
-      {
-        Dep::SimpleSmearingSim->processEvent(*Dep::HardScatteringEvent, result);
-      }
-      catch (std::domain_error& e)
-      {
-        #pragma omp critical (event_warning)
+      try {
+        (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
+      } catch (std::domain_error& e) {
+#pragma omp critical (event_warning)
         {
           std::cerr<<"\n== ColliderBit Warning ==";
           std::cerr<<"\n   Event problem: "<<e.what();
@@ -671,7 +727,6 @@ namespace Gambit
         throw e;
       }
     }
-
 
     void copyEvent(HEPUtils::Event& result) {
       using namespace Pipes::copyEvent;
@@ -702,10 +757,32 @@ namespace Gambit
 
     /// *** Analysis Accumulators ***
 
+#ifndef EXCLUDE_DELPHES
+    void runDetAnalyses(ColliderLogLikes& result)
+    {
+      using namespace Pipes::runDetAnalyses;
+      if (!useDelphesDetector) return;
+      if (*Loop::iteration == FINALIZE && eventsGenerated) {
+        // The final iteration: get log likelihoods for the analyses
+        result.clear();
+        globalAnalysesDet.scale();
+        for (auto anaPtr = globalAnalysesDet.analyses.begin();
+                  anaPtr != globalAnalysesDet.analyses.end(); ++anaPtr)
+          result.push_back((*anaPtr)->get_results());
+        return;
+      }
+
+      if (*Loop::iteration <= BASE_INIT) return;
+
+      // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      Dep::DetAnalysisContainer->analyze(*Dep::ReconstructedEvent);
+    }
+#endif // not defined EXCLUDE_DELPHES
+    
     void runATLASAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runATLASAnalyses;
-      if (!useATLAS) return;
+      if (!useBuckFastATLASDetector) return;
       if (*Loop::iteration == FINALIZE && eventsGenerated)
       {
         // The final iteration: get log likelihoods for the analyses
@@ -727,7 +804,7 @@ namespace Gambit
     void runCMSAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runCMSAnalyses;
-      if (!useCMS) return;
+      if (!useBuckFastCMSDetector) return;
       if (*Loop::iteration == FINALIZE && eventsGenerated)
       {
         // The final iteration: get log likelihoods for the analyses
@@ -763,13 +840,16 @@ namespace Gambit
         return;
       }
       ColliderLogLikes analysisResults;
-      if(useATLAS)
+      if(useBuckFastATLASDetector)
         analysisResults.insert(analysisResults.end(),
                 Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
-      if(useCMS)
+      if(useBuckFastCMSDetector)
         analysisResults.insert(analysisResults.end(),
                 Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
-
+#ifndef EXCLUDE_DELPHES
+      if (useDelphesDetector)
+        analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
+#endif
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis)

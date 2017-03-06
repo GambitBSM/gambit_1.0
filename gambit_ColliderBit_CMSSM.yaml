@@ -6,18 +6,10 @@ Parameters:
   # Specify CMSSM parameter ranges and priors here
 
   CMSSM:
-    M0:
-      range: [100, 5000]
-      prior_type: log
-    M12:
-      range: [100, 5000]
-      prior_type: log
-    A0:
-      range: [-7000, 7000]
-      prior_type: flat
-    TanBeta:
-      range: [3.0, 70]
-      prior_type: flat
+    M0: 70
+    M12: 350
+    A0: 0
+    TanBeta: 10
     SignMu: 1
 
 Priors:
@@ -49,7 +41,7 @@ Scanner:
   # Random scanner setup is given below (can switch by using use_scanner: random)
 
 
-  use_scanner: multinest
+  use_scanner: random
 
   scanners:
     multinest:
@@ -58,13 +50,13 @@ Scanner:
       nlive: 4000
       tol: 0.5
 
-    #random:
-    #  plugin: random
-    #  point_number: 1
-    #  output_file:  output
-    #  like:  Likelihood
-    #  files:
-    #    output_file: "weights ..."
+    random:
+      plugin: random
+      point_number: 1
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
   
 
 ObsLikes:
@@ -151,13 +143,13 @@ ObsLikes:
 
     # Calculate the LEP Higgs likelihood
 
-    - purpose:    LogLike
-      capability: LEP_Higgs_LogLike
+    #- purpose:    LogLike
+    #  capability: LEP_Higgs_LogLike
 
     # Calculate the LHC Higgs likelihood
       
-    - purpose:    LogLike
-      capability: LHC_Higgs_LogLike
+    #- purpose:    LogLike
+    #  capability: LHC_Higgs_LogLike
 
 Rules:
 
@@ -212,48 +204,84 @@ Rules:
   - capability: Higgs_Couplings
     function: MSSM_higgs_couplings_pwid
 
- # Specify the use of BuckFast for the ATLAS simulator (and set the jet radius)
+ ##### LHC Detector and Analysis rules #####
+  #
+  # The current capability structure allows for the user to mix'n'match
+  # detector sims and analyses. The user may run BuckFastATLAS with ATLAS
+  # analyses, BuckFastCMS with CMS analyses, and Delphes with any analyses.
+  #
+  # The way to turn these features on or off is via the booleans useDelphesDetector,
+  # useBuckFastATLASDetector, and useBuckFastCMSDetector within the getDelphes, getBuckFastATLAS, and
+  # getBuckFastCMS functions, respectively.
+  #
+  # For example, in this file the delphesConfigFile is set to an ATLAS config
+  # file, and DetAnalysisContainer is set to use ATLAS analyses. Thus, if we set
+  # useDelphesDetector=true, useBuckFastATLASDetector=false, and useBuckFastCMSDetector=true, then the ATLAS analyses will
+  # run on the reconstructed events from Delphes, and the CMS analyses will run
+  # on the simply smeared events from BuckFastCMS.
+  #
+  # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
+
+  # Delphes rules and options (ex. the Delphes configuration card file)
+  # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
+  - capability: DetectorSim
+    type: "Gambit::ColliderBit::DelphesVanilla"
+    function: getDelphes
+    options:
+      #useDelphesDetector defaults to false, which ignores all "Det" analyses and disables Delphes
+      useDelphesDetector: true
+      # Choose which type of event to use: for parton level, change partonOnly to true
+      delphesConfigFile: "ColliderBit/data/delphes_card_ATLAS.tcl"
+
+  # BuckFast for ATLAS rules and options (ex. the jet radius)
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
+      #useBuckFastATLASDetector defaults to true. Set it to false to ignore all ATLAS analyses and disable the BuckFast ATLAS simulator
+      useBuckFastATLASDetector: true
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: false
       antiktR: 0.4
 
-  # Specify the use of BuckFast for the CMS simulator (and set the jet radius)
+  # BuckFast for CMS rules and options (ex. the jet radius)
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
+      #useBuckFastCMSDetector defaults to true. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
+      useBuckFastCMSDetector: true
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: false
-      antiktR: 0.5
+      antiktR: 0.4
 
-  # Here we specify the list of ATLAS analyses to run
+  # Specify the list of analyses to run after Delphes performs detector simulation
+  # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
+  - capability: DetAnalysisContainer
+    function: getDetAnalysisContainer
+    options:  
+      analysisNamesDet: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                         "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                         "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                         "ATLAS_3LEPEW_20invfb"]
+
+  # Specify the list of ATLAS analyses to run
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:  
-      #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
-      useATLAS: true
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
-                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
-                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                           "ATLAS_3LEPEW_20invfb"]
+      analysisNamesATLAS: ["ATLAS_13TeV_0LEP_13invfb"]
 
+  # Specify the list of CMS analyses to run
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
-      #useCMS defaults to true anyways. Set it to false to ignore all these analyses
-      useCMS: true
-      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
-                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
+      analysisNamesCMS: ["CMS_13TeV_0LEP_13invfb"]
 
   # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: 20000
+      nEvents: 10000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
 
   # These options set various tolerances in the spectrum generation
@@ -268,7 +296,7 @@ Rules:
   # Note that you must specify the path to the xmldoc
   # Note also that you can use normal Pythia options here
   - capability:  HardScatteringSim
-    function:  getPythia
+    function:  getPythiaFileReader
     options:
       ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
       ###   backend. So, this must only be set if the user chooses a different Pythia.
@@ -279,13 +307,19 @@ Rules:
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
                              "SUSY:all = on",
-                             "TauDecays:mode = 0"]
+                             "TauDecays:mode = 0",
+			     "Beams:eCM = 13000"]
+      SLHA_filenames:
+        - gg_100_1400.slha
+
+
 
     # Use lognormal errors when marginalising the LHC Poisson likelihoods over systematic uncertainties
     # Can change "_lognormal_" to "_gaussian_" if you prefer
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
+
 
     # Set the names of key log files
 
