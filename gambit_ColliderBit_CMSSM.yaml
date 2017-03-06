@@ -247,7 +247,7 @@ Rules:
     function: getBuckFastATLAS
     options:
       #useBuckFastATLASDetector defaults to true. Set it to false to ignore all ATLAS analyses and disable the BuckFast ATLAS simulator
-      useBuckFastATLASDetector: true
+      useBuckFastATLASDetector: false
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: false
       antiktR: 0.4

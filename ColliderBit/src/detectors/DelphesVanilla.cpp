@@ -34,14 +34,12 @@ namespace Gambit {
         pdg(nullptr) {}
 
       ~DelphesVanillaImpl() {
-        delete confReader; confReader=nullptr;
-        /// @todo Hmm... I wonder whether or not Delphes cleans up its own memory?
-        delete factory; factory=nullptr;
-        delete allParticleOutputArray; allParticleOutputArray=nullptr;
-        delete stableParticleOutputArray; stableParticleOutputArray=nullptr;
-        delete partonOutputArray; partonOutputArray=nullptr;
-        delete pdg; pdg=nullptr;
-        delete modularDelphes; modularDelphes = nullptr;
+        if(confReader)
+          delete confReader;
+        if(modularDelphes) {
+          modularDelphes->Clear();
+          delete modularDelphes;
+        }
       }
 
       ////////////////////
@@ -102,7 +100,8 @@ namespace Gambit {
 
 
     void DelphesVanilla::clear() {
-      delete _impl;
+      if(_impl)
+        delete _impl;
       _impl = nullptr;
     }
 
