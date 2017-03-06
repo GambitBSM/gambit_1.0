@@ -49,7 +49,6 @@ Scanner:
   # Random scanner setup is given below (can switch by using use_scanner: random)
 
 
-
   use_scanner: multinest
 
   scanners:
@@ -58,13 +57,6 @@ Scanner:
       like:  LogLike
       nlive: 4000
       tol: 0.5
-      mmodal: 1
-      # write native MultiNest ascii output files?
-      outfile: 1
-      # No options to set, but still need the nodes at the moment...
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
 
     #random:
     #  plugin: random
@@ -107,7 +99,10 @@ ObsLikes:
     - purpose:    Observable
       capability: SLHA1_violation
 
-
+    - purpose:    Observable
+      capability: MSSM_spectrum
+      type:       map_str_dbl
+     
     # Calculate the LEP likelihoods
     - purpose:    LogLike
       capability: ALEPH_Selectron_LLike
@@ -189,32 +184,35 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use v2.11.3 of FeynHiggs for everything
-  # does not work yet
-  #- backend: FeynHiggs
-  #  version: 2.11.3
-
-  # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
-  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
-  # with the FH error estimate, to estimate the theoretical error on the prediction.
+  # Choose where to get the precision spectrum from
   - capability: MSSM_spectrum
-    options:
-      Higgs_predictions_source: 1
-      Higgs_predictions_error_method: 4
+    type: Spectrum
+    function: make_MSSM_precision_spectrum_none
 
-  # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
-  - capability: A0_decay_rates
-    function: FH_A0_decays
+
+  # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
+  - capability: Reference_SM_Higgs_decay_rates
+    function: Ref_SM_Higgs_decays_table
+  - capability: Reference_SM_other_Higgs_decay_rates
+    function: Ref_SM_other_Higgs_decays_table
+  - capability: Reference_SM_A0_decay_rates
+    function: Ref_SM_A0_decays_table
   - capability: Higgs_decay_rates
-    function: FH_MSSM_h0_1_decays
-  - capability: H_plus_decay_rates
-    function: FH_H_plus_decays
+    function: MSSM_h0_1_decays
   - capability: h0_2_decay_rates
-    function: FH_h0_2_decays
+    function: h0_2_decays
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
   - capability: t_decay_rates
-    function: FH_t_decays
+    function: t_decays
 
-  # Specify the use of BuckFast for the ATLAS simulator (and set the jet radius)
+ # Choose where to get the Higgs couplings from
+  - capability: Higgs_Couplings
+    function: MSSM_higgs_couplings_pwid
+
+ # Specify the use of BuckFast for the ATLAS simulator (and set the jet radius)
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
