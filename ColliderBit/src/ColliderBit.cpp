@@ -152,8 +152,9 @@ namespace Gambit
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
-      // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0);
+      // Should we silence stdout during the loop?
+      bool silenceLoop = runOptions->getValueOrDef<bool>(true, "silenceLoop");
+      if (silenceLoop) std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -182,8 +183,9 @@ namespace Gambit
           Loop::executeIteration(END_SUBPROCESS);
         }
       }
+
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
-      std::cout.rdbuf(coutbuf);
+      if (silenceLoop) std::cout.rdbuf(coutbuf);
 
       // Check for exceptions
       piped_invalid_point.check();
@@ -3362,6 +3364,17 @@ namespace Gambit
       }
 
     }
+
+
+
+    // Dummy observable that creates a dependency on TestModel1D, which is used to satisfy the normal 
+    // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to run 
+    // ColliderBit on a single point with a custom Pythia version, using Pythia's SLHA interface. 
+    void getDummyColliderObservable(double& result)
+    {
+      result = 0.0;
+    }
+
 
     /// @}
 
