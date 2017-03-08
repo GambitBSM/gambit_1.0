@@ -23,6 +23,6 @@
 
 // Choose default versions here, using underscores instead of periods
 #define  Default_gm2calc 1_3_0
-#define  Default_Pythia 8_212_EM
+#define  Default_Pythia 8_212
 
 #endif

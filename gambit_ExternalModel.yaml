@@ -50,6 +50,9 @@ Printer:
 
 Scanner:
 
+  # Use the random scanner and run one point
+  # Note that these parameters are not used
+  # It will simply run Pythia on the SLHA file provided below
   use_scanner: random
 
   scanners:
@@ -188,8 +191,10 @@ Rules:
     backends:
     - {backend: Pythia,  version: 8.212.EM}
     options:
-      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
-      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      # Point GAMBIT to the version of Pythia that has the external model example included
+      # Specify the Pythia options (and tell Pythia to run the new model)
+      # Specify the SLHA file that Pythia will use to run the model
+      
       Pythia_doc_path: "Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"
       Pythia_external: ["UserModel:all = on",
 		        "PartonLevel:MPI = off",
@@ -228,7 +233,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/gambit_Collider"
+  default_output_path: "runs/gambit_External"
 
   dependency_resolution:
     prefer_model_specific_functions: true
@@ -243,4 +248,4 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
 
-  default_output_path: "runs/ColliderBit_test/"
+
