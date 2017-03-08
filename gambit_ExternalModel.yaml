@@ -28,17 +28,21 @@ Parameters:
 
 Printer:
 
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
-  printer: ascii
+  # These lines tell GAMBIT to use the hdf5 printer
+  # Can switch to the ascii printer by commenting out and
+  # using the ascii lines below
 
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
+  printer: hdf5
+
   options:
-    # name of output file
-    output_file: "gambit_output.txt"
+    output_file: "External.hdf5"
+    group: "/External"
+    delete_file_on_restart: true
+
+  #printer: ascii
+
+  #options:
+  #  output_file: "gambit_output.txt"
 
 ##############################
 # Scanner setup
@@ -231,6 +235,7 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
+    debug: true
 
   #By default, errors are fatal and warnings non-fatal
   exceptions:
