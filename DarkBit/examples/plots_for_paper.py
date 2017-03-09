@@ -205,10 +205,14 @@ def plotLUX():
     #plt.show()
     plt.savefig("DarkBit_SI_sigma_m.eps",bbox_inches="tight")
   
+    plt.gca().set_ylim(ymin=10**-46,ymax=10**-38)
+    plt.savefig("DarkBit_SI_sigma_m_high_sigma.eps",bbox_inches="tight")
+
     # SD proton scattering
     plt.clf()
     plt.figure(figsize=(5, 4))
 
+    pandaxsd = loadtxt("./PandaX_2016_SDp_table.dat")
     luxsd = loadtxt("./LUX_2013_SDp_table.dat")
     pico60 = loadtxt("./PICO_60_F_table.dat")
     simple = loadtxt("./SIMPLE_2014_table.dat")
@@ -230,8 +234,14 @@ def plotLUX():
     m_SIMPLE = simple[0, 1:]
     lnL_SIMPLE = -simple[1:, 1:]
     lnL_SIMPLE -= lnL_SIMPLE.min()
+    s_PandaX = pandaxsd[1:, 0]
+    m_PandaX = pandaxsd[0, 1:]
+    lnL_PandaX = -pandaxsd[1:, 1:]
+    lnL_PandaX -= lnL_PandaX.min()
+
 
     #simple_lim = genfromtxt("./DarkBit/examples/limits/SIMPLE_2014_SDp.csv",delimiter=",")
+    pandax_lim = genfromtxt("./DarkBit/examples/limits/PandaX_SD.dat")
     pico60_lim = genfromtxt("./DarkBit/examples/limits/PICO60_SDp_2015Oct16_90CL.csv",delimiter=",")
     pico2L_lim = genfromtxt("./DarkBit/examples/limits/PICO_2L_2016_SDp.txt")
     luxsd_lim = genfromtxt("./DarkBit/examples/limits/LUX_2013_SD_proton.txt")
@@ -242,13 +252,17 @@ def plotLUX():
     #simple_plt.collections[0].set_label("SIMPLE")
     lux_plt = plt.contour(m_LUX, s_LUX, lnL_LUX, levels = [2.71/2], colors='r')
     lux_plt.collections[0].set_label("LUX")
+    pandax_plt = plt.contour(m_PandaX, s_PandaX, lnL_PandaX, levels = [2.71/2], colors='b')
+    pandax_plt.collections[0].set_label("PandaX")
     pico60_plt = plt.contour(m_PICO60, s_PICO60, lnL_PICO60, levels = [2.71/2], colors='g')
     pico60_plt.collections[0].set_label("PICO 60")
     pico2L_plt = plt.contour(m_PICO2L, s_PICO2L, lnL_PICO2L, levels = [2.71/2], colors='k')
     pico2L_plt.collections[0].set_label("PICO 2L")
 
+
     #plt.plot(simple_lim[:,0],simple_lim[:,1]*10**-36,ls="--", color='r')
     plt.plot(luxsd_lim[:,0],luxsd_lim[:,1]*10**-36,ls="--", color='r')
+    plt.plot(pandax_lim[:,0],pandax_lim[:,1],ls="--", color='b')
     plt.plot(pico60_lim[:,0],pico60_lim[:,1]*10**-40,ls="--",color='g')
     plt.plot(pico2L_lim[:,0],pico2L_lim[:,1],ls="--",color='k')
 
@@ -699,8 +713,8 @@ def arrows(x, y, points):
 
 if __name__ == '__main__':
     #plotMSSM7()
-    spokePlots()
+    #spokePlots()
     #plotLimits()
     #plotSpectraValidation()
     #plotSpectraCascade()
-    #plotLUX()
+    plotLUX()
