@@ -708,8 +708,8 @@ int main(int argc, char* argv[])
       dump_array_to_file("SuperCDMS_2014_table.dat", lnL_array5, m_list, s_list);
 
       s_list = daFunk::logspace(-41., -35., sBins);
-      // Calculate array of sigma_SD,p and lnL values for PICO-60, LUX 2013 and
-      // SIMPLE 2014, assuming gps=gns
+      // Calculate array of sigma_SD,p and lnL values for PICO-60, LUX 2013,
+      // SIMPLE 2014, and PandaX assuming gna=0
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -756,8 +756,11 @@ int main(int argc, char* argv[])
           SIMPLE_2014_Calc.reset_and_calculate();
           SIMPLE_2014_GetLogLikelihood.reset_and_calculate();
           lnL3 = SIMPLE_2014_GetLogLikelihood(0);
+          SIMPLE_2014_Calc.reset_and_calculate();
+          SIMPLE_2014_GetLogLikelihood.reset_and_calculate();
+          lnL3 = SIMPLE_2014_GetLogLikelihood(0);
 
-          // Re-initialize DDCalc with LUX 2013 halo parameters
+          // Re-initialize DDCalc with LUX 2013 halo parameters (and PandaX?)
           Halo_primary_parameters->setValue("rho0", 0.3);
           Halo_primary_parameters->setValue("vrot", 232.7); // v_Earth = 245 km/s
           Halo_primary_parameters->setValue("v0", 220.);
@@ -768,16 +771,21 @@ int main(int argc, char* argv[])
           LUX_2013_Calc.reset_and_calculate();
           LUX_2013_GetLogLikelihood.reset_and_calculate();
           lnL4 = LUX_2013_GetLogLikelihood(0);
+          PandaX_2016_Calc.reset_and_calculate();
+          PandaX_2016_GetLogLikelihood.reset_and_calculate();
+          lnL5 = PandaX_2016_GetLogLikelihood(0);
 
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
           lnL_array4[i][j] = lnL4;
+          lnL_array5[i][j] = lnL5;
 
           std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
           std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
           std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
           std::cout << "LUX_2013 SD,p lnL = " << lnL4 << std::endl;
+          std::cout << "PandaX_2016_SD,p lnL = " << lnL5 << std::endl;
         }
       }
 
@@ -793,6 +801,7 @@ int main(int argc, char* argv[])
       dump_array_to_file("PICO_2L_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("SIMPLE_2014_table.dat", lnL_array3, m_list, s_list);
       dump_array_to_file("LUX_2013_SDp_table.dat", lnL_array4, m_list, s_list);
+      dump_array_to_file("PandaX_2016_SDp_table.dat", lnL_array5, m_list, s_list);
     }
   }
 
