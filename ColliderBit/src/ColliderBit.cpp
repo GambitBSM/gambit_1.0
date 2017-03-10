@@ -447,19 +447,31 @@ namespace Gambit
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
+
       if (*Loop::iteration == BASE_INIT)
+      {
         useDelphesDetector = runOptions->getValueOrDef<bool>(false, "useDelphesDetector");
+
+        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
+        if (useDelphesDetector and omp_get_max_threads()>1)
+        {
+          str errmsg = "\nDelphes is not threadsafe and cannot be used with OMP_NUM_THREADS>1.\n";
+          errmsg    += "Either set OMP_NUM_THREADS=1 or switch to a threadsafe detector simulator, e.g. BuckFast.";
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
+      }
       if (*Loop::iteration == INIT and useDelphesDetector)
-	{
-	  result.clear();
-	  // Reset Options
-	  delphesOptions.clear();
-	  std::string delphesConfigFile;
-	  GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
-	  delphesOptions.push_back(delphesConfigFile);
-	  // Setup new Delphes
-	  result.init(delphesOptions);
-	}
+      {
+        result.clear();
+        // Reset Options
+        delphesOptions.clear();
+        std::string delphesConfigFile;
+        GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
+        delphesOptions.push_back(delphesConfigFile);
+        // Setup new Delphes
+        result.init(delphesOptions);
+      }
     }
 #endif // not defined EXCLUDE_DELPHES
     
@@ -506,13 +518,13 @@ namespace Gambit
       bool partonOnly;
       double antiktR;
       if (*Loop::iteration == INIT)
-	{
-	  result.clear();
-	  // Setup new BuckFast
-	  partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-	  antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
-	  result.init(partonOnly, antiktR);
-	}
+      {
+        result.clear();
+        // Setup new BuckFast
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
+      }
     }
     
     
@@ -531,29 +543,29 @@ namespace Gambit
       }
       
       if (*Loop::iteration == START_SUBPROCESS)
-	{
-	  // Each thread gets its own Analysis container.
-	  // Thus, their initialization is *after* INIT, within omp parallel.
-	  result.clear();
-	  result.init(analysisNamesDet);
-	  return;
-	}
+      {
+        // Each thread gets its own Analysis container.
+        // Thus, their initialization is *after* INIT, within omp parallel.
+        result.clear();
+        result.init(analysisNamesDet);
+        return;
+      }
       
       if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
-	{
-	  const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
-	  const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
-	  result.add_xsec(xs_fb, xserr_fb);
-	  
-	  // Combine results from the threads together
-#pragma omp critical (access_globalAnalyses)
-	  {
-	    globalAnalysesDet.add(result);
-	    // Use improve_xsec to combine results from the same process type
-	    globalAnalysesDet.improve_xsec(result);
-	  }
-	  return;
-	}
+      {
+        const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+        const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+        result.add_xsec(xs_fb, xserr_fb);
+        
+        // Combine results from the threads together
+        #pragma omp critical (access_globalAnalyses)
+        {
+          globalAnalysesDet.add(result);
+          // Use improve_xsec to combine results from the same process type
+          globalAnalysesDet.improve_xsec(result);
+        }
+        return;
+      }
       
     }
 #endif // not defined EXCLUDE_DELPHES
@@ -679,7 +691,7 @@ namespace Gambit
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
           logger() << ss.str() << EOM;
-	  throw e;
+          throw e;
         }
       }
     }
