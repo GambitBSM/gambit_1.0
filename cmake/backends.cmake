@@ -269,8 +269,6 @@ set(ver "8.212.${model}")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 set(ext_model_dir "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/ExternalModel")
-file(GLOB ext_model_src_files "${ext_model_dir}/*.cc")
-file(GLOB ext_model_headers "${ext_model_dir}/*.h")
 
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
@@ -285,8 +283,8 @@ ExternalProject_Add_Step(${name}_${ver} add_external_Pythia_model
   COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_dir}/ProcessContainer.cc ${dir}/src/
   COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_dir}/Index.xml  ${dir}/share/Pythia8/xmldoc/
   COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_dir}/UserModel.xml ${dir}/share/Pythia8/xmldoc/
-  COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_src_files} ${dir}/src/
-  COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_headers} ${dir}/include/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${ext_model_dir}/src ${dir}/src/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${ext_model_dir}/include ${dir}/include/
   DEPENDEES download
   DEPENDERS patch
 )
