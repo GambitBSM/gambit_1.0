@@ -184,7 +184,6 @@ namespace Gambit
         {
           if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
-            cout << "Using diskless SLHA interface to DarkSUSY." << endl;
             logger() << LogTags::debug << "Using diskless SLHA interface to DarkSUSY." << EOM;
             BEreq::dsprep();
             result = true;
