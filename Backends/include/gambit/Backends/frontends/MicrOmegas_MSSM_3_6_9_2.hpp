@@ -49,5 +49,6 @@ BE_VARIABLE(VWdecay, int, "VWdecay", "VWdecay")
 BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 
 BE_INI_DEPENDENCY(MSSM_spectrum, Spectrum)
+BE_INI_DEPENDENCY(decay_rates, DecayTable)
 
 #include "gambit/Backends/backend_undefs.hpp"

@@ -63,6 +63,16 @@ BE_INI_FUNCTION
         SLHAstruct mySLHA = mySpec.getSLHAea(1);
         std::ofstream ofs(filename);
         ofs << mySLHA;
+
+        // Also write out decay block, if internal_decays option is set to false
+        cout << "internal_decays: " << runOptions->getValueOrDef<bool>(true,"internal_decays") << endl;
+        if(!(runOptions->getValueOrDef<bool>(true,"internal_decays")))
+        {
+            ofs << endl;
+            const DecayTable& myDecays = *Dep::decay_rates;
+            SLHAstruct decayBlock = myDecays.getSLHAea(true);
+            ofs << decayBlock;
+        }
         ofs.close();
 
         // Convert filename string to char* type
