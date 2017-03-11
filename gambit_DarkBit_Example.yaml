@@ -262,70 +262,47 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
-  # - capability: FH_Precision
-  #   backends:
-  #   - {backend: FeynHiggs, version: 2.11.3}
-  # - capability: prec_HiggsMasses
-  #   backends:
-  #   - {backend: FeynHiggs, version: 2.11.3}
-  # - capability: Higgs_Couplings
-  #   backends:
-  #   - {backend: FeynHiggs, version: 2.11.3}
-  # - capability: FH_HiggsProd
-  #   backends:
-  #   - {backend: FeynHiggs, version: 2.11.3}
-  # - capability: FH_MSSMMasses
-  #   backends:
-  #   - {backend: FeynHiggs, version: 2.11.3}
+  # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
+  - capability: FH_Precision
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: prec_HiggsMasses
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: Higgs_Couplings
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: FH_HiggsProd
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: FH_MSSMMasses
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
   # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
   #  version: 2.11.3
   # In practice, the easiest option is just to not install / nuke the versions you don't want to use, e.g.
   #  make nuke-feynhiggs_2_11_2  
 
+  # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
+  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
+  # with the FH error estimate, to estimate the theoretical error on the prediction.
   - capability: MSSM_spectrum
-    type: Spectrum
-    function: make_MSSM_precision_spectrum_none
-    #function: make_MSSM_precision_spectrum_W
-    #function: make_MSSM_precision_spectrum_H_W
-    # The following options only have an impact when using make_MSSM_precision_spectrum_H_W.
-    # Choose to take FeynHiggs' prediction for the Higgs mass (rather then FlexibleSUSY's).
-    # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
-    # with the FH error estimate, to estimate the theoretical error on the prediction.
-    #options:
-    #  Higgs_predictions_source: 1
-    #  Higgs_predictions_error_method: 4
+    options:
+      Higgs_predictions_source: 1
+      Higgs_predictions_error_method: 4
 
-  # # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
-  # - capability: A0_decay_rates
-  #   function: FH_A0_decays
-  # - capability: Higgs_decay_rates
-  #   function: FH_MSSM_h0_1_decays
-  # - capability: H_plus_decay_rates
-  #   function: FH_H_plus_decays
-  # - capability: h0_2_decay_rates
-  #   function: FH_h0_2_decays
-  # - capability: t_decay_rates
-  #   function: FH_t_decays
-
-  # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
-  - capability: Reference_SM_Higgs_decay_rates
-    function: Ref_SM_Higgs_decays_table
-  - capability: Reference_SM_other_Higgs_decay_rates
-    function: Ref_SM_other_Higgs_decays_table
-  - capability: Reference_SM_A0_decay_rates
-    function: Ref_SM_A0_decays_table
-  - capability: Higgs_decay_rates
-    function: MSSM_h0_1_decays
-  - capability: h0_2_decay_rates
-    function: h0_2_decays
+  # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
   - capability: A0_decay_rates
-    function: A0_decays
+    function: FH_A0_decays
+  - capability: Higgs_decay_rates
+    function: FH_MSSM_h0_1_decays
   - capability: H_plus_decay_rates
-    function: H_plus_decays
+    function: FH_H_plus_decays
+  - capability: h0_2_decay_rates
+    function: FH_h0_2_decays
   - capability: t_decay_rates
-    function: t_decays
+    function: FH_t_decays
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
