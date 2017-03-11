@@ -95,15 +95,6 @@ namespace Gambit
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
-//User makes the matrix elements here
-// MJW: need to reintroduce once Anders fixes bossed Pythia
-/*_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_uvuvx());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_evevx());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p2());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p2p2());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
-
       // Send along the SLHAea::Coll pointer, if it exists
       if (slhaea) _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
