@@ -35,7 +35,6 @@ namespace Gambit
 
       void init(SpecializablePythia* specializeMe) {
         specializeMe->addToSettings("Beams:eCM = 8000");
-        specializeMe->addToSettings("Main:numberOfEvents = 20000");
         specializeMe->addToSettings("Main:timesAllowErrors = 1000");
         specializeMe->addToSettings("SUSY:all = on");
         specializeMe->addToSettings("Random:setSeed = on");

@@ -42,7 +42,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-//#define COLLIDERBIT_DEBUG
+// #define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -284,8 +284,8 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
+          // Append new seed to override the previous one
           int newSeedBase = int(Random::draw() * 899990000.);
-          pythiaOptions.pop_back();
           pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase));
           try
           {
@@ -397,8 +397,8 @@ namespace Gambit
         }
         catch (SpecializablePythia::InitializationError &e)
         {
+          // Append new seed to override the previous one
           int newSeedBase = int(Random::draw() * 899990000.);
-          pythiaOptions.pop_back();
           pythiaOptions.push_back("Random:seed = " + std::to_string(newSeedBase));
           try
           {
@@ -570,7 +570,7 @@ namespace Gambit
     }
 #endif // not defined EXCLUDE_DELPHES
     
-       void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+    void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
       if (!useBuckFastATLASDetector) return;
 
@@ -793,6 +793,7 @@ namespace Gambit
     }
 #endif // not defined EXCLUDE_DELPHES
     
+
     void runATLASAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runATLASAnalyses;
@@ -812,7 +813,6 @@ namespace Gambit
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
       Dep::ATLASAnalysisContainer->analyze(*Dep::ATLASSmearedEvent);
     }
-
 
 
     void runCMSAnalyses(ColliderLogLikes& result)
@@ -954,7 +954,7 @@ namespace Gambit
       } // end ana loop
 
       #ifdef COLLIDERBIT_DEBUG
-        std::cout << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << std::endl;
+        logger() << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << EOM;
       #endif
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
       result = -total_dll_obs;
@@ -2052,14 +2052,14 @@ namespace Gambit
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
       static const ALEPHSelectronLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::ALEPH_Selectron_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2119,14 +2119,14 @@ namespace Gambit
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
       static const ALEPHSmuonLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::ALEPH_Smuon_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2186,14 +2186,14 @@ namespace Gambit
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
       static const ALEPHStauLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::ALEPH_Stau_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2254,14 +2254,14 @@ namespace Gambit
     void L3_Selectron_Conservative_LLike(double& result)
     {
       static const L3SelectronLimitAt205GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::L3_Selectron_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2322,14 +2322,14 @@ namespace Gambit
     void L3_Smuon_Conservative_LLike(double& result)
     {
       static const L3SmuonLimitAt205GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-      static bool dumped=false;
-      if(!dumped)
-      {
-        limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
-        dumped=true;
-      }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      // static bool dumped=false;
+      // if(!dumped)
+      // {
+      //   limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
+      //   dumped=true;
+      // }
+      // #endif
       using namespace Pipes::L3_Smuon_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2389,14 +2389,14 @@ namespace Gambit
     void L3_Stau_Conservative_LLike(double& result)
     {
       static const L3StauLimitAt205GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::L3_Stau_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2460,14 +2460,14 @@ namespace Gambit
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
       static const L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::L3_Neutralino_All_Channels_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2584,14 +2584,14 @@ namespace Gambit
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
       static const L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-      static bool dumped=false;
-      if(!dumped)
-      {
-        limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
-        dumped=true;
-      }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      // static bool dumped=false;
+      // if(!dumped)
+      // {
+      //   limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
+      //   dumped=true;
+      // }
+      // #endif
       using namespace Pipes::L3_Neutralino_Leptonic_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2699,14 +2699,14 @@ namespace Gambit
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static const L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 100., 0., 100., "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 100., 0., 100., "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::L3_Chargino_All_Channels_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2779,14 +2779,14 @@ namespace Gambit
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static const L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 100., 0., 100., "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(45., 100., 0., 100., "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::L3_Chargino_Leptonic_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2865,14 +2865,14 @@ namespace Gambit
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
       static const OPALCharginoHadronicLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::OPAL_Chargino_Hadronic_Conservative_LLike;
       using std::pow;
       using std::log;
@@ -2943,14 +2943,14 @@ namespace Gambit
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
       static const OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
@@ -3070,14 +3070,14 @@ namespace Gambit
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static const OPALCharginoLeptonicLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
@@ -3175,14 +3175,14 @@ namespace Gambit
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static const OPALCharginoAllChannelsLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
@@ -3274,14 +3274,14 @@ namespace Gambit
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
       static const OPALNeutralinoHadronicLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
+      // #ifdef COLLIDERBIT_DEBUG
+      //   static bool dumped=false;
+      //   if(!dumped)
+      //   {
+      //     limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
+      //     dumped=true;
+      //   }
+      // #endif
       using namespace Pipes::OPAL_Neutralino_Hadronic_Conservative_LLike;
       using std::pow;
       using std::log;
