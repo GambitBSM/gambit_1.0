@@ -65,7 +65,6 @@ BE_INI_FUNCTION
         ofs << mySLHA;
 
         // Also write out decay block, if internal_decays option is set to false
-        cout << "internal_decays: " << runOptions->getValueOrDef<bool>(true,"internal_decays") << endl;
         if(!(runOptions->getValueOrDef<bool>(true,"internal_decays")))
         {
             ofs << endl;
