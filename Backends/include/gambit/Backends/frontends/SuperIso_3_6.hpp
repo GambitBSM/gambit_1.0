@@ -35,6 +35,8 @@ BE_FUNCTION(C_calculator_base2, void, (double*, double*, double, double*, double
 BE_FUNCTION(Cprime_calculator, void, (int, double*, std::complex<double>*, double, double, struct parameters*), "Cprime_calculator", "Cprime_calculator")
 BE_FUNCTION(CQ_calculator, void, (int, std::complex<double>*, std::complex<double>*, double, double, struct parameters*), "CQ_calculator", "CQ_calculator")
 
+BE_FUNCTION(alphas_running, double, ( double, double,  double, struct parameters*), "alphas_running", "alphas_running") 
+
 BE_FUNCTION(bsgamma, double, (double*, double*, double*, double*, double, double, struct parameters*), "bsgamma", "bsgamma")
 BE_FUNCTION(bsgamma_Ecut, double, (double*, double*, double*, double*, double, double, double, struct parameters*), "bsgamma_Ecut", "bsgamma_Ecut")
 

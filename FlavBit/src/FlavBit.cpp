@@ -1107,20 +1107,9 @@ namespace Gambit
       }
       else
       {
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b_1S/2.;
 
-        double lambda_h=0.5;
-        double mu_spec=sqrt(lambda_h*param.mass_b);
+	result=BEreq::delta0_CONV(&param);
 
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
-        std::complex<double> CQpb[3];
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
-        BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),byVal(Cpb),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
       }
 
       if(flav_debug) printf("Delta0(B->K* gamma)=%.3e\n",result);
@@ -1143,87 +1132,13 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
+	result=BEreq::BRBXsmumu_lowq2_CONV(&param);
 
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
       }
 
       if(flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
     }
-
-    // *************************************************
-    /*
-    void SI_BRBXsmumu_lowq2_WC(double &result)
-    {
-      using namespace Pipes::SI_BRBXsmumu_lowq2_WC;
-
-      if(flav_debug)  cout<<"Starting SI_BRBXsmumu_lowq2 WC"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-
-      if(param.model<0)
-	{
-	  result=0.;
-	}
-      else
-	{
-	  double mu_W=120.;
-	  double mu_b=5.;
-
-	  double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-	  std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-	  // the WC will be done via Delta C modification
-
-	  double Re_DeltaC7=param.Re_DeltaC7;
-	  double Im_DeltaC7=param.Im_DeltaC7;
-	  double Re_DeltaC9=param.Re_DeltaC9;
-	  double Im_DeltaC9=param.Im_DeltaC9;
-	  double Re_DeltaC10=param.Re_DeltaC10;
-	  double Im_DeltaC10=param.Im_DeltaC10;
-	  double Re_DeltaCQ1=param.Re_DeltaCQ1;
-	  double Im_DeltaCQ1=param.Im_DeltaCQ1;
-	  double Re_DeltaCQ2=param.Re_DeltaCQ2;
-	  double Im_DeltaCQ2=param.Im_DeltaCQ2;
-
-
-	  BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-	  BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-	  BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-	  BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-
-	  // the prime WC I don't care about :P
-	  //now hacking the WC:
-	  C0b[7]+=Re_DeltaC7;
-	  C0b[9]+=Re_DeltaC9;
-	  C0b[10]+=Re_DeltaC10;
-	  CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
-	  CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
-
-	  result = BEreq::BRBXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-
-
-	}
-
-
-
-
-      if(flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
-    }
-
-
-    */
-
 
     // *************************************************
 
@@ -1241,80 +1156,13 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
+	result=BEreq::BRBXsmumu_highq2_CONV(&param);
 
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
       }
 
       if(flav_debug) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
     }
-    /*
-    void SI_BRBXsmumu_highq2_WC(double &result)
-    {
-      using namespace Pipes::SI_BRBXsmumu_highq2_WC;
-
-      if(flav_debug)  cout<<"Starting SI_BRBXsmumu_highq2 WC"<<endl;
-
-      struct parameters param = *Dep::SuperIso_modelinfo_WC;
-
-      if(param.model<0)
-	{
-	  result=0.;
-	}
-      else
-	{
-	  double mu_W=120.;
-	  double mu_b=5.;
-
-	  // the WC will be done via Delta C modification
-
-	  double Re_DeltaC7=param.Re_DeltaC7;
-	  double Im_DeltaC7=param.Im_DeltaC7;
-	  double Re_DeltaC9=param.Re_DeltaC9;
-	  double Im_DeltaC9=param.Im_DeltaC9;
-	  double Re_DeltaC10=param.Re_DeltaC10;
-	  double Im_DeltaC10=param.Im_DeltaC10;
-	  double Re_DeltaCQ1=param.Re_DeltaCQ1;
-	  double Im_DeltaCQ1=param.Im_DeltaCQ1;
-	  double Re_DeltaCQ2=param.Re_DeltaCQ2;
-	  double Im_DeltaCQ2=param.Im_DeltaCQ2;
-
-
-	  double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-	  std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-	  BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-	  BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-	  BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-	  BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-
-	  // the prime WC I don't care about :P
-	  //now hacking the WC:
-	  C0b[7]+=Re_DeltaC7;
-	  C0b[9]+=Re_DeltaC9;
-	  C0b[10]+=Re_DeltaC10;
-	  CQ0b[1]+=complex<double>(Re_DeltaCQ1, Im_DeltaCQ1);
-	  CQ0b[2]+=complex<double>(Re_DeltaCQ2, Im_DeltaCQ2);
-
-	  result = BEreq::BRBXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-	}
-
-
-      if(flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
-    }
-
-
-    */
     // *************************************************
 
     void SI_A_BXsmumu_lowq2(double &result)
@@ -1331,19 +1179,8 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
-
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::A_BXsll_lowq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	result=BEreq::A_BXsmumu_lowq2_CONV(&param);
       }
-
       if(flav_debug) printf("AFB(B->Xs mu mu)_lowq2=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_A_BXsmumu_lowq2"<<endl;
     }
@@ -1364,17 +1201,7 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
-
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::A_BXsll_highq2(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	result=BEreq::A_BXsmumu_highq2_CONV(&param);
       }
 
       if(flav_debug) printf("AFB(B->Xs mu mu)_highq2=%.3e\n",result);
@@ -1397,17 +1224,7 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
-
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::A_BXsll_zero(2,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	result=BEreq::A_BXsmumu_zero_CONV(&param);
       }
 
       if(flav_debug) printf("AFB(B->Xs mu mu)_zero=%.3e\n",result);
@@ -1430,17 +1247,7 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
-
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::BRBXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	result=BEreq::BRBXstautau_highq2_CONV(&param);
       }
 
       if(flav_debug) printf("BR(B->Xs tau tau)_highq2=%.3e\n",result);
@@ -1463,17 +1270,7 @@ namespace Gambit
       }
       else
       {
-        double mu_W=120.;
-        double mu_b=5.;
-
-        double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
-        std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-
-        BEreq::CW_calculator(3,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        BEreq::CQ_calculator(3,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-        BEreq::Cprime_calculator(3,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-        result = BEreq::A_BXsll_highq2(3,byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+        result=BEreq::A_BXstautau_highq2_CONV(&param);
       }
 
       if(flav_debug) printf("AFB(B->Xs tau tau)_highq2=%.3e\n",result);

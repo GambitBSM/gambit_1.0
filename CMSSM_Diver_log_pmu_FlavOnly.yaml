@@ -52,6 +52,7 @@ Scanner:
       NP: 19200
       convthresh: 1e-5
       verbosity: 1
+#      lambdajDE: false
 
 ObsLikes:
 
@@ -65,15 +66,9 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    - purpose:    LogLike
-      capability: b2sgamma_LL
+#    - purpose:    LogLike
+#      capability: b2sgamma_LL
 
-    # Precision physics likelihoods
-    - capability: lnL_W_mass
-      purpose:    LogLike
-
-#    - capability:  lnL_gm2
-#      purpose:     LogLike
 
 
 Rules:
@@ -82,34 +77,6 @@ Rules:
   - options:
       gauge_mixing_tolerance: 0.5
       family_mixing_tolerance: 0.5
-
-  # Choose to use gm2calc for g-2
-  - capability: muon_gm2
-    function: GM2C_SUSY
-
-  # Choose to base the SM prediction for g-2 on e+e- data
-  - capability: muon_gm2_SM
-    function: gm2_SM_ee
-
-  # Choose to implement the relic density likelihood as an upper bound, not a detection
-  - capability: lnL_oh2
-    function: lnL_oh2_upperlimit
-
-  # Choose to rescale signals in direct and indirect detection by the relic density fraction
-  - capability: RD_fraction
-    function: RD_fraction_from_oh2
-    options:
-      mode: leq_one
-
-  # Use the DarkBit native calculator for the relic density
-  - capability: RD_oh2
-    function: RD_oh2_general
-    options:
-      fast: 1
-
-  # Choose to use detailed Fermi Pass 8 dwarf likelihoood from gamlike
-  - capability: lnL_FermiLATdwarfs
-    function:  lnL_FermiLATdwarfs_gamLike
 
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
@@ -255,3 +222,5 @@ KeyValues:
     model_invalid_for_lnlike_below_alt: -1e5
 
   default_output_path: "runs/CMSSM/"
+  
+  debug: true
