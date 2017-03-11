@@ -237,7 +237,7 @@ Rules:
     function: getDelphes
     options:
       #useDelphesDetector defaults to false, which ignores all "Det" analyses and disables Delphes
-      useDelphesDetector: true
+      useDelphesDetector: false
       # Choose which type of event to use: for parton level, change partonOnly to true
       delphesConfigFile: "ColliderBit/data/delphes_card_ATLAS.tcl"
 
@@ -258,7 +258,18 @@ Rules:
     function: getBuckFastCMS
     options:
       #useBuckFastCMSDetector defaults to true. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
-      useBuckFastCMSDetector: true
+      useBuckFastCMSDetector: false
+      # Choose which type of event to use: for parton level, change partonOnly to true
+      partonOnly: false
+      antiktR: 0.4
+
+  # Identity BuckFast rules and options (ex. the jet radius)
+  - capability: SimpleSmearingSim
+    type: "Gambit::ColliderBit::BuckFastIdentity"
+    function: getBuckFastIdentity
+    options:
+      #useBuckFastCMSDetector defaults to true. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
+      useBuckFastIdentityDetector: true
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: false
       antiktR: 0.4
@@ -288,6 +299,16 @@ Rules:
     options:  
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
+
+  # Specify the list of identity analyses to run
+  - capability: IdentityAnalysisContainer
+    function: getIdentityAnalysisContainer
+    options:  
+      analysisNamesIdentity: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                         "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                         "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                         "ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"] 
 
   # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
   - capability:  ColliderOperator

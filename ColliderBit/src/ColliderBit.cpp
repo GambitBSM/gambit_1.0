@@ -120,6 +120,9 @@ namespace Gambit
     bool useBuckFastCMSDetector;
     std::vector<std::string> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
+    bool useBuckFastIdentityDetector;
+    std::vector<std::string> analysisNamesIdentity;
+    HEPUtilsAnalysisContainer globalAnalysesIdentity;
 #ifndef EXCLUDE_DELPHES
     bool useDelphesDetector;
     std::vector<std::string> analysisNamesDet;
@@ -517,7 +520,9 @@ namespace Gambit
       using namespace Pipes::getBuckFastIdentity;
       bool partonOnly;
       double antiktR;
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == BASE_INIT)
+        useBuckFastIdentityDetector = runOptions->getValueOrDef<bool>(true, "useBuckFastIdentityDetector");
+      if (*Loop::iteration == INIT and useBuckFastIdentityDetector)
       {
         result.clear();
         // Setup new BuckFast
@@ -646,7 +651,43 @@ namespace Gambit
 
     }
 
+   void getIdentityAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getIdentityAnalysisContainer;
+      if (!useBuckFastIdentityDetector) return;
 
+      if (*Loop::iteration == BASE_INIT) {
+        GET_COLLIDER_RUNOPTION(analysisNamesIdentity, std::vector<std::string>);
+        globalAnalysesIdentity.clear();
+        globalAnalysesIdentity.init(analysisNamesIdentity);
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS)
+      {
+        // Each thread gets its own Analysis container.
+        // Thus, their initialization is *after* INIT, within omp parallel.
+        result.clear();
+        result.init(analysisNamesIdentity);
+        return;
+      }
+
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      {
+        const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+        const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+        result.add_xsec(xs_fb, xserr_fb);
+
+        // Combine results from the threads together
+        #pragma omp critical (access_globalAnalyses)
+        {
+          globalAnalysesIdentity.add(result);
+          // Use improve_xsec to combine results from the same process type
+          globalAnalysesIdentity.improve_xsec(result);
+        }
+        return;
+      }
+
+    }
 
     /// *** Hard Scattering Event Generators ***
 
@@ -835,7 +876,25 @@ namespace Gambit
       Dep::CMSAnalysisContainer->analyze(*Dep::CMSSmearedEvent);
     }
 
+   void runIdentityAnalyses(ColliderLogLikes& result)
+    {
+      using namespace Pipes::runIdentityAnalyses;
+      if (!useBuckFastIdentityDetector) return;
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
+        // The final iteration: get log likelihoods for the analyses
+        result.clear();
+        globalAnalysesIdentity.scale();
+        for (auto anaPtr = globalAnalysesIdentity.analyses.begin(); anaPtr != globalAnalysesIdentity.analyses.end(); ++anaPtr)
+          result.push_back((*anaPtr)->get_results());
+        return;
+      }
 
+      if (*Loop::iteration <= BASE_INIT) return;
+
+      // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      Dep::IdentityAnalysisContainer->analyze(*Dep::CopiedEvent);
+    }
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calc_LHC_LogLike(double& result) {

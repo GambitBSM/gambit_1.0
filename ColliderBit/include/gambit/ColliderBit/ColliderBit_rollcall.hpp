@@ -119,6 +119,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+ #define CAPABILITY IdentityAnalysisContainer
+  START_CAPABILITY
+    #define FUNCTION getIdentityAnalysisContainer
+    START_FUNCTION(HEPUtilsAnalysisContainer)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 #ifndef EXCLUDE_DELPHES
   #define CAPABILITY DetAnalysisContainer
   START_CAPABILITY
@@ -222,6 +231,17 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IdentityAnalysisNumbers
+  START_CAPABILITY
+    #define FUNCTION runIdentityAnalyses
+    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(CopiedEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    DEPENDENCY(IdentityAnalysisContainer, HEPUtilsAnalysisContainer)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
   // Calculate the log likelihood from the analysis numbers
   #define CAPABILITY LHC_Combined_LogLike
   START_CAPABILITY
@@ -229,6 +249,7 @@ START_MODULE
     START_FUNCTION(double)
     DEPENDENCY(ATLASAnalysisNumbers, ColliderLogLikes)
     DEPENDENCY(CMSAnalysisNumbers, ColliderLogLikes)
+    DEPENDENCY(IdentityAnalysisNumbers, ColliderLogLikes)
 #ifndef EXCLUDE_DELPHES
     DEPENDENCY(DetAnalysisNumbers, ColliderLogLikes)
 #endif // not defined EXCLUDE_DELPHES
