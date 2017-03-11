@@ -250,8 +250,8 @@ def plotLUX():
     # I'm not sure about the CL in the SIMPLE analysis!
     #simple_plt = plt.contour(m_SIMPLE, s_SIMPLE, lnL_SIMPLE, levels = [2.71/2], colors='r')
     #simple_plt.collections[0].set_label("SIMPLE")
-    lux_plt = plt.contour(m_LUX, s_LUX, lnL_LUX, levels = [2.71/2], colors='r')
-    lux_plt.collections[0].set_label("LUX")
+    #lux_plt = plt.contour(m_LUX, s_LUX, lnL_LUX, levels = [2.71/2], colors='r')
+    #lux_plt.collections[0].set_label("LUX")
     pandax_plt = plt.contour(m_PandaX, s_PandaX, lnL_PandaX, levels = [2.71/2], colors='b')
     pandax_plt.collections[0].set_label("PandaX")
     pico60_plt = plt.contour(m_PICO60, s_PICO60, lnL_PICO60, levels = [2.71/2], colors='g')
@@ -261,7 +261,7 @@ def plotLUX():
 
 
     #plt.plot(simple_lim[:,0],simple_lim[:,1]*10**-36,ls="--", color='r')
-    plt.plot(luxsd_lim[:,0],luxsd_lim[:,1]*10**-36,ls="--", color='r')
+    #plt.plot(luxsd_lim[:,0],luxsd_lim[:,1]*10**-36,ls="--", color='r')
     plt.plot(pandax_lim[:,0],pandax_lim[:,1],ls="--", color='b')
     plt.plot(pico60_lim[:,0],pico60_lim[:,1]*10**-40,ls="--",color='g')
     plt.plot(pico2L_lim[:,0],pico2L_lim[:,1],ls="--",color='k')
