@@ -538,15 +538,25 @@ namespace Gambit
 #ifndef EXCLUDE_DELPHES
     void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getDetAnalysisContainer;
-      if (!useDelphesDetector) return;
       
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesDet, std::vector<std::string>);
+
+        if (analysisNamesDet.empty() and useDelphesDetector)
+        {
+          str errmsg = "\nThe option 'useDelphesDetector' for function getDelphes is set to true,\n";
+          errmsg    += "but the list of corresponding analyses (option 'analysisNamesDet' for function\n"; 
+          errmsg    += "getDetAnalysisContainer) is empty. Please correct your settings.\n"; 
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
         globalAnalysesDet.clear();
         globalAnalysesDet.init(analysisNamesDet);
         return;
       }
       
+      if (!useDelphesDetector) return;
+
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
@@ -577,14 +587,25 @@ namespace Gambit
     
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
-      if (!useBuckFastATLASDetector) return;
 
       if (*Loop::iteration == BASE_INIT) {
+
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
+
+        if (analysisNamesATLAS.empty() and useBuckFastATLASDetector)
+        {
+          str errmsg = "\nThe option 'useBuckFastATLASDetector' for function getBuckFastATLAS is set to true,\n";
+          errmsg    += "but the list of corresponding analyses (option 'analysisNamesATLAS' for function\n"; 
+          errmsg    += "getATLASAnalysisContainer) is empty. Please correct your settings.\n"; 
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
         globalAnalysesATLAS.clear();
         globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
       }
+
+      if (!useBuckFastATLASDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -615,14 +636,24 @@ namespace Gambit
 
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
-      if (!useBuckFastCMSDetector) return;
 
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
+
+        if (analysisNamesCMS.empty() and useBuckFastCMSDetector)
+        {
+          str errmsg = "\nThe option 'useBuckFastCMSDetector' for function getBuckFastCMS is set to true,\n";
+          errmsg    += "but the list of corresponding analyses (option 'analysisNamesCMS' for function\n"; 
+          errmsg    += "getCMSAnalysisContainer) is empty. Please correct your settings.\n"; 
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
         globalAnalysesCMS.clear();
         globalAnalysesCMS.init(analysisNamesCMS);
         return;
       }
+
+      if (!useBuckFastCMSDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -653,14 +684,24 @@ namespace Gambit
 
    void getIdentityAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getIdentityAnalysisContainer;
-      if (!useBuckFastIdentityDetector) return;
 
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesIdentity, std::vector<std::string>);
+
+        if (analysisNamesIdentity.empty() and useBuckFastIdentityDetector)
+        {
+          str errmsg = "\nThe option 'useBuckFastIdentityDetector' for function getBuckFastIdentity is set to true,\n";
+          errmsg    += "but the list of corresponding analyses (option 'analysisNamesIdentity' for function\n"; 
+          errmsg    += "getIdentityAnalysisContainer) is empty. Please correct your settings.\n"; 
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
         globalAnalysesIdentity.clear();
         globalAnalysesIdentity.init(analysisNamesIdentity);
         return;
       }
+
+      if (!useBuckFastIdentityDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
