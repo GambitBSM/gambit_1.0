@@ -191,6 +191,9 @@ START_MODULE
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
       BACKEND_REQ(oh2, (MicrOmegas_MSSM, MicrOmegas_SingletDM), double, (double*,int,double))
+      BACKEND_REQ(VZdecay, (), int)
+      BACKEND_REQ(VWdecay, (), int)
+      BACKEND_REQ(cleanDecayTable, (), void, ())
       ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
