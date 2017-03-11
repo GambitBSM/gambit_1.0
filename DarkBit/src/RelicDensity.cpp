@@ -632,8 +632,6 @@ namespace Gambit
       // Set options via ini-file (MicrOmegas-specific performance options)
       fast = runOptions->getValueOrDef<int>(0, "fast");
       Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
-      cout << "VZ decay " << *BEreq::VZdecay;
-      cout << "VW decay " << *BEreq::VWdecay;
       VZdecay = runOptions->getValueOrDef<int>(1, "VZdecay");
       VWdecay = runOptions->getValueOrDef<int>(1, "VWdecay");
       if (VZdecay != 1 || VWdecay != 1)
@@ -642,8 +640,6 @@ namespace Gambit
           *BEreq::VWdecay = VWdecay;
           BEreq::cleanDecayTable();
       }
-      cout << "VZ decay " << *BEreq::VZdecay;
-      cout << "VW decay " << *BEreq::VWdecay;
       logger() << LogTags::debug << "Using fast: " << fast << " Beps: " << Beps;
       logger() << " VWdecay: " << VWdecay << " VZdecay: " << VZdecay << EOM;
 
