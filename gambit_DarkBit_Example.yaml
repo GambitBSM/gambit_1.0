@@ -198,6 +198,8 @@ Rules:
     options:
       mode: leq_one
 
+  # Choose whether MicrOmegas calculates decays widths for the MSSM internally using CalcHEP (internal_decays=true) or uses 
+  # values from the GAMBIT decay table (internal_decays=false).
   - function: MicrOmegas_MSSM_3_6_9_2_init
     options:
        internal_decays: false
