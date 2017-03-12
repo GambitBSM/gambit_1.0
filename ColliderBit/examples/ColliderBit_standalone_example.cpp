@@ -73,8 +73,11 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "...but I may need: " << endl << iMayNeed << std::endl << std::endl;
 
 
-    // 
-    // Dependecy resolution
+
+
+    // -----------------------------------
+    //    Part 1:  Dependecy resolution
+    // -----------------------------------
     // 
     // We now set up the module functions that we wish use.
     // Dependencies and backend requirements of module functions are resolved by hand.
@@ -172,11 +175,15 @@ int main(int argc, char* argv[])
 
 
 
-    // ----------------------------------------------------
-    // Set Module function options below.
-    // User can edit this section to configure ColliderBit.
-    // See the ColiderBit manual for available options.
-    // ----------------------------------------------------
+    // ----------------------------
+    //    Part 2:  Configuration
+    // ----------------------------
+    // 
+    // Below we set the options for the various ColliderBit module functions.
+    // This is where we configure our Pythia backends, choose detector simulation
+    // and specify which LHC analyses to inlcude. See the ColiderBit manual for 
+    // available options.
+    // 
 
     // 
     // Set up the collider(s), i.e. different configurations of Pythia:
@@ -184,14 +191,15 @@ int main(int argc, char* argv[])
     // 1. Create a vector with the names of the different colliders.
     // 2. For each collider, create a vector with Pythia settings. 
     // 3. Connect the settings and collider names by passing the information to getPythiaFileReader.
+    // 4. Pass the Pythia XML path and the path to the input SLHA file to getPythiaFileReader.
     // 
     // For this example we will only set up a single collider, starting from the completely unpsecified collider
     // "Pythia_external" in ColliderBit/src/colliders/SpecializablePythia.cpp. This collider has no pre-defined 
-    //  configuration, so we shoul specify all settings below.
+    //  configuration, so we should specify all settings below.
     // 
     // (The file SpecializablePythia.cpp also defines some partly configured colliders, "Pythia_SUSY_LHC_8TeV" and 
-    //  "Pythia_glusq_LHC_8TeV", and others can be added if needed.)   
-    //
+    // "Pythia_glusq_LHC_8TeV", and others can be added if needed.)   
+    
 
     // Vector with collider names
     std::vector<std::string> pythiaNames;
@@ -205,31 +213,29 @@ int main(int argc, char* argv[])
     //       this must currently be done directly in the module function getPythiaFileReader 
     //       in ColliderBit/src/CollderBit.cpp, in a similar manner to what is done there now.
     //       This is to avoid potential problems with OpenMP threads getting identical seeds.
+    //
+    //       Also, Pythia options specified directly in getPythiaFileReader in ColliderBit.cpp 
+    //       can override options given here.
     // 
-    std::vector<std::string> Pythia_external_settings;
-    Pythia_external_settings.push_back("Beams:eCM = 8000");
-    Pythia_external_settings.push_back("UserModel:all = on");   // Switch on the processes in the external model
-    Pythia_external_settings.push_back("PartonLevel:MPI = off");
-    Pythia_external_settings.push_back("PartonLevel:ISR = on");
-    Pythia_external_settings.push_back("PartonLevel:FSR = off");
-    Pythia_external_settings.push_back("HadronLevel:all = off");
-    Pythia_external_settings.push_back("TauDecays:mode = 0");
-    Pythia_external_settings.push_back("Main:timesAllowErrors = 1000");
+    // 
+    std::vector<std::string> pythiaSettings;
+    pythiaSettings.push_back("UserModel:all = on");   // Switch on the processes in the external model
+    pythiaSettings.push_back("Beams:eCM = 8000");
+    pythiaSettings.push_back("PartonLevel:MPI = off");
+    pythiaSettings.push_back("PartonLevel:ISR = on");
+    pythiaSettings.push_back("PartonLevel:FSR = off");
+    pythiaSettings.push_back("HadronLevel:all = off");
+    pythiaSettings.push_back("TauDecays:mode = 0");
+    pythiaSettings.push_back("Main:timesAllowErrors = 1000");
 
     // Connect settings and collider name
-    getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_external",Pythia_external_settings);
+    getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_external",pythiaSettings);
 
-
-    // 
     // Set the correct XML path for Pythia
-    // 
     getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
 
-
-    // 
     // Specify the SLHA input file. 
     // For this example we take the command line argument stored in 'inputFileName'.
-    // 
     std::vector<std::string> inputFiles;
     inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
     getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
@@ -240,7 +246,7 @@ int main(int argc, char* argv[])
     // Settings for the LHC event loop (ColliderBit function 'operateLHCLoop')
     // 
 
-    // Pass the collider names to the loop
+    // Pass the collider names to the module function responsible for the event loop
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
 
     // Set number of LHC events
@@ -302,39 +308,39 @@ int main(int argc, char* argv[])
     getIdentityAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesIdentity",runTheseIdentityAnalyses);
 
 
-    // ------------------ 
-    // Start running here
-    // ------------------
-
-    {
-
-      // Call the initialisation functions for all backends that are in use.
-      nulike_1_0_3_init.reset_and_calculate();
-      Pythia_8_212_EM_init.reset_and_calculate();
 
 
-      // 
-      // Call the LHC likelihood. This is where we launch the full event loop in ColliderBit.
-      // 
-      operateLHCLoop.reset_and_calculate();
-      calc_LHC_LogLike.reset_and_calculate();
+    // ----------------------- 
+    //    Part 3: Execution 
+    // -----------------------
+    // 
+    // Here we call the ColliderBit module functions 
+    // that run the LHC event loop and calculate the 
+    // log-likelihood.
+    // 
 
-      // Retrieve and print the LHC likelihood
-      double loglike = calc_LHC_LogLike(0);
+    // Call the initialisation functions for all backends that are in use.
+    nulike_1_0_3_init.reset_and_calculate();
+    Pythia_8_212_EM_init.reset_and_calculate();
 
-      std::cout.precision(5);
-      std::cout << std::endl;
-      std::cout << std::scientific << "LHC log likelihood is " << loglike << std::endl;
-      std::cout << std::endl;
+    // Run the simulation loop and calculate the LHC likelihood.
+    operateLHCLoop.reset_and_calculate();
+    calc_LHC_LogLike.reset_and_calculate();
 
-      // To print to the logs instead, use 
-      // logger() << "LHC log likelihood is " << loglike << EOM
+    // Retrieve and print the LHC likelihood
+    double loglike = calc_LHC_LogLike(0);
 
-      // To output additional info such as the number of signal events
-      // predicted for a given analysis and signal region, edit the
-      // calc_LHC_LogLike module function in ColliderBit/src/ColliderBit.cpp.
+    std::cout.precision(5);
+    std::cout << std::endl;
+    std::cout << std::scientific << "LHC log likelihood is " << loglike << std::endl;
+    std::cout << std::endl;
 
-    }
+    // To print to the logs instead, use 
+    // logger() << "LHC log likelihood is " << loglike << EOM
+
+    // To output additional info such as the number of signal events
+    // predicted for a given analysis and signal region, edit the
+    // calc_LHC_LogLike module function in ColliderBit/src/ColliderBit.cpp.
 
     // Done, all is well
     return 0;
@@ -349,3 +355,4 @@ int main(int argc, char* argv[])
   return 1;
 
 }
+
