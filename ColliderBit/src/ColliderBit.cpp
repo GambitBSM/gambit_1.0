@@ -521,7 +521,7 @@ namespace Gambit
       bool partonOnly;
       double antiktR;
       if (*Loop::iteration == BASE_INIT)
-        useBuckFastIdentityDetector = runOptions->getValueOrDef<bool>(true, "useBuckFastIdentityDetector");
+        useBuckFastIdentityDetector = runOptions->getValueOrDef<bool>(false, "useBuckFastIdentityDetector");
       if (*Loop::iteration == INIT and useBuckFastIdentityDetector)
       {
         result.clear();
@@ -539,6 +539,8 @@ namespace Gambit
     void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getDetAnalysisContainer;
       
+      if (!useDelphesDetector) return;
+
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesDet, std::vector<std::string>);
 
@@ -554,8 +556,6 @@ namespace Gambit
         globalAnalysesDet.init(analysisNamesDet);
         return;
       }
-      
-      if (!useDelphesDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -588,6 +588,8 @@ namespace Gambit
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
 
+      if (!useBuckFastATLASDetector) return;
+
       if (*Loop::iteration == BASE_INIT) {
 
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
@@ -604,8 +606,6 @@ namespace Gambit
         globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
       }
-
-      if (!useBuckFastATLASDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -637,6 +637,8 @@ namespace Gambit
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
 
+      if (!useBuckFastCMSDetector) return;
+
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
 
@@ -652,8 +654,6 @@ namespace Gambit
         globalAnalysesCMS.init(analysisNamesCMS);
         return;
       }
-
-      if (!useBuckFastCMSDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -685,6 +685,8 @@ namespace Gambit
    void getIdentityAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getIdentityAnalysisContainer;
 
+      if (!useBuckFastIdentityDetector) return;
+
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNamesIdentity, std::vector<std::string>);
 
@@ -700,8 +702,6 @@ namespace Gambit
         globalAnalysesIdentity.init(analysisNamesIdentity);
         return;
       }
-
-      if (!useBuckFastIdentityDetector) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -960,6 +960,9 @@ namespace Gambit
       if(useBuckFastCMSDetector)
         analysisResults.insert(analysisResults.end(),
                 Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
+      if(useBuckFastIdentityDetector)
+        analysisResults.insert(analysisResults.end(),
+                Dep::IdentityAnalysisNumbers->begin(), Dep::IdentityAnalysisNumbers->end());
 #ifndef EXCLUDE_DELPHES
       if (useDelphesDetector)
         analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
@@ -996,18 +999,6 @@ namespace Gambit
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
-          #ifdef COLLIDERBIT_DEBUG
-            logger() << endl;
-            logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
-            logger() << "  NEvents, not scaled to luminosity :" << endl;
-            logger() << "    " << srData.n_signal << endl;
-            logger() << "  NEvents, scaled  to luminosity :  " << endl;
-            logger() << "    " << srData.n_signal_at_lumi << endl;
-            logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
-            logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
-                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
-          #endif
-
           double llb_exp = 0, llsb_exp = 0, llb_obs = 0, llsb_obs = 0;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
@@ -1031,17 +1022,17 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
-          // The following was used for some final tests of ColliderBit:
+          // For debuggig: print some useful numbers to the log.
           #ifdef COLLIDERBIT_DEBUG
             logger() << endl;
-            logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
-            logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
-            logger() << "    " << llb_exp << " " << llsb_exp << " "
-                     << llb_obs << " " << llsb_obs << endl;
-            logger() << "  NEvents, not scaled to luminosity :" << endl;
-            logger() << "    " << srData.n_signal << endl;
-            logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
-            logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+            logger() << "COLLIDER_RESULT: " << srData.analysis_name << ", SR: " << srData.sr_label << endl;
+            logger() << "  LLikes: b_ex      sb_ex     b_obs     sb_obs    (sb_obs-b_obs)" << endl;
+            logger() << "          " << llb_exp << "  " << llsb_exp << "  "
+                     << llb_obs << "  " << llsb_obs << "  " << llsb_obs-llb_obs << endl;
+            logger() << "  NEvents, not scaled to luminosity: " << srData.n_signal << endl;
+            logger() << "  NEvents, scaled  to luminosity:    " << srData.n_signal_at_lumi << endl;
+            logger() << "  NEvents: b [rel err]      sb [rel err]" << endl;
+            logger() << "           " << n_predicted_uncertain_b << " [" << uncertainty_b << "]   "
                      << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
           #endif
 
