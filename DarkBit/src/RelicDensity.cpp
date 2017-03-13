@@ -624,24 +624,12 @@ namespace Gambit
       // Input
       int fast;     // fast: 1, accurate: 0
       double Beps;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
-      int VZdecay, VWdecay; // 0=no 3 body final states
-                            // 1=3 body final states in annihlations
-                            // 2=3 body final states in co-annihilations
-
 
       // Set options via ini-file (MicrOmegas-specific performance options)
       fast = runOptions->getValueOrDef<int>(0, "fast");
       Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
-      VZdecay = runOptions->getValueOrDef<int>(1, "VZdecay");
-      VWdecay = runOptions->getValueOrDef<int>(1, "VWdecay");
-      if (VZdecay != 1 || VWdecay != 1)
-      {
-          *BEreq::VZdecay = VZdecay;
-          *BEreq::VWdecay = VWdecay;
-          BEreq::cleanDecayTable();
-      }
+
       logger() << LogTags::debug << "Using fast: " << fast << " Beps: " << Beps;
-      logger() << " VWdecay: " << VWdecay << " VZdecay: " << VZdecay << EOM;
 
       // Output
       double Xf;
