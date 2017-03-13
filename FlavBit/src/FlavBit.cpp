@@ -74,19 +74,24 @@ namespace Gambit
     /// Non-rollcalled helper functions unknown to GAMBIT
     // **************************************************
 
-    const bool flav_debug =
+    
+    bool flav_debug =true;
+      /*
     #ifdef FLAVBIT_DEBUG
       true;
     #else
       false;
     #endif
-
-    const bool flav_debug_LL =
+      */
+    bool flav_debug_LL =true;
+    /*
     #ifdef FLAVBIT_DEBUG_LL
       true;
     #else
       false;
     #endif
+    
+    */
 
     ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
     inline std::complex<double> rhoplusieta(double lambda, double A, double rhobar, double etabar)
@@ -2074,7 +2079,7 @@ namespace Gambit
 
       if(flav_debug) cout<<"Inited Flav reader"<<endl;
       red.read_yaml_mesurement("flav_data.yaml", "BR_b2sgamma");
-
+      cout<<"READ?"<<endl;
       red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();

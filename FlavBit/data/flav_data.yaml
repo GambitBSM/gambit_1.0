@@ -2,6 +2,7 @@
   islimit: false
   value: 2.8e-9
   exp_stat_error: 0.7e-9
+  exp_sys_error: 0.0e-9
   th_error: 0.1
   source: Nature 522
   error_type: M
