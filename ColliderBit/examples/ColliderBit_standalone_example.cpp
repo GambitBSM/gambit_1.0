@@ -34,6 +34,7 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 using namespace std;
 
 // Useful typedefs
+typedef vector<int> vint;
 typedef vector<double> vdouble;
 typedef vector<bool> vbool;
 typedef vector<string> vstr;
@@ -204,7 +205,7 @@ int main(int argc, char* argv[])
     operateLHCLoop.setOption<vstr>("pythiaNames", vstr {"Pythia_EM_8Tev", "Pythia_EM_13TeV"});
 
     // Set number of LHC events
-    operateLHCLoop.setOption<int>("nEvents",20000);
+    operateLHCLoop.setOption<vint>("nEvents",vint {20000, 20000});
 
     // Should stdout be silenced during the event loop? 
     operateLHCLoop.setOption<bool>("silenceLoop",false);

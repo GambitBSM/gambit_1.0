@@ -117,7 +117,8 @@ namespace Gambit
     std::vector<std::string>::const_iterator iterPythiaNames;
     unsigned int indexPythiaNames;
     bool eventsGenerated;
-    int nEvents, seedBase;
+    std::vector<int> nEvents;
+    int seedBase;
 
     /// Analysis stuff
     bool useBuckFastATLASDetector;
@@ -171,7 +172,7 @@ namespace Gambit
       iterPythiaNames = pythiaNames.cbegin();
       indexPythiaNames = 0;
 
-      nEvents = 0;
+      nEvents.clear();
       // - Pythia random number seed base will be set in the loop over colliders below.
       seedBase = 0;
       // - Set eventsGenerated to true once some events are generated.
@@ -204,7 +205,10 @@ namespace Gambit
       // Retrieve run options from the YAML file safely...
       GET_COLLIDER_RUNOPTION(pythiaNames, "pythiaNames", std::vector<std::string>);
       // @todo Subprocess specific nEvents
-      GET_COLLIDER_RUNOPTION(nEvents, "nEvents", int);
+      GET_COLLIDER_RUNOPTION(nEvents, "nEvents", std::vector<int>);
+
+      // Anders!
+      // Check that length of pythiaNames and nEvents agree!
 
       // Should we silence stdout during the loop?
       bool silenceLoop = runOptions->getValueOrDef<bool>(true, "silenceLoop");
@@ -234,7 +238,7 @@ namespace Gambit
         {
           Loop::executeIteration(START_SUBPROCESS);
           // main event loop
-          while(currentEvent<nEvents and not *Loop::done) {
+          while(currentEvent<nEvents[indexPythiaNames] and not *Loop::done) {
             if (!eventsGenerated)
               eventsGenerated = true;
             try
@@ -379,7 +383,7 @@ namespace Gambit
 
         // - Get the veto value from the options
         double totalxsec_fb_veto;
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_veto", double, 0.0);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_vetos", double, 0.0);
 
         // - Get the upper limt xsec as estimated by Pythia
         code = -1;
@@ -520,7 +524,7 @@ namespace Gambit
 
         // - Get the veto value from the options
         double totalxsec_fb_veto;
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_veto", double, 0.0);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_vetos", double, 0.0);
 
         // - Get the upper limt xsec as estimated by Pythia
         code = -1;
@@ -587,7 +591,7 @@ namespace Gambit
         delphesOptions.clear();
         std::string delphesConfigFile;
         // GET_COLLIDER_RUNOPTION(delphesConfigFile, "delphesConfigFile", std::string);
-        GET_COLLIDER_RUNOPTION_VECTOR(delphesConfigFile, indexPythiaNames, "delphesConfigFile", std::string);
+        GET_COLLIDER_RUNOPTION_VECTOR(delphesConfigFile, indexPythiaNames, "delphesConfigFiles", std::string);
         delphesOptions.push_back(delphesConfigFile);
         // Setup new Delphes
         result.init(delphesOptions);
@@ -1090,7 +1094,7 @@ namespace Gambit
 
 
 #ifndef EXCLUDE_DELPHES
-    void runDetAnalyses(AnalysesData& result)
+    void runDetAnalyses(AnalysisNumbers& result)
     {
       using namespace Pipes::runDetAnalyses;
 
@@ -1136,7 +1140,7 @@ namespace Gambit
 
 
 
-    void runATLASAnalyses(AnalysesData& result)
+    void runATLASAnalyses(AnalysisNumbers& result)
     {
       using namespace Pipes::runATLASAnalyses;
 
@@ -1181,7 +1185,7 @@ namespace Gambit
 
 
 
-    void runCMSAnalyses(AnalysesData& result)
+    void runCMSAnalyses(AnalysisNumbers& result)
     {
       using namespace Pipes::runCMSAnalyses;
 
@@ -1225,7 +1229,7 @@ namespace Gambit
 
 
 
-    void runIdentityAnalyses(AnalysesData& result)
+    void runIdentityAnalyses(AnalysisNumbers& result)
     {
       using namespace Pipes::runIdentityAnalyses;
 
@@ -1273,7 +1277,7 @@ namespace Gambit
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
 
-      AnalysesData analysisResults;
+      AnalysisNumbers analysisResults;
       #ifdef COLLIDERBIT_DEBUG
         if (haveUsedBuckFastATLASDetector)
           cout << "DEBUG: calc_LHC_LogLike: Dep::ATLASAnalysisNumbers->size()    = " << Dep::ATLASAnalysisNumbers->size() << endl;

@@ -230,6 +230,47 @@ Rules:
   #
   # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
 
+  # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
+  - capability:  ColliderOperator
+    function: operateLHCLoop
+    options:
+      nEvents: [5000,5000]
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_SUSY_LHC_13TeV"]
+      silenceLoop: true
+
+
+  # Choose which getPythia to use
+  # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)
+  # Note that you must specify the path to the xmldoc
+  # Note also that you can use normal Pythia options here
+  - capability:  HardScatteringSim
+    function:  getPythia
+    options:
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = off",
+                             "HadronLevel:all = off",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0"]
+      Pythia_SUSY_LHC_13TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = off",
+                             "HadronLevel:all = off",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0"]
+      # Don't bother generating events if the estimated upper limit on the cross-section is below this value [fb].
+      # (The cross-section values 0.048 fb and 0.075 fb correspond to ~1 expected event at L = 20.7 fb^-1 and L = 13.3 fb^-1, respectively.)
+      xsec_vetos: [0.048, 0.075]
+
+      # Option needed if you want to use the getPythiaFileReader
+      # SLHA_filenames: ["path to SLHA file"]
+
+
   # Delphes rules and options (ex. the Delphes configuration card file)
   # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
   - capability: DetectorSim
@@ -239,7 +280,7 @@ Rules:
       # useDetector defaults to false for getDelphes, which ignores all "Det" analyses and disables Delphes
       useDetector: [false,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
-      delphesConfigFile: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
+      delphesConfigFiles: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
   # BuckFast for ATLAS rules and options (ex. the jet radius)
   - capability: SimpleSmearingSim
@@ -313,47 +354,6 @@ Rules:
                     "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
                     "ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                     "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"], [] ] 
-
-  # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
-  - capability:  ColliderOperator
-    function: operateLHCLoop
-    options:
-      nEvents: 5000
-      pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_SUSY_LHC_13TeV"]
-      silenceLoop: true
-
-
-  # Choose which getPythia to use
-  # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)
-  # Note that you must specify the path to the xmldoc
-  # Note also that you can use normal Pythia options here
-  - capability:  HardScatteringSim
-    function:  getPythia
-    options:
-      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
-      ###   backend. So, this must only be set if the user chooses a different Pythia.
-      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
-                             "PartonLevel:MPI = off",
-                             "PartonLevel:ISR = on",
-                             "PartonLevel:FSR = off",
-                             "HadronLevel:all = off",
-                             "SUSY:all = on",
-                             "TauDecays:mode = 0"]
-      Pythia_SUSY_LHC_13TeV: ["Print:quiet = on",
-                             "PartonLevel:MPI = off",
-                             "PartonLevel:ISR = on",
-                             "PartonLevel:FSR = off",
-                             "HadronLevel:all = off",
-                             "SUSY:all = on",
-                             "TauDecays:mode = 0"]
-      # Don't bother generating events if the estimated upper limit on the cross-section is below this value [fb].
-      # (The cross-section values 0.048 fb and 0.075 fb correspond to ~1 expected event at L = 20.7 fb^-1 and L = 13.3 fb^-1, respectively.)
-      xsec_veto: [0.048, 0.075]
-
-      # Option needed if you want to use the getPythiaFileReader
-      # SLHA_filenames: ["path to SLHA file"]
-
 
 
     # Use lognormal errors when marginalising the LHC Poisson likelihoods over systematic uncertainties
