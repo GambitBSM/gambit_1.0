@@ -48,7 +48,7 @@ namespace Gambit
         using boost::enable_shared_from_this;
 #endif
 
-        ///Generic function base used my the scanner.  Can be Likelihood, observables, etc.
+        ///Generic function base used by the scanner.  Can be Likelihood, observables, etc.
         template<typename T>
         class Function_Base;
 
@@ -291,7 +291,7 @@ namespace Gambit
         // two like_ptrs be active in the one scan? I.e. we could calculate two separate
         // likelihood functions at the one point (no scanners currently allow this, but
         // in-principle they could). If so, then there is a printer issue here to worry
-        // about, namely, and error will be thrown if we attempt to print MPIrank, pointID,
+        // about, namely, an error will be thrown if we attempt to print MPIrank, pointID,
         // and unitCubeParameters twice for the same point, which it seems is what would
         // happen. So we need to change something here so that they only get printed once
         // per point, no matter how many like_ptr's may be "active" at once.
