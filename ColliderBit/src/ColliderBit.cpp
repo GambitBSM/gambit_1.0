@@ -25,6 +25,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Jul
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@nordita.org)
+///  \date   2017 March
+///
 ///  *********************************************
 
 #include <cmath>
@@ -42,7 +46,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-// #define COLLIDERBIT_DEBUG
+#define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -134,6 +138,11 @@ namespace Gambit
     HEPUtilsAnalysisContainer globalAnalysesDet;
 #endif // not defined EXCLUDE_DELPHES
 
+    bool haveUsedBuckFastATLASDetector;
+    bool haveUsedBuckFastCMSDetector;
+    bool haveUsedBuckFastIdentityDetector;
+    bool haveUsedDelphesDetector;
+
 
 
     
@@ -183,6 +192,11 @@ namespace Gambit
       useDelphesDetector = false; // false by default
       analysisNamesDet.clear();
       globalAnalysesDet.clear();
+
+      haveUsedBuckFastATLASDetector = false;
+      haveUsedBuckFastCMSDetector = false;
+      haveUsedBuckFastIdentityDetector = false;
+      haveUsedDelphesDetector = false;
 
 
       // Do the base-level initialisation
@@ -557,8 +571,9 @@ namespace Gambit
       {
         result.clear();
 
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useDelphesDetector, indexPythiaNames, "useDelphesDetector", bool, false);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useDelphesDetector, indexPythiaNames, "useDetector", bool, false);
         if (!useDelphesDetector) return;
+        else haveUsedDelphesDetector = true;
 
         // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
         if (useDelphesDetector and omp_get_max_threads()>1)
@@ -593,8 +608,9 @@ namespace Gambit
       {
         result.clear();
         // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastATLASDetector, indexPythiaNames, "useBuckFastATLASDetector", bool, true);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastATLASDetector, indexPythiaNames, "useDetector", bool, true);
         if (!useBuckFastATLASDetector) return;
+        else haveUsedBuckFastATLASDetector = true;
 
         GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
         GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
@@ -614,8 +630,9 @@ namespace Gambit
       {
         result.clear();
         // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastCMSDetector, indexPythiaNames, "useBuckFastCMSDetector", bool, true);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastCMSDetector, indexPythiaNames, "useDetector", bool, true);
         if (!useBuckFastCMSDetector) return;
+        else haveUsedBuckFastCMSDetector = true;
 
         GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
         GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
@@ -635,8 +652,9 @@ namespace Gambit
       {
         result.clear();
         // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastIdentityDetector, indexPythiaNames, "useBuckFastIdentityDetector", bool, false);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastIdentityDetector, indexPythiaNames, "useDetector", bool, false);
         if (!useBuckFastCMSDetector) return;
+        else haveUsedBuckFastIdentityDetector = true;
 
         GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
         GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
@@ -1255,36 +1273,36 @@ namespace Gambit
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
 
-      // Anders
-      // // xsec veto
-      // if (not eventsGenerated)
-      // {
-      //   logger() << "This point was xsec vetoed." << EOM;
-      //   result = 0.;
-      //   return;
-      // }
-
       AnalysesData analysisResults;
       #ifdef COLLIDERBIT_DEBUG
-        cout << "DEBUG: calc_LHC_LogLike: Dep::ATLASAnalysisNumbers->size()    = " << Dep::ATLASAnalysisNumbers->size() << endl;
-        cout << "DEBUG: calc_LHC_LogLike: Dep::CMSAnalysisNumbers->size()      = " << Dep::CMSAnalysisNumbers->size() << endl;
-        cout << "DEBUG: calc_LHC_LogLike: Dep::IdentityAnalysisNumbers->size() = " << Dep::IdentityAnalysisNumbers->size() << endl;
-        cout << "DEBUG: calc_LHC_LogLike: Dep::DetAnalysisNumbers->size()      = " << Dep::DetAnalysisNumbers->size() << endl;
+        if (haveUsedBuckFastATLASDetector)
+          cout << "DEBUG: calc_LHC_LogLike: Dep::ATLASAnalysisNumbers->size()    = " << Dep::ATLASAnalysisNumbers->size() << endl;
+        if (haveUsedBuckFastCMSDetector)
+          cout << "DEBUG: calc_LHC_LogLike: Dep::CMSAnalysisNumbers->size()      = " << Dep::CMSAnalysisNumbers->size() << endl;
+        if (haveUsedBuckFastIdentityDetector)
+          cout << "DEBUG: calc_LHC_LogLike: Dep::IdentityAnalysisNumbers->size() = " << Dep::IdentityAnalysisNumbers->size() << endl;
+        if (haveUsedDelphesDetector)
+          cout << "DEBUG: calc_LHC_LogLike: Dep::DetAnalysisNumbers->size()      = " << Dep::DetAnalysisNumbers->size() << endl;
       #endif
 
-      analysisResults.insert(analysisResults.end(), Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
-      analysisResults.insert(analysisResults.end(), Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
-      analysisResults.insert(analysisResults.end(), Dep::IdentityAnalysisNumbers->begin(), Dep::IdentityAnalysisNumbers->end());
+      if (haveUsedBuckFastATLASDetector)
+        analysisResults.insert(analysisResults.end(), Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
+      if (haveUsedBuckFastCMSDetector)
+        analysisResults.insert(analysisResults.end(), Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
+      if (haveUsedBuckFastIdentityDetector)
+        analysisResults.insert(analysisResults.end(), Dep::IdentityAnalysisNumbers->begin(), Dep::IdentityAnalysisNumbers->end());
 #ifndef EXCLUDE_DELPHES
-      analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
+      if (haveUsedDelphesDetector)
+        analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
 #endif
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis)
       {
 
-        // Anders
-        cout << "DEBUG: calc_LHC_LogLike: Analysis " << analysis << " has " << analysisResults[analysis].size() << " signal regions." << endl;
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: calc_LHC_LogLike: Analysis " << analysis << " has " << analysisResults[analysis].size() << " signal regions." << endl;
+        #endif
 
         // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
         /// @note In general each analysis could/should work out its own likelihood so they can handle SR combination if possible.

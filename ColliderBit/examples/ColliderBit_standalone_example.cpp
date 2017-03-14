@@ -33,21 +33,11 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 
 using namespace std;
 
-
-// getOptions()->getValue< vector<vector<string>> >("SLHA_filenames")
-
-// Useful macros for filling the option vectors
-
-#define DECLARE_OPTION(FUNCTION, OPTION_NAME, OPTION_TYPE)   \
-    typedef OPTION_TYPE CAT_3(FUNCTION,OPTION_NAME,_type);   \
-    OPTION_TYPE CAT(FUNCTION,OPTION_NAME);                   \
-
-#define APPEND_TO_OPTION(FUNCTION, OPTION_NAME, ELEMENT_VALUE)                                                       \
-    try{ CAT(FUNCTION,OPTION_NAME) = FUNCTION.getOptions()->getValue< CAT_3(FUNCTION,OPTION_NAME,_type) >(#OPTION_NAME); } \
-    catch (...) {}                                                                                                   \
-    CAT(FUNCTION,OPTION_NAME).push_back(ELEMENT_VALUE);                                                              \
-    FUNCTION.setOption< CAT_3(FUNCTION,OPTION_NAME,_type) >(#OPTION_NAME, CAT(FUNCTION,OPTION_NAME));                \
-
+// Useful typedefs
+typedef vector<double> vdouble;
+typedef vector<bool> vbool;
+typedef vector<string> vstr;
+typedef vector<vector<string> > vvstr;
 
 
 // 
@@ -207,79 +197,11 @@ int main(int argc, char* argv[])
     // 
 
     // 
-    // Set up the collider(s), i.e. different configurations of Pythia:
-    // 
-    // 1. Create a vector with the names of the different colliders.
-    // 2. For each collider, create a vector with Pythia settings. 
-    // 3. Connect the settings and collider names by passing the information to getPythiaFileReader.
-    // 4. Pass the Pythia XML path and the path to the input SLHA file to getPythiaFileReader.
-    // 
-    // For this example we will only set up a single collider, starting from the completely unpsecified collider
-    // "Pythia_external" in ColliderBit/src/colliders/SpecializablePythia.cpp. This collider has no pre-defined 
-    //  configuration, so we should specify all settings below.
-    // 
-    // (The file SpecializablePythia.cpp also defines some partly configured colliders, "Pythia_SUSY_LHC_8TeV" and 
-    // "Pythia_glusq_LHC_8TeV", and others can be added if needed.)   
-    
-
-    // Vector with collider names
-    vector<string> pythiaNames;
-
-    // Add the "Pythia_external" collider.
-    pythiaNames.push_back("Pythia_external");
-
-    // Vector with settings for Pythia_external
-    // 
-    // NOTE: If you want to set a fixed seed for Pythia through "Random:seed = ...",
-    //       this must currently be done directly in the module function getPythiaFileReader 
-    //       in ColliderBit/src/CollderBit.cpp, in a similar manner to what is done there now.
-    //       This is to avoid potential problems with OpenMP threads getting identical seeds.
-    //
-    //       Also, Pythia options specified directly in getPythiaFileReader in ColliderBit.cpp 
-    //       can override options given here.
-    // 
-    // 
-    vector<string> pythiaSettings;
-    pythiaSettings.push_back("UserModel:all = on");   // Switch on the processes in the external model
-    pythiaSettings.push_back("Beams:eCM = 8000");
-    pythiaSettings.push_back("PartonLevel:MPI = off");
-    pythiaSettings.push_back("PartonLevel:ISR = on");
-    pythiaSettings.push_back("PartonLevel:FSR = off");
-    pythiaSettings.push_back("HadronLevel:all = off");
-    pythiaSettings.push_back("TauDecays:mode = 0");
-    pythiaSettings.push_back("Main:timesAllowErrors = 1000");
-
-    // Connect settings and collider name
-    getPythiaFileReader.setOption<vector<string>>("Pythia_external",pythiaSettings);
-
-    // Set the correct XML path for Pythia
-    getPythiaFileReader.setOption<string>("Pythia_doc_path","Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
-
-    // Specify the SLHA input file. 
-    // For this example we take the command line argument stored in 'inputFileName'.
-    // vector<string> inputFiles;
-    // inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
-    // getPythiaFileReader.setOption<vector<string>>("SLHA_filenames",inputFiles);
-
-    // getPythiaFileReader.getOptions()->getValue< vector<vector<string>> >("SLHA_filenames").insert(getPythiaFileReader.getOptions()->getValue< vector<vector<string>> >("SLHA_filenames").end(), inputFiles.begin(), inputFiles());
-    // getPythiaFileReader.getOptions()->getValue< vector<string> >("SLHA_filenames").insert(getPythiaFileReader.getOptions()->getValue< vector<string> >("SLHA_filenames").end(), inputFiles.begin(), inputFiles.end());
-
-    // WORKS!
-    // vector<string> SLHA_filenames;
-    // SLHA_filenames.push_back(inputFileName);
-    // getPythiaFileReader.setOption<vector<string>>("SLHA_filenames",SLHA_filenames);
-
-    DECLARE_OPTION(getPythiaFileReader, SLHA_filenames, vector<string>)
-    APPEND_TO_OPTION(getPythiaFileReader, SLHA_filenames, inputFileName)
-
-
-
-    // 
     // Settings for the LHC event loop (ColliderBit function 'operateLHCLoop')
     // 
 
     // Pass the collider names to the module function responsible for the event loop
-    operateLHCLoop.setOption<vector<string>>("pythiaNames",pythiaNames);
+    operateLHCLoop.setOption<vstr>("pythiaNames", vstr {"Pythia_EM_8Tev", "Pythia_EM_13TeV"});
 
     // Set number of LHC events
     operateLHCLoop.setOption<int>("nEvents",20000);
@@ -288,87 +210,93 @@ int main(int argc, char* argv[])
     operateLHCLoop.setOption<bool>("silenceLoop",false);
 
 
+    // 
+    // Set up the collider(s), i.e. the different configurations of Pythia:
+    // 
+    // For this example we will set up two colliders, "Pythia_EM_8Tev" and "Pythia_EM_13TeV". 
+    // As these are not pre-configured in ColliderBit/src/colliders/SpecializablePythia.cpp,  
+    // we should specify all required settings below.
+    // 
+    // (The file SpecializablePythia.cpp defines some partly configured colliders, e.g "Pythia_SUSY_LHC_8TeV" and 
+    // "Pythia_SUSY_LHC_13TeV, and others can be added if needed.)   
+    // 
+
+    // NOTE: If you want to set a fixed seed for Pythia through "Random:seed = ...",
+    //       this must currently be done directly in the module function getPythiaFileReader 
+    //       in ColliderBit/src/CollderBit.cpp, in a similar manner to what is done there now.
+    //       This is to avoid potential problems with OpenMP threads getting identical seeds.
+    //
+    //       Also, Pythia options specified directly in getPythiaFileReader in ColliderBit.cpp 
+    //       can override options given here.
+
+    getPythiaFileReader.setOption<vstr>("Pythia_EM_8Tev", vstr
+        {"UserModel:all = on",
+         "Beams:eCM = 8000",
+         "PartonLevel:MPI = off",
+         "PartonLevel:ISR = on",
+         "PartonLevel:FSR = off",
+         "HadronLevel:all = off",
+         "TauDecays:mode = 0",
+         "Main:timesAllowErrors = 1000",
+         "Random:setSeed = on"} );
+
+    getPythiaFileReader.setOption<vstr>("Pythia_EM_13TeV", vstr
+        {"UserModel:all = on",
+         "Beams:eCM = 13000",
+         "PartonLevel:MPI = off",
+         "PartonLevel:ISR = on",
+         "PartonLevel:FSR = off",
+         "HadronLevel:all = off",
+         "TauDecays:mode = 0",
+         "Main:timesAllowErrors = 1000",
+         "Random:setSeed = on"} );
+
+
+    // Set the correct XML path for Pythia
+    getPythiaFileReader.setOption<string>("Pythia_doc_path","Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
+
+    // Specify the SLHA input file. 
+    // For this example we take the command line argument stored in 'inputFileName'.
+    getPythiaFileReader.setOption<vstr>("SLHA_filenames", vstr {inputFileName});
+
+
 
     // 
     // Specify which analyses to run and which detectors to use.
     // 
-    // Note: Adding more detectors and analysis containers
-    //       will require changes to the manual dependecy 
-    //       resolution at the top.
+    // Note: Adding more detectors and analysis containers 
+    //       (e.g. for Delphes) will require additions to the 
+    //       manual dependecy resolution at the top.
     // 
 
+    // -- ATLAS analyses:
+    getBuckFastATLAS.setOption<vbool>("useDetector",vbool {true, true});
+    getBuckFastATLAS.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
+    getBuckFastATLAS.setOption<vbool>("partonOnly",vbool {false, false});
 
-    // -- ATLAS analyses
-
-    // getBuckFastATLAS.setOption<bool>("useBuckFastATLASDetector",true);
-    // getBuckFastATLAS.setOption<double>("antiktR",0.4);
-    // getBuckFastATLAS.setOption<bool>("partonOnly",false);
-
-    DECLARE_OPTION(getBuckFastATLAS, useBuckFastATLASDetector, vector<bool>)
-    DECLARE_OPTION(getBuckFastATLAS, antiktR, vector<double>)
-    DECLARE_OPTION(getBuckFastATLAS, partonOnly, vector<bool>)
-
-    APPEND_TO_OPTION(getBuckFastATLAS, useBuckFastATLASDetector, true)
-    APPEND_TO_OPTION(getBuckFastATLAS, antiktR, 0.4)
-    APPEND_TO_OPTION(getBuckFastATLAS, partonOnly, false)
-
-
-
-    DECLARE_OPTION(getBuckFastATLAS, analyses, vector< vector<string> >)
-
-    vector<string> runTheseATLASAnalyses;
-    runTheseATLASAnalyses.push_back("ATLAS_0LEP_20invfb");
-    // runTheseATLASAnalyses.push_back("ATLAS_0LEPStop_20invfb");
-    // runTheseATLASAnalyses.push_back("ATLAS_1LEPStop_20invfb");
-    // runTheseATLASAnalyses.push_back("ATLAS_2bStop_20invfb");
-    // runTheseATLASAnalyses.push_back("ATLAS_2LEPEW_20invfb");
-    // runTheseATLASAnalyses.push_back("ATLAS_2LEPStop_20invfb");
-    // runTheseATLASAnalyses.push_back("ATLAS_3LEPEW_20invfb");
-
-    // getATLASAnalysisContainer.setOption<vector<string>>("analysisNamesATLAS",runTheseATLASAnalyses);
-    APPEND_TO_OPTION(getBuckFastATLAS, analyses, runTheseATLASAnalyses)
-
-    cout << "DEBUG pythiaNames.size() = " <<  operateLHCLoop.getOptions()->getValue< vector<string> >("pythiaNames").size() << endl;
-    cout << "DEBUG analyses.size() = " <<  getBuckFastATLAS.getOptions()->getValue< vector< vector<string> > >("analyses").size() << endl;
+    getATLASAnalysisContainer.setOption<vvstr>("analyses", vvstr 
+        { {"ATLAS_0LEP_20invfb"}, 
+          {"ATLAS_13TeV_0LEP_13invfb"} });
 
 
     // -- CMS analyses:
-    // getBuckFastCMS.setOption<bool>("useBuckFastCMSDetector",true);
-    // getBuckFastCMS.setOption<double>("antiktR",0.5);
-    // getBuckFastCMS.setOption<bool>("partonOnly",false);
+    getBuckFastCMS.setOption<vbool>("useDetector",vbool {true, false});
+    getBuckFastCMS.setOption<vdouble>("antiktR",vdouble {0.5, 0.5});
+    getBuckFastCMS.setOption<vbool>("partonOnly",vbool {false, false});
 
-    DECLARE_OPTION(getBuckFastCMS, useBuckFastCMSDetector, vector<bool>)
-    DECLARE_OPTION(getBuckFastCMS, antiktR, vector<double>)
-    DECLARE_OPTION(getBuckFastCMS, partonOnly, vector<bool>)
-
-    APPEND_TO_OPTION(getBuckFastCMS, useBuckFastCMSDetector, true)
-    APPEND_TO_OPTION(getBuckFastCMS, antiktR, 0.4)
-    APPEND_TO_OPTION(getBuckFastCMS, partonOnly, false)
+    getCMSAnalysisContainer.setOption<vvstr>("analyses", vvstr 
+        { {"CMS_MONOJET_20invfb"}, 
+          {} });
 
 
-    DECLARE_OPTION(getBuckFastCMS, analyses, vector< vector<string> >)
+    // // -- Identity analyses:
+    // getBuckFastIdentity.setOption<vbool>("useDetector",vbool {true, true});
+    // getBuckFastIdentity.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
+    // getBuckFastIdentity.setOption<vbool>("partonOnly",vbool {false, false});
 
-    vector<string> runTheseCMSAnalyses;
-    // runTheseCMSAnalyses.push_back("CMS_1LEPDMTOP_20invfb");
-    // runTheseCMSAnalyses.push_back("CMS_2LEPDMTOP_20invfb");
-    // runTheseCMSAnalyses.push_back("CMS_3LEPEW_20invfb");
-    runTheseCMSAnalyses.push_back("CMS_MONOJET_20invfb");
-
-    // getCMSAnalysisContainer.setOption<vector<string>>("analysisNamesCMS",runTheseCMSAnalyses);
-    APPEND_TO_OPTION(getBuckFastCMS, analyses, runTheseCMSAnalyses)
-
-
-
-    // // -- Identity analyses (no detector smearing)
-    // getBuckFastIdentity.setOption<bool>("useBuckFastIdentityDetector",false);  // Switched off by default
-    // getBuckFastIdentity.setOption<double>("antiktR",0.4);
-    // getBuckFastIdentity.setOption<bool>("partonOnly",false);
-
-    // vector<string> runTheseIdentityAnalyses;
-    // // runTheseIdentityAnalyses.push_back("Insert analysis name here");  // Add analysis names
-
-    // getIdentityAnalysisContainer.setOption<vector<string>>("analysisNamesIdentity",runTheseIdentityAnalyses);
-
+    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr { 
+    //     { {"ATLAS_0LEP_20invfb", "CMS_MONOJET_20invfb"}, 
+    //       {"ATLAS_13TeV_0LEP_13invfb"} });
 
 
 

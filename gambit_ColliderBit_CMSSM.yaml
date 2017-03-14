@@ -221,18 +221,12 @@ Rules:
  ##### LHC Detector and Analysis rules #####
   #
   # The current capability structure allows for the user to mix'n'match
-  # detector sims and analyses. The user may run BuckFastATLAS with ATLAS
-  # analyses, BuckFastCMS with CMS analyses, and Delphes with any analyses.
+  # collider settings, detector sims and analyses. The user may run BuckFastATLAS 
+  # with ATLAS analyses, BuckFastCMS with CMS analyses, and Delphes with any analyses,
+  # for various configurations of Pythia.
   #
-  # The way to turn these features on or off is via the booleans useDelphesDetector,
-  # useBuckFastATLASDetector, and useBuckFastCMSDetector within the getDelphes, getBuckFastATLAS, and
-  # getBuckFastCMS functions, respectively.
-  #
-  # For example, in this file the delphesConfigFile is set to an ATLAS config
-  # file, and DetAnalysisContainer is set to use ATLAS analyses. Thus, if we set
-  # useDelphesDetector=true, useBuckFastATLASDetector=false, and useBuckFastCMSDetector=true, then the ATLAS analyses will
-  # run on the reconstructed events from Delphes, and the CMS analyses will run
-  # on the simply smeared events from BuckFastCMS.
+  # The way to turn the detectors on or off is via the boolean option useDetector for 
+  # the module functions getDelphes, getBuckFastATLAS and getBuckFastCMS.
   #
   # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
 
@@ -242,8 +236,8 @@ Rules:
     type: "Gambit::ColliderBit::DelphesVanilla"
     function: getDelphes
     options:
-      #useDelphesDetector defaults to false, which ignores all "Det" analyses and disables Delphes
-      useDelphesDetector: [false,false]
+      # useDetector defaults to false for getDelphes, which ignores all "Det" analyses and disables Delphes
+      useDetector: [false,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
       delphesConfigFile: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
@@ -252,8 +246,8 @@ Rules:
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
-      #useBuckFastATLASDetector defaults to true. Set it to false to ignore all ATLAS analyses and disable the BuckFast ATLAS simulator
-      useBuckFastATLASDetector: [true,true]
+      # useDetector defaults to true for getBuckFastATLAS. Set it to false to ignore all ATLAS analyses and disable the BuckFast ATLAS simulator
+      useDetector: [true,true]
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: [false,false]
       antiktR: [0.4,0.4]
@@ -263,8 +257,8 @@ Rules:
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
-      #useBuckFastCMSDetector defaults to true. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
-      useBuckFastCMSDetector: [true,false]
+      # useDetector defaults to true for getBuckFastCMS. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
+      useDetector: [true,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: [false,false]
       antiktR: [0.4,0.4]
@@ -274,8 +268,8 @@ Rules:
     type: "Gambit::ColliderBit::BuckFastIdentity"
     function: getBuckFastIdentity
     options:
-      #useBuckFastIdentityDetector defaults to false, which ignores all "Identity" analyses and disables the BuckFast Identity "simulator".
-      useBuckFastIdentityDetector: [false,false]
+      #useDetector defaults to false for getBuckFastIdentity, which ignores all "Identity" analyses and disables the BuckFast Identity "simulator".
+      useDetector: [false,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
       partonOnly: [false,false]
       antiktR: [0.4,0.4]
