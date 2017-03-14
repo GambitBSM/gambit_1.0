@@ -189,6 +189,12 @@ Rules:
     type: Spectrum
     function: make_MSSM_precision_spectrum_none
 
+  # These options set various tolerances in the spectrum generation
+  - options:
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
+      #gauge_mixing_tolerance_invalidates_point_only: false
+      #family_mixing_tolerance_invalidates_point_only: false
 
   # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
   - capability: Reference_SM_Higgs_decay_rates
@@ -237,9 +243,9 @@ Rules:
     function: getDelphes
     options:
       #useDelphesDetector defaults to false, which ignores all "Det" analyses and disables Delphes
-      useDelphesDetector: false
+      useDelphesDetector: [false,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
-      delphesConfigFile: "ColliderBit/data/delphes_card_ATLAS.tcl"
+      delphesConfigFile: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
   # BuckFast for ATLAS rules and options (ex. the jet radius)
   - capability: SimpleSmearingSim
@@ -247,10 +253,10 @@ Rules:
     function: getBuckFastATLAS
     options:
       #useBuckFastATLASDetector defaults to true. Set it to false to ignore all ATLAS analyses and disable the BuckFast ATLAS simulator
-      useBuckFastATLASDetector: false
+      useBuckFastATLASDetector: [true,true]
       # Choose which type of event to use: for parton level, change partonOnly to true
-      partonOnly: false
-      antiktR: 0.4
+      partonOnly: [false,false]
+      antiktR: [0.4,0.4]
 
   # BuckFast for CMS rules and options (ex. the jet radius)
   - capability: SimpleSmearingSim
@@ -258,71 +264,70 @@ Rules:
     function: getBuckFastCMS
     options:
       #useBuckFastCMSDetector defaults to true. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
-      useBuckFastCMSDetector: false
+      useBuckFastCMSDetector: [true,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
-      partonOnly: false
-      antiktR: 0.4
+      partonOnly: [false,false]
+      antiktR: [0.4,0.4]
 
   # Identity BuckFast rules and options (ex. the jet radius)
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastIdentity"
     function: getBuckFastIdentity
     options:
-      #useBuckFastCMSDetector defaults to true. Set it to false to ignore all CMS analyses and disable the BuckFast CMS simulator
-      useBuckFastIdentityDetector: true
+      #useBuckFastIdentityDetector defaults to false, which ignores all "Identity" analyses and disables the BuckFast Identity "simulator".
+      useBuckFastIdentityDetector: [false,false]
       # Choose which type of event to use: for parton level, change partonOnly to true
-      partonOnly: false
-      antiktR: 0.4
+      partonOnly: [false,false]
+      antiktR: [0.4,0.4]
+
 
   # Specify the list of analyses to run after Delphes performs detector simulation
   # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
   - capability: DetAnalysisContainer
     function: getDetAnalysisContainer
     options:  
-      analysisNamesDet: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
-                         "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
-                         "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                         "ATLAS_3LEPEW_20invfb"]
+      analyses: [ ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                   "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                   "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                   "ATLAS_3LEPEW_20invfb"], 
+                   [] ]
 
   # Specify the list of ATLAS analyses to run
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:  
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
-                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
-                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                           "ATLAS_3LEPEW_20invfb"]
+      analyses: [ ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                   "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                   "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                   "ATLAS_3LEPEW_20invfb"], 
+                  ["ATLAS_13TeV_0LEP_13invfb"] ]
 
   # Specify the list of CMS analyses to run
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
-      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
-                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
+      analyses: [ ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                   "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"],
+                  [] ]     
 
   # Specify the list of identity analyses to run
   - capability: IdentityAnalysisContainer
     function: getIdentityAnalysisContainer
     options:  
-      analysisNamesIdentity: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
-                         "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
-                         "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                         "ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
-                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"] 
+      analyses: [ [ "ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                    "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                    "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                    "ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                    "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"], [] ] 
 
   # Choose number of events, and the type of Pythia object to run (this example here runs a SUSY example, which is what we want)
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
       nEvents: 5000
-      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_SUSY_LHC_13TeV"]
+      silenceLoop: true
 
-  # These options set various tolerances in the spectrum generation
-  - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
-      #gauge_mixing_tolerance_invalidates_point_only: false
-      #family_mixing_tolerance_invalidates_point_only: false
 
   # Choose which getPythia to use
   # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)
@@ -337,16 +342,23 @@ Rules:
       Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
-                             "PartonLevel:FSR = on",
-                             "HadronLevel:all = on",
+                             "PartonLevel:FSR = off",
+                             "HadronLevel:all = off",
                              "SUSY:all = on",
                              "TauDecays:mode = 0"]
-      # Add this option for 13 TeV LHC running
-                      #  "Beams:eCM = 13000"]
+      Pythia_SUSY_LHC_13TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = off",
+                             "HadronLevel:all = off",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0"]
+      # Don't bother generating events if the estimated upper limit on the cross-section is below this value [fb].
+      # (The cross-section values 0.048 fb and 0.075 fb correspond to ~1 expected event at L = 20.7 fb^-1 and L = 13.3 fb^-1, respectively.)
+      xsec_veto: [0.048, 0.075]
 
-      # Uncomment these lines if you want to use getPythiaFileReader
-      #SLHA_filenames:
-      #  - gg_100_1400.slha
+      # Option needed if you want to use the getPythiaFileReader
+      # SLHA_filenames: ["path to SLHA file"]
 
 
 

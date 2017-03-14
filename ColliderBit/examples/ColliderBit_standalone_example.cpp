@@ -31,7 +31,28 @@ using namespace ColliderBit::Accessors;     // Helper functions that provide som
 using namespace ColliderBit::Functown;      // Functors wrapping the module's actual module functions
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
+using namespace std;
 
+
+// getOptions()->getValue< vector<vector<string>> >("SLHA_filenames")
+
+// Useful macros for filling the option vectors
+
+#define DECLARE_OPTION(FUNCTION, OPTION_NAME, OPTION_TYPE)   \
+    typedef OPTION_TYPE CAT_3(FUNCTION,OPTION_NAME,_type);   \
+    OPTION_TYPE CAT(FUNCTION,OPTION_NAME);                   \
+
+#define APPEND_TO_OPTION(FUNCTION, OPTION_NAME, ELEMENT_VALUE)                                                       \
+    try{ CAT(FUNCTION,OPTION_NAME) = FUNCTION.getOptions()->getValue< CAT_3(FUNCTION,OPTION_NAME,_type) >(#OPTION_NAME); } \
+    catch (...) {}                                                                                                   \
+    CAT(FUNCTION,OPTION_NAME).push_back(ELEMENT_VALUE);                                                              \
+    FUNCTION.setOption< CAT_3(FUNCTION,OPTION_NAME,_type) >(#OPTION_NAME, CAT(FUNCTION,OPTION_NAME));                \
+
+
+
+// 
+// ---- main program ----
+// 
 int main(int argc, char* argv[])
 {
 
@@ -42,25 +63,25 @@ int main(int argc, char* argv[])
     logger()<<"Running ColliderBit standalone example"<<LogTags::info<<EOM;
 
 
-    std::cout << std::endl;
-    std::cout << "==================================" << std::endl;
-    std::cout << "||                              ||" << std::endl;
-    std::cout << "||    ColliderBit standalone    ||" << std::endl;
-    std::cout << "||                              ||" << std::endl;
-    std::cout << "==================================" << std::endl;
-    std::cout << std::endl;
+    cout << endl;
+    cout << "==================================" << endl;
+    cout << "||                              ||" << endl;
+    cout << "||    ColliderBit standalone    ||" << endl;
+    cout << "||                              ||" << endl;
+    cout << "==================================" << endl;
+    cout << endl;
 
 
     // Check the number of command line arguments
     if (argc < 2) 
     {
       // Tell the user how to run the program and exit
-      std::cerr << "Usage: " << argv[0] << " <input SLHA file>" << std::endl << std::endl;
+      cerr << "Usage: " << argv[0] << " <input SLHA file>" << endl << endl;
       return 1;
     }
 
     // Read input file name 
-    const std::string inputFileName = argv[1];
+    const string inputFileName = argv[1];
 
 
     // Check that required backends are present
@@ -68,9 +89,9 @@ int main(int argc, char* argv[])
     if (not Backends::backendInfo().works["nulike1.0.3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
 
     // Output some info about ColliderBit
-    std::cout << std::endl << "My name is " << name() << std::endl;
-    std::cout << std::endl << "I can calculate: " << endl << iCanDo << std::endl;
-    std::cout << std::endl << "...but I may need: " << endl << iMayNeed << std::endl << std::endl;
+    cout << endl << "My name is " << name() << endl;
+    cout << endl << "I can calculate: " << endl << iCanDo << endl;
+    cout << endl << "...but I may need: " << endl << iMayNeed << endl << endl;
 
 
 
@@ -132,7 +153,7 @@ int main(int argc, char* argv[])
     runCMSAnalyses.resolveLoopManager(&operateLHCLoop);
     runIdentityAnalyses.resolveLoopManager(&operateLHCLoop);
 
-    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, 
+    vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, 
                                                                   &getBuckFastATLAS, 
                                                                   &getBuckFastCMS, 
                                                                   &getBuckFastIdentity, 
@@ -154,23 +175,23 @@ int main(int argc, char* argv[])
     // 
 
     // - Double-check which backend requirements have been filled with what
-    // std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
-    // std::cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.origin() << "::";
-    // std::cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.name() << std::endl;
+    // cout << endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << endl;
+    // cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.origin() << "::";
+    // cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.name() << endl;
 
     // - Double-check which dependencies have been filled with what (only a few combinations shown here)
-    // std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on ATLASAnalysisNumbers filled by:" << endl;
-    // std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.origin() << "::";
-    // std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.name() << std::endl;
-    // std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on CMSAnalysisNumbers filled by:" << endl;
-    // std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::CMSAnalysisNumbers.origin() << "::";
-    // std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::CMSAnalysisNumbers.name() << std::endl;
-    // std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
-    // std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
-    // std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << std::endl;
-    // std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
-    // std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
-    // std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << std::endl;
+    // cout << endl << "My function calc_LHC_LogLike has had its dependency on ATLASAnalysisNumbers filled by:" << endl;
+    // cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.origin() << "::";
+    // cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.name() << endl;
+    // cout << endl << "My function calc_LHC_LogLike has had its dependency on CMSAnalysisNumbers filled by:" << endl;
+    // cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::CMSAnalysisNumbers.origin() << "::";
+    // cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::CMSAnalysisNumbers.name() << endl;
+    // cout << endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
+    // cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
+    // cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << endl;
+    // cout << endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
+    // cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
+    // cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << endl;
 
 
 
@@ -202,7 +223,7 @@ int main(int argc, char* argv[])
     
 
     // Vector with collider names
-    std::vector<std::string> pythiaNames;
+    vector<string> pythiaNames;
 
     // Add the "Pythia_external" collider.
     pythiaNames.push_back("Pythia_external");
@@ -218,7 +239,7 @@ int main(int argc, char* argv[])
     //       can override options given here.
     // 
     // 
-    std::vector<std::string> pythiaSettings;
+    vector<string> pythiaSettings;
     pythiaSettings.push_back("UserModel:all = on");   // Switch on the processes in the external model
     pythiaSettings.push_back("Beams:eCM = 8000");
     pythiaSettings.push_back("PartonLevel:MPI = off");
@@ -229,16 +250,27 @@ int main(int argc, char* argv[])
     pythiaSettings.push_back("Main:timesAllowErrors = 1000");
 
     // Connect settings and collider name
-    getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_external",pythiaSettings);
+    getPythiaFileReader.setOption<vector<string>>("Pythia_external",pythiaSettings);
 
     // Set the correct XML path for Pythia
-    getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
+    getPythiaFileReader.setOption<string>("Pythia_doc_path","Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
 
     // Specify the SLHA input file. 
     // For this example we take the command line argument stored in 'inputFileName'.
-    std::vector<std::string> inputFiles;
-    inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
-    getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
+    // vector<string> inputFiles;
+    // inputFiles.push_back(inputFileName); // specify the input SLHA filename for Pythia
+    // getPythiaFileReader.setOption<vector<string>>("SLHA_filenames",inputFiles);
+
+    // getPythiaFileReader.getOptions()->getValue< vector<vector<string>> >("SLHA_filenames").insert(getPythiaFileReader.getOptions()->getValue< vector<vector<string>> >("SLHA_filenames").end(), inputFiles.begin(), inputFiles());
+    // getPythiaFileReader.getOptions()->getValue< vector<string> >("SLHA_filenames").insert(getPythiaFileReader.getOptions()->getValue< vector<string> >("SLHA_filenames").end(), inputFiles.begin(), inputFiles.end());
+
+    // WORKS!
+    // vector<string> SLHA_filenames;
+    // SLHA_filenames.push_back(inputFileName);
+    // getPythiaFileReader.setOption<vector<string>>("SLHA_filenames",SLHA_filenames);
+
+    DECLARE_OPTION(getPythiaFileReader, SLHA_filenames, vector<string>)
+    APPEND_TO_OPTION(getPythiaFileReader, SLHA_filenames, inputFileName)
 
 
 
@@ -247,7 +279,7 @@ int main(int argc, char* argv[])
     // 
 
     // Pass the collider names to the module function responsible for the event loop
-    operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
+    operateLHCLoop.setOption<vector<string>>("pythiaNames",pythiaNames);
 
     // Set number of LHC events
     operateLHCLoop.setOption<int>("nEvents",20000);
@@ -265,12 +297,26 @@ int main(int argc, char* argv[])
     //       resolution at the top.
     // 
 
-    // -- ATLAS analyses
-    getBuckFastATLAS.setOption<bool>("useBuckFastATLASDetector",true);
-    getBuckFastATLAS.setOption<double>("antiktR",0.4);
-    getBuckFastATLAS.setOption<bool>("partonOnly",false);
 
-    std::vector<std::string> runTheseATLASAnalyses;
+    // -- ATLAS analyses
+
+    // getBuckFastATLAS.setOption<bool>("useBuckFastATLASDetector",true);
+    // getBuckFastATLAS.setOption<double>("antiktR",0.4);
+    // getBuckFastATLAS.setOption<bool>("partonOnly",false);
+
+    DECLARE_OPTION(getBuckFastATLAS, useBuckFastATLASDetector, vector<bool>)
+    DECLARE_OPTION(getBuckFastATLAS, antiktR, vector<double>)
+    DECLARE_OPTION(getBuckFastATLAS, partonOnly, vector<bool>)
+
+    APPEND_TO_OPTION(getBuckFastATLAS, useBuckFastATLASDetector, true)
+    APPEND_TO_OPTION(getBuckFastATLAS, antiktR, 0.4)
+    APPEND_TO_OPTION(getBuckFastATLAS, partonOnly, false)
+
+
+
+    DECLARE_OPTION(getBuckFastATLAS, analyses, vector< vector<string> >)
+
+    vector<string> runTheseATLASAnalyses;
     runTheseATLASAnalyses.push_back("ATLAS_0LEP_20invfb");
     // runTheseATLASAnalyses.push_back("ATLAS_0LEPStop_20invfb");
     // runTheseATLASAnalyses.push_back("ATLAS_1LEPStop_20invfb");
@@ -279,33 +325,49 @@ int main(int argc, char* argv[])
     // runTheseATLASAnalyses.push_back("ATLAS_2LEPStop_20invfb");
     // runTheseATLASAnalyses.push_back("ATLAS_3LEPEW_20invfb");
 
-    getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesATLAS",runTheseATLASAnalyses);
+    // getATLASAnalysisContainer.setOption<vector<string>>("analysisNamesATLAS",runTheseATLASAnalyses);
+    APPEND_TO_OPTION(getBuckFastATLAS, analyses, runTheseATLASAnalyses)
+
+    cout << "DEBUG pythiaNames.size() = " <<  operateLHCLoop.getOptions()->getValue< vector<string> >("pythiaNames").size() << endl;
+    cout << "DEBUG analyses.size() = " <<  getBuckFastATLAS.getOptions()->getValue< vector< vector<string> > >("analyses").size() << endl;
 
 
     // -- CMS analyses:
-    getBuckFastCMS.setOption<bool>("useBuckFastCMSDetector",true);
-    getBuckFastCMS.setOption<double>("antiktR",0.5);
-    getBuckFastCMS.setOption<bool>("partonOnly",false);
+    // getBuckFastCMS.setOption<bool>("useBuckFastCMSDetector",true);
+    // getBuckFastCMS.setOption<double>("antiktR",0.5);
+    // getBuckFastCMS.setOption<bool>("partonOnly",false);
 
-    std::vector<std::string> runTheseCMSAnalyses;
+    DECLARE_OPTION(getBuckFastCMS, useBuckFastCMSDetector, vector<bool>)
+    DECLARE_OPTION(getBuckFastCMS, antiktR, vector<double>)
+    DECLARE_OPTION(getBuckFastCMS, partonOnly, vector<bool>)
+
+    APPEND_TO_OPTION(getBuckFastCMS, useBuckFastCMSDetector, true)
+    APPEND_TO_OPTION(getBuckFastCMS, antiktR, 0.4)
+    APPEND_TO_OPTION(getBuckFastCMS, partonOnly, false)
+
+
+    DECLARE_OPTION(getBuckFastCMS, analyses, vector< vector<string> >)
+
+    vector<string> runTheseCMSAnalyses;
     // runTheseCMSAnalyses.push_back("CMS_1LEPDMTOP_20invfb");
     // runTheseCMSAnalyses.push_back("CMS_2LEPDMTOP_20invfb");
     // runTheseCMSAnalyses.push_back("CMS_3LEPEW_20invfb");
     runTheseCMSAnalyses.push_back("CMS_MONOJET_20invfb");
 
-    getCMSAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesCMS",runTheseCMSAnalyses);
+    // getCMSAnalysisContainer.setOption<vector<string>>("analysisNamesCMS",runTheseCMSAnalyses);
+    APPEND_TO_OPTION(getBuckFastCMS, analyses, runTheseCMSAnalyses)
 
 
 
-    // -- Identity analyses (no detector smearing)
-    getBuckFastIdentity.setOption<bool>("useBuckFastIdentityDetector",false);  // Switched off by default
-    getBuckFastIdentity.setOption<double>("antiktR",0.4);
-    getBuckFastIdentity.setOption<bool>("partonOnly",false);
+    // // -- Identity analyses (no detector smearing)
+    // getBuckFastIdentity.setOption<bool>("useBuckFastIdentityDetector",false);  // Switched off by default
+    // getBuckFastIdentity.setOption<double>("antiktR",0.4);
+    // getBuckFastIdentity.setOption<bool>("partonOnly",false);
 
-    std::vector<std::string> runTheseIdentityAnalyses;
-    // runTheseIdentityAnalyses.push_back("Insert analysis name here");  // Add analysis names
+    // vector<string> runTheseIdentityAnalyses;
+    // // runTheseIdentityAnalyses.push_back("Insert analysis name here");  // Add analysis names
 
-    getIdentityAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesIdentity",runTheseIdentityAnalyses);
+    // getIdentityAnalysisContainer.setOption<vector<string>>("analysisNamesIdentity",runTheseIdentityAnalyses);
 
 
 
@@ -330,10 +392,10 @@ int main(int argc, char* argv[])
     // Retrieve and print the LHC likelihood
     double loglike = calc_LHC_LogLike(0);
 
-    std::cout.precision(5);
-    std::cout << std::endl;
-    std::cout << std::scientific << "LHC log likelihood is " << loglike << std::endl;
-    std::cout << std::endl;
+    cout.precision(5);
+    cout << endl;
+    cout << scientific << "LHC log likelihood is " << loglike << endl;
+    cout << endl;
 
     // To print to the logs instead, use 
     // logger() << "LHC log likelihood is " << loglike << EOM
@@ -348,7 +410,7 @@ int main(int argc, char* argv[])
 
   catch (std::exception& e)
   {
-    std::cerr << "ColliderBit_standalone example has exited with fatal exception: " << e.what() << std::endl;
+    cerr << "ColliderBit_standalone example has exited with fatal exception: " << e.what() << endl;
   }
 
   // Done, but something went wrong

@@ -200,7 +200,7 @@ START_MODULE
   #define CAPABILITY DetAnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runDetAnalyses
-    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    START_FUNCTION(AnalysesData)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -212,7 +212,7 @@ START_MODULE
   #define CAPABILITY ATLASAnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runATLASAnalyses
-    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    START_FUNCTION(AnalysesData)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ATLASSmearedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -223,7 +223,7 @@ START_MODULE
   #define CAPABILITY CMSAnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runCMSAnalyses
-    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    START_FUNCTION(AnalysesData)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(CMSSmearedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -234,7 +234,7 @@ START_MODULE
   #define CAPABILITY IdentityAnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runIdentityAnalyses
-    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    START_FUNCTION(AnalysesData)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(CopiedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -247,11 +247,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION calc_LHC_LogLike
     START_FUNCTION(double)
-    DEPENDENCY(ATLASAnalysisNumbers, ColliderLogLikes)
-    DEPENDENCY(CMSAnalysisNumbers, ColliderLogLikes)
-    DEPENDENCY(IdentityAnalysisNumbers, ColliderLogLikes)
+    DEPENDENCY(ATLASAnalysisNumbers, AnalysesData)
+    DEPENDENCY(CMSAnalysisNumbers, AnalysesData)
+    DEPENDENCY(IdentityAnalysisNumbers, AnalysesData)
 #ifndef EXCLUDE_DELPHES
-    DEPENDENCY(DetAnalysisNumbers, ColliderLogLikes)
+    DEPENDENCY(DetAnalysisNumbers, AnalysesData)
 #endif // not defined EXCLUDE_DELPHES
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )

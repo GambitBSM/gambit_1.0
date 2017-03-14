@@ -107,27 +107,35 @@ namespace Gambit
     }
 
     /// Event labels
-    enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
+    enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE_COLLIDER = -5, FINALIZE = -6};
     /// Pythia stuff
     std::vector<std::string> pythiaNames, pythiaCommonOptions;
-    std::vector<std::string>::const_iterator iter;
+    std::vector<std::string>::const_iterator iterPythiaNames;
+    unsigned int indexPythiaNames;
     bool eventsGenerated;
     int nEvents, seedBase;
+
     /// Analysis stuff
     bool useBuckFastATLASDetector;
     std::vector<std::string> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
+
     bool useBuckFastCMSDetector;
     std::vector<std::string> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
+
     bool useBuckFastIdentityDetector;
     std::vector<std::string> analysisNamesIdentity;
     HEPUtilsAnalysisContainer globalAnalysesIdentity;
+
 #ifndef EXCLUDE_DELPHES
     bool useDelphesDetector;
     std::vector<std::string> analysisNamesDet;
     HEPUtilsAnalysisContainer globalAnalysesDet;
 #endif // not defined EXCLUDE_DELPHES
+
+
+
     
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -141,31 +149,73 @@ namespace Gambit
     {
       using namespace Pipes::operateLHCLoop;
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
-      int currentEvent;
+
+      #ifdef COLLIDERBIT_DEBUG
+        cout << "DEBUG: New point!" << endl; 
+      #endif
+
+      // 
+      // Clear global containers and variables
+      // 
+      pythiaNames.clear();
+      pythiaCommonOptions.clear();
+      iterPythiaNames = pythiaNames.cbegin();
+      indexPythiaNames = 0;
+
       nEvents = 0;
-      // Pythia random number seed will be set properly during BASE_INIT.
-      seedBase = 0; // This just prevents a warning.
-      // Set eventsGenerated to true once some events are generated.
+      // - Pythia random number seed base will be set in the loop over colliders below.
+      seedBase = 0;
+      // - Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
+
+      useBuckFastATLASDetector = true;
+      analysisNamesATLAS.clear();
+      globalAnalysesATLAS.clear();
+
+      useBuckFastCMSDetector = true;
+      analysisNamesCMS.clear();
+      globalAnalysesCMS.clear();
+
+      useBuckFastIdentityDetector = false;  // false by default
+      analysisNamesIdentity.clear();
+      globalAnalysesIdentity.clear();
+
+      useDelphesDetector = false; // false by default
+      analysisNamesDet.clear();
+      globalAnalysesDet.clear();
+
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
-      // Retrieve runOptions from the YAML file safely...
-      GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
+      // Retrieve run options from the YAML file safely...
+      GET_COLLIDER_RUNOPTION(pythiaNames, "pythiaNames", std::vector<std::string>);
       // @todo Subprocess specific nEvents
-      GET_COLLIDER_RUNOPTION(nEvents, int);
+      GET_COLLIDER_RUNOPTION(nEvents, "nEvents", int);
 
       // Should we silence stdout during the loop?
       bool silenceLoop = runOptions->getValueOrDef<bool>(true, "silenceLoop");
       if (silenceLoop) std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
-      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
+      for (iterPythiaNames = pythiaNames.cbegin(); iterPythiaNames != pythiaNames.cend(); ++iterPythiaNames)
       {
+
+        // Update the global index indexPythiaNames
+        indexPythiaNames = iterPythiaNames - pythiaNames.cbegin();
+
+        // Update the global Pythia seedBase.
+        // The Pythia random number seed will be this, plus the thread number.
+        seedBase = int(Random::draw() * 899990000);
+
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: Current collider: " << *iterPythiaNames << " with index " << indexPythiaNames << endl; 
+        #endif
+
         piped_invalid_point.check();
         Loop::reset();
         Loop::executeIteration(INIT);
-        currentEvent = 0;
+
+        int currentEvent = 0;
         #pragma omp parallel
         {
           Loop::executeIteration(START_SUBPROCESS);
@@ -185,6 +235,9 @@ namespace Gambit
           }
           Loop::executeIteration(END_SUBPROCESS);
         }
+
+        Loop::executeIteration(FINALIZE_COLLIDER);
+
       }
 
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
@@ -244,9 +297,6 @@ namespace Gambit
         {
           ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
-
-        // Pythia random number seed will be this, plus the thread number.
-        seedBase = int(Random::draw() * 899990000.);
       }
 
       if (*Loop::iteration == INIT)
@@ -254,22 +304,26 @@ namespace Gambit
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
+        if (runOptions->hasKey(*iterPythiaNames))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iterPythiaNames);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
       {
-        result.clear();
-        // variables for xsec veto
+        // Variables needed for the xsec veto
         std::stringstream processLevelOutput;
         std::string _junk, readline;
         int code, nxsec;
         double xsec, totalxsec;
 
-        // Each thread gets its own Pythia instance.
+        // Each thread needs an independent Pythia instance at the start
+        // of each event generation loop.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
+
+        result = SpecializablePythia();
+        // result.clear();
+
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
         // Although we capture all couts, still we tell Pythia to be quiet....
         pythiaOptions.push_back("Print:quiet = on");
@@ -279,7 +333,11 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:file = slhaea");
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
-        result.resetSpecialization(*iter);
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: getPythia: My Pythia seed is: " << std::to_string(seedBase + omp_get_thread_num()) << endl;
+        #endif
+
+        result.resetSpecialization(*iterPythiaNames);
 
         try
         {
@@ -302,7 +360,14 @@ namespace Gambit
           }
         }
 
-        // xsec veto
+
+        // Should we apply the xsec veto and skip event generation?
+
+        // - Get the veto value from the options
+        double totalxsec_fb_veto;
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_veto", double, 0.0);
+
+        // - Get the upper limt xsec as estimated by Pythia
         code = -1;
         nxsec = 0;
         totalxsec = 0.;
@@ -321,11 +386,20 @@ namespace Gambit
           }
         }
 
-        /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
-        if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
+        #endif
 
+        if (totalxsec * 1e12 < totalxsec_fb_veto) 
+        {
+          #ifdef COLLIDERBIT_DEBUG
+            cout << "DEBUG: Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
+          #endif
+          Loop::wrapup();
+        }
       }
     }
+
 
 
     void getPythiaFileReader(Gambit::ColliderBit::SpecializablePythia &result)
@@ -351,13 +425,17 @@ namespace Gambit
           result.banner(pythia_doc_path);
           pythia_doc_path_needs_setting = false;
         }
-        // If there are no debug filenames set, look for them.
-        if (filenames.empty())
-          filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
-        if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
 
-        // Pythia random number seed will be this, plus the thread number.
-        seedBase = int(Random::draw() * 899990000.);
+        // Get SLHA file(s)
+        filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
+        if (filenames.empty())
+        {
+          str errmsg = "\nNo SLHA files are listed for ColliderBit function getPythiaFileReader.\n";
+          errmsg    += "Please correct the option 'SLHA_filenames' or use getPythia instead.";
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
+        if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
       }
 
       if (*Loop::iteration == INIT)
@@ -365,24 +443,29 @@ namespace Gambit
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
+        if (runOptions->hasKey(*iterPythiaNames))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iterPythiaNames);
       }
+
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
-        result.clear();
         // variables for xsec veto
         std::stringstream processLevelOutput;
         std::string _junk, readline;
         int code, nxsec;
         double xsec, totalxsec;
 
-        if (omp_get_thread_num() == 0) logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
-
-        // Each thread gets its own Pythia instance.
+        // Each thread needs an independent Pythia instance at the start
+        // of each event generation loop.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
+
+        result = SpecializablePythia();
+        // result.clear();
+
+        if (omp_get_thread_num() == 0) logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
+
         std::vector<std::string> pythiaOptions = pythiaCommonOptions;
         // Although we capture all couts, still we tell Pythia to be quiet....
         pythiaOptions.push_back("Print:quiet = on");
@@ -392,7 +475,11 @@ namespace Gambit
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
-        result.resetSpecialization(*iter);
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: getPythiaFileReader: My Pythia seed is: " << std::to_string(seedBase + omp_get_thread_num()) << endl;
+        #endif
+
+        result.resetSpecialization(*iterPythiaNames);
 
         try
         {
@@ -415,7 +502,13 @@ namespace Gambit
           }
         }
 
-        // xsec veto
+        // Should we apply the xsec veto and skip event generation?
+
+        // - Get the veto value from the options
+        double totalxsec_fb_veto;
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_veto", double, 0.0);
+
+        // - Get the upper limt xsec as estimated by Pythia
         code = -1;
         nxsec = 0;
         totalxsec = 0.;
@@ -434,8 +527,17 @@ namespace Gambit
           }
         }
 
-        /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
-        if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
+        #endif
+
+        if (totalxsec * 1e12 < totalxsec_fb_veto) 
+        {
+          #ifdef COLLIDERBIT_DEBUG
+            cout << "DEBUG: Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
+          #endif
+          Loop::wrapup();
+        }
 
       }
 
@@ -451,9 +553,12 @@ namespace Gambit
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
 
-      if (*Loop::iteration == BASE_INIT)
+      if (*Loop::iteration == INIT)
       {
-        useDelphesDetector = runOptions->getValueOrDef<bool>(false, "useDelphesDetector");
+        result.clear();
+
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useDelphesDetector, indexPythiaNames, "useDelphesDetector", bool, false);
+        if (!useDelphesDetector) return;
 
         // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
         if (useDelphesDetector and omp_get_max_threads()>1)
@@ -463,56 +568,61 @@ namespace Gambit
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
-      }
-      if (*Loop::iteration == INIT and useDelphesDetector)
-      {
-        result.clear();
         // Reset Options
         delphesOptions.clear();
         std::string delphesConfigFile;
-        GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
+        // GET_COLLIDER_RUNOPTION(delphesConfigFile, "delphesConfigFile", std::string);
+        GET_COLLIDER_RUNOPTION_VECTOR(delphesConfigFile, indexPythiaNames, "delphesConfigFile", std::string);
         delphesOptions.push_back(delphesConfigFile);
         // Setup new Delphes
         result.init(delphesOptions);
       }
     }
+
 #endif // not defined EXCLUDE_DELPHES
     
+
   
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
       bool partonOnly;
       double antiktR;
-      if (*Loop::iteration == BASE_INIT)
-        useBuckFastATLASDetector = runOptions->getValueOrDef<bool>(true, "useBuckFastATLASDetector");
-      if (*Loop::iteration == INIT and useBuckFastATLASDetector)
+
+      if (*Loop::iteration == INIT)
       {
         result.clear();
         // Setup new BuckFast:
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastATLASDetector, indexPythiaNames, "useBuckFastATLASDetector", bool, true);
+        if (!useBuckFastATLASDetector) return;
+
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
         result.init(partonOnly, antiktR);
       }
     }
 
 
-   void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
+
+    void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
     {
       using namespace Pipes::getBuckFastCMS;
       bool partonOnly;
       double antiktR;
-      if (*Loop::iteration == BASE_INIT)
-        useBuckFastCMSDetector = runOptions->getValueOrDef<bool>(true, "useBuckFastCMSDetector");
-      if (*Loop::iteration == INIT and useBuckFastCMSDetector)
+
+      if (*Loop::iteration == INIT)
       {
         result.clear();
-        // Setup new BuckFast
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        // Setup new BuckFast:
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastCMSDetector, indexPythiaNames, "useBuckFastCMSDetector", bool, true);
+        if (!useBuckFastCMSDetector) return;
+
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
         result.init(partonOnly, antiktR);
       }
     }
+
 
 
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
@@ -520,35 +630,46 @@ namespace Gambit
       using namespace Pipes::getBuckFastIdentity;
       bool partonOnly;
       double antiktR;
-      if (*Loop::iteration == BASE_INIT)
-        useBuckFastIdentityDetector = runOptions->getValueOrDef<bool>(false, "useBuckFastIdentityDetector");
-      if (*Loop::iteration == INIT and useBuckFastIdentityDetector)
+
+      if (*Loop::iteration == INIT)
       {
         result.clear();
-        // Setup new BuckFast
-        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
-        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        // Setup new BuckFast:
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastIdentityDetector, indexPythiaNames, "useBuckFastIdentityDetector", bool, false);
+        if (!useBuckFastCMSDetector) return;
+
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
+        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
         result.init(partonOnly, antiktR);
       }
     }
-    
-    
+
+
+
     /// *** Initialization for analyses ***
 
+    
 #ifndef EXCLUDE_DELPHES
     void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getDetAnalysisContainer;
-      
-      if (!useDelphesDetector) return;
 
-      if (*Loop::iteration == BASE_INIT) {
-        GET_COLLIDER_RUNOPTION(analysisNamesDet, std::vector<std::string>);
+      if (*Loop::iteration == BASE_INIT) return;
+
+      if (*Loop::iteration == INIT) {
+
+        if (!useDelphesDetector) return;
+
+        // Get the vector of analysis names corresponding to the current collider 
+        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesDet, indexPythiaNames, "analyses", std::vector<str>);
 
         if (analysisNamesDet.empty() and useDelphesDetector)
         {
-          str errmsg = "\nThe option 'useDelphesDetector' for function getDelphes is set to true,\n";
-          errmsg    += "but the list of corresponding analyses (option 'analysisNamesDet' for function\n"; 
-          errmsg    += "getDetAnalysisContainer) is empty. Please correct your settings.\n"; 
+          str errmsg = "\nThe option 'useDelphesDetector' for function 'getDelphes' is set to true\n";
+          errmsg    += "for the collider '";
+          errmsg    += *iterPythiaNames;
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getDetAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -557,21 +678,38 @@ namespace Gambit
         return;
       }
 
+      if (!useDelphesDetector) return;
+
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesDet);
+
+        #ifdef COLLIDERBIT_DEBUG
+          if (omp_get_thread_num() == 0)
+          {
+            for (auto it = analysisNamesDet.begin(); it != analysisNamesDet.end(); ++it)
+            {
+              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+            }
+          }
+        #endif
+
         return;
       }
-      
+
       if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
-        
+
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+        #endif
+
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
         {
@@ -581,24 +719,32 @@ namespace Gambit
         }
         return;
       }
-      
+
     }
 #endif // not defined EXCLUDE_DELPHES
-    
+
+
+
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
 
-      if (!useBuckFastATLASDetector) return;
+      if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == BASE_INIT) {
+      if (*Loop::iteration == INIT) {
 
-        GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
+        if (!useBuckFastATLASDetector) return;
+
+        // Get the vector of analysis names corresponding to the current collider 
+        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesATLAS, indexPythiaNames, "analyses", std::vector<str>);
 
         if (analysisNamesATLAS.empty() and useBuckFastATLASDetector)
         {
-          str errmsg = "\nThe option 'useBuckFastATLASDetector' for function getBuckFastATLAS is set to true,\n";
-          errmsg    += "but the list of corresponding analyses (option 'analysisNamesATLAS' for function\n"; 
-          errmsg    += "getATLASAnalysisContainer) is empty. Please correct your settings.\n"; 
+          str errmsg = "\nThe option 'useBuckFastATLASDetector' for function 'getBuckFastATLAS' is set to true\n";
+          errmsg    += "for the collider '";
+          errmsg    += *iterPythiaNames;
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getATLASAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -607,12 +753,25 @@ namespace Gambit
         return;
       }
 
+      if (!useBuckFastATLASDetector) return;
+
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesATLAS);
+
+        #ifdef COLLIDERBIT_DEBUG
+          if (omp_get_thread_num() == 0)
+          {
+            for (auto it = analysisNamesATLAS.begin(); it != analysisNamesATLAS.end(); ++it)
+            {
+              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+            }
+          }
+        #endif
+
         return;
       }
 
@@ -621,6 +780,10 @@ namespace Gambit
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
+
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+        #endif
 
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
@@ -634,19 +797,28 @@ namespace Gambit
 
     }
 
+
+
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
 
-      if (!useBuckFastCMSDetector) return;
+      if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == BASE_INIT) {
-        GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
+      if (*Loop::iteration == INIT) {
+
+        if (!useBuckFastCMSDetector) return;
+
+        // Get the vector of analysis names corresponding to the current collider 
+        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesCMS, indexPythiaNames, "analyses", std::vector<str>);
 
         if (analysisNamesCMS.empty() and useBuckFastCMSDetector)
         {
-          str errmsg = "\nThe option 'useBuckFastCMSDetector' for function getBuckFastCMS is set to true,\n";
-          errmsg    += "but the list of corresponding analyses (option 'analysisNamesCMS' for function\n"; 
-          errmsg    += "getCMSAnalysisContainer) is empty. Please correct your settings.\n"; 
+          str errmsg = "\nThe option 'useBuckFastCMSDetector' for function 'getBuckFastCMS' is set to true\n";
+          errmsg    += "for the collider '";
+          errmsg    += *iterPythiaNames;
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getCMSAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -655,12 +827,25 @@ namespace Gambit
         return;
       }
 
+      if (!useBuckFastCMSDetector) return;
+
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesCMS);
+
+        #ifdef COLLIDERBIT_DEBUG
+          if (omp_get_thread_num() == 0)
+          {
+            for (auto it = analysisNamesCMS.begin(); it != analysisNamesCMS.end(); ++it)
+            {
+              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+            }
+          }
+        #endif
+
         return;
       }
 
@@ -669,6 +854,10 @@ namespace Gambit
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
+
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+        #endif
 
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
@@ -682,19 +871,28 @@ namespace Gambit
 
     }
 
-   void getIdentityAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+
+
+    void getIdentityAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getIdentityAnalysisContainer;
 
-      if (!useBuckFastIdentityDetector) return;
+      if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == BASE_INIT) {
-        GET_COLLIDER_RUNOPTION(analysisNamesIdentity, std::vector<std::string>);
+      if (*Loop::iteration == INIT) {
+
+        if (!useBuckFastIdentityDetector) return;
+
+        // Get the vector of analysis names corresponding to the current collider 
+        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesIdentity, indexPythiaNames, "analyses", std::vector<str>);
 
         if (analysisNamesIdentity.empty() and useBuckFastIdentityDetector)
         {
-          str errmsg = "\nThe option 'useBuckFastIdentityDetector' for function getBuckFastIdentity is set to true,\n";
-          errmsg    += "but the list of corresponding analyses (option 'analysisNamesIdentity' for function\n"; 
-          errmsg    += "getIdentityAnalysisContainer) is empty. Please correct your settings.\n"; 
+          str errmsg = "\nThe option 'useBuckFastIdentityDetector' for function 'getBuckFastIdentity' is set to true\n";
+          errmsg    += "for the collider '";
+          errmsg    += *iterPythiaNames;
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getIdentityAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -703,12 +901,25 @@ namespace Gambit
         return;
       }
 
+      if (!useBuckFastIdentityDetector) return;
+
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesIdentity);
+
+        #ifdef COLLIDERBIT_DEBUG
+          if (omp_get_thread_num() == 0)
+          {
+            for (auto it = analysisNamesIdentity.begin(); it != analysisNamesIdentity.end(); ++it)
+            {
+              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+            }
+          }
+        #endif
+
         return;
       }
 
@@ -717,6 +928,10 @@ namespace Gambit
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
+
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+        #endif
 
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
@@ -729,6 +944,8 @@ namespace Gambit
       }
 
     }
+
+
 
     /// *** Hard Scattering Event Generators ***
 
@@ -853,18 +1070,42 @@ namespace Gambit
 
     /// *** Analysis Accumulators ***
 
+
 #ifndef EXCLUDE_DELPHES
-    void runDetAnalyses(ColliderLogLikes& result)
+    void runDetAnalyses(AnalysesData& result)
     {
       using namespace Pipes::runDetAnalyses;
-      if (!useDelphesDetector) return;
-      if (*Loop::iteration == FINALIZE && eventsGenerated) {
-        // The final iteration: get log likelihoods for the analyses
+
+      if (*Loop::iteration == BASE_INIT) 
+      {
         result.clear();
+        return;
+      }
+
+      if (!useDelphesDetector) return;
+
+      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      {
+        // The final iteration for this collider: collect results
         globalAnalysesDet.scale();
-        for (auto anaPtr = globalAnalysesDet.analyses.begin();
-                  anaPtr != globalAnalysesDet.analyses.end(); ++anaPtr)
+        for (auto anaPtr = globalAnalysesDet.analyses.begin(); anaPtr != globalAnalysesDet.analyses.end(); ++anaPtr)
+        {
+
+          #ifdef COLLIDERBIT_DEBUG
+            cout << "DEBUG: runDetAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+          #endif
+
           result.push_back((*anaPtr)->get_results());
+        }
+        return;
+      }
+
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
+        // Final iteration. Just return.
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: runDetAnalyses: 'result' contains " << result.size() << " results." << endl;
+        #endif
         return;
       }
 
@@ -874,19 +1115,43 @@ namespace Gambit
       Dep::DetAnalysisContainer->analyze(*Dep::ReconstructedEvent);
     }
 #endif // not defined EXCLUDE_DELPHES
-    
 
-    void runATLASAnalyses(ColliderLogLikes& result)
+
+
+    void runATLASAnalyses(AnalysesData& result)
     {
       using namespace Pipes::runATLASAnalyses;
-      if (!useBuckFastATLASDetector) return;
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+
+      if (*Loop::iteration == BASE_INIT) 
       {
-        // The final iteration: get log likelihoods for the analyses
         result.clear();
+        return;
+      }
+
+      if (!useBuckFastATLASDetector) return;
+
+      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      {
+        // The final iteration for this collider: collect results
         globalAnalysesATLAS.scale();
         for (auto anaPtr = globalAnalysesATLAS.analyses.begin(); anaPtr != globalAnalysesATLAS.analyses.end(); ++anaPtr)
+        {
+
+          #ifdef COLLIDERBIT_DEBUG
+            cout << "DEBUG: runATLASAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+          #endif
+
           result.push_back((*anaPtr)->get_results());
+        }
+        return;
+      }
+
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
+        // Final iteration. Just return.
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: runATLASAnalyses: 'result' contains " << result.size() << " results." << endl;
+        #endif
         return;
       }
 
@@ -897,17 +1162,40 @@ namespace Gambit
     }
 
 
-    void runCMSAnalyses(ColliderLogLikes& result)
+
+    void runCMSAnalyses(AnalysesData& result)
     {
       using namespace Pipes::runCMSAnalyses;
-      if (!useBuckFastCMSDetector) return;
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+
+      if (*Loop::iteration == BASE_INIT) 
       {
-        // The final iteration: get log likelihoods for the analyses
         result.clear();
+        return;
+      }
+
+      if (!useBuckFastCMSDetector) return;
+
+      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      {
+        // The final iteration for this collider: collect results
         globalAnalysesCMS.scale();
         for (auto anaPtr = globalAnalysesCMS.analyses.begin(); anaPtr != globalAnalysesCMS.analyses.end(); ++anaPtr)
+        {
+          #ifdef COLLIDERBIT_DEBUG
+            cout << "DEBUG: runCMSAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+          #endif
+
           result.push_back((*anaPtr)->get_results());
+        }
+        return;
+      }
+
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
+        // Final iteration. Just return.
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: runCMSAnalyses: 'result' contains " << result.size() << " results." << endl;
+        #endif
         return;
       }
 
@@ -917,17 +1205,41 @@ namespace Gambit
       Dep::CMSAnalysisContainer->analyze(*Dep::CMSSmearedEvent);
     }
 
-   void runIdentityAnalyses(ColliderLogLikes& result)
+
+
+    void runIdentityAnalyses(AnalysesData& result)
     {
       using namespace Pipes::runIdentityAnalyses;
-      if (!useBuckFastIdentityDetector) return;
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+
+      if (*Loop::iteration == BASE_INIT) 
       {
-        // The final iteration: get log likelihoods for the analyses
         result.clear();
+        return;
+      }
+
+      if (!useBuckFastIdentityDetector) return;
+
+      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      {
+        // The final iteration for this collider: collect results
         globalAnalysesIdentity.scale();
         for (auto anaPtr = globalAnalysesIdentity.analyses.begin(); anaPtr != globalAnalysesIdentity.analyses.end(); ++anaPtr)
+        {
+          #ifdef COLLIDERBIT_DEBUG
+            cout << "DEBUG: runIdentityAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+          #endif
+
           result.push_back((*anaPtr)->get_results());
+        }
+        return;
+      }
+
+      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      {
+        // Final iteration. Just return.
+        #ifdef COLLIDERBIT_DEBUG
+          cout << "DEBUG: runIdentityAnalyses: 'result' contains " << result.size() << " results." << endl;
+        #endif
         return;
       }
 
@@ -937,41 +1249,42 @@ namespace Gambit
       Dep::IdentityAnalysisContainer->analyze(*Dep::CopiedEvent);
     }
 
+
+
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
-      /* The use of the following requires ALLOW_MODEL(CMSSM) in the rollcall.
-      logger() << "This model:";
-      logger() << "\nm0: " << *Param["M0"];
-      logger() << "\nm1/2: " << *Param["M12"] << EOM;
-      */
 
-      // xsec veto
-      if (not eventsGenerated)
-      {
-        logger() << "This point was xsec vetoed." << EOM;
-        result = 0.;
-        return;
-      }
-      ColliderLogLikes analysisResults;
-      if(useBuckFastATLASDetector)
-        analysisResults.insert(analysisResults.end(),
-                Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
-      if(useBuckFastCMSDetector)
-        analysisResults.insert(analysisResults.end(),
-                Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
-      if(useBuckFastIdentityDetector)
-        analysisResults.insert(analysisResults.end(),
-                Dep::IdentityAnalysisNumbers->begin(), Dep::IdentityAnalysisNumbers->end());
+      // Anders
+      // // xsec veto
+      // if (not eventsGenerated)
+      // {
+      //   logger() << "This point was xsec vetoed." << EOM;
+      //   result = 0.;
+      //   return;
+      // }
+
+      AnalysesData analysisResults;
+      #ifdef COLLIDERBIT_DEBUG
+        cout << "DEBUG: calc_LHC_LogLike: Dep::ATLASAnalysisNumbers->size()    = " << Dep::ATLASAnalysisNumbers->size() << endl;
+        cout << "DEBUG: calc_LHC_LogLike: Dep::CMSAnalysisNumbers->size()      = " << Dep::CMSAnalysisNumbers->size() << endl;
+        cout << "DEBUG: calc_LHC_LogLike: Dep::IdentityAnalysisNumbers->size() = " << Dep::IdentityAnalysisNumbers->size() << endl;
+        cout << "DEBUG: calc_LHC_LogLike: Dep::DetAnalysisNumbers->size()      = " << Dep::DetAnalysisNumbers->size() << endl;
+      #endif
+
+      analysisResults.insert(analysisResults.end(), Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
+      analysisResults.insert(analysisResults.end(), Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
+      analysisResults.insert(analysisResults.end(), Dep::IdentityAnalysisNumbers->begin(), Dep::IdentityAnalysisNumbers->end());
 #ifndef EXCLUDE_DELPHES
-      if (useDelphesDetector)
-        analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
+      analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
 #endif
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis)
       {
-        // cout << "In analysis loop" << endl;
+
+        // Anders
+        cout << "DEBUG: calc_LHC_LogLike: Analysis " << analysis << " has " << analysisResults[analysis].size() << " signal regions." << endl;
 
         // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
         /// @note In general each analysis could/should work out its own likelihood so they can handle SR combination if possible.
@@ -1024,16 +1337,16 @@ namespace Gambit
 
           // For debuggig: print some useful numbers to the log.
           #ifdef COLLIDERBIT_DEBUG
-            logger() << endl;
-            logger() << "COLLIDER_RESULT: " << srData.analysis_name << ", SR: " << srData.sr_label << endl;
-            logger() << "  LLikes: b_ex      sb_ex     b_obs     sb_obs    (sb_obs-b_obs)" << endl;
-            logger() << "          " << llb_exp << "  " << llsb_exp << "  "
+            cout << endl;
+            cout <<  "DEBUG: " << "COLLIDER_RESULT: " << srData.analysis_name << ", SR: " << srData.sr_label << endl;
+            cout <<  "DEBUG: " << "  LLikes: b_ex      sb_ex     b_obs     sb_obs    (sb_obs-b_obs)" << endl;
+            cout <<  "DEBUG: " << "          " << llb_exp << "  " << llsb_exp << "  "
                      << llb_obs << "  " << llsb_obs << "  " << llsb_obs-llb_obs << endl;
-            logger() << "  NEvents, not scaled to luminosity: " << srData.n_signal << endl;
-            logger() << "  NEvents, scaled  to luminosity:    " << srData.n_signal_at_lumi << endl;
-            logger() << "  NEvents: b [rel err]      sb [rel err]" << endl;
-            logger() << "           " << n_predicted_uncertain_b << " [" << uncertainty_b << "]   "
-                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+            cout <<  "DEBUG: " << "  NEvents, not scaled to luminosity: " << srData.n_signal << endl;
+            cout <<  "DEBUG: " << "  NEvents, scaled  to luminosity:    " << srData.n_signal_at_lumi << endl;
+            cout <<  "DEBUG: " << "  NEvents: b [rel err]      sb [rel err]" << endl;
+            cout <<  "DEBUG: " << "           " << n_predicted_uncertain_b << " [" << uncertainty_b << "]   "
+                     << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << endl;
           #endif
 
         } // end SR loop
@@ -1042,13 +1355,19 @@ namespace Gambit
         /// @note For now we assume that the analyses are fully orthogonal, i.e. no possiblity that the same event appears twice -> straight addition
         total_dll_obs += bestexp_dll_obs;
 
+        #ifdef COLLIDERBIT_DEBUG
+          std::cout.precision(5);
+          cout << "DEBUG: calc_LHC_LogLike: Analysis #" << analysis << " contributes with a -LogL = " << bestexp_dll_obs << endl;
+        #endif
+
       } // end ana loop
 
       #ifdef COLLIDERBIT_DEBUG
-        logger() << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << EOM;
+        cout << "DEBUG: COLLIDERBIT LIKELIHOOD: " << -total_dll_obs << endl;;
       #endif
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
       result = -total_dll_obs;
+
     }
 
 

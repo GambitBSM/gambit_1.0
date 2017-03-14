@@ -56,6 +56,24 @@ namespace Gambit
       }
     }
 
+    /// @brief Contains a SpecializablePythia init function for a basic SUSY @ 8TeV LHC scenario.
+    /// @note Additional Pythia settings may still be applied externally via yaml file input.
+    namespace Pythia_SUSY_LHC_13TeV
+    {
+
+      void init(SpecializablePythia* specializeMe) {
+        specializeMe->addToSettings("Beams:eCM = 13000");
+        specializeMe->addToSettings("Main:timesAllowErrors = 1000");
+        specializeMe->addToSettings("SUSY:all = on");
+        specializeMe->addToSettings("Random:setSeed = on");
+      }
+
+    }
+
+
+
+
+
     SpecializablePythia::~SpecializablePythia()
     {
       _pythiaSettings.clear();
@@ -132,6 +150,7 @@ namespace Gambit
       IF_X_SPECIALIZEX(Pythia_external)
       IF_X_SPECIALIZEX(Pythia_SUSY_LHC_8TeV)
       IF_X_SPECIALIZEX(Pythia_glusq_LHC_8TeV)
+      IF_X_SPECIALIZEX(Pythia_SUSY_LHC_13TeV)
       // default to a Pythia instance configured entirely by external (yaml) settings:
       _specialInit = Pythia_external::init;
       std::cout<<"\n\n\n"
