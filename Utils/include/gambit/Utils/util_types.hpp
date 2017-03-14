@@ -93,7 +93,42 @@ namespace Gambit
       lower = in.lower;
       return *this;
     }
+  };
+  
+  // a tuple containg two doubles and a bool
+  struct dbl_dbl_bool
+  {
+    double first, second;
+    bool flag;
+    /// Default constructor
+    dbl_dbl_bool()
+     : first(0.),
+       second(0.),
+       flag(0.)
+    {}
+
+    /// Three-value constructor
+    dbl_dbl_bool(double firstval, double secondval, bool flagval)
+     : first(firstval),
+       second(secondval),
+       flag(flagval)
+    {}
+    /// Copy constructor
+    dbl_dbl_bool(const dbl_dbl_bool& in)
+     : first(in.first),
+       second(in.second),
+       flag(in.flag)
+    {}    
+    /// Copy assignment operator
+    dbl_dbl_bool& operator = (const dbl_dbl_bool& in) {
+      first = in.first;
+      second = in.second;
+      flag = in.flag;
+      return *this;
+    }
   }; 
+  
+  
 
   /// A safe pointer that throws an informative error if you try to dereference
   /// it when nullified, and cannot be used to overwrite the thing it points to.
