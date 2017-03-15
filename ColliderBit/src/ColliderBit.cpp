@@ -113,8 +113,8 @@ namespace Gambit
     /// Event labels
     enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE_COLLIDER = -5, FINALIZE = -6};
     /// Pythia stuff
-    std::vector<std::string> pythiaNames, pythiaCommonOptions;
-    std::vector<std::string>::const_iterator iterPythiaNames;
+    std::vector<str> pythiaNames, pythiaCommonOptions;
+    std::vector<str>::const_iterator iterPythiaNames;
     unsigned int indexPythiaNames;
     bool eventsGenerated;
     std::vector<int> nEvents;
@@ -122,20 +122,20 @@ namespace Gambit
 
     /// Analysis stuff
     bool useBuckFastATLASDetector;
-    std::vector<std::string> analysisNamesATLAS;
+    std::vector<str> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
 
     bool useBuckFastCMSDetector;
-    std::vector<std::string> analysisNamesCMS;
+    std::vector<str> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
 
     bool useBuckFastIdentityDetector;
-    std::vector<std::string> analysisNamesIdentity;
+    std::vector<str> analysisNamesIdentity;
     HEPUtilsAnalysisContainer globalAnalysesIdentity;
 
 #ifndef EXCLUDE_DELPHES
     bool useDelphesDetector;
-    std::vector<std::string> analysisNamesDet;
+    std::vector<str> analysisNamesDet;
     HEPUtilsAnalysisContainer globalAnalysesDet;
 #endif // not defined EXCLUDE_DELPHES
 
@@ -203,10 +203,17 @@ namespace Gambit
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
       // Retrieve run options from the YAML file safely...
-      GET_COLLIDER_RUNOPTION(pythiaNames, "pythiaNames", std::vector<std::string>);
+      GET_COLLIDER_RUNOPTION(pythiaNames, "pythiaNames", std::vector<str>);
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, "nEvents", std::vector<int>);
 
+      if (pythiaNames.size() != nEvents.size())
+      {
+        str errmsg;
+        errmsg  = "\nThe options 'pythiaNames' and 'nEvents' for the function 'operateLHCLoop' must have\n";
+        errmsg += "the same number of entries. Correct your settings and try again.\n";
+        ColliderBit_error().raise(LOCAL_INFO, errmsg);
+      }
       // Anders!
       // Check that length of pythiaNames and nEvents agree!
 
@@ -275,8 +282,8 @@ namespace Gambit
     {
       using namespace Pipes::getPythia;
 
-      static std::string pythia_doc_path;
-      static std::string default_doc_path;
+      static str pythia_doc_path;
+      static str default_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
@@ -289,7 +296,7 @@ namespace Gambit
           default_doc_path = GAMBIT_DIR "/Backends/installed/Pythia/" +
                              Backends::backendInfo().default_version("Pythia") +
                              "/share/Pythia8/xmldoc/";
-          pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
+          pythia_doc_path = runOptions->getValueOrDef<str>(default_doc_path, "Pythia_doc_path");
           // Print the Pythia banner once.
           result.banner(pythia_doc_path);
           pythia_doc_path_needs_setting = false;
@@ -323,14 +330,14 @@ namespace Gambit
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
         if (runOptions->hasKey(*iterPythiaNames))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iterPythiaNames);
+          pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         // Variables needed for the xsec veto
         std::stringstream processLevelOutput;
-        std::string _junk, readline;
+        str _junk, readline;
         int code, nxsec;
         double xsec, totalxsec;
 
@@ -342,7 +349,7 @@ namespace Gambit
         result = SpecializablePythia();
         // result.clear();
 
-        std::vector<std::string> pythiaOptions = pythiaCommonOptions;
+        std::vector<str> pythiaOptions = pythiaCommonOptions;
         // Although we capture all couts, still we tell Pythia to be quiet....
         pythiaOptions.push_back("Print:quiet = on");
         // .... except for showProcesses, which we need for the xsec veto.
@@ -424,9 +431,9 @@ namespace Gambit
     {
       using namespace Pipes::getPythiaFileReader;
 
-      static std::vector<std::string> filenames;
-      static std::string default_doc_path;
-      static std::string pythia_doc_path;
+      static std::vector<str> filenames;
+      static str default_doc_path;
+      static str pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = 0;
 
@@ -438,7 +445,7 @@ namespace Gambit
           default_doc_path = GAMBIT_DIR "/Backends/installed/Pythia/" +
                              Backends::backendInfo().default_version("Pythia") +
                              "/share/Pythia8/xmldoc/";
-          pythia_doc_path = runOptions->getValueOrDef<std::string>(default_doc_path, "Pythia_doc_path");
+          pythia_doc_path = runOptions->getValueOrDef<str>(default_doc_path, "Pythia_doc_path");
           // Print the Pythia banner once.
           result.banner(pythia_doc_path);
           pythia_doc_path_needs_setting = false;
@@ -462,7 +469,7 @@ namespace Gambit
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
         if (runOptions->hasKey(*iterPythiaNames))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iterPythiaNames);
+          pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
       }
 
 
@@ -470,7 +477,7 @@ namespace Gambit
       {
         // variables for xsec veto
         std::stringstream processLevelOutput;
-        std::string _junk, readline;
+        str _junk, readline;
         int code, nxsec;
         double xsec, totalxsec;
 
@@ -484,7 +491,7 @@ namespace Gambit
 
         if (omp_get_thread_num() == 0) logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
 
-        std::vector<std::string> pythiaOptions = pythiaCommonOptions;
+        std::vector<str> pythiaOptions = pythiaCommonOptions;
         // Although we capture all couts, still we tell Pythia to be quiet....
         pythiaOptions.push_back("Print:quiet = on");
         // .... except for showProcesses, which we need for the xsec veto.
@@ -569,7 +576,7 @@ namespace Gambit
 #ifndef EXCLUDE_DELPHES
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
-      std::vector<std::string> delphesOptions;
+      std::vector<str> delphesOptions;
 
       if (*Loop::iteration == INIT)
       {
@@ -589,9 +596,8 @@ namespace Gambit
 
         // Reset Options
         delphesOptions.clear();
-        std::string delphesConfigFile;
-        // GET_COLLIDER_RUNOPTION(delphesConfigFile, "delphesConfigFile", std::string);
-        GET_COLLIDER_RUNOPTION_VECTOR(delphesConfigFile, indexPythiaNames, "delphesConfigFiles", std::string);
+        str delphesConfigFile;
+        GET_COLLIDER_RUNOPTION_VECTOR(delphesConfigFile, indexPythiaNames, "delphesConfigFiles", str);
         delphesOptions.push_back(delphesConfigFile);
         // Setup new Delphes
         result.init(delphesOptions);

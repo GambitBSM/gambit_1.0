@@ -23,7 +23,7 @@
 // Backends/include/gambit/Backends/default_bossed_versions.hpp (use: #define Default_Pythia 8_212_EM).
 //
 
-// Always required in for the standalone main file
+// Always required for the standalone main file
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
@@ -41,8 +41,11 @@ typedef vector<string> vstr;
 typedef vector<vector<string> > vvstr;
 
 
+
 // 
-// ---- main program ----
+// ---------------------- 
+//      Main program    
+// ----------------------
 // 
 int main(int argc, char* argv[])
 {
@@ -290,7 +293,7 @@ int main(int argc, char* argv[])
           {} });
 
 
-    // // -- Identity analyses:
+    // // -- Identity analyses (no detector sim):
     // getBuckFastIdentity.setOption<vbool>("useDetector",vbool {true, true});
     // getBuckFastIdentity.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
     // getBuckFastIdentity.setOption<vbool>("partonOnly",vbool {false, false});

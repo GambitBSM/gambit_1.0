@@ -51,7 +51,7 @@ namespace Gambit
   namespace ColliderBit
   {
 
-    /// @brief Container for data from multiple Analyses and SRs
+    /// @brief Container for data from multiple analyses and SRs
     typedef std::vector<std::vector<SignalRegionData>> AnalysisNumbers;
 
     // typedefs specifically for timing (see ColliderBit_macros.hpp)

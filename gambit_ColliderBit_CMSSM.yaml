@@ -151,13 +151,13 @@ ObsLikes:
 
     # Calculate the LEP Higgs likelihood
 
-    #- purpose:    LogLike
-    #  capability: LEP_Higgs_LogLike
+    - purpose:    LogLike
+     capability: LEP_Higgs_LogLike
 
     # Calculate the LHC Higgs likelihood
       
-    #- purpose:    LogLike
-    #  capability: LHC_Higgs_LogLike
+    - purpose:    LogLike
+     capability: LHC_Higgs_LogLike
 
 Rules:
 
@@ -218,7 +218,7 @@ Rules:
   - capability: Higgs_Couplings
     function: MSSM_higgs_couplings_pwid
 
- ##### LHC Detector and Analysis rules #####
+  ##### LHC Detector and Analysis rules #####
   #
   # The current capability structure allows for the user to mix'n'match
   # collider settings, detector sims and analyses. The user may run BuckFastATLAS 
@@ -234,7 +234,7 @@ Rules:
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: [5000,5000]
+      nEvents: [5000, 5000]
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_SUSY_LHC_13TeV"]
       silenceLoop: true
 
