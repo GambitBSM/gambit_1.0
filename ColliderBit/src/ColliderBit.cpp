@@ -55,9 +55,9 @@ namespace Gambit
   {
 
 
-    /// ********************************************
-    /// Non-rollcalled Functions and Local Variables
-    /// ********************************************
+    /// **************************************************
+    /// Non-rollcalled functions and module-wide variables
+    /// **************************************************
 
     /// LEP limit likelihood function
     double limitLike(double x, double x95, double sigma)

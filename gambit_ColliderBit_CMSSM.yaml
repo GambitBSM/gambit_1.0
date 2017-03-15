@@ -152,12 +152,12 @@ ObsLikes:
     # Calculate the LEP Higgs likelihood
 
     - purpose:    LogLike
-     capability: LEP_Higgs_LogLike
+      capability: LEP_Higgs_LogLike
 
     # Calculate the LHC Higgs likelihood
       
     - purpose:    LogLike
-     capability: LHC_Higgs_LogLike
+      capability: LHC_Higgs_LogLike
 
 Rules:
 
