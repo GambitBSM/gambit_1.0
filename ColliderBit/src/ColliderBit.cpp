@@ -133,20 +133,16 @@ namespace Gambit
 
     /// Analysis stuff
     bool useBuckFastATLASDetector;
-    std::vector<str> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
 
     bool useBuckFastCMSDetector;
-    std::vector<str> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
 
     bool useBuckFastIdentityDetector;
-    std::vector<str> analysisNamesIdentity;
     HEPUtilsAnalysisContainer globalAnalysesIdentity;
 
 #ifndef EXCLUDE_DELPHES
     bool useDelphesDetector;
-    std::vector<str> analysisNamesDet;
     HEPUtilsAnalysisContainer globalAnalysesDet;
 #endif // not defined EXCLUDE_DELPHES
 
@@ -188,20 +184,16 @@ namespace Gambit
       // - Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
 
-      useBuckFastATLASDetector = true;
-      analysisNamesATLAS.clear();
+      useBuckFastATLASDetector = false;
       globalAnalysesATLAS.clear();
 
-      useBuckFastCMSDetector = true;
-      analysisNamesCMS.clear();
+      useBuckFastCMSDetector = false;
       globalAnalysesCMS.clear();
 
-      useBuckFastIdentityDetector = false;  // false by default
-      analysisNamesIdentity.clear();
+      useBuckFastIdentityDetector = false;
       globalAnalysesIdentity.clear();
 
-      useDelphesDetector = false; // false by default
-      analysisNamesDet.clear();
+      useDelphesDetector = false;
       globalAnalysesDet.clear();
 
       haveUsedBuckFastATLASDetector = false;
@@ -780,19 +772,23 @@ namespace Gambit
 #ifndef EXCLUDE_DELPHES
     void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getDetAnalysisContainer;
+      static std::vector<std::vector<str> > analyses;
 
-      if (*Loop::iteration == BASE_INIT) return;
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<std::vector<str> > default_analyses;  // The default is empty lists of analyses
+        analyses = runOptions->getValueOrDef<std::vector<std::vector<str> > >(default_analyses, "analyses");
+      }
 
       if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useDelphesDetector) return;
 
-        // Get the vector of analysis names corresponding to the current collider 
-        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesDet, indexPythiaNames, "analyses", std::vector<str>);
-
-        if (analysisNamesDet.empty() and useDelphesDetector)
+        // Check that there are some analyses to run if the detector is switched on 
+        if (analyses[indexPythiaNames].empty() and useDelphesDetector)
         {
-          str errmsg = "The option 'useDelphesDetector' for function 'getDelphes' is set to true\n";
+          str errmsg = "The option 'useDetector' for function 'getDelphes' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -802,7 +798,7 @@ namespace Gambit
         }
 
         globalAnalysesDet.clear();
-        globalAnalysesDet.init(analysisNamesDet);
+        globalAnalysesDet.init(analyses[indexPythiaNames]);
         return;
       }
 
@@ -813,12 +809,12 @@ namespace Gambit
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
-        result.init(analysisNamesDet);
+        result.init(analyses[indexPythiaNames]);
 
         #ifdef COLLIDERBIT_DEBUG
           if (omp_get_thread_num() == 0)
           {
-            for (auto it = analysisNamesDet.begin(); it != analysisNamesDet.end(); ++it)
+            for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
               cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
@@ -855,19 +851,23 @@ namespace Gambit
 
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
+      static std::vector<std::vector<str> > analyses;
 
-      if (*Loop::iteration == BASE_INIT) return;
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<std::vector<str> > default_analyses;  // The default is empty lists of analyses
+        analyses = runOptions->getValueOrDef<std::vector<std::vector<str> > >(default_analyses, "analyses");
+      }
 
       if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useBuckFastATLASDetector) return;
 
-        // Get the vector of analysis names corresponding to the current collider 
-        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesATLAS, indexPythiaNames, "analyses", std::vector<str>);
-
-        if (analysisNamesATLAS.empty() and useBuckFastATLASDetector)
+        // Check that there are some analyses to run if the detector is switched on 
+        if (analyses[indexPythiaNames].empty() and useBuckFastATLASDetector)
         {
-          str errmsg = "The option 'useBuckFastATLASDetector' for function 'getBuckFastATLAS' is set to true\n";
+          str errmsg = "The option 'useDetector' for function 'getBuckFastATLAS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -877,7 +877,7 @@ namespace Gambit
         }
 
         globalAnalysesATLAS.clear();
-        globalAnalysesATLAS.init(analysisNamesATLAS);
+        globalAnalysesATLAS.init(analyses[indexPythiaNames]);
         return;
       }
 
@@ -888,12 +888,12 @@ namespace Gambit
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
-        result.init(analysisNamesATLAS);
+        result.init(analyses[indexPythiaNames]);
 
         #ifdef COLLIDERBIT_DEBUG
           if (omp_get_thread_num() == 0)
           {
-            for (auto it = analysisNamesATLAS.begin(); it != analysisNamesATLAS.end(); ++it)
+            for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
               cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
@@ -929,19 +929,23 @@ namespace Gambit
 
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
+      static std::vector<std::vector<str> > analyses;
 
-      if (*Loop::iteration == BASE_INIT) return;
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<std::vector<str> > default_analyses;  // The default is empty lists of analyses
+        analyses = runOptions->getValueOrDef<std::vector<std::vector<str> > >(default_analyses, "analyses");
+      }
 
       if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useBuckFastCMSDetector) return;
 
-        // Get the vector of analysis names corresponding to the current collider 
-        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesCMS, indexPythiaNames, "analyses", std::vector<str>);
-
-        if (analysisNamesCMS.empty() and useBuckFastCMSDetector)
+        // Check that there are some analyses to run if the detector is switched on 
+        if (analyses[indexPythiaNames].empty() and useBuckFastCMSDetector)
         {
-          str errmsg = "The option 'useBuckFastCMSDetector' for function 'getBuckFastCMS' is set to true\n";
+          str errmsg = "The option 'useDetector' for function 'getBuckFastCMS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -951,7 +955,7 @@ namespace Gambit
         }
 
         globalAnalysesCMS.clear();
-        globalAnalysesCMS.init(analysisNamesCMS);
+        globalAnalysesCMS.init(analyses[indexPythiaNames]);
         return;
       }
 
@@ -962,12 +966,12 @@ namespace Gambit
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
-        result.init(analysisNamesCMS);
+        result.init(analyses[indexPythiaNames]);
 
         #ifdef COLLIDERBIT_DEBUG
           if (omp_get_thread_num() == 0)
           {
-            for (auto it = analysisNamesCMS.begin(); it != analysisNamesCMS.end(); ++it)
+            for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
               cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
@@ -1003,19 +1007,23 @@ namespace Gambit
 
     void getIdentityAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getIdentityAnalysisContainer;
+      static std::vector<std::vector<str> > analyses;
 
-      if (*Loop::iteration == BASE_INIT) return;
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<std::vector<str> > default_analyses;  // The default is empty lists of analyses
+        analyses = runOptions->getValueOrDef<std::vector<std::vector<str> > >(default_analyses, "analyses");
+      }
 
       if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useBuckFastIdentityDetector) return;
 
-        // Get the vector of analysis names corresponding to the current collider 
-        GET_COLLIDER_RUNOPTION_VECTOR(analysisNamesIdentity, indexPythiaNames, "analyses", std::vector<str>);
-
-        if (analysisNamesIdentity.empty() and useBuckFastIdentityDetector)
+        // Check that there are some analyses to run if the detector is switched on 
+        if (analyses[indexPythiaNames].empty() and useBuckFastIdentityDetector)
         {
-          str errmsg = "The option 'useBuckFastIdentityDetector' for function 'getBuckFastIdentity' is set to true\n";
+          str errmsg = "The option 'useDetector' for function 'getBuckFastIdentity' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -1025,7 +1033,7 @@ namespace Gambit
         }
 
         globalAnalysesIdentity.clear();
-        globalAnalysesIdentity.init(analysisNamesIdentity);
+        globalAnalysesIdentity.init(analyses[indexPythiaNames]);
         return;
       }
 
@@ -1036,12 +1044,12 @@ namespace Gambit
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
-        result.init(analysisNamesIdentity);
+        result.init(analyses[indexPythiaNames]);
 
         #ifdef COLLIDERBIT_DEBUG
           if (omp_get_thread_num() == 0)
           {
-            for (auto it = analysisNamesIdentity.begin(); it != analysisNamesIdentity.end(); ++it)
+            for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
               cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
