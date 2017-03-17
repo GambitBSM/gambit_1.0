@@ -110,8 +110,19 @@ namespace Gambit
       return true;
     }
 
-    /// Event labels
-    enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE_COLLIDER = -5, FINALIZE = -6};
+
+    /// Module-wide variables
+
+    // TODO: Get rid of some of these variables by restructuring the code a bit 
+
+    /// Special iteration labels for the loop controlled by operateLHCLoop
+    enum specialIterations { BASE_INIT = -1, 
+                             COLLIDER_INIT = -2, 
+                             START_SUBPROCESS = -3, 
+                             END_SUBPROCESS = -4, 
+                             COLLIDER_FINALIZE = -5, 
+                             BASE_FINALIZE = -6};
+
     /// Pythia stuff
     std::vector<str> pythiaNames, pythiaCommonOptions;
     std::vector<str>::const_iterator iterPythiaNames;
@@ -153,7 +164,6 @@ namespace Gambit
     /// *** Loop Managers ***
 
     /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
-    /// @note: For our first run, we will just run all SUSY subprocesses.
 
     void operateLHCLoop()
     {
@@ -199,14 +209,12 @@ namespace Gambit
       haveUsedBuckFastIdentityDetector = false;
       haveUsedDelphesDetector = false;
 
+     
+      // Retrieve run options from the YAML file (or standalone code)
+      pythiaNames = runOptions->getValue<std::vector<str> >("pythiaNames");
+      nEvents = runOptions->getValue<std::vector<int> >("nEvents");
 
-      // Do the base-level initialisation
-      Loop::executeIteration(BASE_INIT);
-      // Retrieve run options from the YAML file safely...
-      GET_COLLIDER_RUNOPTION(pythiaNames, "pythiaNames", std::vector<str>);
-      // @todo Subprocess specific nEvents
-      GET_COLLIDER_RUNOPTION(nEvents, "nEvents", std::vector<int>);
-
+      // Check that length of pythiaNames and nEvents agree!
       if (pythiaNames.size() != nEvents.size())
       {
         str errmsg;
@@ -214,12 +222,15 @@ namespace Gambit
         errmsg += "the same number of entries. Correct your settings and try again.\n";
         ColliderBit_error().raise(LOCAL_INFO, errmsg);
       }
-      // Anders!
-      // Check that length of pythiaNames and nEvents agree!
 
       // Should we silence stdout during the loop?
       bool silenceLoop = runOptions->getValueOrDef<bool>(true, "silenceLoop");
       if (silenceLoop) std::cout.rdbuf(0);
+
+
+
+      // Do the base-level initialisation
+      Loop::executeIteration(BASE_INIT);
 
       // For every collider requested in the yaml file:
       for (iterPythiaNames = pythiaNames.cbegin(); iterPythiaNames != pythiaNames.cend(); ++iterPythiaNames)
@@ -238,7 +249,7 @@ namespace Gambit
 
         piped_invalid_point.check();
         Loop::reset();
-        Loop::executeIteration(INIT);
+        Loop::executeIteration(COLLIDER_INIT);
 
         int currentEvent = 0;
         #pragma omp parallel
@@ -261,7 +272,7 @@ namespace Gambit
           Loop::executeIteration(END_SUBPROCESS);
         }
 
-        Loop::executeIteration(FINALIZE_COLLIDER);
+        Loop::executeIteration(COLLIDER_FINALIZE);
 
       }
 
@@ -271,7 +282,7 @@ namespace Gambit
       // Check for exceptions
       piped_invalid_point.check();
 
-      Loop::executeIteration(FINALIZE);
+      Loop::executeIteration(BASE_FINALIZE);
     }
 
 
@@ -287,6 +298,7 @@ namespace Gambit
       static bool pythia_doc_path_needs_setting = true;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
+      static std::vector<double> xsec_vetos;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -322,9 +334,20 @@ namespace Gambit
         {
           ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
+
+        // Read xsec veto values and store in static variable 'xsec_vetos'
+        std::vector<double> default_xsec_vetos(pythiaNames.size(), 0.0);
+        xsec_vetos = runOptions->getValueOrDef<std::vector<double> >(default_xsec_vetos, "xsec_vetos");
+        if (xsec_vetos.size() != default_xsec_vetos.size())
+        {
+          std::stringstream errmsg; 
+          errmsg << "The number of elements in the option 'xsec_vetos' (function 'getPythia') " << endl
+                 << "must match the number of elements in option 'pythiaNames' (function 'operateLHCLoop')." << endl;
+          ColliderBit_error().raise(LOCAL_INFO, errmsg.str());
+        }
       }
 
-      if (*Loop::iteration == INIT)
+      else if (*Loop::iteration == COLLIDER_INIT)
       {
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
@@ -344,7 +367,7 @@ namespace Gambit
         // Each thread needs an independent Pythia instance at the start
         // of each event generation loop.
         // Thus, the actual Pythia initialization is
-        // *after* INIT, within omp parallel.
+        // *after* COLLIDER_INIT, within omp parallel.
 
         result = SpecializablePythia();
         // result.clear();
@@ -385,12 +408,10 @@ namespace Gambit
           }
         }
 
-
         // Should we apply the xsec veto and skip event generation?
 
-        // - Get the veto value from the options
-        double totalxsec_fb_veto;
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_vetos", double, 0.0);
+        // - Get the xsec veto value for the current collider
+        double totalxsec_fb_veto = xsec_vetos[indexPythiaNames];
 
         // - Get the upper limt xsec as estimated by Pythia
         code = -1;
@@ -415,6 +436,7 @@ namespace Gambit
           cout << "DEBUG: totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
         #endif
 
+        // - Wrap up loop if veto applies
         if (totalxsec * 1e12 < totalxsec_fb_veto) 
         {
           #ifdef COLLIDERBIT_DEBUG
@@ -436,6 +458,7 @@ namespace Gambit
       static str pythia_doc_path;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = 0;
+      static std::vector<double> xsec_vetos;
 
       if (*Loop::iteration == BASE_INIT)
       {
@@ -461,9 +484,20 @@ namespace Gambit
         }
 
         if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
+
+        // Read xsec veto values and store in static variable 'xsec_vetos'
+        std::vector<double> default_xsec_vetos(pythiaNames.size(), 0.0);
+        xsec_vetos = runOptions->getValueOrDef<std::vector<double> >(default_xsec_vetos, "xsec_vetos");
+        if (xsec_vetos.size() != default_xsec_vetos.size())
+        {
+          std::stringstream errmsg; 
+          errmsg << "The number of elements in the option 'xsec_vetos' (function 'getPythiaFileReader') " << endl
+                 << "must match the number of elements in option 'pythiaNames' (function 'operateLHCLoop')." << endl;
+          ColliderBit_error().raise(LOCAL_INFO, errmsg.str());
+        }
       }
 
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == COLLIDER_INIT)
       {
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
@@ -484,7 +518,7 @@ namespace Gambit
         // Each thread needs an independent Pythia instance at the start
         // of each event generation loop.
         // Thus, the actual Pythia initialization is
-        // *after* INIT, within omp parallel.
+        // *after* COLLIDER_INIT, within omp parallel.
 
         result = SpecializablePythia();
         // result.clear();
@@ -529,9 +563,8 @@ namespace Gambit
 
         // Should we apply the xsec veto and skip event generation?
 
-        // - Get the veto value from the options
-        double totalxsec_fb_veto;
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(totalxsec_fb_veto, indexPythiaNames, "xsec_vetos", double, 0.0);
+        // - Get the xsec veto value for the current collider
+        double totalxsec_fb_veto = xsec_vetos[indexPythiaNames];
 
         // - Get the upper limt xsec as estimated by Pythia
         code = -1;
@@ -556,6 +589,7 @@ namespace Gambit
           cout << "DEBUG: totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
         #endif
 
+        // - Wrap up loop if veto applies
         if (totalxsec * 1e12 < totalxsec_fb_veto) 
         {
           #ifdef COLLIDERBIT_DEBUG
@@ -566,7 +600,7 @@ namespace Gambit
 
       }
 
-      if (*Loop::iteration == FINALIZE) fileCounter++;
+      if (*Loop::iteration == BASE_FINALIZE) fileCounter++;
 
     }
 
@@ -578,7 +612,7 @@ namespace Gambit
       using namespace Pipes::getDelphes;
       std::vector<str> delphesOptions;
 
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
 
@@ -614,7 +648,7 @@ namespace Gambit
       bool partonOnly;
       double antiktR;
 
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
         // Setup new BuckFast:
@@ -636,7 +670,7 @@ namespace Gambit
       bool partonOnly;
       double antiktR;
 
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
         // Setup new BuckFast:
@@ -658,7 +692,7 @@ namespace Gambit
       bool partonOnly;
       double antiktR;
 
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
         // Setup new BuckFast:
@@ -683,7 +717,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useDelphesDetector) return;
 
@@ -711,7 +745,7 @@ namespace Gambit
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
-        // Thus, their initialization is *after* INIT, within omp parallel.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesDet);
 
@@ -758,7 +792,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useBuckFastATLASDetector) return;
 
@@ -786,7 +820,7 @@ namespace Gambit
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
-        // Thus, their initialization is *after* INIT, within omp parallel.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesATLAS);
 
@@ -832,7 +866,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useBuckFastCMSDetector) return;
 
@@ -860,7 +894,7 @@ namespace Gambit
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
-        // Thus, their initialization is *after* INIT, within omp parallel.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesCMS);
 
@@ -906,7 +940,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT) return;
 
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == COLLIDER_INIT) {
 
         if (!useBuckFastIdentityDetector) return;
 
@@ -934,7 +968,7 @@ namespace Gambit
       if (*Loop::iteration == START_SUBPROCESS)
       {
         // Each thread gets its own Analysis container.
-        // Thus, their initialization is *after* INIT, within omp parallel.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.clear();
         result.init(analysisNamesIdentity);
 
@@ -1112,7 +1146,7 @@ namespace Gambit
 
       if (!useDelphesDetector) return;
 
-      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
       {
         // The final iteration for this collider: collect results
         globalAnalysesDet.scale();
@@ -1128,7 +1162,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
@@ -1158,7 +1192,7 @@ namespace Gambit
 
       if (!useBuckFastATLASDetector) return;
 
-      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
       {
         // The final iteration for this collider: collect results
         globalAnalysesATLAS.scale();
@@ -1174,7 +1208,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
@@ -1203,7 +1237,7 @@ namespace Gambit
 
       if (!useBuckFastCMSDetector) return;
 
-      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
       {
         // The final iteration for this collider: collect results
         globalAnalysesCMS.scale();
@@ -1218,7 +1252,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
@@ -1247,7 +1281,7 @@ namespace Gambit
 
       if (!useBuckFastIdentityDetector) return;
 
-      if (*Loop::iteration == FINALIZE_COLLIDER && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
       {
         // The final iteration for this collider: collect results
         globalAnalysesIdentity.scale();
@@ -1262,7 +1296,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
