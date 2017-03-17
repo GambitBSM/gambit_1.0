@@ -218,7 +218,7 @@ namespace Gambit
       if (pythiaNames.size() != nEvents.size())
       {
         str errmsg;
-        errmsg  = "\nThe options 'pythiaNames' and 'nEvents' for the function 'operateLHCLoop' must have\n";
+        errmsg  = "The options 'pythiaNames' and 'nEvents' for the function 'operateLHCLoop' must have\n";
         errmsg += "the same number of entries. Correct your settings and try again.\n";
         ColliderBit_error().raise(LOCAL_INFO, errmsg);
       }
@@ -338,13 +338,7 @@ namespace Gambit
         // Read xsec veto values and store in static variable 'xsec_vetos'
         std::vector<double> default_xsec_vetos(pythiaNames.size(), 0.0);
         xsec_vetos = runOptions->getValueOrDef<std::vector<double> >(default_xsec_vetos, "xsec_vetos");
-        if (xsec_vetos.size() != default_xsec_vetos.size())
-        {
-          std::stringstream errmsg; 
-          errmsg << "The number of elements in the option 'xsec_vetos' (function 'getPythia') " << endl
-                 << "must match the number of elements in option 'pythiaNames' (function 'operateLHCLoop')." << endl;
-          ColliderBit_error().raise(LOCAL_INFO, errmsg.str());
-        }
+        CHECK_EQUAL_VECTOR_LENGTH(xsec_vetos, pythiaNames)
       }
 
       else if (*Loop::iteration == COLLIDER_INIT)
@@ -478,7 +472,7 @@ namespace Gambit
         filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
         if (filenames.empty())
         {
-          str errmsg = "\nNo SLHA files are listed for ColliderBit function getPythiaFileReader.\n";
+          str errmsg = "No SLHA files are listed for ColliderBit function getPythiaFileReader.\n";
           errmsg    += "Please correct the option 'SLHA_filenames' or use getPythia instead.";
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
@@ -488,13 +482,7 @@ namespace Gambit
         // Read xsec veto values and store in static variable 'xsec_vetos'
         std::vector<double> default_xsec_vetos(pythiaNames.size(), 0.0);
         xsec_vetos = runOptions->getValueOrDef<std::vector<double> >(default_xsec_vetos, "xsec_vetos");
-        if (xsec_vetos.size() != default_xsec_vetos.size())
-        {
-          std::stringstream errmsg; 
-          errmsg << "The number of elements in the option 'xsec_vetos' (function 'getPythiaFileReader') " << endl
-                 << "must match the number of elements in option 'pythiaNames' (function 'operateLHCLoop')." << endl;
-          ColliderBit_error().raise(LOCAL_INFO, errmsg.str());
-        }
+        CHECK_EQUAL_VECTOR_LENGTH(xsec_vetos, pythiaNames)
       }
 
       if (*Loop::iteration == COLLIDER_INIT)
@@ -610,31 +598,45 @@ namespace Gambit
 #ifndef EXCLUDE_DELPHES
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
-      std::vector<str> delphesOptions;
+      static std::vector<bool> useDetector;
+      static std::vector<str> delphesConfigFiles;
+
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<bool> default_useDetector(pythiaNames.size(), false);  // Delphes is switched off by default
+        useDetector = runOptions->getValueOrDef<std::vector<bool> >(default_useDetector, "useDetector");
+        CHECK_EQUAL_VECTOR_LENGTH(useDetector,pythiaNames)
+
+        delphesConfigFiles = runOptions->getValue<std::vector<str> >("delphesConfigFiles");
+        CHECK_EQUAL_VECTOR_LENGTH(delphesConfigFiles,pythiaNames)
+
+        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
+        if(omp_get_max_threads()>1 and std::find(useDetector.begin(), useDetector.end(), true) != useDetector.end())
+        {
+          str errmsg = "Delphes is not threadsafe and cannot be used with OMP_NUM_THREADS>1.\n";
+          errmsg    += "Either set OMP_NUM_THREADS=1 or switch to a threadsafe detector simulator, e.g. BuckFast.";
+          ColliderBit_error().raise(LOCAL_INFO, errmsg);
+        }
+
+        return;
+      }
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
 
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useDelphesDetector, indexPythiaNames, "useDetector", bool, false);
+        // Get useDetector setting for the current collider
+        useDelphesDetector = useDetector[indexPythiaNames];
         if (!useDelphesDetector) return;
         else haveUsedDelphesDetector = true;
 
-        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
-        if (useDelphesDetector and omp_get_max_threads()>1)
-        {
-          str errmsg = "\nDelphes is not threadsafe and cannot be used with OMP_NUM_THREADS>1.\n";
-          errmsg    += "Either set OMP_NUM_THREADS=1 or switch to a threadsafe detector simulator, e.g. BuckFast.";
-          ColliderBit_error().raise(LOCAL_INFO, errmsg);
-        }
-
-        // Reset Options
-        delphesOptions.clear();
-        str delphesConfigFile;
-        GET_COLLIDER_RUNOPTION_VECTOR(delphesConfigFile, indexPythiaNames, "delphesConfigFiles", str);
-        delphesOptions.push_back(delphesConfigFile);
-        // Setup new Delphes
+        // Setup new Delphes for the current collider
+        std::vector<str> delphesOptions;
+        delphesOptions.push_back(delphesConfigFiles[indexPythiaNames]);
         result.init(delphesOptions);
+
+        return;
       }
     }
 
@@ -645,20 +647,42 @@ namespace Gambit
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
-      bool partonOnly;
-      double antiktR;
+      static std::vector<bool> useDetector;
+      static std::vector<bool> partonOnly;
+      static std::vector<double> antiktR;
+
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<bool> default_useDetector(pythiaNames.size(), true);  // BuckFastATLAS is switched on by default
+        useDetector = runOptions->getValueOrDef<std::vector<bool> >(default_useDetector, "useDetector");
+        CHECK_EQUAL_VECTOR_LENGTH(useDetector,pythiaNames)
+
+        std::vector<bool> default_partonOnly(pythiaNames.size(), false);
+        partonOnly = runOptions->getValueOrDef<std::vector<bool> >(default_partonOnly, "partonOnly");
+        CHECK_EQUAL_VECTOR_LENGTH(partonOnly,pythiaNames)
+
+        std::vector<double> default_antiktR(pythiaNames.size(), 0.4);
+        antiktR = runOptions->getValueOrDef<std::vector<double> >(default_antiktR, "antiktR");
+        CHECK_EQUAL_VECTOR_LENGTH(antiktR,pythiaNames)
+
+        return;
+      }
+
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
-        // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastATLASDetector, indexPythiaNames, "useDetector", bool, true);
+
+        // Get settings for the current collider
+        useBuckFastATLASDetector = useDetector[indexPythiaNames];
         if (!useBuckFastATLASDetector) return;
         else haveUsedBuckFastATLASDetector = true;
 
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
-        result.init(partonOnly, antiktR);
+        // Setup new BuckFast for the current collider:
+        result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
+
+        return;
       }
     }
 
@@ -667,20 +691,41 @@ namespace Gambit
     void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
     {
       using namespace Pipes::getBuckFastCMS;
-      bool partonOnly;
-      double antiktR;
+      static std::vector<bool> useDetector;
+      static std::vector<bool> partonOnly;
+      static std::vector<double> antiktR;
+
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<bool> default_useDetector(pythiaNames.size(), true);  // BuckFastCMS is switched on by default
+        useDetector = runOptions->getValueOrDef<std::vector<bool> >(default_useDetector, "useDetector");
+        CHECK_EQUAL_VECTOR_LENGTH(useDetector,pythiaNames)
+
+        std::vector<bool> default_partonOnly(pythiaNames.size(), false);
+        partonOnly = runOptions->getValueOrDef<std::vector<bool> >(default_partonOnly, "partonOnly");
+        CHECK_EQUAL_VECTOR_LENGTH(partonOnly,pythiaNames)
+
+        std::vector<double> default_antiktR(pythiaNames.size(), 0.4);
+        antiktR = runOptions->getValueOrDef<std::vector<double> >(default_antiktR, "antiktR");
+        CHECK_EQUAL_VECTOR_LENGTH(antiktR,pythiaNames)
+
+        return;
+      }
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
-        // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastCMSDetector, indexPythiaNames, "useDetector", bool, true);
+
+        // Get useDetector setting for the current collider
+        useBuckFastCMSDetector = useDetector[indexPythiaNames];
         if (!useBuckFastCMSDetector) return;
         else haveUsedBuckFastCMSDetector = true;
 
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
-        result.init(partonOnly, antiktR);
+        // Setup new BuckFast for the current collider:
+        result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
+
+        return;
       }
     }
 
@@ -689,20 +734,41 @@ namespace Gambit
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
     {
       using namespace Pipes::getBuckFastIdentity;
-      bool partonOnly;
-      double antiktR;
+      static std::vector<bool> useDetector;
+      static std::vector<bool> partonOnly;
+      static std::vector<double> antiktR;
+
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Read options
+        std::vector<bool> default_useDetector(pythiaNames.size(), false);  // BuckFastIdentity is switched off by default
+        useDetector = runOptions->getValueOrDef<std::vector<bool> >(default_useDetector, "useDetector");
+        CHECK_EQUAL_VECTOR_LENGTH(useDetector,pythiaNames)
+
+        std::vector<bool> default_partonOnly(pythiaNames.size(), false);
+        partonOnly = runOptions->getValueOrDef<std::vector<bool> >(default_partonOnly, "partonOnly");
+        CHECK_EQUAL_VECTOR_LENGTH(partonOnly,pythiaNames)
+
+        std::vector<double> default_antiktR(pythiaNames.size(), 0.4);
+        antiktR = runOptions->getValueOrDef<std::vector<double> >(default_antiktR, "antiktR");
+        CHECK_EQUAL_VECTOR_LENGTH(antiktR,pythiaNames)
+
+        return;
+      }
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
         result.clear();
-        // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(useBuckFastIdentityDetector, indexPythiaNames, "useDetector", bool, false);
-        if (!useBuckFastCMSDetector) return;
+
+        // Get useDetector setting for the current collider
+        useBuckFastIdentityDetector = useDetector[indexPythiaNames];
+        if (!useBuckFastIdentityDetector) return;
         else haveUsedBuckFastIdentityDetector = true;
 
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(partonOnly, indexPythiaNames, "partonOnly", bool, false);
-        GET_COLLIDER_RUNOPTION_VECTOR_OR_DEF(antiktR, indexPythiaNames, "antiktR", double, 0.4);
-        result.init(partonOnly, antiktR);
+        // Setup new BuckFast for the current collider:
+        result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
+
+        return;
       }
     }
 
@@ -726,7 +792,7 @@ namespace Gambit
 
         if (analysisNamesDet.empty() and useDelphesDetector)
         {
-          str errmsg = "\nThe option 'useDelphesDetector' for function 'getDelphes' is set to true\n";
+          str errmsg = "The option 'useDelphesDetector' for function 'getDelphes' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -801,7 +867,7 @@ namespace Gambit
 
         if (analysisNamesATLAS.empty() and useBuckFastATLASDetector)
         {
-          str errmsg = "\nThe option 'useBuckFastATLASDetector' for function 'getBuckFastATLAS' is set to true\n";
+          str errmsg = "The option 'useBuckFastATLASDetector' for function 'getBuckFastATLAS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -875,7 +941,7 @@ namespace Gambit
 
         if (analysisNamesCMS.empty() and useBuckFastCMSDetector)
         {
-          str errmsg = "\nThe option 'useBuckFastCMSDetector' for function 'getBuckFastCMS' is set to true\n";
+          str errmsg = "The option 'useBuckFastCMSDetector' for function 'getBuckFastCMS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
@@ -949,7 +1015,7 @@ namespace Gambit
 
         if (analysisNamesIdentity.empty() and useBuckFastIdentityDetector)
         {
-          str errmsg = "\nThe option 'useBuckFastIdentityDetector' for function 'getBuckFastIdentity' is set to true\n";
+          str errmsg = "The option 'useBuckFastIdentityDetector' for function 'getBuckFastIdentity' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
           errmsg    += "', but the corresponding list of analyses\n"; 
