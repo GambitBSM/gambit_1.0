@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH -N 60                              # Number of nodes.
+#SBATCH -N 50                              # Number of nodes.
 #SBATCH --ntasks-per-node 24               # Number of MPI processes per node.
 #SBATCH -c 1                               # Number of cores per MPI process.
 #SBATCH -t 1-00:00                         # Runtime in D-HH:MM

@@ -52,7 +52,7 @@ Scanner:
       NP: 19200
       convthresh: 1e-5
       verbosity: 1
-#      lambdajDE: false
+      lambdajDE: false
 
 ObsLikes:
 
@@ -66,8 +66,8 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-#    - purpose:    LogLike
-#      capability: b2sgamma_LL
+    - purpose:    LogLike
+      capability: b2sgamma_LL
 
 
 
