@@ -86,6 +86,12 @@ Scanner:
         file: "tmp.hdf5"
         group: "/"
 
+      # Cut on any input variable that can be read in as a double. Points that do not pass these cuts will be skipped.
+      cuts:
+        greater_than:
+          "LogLike": 2
+        less_than:
+          "#NormalDist_parameters @NormalDist::primary_parameters::mu": 25  
 #  objectives:
 #
 #    parameter_reader:
