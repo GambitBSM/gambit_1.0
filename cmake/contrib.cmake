@@ -139,10 +139,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   include_directories("${EIGEN3_DIR}")
 
   # Silence the deprecated-declarations warnings comming from Eigen3
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(FS_CXX_FLAGS "${FS_CXX_FLAGS} -Wno-deprecated-declarations")
-  endif()
-
+  set_compiler_warning("no-deprecated-declarations" FS_CXX_FLAGS)
 
   # FlexibleSUSY configure options
   set(FS_OPTIONS ${FS_OPTIONS}

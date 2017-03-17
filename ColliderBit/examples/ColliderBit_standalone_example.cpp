@@ -142,7 +142,7 @@ int main()
     logger()<<"Running ColliderBit standalone example"<<LogTags::info<<EOM;
 
     // ---- Check that required backends are present
-    if (not Backends::backendInfo().works["Pythia8.212.EM"]) backend_error().raise(LOCAL_INFO, "Pythia 8.212.EM is missing!");
+    if (not Backends::backendInfo().works["Pythia8.212"]) backend_error().raise(LOCAL_INFO, "Pythia 8.212 is missing!");
     if (not Backends::backendInfo().works["nulike1.0.3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
 
     std::cout << std::endl << "My name is " << name() << std::endl;
@@ -356,8 +356,15 @@ int main()
     std::vector<std::string> runTheseATLASAnalyses;
     runTheseATLASAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which ATLAS analyses to run
     getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesATLAS",runTheseATLASAnalyses);
+    
     getCMSAnalysisContainer.setOption<bool>("useCMS",false);
 
+    // To use a CMS analysis comment out the line above
+    // and uncomment the following lines:
+    //std::vector<std::string> runTheseCMSAnalyses;
+    //runTheseCMSAnalyses.push_back("CMS_1LEPDMTOP_20invfb");
+    //getCMSAnalysisContainer.setOption<std::vector<std::string>>("analysisNamesCMS",runTheseCMSAnalyses);
+    
 
     // The standalone Pythia instance is given a name
     // Can be set to anything, provided it matches the same name given below

@@ -23,42 +23,28 @@ option(WERROR "WERROR" OFF)
 
 include(CheckCXXCompilerFlag)
 
-CHECK_CXX_COMPILER_FLAG("-Wall" CXX_SUPPORTS_WALL)
-if (CXX_SUPPORTS_WALL)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-endif()
-
-CHECK_CXX_COMPILER_FLAG("-Wextra" CXX_SUPPORTS_WEXTRA)
-if (CXX_SUPPORTS_WEXTRA)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
-endif()
+macro(set_compiler_warning warning current_flags)
+  CHECK_CXX_COMPILER_FLAG("-W${warning}" CXX_SUPPORTS_${warning})
+  if (CXX_SUPPORTS_${warning})
+    set(${current_flags} "${${current_flags}} -W${warning}")
+  endif()
+endmacro()
 
 if(${WERROR})
-  CHECK_CXX_COMPILER_FLAG("-Werror" CXX_SUPPORTS_WERROR)
-  if (CXX_SUPPORTS_WERROR)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-  endif()
+  set_compiler_warning("error")
 else()
   message(STATUS "${Red}Werror is disabled${ColourReset}")
 endif()
 
-CHECK_CXX_COMPILER_FLAG("-Wno-unused-local-typedefs" CXX_SUPPORTS_WUNUSED_LOCAL_TYPEDEFS)
-if (CXX_SUPPORTS_WUNUSED_LOCAL_TYPEDEFS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
-endif()
+set_compiler_warning("all" CMAKE_CXX_FLAGS)
+set_compiler_warning("extra" CMAKE_CXX_FLAGS)
+set_compiler_warning("no-unused-local-typedefs" CMAKE_CXX_FLAGS)
+set_compiler_warning("no-unknown-pragmas" CMAKE_CXX_FLAGS)
+set_compiler_warning("no-misleading-indentation" CMAKE_CXX_FLAGS)
+set_compiler_warning("no-ignored-attributes" CMAKE_CXX_FLAGS)
+set_compiler_warning("no-literal-suffix" CMAKE_CXX_FLAGS)
 
-CHECK_CXX_COMPILER_FLAG("-Wno-unknown-pragmas" CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
-if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
-endif()
-
-# suppress complaints from OpenMPI library with C++11 (on Ubuntu 15.10, at least)
-CHECK_CXX_COMPILER_FLAG("-Wno-literal-suffix" CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
-if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-literal-suffix")
-endif()
-
-# suppress additional warnings when using clang and ccache
+# Suppress additional warnings when using clang and ccache
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   EXEC_PROGRAM(sh
                ARGS ${CMAKE_SOURCE_DIR}/cmake/check_for_ccache.sh ${CMAKE_CXX_COMPILER}
