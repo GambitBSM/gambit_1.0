@@ -132,6 +132,10 @@ scanner_plugin(postprocessor, version(1, 0, 0))
   /// Map to retrieve the "model::parameter" version of the parameter name
   std::map<std::string,std::map<std::string,std::string>> longname;
 
+  /// Map for renaming old datasets in the new output
+  /// Keys are "in_label", values are "out_label"
+  std::map<std::string,std::string> renaming_scheme;
+
   /// The reader object in use for the scan
   Gambit::Printers::BaseBaseReader* reader;
 
@@ -197,6 +201,9 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     add_to_logl = get_inifile_value<std::vector<std::string>>("add_to_like", std::vector<std::string>());
     subtract_from_logl = get_inifile_value<std::vector<std::string>>("subtract_from_like", std::vector<std::string>());
     reweighted_loglike_name = get_inifile_value<std::string>("reweighted_like");
+
+    renaming_scheme = get_inifile_value<std::map<std::string,std::string>>("rename", 
+                          std::map<std::string,std::string>());
 
     // Use virtual rank system?
     if(get_inifile_value<bool>("use_virtual_rank",false))
@@ -476,6 +483,65 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     all_params.insert(reweighted_loglike_name); //   "  " 
     std::set<std::string> new_params = all_params; // Parameters not present in the input file
 
+    /// Check if any of the output names selected in the renaming scheme are already claimed by functor output etc.
+    /// Also check if the requested input label actually exists in the input dataset
+    /// And check if the selected output name clashes with another input name that isn't selected for renaming
+    for(std::map<std::string,std::string>::iterator it = renaming_scheme.begin(); it!=renaming_scheme.end(); ++it)
+    {
+       std::string in_label = it->first;
+       std::string out_label = it->second;
+
+       // Make sure input label actually exists
+       if(std::find(data_labels.begin(), data_labels.end(), in_label) 
+           == data_labels.end())
+       {
+          //Whoops, could not find this label in the input data
+          std::ostringstream err;
+          err << "Could not find data labelled '"<<in_label<<"' in the input dataset for postprocessing! In your master YAML file you have requested this data to be relabelled to '"<<out_label<<"', however it could not be found under the specified input label.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+
+       // Make sure chosen output name is not already claimed by the printer
+       if(std::find(all_params.begin(), all_params.end(), out_label) 
+           != all_params.end())
+       {
+          //Whoops, name already in use by something else!
+          std::ostringstream err;
+          err << "Cannot rename dataset '"<<in_label<<"' to '"<<out_label<<"'! The requested output label has already been claimed by some other component in the scan. Please choose a different output label for this dataset in the master YAML file, or remove it from the 'rename' options for the postprocessor scanner plugin";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+
+       // Make sure chosen output name doesn't clash with an un-renamed item to be copied
+       std::set<std::string>::iterator jt = std::find(data_labels.begin(), data_labels.end(), out_label);
+       if(jt != data_labels.end())
+       { 
+          // Potential clash; check if the name is going to be changed
+          std::map<std::string,std::string>::iterator kt = renaming_scheme.find(*jt);
+          if(kt == renaming_scheme.end())
+          {
+             // Not getting renamed! Error
+             std::ostringstream err;
+             err << "Cannot rename dataset '"<<in_label<<"' to '"<<out_label<<"'! The requested output label clashes with an item in the input dataset (which isn't getting renamed). Please choose a different output label for this dataset in the master YAML file, remove it from the 'rename' options for the postprocessor scanner plugin, or request for the conflicting input label to be renamed.";
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+          // Could still be a problem if the renamed name clashes, but we will check for that separately
+       }
+
+       // Make sure chosen output name doesn't clash with another renamed name
+       for(std::map<std::string,std::string>::iterator jt = renaming_scheme.begin();
+              jt!=renaming_scheme.end(); ++jt)
+       {
+          if((jt->second==it->second) and (jt->first!=it->first))
+          {
+             // If the out_labels match (and we aren't just clashing with ourselves)
+             // Then this is forbidden
+             std::ostringstream err;
+             err << "Cannot rename dataset '"<<in_label<<"' to '"<<out_label<<"'! The requested output label has already been claimed by some another item in the renaming scheme (you requested '"<<jt->first<<"' to also be renamed to '"<<jt->second<<"'). Please choose a different output label for one of these datasets in the master YAML file, or remove one of them from the 'rename' options for the postprocessor scanner plugin";
+             scan_error().raise(LOCAL_INFO,err.str());
+          }
+       }
+    }
+
     // Check what data is to be copied and what is to be recomputed
     if(rank==0) std::cout << "Determining which data is to be copied from input file to new output file, and which will be recomputed..." <<std::endl;
     if(rank==0) std::cout << " Datasets found in input file: " << std::endl;
@@ -515,10 +581,29 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        {
           data_labels_copy.insert(*it); // Not otherwise printed; schedule for copying
           if(rank==0) std::cout << "   copy     : "<< (*it) <<std::endl;
+          // Check if it is getting relabelled
+          std::map<std::string,std::string>::iterator jt = renaming_scheme.find(*it);
+          if(jt != renaming_scheme.end())
+          {
+             // Yep, getting relabelled
+             if(rank==0) std::cout << "     to --> : "<< jt->second <<std::endl;
+          }
        }
        else
        {
           if(rank==0) std::cout << "   recompute: "<< (*it) <<std::endl;
+          // Check if it is getting relabelled
+          std::map<std::string,std::string>::iterator jt = renaming_scheme.find(*it);
+          if(jt != renaming_scheme.end())
+          {
+             // Yep, getting relabelled
+             data_labels_copy.insert(*it); // Allowed to copy this after all since the name will be changed
+             if(rank==0) 
+             {
+                std::cout << "     with old data copied"<<std::endl;
+                std::cout << "     to --> : "<< jt->second <<std::endl;
+             }
+          }
        }
     }
     // Might as well also list what new stuff is listed for creation
@@ -532,6 +617,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     }
     if(rank==0) std::cout << "Copy analysis complete." <<std::endl;
     /// @}
+
 
     /// Check that we aren't accidentally throwing away any old likelihood components that we might want to keep.
     if(not discard_old_logl)
@@ -779,8 +865,22 @@ scanner_plugin(postprocessor, version(1, 0, 0))
       /// Copy selected data from input file
       for(std::set<std::string>::iterator it = data_labels_copy.begin(); it!=data_labels_copy.end(); ++it)
       {
-         //std::cout << "Copying data for "<<*it<<", point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
-         reader->retrieve_and_print(*it, *(get_printer().get_stream()), MPIrank, pointID);
+         // Check if this input label has been mapped to a different output label.
+         std::string in_label = *it;
+         std::map<std::string,std::string>::iterator jt = renaming_scheme.find(in_label);
+         if(jt != renaming_scheme.end())
+         {
+            // Found match! Do the renaming
+            std::string out_label = jt->second;
+            //std::cout << "Copying data from "<<in_label<<", to output name "<<out_label<<", for point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
+            reader->retrieve_and_print(in_label,out_label,*(get_printer().get_stream()), MPIrank, pointID);
+         }
+         else
+         {
+            // No match, keep the old name
+            //std::cout << "Copying data from "<<in_label<<" for point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
+            reader->retrieve_and_print(in_label,*(get_printer().get_stream()), MPIrank, pointID);
+         }
       }
 
       // Check whether the calling code wants us to shut down early

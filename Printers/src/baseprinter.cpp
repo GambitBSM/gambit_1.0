@@ -47,28 +47,28 @@ namespace Gambit
      }
 
      /// Retrieve and directly print data to new output
-     bool BaseReader::retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID)
+     bool BaseReader::retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer, const uint rank, const ulong pointID)
      {
-        /// First need to get the type data for 'label', then call appropriate retrieve and print functions.
+        /// First need to get the type data for 'in_label', then call appropriate retrieve and print functions.
         /// I think there is no choice but to do this with a big switch.
         /// Also need to check if the type matches what the printer expects, and decide what to do in case
         /// of mismatch.
         bool valid = false; // Switch to true if value is successfully retrieved for this point
         #define TYPE_CASES(r,data,elem) \
-        if( get_type(label) == getTypeID<elem>()) \
+        if( get_type(in_label) == getTypeID<elem>()) \
         { \
             elem buffer; \
-            valid = retrieve(buffer, label, rank, pointID); \
+            valid = retrieve(buffer, in_label, rank, pointID); \
             if(valid) \
             { \
-               printer.print(buffer, label, rank, pointID); \
+               printer.print(buffer, out_label, rank, pointID); \
             } \
         } else
         BOOST_PP_SEQ_FOR_EACH(TYPE_CASES, _, PRINTABLE_TYPES)
         #undef TYPE_CASES
         {
           std::ostringstream err;                               
-          err << "Did not recognise retrieved type for data label '"<<label<<"'! This may indicate a bug in the Reader class you are using, please report it."; 
+          err << "Did not recognise retrieved type for data label '"<<in_label<<"'! This may indicate a bug in the Reader class you are using, please report it."; 
           printer_error().raise(LOCAL_INFO,err.str());         
         }
         return valid;

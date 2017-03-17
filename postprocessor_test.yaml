@@ -36,7 +36,7 @@ Printer:
   # Output can be re-printed into a different format via the postprocessor
   printer: hdf5
   options:
-    output_file: "results_<RANK>.hdf5"
+    output_file: "results.hdf5"
     group: "/reweight_data"
     delete_file_on_restart: true
     # Current a special setting is required here to allow the postproccessing scanner to print to points in an erratic order.
@@ -50,16 +50,21 @@ Scanner:
 
     postprocess:
       plugin: postprocessor
+
       # 'purpose' name assigned to log-likelihood for this 'scan'
       like: LogLike3
+
       # label given to result of likelihood reweighting. Can overwrite old name, if 'permit_discard_old_likes' is 'true'.
       reweighted_like: reweighted_LogLike2
+
       # If the purpose name above collides with an entry in the selected input file 
       # (e.g. an old likelihood from the original scan), should the old data be discarded?
       permit_discard_old_like: true
+
       # List of labels in old output to treat as likelihoods to be added to the newly computed LogLike.
       # It is assumed that these are stored as doubles. If they aren't, something unexpected may happen...
       add_to_like: [LogLike, LogLike]
+
       # List of labels in old output to treat as likelihoods to be subtracted from the newly computed LogLike.
       # (for example if you recompute a new likelihood component with a different tool, you may want to
       #  subtract the old component here)
@@ -67,11 +72,25 @@ Scanner:
       # Note, there is no protection from adding then subtracting the same component, or from adding the same component twice etc.
       # More complicated arrangements of old + new likelihood components go beyond the goals of this scanner.
       # Use plotting tools for that kind of thing.
+   
+      # Renaming map for datasets
+      # Use this to preserve input data that would otherwise be overwritten, or if you just
+      # want to change the dataset name.
+      # NOTE: There is no way to enforce that you stick to GAMBIT naming conventions here, but if don't
+      # do so then you may be unable to postprocesses the new output, or it might screw with plotting tools.
+      # So choose names wisely.
+      # Also, don't try to rename e.g. the "is_valid" datasets in a HDF5 file. That will probably just crash,
+      # since the reader will be unable to find the match "is_valid_is_valid" dataset ;)
+      # Format is {"oldname1":"newname1", "oldname2":"newname2", ...}
+      rename:  {"#normaldist_loglike @ExampleBit_A::lnL_gaussian": "old_normaldist_loglike",
+                "Runtime(ms) totalloop": "old_totalloop_runtime",
+                "LogLike" : "LogLike2",
+                "LogLike2": "old_LogLike2"}
 
       # Postprocess points as if we are in an MPI process with rank=RANK and size=SIZE (set via environment variable)
       # This lets a postprocessing batch be done completely in parallel
       # Note that output files will be appended with RANK, and will need to be manually combined at the end.
-      use_virtual_rank: true 
+      # use_virtual_rank: true 
 
       # Set interval between progress report messages to stdout (0 for no messages, default 1000)
       #update_interval: 1000

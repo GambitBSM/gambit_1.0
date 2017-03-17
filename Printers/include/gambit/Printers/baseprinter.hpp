@@ -177,7 +177,7 @@ namespace Gambit
         }
 
         /// Retrieve and directly print data to new output
-        bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID);
+        bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer, const uint rank, const ulong pointID);
 
       protected:
         using BaseBaseReader::_retrieve; //unhide the default function in the base class
