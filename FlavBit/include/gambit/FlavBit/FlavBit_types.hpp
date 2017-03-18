@@ -41,10 +41,10 @@
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 
-#include <boost/numeric/ublas/matrix.hpp>      
-#include <boost/numeric/ublas/io.hpp>          
-                                               
-#include "gambit/FlavBit/FlavBit_types.hpp"    
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
+#include "gambit/FlavBit/FlavBit_types.hpp"
 
 
 
@@ -53,67 +53,59 @@ namespace Gambit
 
   namespace FlavBit
   {
-    using namespace std;
-                                                 
-    namespace ublas = boost::numeric::ublas;     
 
-     struct Correlation    
-     {                     
-       double corr_val;    
-       std::string corr_name;   
-     };                    
-     struct Measurement             
-     {                              
-       double value;                
-       double exp_stat_error;
-       double exp_sys_error;
-       //double exp_stat_error_minus;     
-       // double exp_sys_error_minus;      
-       
-       double th_error;
-       //double th_error_minus;
+    namespace ublas = boost::numeric::ublas;
 
-       double exp_error;
-       //double exp_error_minus;          
-                                
-       double limit;                
-       bool is_limit;               
-       vector<Correlation> corr;    
-       std::string name;                 
-       std::string source;
-       std::string error_type;
-     };                             
+    /// FIXME Marcin!!!
+    struct Correlation
+    {
+      double corr_val;
+      std::string corr_name;
+    };
+
+    /// FIXME Marcin!!!
+    struct Measurement
+    {
+      double value;
+      double exp_stat_error;
+      double exp_sys_error;
+      double th_error;
+      double exp_error;
+      double limit;
+      bool is_limit;
+      std::vector<Correlation> corr;
+      std::string name;
+      std::string source;
+      std::string error_type;
+    };
+
+    /// FIXME Marcin!!!
     struct Flav_measurement_simple
     {
       boost::numeric::ublas::matrix<double> M_cov;
       boost::numeric::ublas::matrix<double> M_mes;
     };
 
+    /// FIXME Marcin!!!
     struct Flav_measurement_assym
-    {                                
-      
-      string LL_name;
+    {
 
-      
-      boost::numeric::ublas::matrix<double>  value_exp;          
+      std::string LL_name;
+
+      boost::numeric::ublas::matrix<double>  value_exp;
       boost::numeric::ublas::matrix<double> cov_exp;
-      
-      boost::numeric::ublas::matrix<double> value_th;             
+
+      boost::numeric::ublas::matrix<double> value_th;
       boost::numeric::ublas::matrix<double> cov_th;
 
-      
-      vector<double> diff;
+      std::vector<double> diff;
       int dim;
-  
-    };                               
-    
 
-    
-    
-    
-    
+    };
+
+
   }
 }
 
 
-#endif     
+#endif

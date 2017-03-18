@@ -68,106 +68,24 @@ namespace Gambit
   {
 
     using namespace std;
+    using namespace Spectrum;
     namespace ublas = boost::numeric::ublas;
 
     // **************************************************
     /// Non-rollcalled helper functions unknown to GAMBIT
     // **************************************************
 
-    
-    bool flav_debug =true;
-      /*
     #ifdef FLAVBIT_DEBUG
-      true;
+      const bool flav_debug = true;
     #else
-      false;
+      const bool flav_debug = false;
     #endif
-      */
-    bool flav_debug_LL =true;
-    /*
+
     #ifdef FLAVBIT_DEBUG_LL
-      true;
+      const bool flav_debug_LL = true;
     #else
-      false;
+      const bool flav_debug_LL = false;
     #endif
-    
-    */
-
-    ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
-    inline std::complex<double> rhoplusieta(double lambda, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhobar, etabar);
-      double y = pow(A*lambda*lambda,2);
-      return sqrt((1.0-y)/(1.0-lambda*lambda))*x/(1.0-x*y);
-    }
-
-    /// CKM Wolfenstein --> V_ud standard parameterisation convertor
-    inline double Wolf2V_ud(double l, double A, double rhobar, double etabar)
-    {
-      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
-      return 1.0 - 0.5*pow(l,2) - 0.125*pow(l,4) - 0.0625*pow(l,6)*(1.0+8.0*A*A*norm)
-	- 0.0078125*pow(l,8)*(5.0-32.0*A*A*norm);
-    }
-
-    /// CKM Wolfenstein --> V_us standard parameterisation convertor
-    inline double Wolf2V_us(double l, double A, double rhobar, double etabar)
-    {
-      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
-      return l - 0.5*A*A*pow(l,7)*norm;
-    }
-
-    /// CKM Wolfenstein --> V_ub standard parameterisation convertor
-    inline std::complex<double> Wolf2V_ub(double l, double A, double rhobar, double etabar)
-    {
-      return A*pow(l,3)*std::conj(rhoplusieta(l,A,rhobar,etabar));
-    }
-
-    /// CKM Wolfenstein --> V_cd standard parameterisation convertor
-    inline std::complex<double> Wolf2V_cd(double l, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
-      return 0.5*pow(A*l,2)*(pow(l,3)*(1.0-2.0*x) + pow(l,5)*x) - l;
-    }
-
-    /// CKM Wolfenstein --> V_cs standard parameterisation convertor
-    inline std::complex<double> Wolf2V_cs(double l, double A, double rhobar, double etabar)
-    {
-      double l2 = l*l;
-      double fA2 = 4.0*A*A;
-      return 1.0 - 0.5*l2 - 0.125*l2*l2*(1.0+fA2)
-	- 0.0625*pow(l2,3)*(1.0-fA2+4.0*fA2*rhoplusieta(l,A,rhobar,etabar))
-	- 0.0078125*pow(l2,4)*(5.0-fA2*(2.0+4.0*fA2));
-    }
-
-    /// CKM Wolfenstein --> V_cb standard parameterisation convertor
-    inline  double Wolf2V_cb(double l, double A, double rhobar, double etabar)
-    {
-      return A*l*l * (1.0 - 0.5*A*A*pow(l,6)*std::norm(rhoplusieta(l,A,rhobar,etabar)));
-    }
-
-    /// CKM Wolfenstein --> V_td standard parameterisation convertor
-    inline std::complex<double> Wolf2V_td(double l, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
-      return A*l*l * (l*(1.0-x) + 0.5*pow(l,3)*x + 0.125*pow(l,5)*(1.0+4.0*A*A)*x);
-    }
-
-    /// CKM Wolfenstein --> V_ts standard parameterisation convertor
-    inline std::complex<double> Wolf2V_ts(double l, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
-      return A*l*l * (0.5*pow(l,2)*(1.0-2.0*x) + 0.125*pow(l,4) + 0.0625*pow(l,6)*(1.0+8.0*A*A*x) - 1.0);
-    }
-
-    /// CKM Wolfenstein --> V_tb standard parameterisation convertor
-    inline double Wolf2V_tb(double l, double A, double rhobar, double etabar)
-    {
-      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
-      double l4 = pow(l,4);
-      return 1.0 - 0.5*A*A*l4 * (1.0 + l*l*norm + 0.25*A*A*l4);
-    }
-
-
 
     template<class T>
     bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse)
@@ -205,31 +123,30 @@ namespace Gambit
 
       if(ModelInUse("WC"))
 	{
-	  //BEreq::Init_param(&result); 
-	  result.SM=1;  // needed acordingly to Nazila
+	  //BEreq::Init_param(&result);
+	  result.SM=1;  // needed according to Nazila
 	  result.Re_DeltaC7=*Param["Re_DeltaC7"];
 	  result.Re_DeltaC9=*Param["Re_DeltaC9"];
 	  result.Re_DeltaC10=*Param["Re_DeltaC10"];
-	  
+
 	  result.Im_DeltaC7=*Param["Im_DeltaC7"];
 	  result.Im_DeltaC9=*Param["Im_DeltaC9"];
 	  result.Im_DeltaC10=*Param["Im_DeltaC10"];
-	  
+
 	  result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
 	  result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
-	  
+
 	  result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
 	  result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
-	  
-	  
+
+
 	  // now SM inputs
 	  // Access the pipes for this function to get model and parameter information, and dependencies
 
-
 	  // Get SLHA2 SMINPUTS values
-
 	  const SMInputs& spectrum = *(Dep::SMINPUTS);
 
+    //FIXME this needs to come from the spectrum object!
 	  result.mass_W=160.74067/2.;
 	  result.inv_alpha_em=spectrum.alphainv;
 	  result.Gfermi=spectrum.GF;
@@ -248,6 +165,7 @@ namespace Gambit
 	  result.mass_u=spectrum.mU;
 	  result.mass_s=spectrum.mS;
 	  result.mass_c=spectrum.mCmC;
+    // FIXME this needs to come from the spectrum object!
 	  result.mass_b_1S=2.348147*2.;
 	  // for the WC we need to fix the
 
@@ -267,93 +185,99 @@ namespace Gambit
 	  result.Vcd=Wolf2V_cd(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 	  result.Vud=Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 
-          result.BR_BXclnu_exp=0.1065;
+    // FIXME these all need to come from/be included in Elements/include/gambit/Elements/numerical_constants.hpp
 	  result.m_Bs=5.366770;
 	  result.m_B=5.27926;
-	  result.m_Bd=5.27958;  
+	  result.m_Bd=5.27958;
 	  result.mass_b_pole=4.791059;
-	  result.life_pi=2.6033e-8;      
-	  result.life_K=1.2380e-8;       
-	  result.life_B=1.638e-12;       
-	  result.life_Bs=1.512e-12;      
-	  result.life_Bd=1.519e-12;      
-	  result.life_D=1.040e-12;       
-	  result.life_Ds=5.e-13;         
-	  result.f_B=0.1905;         
-	  result.f_Bs=0.2277;        
-	  result.f_Ds=0.2486;        
-	  result.f_D=0.2135;         
-	  result.f_K=0.156;          
-	  result.fK_fpi=1.193;       
-	  result.f_Kstar_par=0.216;  
-	  result.f_Kstar_perp=0.163; 
-	  result.f_phi_par=0.235;    
-	  result.f_phi_perp=0.191;   
-	  result.m_pi=0.13957;         
-	  result.m_K=0.493677;         
-	  result.m_K0=0.497614;        
-	  result.m_Kstar=0.89166;      
-	  result.m_Kstar0=0.89581;     
-	  result.m_D0=1.86484;         
-	  result.m_D=1.86961;          
-	  result.m_Dstar=2.01027;      
-	  result.m_Dstar0=2.00697;     
-	  result.m_Ds=1.9683;          
-	  result.m_phi=1.019461;       
-	  result.a1perp=0.04;           
-	  result.a2perp=0.10;           
-	  result.a1par=0.06;            
-	  result.a2par=0.16;            
-	  result.a1K=0.06;              
-	  result.a2K=0.25;              
-	  result.a1phi_perp=0.;         
-	  result.a1phi_par=0.;          
-	  result.a2phi_perp=0.14;       
-	  result.a2phi_par=0.23;        
-	  result.zeta3A=0.032;          
-	  result.zeta3V=0.013;          
-	  result.wA10=-2.1;             
-	  result.deltatp=0.16;          
-	  result.deltatm=-0.16;         
-	  result.deltatp_phi=0.33;      
-	  result.deltatm_phi=0.;        
-	  result.lambda_Bp=0.46;        
-	  result.lambda_Bsp=0.46;       
-	  result.rho1=0.06;             
-	  result.lambda2=0.12;          
-	  result.fullFF=1; 
-	  result.CKM_lambda=0.22537;           
-	  result.CKM_A=0.814;                  
-	  result.CKM_rhobar=0.117;             
-	  result.CKM_etabar=0.353;             
-                                     
-	  result.mass_u = 2.3e-3;              
-	  result.mass_d = 4.8e-3;              
-	  result.mass_s = 0.095;               
-	  result.mass_c = 1.275;               
-	  result.mass_b = 4.18;                
-	  result.mass_top_pole = 173.34;       
-                                     
-	  result.mass_e = 0.511e-3;            
-	  result.mass_mu= 0.105658;            
-	  result.mass_tau_pole=1.77682;        
+	  result.life_pi=2.6033e-8;
+	  result.life_K=1.2380e-8;
+	  result.life_B=1.638e-12;
+	  result.life_Bs=1.512e-12;
+	  result.life_Bd=1.519e-12;
+	  result.life_D=1.040e-12;
+	  result.life_Ds=5.e-13;
+	  result.f_B=0.1905;
+	  result.f_Bs=0.2277;
+	  result.f_Ds=0.2486;
+	  result.f_D=0.2135;
+	  result.f_K=0.156;
+	  result.fK_fpi=1.193;
+	  result.f_Kstar_par=0.216;
+	  result.f_Kstar_perp=0.163;
+	  result.f_phi_par=0.235;
+	  result.f_phi_perp=0.191;
+	  result.m_pi=0.13957;
+	  result.m_K=0.493677;
+	  result.m_K0=0.497614;
+	  result.m_Kstar=0.89166;
+	  result.m_Kstar0=0.89581;
+	  result.m_D0=1.86484;
+	  result.m_D=1.86961;
+	  result.m_Dstar=2.01027;
+	  result.m_Dstar0=2.00697;
+	  result.m_Ds=1.9683;
+	  result.m_phi=1.019461;
+	  result.a1perp=0.04;
+	  result.a2perp=0.10;
+	  result.a1par=0.06;
+	  result.a2par=0.16;
+	  result.a1K=0.06;
+	  result.a2K=0.25;
+	  result.a1phi_perp=0.;
+	  result.a1phi_par=0.;
+	  result.a2phi_perp=0.14;
+	  result.a2phi_par=0.23;
+	  result.zeta3A=0.032;
+	  result.zeta3V=0.013;
+	  result.wA10=-2.1;
+	  result.deltatp=0.16;
+	  result.deltatm=-0.16;
+	  result.deltatp_phi=0.33;
+	  result.deltatm_phi=0.;
+	  result.lambda_Bp=0.46;
+	  result.lambda_Bsp=0.46;
+	  result.rho1=0.06;
+	  result.lambda2=0.12;
+	  result.fullFF=1;
+
+    // FIXME these need to come from the spectrum object!!!  Why are they overwritten here?
+	  result.CKM_lambda=0.22537;
+	  result.CKM_A=0.814;
+	  result.CKM_rhobar=0.117;
+	  result.CKM_etabar=0.353;
+
+    // FIXME these needs to come from the spectrum object!
+	  result.mass_u = 2.3e-3;
+	  result.mass_d = 4.8e-3;
+	  result.mass_s = 0.095;
+	  result.mass_c = 1.275;
+	  result.mass_b = 4.18;
+	  result.mass_top_pole = 173.34;
+
+    // FIXME these need to come from the spectrum object!!!
+	  result.mass_e = 0.511e-3;
+	  result.mass_mu= 0.105658;
+	  result.mass_tau_pole=1.77682;
 	  result.mass_tau=result.mass_tau_pole;
-                                     
-	  result.mass_Z=91.1876;               
-	  result.alphas_MZ=0.1185;             
-	  result.mass_W=80.385;                
-                                     
-	  result.mass_h0=125.;                 
-                                     
-	  result.gp=result.gp_Q=3.57458e-1;    
-	  result.g2=result.g2_Q=6.51908e-1;    
-	  result.inv_alpha_em=1.27916e2;       
-	  result.Gfermi=1.16637000e-5;         
-                                     
-	  result.width_Z=2.4952;               
-	  result.width_W=2.085;                
 
+    // FIXME these need to come from the spectrum object!!!
+	  result.mass_Z=91.1876;
+	  result.alphas_MZ=0.1185;
+	  result.mass_W=80.385;
 
+    // FIXME these need to come from the spectrum object!!!
+	  result.mass_h0=125.;
+
+    // FIXME these need to come from the spectrum object!!!
+	  result.gp=result.gp_Q=3.57458e-1;
+	  result.g2=result.g2_Q=6.51908e-1;
+	  result.inv_alpha_em=1.27916e2;
+	  result.Gfermi=1.16637000e-5;
+
+    // FIXME these need to come from the deca table!!!
+	  result.width_Z=2.4952;
+	  result.width_W=2.085;
 
 
 	  double mtmt=BEreq::mt_mt(&result);
@@ -865,9 +789,9 @@ namespace Gambit
       if(flav_debug)  cout<<"Finished SI_RD"<<endl;
     }
 
-    // *************************************************                     
-    /// Calculating  B->D tau nu_tau / B-> D e nu_e decays                     
-    // *************************************************                     
+    // *************************************************
+    /// Calculating  B->D tau nu_tau / B-> D e nu_e decays
+    // *************************************************
 
     void SI_RDstar(double &result)
     {
@@ -1918,11 +1842,11 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       //cout<<M_cov<<endl;
-      
+
 
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
-      
+
 
       // We assert that the experiments and the observables are the same size
       assert(! ( M_exp.size1() != observables.size()  ));
@@ -2096,7 +2020,7 @@ namespace Gambit
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
 
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
-      
+
     }
     // *************************************************
     /// measurement for b->mumu
@@ -2129,7 +2053,7 @@ namespace Gambit
       double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
       double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
       // comment this out
-      
+
       // we have everything, correlation
 
       boost::numeric::ublas::matrix<double> M_cov_th(2,2);
@@ -2215,7 +2139,7 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
-    
+
     /*
     // *************************************************
     /// measurement for b->mumu WC
@@ -2393,7 +2317,7 @@ namespace Gambit
       double theory_BDmunu=*Dep::BDmunu;
       // B-> D* mu nu
       double theory_BDstarmunu=*Dep::BDstarmunu;
-      
+
       // theory results;
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
 
