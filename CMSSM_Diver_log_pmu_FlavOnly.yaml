@@ -1,7 +1,9 @@
 Parameters:
 
   #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  #StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  
 
   #SUSY parameters.
   CMSSM:

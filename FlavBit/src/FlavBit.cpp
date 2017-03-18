@@ -75,23 +75,21 @@ namespace Gambit
     // **************************************************
 
     
-    bool flav_debug =true;
-      /*
+    bool flav_debug
     #ifdef FLAVBIT_DEBUG
       true;
     #else
       false;
     #endif
-      */
-    bool flav_debug_LL =true;
-    /*
+
+    bool flav_debug_LL
     #ifdef FLAVBIT_DEBUG_LL
       true;
     #else
       false;
     #endif
     
-    */
+
 
     ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
     inline std::complex<double> rhoplusieta(double lambda, double A, double rhobar, double etabar)
