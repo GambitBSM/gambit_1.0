@@ -17,15 +17,6 @@
 #ifndef FLAV_OBS_H
 #define FLAV_OBS_H
 
-#include <iostream>
-#include <unistd.h>
-#include <stdio.h>
-#include <iostream>
-#include <stdio.h>
-#include <fstream>
-#include <sstream>
-#include <cmath>
-
 #include "yaml-cpp/yaml.h"
 #include "gambit/FlavBit/FlavBit_types.hpp"
 #include "gambit/Utils/util_types.hpp"

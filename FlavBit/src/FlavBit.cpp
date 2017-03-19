@@ -53,8 +53,8 @@
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-#define FLAVBIT_DEBUG
-#define FLAVBIT_DEBUG_LL
+//#define FLAVBIT_DEBUG
+//#define FLAVBIT_DEBUG_LL
 
 #define Nobs_BKll 2
 #define Nobs_BKsll 30
