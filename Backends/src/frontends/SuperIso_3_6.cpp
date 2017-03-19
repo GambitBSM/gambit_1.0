@@ -68,7 +68,9 @@ BE_NAMESPACE
     //    double alphas_mub=param->alphas_MZ;
     double alphas_mub=alphas_running(byVal(mu_b),byVal(param->mass_top_pole),byVal(param->mass_b_pole),param);
     double pi=3.1415;
-
+    
+    std::cout<<"CMSSM params; "<<param->m0<<" "<<param->m12<<" "<<param->tan_beta<<" "<<param->sign_mu<<" "<<param->A0<<std::endl;
+    
     std::cout<<"Wilson Coefficients: C7= "<<C0b[7]+alphas_mub/4./pi*C1b[7]+pow(alphas_mub/4./pi,2.)*C2b[7]<<std::endl;
     std::cout<<"Wilson Coefficients: C9= "<<C0b[9]+alphas_mub/4./pi*C1b[9]+pow(alphas_mub/4./pi,2.)*C2b[9]<<std::endl;
     std::cout<<"Wilson Coefficients: C10= "<<C0b[10]+alphas_mub/4./pi*C1b[10]+pow(alphas_mub/4./pi,2.)*C2b[10]<<std::endl;

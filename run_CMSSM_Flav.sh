@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#SBATCH -N 50                              # Number of nodes.
+#SBATCH -N 70                              # Number of nodes.
 #SBATCH --ntasks-per-node 24               # Number of MPI processes per node.
 #SBATCH -c 1                               # Number of cores per MPI process.
-#SBATCH -t 1-00:00                         # Runtime in D-HH:MM
+#SBATCH -t 2-20:00                         # Runtime in D-HH:MM
 #SBATCH -p exclusive                       # Partition to submit to
 #SBATCH -A gambitv4                        # Account to charge
 #SBATCH --signal=SIGUSR1@900               # Signal and time before walltime to send
