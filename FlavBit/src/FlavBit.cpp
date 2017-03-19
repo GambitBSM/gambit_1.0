@@ -68,7 +68,6 @@ namespace Gambit
   {
 
     using namespace std;
-    using namespace Spectrum;
     namespace ublas = boost::numeric::ublas;
 
     // **************************************************
@@ -88,83 +87,6 @@ namespace Gambit
     #else
       false;
     #endif
-
-    ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
-    inline std::complex<double> rhoplusieta(double lambda, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhobar, etabar);
-      double y = pow(A*lambda*lambda,2);
-      return sqrt((1.0-y)/(1.0-lambda*lambda))*x/(1.0-x*y);
-    }
-
-    /// CKM Wolfenstein --> V_ud standard parameterisation convertor
-    inline double Wolf2V_ud(double l, double A, double rhobar, double etabar)
-    {
-      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
-      return 1.0 - 0.5*pow(l,2) - 0.125*pow(l,4) - 0.0625*pow(l,6)*(1.0+8.0*A*A*norm)
-	- 0.0078125*pow(l,8)*(5.0-32.0*A*A*norm);
-    }
-
-    /// CKM Wolfenstein --> V_us standard parameterisation convertor
-    inline double Wolf2V_us(double l, double A, double rhobar, double etabar)
-    {
-      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
-      return l - 0.5*A*A*pow(l,7)*norm;
-    }
-
-    /// CKM Wolfenstein --> V_ub standard parameterisation convertor
-    inline std::complex<double> Wolf2V_ub(double l, double A, double rhobar, double etabar)
-    {
-      return A*pow(l,3)*std::conj(rhoplusieta(l,A,rhobar,etabar));
-    }
-
-    /// CKM Wolfenstein --> V_cd standard parameterisation convertor
-    inline std::complex<double> Wolf2V_cd(double l, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
-      return 0.5*pow(A*l,2)*(pow(l,3)*(1.0-2.0*x) + pow(l,5)*x) - l;
-    }
-
-    /// CKM Wolfenstein --> V_cs standard parameterisation convertor
-    inline std::complex<double> Wolf2V_cs(double l, double A, double rhobar, double etabar)
-    {
-      double l2 = l*l;
-      double fA2 = 4.0*A*A;
-      return 1.0 - 0.5*l2 - 0.125*l2*l2*(1.0+fA2)
-	- 0.0625*pow(l2,3)*(1.0-fA2+4.0*fA2*rhoplusieta(l,A,rhobar,etabar))
-	- 0.0078125*pow(l2,4)*(5.0-fA2*(2.0+4.0*fA2));
-    }
-
-    /// CKM Wolfenstein --> V_cb standard parameterisation convertor
-    inline  double Wolf2V_cb(double l, double A, double rhobar, double etabar)
-    {
-      return A*l*l * (1.0 - 0.5*A*A*pow(l,6)*std::norm(rhoplusieta(l,A,rhobar,etabar)));
-    }
-
-    /// CKM Wolfenstein --> V_td standard parameterisation convertor
-    inline std::complex<double> Wolf2V_td(double l, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
-      return A*l*l * (l*(1.0-x) + 0.5*pow(l,3)*x + 0.125*pow(l,5)*(1.0+4.0*A*A)*x);
-    }
-
-    /// CKM Wolfenstein --> V_ts standard parameterisation convertor
-    inline std::complex<double> Wolf2V_ts(double l, double A, double rhobar, double etabar)
-    {
-      std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
-      return A*l*l * (0.5*pow(l,2)*(1.0-2.0*x) + 0.125*pow(l,4) + 0.0625*pow(l,6)*(1.0+8.0*A*A*x) - 1.0);
-    }
-
-    /// CKM Wolfenstein --> V_tb standard parameterisation convertor
-    inline double Wolf2V_tb(double l, double A, double rhobar, double etabar)
-    {
-      double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
-      double l4 = pow(l,4);
-      return 1.0 - 0.5*A*A*l4 * (1.0 + l*l*norm + 0.25*A*A*l4);
-    }
-
-
->>>>>>> fd2b98f82c32e20835d0bb54fff76c1b1c58fb5d
 
     template<class T>
     bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse)
@@ -225,14 +147,12 @@ namespace Gambit
 	  // Get SLHA2 SMINPUTS values
 	  const SMInputs& spectrum = *(Dep::SMINPUTS);
 
-    //FIXME this needs to come from the spectrum object!
-	  result.mass_W=160.74067/2.;
+	  result.mass_W=spectrum.mW;
 	  result.inv_alpha_em=spectrum.alphainv;
 	  result.Gfermi=spectrum.GF;
 	  result.alphas_MZ=spectrum.alphaS;
 	  result.mass_Z=spectrum.mZ;
 	  result.mass_b=spectrum.mBmB;
-	  // std::cout<<"top mass : "<<spectrum.mT<<endl;
 	  result.mass_top_pole=spectrum.mT;
 	  result.mass_tau=spectrum.mTau;
 	  result.mass_nutau2=spectrum.mNu3;
@@ -244,25 +164,24 @@ namespace Gambit
 	  result.mass_u=spectrum.mU;
 	  result.mass_s=spectrum.mS;
 	  result.mass_c=spectrum.mCmC;
-    // FIXME this needs to come from the spectrum object!
-	  result.mass_b_1S=2.348147*2.;
-	  // for the WC we need to fix the
+	  result.mass_b_1S=2.348147*2.;  // In principle this should come from the spectrum object, but it can't do masses in the 1S scheme atm...
 
 	  result.CKM_lambda=spectrum.CKM.lambda;
 	  result.CKM_A=spectrum.CKM.A;
 	  result.CKM_rhobar=spectrum.CKM.rhobar;
 	  result.CKM_etabar=spectrum.CKM.etabar;
-	  result.Vtb=Wolf2V_tb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-	  result.Vcb=Wolf2V_cb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-	  result.Vub=Wolf2V_ub(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 
-	  result.Vts=Wolf2V_ts(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-	  result.Vcs=Wolf2V_cs(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-	  result.Vus=Wolf2V_us(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vtb=Spectrum::Wolf2V_tb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vcb=Spectrum::Wolf2V_cb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vub=Spectrum::Wolf2V_ub(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 
-	  result.Vtd=Wolf2V_td(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-	  result.Vcd=Wolf2V_cd(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-	  result.Vud=Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vts=Spectrum::Wolf2V_ts(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vcs=Spectrum::Wolf2V_cs(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vus=Spectrum::Wolf2V_us(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+
+	  result.Vtd=Spectrum::Wolf2V_td(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vcd=Spectrum::Wolf2V_cd(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+	  result.Vud=Spectrum::Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
 
     // FIXME these all need to come from/be included in Elements/include/gambit/Elements/numerical_constants.hpp
 	  result.m_Bs=5.366770;
@@ -320,13 +239,13 @@ namespace Gambit
 	  result.lambda2=0.12;
 	  result.fullFF=1;
 
-    // FIXME these need to come from the spectrum object!!!  Why are they overwritten here?
+    // FIXME these need to come from the spectrum object!!!  They are already set - why are they overwritten here?
 	  result.CKM_lambda=0.22537;
 	  result.CKM_A=0.814;
 	  result.CKM_rhobar=0.117;
 	  result.CKM_etabar=0.353;
 
-    // FIXME these needs to come from the spectrum object!
+    // FIXME these needs to come from the spectrum object! They are already set - why are they overwritten here?
 	  result.mass_u = 2.3e-3;
 	  result.mass_d = 4.8e-3;
 	  result.mass_s = 0.095;
@@ -340,12 +259,12 @@ namespace Gambit
 	  result.mass_tau_pole=1.77682;
 	  result.mass_tau=result.mass_tau_pole;
 
-    // FIXME these need to come from the spectrum object!!!
+    // FIXME these need to come from the spectrum object!!!  They are already set - why are they overwritten here?
 	  result.mass_Z=91.1876;
 	  result.alphas_MZ=0.1185;
 	  result.mass_W=80.385;
 
-    // FIXME these need to come from the spectrum object!!!
+    // FIXME this needs to come from the spectrum object (the model-conditional dep needs to be on SM_spectrum, not SMINPUTS)!!!
 	  result.mass_h0=125.;
 
     // FIXME these need to come from the spectrum object!!!
@@ -354,10 +273,9 @@ namespace Gambit
 	  result.inv_alpha_em=1.27916e2;
 	  result.Gfermi=1.16637000e-5;
 
-    // FIXME these need to come from the deca table!!!
+    // FIXME these need to come from the decay table (need to add a dep on the decay table or on the W and Z widths individually)!!!
 	  result.width_Z=2.4952;
 	  result.width_W=2.085;
-
 
 	  double mtmt=BEreq::mt_mt(&result);
 	  result.mtmt=mtmt;

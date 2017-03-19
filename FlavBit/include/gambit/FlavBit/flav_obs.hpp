@@ -14,30 +14,24 @@
 ///
 ///  *********************************************
 
-
 #ifndef FLAV_OBS_H
 #define FLAV_OBS_H
 
-
-#include <string>
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
-#include <string.h>
-#include <vector>
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
 #include <cmath>
-#include "yaml-cpp/yaml.h"
 
+#include "yaml-cpp/yaml.h"
 #include "gambit/FlavBit/FlavBit_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
-
-
 
 
 namespace Gambit
@@ -51,10 +45,10 @@ namespace Gambit
     private:
 
       double **b2sll_cov;
-      vector <string> names_obs;
-      vector< Measurement > measurements;
-      string measurement_location;
-      int get_measurement_for_corr(string);
+      std::vector <str> names_obs;
+      std::vector< Measurement > measurements;
+      str measurement_location;
+      int get_measurement_for_corr(str);
       bool check_corr_matrix();
       bool use_P;
       bool use_S;
@@ -71,11 +65,11 @@ namespace Gambit
 
       int number_measurements;
 
-      Flav_reader(string loc);
-      int read_yaml(string name); // reads a yaml file
-      int read_root(string name); // reads a root saved histogram
-      int read(string name); // reads root or yaml files, by checking the name
-      void read_yaml_mesurement(string name, string measurement_name) ;
+      Flav_reader(str loc);
+      int read_yaml(str name); // reads a yaml file
+      int read_root(str name); // reads a root saved histogram
+      int read(str name); // reads root or yaml files, by checking the name
+      void read_yaml_mesurement(str name, str measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
       void debug_mode(bool k) {debug= k;};
@@ -97,15 +91,15 @@ namespace Gambit
        {
        private:
 	 int size_obs;
-	 vector<string> names_obs;
-	 vector< vector< double > >covariance;
-	 std::map<string,int> map_kstarmumu;
+	 std::vector<str> names_obs;
+	 std::vector< std::vector< double > >covariance;
+	 std::map<str,int> map_kstarmumu;
 
        public:
 	 Kstarmumu_theory_errr()
 	 {
 	   size_obs=128;
-	   names_obs= vector<string>(size_obs);
+	   names_obs= std:: vector<str>(size_obs);
 	   names_obs[0]="BR_B0Kstar0mumu_0.1-2";
 	   names_obs[1]="AFB_B0Kstar0mumu_0.1-2";
 	   names_obs[2]="FL_B0Kstar0mumu_0.1-2";
@@ -241,7 +235,7 @@ namespace Gambit
 	     }
 	   for(int i=0;i<size_obs;++i)
 	     {
-	       covariance.push_back(vector<double>(size_obs));
+	       covariance.push_back(std::vector<double>(size_obs));
 	     }
 	   covariance[0][0]=2.8287e-16;
 	   covariance[0][1]=2.4226e-11;
@@ -16632,7 +16626,7 @@ covariance[127][127]=9.9732e-02;
 
 	 };
 
-	 boost::numeric::ublas::matrix<double> get_cov_theory(vector<string> observables)
+	 boost::numeric::ublas::matrix<double> get_cov_theory(std::vector<str> observables)
 	 {
 	     boost::numeric::ublas::matrix<double> cov_th(observables.size(), observables.size());
 	     for(unsigned i=0;i<observables.size();++i)
