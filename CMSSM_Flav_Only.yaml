@@ -1,24 +1,38 @@
 Parameters:
 
-  #SM nuisance parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
-
   CMSSM:
-    M0:
-      range: [500, 1e4]
-      prior_type: log
-    M12:
-      range: [500, 1e4]
-      prior_type: log
-    A0:
-      range: [-1e4, 1e4]
-      flat_start: -1e2
-      flat_end: 1e2
-      prior_type: double_log_flat_join
-    TanBeta:
-      range: [30.0, 70]
-      prior_type: flat
+    A0: [49.9589, 55.0]
+    M0: 8304.61
+    M12: 5808.96
     SignMu: 1
+    TanBeta: 57.7776
+  StandardModel_SLHA2:
+    CKM_A: 0.814
+    CKM_etabar: 0.353
+    CKM_lambda: 0.22537
+    CKM_rhobar: 0.117
+    GF: 1.16638e-05
+    alpha1: 0
+    alpha2: 0
+    alphaS: 0.120273
+    alphainv: 127.94
+    delta13: 0
+    mBmB: 4.18
+    mCmC: 1.275
+    mD: 0.0048
+    mE: 0.000510999
+    mMu: 0.105658
+    mNu1: 0
+    mNu2: 0
+    mNu3: 0
+    mS: 0.095
+    mT: 174.077
+    mTau: 1.77682
+    mU: 0.0023
+    mZ: 91.1876
+    theta12: 0.58376
+    theta13: 0.15495
+    theta23: 0.76958
 
 
 Priors:

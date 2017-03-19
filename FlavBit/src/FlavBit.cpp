@@ -53,8 +53,8 @@
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-//#define FLAVBIT_DEBUG
-//#define FLAVBIT_DEBUG_LL
+#define FLAVBIT_DEBUG
+#define FLAVBIT_DEBUG_LL
 
 #define Nobs_BKll 2
 #define Nobs_BKsll 30
@@ -1812,123 +1812,114 @@ namespace Gambit
     void b2sll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2sll_measurements;
+      static bool first = true;
 
-      if(flav_debug)  cout<<"Starting b2sll_measurements function"<<endl;
+      if(flav_debug) cout<<"Starting b2sll_measurements function"<<endl;
+      if(flav_debug and first) cout <<"Initialising Flav Reader in b2sll_measurements"<<endl;
+      static Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      static const vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
+      static const vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
+      static vector<string> observables;
+      static int n_experiments;
 
-      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-      red.debug_mode(flav_debug);
-      if(flav_debug)  cout<<"init Flav Reader the B2sll "<<endl;
-      vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
-      vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
-      vector<string> observables;
-      for(unsigned i=0;i<observablesq.size();++i)
+      // Read and calculate things based on the observed data only the first time through, as none of it depends on the model parameters.
+      if (first)
       {
-        for(unsigned j=0;j<observablesn.size();++j)
+        measurement_assym.LL_name="b2sll_likelihood";
+
+        red.debug_mode(flav_debug);
+
+        for(unsigned i=0;i<observablesq.size();++i)
         {
-	        observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
+          for(unsigned j=0;j<observablesn.size();++j)
+          {
+            observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
+          }
         }
+
+        for(unsigned i=0;i<observables.size();++i)
+        {
+          red.read_yaml_mesurement("flav_data.yaml", observables[i]);
+        }
+
+        red.create_global_corr();
+        measurement_assym.cov_exp = red.get_cov();
+        measurement_assym.value_exp = red.get_exp_value();
+        measurement_assym.cov_th = Kstarmumu_theory_errr().get_cov_theory(observables);
+        n_experiments = measurement_assym.cov_th.size1();
+        measurement_assym.value_th.resize(n_experiments,1);
+        measurement_assym.dim=n_experiments;
+
+        // We assert that the experiments and the observables are the same size
+        assert(measurement_assym.value_exp.size1() == observables.size());
+
+        // Init out.
+        first = false;
       }
 
-      for(unsigned i=0;i<observables.size();++i)
-      {
-        red.read_yaml_mesurement("flav_data.yaml", observables[i]);
-      }
+      if(flav_debug)  cout<<"here"<<endl;
 
-      red.create_global_corr();
-      //cov matirces
+      measurement_assym.value_th(0,0)=Dep::BRBKstarmumu_11_25->FL;
+      measurement_assym.value_th(1,0)=Dep::BRBKstarmumu_11_25->AFB;
+      measurement_assym.value_th(2,0)=Dep::BRBKstarmumu_11_25->S3;
+      measurement_assym.value_th(3,0)=Dep::BRBKstarmumu_11_25->S4;
+      measurement_assym.value_th(4,0)=Dep::BRBKstarmumu_11_25->S5;
+      measurement_assym.value_th(5,0)=Dep::BRBKstarmumu_11_25->S7;
+      measurement_assym.value_th(6,0)=Dep::BRBKstarmumu_11_25->S8;
+      measurement_assym.value_th(7,0)=Dep::BRBKstarmumu_11_25->S9;
 
-      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
-      //cout<<M_cov<<endl;
+      measurement_assym.value_th(8,0)=Dep::BRBKstarmumu_25_40->FL;
+      measurement_assym.value_th(9,0)=Dep::BRBKstarmumu_25_40->AFB;
+      measurement_assym.value_th(10,0)=Dep::BRBKstarmumu_25_40->S3;
+      measurement_assym.value_th(11,0)=Dep::BRBKstarmumu_25_40->S4;
+      measurement_assym.value_th(12,0)=Dep::BRBKstarmumu_25_40->S5;
+      measurement_assym.value_th(13,0)=Dep::BRBKstarmumu_25_40->S7;
+      measurement_assym.value_th(14,0)=Dep::BRBKstarmumu_25_40->S8;
+      measurement_assym.value_th(15,0)=Dep::BRBKstarmumu_25_40->S9;
 
+      measurement_assym.value_th(16,0)=Dep::BRBKstarmumu_40_60->FL;
+      measurement_assym.value_th(17,0)=Dep::BRBKstarmumu_40_60->AFB;
+      measurement_assym.value_th(18,0)=Dep::BRBKstarmumu_40_60->S3;
+      measurement_assym.value_th(19,0)=Dep::BRBKstarmumu_40_60->S4;
+      measurement_assym.value_th(20,0)=Dep::BRBKstarmumu_40_60->S5;
+      measurement_assym.value_th(21,0)=Dep::BRBKstarmumu_40_60->S7;
+      measurement_assym.value_th(22,0)=Dep::BRBKstarmumu_40_60->S8;
+      measurement_assym.value_th(23,0)=Dep::BRBKstarmumu_40_60->S9;
 
-      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
+      measurement_assym.value_th(24,0)=Dep::BRBKstarmumu_60_80->FL;
+      measurement_assym.value_th(25,0)=Dep::BRBKstarmumu_60_80->AFB;
+      measurement_assym.value_th(26,0)=Dep::BRBKstarmumu_60_80->S3;
+      measurement_assym.value_th(27,0)=Dep::BRBKstarmumu_60_80->S4;
+      measurement_assym.value_th(28,0)=Dep::BRBKstarmumu_60_80->S5;
+      measurement_assym.value_th(29,0)=Dep::BRBKstarmumu_60_80->S7;
+      measurement_assym.value_th(30,0)=Dep::BRBKstarmumu_60_80->S8;
+      measurement_assym.value_th(31,0)=Dep::BRBKstarmumu_60_80->S9;
 
+      measurement_assym.value_th(32,0)=Dep::BRBKstarmumu_15_17->FL;
+      measurement_assym.value_th(33,0)=Dep::BRBKstarmumu_15_17->AFB;
+      measurement_assym.value_th(34,0)=Dep::BRBKstarmumu_15_17->S3;
+      measurement_assym.value_th(35,0)=Dep::BRBKstarmumu_15_17->S4;
+      measurement_assym.value_th(36,0)=Dep::BRBKstarmumu_15_17->S5;
+      measurement_assym.value_th(37,0)=Dep::BRBKstarmumu_15_17->S7;
+      measurement_assym.value_th(38,0)=Dep::BRBKstarmumu_15_17->S8;
+      measurement_assym.value_th(39,0)=Dep::BRBKstarmumu_15_17->S9;
 
+      measurement_assym.value_th(40,0)=Dep::BRBKstarmumu_17_19->FL;
+      measurement_assym.value_th(41,0)=Dep::BRBKstarmumu_17_19->AFB;
+      measurement_assym.value_th(42,0)=Dep::BRBKstarmumu_17_19->S3;
+      measurement_assym.value_th(43,0)=Dep::BRBKstarmumu_17_19->S4;
+      measurement_assym.value_th(44,0)=Dep::BRBKstarmumu_17_19->S5;
+      measurement_assym.value_th(45,0)=Dep::BRBKstarmumu_17_19->S7;
+      measurement_assym.value_th(46,0)=Dep::BRBKstarmumu_17_19->S8;
+      measurement_assym.value_th(47,0)=Dep::BRBKstarmumu_17_19->S9;
 
-      // We assert that the experiments and the observables are the same size
-      assert(! ( M_exp.size1() != observables.size()  ));
+      if(flav_debug)  cout<<"here"<<endl;
 
-      Flav_KstarMuMu_obs obs_out_11_25= *Dep::BRBKstarmumu_11_25;
-      Flav_KstarMuMu_obs obs_out_25_40= *Dep::BRBKstarmumu_25_40;
-      Flav_KstarMuMu_obs obs_out_40_60= *Dep::BRBKstarmumu_40_60;
-      Flav_KstarMuMu_obs obs_out_60_80= *Dep::BRBKstarmumu_60_80;
-      Flav_KstarMuMu_obs obs_out_15_17= *Dep::BRBKstarmumu_15_17;
-      Flav_KstarMuMu_obs obs_out_17_19= *Dep::BRBKstarmumu_17_19;
-
-      Kstarmumu_theory_errr th_reader;
-      boost::numeric::ublas::matrix<double> M_cov_th = th_reader.get_cov_theory(observables);  //(M_exp.size1(),M_exp.size2());
-      boost::numeric::ublas::matrix<double> M_th(M_cov_th.size1(),1);
-      M_th(0,0)=obs_out_11_25.FL;
-      M_th(1,0)=obs_out_11_25.AFB;
-      M_th(2,0)=obs_out_11_25.S3;
-      M_th(3,0)=obs_out_11_25.S4;
-      M_th(4,0)=obs_out_11_25.S5;
-      M_th(5,0)=obs_out_11_25.S7;
-      M_th(6,0)=obs_out_11_25.S8;
-      M_th(7,0)=obs_out_11_25.S9;
-
-      M_th(8,0)=obs_out_25_40.FL;
-      M_th(9,0)=obs_out_25_40.AFB;
-      M_th(10,0)=obs_out_25_40.S3;
-      M_th(11,0)=obs_out_25_40.S4;
-      M_th(12,0)=obs_out_25_40.S5;
-      M_th(13,0)=obs_out_25_40.S7;
-      M_th(14,0)=obs_out_25_40.S8;
-      M_th(15,0)=obs_out_25_40.S9;
-
-      M_th(16,0)=obs_out_40_60.FL;
-      M_th(17,0)=obs_out_40_60.AFB;
-      M_th(18,0)=obs_out_40_60.S3;
-      M_th(19,0)=obs_out_40_60.S4;
-      M_th(20,0)=obs_out_40_60.S5;
-      M_th(21,0)=obs_out_40_60.S7;
-      M_th(22,0)=obs_out_40_60.S8;
-      M_th(23,0)=obs_out_40_60.S9;
-
-      M_th(24,0)=obs_out_60_80.FL;
-      M_th(25,0)=obs_out_60_80.AFB;
-      M_th(26,0)=obs_out_60_80.S3;
-      M_th(27,0)=obs_out_60_80.S4;
-      M_th(28,0)=obs_out_60_80.S5;
-      M_th(29,0)=obs_out_60_80.S7;
-      M_th(30,0)=obs_out_60_80.S8;
-      M_th(31,0)=obs_out_60_80.S9;
-
-      M_th(32,0)=obs_out_15_17.FL;
-      M_th(33,0)=obs_out_15_17.AFB;
-      M_th(34,0)=obs_out_15_17.S3;
-      M_th(35,0)=obs_out_15_17.S4;
-      M_th(36,0)=obs_out_15_17.S5;
-      M_th(37,0)=obs_out_15_17.S7;
-      M_th(38,0)=obs_out_15_17.S8;
-      M_th(39,0)=obs_out_15_17.S9;
-
-      M_th(40,0)=obs_out_17_19.FL;
-      M_th(41,0)=obs_out_17_19.AFB;
-      M_th(42,0)=obs_out_17_19.S3;
-      M_th(43,0)=obs_out_17_19.S4;
-      M_th(44,0)=obs_out_17_19.S5;
-      M_th(45,0)=obs_out_17_19.S7;
-      M_th(46,0)=obs_out_17_19.S8;
-      M_th(47,0)=obs_out_17_19.S9;
-
-      measurement_assym.LL_name="b2sll_likelihood";
-
-      measurement_assym.value_exp=M_exp;
-      measurement_assym.cov_exp=M_cov;
-
-      measurement_assym.value_th=M_th;
-      measurement_assym.cov_th=M_cov_th;
-
-      int n_experiments=M_cov_th.size1();
-      vector<double> diff;
+      measurement_assym.diff.clear();
       for(int i=0;i<n_experiments;++i)
       {
-        diff.push_back(M_exp(i,0)-M_th(i,0));
+        measurement_assym.diff.push_back(measurement_assym.value_exp(i,0)-measurement_assym.value_th(i,0));
       }
-
-      measurement_assym.diff=diff;
-      measurement_assym.dim=n_experiments;
 
       if(flav_debug)  cout<<"Finished b2sll_measurements function"<<endl;
     }

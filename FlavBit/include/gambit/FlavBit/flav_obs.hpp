@@ -39,7 +39,7 @@ namespace Gambit
   namespace FlavBit
   {
 
-    /// FIXME Marcin!!!
+    /// FIXME Marcin add documentation here!!!
     class Flav_reader
     {
     private:

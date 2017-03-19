@@ -79,20 +79,20 @@ namespace Gambit
       std::string error_type;
     };
 
-    /// FIXME Marcin!!!
+    /// FIXME Marcin add documentation!!!
     struct Flav_measurement_simple
     {
       boost::numeric::ublas::matrix<double> M_cov;
       boost::numeric::ublas::matrix<double> M_mes;
     };
 
-    /// FIXME Marcin!!!
+    /// FIXME Marcin add documentation!!!
     struct Flav_measurement_assym
     {
 
       std::string LL_name;
 
-      boost::numeric::ublas::matrix<double>  value_exp;
+      boost::numeric::ublas::matrix<double> value_exp;
       boost::numeric::ublas::matrix<double> cov_exp;
 
       boost::numeric::ublas::matrix<double> value_th;
