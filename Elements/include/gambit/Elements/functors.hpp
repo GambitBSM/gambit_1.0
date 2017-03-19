@@ -185,6 +185,10 @@ namespace Gambit
 
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
+      /// Getter for revealing the name of the wrapped function's assigned loop manager
+      virtual str loopManagerName();
+      /// Getter for revealing the module of the wrapped function's assigned loop manager
+      virtual str loopManagerOrigin();
 
       /// Tell the functor that the loop it manages should break now.
       virtual void breakLoop();

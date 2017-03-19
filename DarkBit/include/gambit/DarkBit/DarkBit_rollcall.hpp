@@ -22,7 +22,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun
-///  \date 2014 Mar [RD interface to DS is working]
+///  \date 2014 Mar
 ///
 ///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
@@ -230,10 +230,6 @@ START_MODULE
     #define FUNCTION cascadeMC_LoopManager
       START_FUNCTION(void, CAN_MANAGE_LOOPS)
       DEPENDENCY(GA_missingFinalStates, std::vector<std::string>)
-      // Make sure these capabilities are run before the loop
-      DEPENDENCY(cascadeMC_DecayTable, DarkBit::DecayChain::DecayTable)
-      DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
     #undef FUNCTION
   #undef CAPABILITY
 

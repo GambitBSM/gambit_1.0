@@ -196,6 +196,20 @@ namespace Gambit
       return "none";
     }
 
+    /// Getter for revealing the name of the wrapped function's assigned loop manager
+    str functor::loopManagerName()
+    {
+      utils_error().raise(LOCAL_INFO,"The loopManagerName method has not been defined in this class.");
+      return "none";
+    }
+
+    /// Getter for revealing the module of the wrapped function's assigned loop manager
+    str functor::loopManagerOrigin()
+    {
+      utils_error().raise(LOCAL_INFO,"The loopManagerOrigin method has not been defined in this class.");
+      return "none";
+    }
+
     /// Getter for listing currently activated dependencies
     std::set<sspair> functor::dependencies()
     {

@@ -1,7 +1,7 @@
 Parameters:
 
   #SM nuisance parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
