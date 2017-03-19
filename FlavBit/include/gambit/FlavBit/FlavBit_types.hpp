@@ -23,29 +23,15 @@
 ///
 ///  *********************************************
 
-
 #ifndef __FlavBit_types_hpp__
 #define __FlavBit_types_hpp__
 
-
-
-#include <cmath>
-#include <algorithm>
 #include <string>
 #include <vector>
-#include <map>
-#include <array>
-#include <cmath>
-
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-#include <gsl/gsl_integration.h>
-
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
 
 #include "gambit/FlavBit/FlavBit_types.hpp"
 
+#include <boost/numeric/ublas/matrix.hpp>
 
 
 namespace Gambit
@@ -56,14 +42,14 @@ namespace Gambit
 
     namespace ublas = boost::numeric::ublas;
 
-    /// FIXME Marcin!!!
+    /// FIXME Marcin add documentation!!!
     struct Correlation
     {
       double corr_val;
       std::string corr_name;
     };
 
-    /// FIXME Marcin!!!
+    /// FIXME Marcin add documentation!!!
     struct Measurement
     {
       double value;
@@ -80,29 +66,16 @@ namespace Gambit
     };
 
     /// FIXME Marcin add documentation!!!
-    struct Flav_measurement_simple
-    {
-      boost::numeric::ublas::matrix<double> M_cov;
-      boost::numeric::ublas::matrix<double> M_mes;
-    };
-
-    /// FIXME Marcin add documentation!!!
     struct Flav_measurement_assym
     {
-
       std::string LL_name;
-
       boost::numeric::ublas::matrix<double> value_exp;
       boost::numeric::ublas::matrix<double> cov_exp;
-
       boost::numeric::ublas::matrix<double> value_th;
       boost::numeric::ublas::matrix<double> cov_th;
-
       std::vector<double> diff;
       int dim;
-
     };
-
 
   }
 }
