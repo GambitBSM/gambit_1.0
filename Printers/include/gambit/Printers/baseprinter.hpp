@@ -60,7 +60,7 @@ namespace Gambit
   {
     
     // Helper function for parsing ModelParameters label strings.
-    bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out);
+    bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out, std::string& rest);
 
     /// For debugging; print to stdout all the typeIDs for all types.
     void printAllTypeIDs(void);
@@ -177,7 +177,7 @@ namespace Gambit
         }
 
         /// Retrieve and directly print data to new output
-        bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID);
+        bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer, const uint rank, const ulong pointID);
 
       protected:
         using BaseBaseReader::_retrieve; //unhide the default function in the base class

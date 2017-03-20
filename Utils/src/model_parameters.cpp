@@ -49,16 +49,16 @@ namespace Gambit
    }
 
    /// Default constructor
-   ModelParameters::ModelParameters(): _values(){}
+   ModelParameters::ModelParameters(): _values(), modelname(), outputname() {}
 
    /// Constructor using vector of strings
-   ModelParameters::ModelParameters(const std::vector<std::string> &paramlist): _values()
+   ModelParameters::ModelParameters(const std::vector<std::string> &paramlist): _values(), modelname(), outputname() 
    {
      _definePars(paramlist);
    }
    
    /// Constructor using array of char arrays
-   ModelParameters::ModelParameters(const char** paramlist): _values()
+   ModelParameters::ModelParameters(const char** paramlist): _values(), modelname(), outputname() 
    {
      _definePars(paramlist);
    }
@@ -175,5 +175,11 @@ namespace Gambit
        i++;
      }
    }
+
+   /// Getters/setters for model and output names
+   std::string ModelParameters::getModelName()  { return modelname; }
+   std::string ModelParameters::getOutputName() { return outputname; }
+   void ModelParameters::setModelName (const std::string& in) { modelname = in; }
+   void ModelParameters::setOutputName(const std::string& in) { outputname = in; }
 
 } //end Gambit namespace

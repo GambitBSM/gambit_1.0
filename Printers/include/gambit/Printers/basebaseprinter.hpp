@@ -270,14 +270,28 @@ namespace Gambit
         }
 
         /// Retrieve and directly print data to new output
+        bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID)
+        {
+           /// Just use the same label for input and output
+           return retrieve_and_print(label, label, printer, rank, pointID);
+        }
+
+        /// Retrieve and directly print data to new output, renaming the output to something new
         /// Implemented in BasePrinter where complete type info is available.
-        virtual bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID) = 0;
+        virtual bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer, const uint rank, const ulong pointID) = 0;
 
         /// Overload for 'retrieve_and_print' that uses the current point as the input for rank/pointID
         bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer)
         {
+           /// Uses same label for input and output
+           return retrieve_and_print(label, label, printer);
+        }
+    
+        /// As above, but allows for different input/output labels
+        bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer)
+        {
           PPIDpair pt = get_current_point();
-          return retrieve_and_print(label, printer, pt.rank, pt.pointID);
+          return retrieve_and_print(in_label, out_label, printer, pt.rank, pt.pointID);
         }
 
         /// Get type information for a data entry, i.e. defines the C++ type which this should be
