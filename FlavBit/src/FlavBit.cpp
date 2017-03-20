@@ -1451,7 +1451,7 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
+      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2sll_likelihood"<<endl;
@@ -1603,7 +1603,7 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
+      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
@@ -1777,7 +1777,7 @@ namespace Gambit
         }
       }
 
-      Chi2=Chi2/measurement_assym.dim;
+      //Chi2=Chi2/measurement_assym.dim;
       result=-0.5*Chi2;
 
       if(flav_debug)  cout<<"Finished SL_likelihood"<<endl;
