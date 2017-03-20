@@ -124,7 +124,7 @@ namespace Gambit
 
       if(ModelInUse("WC"))
         {
-          //BEreq::Init_param(&result);
+          BEreq::Init_param(&result);
           result.SM=1;  // needed according to Nazila
           result.Re_DeltaC7=*Param["Re_DeltaC7"];
           result.Re_DeltaC9=*Param["Re_DeltaC9"];
@@ -148,6 +148,7 @@ namespace Gambit
           const SMInputs& spectrum = *(Dep::SMINPUTS);
 
           result.mass_W=spectrum.mW;
+
           result.inv_alpha_em=spectrum.alphainv;
           result.Gfermi=spectrum.GF;
           result.alphas_MZ=spectrum.alphaS;
@@ -182,6 +183,7 @@ namespace Gambit
           result.Vtd=Spectrum::Wolf2V_td(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
           result.Vcd=Spectrum::Wolf2V_cd(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
           result.Vud=Spectrum::Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
+
 
     // FIXME these all need to come from/be included in Elements/include/gambit/Elements/numerical_constants.hpp
           result.m_Bs=5.366770;
@@ -239,8 +241,6 @@ namespace Gambit
           result.lambda2=0.12;
           result.fullFF=1;
 
-        std:cout<<result.m_Bs<<" "<<
-
 
     // FIXME these need to come from the spectrum object!!!  They are already set - why are they overwritten here?
 	  result.CKM_lambda=0.22537;
@@ -283,7 +283,8 @@ namespace Gambit
 	  double mtmt=BEreq::mt_mt(&result);
 	  result.mtmt=mtmt;
 
-	  //	  BEreq::slha_adjust(&result);
+	  BEreq::slha_adjust(&result);
+
 	  if(flav_debug) cout<<"Finished SI_fill"<<endl;
 
 	  //result.model=4;// WC are 4
@@ -300,7 +301,7 @@ namespace Gambit
 
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
-      
+
       BEreq::Init_param(&result);
 
       int ie,je;
@@ -1129,7 +1130,7 @@ namespace Gambit
       }
       else
       {
-	result=BEreq::A_BXsmumu_highq2_CONV(&param);
+        result=BEreq::A_BXsmumu_highq2_CONV(&param);
       }
 
       if(flav_debug) printf("AFB(B->Xs mu mu)_highq2=%.3e\n",result);
@@ -1152,7 +1153,7 @@ namespace Gambit
       }
       else
       {
-	result=BEreq::A_BXsmumu_zero_CONV(&param);
+        result=BEreq::A_BXsmumu_zero_CONV(&param);
       }
 
       if(flav_debug) printf("AFB(B->Xs mu mu)_zero=%.3e\n",result);
@@ -1175,7 +1176,7 @@ namespace Gambit
       }
       else
       {
-	result=BEreq::BRBXstautau_highq2_CONV(&param);
+        result=BEreq::BRBXstautau_highq2_CONV(&param);
       }
 
       if(flav_debug) printf("BR(B->Xs tau tau)_highq2=%.3e\n",result);
@@ -1722,23 +1723,14 @@ namespace Gambit
 
       if(flav_debug)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
       if(param.model<0)
-      {
-        result=0.;
-      }
+	{
+	  result=0.;
+	}
       else
-      {
-        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
-
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b_pole;
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        result = BEreq::AI_BKstarmumu(1.,6.,byVal(C0b),byVal(C1b),byVal(C2b),&param,byVal(mu_b));
-      }
+	{
+	  result=BEreq::SI_AI_BKstarmumu_CONV(&param);
+	}
 
       if(flav_debug) printf("A_I(B->K* mu mu)_lowq2=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_AI_BKstarmumu"<<endl;
@@ -1760,14 +1752,7 @@ namespace Gambit
       }
       else
       {
-        double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
-
-        double mu_W=2.*param.mass_W;
-        double mu_b=param.mass_b_pole;
-
-        BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-        BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-        result = BEreq::AI_BKstarmumu_zero(byVal(C0b),byVal(C1b),byVal(C2b),&param,byVal(mu_b));
+	result=BEreq::SI_AI_BKstarmumu_zero_CONV(&param);
       }
 
       if(flav_debug) printf("A_I(B->K* mu mu)_zero=%.3e\n",result);
@@ -1946,7 +1931,7 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
 
-      
+
       double Chi2=0;
 
       for(int i=0; i < measurement_assym.dim; ++i)
