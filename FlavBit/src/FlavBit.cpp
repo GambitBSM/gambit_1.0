@@ -239,6 +239,9 @@ namespace Gambit
 	  result.lambda2=0.12;
 	  result.fullFF=1;
 
+	std:cout<<result.m_Bs<<" "<<
+
+
     // FIXME these need to come from the spectrum object!!!  They are already set - why are they overwritten here?
 	  result.CKM_lambda=0.22537;
 	  result.CKM_A=0.814;
@@ -297,7 +300,7 @@ namespace Gambit
 
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
-
+      
       BEreq::Init_param(&result);
 
       int ie,je;
@@ -709,7 +712,6 @@ namespace Gambit
       {
         result=0.;
       }
-      //      else if(ModelInUse("WC")) result=BEreq::Bsll_untag_CONV_WC(&param, byVal(flav));
       else
       {
         result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
@@ -1938,22 +1940,13 @@ namespace Gambit
       // Get experimental covariance
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
-      // Add theory covariance
-      //cov+=measurement_assym.cov_th;
-
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-      //cout<<"Cov matrix:"<<endl;
-      //cout<<cov<<endl;
-      //cout<<"End cov matrix"<<endl;
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
 
-      //cout<<"Cov^-1 matrix:"<<endl;
-      //cout<<cov_inv<<endl;
-      //cout<<"End cov^-1 matrix"<<endl;
-
+      
       double Chi2=0;
 
       for(int i=0; i < measurement_assym.dim; ++i)
@@ -2117,134 +2110,11 @@ namespace Gambit
 
       result=-0.5*Chi2;
 
-      //cout<<"Likelihood b->sll: "<<result<<endl;
 
       if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
       if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
 
     }
-
-    /*
-    // *************************************************
-    /// measurement for b->mumu WC
-    // *************************************************
-    void b2ll_measurements_WC(Flav_measurement_assym &measurement_assym)
-    {
-      using namespace Pipes::b2ll_measurements_WC;
-
-      if(flav_debug)  cout<<"Starting b2ll_measurements WC"<<endl;
-
-      // experimental measurement
-      //Bsmumu
-
-      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-      red.debug_mode(flav_debug);
-
-      if(flav_debug) cout<<"Initiated Flav reader"<<endl;
-      red.read_yaml_mesurement("flav_data.yaml", "BR_Bs2mumu");
-      red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
-      if (flav_debug) cout<<"Finish reading b->mumu"<<endl;
-
-      red.create_global_corr();
-
-      boost::numeric::ublas::matrix<double> th_err = red.get_th_err();
-
-      double theory_bs2mumu=*Dep::Bsmumu_untag_WC;
-      double theory_bd2mumu=*Dep::Bdmumu_WC;
-
-      // Naliza doesn't provide the errors, need to take them from paper
-      double theory_bs2mumu_error=theory_bs2mumu*th_err(0,0);
-      double theory_bd2mumu_error=theory_bd2mumu*th_err(1,0);
-      // comment this out
-      cout<<"THeory prediction b->mumu decays= "<<theory_bs2mumu<< "  "<<theory_bd2mumu<<endl;
-      cout<<"Theory Errors on b-> mumu decays= "<<theory_bs2mumu_error<<"  "<<theory_bd2mumu_error<<endl;
-
-
-      // we have everything, correlation
-
-      boost::numeric::ublas::matrix<double> M_cov_th(2,2);
-      M_cov_th(0,0)=theory_bs2mumu_error*theory_bs2mumu_error;
-      M_cov_th(0,1)=0.;
-      M_cov_th(1,0)=0.;
-      M_cov_th(1,1)=theory_bd2mumu_error*theory_bd2mumu_error;
-
-      boost::numeric::ublas::matrix<double> M_th(2,1);
-
-      M_th(0,0)=theory_bs2mumu;
-      M_th(1,0)=theory_bd2mumu;
-
-      // #########################
-
-      boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
-      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
-
-      measurement_assym.LL_name="b2ll_likelihood";
-
-      measurement_assym.value_exp=M_exp;
-      measurement_assym.cov_exp=M_cov;
-
-      measurement_assym.value_th=M_th;
-      measurement_assym.cov_th=M_cov_th;
-
-      vector<double> diff;
-
-      for(int i=0;i<2;++i)
-      {
-        diff.push_back(M_exp(i,0)-M_th(i,0));
-      }
-      measurement_assym.diff=diff;
-      measurement_assym.dim=2;
-
-      if(flav_debug)  cout<<"Finished b2ll_measurements"<<endl;
-
-    }
-
-    // *************************************************
-    /// likelihood for b->mumu
-    // *************************************************
-
-
-    void b2ll_likelihood_WC(double &result)
-    {
-      using namespace Pipes::b2ll_likelihood_WC;
-
-      if(flav_debug)  cout<<"Starting b2ll_likelihood"<<endl;
-      result=0.;
-      if(flav_debug_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
-
-      Flav_measurement_assym measurement_assym = *Dep::b2ll_M_WC;
-
-      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
-
-      // adding theory and experimenta covariance
-      cov+=measurement_assym.cov_th;
-
-      //calculating a diff
-      vector<double> diff;
-      diff=measurement_assym.diff;
-
-      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
-      InvertMatrix(cov, cov_inv);
-
-      // calculating the chi2
-      double Chi2=0;
-
-      for(int i=0; i < measurement_assym.dim; ++i)
-      {
-        for(int j=0; j<measurement_assym.dim; ++j)
-        {
-          Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-        }
-      }
-
-      result=-0.5*Chi2;
-
-      if(flav_debug)  cout<<"Finished b2ll_likelihood"<<endl;
-      if(flav_debug_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
-
-    }
-
-    */
 
 
     // *************************************************
@@ -2353,8 +2223,7 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood before SL_likelihood  : "<< result<<endl;
 
       Flav_measurement_assym measurement_assym = *Dep::SL_M;
-      //SL_measurements(measurement_assym);
-      // calculating the chi2:
+
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
       // adding theory and experimental covariance
