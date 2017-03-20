@@ -86,6 +86,22 @@ Scanner:
                 "Runtime(ms) totalloop": "old_totalloop_runtime",
                 "LogLike" : "LogLike2",
                 "LogLike2": "old_LogLike2"}
+      # error example; clashes with 'LogLike' target;  "pointID": "LogLike2"}
+
+      # Cut options
+      # Use these to ignore certain entries in the input file.
+      # Points for which all the cuts are TRUE will be postprocessed, points for which
+      # any cut is FALSE will be ignored (but will still be copied into the new output, unless
+      # the further option 'discard_points_outside_cuts: true' is set)
+      # NOTE: These cuts currently only work for datasets with type 'double'.
+      # Cuts can only be applied to OLD/INPUT datasets, not on newly computed observables.
+      # For 'less than', the condition should be read as "variable_name" <= value. Similar for greater than.
+      # That is, the cuts are e.g. 'less than or equal to'.
+      # If a valid entry cannot be retrieved for one of these variables for a point, that point will
+      # not be postprocessed. I.e. cuts are "failed" by default.
+      cut_less_than:    {"#NormalDist_parameters @NormalDist::primary_parameters::mu": 23}
+      cut_greater_than: {"#NormalDist_parameters @NormalDist::primary_parameters::mu": 20}
+      discard_points_outside_cuts: true
 
       # Postprocess points as if we are in an MPI process with rank=RANK and size=SIZE (set via environment variable)
       # This lets a postprocessing batch be done completely in parallel
@@ -105,12 +121,6 @@ Scanner:
         file: "tmp.hdf5"
         group: "/"
 
-      # Cut on any input variable that can be read in as a double. Points that do not pass these cuts will be skipped.
-      cuts:
-        greater_than:
-          "LogLike": 2
-        less_than:
-          "#NormalDist_parameters @NormalDist::primary_parameters::mu": 25  
 #  objectives:
 #
 #    parameter_reader:

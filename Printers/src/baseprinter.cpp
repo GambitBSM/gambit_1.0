@@ -75,7 +75,10 @@ namespace Gambit
      }
 
      /// Helper function for the ModelParameters '_retrieve' functions
-     bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out)
+     /// Parses a printer label and checks if it contains a single model parameter.
+     /// "out" is a memory location to store the parameter name, if found.
+     /// "labelroot" is a memory location to store the rest of the label (i.e. minus the parameter name)
+     bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out, std::string& labelroot)
      {
         bool result = false;
         std::istringstream iss(fulllabel);
@@ -106,6 +109,10 @@ namespace Gambit
                   // Ok! We have a match!
                   out = split_rest[2];
                   result = true;
+                  // Get the rest of the full label
+                  labelroot = fulllabel;
+                  // Erase the "::parameter_name" part
+                  labelroot.erase(fulllabel.size() - out.size() - 2, out.size()+2);
                 } else { result = false; }
              } else { result = false; }
           } else { result = false; }        

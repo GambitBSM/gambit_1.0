@@ -268,11 +268,31 @@ namespace Gambit {
             it!= all_datasets.end(); ++it)
         {
           //std::cout << "Candidate: " <<*it<<std::endl;
-          std::string param_name; // *output* of parsing function
-          if(parse_label_for_ModelParameters(*it, modelname, param_name))
+          std::string param_name; // *output* of parsing function, parameter name
+          std::string label_root; // *output* of parsing function, label minus parameter name
+          if(parse_label_for_ModelParameters(*it, modelname, param_name, label_root))
           {
             // Add the found parameter name to the ModelParameters object
             out._definePar(param_name);
+            if(found_at_least_one)
+            {
+              if(out.getOutputName()!=label_root)
+              {
+                 std::ostringstream err;
+                 err << "Error! HDF5Reader could not retrieve ModelParameters matching the model name '"<<modelname<<"' in the HDF5 file:group "<<file<<":"<<group<<"' (while calling 'retrieve'). Candidate parameters WERE found, however their dataset labels indicate the presence of an inconsistency or ambiguity in the output. For example, we just tried to retrive a model parameter from the dataset:\n\
+  "<<*it<<"\n\
+and successfully found the parameter "<<param_name<<", however the root of the label, that is,\n\
+  "<<label_root<<"\n\
+does not match the root expected based upon previous parameter retrievals for this model, which was\n\
+  "<<out.getOutputName()<<"\n\
+This may indicate that multiple sets of model parameters are present in the output file for the same model! This is not allowed, please report this bug against whatever master YAML file (or external code?) produced the output file you are trying to read.";
+                printer_error().raise(LOCAL_INFO,err.str());     
+              }
+            }
+            else
+            {
+              out.setOutputName(label_root);
+            }
             // Get the corresponding value out of the data file
             double value; // *output* of retrieve function
             bool tmp_is_valid;

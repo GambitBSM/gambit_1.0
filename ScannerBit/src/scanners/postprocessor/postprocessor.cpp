@@ -31,6 +31,12 @@
 #include <fstream>
 #include <sstream>
 
+// Boost
+#include <boost/preprocessor.hpp>
+#include "gambit/Utils/boost_fallbacks.hpp"
+#include <boost/preprocessor/seq/for_each.hpp>
+
+// GAMBIT
 #include "gambit/ScannerBit/objective_plugin.hpp"
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/Utils/model_parameters.hpp"
@@ -136,6 +142,15 @@ scanner_plugin(postprocessor, version(1, 0, 0))
   /// Keys are "in_label", values are "out_label"
   std::map<std::string,std::string> renaming_scheme;
 
+  /// Cut maps, for selecting only points in the input
+  /// datasets which pass certain criteria.
+  /// Keys are "in_label", values are the cut boundaries.
+  std::map<std::string,double> cut_less_than;
+  std::map<std::string,double> cut_greater_than;
+
+  /// Flag to throw away points that don't pass the cuts (rather than copying them un-processed)
+  bool discard_points_outside_cuts;
+
   /// The reader object in use for the scan
   Gambit::Printers::BaseBaseReader* reader;
 
@@ -190,11 +205,15 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     //    scannername:
     //      reader 
     Gambit::Options reader_options = get_inifile_node("reader");
+
     // Initialise reader object
     get_printer().new_reader("old_points",reader_options);
 
+    // Retrieve the reader object
+    reader = get_printer().get_reader("old_points");
+
     // Get names of all the output data labels
-    data_labels = get_printer().get_reader("old_points")->get_all_labels();
+    data_labels = reader->get_all_labels();
 
     // Set up other options for the plugin
     update_interval = get_inifile_value<std::size_t>("update_interval", 1000);
@@ -204,6 +223,14 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
     renaming_scheme = get_inifile_value<std::map<std::string,std::string>>("rename", 
                           std::map<std::string,std::string>());
+
+    cut_less_than = get_inifile_value<std::map<std::string,double>>("cut_less_than", 
+                          std::map<std::string,double>());
+
+    cut_greater_than = get_inifile_value<std::map<std::string,double>>("cut_greater_than", 
+                          std::map<std::string,double>());
+   
+    discard_points_outside_cuts = get_inifile_value<bool>("discard_points_outside_cuts", false);
 
     // Use virtual rank system?
     if(get_inifile_value<bool>("use_virtual_rank",false))
@@ -282,7 +309,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     return answer;
   }
   
-  // Extract model parameters from a reader 
+  // Extract model parameters from the reader
   bool get_ModelParameters(std::unordered_map<std::string, double>& outputMap)
   {
      bool valid_modelparams = true;
@@ -540,7 +567,64 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              scan_error().raise(LOCAL_INFO,err.str());
           }
        }
+
+       // Make sure the user isn't trying to rename a protected name (MPIrank, pointID)
+       if(in_label=="MPIrank" or in_label=="pointID")
+       {
+          std::ostringstream err;
+             err << "Cannot rename dataset '"<<in_label<<"' to '"<<out_label<<"'! The input dataset has a special purpose so renaming it is forbidden. Please remove it from the 'rename' options for the postprocessor scanner plugin in your master YAML file.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
     }
+
+    // Check that the cut maps refer to input datasets that actually exist
+    for(std::map<std::string,double>::iterator it = cut_less_than.begin(); it!=cut_less_than.end(); ++it)
+    {
+       std::string in_label = it->first;
+       double cut_value = it->second;
+
+       // Make sure input label actually exists
+       if(std::find(data_labels.begin(), data_labels.end(), in_label) 
+           == data_labels.end())
+       {
+          //Whoops, could not find this label in the input data
+          std::ostringstream err;
+          err << "Could not find data labelled '"<<in_label<<"' in the input dataset for postprocessing! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' <= "<<cut_value<<", however the requested dataset for cutting could not be found under the specified input label. Please fix the label or remove this entry from the 'cut_less_than' list.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+        
+       // Make sure it has type 'double'
+       if(reader->get_type(in_label) != Printers::getTypeID<double>())
+       {
+          std::ostringstream err;
+          err << "Type of input dataset '"<<in_label<<"' is not 'double'! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' <= "<<cut_value<<", however the requested dataset for cutting cannot be retrieved as type 'double'. Currently cuts can only be applied to datasets stored as doubles, sorry! Please remove this entry from the 'cut_less_than' list.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+    }
+    for(std::map<std::string,double>::iterator it = cut_greater_than.begin(); it!=cut_greater_than.end(); ++it)
+    {
+       std::string in_label = it->first;
+       double cut_value = it->second;
+    
+       // Make sure input label actually exists
+       if(std::find(data_labels.begin(), data_labels.end(), in_label) 
+           == data_labels.end())
+       {
+          //Whoops, could not find this label in the input data
+          std::ostringstream err;
+          err << "Could not find data labelled '"<<in_label<<"' in the input dataset for postprocessing! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' >= "<<cut_value<<", however the requested dataset for cutting could not be found under the specified input label. Please fix the label or remove this entry from the 'cut_greater_than' list.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+ 
+       // Make sure it has type 'double'
+       if(reader->get_type(in_label) != Printers::getTypeID<double>())
+       {
+          std::ostringstream err;
+          err << "Type of input dataset '"<<in_label<<"' is not 'double'! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' <= "<<cut_value<<", however the requested dataset for cutting cannot be retrieved as type 'double'. Currently cuts can only be applied to datasets stored as doubles, sorry! Please remove this entry from the 'cut_greater_than' list.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+   }
+
 
     // Check what data is to be copied and what is to be recomputed
     if(rank==0) std::cout << "Determining which data is to be copied from input file to new output file, and which will be recomputed..." <<std::endl;
@@ -605,6 +689,20 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              }
           }
        }
+       // Check if a cut is being applied on this input dataset
+       if(rank==0) 
+       {
+          std::map<std::string,double>::iterator jt = cut_less_than.find(*it);
+          if(jt != cut_less_than.end())
+          {
+                std::cout << "     with cut <= "<< jt->second <<std::endl;
+          }
+          std::map<std::string,double>::iterator kt = cut_greater_than.find(*it);
+          if(kt != cut_greater_than.end())
+          {
+                std::cout << "     with cut >= "<< kt->second <<std::endl;
+          }
+       }
     }
     // Might as well also list what new stuff is listed for creation
     if(rank==0)
@@ -658,7 +756,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     //set_dimension(keys.size());
     
     // Pull the keys apart into model-name, parameter-name pairs
-    if(rank==0) std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
+    if(rank==0) std::cout << "Number of model parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
     for(auto it=keys.begin(); it!=keys.end(); ++it)
     {
        if(rank==0) std::cout << "   " << *it << std::endl;
@@ -688,12 +786,9 @@ scanner_plugin(postprocessor, version(1, 0, 0))
       done_chunks = get_done_points(root);
     }
 
-    // Retrieve the reader object
-    reader = get_printer().get_reader("old_points");
-    unsigned long long total_length = reader->get_dataset_length();
-
     // Compute which points this process is supposed to process. Divide up
     // by number of MPI tasks.
+    unsigned long long total_length = reader->get_dataset_length();
     Chunk mychunk = get_my_chunk(total_length, done_chunks, rank, numtasks);
 
     // Loop over the old points
@@ -702,6 +797,8 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     std::size_t ppi = 0; // track number of points actually processed
     if(rank==0) std::cout << "Starting loop over old points ("<<total_length<<" in total)" << std::endl;
     std::cout << "This task (rank "<<rank<<" of "<<numtasks<<"), will process iterations "<<mychunk.start<<" through to "<<mychunk.end<<", excluding any points that may have already been processed as recorded by resume data. This leaves "<<mychunk.eff_length<<" points for this rank to process."<<std::endl;
+
+    std::size_t n_passed = 0; // Number which have passed any user-specified cuts.
 
     // Disable auto-incrementing of pointID's in the likelihood container. We will set these manually.
     Gambit::Printers::auto_increment() = false;
@@ -726,10 +823,10 @@ scanner_plugin(postprocessor, version(1, 0, 0))
          continue;
       }
 
-      if((ppi % update_interval) == 0)
+      if((ppi % update_interval) == 0 and ppi!=0)
       {
          // Progress report
-         std::cout << "Rank "<<rank<<" has proccessed "<<ppi<<" of "<<mychunk.eff_length<<" points ("<<100*ppi/mychunk.eff_length<<"%)"<<std::endl;
+         std::cout << "Rank "<<rank<<" has processed "<<ppi<<" of "<<mychunk.eff_length<<" points ("<<100*ppi/mychunk.eff_length<<"\%, with "<<100*n_passed/ppi<<"\% passing all cuts)"<<std::endl;
       }
       ppi++; // Processing is go, update counter. 
 
@@ -739,16 +836,12 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
       /// @{ Retrieve the old parameter values from previous output
 
-      //std::cout << "Retrieving old parameter values for 'reweight' scanner" << std::endl;
-
-      // Get the reader object
-      Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
-
       // Storage for retrieved parameters
       std::unordered_map<std::string, double> outputMap;
 
       // Extract the model parameters
       bool valid_modelparams = get_ModelParameters(outputMap);
+
    
       // Check if valid model parameters were extracted. If not, something may be wrong with the input file, or we could just be at the end of a buffer (e.g. in HDF5 case). Can't tell the difference, so just skip the point and continue.
       if(not valid_modelparams)
@@ -758,134 +851,205 @@ scanner_plugin(postprocessor, version(1, 0, 0))
          continue;
       }   
 
-      /// @{ More debugging: show what we are returning to the likelihood container
-      // std::cout << "Final retrieved parameters:" << std::endl;
-      // for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
-      // {
-      //   std::cout << "    " << it->first << " : " << it->second << std::endl;
-      // }
-      /// @}
-  
-      // std::cout << "Finished parameter retrieval 'reweight' scanner" << std::endl;
-
       /// @}
 
-      // Before calling the likelihood function, we need to set up the printer to
-      // output correctly. The auto-incrementing of pointID's cannot be used,
-      // because we need to match the old scan results. So we must set it manually.
-      // This is currently a little clunky but it works. Make sure to have turned
-      // off auto incrementing (see above).
-      // The printer should still print to files split according to the actual rank, this
-      // should only change the assigned pointID pair tag. Which should already be
-      // properly unambiguous if the original scan was done properly.
-      // Note: This might fail for merged datasets from separate runs. Not sure what the solution
-      // for that is.
-      LogLike->setRank(MPIrank); // For purposes of printing only
-      LogLike->setPtID(pointID);
-
-      // Call the likelihood function to compute new component
-      // Must use "reweight_prior" as the prior!!
-      //double partial_logL = LogLike(unitcube);
-
-      // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
-      double new_logL = LogLike(outputMap); // Here we supply *only* the map; no parameters to transform.
-
-      // Add old likelihood components as requested in the inifile
-      double combined_logL = new_logL;
-      bool   is_valid;
-      for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
+      // Determine if model point passes the user-requested cuts
+      // This is a little tricky because we don't know the type of the input dataset.
+      // For now we will restrict the system so that it only works for datasets with
+      // type 'double' (which is most stuff). We check for this earlier, so here we
+      // can just assume that the requested datasets have the correct type.
+      
+      bool cuts_passed = true; // Will be set to false if any cut is failed, or a required entry is invalid
+      for(std::map<std::string,double>::iterator it = cut_less_than.begin();
+           it!=cut_less_than.end(); ++it)
       {
-          std::string old_logl = *it;
-          if(std::find(data_labels.begin(), data_labels.end(), old_logl)
-              == data_labels.end())
+        if(cuts_passed)
+        {
+          std::string in_label = it->first;
+          double cut_value = it->second;
+          double buffer;
+          bool valid = reader->retrieve(buffer, in_label);
+          if(valid)
           {
-             std::ostringstream err;
-             err << "In the input YAML file, you requested to 'add_to_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
-             scan_error().raise(LOCAL_INFO,err.str());
+             cuts_passed = (buffer <= cut_value);
           }
-          if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
+          else
           {
-             std::ostringstream err;
-             err << "In the input YAML file, you requested 'add_to_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
-             scan_error().raise(LOCAL_INFO,err.str());
+             cuts_passed = false;
           }
-          
-          double old_logl_value;
-          is_valid = reader->retrieve(old_logl_value, old_logl);
-          if(is_valid)
-          {
-             // Combine with the new logL component
-             combined_logL += old_logl_value;
-          }
-          // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+        }
       }
 
-      // Now do the same thing for the components we want to subtract.
-      for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
+      for(std::map<std::string,double>::iterator it = cut_greater_than.begin();
+           it!=cut_greater_than.end(); ++it)
       {
-          std::string old_logl = *it;
-          if(std::find(data_labels.begin(), data_labels.end(), old_logl)
-              == data_labels.end())
+        if(cuts_passed)
+        {
+          std::string in_label = it->first;
+          double cut_value = it->second;
+          double buffer;
+          bool valid = reader->retrieve(buffer, in_label);
+          if(valid)
           {
-             std::ostringstream err;
-             err << "In the input YAML file, you requested to 'subtract_from_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
-             scan_error().raise(LOCAL_INFO,err.str());
+             cuts_passed = (buffer >= cut_value);
           }
-          if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
+          else
           {
-             std::ostringstream err;
-             err << "In the input YAML file, you requested 'subtract_from_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
-             scan_error().raise(LOCAL_INFO,err.str());
+             cuts_passed = false;
           }
-          
-          double old_logl_value;
-          is_valid = reader->retrieve(old_logl_value, old_logl);
-          if(is_valid)
-          {
-             // Combine with the new logL component, subtracting this time
-             combined_logL -= old_logl_value;
-          }
-          // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+        }
       }
 
-      // Output the new reweighted likelihood (if all components were valid)
-      if(is_valid) get_printer().get_stream()->print( combined_logL, reweighted_loglike_name, MPIrank, pointID);
-
-      ///  In the future would be nice if observables could be reconstructed from the
-      ///  output file, but that is a big job, need to automatically create functors
-      ///  for them which provide the capabilities they are supposed to correspond to,
-      ///  which is possible since this information is stored in the labels, but
-      ///  would take quite a bit of setting up I think...
-      ///  Would need the reader to provide virtual functions for retrieving all the
-      ///  observable metadata from the output files.
-      ///
-      ///  UPDATE: TODO: What happens in case of invalid point? Does this copying etc. just get skipped?
-      ///  Or do I need to check that the output LogL was valid somehow?
-     
-      /// Copy selected data from input file
-      for(std::set<std::string>::iterator it = data_labels_copy.begin(); it!=data_labels_copy.end(); ++it)
+      if(cuts_passed) // Else skip new calculations and go straight to copying old results
       {
-         // Check if this input label has been mapped to a different output label.
-         std::string in_label = *it;
-         std::map<std::string,std::string>::iterator jt = renaming_scheme.find(in_label);
-         if(jt != renaming_scheme.end())
+         n_passed += 1; // Counter for number of points which have passed all the cuts.
+         // Before calling the likelihood function, we need to set up the printer to
+         // output correctly. The auto-incrementing of pointID's cannot be used,
+         // because we need to match the old scan results. So we must set it manually.
+         // This is currently a little clunky but it works. Make sure to have turned
+         // off auto incrementing (see above).
+         // The printer should still print to files split according to the actual rank, this
+         // should only change the assigned pointID pair tag. Which should already be
+         // properly unambiguous if the original scan was done properly.
+         // Note: This might fail for merged datasets from separate runs. Not sure what the solution
+         // for that is.
+         LogLike->setRank(MPIrank); // For purposes of printing only
+         LogLike->setPtID(pointID);
+
+         // Call the likelihood function to compute new component
+         // Must use "reweight_prior" as the prior!!
+         //double partial_logL = LogLike(unitcube);
+
+         // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
+         double new_logL = LogLike(outputMap); // Here we supply *only* the map; no parameters to transform.
+
+         // Add old likelihood components as requested in the inifile
+         double combined_logL = new_logL;
+         bool   is_valid;
+         for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
          {
-            // Found match! Do the renaming
-            std::string out_label = jt->second;
-            //std::cout << "Copying data from "<<in_label<<", to output name "<<out_label<<", for point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
-            reader->retrieve_and_print(in_label,out_label,*(get_printer().get_stream()), MPIrank, pointID);
+             std::string old_logl = *it;
+             if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+                 == data_labels.end())
+             {
+                std::ostringstream err;
+                err << "In the input YAML file, you requested to 'add_to_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+                scan_error().raise(LOCAL_INFO,err.str());
+             }
+             if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
+             {
+                std::ostringstream err;
+                err << "In the input YAML file, you requested 'add_to_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+                scan_error().raise(LOCAL_INFO,err.str());
+             }
+             
+             double old_logl_value;
+             is_valid = reader->retrieve(old_logl_value, old_logl);
+             if(is_valid)
+             {
+                // Combine with the new logL component
+                combined_logL += old_logl_value;
+             }
+             // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
          }
-         else
+
+         // Now do the same thing for the components we want to subtract.
+         for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
          {
-            // No match, keep the old name
-            //std::cout << "Copying data from "<<in_label<<" for point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
-            reader->retrieve_and_print(in_label,*(get_printer().get_stream()), MPIrank, pointID);
+             std::string old_logl = *it;
+             if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+                 == data_labels.end())
+             {
+                std::ostringstream err;
+                err << "In the input YAML file, you requested to 'subtract_from_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+                scan_error().raise(LOCAL_INFO,err.str());
+             }
+             if(reader->get_type(*it) != Gambit::Printers::getTypeID<double>())
+             {
+                std::ostringstream err;
+                err << "In the input YAML file, you requested 'subtract_from_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+                scan_error().raise(LOCAL_INFO,err.str());
+             }
+             
+             double old_logl_value;
+             is_valid = reader->retrieve(old_logl_value, old_logl);
+             if(is_valid)
+             {
+                // Combine with the new logL component, subtracting this time
+                combined_logL -= old_logl_value;
+             }
+             // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+         }
+
+         // Output the new reweighted likelihood (if all components were valid)
+         if(is_valid) get_printer().get_stream()->print( combined_logL, reweighted_loglike_name, MPIrank, pointID);
+
+         ///  In the future would be nice if observables could be reconstructed from the
+         ///  output file, but that is a big job, need to automatically create functors
+         ///  for them which provide the capabilities they are supposed to correspond to,
+         ///  which is possible since this information is stored in the labels, but
+         ///  would take quite a bit of setting up I think...
+         ///  Would need the reader to provide virtual functions for retrieving all the
+         ///  observable metadata from the output files.
+         ///
+         ///  UPDATE: TODO: What happens in case of invalid point? Does this copying etc. just get skipped?
+         ///  Or do I need to check that the output LogL was valid somehow?
+         ///  Answer: Loglike function just returns a default low value in that case, scanner plugins do
+         ///  not see the invalid point exceptions, they are caught inside the likelihood container.
+      }    
+      else if(not discard_points_outside_cuts)
+      {
+         /// No postprocessing to be done, but we still should copy across the modelparameters 
+         /// and point ID data, since the copying routines below assume that these were taken
+         /// care of by the likelihood routine, which we never ran.
+         get_printer().get_stream()->print(MPIrank, "MPIrank", MPIrank, pointID);
+         get_printer().get_stream()->print(pointID, "pointID", MPIrank, pointID);
+         // Now the modelparameters
+         bool valid_modelparams = true;
+         for(auto it=req_models.begin(); it!=req_models.end(); ++it)
+         {
+           ModelParameters modelparameters;
+           std::string model = it->first;
+           bool is_valid = reader->retrieve(modelparameters, model);
+           if(is_valid) 
+           {
+              // Use the OutputName set by the reader to preserve the original naming of the modelparameters.
+              get_printer().get_stream()->print(modelparameters, modelparameters.getOutputName(), MPIrank, pointID);
+           }
+         }
+      }
+ 
+      /// Copy selected data from input file
+      if(not cuts_passed and discard_points_outside_cuts)
+      {
+         // Don't copy in this case, just discard the old data.
+      }
+      else
+      {
+         for(std::set<std::string>::iterator it = data_labels_copy.begin(); it!=data_labels_copy.end(); ++it)
+         {
+            // Check if this input label has been mapped to a different output label.
+            std::string in_label = *it;
+            std::map<std::string,std::string>::iterator jt = renaming_scheme.find(in_label);
+            if(jt != renaming_scheme.end())
+            {
+               // Found match! Do the renaming
+               std::string out_label = jt->second;
+               //std::cout << "Copying data from "<<in_label<<", to output name "<<out_label<<", for point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
+               reader->retrieve_and_print(in_label,out_label,*(get_printer().get_stream()), MPIrank, pointID);
+            }
+            else
+            {
+               // No match, keep the old name
+               //std::cout << "Copying data from "<<in_label<<" for point ("<<MPIrank<<", "<<pointID<<")" <<std::endl;
+               reader->retrieve_and_print(in_label,*(get_printer().get_stream()), MPIrank, pointID);
+            }
          }
       }
 
       // Check whether the calling code wants us to shut down early
       quit = Gambit::Scanner::Plugins::plugin_info.early_shutdown_in_progress();
-  
+
       if(quit)
       {
          // Need to save data about which points have been processed, so we
