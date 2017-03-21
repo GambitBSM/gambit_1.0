@@ -1925,6 +1925,9 @@ namespace Gambit
       // Get experimental covariance
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
+      // adding theory and experimenta covariance
+      cov+=measurement_assym.cov_th;
+
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
@@ -2069,7 +2072,7 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
 
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
-
+      
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
       // adding theory and experimenta covariance
