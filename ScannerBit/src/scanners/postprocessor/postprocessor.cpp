@@ -19,10 +19,7 @@
 ///
 ///  *********************************************
 
-#ifdef WITH_MPI
-#include "mpi.h" // Not using the GAMBIT MPI wrappers since they are overkill for this scanner.
-#endif
-
+// STL
 #include <vector>
 #include <string>
 #include <cmath>
@@ -31,18 +28,13 @@
 #include <fstream>
 #include <sstream>
 
-// Boost
-#include <boost/preprocessor.hpp>
-#include "gambit/Utils/boost_fallbacks.hpp"
-#include <boost/preprocessor/seq/for_each.hpp>
-
 // GAMBIT
+#include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 #include "gambit/ScannerBit/scanners/postprocessor/postprocessor.hpp"
 #include "gambit/ScannerBit/objective_plugin.hpp"
 #include "gambit/ScannerBit/scanner_plugin.hpp"
-#include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/new_mpi_datatypes.hpp"
-
 
 using namespace Gambit;
 using namespace Gambit::PostProcessor;
@@ -198,6 +190,13 @@ scanner_plugin(postprocessor, version(1, 0, 0))
   {
     if(rank==0) std::cout << "Running 'postprocessor' plugin for ScannerBit." << std::endl;
 
+    // Set up our MPI communicator
+    #ifdef WITH_MPI
+    GMPI::Comm ppComm;
+    ppComm.dup(MPI_COMM_WORLD,"PostprocessorComm"); // duplicates MPI_COMM_WORLD
+    // Message tag definitons in PPDriver class:
+    #endif
+
     /// @{ Determine what data needs to be copied from the input file to the new output dataset
     // Get labels of functors listed for printing from the primary printer.
     settings.all_params = get_printer().get_stream()->getPrintList();
@@ -208,6 +207,9 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     settings.all_params.insert("pointID");
     settings.all_params.insert(settings.logl_purpose_name); // If there is a name clash and the run was not aborted, we are to discard the old data under this name.
     settings.all_params.insert(settings.reweighted_loglike_name); //   "  " 
+    #ifdef WITH_MPI
+    settings.comm = &ppComm;
+    #endif
 
     // Construct the main driver object
     driver = PPDriver(reader,get_printer().get_stream(),LogLike,settings);
@@ -220,15 +222,123 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
     // Ask the printer if this is a resumed run or not, and check that the necessary files exist if so.
     bool resume = get_printer().resume_mode();
-    if (resume) // If resuming, get the required resume data
-    {
-      done_chunks = get_done_points(settings.root);
-    }
 
     //MAIN LOOP HERE
-    driver.run_main_loop(done_chunks);
+    bool continue_processing = true;
+    bool quit_flag_seen = false;
+    while(continue_processing)
+    {
+       bool I_am_finished = false;
+       if (resume) // If resuming (or redistributing), get the required resume data
+       {
+         done_chunks = get_done_points(settings.root);
+       }
 
-    std::cout << "Done! (rank "<<rank<<")" << std::endl;
+       bool do_redistribution = false;
+       int exit_code;
+       // 0 - Finished processing all the points we were assigned
+       // 1 - Saw quit flag and so stopped prematurely
+       // 2 - Was told to stop by some other process for redistribution of postprocessing work
+       // 3 - Encountered end of input file unexpectedly
+       exit_code = driver.run_main_loop(done_chunks);
+       //std::cout << "Rank "<<rank<<": exited loop with code "<<exit_code<<std::endl;
+       if(exit_code==0)
+       {
+          I_am_finished = true;
+          std::cout << "Rank "<<rank<<" has finished processing its batch; requesting work from other processes." << std::endl;
+          // We are finished, but there might still be lots of points to process
+          // that are assigned to other cpus in this job. We will request that
+          // all processes stop and redistribute their workload.
+          // But first, we check if anyone else has already requested this stop!
+          // In that case there is no need to send another stop message.
+          #ifdef WITH_MPI
+          if(not driver.check_for_redistribution_request())
+          {
+             driver.send_redistribution_request();
+          }
+          do_redistribution = true;
+          #endif
+       }
+       else if(exit_code==1)
+       { 
+          // Saw quit flag, time to stop
+          quit_flag_seen = true;
+          continue_processing = false;
+          do_redistribution = true; // Need to unlock processes that may be waiting for point redistribution
+       }
+       else if(exit_code==2)
+       {
+          // Stopped due to workload redistribution request from another process.
+          do_redistribution = true;
+       }
+       else if(exit_code==3)
+       {
+          // That shouldn't happen; warning
+          std::ostringstream err;
+          err << "Postprocessing on "<<rank<<" ended due to encountering the end of the input file. This indicates that it was told to process more points than existed in the input file, which indicates a bug in the postprocessor. Your output may still be fine, but please report this bug.";
+          std::cerr << err.str() << std::endl;
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+       else
+       {
+          std::ostringstream err;
+          err << "Postprocessing on "<<rank<<" terminated with an unrecognised return code ("<<exit_code<<"). This indicates a bug in the postprocessor, please report it.";
+          scan_error().raise(LOCAL_INFO,err.str());
+       }
+ 
+       // Redistribute points, stop if someone has seen the quit flag, or stop if there are no points left to process
+       if(do_redistribution)
+       {
+          #ifdef WITH_MPI
+          /// @{ Gather all 'I_am_finished' flags to see if everyone is done
+          int my_finished = I_am_finished; // convert to int
+          std::vector<int> all_finished = allgather_int(my_finished, ppComm);
+          bool everyone_finished = true;
+          int tmp_rank = 0;
+          for(auto it=all_finished.begin(); it!=all_finished.end(); ++it)
+          {
+             if(*it!=1)
+             {
+                //std::cout << "Rank "<<rank<<": rank "<<tmp_rank<<" is not finished ("<<*it<<")"<<std::endl;
+                everyone_finished = false; // If anyone has not finished, we proceed with redistribution.
+             }
+             tmp_rank++;
+          }
+          /// @}
+          if(not everyone_finished)
+          {
+             /// @{ Gather all quit flags, to see if we need to stop (COLLECTIVE OPERATION)
+             int my_quit = quit_flag_seen; // convert to int
+             std::vector<int> all_quit_flags = allgather_int(my_quit, ppComm);
+             for(auto it=all_quit_flags.begin(); it!=all_quit_flags.end(); ++it)
+             {
+                if(*it==1) continue_processing = false; // If anyone has seen the quit flag, we must stop.
+             }
+             /// @}
+             if(continue_processing)
+             {
+                /// Not quitting; do the redistribution.
+                if(rank==0) std::cout << "Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
+                resume = true; // Perform next loop as if we are resuming the scan.
+             }
+             else
+             {
+                if(rank==0) std::cout << "Quit flag seen by one or more worker processes; stopping postprocessor." << std::endl;
+             } 
+          }
+          else
+          {
+             // Everyone is finished! We can stop
+             continue_processing = false;
+             if(rank==0) std::cout << "All processes report that they are finished with their postprocessing batches. No work left to do, so we will stop." << std::endl;
+          }
+          #endif
+
+          // Receive all the redistribution requests
+          driver.clear_redistribution_requests();
+       }
+    }
+    if(rank==0) std::cout << "Done!" << std::endl;
     return 0;
   }
 }

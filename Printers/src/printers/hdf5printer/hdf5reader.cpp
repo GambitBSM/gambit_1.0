@@ -105,10 +105,8 @@ namespace Gambit {
      /// Reset 'read head' position to first entry
      void HDF5Reader::reset()
      { 
-        // Gotta search for it.
-        std::ostringstream errmsg;
-        errmsg << "'reset()' function has not yet been implemented for the HDF5Reader!";
-        printer_error().raise(LOCAL_INFO, errmsg.str());
+        current_dataset_index = 0;
+        current_point = nullpoint;
      }
 
      /// Get length of input dataset
