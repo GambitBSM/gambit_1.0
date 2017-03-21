@@ -235,6 +235,7 @@ namespace Gambit
         virtual void reset() = 0; // Reset 'read head' position to first entry
         virtual ulong get_dataset_length() = 0; // Get length of input dataset (used e.g. by postprocessor to divide post-processing workload via MPI)
         virtual PPIDpair get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
+        virtual ulong    get_current_index() = 0; // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
         virtual PPIDpair get_next_point() = 0; // Get next rank/ptID pair in data file
         virtual bool eoi() = 0; // Check if 'current point' is past the end of the data file (and thus invalid!)
 

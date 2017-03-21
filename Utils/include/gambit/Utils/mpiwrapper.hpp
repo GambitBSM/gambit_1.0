@@ -343,13 +343,20 @@ namespace Gambit
             // (using templated non-blocking send repeatedly)
             template<class T>
             void IsendToAll(T *buf, int count, int tag, 
-                      MPI_Request *request /*out*/)
+                      MPI_Request *in_req=NULL /*out*/)
             {
+               MPI_Request def_req;
+               MPI_Request* req;
+               if(in_req!=NULL) {
+                 req = in_req;
+               } else {
+                 req = &def_req;
+               }
                int rank = Get_rank();
                int size = Get_size();
                for(int i=0; i<size; i++)
                {
-                  if(i!=rank) Isend(buf, count, i, tag, request);
+                  if(i!=rank) Isend(buf, count, i, tag, req);
                }
             }
 
@@ -423,6 +430,9 @@ namespace Gambit
             /// A generic place to store a tag commonly used by this communicator
             int mytag = 1;
 
+            /// Get pointer to raw bound communicator
+            MPI_Comm* get_boundcomm() { return &boundcomm; }
+ 
          private:
 
             // The MPI communicator to which the current object "talks".

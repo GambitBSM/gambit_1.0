@@ -105,10 +105,8 @@ namespace Gambit {
      /// Reset 'read head' position to first entry
      void HDF5Reader::reset()
      { 
-        // Gotta search for it.
-        std::ostringstream errmsg;
-        errmsg << "'reset()' function has not yet been implemented for the HDF5Reader!";
-        printer_error().raise(LOCAL_INFO, errmsg.str());
+        current_dataset_index = 0;
+        current_point = nullpoint;
      }
 
      /// Get length of input dataset
@@ -120,35 +118,60 @@ namespace Gambit {
      /// Get next rank/ptID pair in data file
      PPIDpair HDF5Reader::get_next_point()
      {
-        if(current_point!=nullpoint)
+        // UPDATE: Don't want any of that! Need to be able to keep track of which iteration we are up to.
+        //if(current_point!=nullpoint)
+        //{
+        //   ++current_dataset_index; 
+        //}
+        //bool stop_loop = false;
+        //while(not stop_loop)
+        //{
+        //   if(eoi())
+        //   {
+        //     current_point = nullpoint;
+        //     stop_loop = true;
+        //   }
+        //   else
+        //   {
+        //     bool pvalid = pointIDs_isvalid.get_entry(current_dataset_index);
+        //     bool mvalid = mpiranks_isvalid.get_entry(current_dataset_index);
+        //     if(pvalid and mvalid)
+        //     {
+        //       unsigned long pid = pointIDs.get_entry(current_dataset_index);
+        //       int mpirank       = mpiranks.get_entry(current_dataset_index);
+        //       current_point = PPIDpair(pid,mpirank);
+        //       stop_loop = true;
+        //     }
+        //     else
+        //     {
+        //       // Point didn't contain valid data, try next one.
+        //       ++current_dataset_index;
+        //     }
+        //   }
+        //}
+        
+        // New method
+        ++current_dataset_index;
+        if(eoi())
         {
-           ++current_dataset_index; 
+          // End of data, return nullpoint;
+          current_point = nullpoint;
         }
-        bool stop_loop = false;
-        while(not stop_loop)
+        else
         {
-           if(eoi())
-           {
-             current_point = nullpoint;
-             stop_loop = true;
-           }
-           else
-           {
-             bool pvalid = pointIDs_isvalid.get_entry(current_dataset_index);
-             bool mvalid = mpiranks_isvalid.get_entry(current_dataset_index);
-             if(pvalid and mvalid)
-             {
-               unsigned long pid = pointIDs.get_entry(current_dataset_index);
-               int mpirank       = mpiranks.get_entry(current_dataset_index);
-               current_point = PPIDpair(pid,mpirank);
-               stop_loop = true;
-             }
-             else
-             {
-               // Point didn't contain valid data, try next one.
-               ++current_dataset_index;
-             }
-           }
+          bool pvalid = pointIDs_isvalid.get_entry(current_dataset_index);
+          bool mvalid = mpiranks_isvalid.get_entry(current_dataset_index);
+          if(pvalid and mvalid)
+          {
+            unsigned long pid = pointIDs.get_entry(current_dataset_index);
+            int mpirank       = mpiranks.get_entry(current_dataset_index);
+            current_point = PPIDpair(pid,mpirank);
+          }
+          else
+          {
+            // No valid data here! Up to user to check.
+            current_point = nullpoint;
+          }
         }
         return current_point;
      }
@@ -159,10 +182,18 @@ namespace Gambit {
         return current_point;
      }
 
+     // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
+     ulong HDF5Reader::get_current_index() 
+     {
+       return current_dataset_index; 
+     }
+
      /// Check if 'current point' is past the end of the datasets (and thus invalid!)
      bool HDF5Reader::eoi()
      {
-        return current_dataset_index >= get_dataset_length();
+        bool result = current_dataset_index >= get_dataset_length();
+        //if(result) std::cout <<"eoi? index="<<current_dataset_index<<", length="<<get_dataset_length()<<std::endl; 
+        return result;
      }
 
      /// Get type information for a data entry, i.e. defines the C++ type which this should be

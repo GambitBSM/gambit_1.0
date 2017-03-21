@@ -91,6 +91,12 @@ namespace Gambit {
       return dataset_length;
     }
 
+    // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
+    ulong asciiReader::get_current_index() 
+    {
+      return current_row; 
+    }
+
     /// Reset read head position to zero
     void asciiReader::reset()
     {
