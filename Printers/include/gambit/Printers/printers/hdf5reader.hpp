@@ -97,7 +97,8 @@ namespace Gambit {
         virtual ulong get_dataset_length(); // Get length of input dataset
         virtual PPIDpair get_next_point(); // Get next rank/ptID pair in data file
         virtual PPIDpair get_current_point(); // Get current rank/ptID pair in data file
-        virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
+        virtual ulong    get_current_index(); // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
+       virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
         /// Get type information for a data entry, i.e. defines the C++ type which this should be
         /// retrieved as, not what it is necessarily literally stored as in the output.
         virtual std::size_t get_type(const std::string& label);
