@@ -1582,7 +1582,7 @@ namespace Gambit
 
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
-      // adding theory and experimenta covariance
+      // adding theory and experimental covariance
       cov+=measurement_assym.cov_th;
 
       //calculating a diff
@@ -1681,15 +1681,15 @@ namespace Gambit
 
       // hardcoded errors :( move it to include later
 
-      double theory_Btaunu_error=th_err(0,0);
-      double theory_BDtaunu_error=th_err(1,0);
-      double theory_BDstartaunu_error=th_err(2,0);
-      double theory_BDmunu_error=th_err(3,0);
-      double theory_BDstarmunu_error=th_err(4,0);
+      double theory_Btaunu_error=th_err(0,0)*theory_Btaunu;
+      double theory_BDtaunu_error=th_err(1,0)*theory_BDtaunu;
+      double theory_BDstartaunu_error=th_err(2,0)*theory_BDstartaunu;
+      double theory_BDmunu_error=th_err(3,0)*theory_BDmunu;
+      double theory_BDstarmunu_error=th_err(4,0)*theory_BDstarmunu;
 
-      double theory_Dstaunu_error=th_err(5,0);
-      double theory_Dsmunu_error=th_err(6,0);
-      double theory_Dmunu_error=th_err(7,0);
+      double theory_Dstaunu_error=th_err(5,0)*theory_Dstaunu;
+      double theory_Dsmunu_error=th_err(6,0)*theory_Dsmunu;
+      double theory_Dmunu_error=th_err(7,0)*theory_Dmunu;
 
 
       // theory cov:
