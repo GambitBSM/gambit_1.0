@@ -464,6 +464,9 @@ namespace Gambit
             {
                std::ostringstream err;
                err << "Type of input dataset '"<<in_label<<"' is not 'double'! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' <= "<<cut_value<<", however the requested dataset for cutting cannot be retrieved as type 'double'. Currently cuts can only be applied to datasets stored as doubles, sorry! Please remove this entry from the 'cut_less_than' list.";
+               // DEBUG
+               err << std::endl << "input type ID:" << getReader().get_type(in_label) << std::endl;
+               err              << "double type ID:" << Printers::getTypeID<double>() << std::endl;
                Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
          }
