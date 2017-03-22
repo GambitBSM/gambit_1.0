@@ -56,8 +56,13 @@ namespace Gambit
     /// Helper template functions to retrieve type IDs for a type.
     /// ID is just a unique integer for each printable type
     template<class T>
-    std::size_t getTypeID(void) { return 0; }
-    // ID of zero means no ID assigned
+    std::size_t getTypeID(void)
+    { 
+       std::ostringstream err;
+       err << "getTypeID failed! No typeID known for requested type! (with compiler name: "<<typeid(T).name()<<")";   
+       printer_error().raise(LOCAL_INFO,err.str());
+       return 0; 
+    }
 
     class BaseBasePrinter  
     {

@@ -61,60 +61,65 @@ namespace Gambit
      }
  
  
-     #ifdef WITH_MPI 
-     MPI_Datatype mpi_VBIDpair_type;  
-     MPI_Datatype mpi_VBIDtrip_type;  
-     MPI_Datatype mpi_PPIDpair_type;  
+     // DEPRECATED! We no longer actually send this stuff via MPI, 
+     // and there were slight issues with non-standards compliance
+     // that generate warnings on some compilers, so I am flagging
+     // this for deletion, though it was a bit complicated to
+     // figure out so I can't bring myself to delete it yet.
+     // #ifdef WITH_MPI 
+     // MPI_Datatype mpi_VBIDpair_type;  
+     // MPI_Datatype mpi_VBIDtrip_type;  
+     // MPI_Datatype mpi_PPIDpair_type;  
 
-     void define_mpiVBIDpair()
-     {
-        const int nitems=2;
-        int          blocklengths[2] = {1,1};
-        MPI_Datatype types[2] = {MPI_INT, MPI_INT};
-        MPI_Aint     offsets[2];
+     // void define_mpiVBIDpair()
+     // {
+     //    const int nitems=2;
+     //    int          blocklengths[2] = {1,1};
+     //    MPI_Datatype types[2] = {MPI_INT, MPI_INT};
+     //    MPI_Aint     offsets[2];
 
-        offsets[0] = offsetof(VBIDpair, vertexID);
-        offsets[1] = offsetof(VBIDpair, index);
+     //    offsets[0] = offsetof(VBIDpair, vertexID);
+     //    offsets[1] = offsetof(VBIDpair, index);
 
-        MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDpair_type);
-        MPI_Type_commit(&mpi_VBIDpair_type);
-     }
-     void define_mpiVBIDtrip()
-     {
-        const int nitems=3;
-        int          blocklengths[3] = {1,1,1};
-        MPI_Datatype types[3] = {MPI_INT, MPI_INT, MPI_INT};
-        MPI_Aint     offsets[3];
+     //    MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDpair_type);
+     //    MPI_Type_commit(&mpi_VBIDpair_type);
+     // }
+     // void define_mpiVBIDtrip()
+     // {
+     //    const int nitems=3;
+     //    int          blocklengths[3] = {1,1,1};
+     //    MPI_Datatype types[3] = {MPI_INT, MPI_INT, MPI_INT};
+     //    MPI_Aint     offsets[3];
 
-        offsets[0] = offsetof(VBIDtrip, vertexID);
-        offsets[1] = offsetof(VBIDtrip, index);
-        offsets[2] = offsetof(VBIDtrip, first_tag);
+     //    offsets[0] = offsetof(VBIDtrip, vertexID);
+     //    offsets[1] = offsetof(VBIDtrip, index);
+     //    offsets[2] = offsetof(VBIDtrip, first_tag);
 
-        MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDtrip_type);
-        MPI_Type_commit(&mpi_VBIDtrip_type);
-     }
-     void define_mpiPPIDpair()
-     {
-        const int nitems=2;
-        int          blocklengths[2] = {1,1};
-        MPI_Datatype types[2] = {MPI_LONG, MPI_INT};
-        MPI_Aint     offsets[2];
+     //    MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDtrip_type);
+     //    MPI_Type_commit(&mpi_VBIDtrip_type);
+     // }
+     // void define_mpiPPIDpair()
+     // {
+     //    const int nitems=2;
+     //    int          blocklengths[2] = {1,1};
+     //    MPI_Datatype types[2] = {MPI_LONG, MPI_INT};
+     //    MPI_Aint     offsets[2];
 
-        offsets[0] = offsetof(PPIDpair, pointID);
-        offsets[1] = offsetof(PPIDpair, rank);
+     //    offsets[0] = offsetof(PPIDpair, pointID);
+     //    offsets[1] = offsetof(PPIDpair, rank);
 
-        MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_PPIDpair_type);
-        MPI_Type_commit(&mpi_PPIDpair_type);
-     }
+     //    MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_PPIDpair_type);
+     //    MPI_Type_commit(&mpi_PPIDpair_type);
+     // }
 
-     /// Queue up these functions to run when MPI initialises
-     void queue_mpidefs()
-     {
-        GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
-        GMPI::AddMpiIniFunc prepare_mpiVBIDtrip(LOCAL_INFO, "define_mpiVBIDtrip", &define_mpiVBIDtrip);
-        GMPI::AddMpiIniFunc prepare_mpiPPIDpair(LOCAL_INFO, "define_mpiPPIDpair", &define_mpiPPIDpair);
-     }
-     #endif
+     // /// Queue up these functions to run when MPI initialises
+     // void queue_mpidefs()
+     // {
+     //    GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
+     //    GMPI::AddMpiIniFunc prepare_mpiVBIDtrip(LOCAL_INFO, "define_mpiVBIDtrip", &define_mpiVBIDtrip);
+     //    GMPI::AddMpiIniFunc prepare_mpiPPIDpair(LOCAL_INFO, "define_mpiPPIDpair", &define_mpiPPIDpair);
+     // }
+     // #endif
 
      /// Stream operator overloads
      std::ostream& operator<<(std::ostream& stream, const PPIDpair& ppid) 
@@ -125,18 +130,18 @@ namespace Gambit
 
   }
 
-  /// Definition needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
-  /// so that template MPI Send and Receive functions work.
-  //template<> MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>() { return Printers::mpi_VBIDpair_type; }
-  #ifdef WITH_MPI 
-  MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>::type() 
-  { return Printers::mpi_VBIDpair_type; } 
+  // /// Definition needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
+  // /// so that template MPI Send and Receive functions work.
+  // //template<> MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>() { return Printers::mpi_VBIDpair_type; }
+  // #ifdef WITH_MPI 
+  // MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>::type() 
+  // { return Printers::mpi_VBIDpair_type; } 
 
-  MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDtrip>::type() 
-  { return Printers::mpi_VBIDtrip_type; } 
+  // MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDtrip>::type() 
+  // { return Printers::mpi_VBIDtrip_type; } 
 
-  MPI_Datatype GMPI::get_mpi_data_type<Printers::PPIDpair>::type() 
-  { return Printers::mpi_PPIDpair_type; } 
-  #endif
+  // MPI_Datatype GMPI::get_mpi_data_type<Printers::PPIDpair>::type() 
+  // { return Printers::mpi_PPIDpair_type; } 
+  // #endif
 
 } // end namespace Gambit

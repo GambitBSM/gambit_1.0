@@ -138,6 +138,7 @@ namespace Gambit
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
 
+        using BasePrinter::_print; // Tell compiler we are using some of the base class overloads of this on purpose.
         /// Macro to add all the simple print functions that just print via a simple template function
         #define ASIMPLEPRINT_DECL(r,data,elem) \
           void _print(elem const&, const std::string&, const int, const uint, const ulong);

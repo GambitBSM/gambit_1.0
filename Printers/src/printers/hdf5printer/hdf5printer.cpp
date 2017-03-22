@@ -99,7 +99,6 @@
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
-#include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
 
 #include "gambit/cmake/cmake_variables.hpp"

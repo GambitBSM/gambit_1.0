@@ -29,7 +29,6 @@
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/VertexBufferBase.hpp"
 #include "gambit/Printers/VertexBuffer_mpitags.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
@@ -159,7 +158,7 @@ namespace Gambit
         ///@}
 
         ///@{ Print functions
-
+        using BasePrinter::_print; // Tell compiler we are using some of the base class overloads of this on purpose.
         /// Templatable print functions
         void _print(int       const&, const std::string&, const int, const uint, const ulong);
         void _print(uint      const&, const std::string&, const int, const uint, const ulong);
