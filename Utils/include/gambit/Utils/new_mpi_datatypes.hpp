@@ -118,36 +118,42 @@ namespace Gambit
 
   } // end namespace Printers
 
-  #ifdef WITH_MPI
-  /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>::type() to VBIDpair and PPIDpair types
-  namespace GMPI { 
-     template<> 
-     struct get_mpi_data_type<Printers::VBIDpair> 
-     { 
-       static MPI_Datatype type();
-     }; 
-     template<> 
-     struct get_mpi_data_type<Printers::VBIDtrip> 
-     { 
-       static MPI_Datatype type();
-     }; 
-     template<> 
-     struct get_mpi_data_type<Printers::PPIDpair> 
-     { 
-       static MPI_Datatype type();
-     }; 
-  }
-  /// Declare MPI datatype for structs VBIDpair and PPIDpair (which is what the above functions will 'get')
-  extern MPI_Datatype mpi_VBIDpair_type;
-  extern MPI_Datatype mpi_VBIDtrip_type;
-  extern MPI_Datatype mpi_PPIDpair_type;
+  // DEPRECATED! We no longer actually send this stuff via MPI, 
+  // and there were slight issues with non-standards compliance
+  // that generate warnings on some compilers, so I am flagging
+  // this for deletion, though it was a bit complicated to
+  // figure out so I can't bring myself to delete it yet.
+  //
+  // #ifdef WITH_MPI
+  // /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>::type() to VBIDpair and PPIDpair types
+  // namespace GMPI { 
+  //    template<> 
+  //    struct get_mpi_data_type<Printers::VBIDpair> 
+  //    { 
+  //      static MPI_Datatype type();
+  //    }; 
+  //    template<> 
+  //    struct get_mpi_data_type<Printers::VBIDtrip> 
+  //    { 
+  //      static MPI_Datatype type();
+  //    }; 
+  //    template<> 
+  //    struct get_mpi_data_type<Printers::PPIDpair> 
+  //    { 
+  //      static MPI_Datatype type();
+  //    }; 
+  // }
+  // /// Declare MPI datatype for structs VBIDpair and PPIDpair (which is what the above functions will 'get')
+  // extern MPI_Datatype mpi_VBIDpair_type;
+  // extern MPI_Datatype mpi_VBIDtrip_type;
+  // extern MPI_Datatype mpi_PPIDpair_type;
 
-  /// Need declaration in order to use these in mpiwrapper.cpp (Init function)
-  namespace Printers {
-     void queue_mpidefs();
-  }
-
-  #endif
+  // /// Need declaration in order to use these in mpiwrapper.cpp (Init function)
+  // namespace Printers {
+  //    void queue_mpidefs();
+  // }
+  //
+  // #endif
 
 } // end namespace Gambit
 

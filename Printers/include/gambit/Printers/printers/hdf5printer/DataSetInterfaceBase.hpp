@@ -231,10 +231,10 @@ namespace Gambit {
          maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
          chunkdims[0] = CHUNKLENGTH;
          slicedims[0] = 1; // Dimensions of a single record in the data space
-         for(std::size_t i=0; i<RECORDRANK; i++)
+         std::size_t loopsize = RECORDRANK; // Just tricking the compiler so it doesn't complain in the RECORDRANK=0 case.
+         for(std::size_t i=0; i<loopsize; i++)
          {
             // Set other dimensions to match record size    
-            // Note: loop will not run for RANK=0 case
             dims[i+1]      = rdims[i];             
             maxdims[i+1]   = rdims[i];             
             chunkdims[i+1] = rdims[i];             
@@ -349,10 +349,10 @@ namespace Gambit {
          maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
          chunkdims[0] = CHUNKLENGTH;
          slicedims[0] = 1; // Dimensions of a single record in the data space
-         for(std::size_t i=0; i<RECORDRANK; i++)
+         std::size_t loopsize = RECORDRANK; // Just tricking the compiler so it doesn't complain in the RECORDRANK=0 case.
+         for(std::size_t i=0; i<loopsize; i++)
          {
             // Set other dimensions to match record size    
-            // Note: loop will not run for RANK=0 case
             dims[i+1]      = rdims[i];             
             maxdims[i+1]   = rdims[i];             
             chunkdims[i+1] = rdims[i];             

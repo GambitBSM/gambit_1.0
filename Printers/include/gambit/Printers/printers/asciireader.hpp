@@ -43,6 +43,7 @@ namespace Gambit {
          /// For ASCIIPrinter, everything is currently a double.
          virtual std::size_t get_type(const std::string&) { return getTypeID<double>(); }
          virtual std::set<std::string> get_all_labels(); // Get all output column labels
+         using BaseReader::_retrieve; // Tell compiler we are using some of the base class overloads of this on purpose.
          bool _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
          bool _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
          bool _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);

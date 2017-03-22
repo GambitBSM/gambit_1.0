@@ -502,9 +502,9 @@ namespace Gambit
       /// This will add functions to the map when it is constructed. Works
       /// on the same idea as the "ini_code" struct, except it doesn't
       /// cause the functions to be run, just "queues them up" so to speak.
-      struct AddMpiIniFunc {
-        AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)());
-      };
+      // struct AddMpiIniFunc {
+      //   AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)());
+      // };
 
       /// @}
 

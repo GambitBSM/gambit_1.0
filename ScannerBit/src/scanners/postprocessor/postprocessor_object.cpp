@@ -73,7 +73,7 @@ namespace Gambit
       /// Compute start/end indices for a given rank process, given previous "done_chunk" data.
       Chunk get_my_chunk(const std::size_t dset_length, const ChunkSet done_chunks, const int rank, const int numtasks)
       {
-        /// First compute number of points left to process
+         /// First compute number of points left to process
         std::size_t total_done_length = 0;
         std::size_t left_to_process;
         for(std::size_t i=0; i<dset_length; ++i)
@@ -619,6 +619,7 @@ namespace Gambit
       {   
          // Compute which points this process is supposed to process. Divide up
          // by number of MPI tasks.
+         if(rank==0) std::cout<<"Computing work assignments (may take a little time for very large datasets)"<<std::endl;
          unsigned long long total_length = getReader().get_dataset_length();
          Chunk mychunk = get_my_chunk(total_length, done_chunks, rank, numtasks);
 
@@ -668,7 +669,7 @@ namespace Gambit
            if((ppi % update_interval) == 0 and ppi!=0)
            {
               // Progress report
-              std::cout << "Rank "<<rank<<" has processed "<<ppi<<" of "<<mychunk.eff_length<<" points ("<<100*ppi/mychunk.eff_length<<"\%, with "<<100*n_passed/ppi<<"\% passing all cuts)"<<std::endl;
+              std::cout << "Rank "<<rank<<" has processed "<<ppi<<" of "<<mychunk.eff_length<<" points ("<<100*ppi/mychunk.eff_length<<"%, with "<<100*n_passed/ppi<<"% passing all cuts)"<<std::endl;
            }
            ppi++; // Processing is go, update counter. 
 

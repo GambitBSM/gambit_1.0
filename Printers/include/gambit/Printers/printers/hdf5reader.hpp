@@ -105,6 +105,7 @@ namespace Gambit {
         virtual std::set<std::string> get_all_labels(); // Get all dataset labels
 
         /// Templatable retrieve functions
+        using BaseReader::_retrieve; // Tell compiler we are using some of the base class overloads of this on purpose.
         bool _retrieve(int      &, const std::string& label, const uint rank, const ulong pointID);
         bool _retrieve(uint     &, const std::string& label, const uint rank, const ulong pointID);
         bool _retrieve(long     &, const std::string& label, const uint rank, const ulong pointID);
