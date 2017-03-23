@@ -197,7 +197,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     // Message tag definitons in PPDriver class:
     #endif
 
-    /// @{ Determine what data needs to be copied from the input file to the new output dataset
+    /// Determine what data needs to be copied from the input file to the new output dataset
     // Get labels of functors listed for printing from the primary printer.
     settings.all_params = get_printer().get_stream()->getPrintList();
     // There are some extra items that will also be automatically printed in all scans,
@@ -241,7 +241,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        // 2 - Was told to stop by some other process for redistribution of postprocessing work
        // 3 - Encountered end of input file unexpectedly
        exit_code = driver.run_main_loop(done_chunks);
-       //std::cout << "Rank "<<rank<<": exited loop with code "<<exit_code<<std::endl;
+       std::cout << "Rank "<<rank<<": exited loop with code "<<exit_code<<std::endl;
        if(exit_code==0)
        {
           I_am_finished = true;
@@ -305,6 +305,11 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              tmp_rank++;
           }
           /// @}
+          
+          // All processes should now be synchronised; receive all the redistribution requests
+          std::cout << "Rank "<<rank<<": Clearing redistribution request messages" << std::endl;
+          driver.clear_redistribution_requests();
+
           if(not everyone_finished)
           {
              /// @{ Gather all quit flags, to see if we need to stop (COLLECTIVE OPERATION)
@@ -312,13 +317,18 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              std::vector<int> all_quit_flags = allgather_int(my_quit, ppComm);
              for(auto it=all_quit_flags.begin(); it!=all_quit_flags.end(); ++it)
              {
-                if(*it==1) continue_processing = false; // If anyone has seen the quit flag, we must stop.
+                if(*it==1) 
+                {
+                   continue_processing = false; // If anyone has seen the quit flag, we must stop.
+                   Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress(); // Tell this process to behave as if the quit flag was seen by us.
+                }
              }
              /// @}
              if(continue_processing)
              {
                 /// Not quitting; do the redistribution.
-                if(rank==0) std::cout << "Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
+                //if(rank==0) std::cout << "Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
+                std::cout << "Rank "<<rank<<": Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
                 resume = true; // Perform next loop as if we are resuming the scan.
              }
              else
@@ -333,12 +343,14 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              if(rank==0) std::cout << "All processes report that they are finished with their postprocessing batches. No work left to do, so we will stop." << std::endl;
           }
           #endif
-
-          // Receive all the redistribution requests
-          driver.clear_redistribution_requests();
        }
     }
-    if(rank==0) std::cout << "Done!" << std::endl;
+    //if(rank==0) std::cout << "Done!" << std::endl;
+    std::cout << "Rank "<< rank<< ": Done!" << std::endl;
+
+    // Test barrier to see if everyone made it
+    ppComm.Barrier();
+    if(rank==0) std::cout << "Passed final PP barrier" << std::endl;
     return 0;
   }
 }

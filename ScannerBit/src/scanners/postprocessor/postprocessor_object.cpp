@@ -643,6 +643,13 @@ namespace Gambit
          bool redistribution_requested = false; // Flag to temporarily stop to redistribute remaining workload amongst MPI processes
          bool redistribution_request_ignored = false;
          bool stop_loop = false;
+ 
+         if(getReader().eoi())
+         {
+            std::cout << "Postprocessor (rank "<<rank<<") immediately reached end of input file! Skipping execution of main loop, ..."<<std::endl;
+            // We should exit with the "unexpected finish" error code if this has happened.
+         }
+
          while(not getReader().eoi() and not stop_loop) // while not end of input
          {
            loopi++;
