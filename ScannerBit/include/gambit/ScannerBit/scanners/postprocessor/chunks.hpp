@@ -58,6 +58,14 @@ struct ChunkEqual{
   }
 };
 
-typedef std::unordered_set<Chunk,ChunkHash,ChunkEqual> ChunkSet;
+struct ChunkLess{
+  bool operator() (const Chunk& lhs, const Chunk& rhs) const
+  {
+    return (lhs.start < rhs.start); // Just sort based on start index alone
+  }
+};
+
+//typedef std::unordered_set<Chunk,ChunkHash,ChunkEqual> ChunkSet; // Actually I want ordered sets now
+typedef std::set<Chunk,ChunkLess> ChunkSet; // Actually I want ordered sets now
 
 #endif

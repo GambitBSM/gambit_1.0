@@ -38,9 +38,9 @@ Scanner:
       like:  LogLike
       nlive: 1000
       tol: 0.01
-      mmodal: 0
+      mmodal: false
       # write native MultiNest ascii output files?
-      outfile: 1 # yes, need them for resuming
+      outfile: true # yes, need them for resuming
       # No options to set, but still need the nodes at the moment...
       aux_printer_txt_options:
       aux_printer_stats_options:
@@ -48,7 +48,7 @@ Scanner:
     de:
       plugin: Diver
       like: LogLike
-      NP: 1000
+      NP: 100000
       #path: "diver_native"
       verbosity: 1
                     
@@ -58,7 +58,7 @@ ObsLikes:
     capability:   normaldist_loglike
     module:       ExampleBit_A
     type:         double
-    printme:      false
+    #printme:      false
 #======== Rule entries ========
 Rules:
   # None required

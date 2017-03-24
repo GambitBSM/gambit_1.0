@@ -231,7 +231,10 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        bool I_am_finished = false;
        if (resume) // If resuming (or redistributing), get the required resume data
        {
-         done_chunks = get_done_points(settings.root);
+          done_chunks = get_done_points(settings.root);
+          // For debugging: report on the retrieved chunks
+          for(auto it=done_chunks.begin(); it!=done_chunks.end(); ++it)
+             std::cout << "Rank "<<rank<<": retrieved done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
        }
 
        bool do_redistribution = false;
@@ -320,7 +323,6 @@ scanner_plugin(postprocessor, version(1, 0, 0))
                 if(*it==1) 
                 {
                    continue_processing = false; // If anyone has seen the quit flag, we must stop.
-                   Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress(); // Tell this process to behave as if the quit flag was seen by us.
                 }
              }
              /// @}

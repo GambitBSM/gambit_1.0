@@ -36,11 +36,14 @@ namespace Gambit
       Chunk get_effective_chunk(const std::size_t total_length, const unsigned int rank, const unsigned int numtasks);
       
       /// Compute start/end indices for a given rank process, given previous "done_chunk" data.
-      Chunk get_my_chunk(const std::size_t dset_length, const ChunkSet done_chunks, const int rank, const int numtasks);
+      Chunk get_my_chunk(const std::size_t dset_length, const ChunkSet& done_chunks, const int rank, const int numtasks);
       
       /// Read through resume data files and reconstruct which chunks of points have already been processed
       ChunkSet get_done_points(const std::string& filebase);
-      
+     
+      /// Simplify a ChunkSet by merging chunks which overlap.
+      ChunkSet merge_chunks(const ChunkSet&);
+ 
       /// Write resume data files
       /// These specify which chunks of points have been processed during this run
       void record_done_points(const ChunkSet& done_chunks, const Chunk& mydone, const std::string& filebase, unsigned int rank, unsigned int size);
