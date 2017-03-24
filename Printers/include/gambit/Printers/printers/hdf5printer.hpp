@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 May
@@ -49,9 +49,9 @@
 // Code!
 namespace Gambit
 {
-  namespace Printers 
+  namespace Printers
   {
- 
+
     // Parameter controlling the length of all the standard buffers
     static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
     /// Max number of PPIDpairs to be tracked
@@ -82,7 +82,7 @@ namespace Gambit
     // foward declaration
     class HDF5Printer;
 
-    /// Keeps track of vertex buffers local to a print function 
+    /// Keeps track of vertex buffers local to a print function
     template<class BuffType>
     class H5P_LocalBufferManager
     {
@@ -109,32 +109,32 @@ namespace Gambit
 
       public:
         /// Constructor
-        H5P_LocalBufferManager() 
-          : printer(NULL) 
+        H5P_LocalBufferManager()
+          : printer(NULL)
           , synchronised(true)
           , access('w')
-        {} 
+        {}
 
         /// Initialise the buffer (attach it to a printer and set its behaviour)
-        void init(HDF5Printer* p, bool synchronised); 
+        void init(HDF5Printer* p, bool synchronised);
 
         /// Signal whether initialisation has occured
         bool ready() { if(printer==NULL){return false;}else{return true;} }
 
         /// Retrieve a buffer for an IDcode/auxilliary-index pair
-        BuffType& get_buffer(const int vID, const unsigned int i, const std::string& label); 
-    
+        BuffType& get_buffer(const int vID, const unsigned int i, const std::string& label);
+
     };
 
 
-    /// The main printer class for output to HDF5 format    
+    /// The main printer class for output to HDF5 format
     class HDF5Printer : public BasePrinter
     {
       public:
         /// Constructor (for construction via inifile options)
         HDF5Printer(const Options&, BasePrinter* const primary = NULL);
 
-        /// Auxilliary mode constructor (for construction in scanner plugins) 
+        /// Auxilliary mode constructor (for construction in scanner plugins)
         // **deprecated**
         //HDF5Printer(const Options&, std::string&, bool synchronised);
 
@@ -144,7 +144,7 @@ namespace Gambit
         /// Destructor
         // Overload the base class virtual destructor
         ~HDF5Printer();
- 
+
         /// Virtual function overloads:
         ///@{
 
@@ -169,12 +169,12 @@ namespace Gambit
         void _print(float     const&, const std::string&, const int, const uint, const ulong);
         void _print(double    const&, const std::string&, const int, const uint, const ulong);
         /// 'Custom' print functions
-        void _print(std::vector<double> const&, const std::string&, const int, const uint, const ulong);
-        void _print(ModelParameters     const&, const std::string&, const int, const uint, const ulong);
-        void _print(triplet<double>     const&, const std::string&, const int, const uint, const ulong);
-        void _print(bool                const&, const std::string&, const int, const uint, const ulong);
-        void _print(map_str_dbl         const&, const std::string&, const int, const uint, const ulong);
-
+        void _print(std::vector<double>  const&, const std::string&, const int, const uint, const ulong);
+        void _print(bool                 const&, const std::string&, const int, const uint, const ulong);
+        void _print(map_str_dbl          const&, const std::string&, const int, const uint, const ulong);
+        void _print(ModelParameters      const&, const std::string&, const int, const uint, const ulong);
+        void _print(triplet<double>      const&, const std::string&, const int, const uint, const ulong);
+        void _print(DM_nucleon_couplings const&, const std::string&, const int, const uint, const ulong);
         ///@}
 
         /// @{ HDF5Printer-specific functions
@@ -224,7 +224,7 @@ namespace Gambit
 
         /// Ask the printer for the highest ID number known for a given rank
         /// process (needed for resuming, so the scanner can resume assigning
-        /// point ID from this value. 
+        /// point ID from this value.
         // TODO: DEPRECATED
         //unsigned long getHighestPointID(const int rank);
 
@@ -233,13 +233,13 @@ namespace Gambit
 
         /// Function to ensure buffers are all synchronised to the same absolute position
         void synchronise_buffers();
- 
+
         /// For debugging: check that buffers are synced correctly
         /// Flag sets whether "perfect" sync is required, or whether
         /// some buffers can be ahead by one slot (due to having
         /// performed prints that other buffers have not yet done)
         void check_sync(const std::string& label, const int sync_type, bool checkall);
- 
+
         #ifdef WITH_MPI
         /// Reserved tags for MPI messages
         /// First reserved tag is for messages registering/requesting a new tag.
@@ -247,7 +247,7 @@ namespace Gambit
 
         /// Retrieve MPI communicator object used by this printer
         GMPI::Comm& get_Comm() { return myComm; }
-        #endif  
+        #endif
 
         // Check if the buffers are full and waiting to be emptied
         // By default this only empties buffers if they are full. Use
@@ -257,10 +257,10 @@ namespace Gambit
         /// Check whether printing to a new parameter space point is about to occur
         // and perform adjustments needed to prepare the printer.
         void check_for_new_point(const PPIDpair&);
- 
+
         /// Retrieve index from global lookup table, with error checking
         unsigned long get_global_index(const ulong pointID, const uint mpirank);
- 
+
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
 
@@ -308,7 +308,7 @@ namespace Gambit
 
 
         /// Helper print functions
-        // Used to reduce repetition in definitions of virtual function overloads 
+        // Used to reduce repetition in definitions of virtual function overloads
         // (useful since there is no automatic type conversion possible)
         template<class T>
         void template_print(T const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID)
@@ -316,8 +316,8 @@ namespace Gambit
            // Retrieve the buffer manager for buffers with this type
            auto& buffer_manager = get_mybuffermanager<T>(pointID,mpirank);
 
-           // Extract a buffer from the manager corresponding to this 
-           auto& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
+           // Extract a buffer from the manager corresponding to this
+           auto& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label);
 
            // { debug
            //if(label=="pointID") std::cout << "rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<label<<" = "<<value<<std::endl;
@@ -328,7 +328,7 @@ namespace Gambit
            std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<typeid(T).name()<<", "<<label<<" = "<<value<<std::endl;
            std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": pointID="<<pointID<<", mpirank="<<mpirank<<std::endl;
            #endif
- 
+
            PPIDpair ppid(pointID,mpirank);
            if(synchronised)
            {
@@ -342,10 +342,10 @@ namespace Gambit
              {
                add_PPID_to_list(ppid);
              }
-             selected_buffer.RA_write(value,ppid,primary_printer->global_index_lookup); 
+             selected_buffer.RA_write(value,ppid,primary_printer->global_index_lookup);
            }
         }
- 
+
       private:
         // String names for output file and group
         std::string tmp_comb_file; // temporary combined output filename
@@ -363,7 +363,7 @@ namespace Gambit
         hid_t location_id;
         hid_t RA_location_id;
 
-        /// Pointer to the primary printer object 
+        /// Pointer to the primary printer object
         // (if this is an auxilliary printer, else it is "this" //NULL)
         HDF5Printer* primary_printer = this; //NULL;
 
@@ -379,22 +379,22 @@ namespace Gambit
 
         /// ID of the point that this printer is currently working on.
         // Need this so that we can compute when (at least initial) writing to a model point has ceased
-        PPIDpair lastPointID; 
+        PPIDpair lastPointID;
 
         /// Current absolute dataset index
         // i.e. this location in the output dataset is currently the target of print functions
-        unsigned long current_dset_position; 
+        unsigned long current_dset_position;
 
         /// Map from pointID,thread pairs to absolute dataset indices
         //  Needed for dataset writes which return to old points.
-        std::map<PPIDpair, unsigned long> global_index_lookup; 
+        std::map<PPIDpair, unsigned long> global_index_lookup;
 
         // Matching vector for the above, for reverse lookup
         std::vector<PPIDpair> reverse_global_index_lookup;
 
         /// Offset needed to be added to the reverse lookup in
         /// order for it to match the output dataset position correctly
-        unsigned long RA_dset_offset = 0; 
+        unsigned long RA_dset_offset = 0;
 
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;
@@ -407,14 +407,14 @@ namespace Gambit
         GMPI::Comm myComm;
         #endif
 
-        /// Flag to specify whether all buffers created by this printer 
+        /// Flag to specify whether all buffers created by this printer
         /// should be synchronised and iterated along with the Gambit
         /// scanner iterations.
         bool synchronised = true;
 
         /// Flag to trigger "global" write mode for printer
         // i.e. print data will not be associated with parameter space points,
-        // but will be "global" data about the whole scan (e.g. max log likelihood 
+        // but will be "global" data about the whole scan (e.g. max log likelihood
         // found, scan statistics, etc.)
         bool global = false;
 
@@ -430,7 +430,7 @@ namespace Gambit
         /// Write position to which output buffers should be synchronised
         unsigned long sync_pos = 0;
 
-        /// In resume mode: storage for PPIDpairs harvested from previous scan data 
+        /// In resume mode: storage for PPIDpairs harvested from previous scan data
         std::vector<PPIDpair> previous_points;
 
       protected:
@@ -482,7 +482,7 @@ namespace Gambit
     // Register printer so it can be constructed via inifile instructions
     // First argument is string label for inifile access, second is class from which to construct printer
     LOAD_PRINTER(hdf5, HDF5Printer)
-     
+
   } // end namespace Printers
 } // end namespace Gambit
 

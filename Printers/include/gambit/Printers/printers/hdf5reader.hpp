@@ -10,7 +10,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2017 Jan
@@ -32,7 +32,7 @@ namespace Gambit {
     /// Length of dataset chunks read into memory during certain search operations.
     /// For maximum efficiency this should probably match the chunking length used
     /// to write the files in the first place.
-    static const std::size_t CHUNKLENGTH = 100; 
+    static const std::size_t CHUNKLENGTH = 100;
 
     template<class T>
     struct BuffPair
@@ -53,7 +53,7 @@ namespace Gambit {
        BuffPair() {}
     };
 
-    /// Keeps track of vertex buffers local to a retrieve function 
+    /// Keeps track of vertex buffers local to a retrieve function
     /// Similar to the buffer manager for HDF5Printer. I considered
     /// trying to re-use that, but it is too integrated with the
     /// printer.
@@ -68,7 +68,7 @@ namespace Gambit {
         /// Constructor
         H5P_LocalReadBufferManager()
         {
-        } 
+        }
 
         /// Destructor. Close all datasets
         ~H5P_LocalReadBufferManager()
@@ -83,7 +83,7 @@ namespace Gambit {
 
         /// Retrieve a buffer for an IDcode/auxilliary-index pair
         /// location_id used to access dataset if it has not yet been opened.
-        BuffPair<T>& get_buffer(const int vID, const unsigned int i, const std::string& label, hid_t location_id);  
+        BuffPair<T>& get_buffer(const int vID, const unsigned int i, const std::string& label, hid_t location_id);
     };
 
     class HDF5Reader : public BaseReader
@@ -98,7 +98,7 @@ namespace Gambit {
         virtual PPIDpair get_next_point(); // Get next rank/ptID pair in data file
         virtual PPIDpair get_current_point(); // Get current rank/ptID pair in data file
         virtual ulong    get_current_index(); // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
-       virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
+        virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
         /// Get type information for a data entry, i.e. defines the C++ type which this should be
         /// retrieved as, not what it is necessarily literally stored as in the output.
         virtual std::size_t get_type(const std::string& label);
@@ -115,18 +115,19 @@ namespace Gambit {
         bool _retrieve(float    &, const std::string& label, const uint rank, const ulong pointID);
         bool _retrieve(double   &, const std::string& label, const uint rank, const ulong pointID);
         /// 'Custom' retrieve functions
-        bool _retrieve(bool&,               const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(std::vector<double>&,const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(map_str_dbl&,        const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(ModelParameters&,    const std::string& label, const uint rank, const ulong pointID);
+        bool _retrieve(bool&,                 const std::string& label, const uint rank, const ulong pointID);
+        bool _retrieve(std::vector<double>&,  const std::string& label, const uint rank, const ulong pointID);
+        bool _retrieve(map_str_dbl&,          const std::string& label, const uint rank, const ulong pointID);
+        bool _retrieve(ModelParameters&,      const std::string& label, const uint rank, const ulong pointID);
+        bool _retrieve(DM_nucleon_couplings&, const std::string& label, const uint rank, const ulong pointID);
         /// @}
 
       private:
         // Location of HDF5 datasets to be read
         const std::string file;
         const std::string group;
-        const hid_t file_id; 
-        const hid_t location_id; 
+        const hid_t file_id;
+        const hid_t location_id;
 
         // Names of all datasets at the target location
         const std::vector<std::string> all_datasets;
@@ -172,14 +173,14 @@ namespace Gambit {
         {
            // Retrieve the buffer manager for buffers with this type
            auto& buffer_manager = get_mybuffermanager<T>();
- 
+
            // Buffers are labelled by an IDcode, which in the printer case is a graph vertex.
            // In the reader case I think we can safely re-use this system to assign IDs:
            int IDcode = get_param_id(label);
 
            // Extract a buffer pair from the manager corresponding to this type + label
-           auto& selected_buffer = buffer_manager.get_buffer(IDcode, aux_id, label, location_id); 
-           
+           auto& selected_buffer = buffer_manager.get_buffer(IDcode, aux_id, label, location_id);
+
            // Determine the dataset index from which to extrat the input PPIDpair
            ulong dset_index = get_index_from_PPID(PPIDpair(pointID,rank));
 
@@ -189,7 +190,7 @@ namespace Gambit {
            // Extract data validity flag
            return selected_buffer.isvalid.get_entry(dset_index);
         }
-  
+
     };
 
     /// Define the buffermanager getter specialisations
@@ -200,7 +201,7 @@ namespace Gambit {
       { \
          return CAT(hdf5_localbufferman_,TYPE); \
       }
-    DEFINE_BUFFMAN_GETTER(int      ) 
+    DEFINE_BUFFMAN_GETTER(int      )
     DEFINE_BUFFMAN_GETTER(uint     )
     DEFINE_BUFFMAN_GETTER(long     )
     DEFINE_BUFFMAN_GETTER(ulong    )

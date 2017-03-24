@@ -10,7 +10,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2017 Jan
@@ -52,7 +52,7 @@ namespace Gambit {
         {
            if(not Utils::endsWith(*it,"_isvalid")) ls_out.push_back(*it);
         }
-        return ls_out;  
+        return ls_out;
      }
 
      HDF5Reader::HDF5Reader(const Options& options)
@@ -61,10 +61,10 @@ namespace Gambit {
       , file_id(openfile_read(file))
       , location_id(HDF5::openGroup(file_id, group, true))
       , all_datasets(lsGroup_process(location_id))
-      , pointIDs        (location_id, "pointID", true, 'r') 
+      , pointIDs        (location_id, "pointID", true, 'r')
       , pointIDs_isvalid(location_id, "pointID_isvalid", true, 'r')
       , mpiranks        (location_id, "MPIrank", true, 'r')
-      , mpiranks_isvalid(location_id, "MPIrank_isvalid", true, 'r') 
+      , mpiranks_isvalid(location_id, "MPIrank_isvalid", true, 'r')
       , current_dataset_index(0)
       , current_point(nullpoint)
      {
@@ -104,7 +104,7 @@ namespace Gambit {
 
      /// Reset 'read head' position to first entry
      void HDF5Reader::reset()
-     { 
+     {
         current_dataset_index = 0;
         current_point = nullpoint;
      }
@@ -121,7 +121,7 @@ namespace Gambit {
         // UPDATE: Don't want any of that! Need to be able to keep track of which iteration we are up to.
         //if(current_point!=nullpoint)
         //{
-        //   ++current_dataset_index; 
+        //   ++current_dataset_index;
         //}
         //bool stop_loop = false;
         //while(not stop_loop)
@@ -149,7 +149,7 @@ namespace Gambit {
         //     }
         //   }
         //}
-        
+
         // New method
         ++current_dataset_index;
         if(eoi())
@@ -183,16 +183,16 @@ namespace Gambit {
      }
 
      // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
-     ulong HDF5Reader::get_current_index() 
+     ulong HDF5Reader::get_current_index()
      {
-       return current_dataset_index; 
+       return current_dataset_index;
      }
 
      /// Check if 'current point' is past the end of the datasets (and thus invalid!)
      bool HDF5Reader::eoi()
      {
         bool result = current_dataset_index >= get_dataset_length();
-        //if(result) std::cout <<"eoi? index="<<current_dataset_index<<", length="<<get_dataset_length()<<std::endl; 
+        //if(result) std::cout <<"eoi? index="<<current_dataset_index<<", length="<<get_dataset_length()<<std::endl;
         return result;
      }
 
@@ -230,15 +230,15 @@ namespace Gambit {
         BOOST_PP_SEQ_FOR_EACH(GET_TYPE_CASES, _, H5_OUTPUT_TYPES)
         #undef GET_TYPE_CASES
         {
-          std::ostringstream err;                               
-          err << "Did not recognise retrieved HDF5 type for data label '"<<label<<"'! This may indicate a bug in the Reader class you are using, please report it."; 
-          printer_error().raise(LOCAL_INFO,err.str());         
+          std::ostringstream err;
+          err << "Did not recognise retrieved HDF5 type for data label '"<<label<<"'! This may indicate a bug in the Reader class you are using, please report it.";
+          printer_error().raise(LOCAL_INFO,err.str());
         }
         if(typeID==0)
         {
-          std::ostringstream err;                               
-          err << "Did not recognise retrieved Printer type for data label '"<<label<<"'! This may indicate a bug in the Printer system, please report it."; 
-          printer_error().raise(LOCAL_INFO,err.str());         
+          std::ostringstream err;
+          err << "Did not recognise retrieved Printer type for data label '"<<label<<"'! This may indicate a bug in the Printer system, please report it.";
+          printer_error().raise(LOCAL_INFO,err.str());
         }
         /// Release HDF5 type ID number
         HDF5::closeType(datatype_id);
@@ -248,7 +248,7 @@ namespace Gambit {
      /// Get labels of all datasets in the linked group
      std::set<std::string> HDF5Reader::get_all_labels()
      {
-        std::set<std::string> out(all_datasets.begin(), all_datasets.end()); 
+        std::set<std::string> out(all_datasets.begin(), all_datasets.end());
         return out;
      }
 
@@ -259,14 +259,14 @@ namespace Gambit {
      /// Templatable retrieve functions
      #define RETRIEVE(TYPE) _retrieve(TYPE& out, const std::string& l, const uint r, const ulong p) \
         { return  _retrieve_template(out,l,0,r,p); }
-     bool HDF5Reader::RETRIEVE(int      ) 
-     bool HDF5Reader::RETRIEVE(uint     ) 
-     bool HDF5Reader::RETRIEVE(long     ) 
-     bool HDF5Reader::RETRIEVE(ulong    ) 
-     bool HDF5Reader::RETRIEVE(longlong ) 
+     bool HDF5Reader::RETRIEVE(int      )
+     bool HDF5Reader::RETRIEVE(uint     )
+     bool HDF5Reader::RETRIEVE(long     )
+     bool HDF5Reader::RETRIEVE(ulong    )
+     bool HDF5Reader::RETRIEVE(longlong )
      bool HDF5Reader::RETRIEVE(ulonglong)
-     bool HDF5Reader::RETRIEVE(float    ) 
-     bool HDF5Reader::RETRIEVE(double   ) 
+     bool HDF5Reader::RETRIEVE(float    )
+     bool HDF5Reader::RETRIEVE(double   )
      #undef RETRIEVE
 
      // Bools can't quite use the template function directly, since there
@@ -285,16 +285,18 @@ namespace Gambit {
      { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
      bool HDF5Reader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
      { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
+     bool HDF5Reader::_retrieve(DM_nucleon_couplings& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+     { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
 
      bool HDF5Reader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
      {
         bool is_valid = true;
         /// Work out all the output labels which correspond to the input modelname
         bool found_at_least_one(false);
- 
+
         //std::cout << "Searching for ModelParameters of model '"<<modelname<<"'"<<std::endl;
         // Iterate through names in HDF5 group
-        for(std::vector<std::string>::const_iterator 
+        for(std::vector<std::string>::const_iterator
             it = all_datasets.begin();
             it!= all_datasets.end(); ++it)
         {
@@ -317,7 +319,7 @@ and successfully found the parameter "<<param_name<<", however the root of the l
 does not match the root expected based upon previous parameter retrievals for this model, which was\n\
   "<<out.getOutputName()<<"\n\
 This may indicate that multiple sets of model parameters are present in the output file for the same model! This is not allowed, please report this bug against whatever master YAML file (or external code?) produced the output file you are trying to read.";
-                printer_error().raise(LOCAL_INFO,err.str());     
+                printer_error().raise(LOCAL_INFO,err.str());
               }
             }
             else
@@ -335,10 +337,10 @@ This may indicate that multiple sets of model parameters are present in the outp
             }
             else
             {
-               // If one parameter value is 'invalid' then we cannot reconstruct 
+               // If one parameter value is 'invalid' then we cannot reconstruct
                // the ModelParameters object, so we mark the whole thing invalid.
                out.setValue(param_name, 0);
-               is_valid = false;           
+               is_valid = false;
             }
           }
         }
@@ -347,8 +349,8 @@ This may indicate that multiple sets of model parameters are present in the outp
         {
           // Didn't find any matches!
            std::ostringstream err;
-           err << "Error! HDF5Reader failed to find any ModelParameters matching the model name '"<<modelname<<"' in the HDF5 file:group "<<file<<":"<<group<<"' (while calling 'retrieve'). Please check that model name and input file/group are correct."; 
-           printer_error().raise(LOCAL_INFO,err.str());     
+           err << "Error! HDF5Reader failed to find any ModelParameters matching the model name '"<<modelname<<"' in the HDF5 file:group "<<file<<":"<<group<<"' (while calling 'retrieve'). Please check that model name and input file/group are correct.";
+           printer_error().raise(LOCAL_INFO,err.str());
         }
         /// done!
         return is_valid;
@@ -366,13 +368,13 @@ This may indicate that multiple sets of model parameters are present in the outp
         {
            // Matches current point; send it out
            out_index = current_dataset_index;
-        } 
+        }
         else if(ppid == mem_point)
         {
            // Matches stored point; send it out
            out_index = mem_index;
         }
-        else 
+        else
         {
            // Gotta search for it.
            std::ostringstream errmsg;
@@ -405,7 +407,7 @@ This may indicate that multiple sets of model parameters are present in the outp
             std::ostringstream errmsg;
             errmsg << "Failed to created HDF5 read buffer '"<<label<<"'! The suppied location_id does not point to a valid location in a HDF5 file!";
             printer_error().raise(LOCAL_INFO, errmsg.str());
-         } 
+         }
 
          local_buffers[key] = BuffPair<T>(location_id,label);
 

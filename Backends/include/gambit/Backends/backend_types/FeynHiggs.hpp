@@ -15,10 +15,10 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/util_types.hpp"
-
 #ifndef __FeynHiggs_types_hpp__
 #define __FeynHiggs_types_hpp__
+
+#include "gambit/Utils/util_types.hpp"
 
 // indexing macros from FeynHiggs' "FHCouplings.h", FH v2.10.2, edited
 

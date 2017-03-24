@@ -10,7 +10,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2016 Jan
@@ -30,7 +30,7 @@ namespace Gambit {
      {
        public:
          asciiReader(const Options& options);
-   
+
          /// @{ Base class virtual interface functions
          virtual void reset(); // Reset 'read head' position to first entry
          virtual ulong get_dataset_length(); // Get length of input dataset
@@ -44,17 +44,18 @@ namespace Gambit {
          virtual std::size_t get_type(const std::string&) { return getTypeID<double>(); }
          virtual std::set<std::string> get_all_labels(); // Get all output column labels
          using BaseReader::_retrieve; // Tell compiler we are using some of the base class overloads of this on purpose.
-         bool _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
-         bool _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
-         bool _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);
-         bool _retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID);
-         bool _retrieve(ModelParameters& out,    const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(std::string& out,          const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(double& out,               const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(std::vector<double>& out,  const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(map_str_dbl& out,          const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(ModelParameters& out,      const std::string& label, const uint rank, const ulong pointID);
+         bool _retrieve(DM_nucleon_couplings& out, const std::string& label, const uint rank, const ulong pointID);
          /// @}
 
        private:
          const std::string infoFile_name;
          const std::string dataFile_name;
-         const std::map<std::string,uint> column_map; // Map from column names to indices 
+         const std::map<std::string,uint> column_map; // Map from column names to indices
          const uint col_rank;
          const uint col_ptID;
          std::ifstream dataFile;

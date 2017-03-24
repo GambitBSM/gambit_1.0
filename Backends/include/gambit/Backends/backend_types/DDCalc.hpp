@@ -7,12 +7,15 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///          p.scott@imperial.ac.uk
 ///  \date 2016 May
 ///
 ///  *************************
+
+#ifndef __DDCalc_types_hpp__
+#define __DDCalc_types_hpp__
 
 namespace Gambit
 {
@@ -27,3 +30,5 @@ namespace Gambit
   };
 
 }
+
+#endif /* defined __DDCalc_types_hpp__ */
