@@ -2,7 +2,7 @@
 # out point reweighting
 #
 # To test this out, first run:
-# ./gambit -f largetest_multinest+ascii.yaml
+# ./gambit -f largetest_diver+hdf5.yaml
 # to generate output to be reweighted.
 # Then run this file.
 #
@@ -84,8 +84,7 @@ Scanner:
       # Format is {"oldname1":"newname1", "oldname2":"newname2", ...}
       rename:  {"#normaldist_loglike @ExampleBit_A::lnL_gaussian": "old_normaldist_loglike",
                 "Runtime(ms) totalloop": "old_totalloop_runtime",
-                "LogLike" : "LogLike2",
-                "LogLike2": "old_LogLike2"}
+                "LogLike" : "LogLike_old"}
       # error example; clashes with 'LogLike' target;  "pointID": "LogLike2"}
 
       # Cut options
@@ -109,7 +108,7 @@ Scanner:
       # use_virtual_rank: true 
 
       # Set interval between progress report messages to stdout (0 for no messages, default 1000)
-      #update_interval: 1000
+      update_interval: 100
       reader:
         # This determines what old output file is to be read and whose parameter points are to be used
         type: hdf5
@@ -118,8 +117,11 @@ Scanner:
         #info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
         #data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
         #file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
-        file: "tmp.hdf5"
-        group: "/"
+        #file: "tmp.hdf5"
+        #group: "/" 
+        file: "runs/largetest_diver+hdf5/samples/results.hdf5"
+        group: "/gambit_data" 
+        
 
 #  objectives:
 #
@@ -159,3 +161,5 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
+
+  debug: false

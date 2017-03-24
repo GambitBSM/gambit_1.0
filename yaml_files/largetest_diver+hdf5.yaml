@@ -47,7 +47,7 @@ Scanner:
       aux_printer_live_options:
     de:
       plugin: Diver
-      NP: 1000000
+      NP: 100000
       #path: "diver_native"
       verbosity: 2
       like: LogLike
