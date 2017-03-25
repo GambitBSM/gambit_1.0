@@ -59,7 +59,7 @@
   value: 2.19e-2
   exp_stat_error: 0.12e-2
   exp_sys_error: 0.
-  th_error: 0.01e-2
+  th_error: 0.06
   error_type: M
   source: PDG
   correlation:
