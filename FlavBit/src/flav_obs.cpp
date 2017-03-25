@@ -78,27 +78,22 @@ namespace Gambit
       v.name=node["name"].as<std::string>();
       v.is_limit = node["islimit"].as<bool>();
       v.exp_source = node["exp_source"].as<std::string>();
+      v.exp_stat_error = node["exp_stat_error"].as<double>();
+      v.exp_sys_error = node["exp_sys_error"].as<double>();
+      v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
+      v.th_error=node["th_error"].as<double>();
+      v.th_error_type=node["th_error_type"].as<std::string>();
       v.th_error_source = node["th_error_source"].as<std::string>();
 
       if (v.is_limit)
       {
         v.limit=node["limit"].as<double>();
         v.exp_value=-1.;
-        v.exp_stat_error=-1.;
-        v.exp_sys_error=-1.;
-        v.exp_error=-1.;
-        v.th_error_type="NONE";
-        v.th_error=-1.;
       }
       else
       {
         v.limit=-1.;
         v.exp_value= node["exp_value"].as<double>();
-        v.exp_stat_error = node["exp_stat_error"].as<double>();
-        v.exp_sys_error = node["exp_sys_error"].as<double>();
-        v.th_error=node["th_error"].as<double>();
-        v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
-        v.th_error_type=node["th_error_type"].as<std::string>();
       }
 
       // now the correlation
