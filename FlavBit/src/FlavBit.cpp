@@ -44,9 +44,7 @@
 #include "gambit/Elements/spectrum.hpp"
 #include "gambit/FlavBit/flav_obs.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-
 #include "gambit/Utils/statistics.hpp"
-
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
@@ -55,11 +53,6 @@
 
 //#define FLAVBIT_DEBUG
 //#define FLAVBIT_DEBUG_LL
-
-#define Nobs_BKll 2
-#define Nobs_BKsll 30
-#define Nobs_Bsphill 6
-
 
 namespace Gambit
 {
@@ -1714,7 +1707,7 @@ namespace Gambit
 
 
     // *************************************************
-    /// Calculating CP asymmetries in B-> K* mu mu
+    /// Calculating isospin asymmetry of B-> K* mu mu
     // *************************************************
 
     void SI_AI_BKstarmumu(double &result)
@@ -1722,7 +1715,7 @@ namespace Gambit
       using namespace Pipes::SI_AI_BKstarmumu;
 
       if(flav_debug)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
-      
+
       struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0)
@@ -1829,7 +1822,7 @@ namespace Gambit
 
         for(unsigned i=0;i<observables.size();++i)
         {
-          red.read_yaml_mesurement("flav_data.yaml", observables[i]);
+          red.read_yaml_measurement("flav_data.yaml", observables[i]);
         }
 
         red.create_global_corr();
@@ -1972,15 +1965,15 @@ namespace Gambit
         Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
         red.debug_mode(flav_debug);
         if (flav_debug) cout<<"Initialised Flav reader in b2sgamma_measurements"<<endl;
-        red.read_yaml_mesurement("flav_data.yaml", "BR_b2sgamma");
-        red.create_global_corr(); // here we have a single mesurement ;) so let's be sneaky:
+        red.read_yaml_measurement("flav_data.yaml", "BR_b2sgamma");
+        red.create_global_corr(); // here we have a single measurement ;) so let's be sneaky:
         exp_meas = red.get_exp_value()(0,0);
         exp_b2sgamma_err = sqrt(red.get_cov()(0,0));
         th_err=red.get_th_err()(0,0);
         first = false;
       }
 
-      if (flav_debug) cout<<"Experiment: "<<exp_meas<<" "<<exp_b2sgamma_err<<" "<<th_err<<endl;
+      if (flav_debug) cout << "Experiment: " << exp_meas << " " << exp_b2sgamma_err << " " << th_err << endl;
 
       // Now we do the stuff that actually depends on the parameters
       double theory_prediction= *Dep::bsgamma;
@@ -2015,8 +2008,8 @@ namespace Gambit
         red.debug_mode(flav_debug);
 
         if (flav_debug) cout<<"Initiated Flav reader in b2ll_measurements"<<endl;
-        red.read_yaml_mesurement("flav_data.yaml", "BR_Bs2mumu");
-        red.read_yaml_mesurement("flav_data.yaml", "BR_B02mumu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_Bs2mumu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_B02mumu");
         if (flav_debug) cout<<"Finished reading b->mumu data"<<endl;
 
         red.create_global_corr();
@@ -2074,7 +2067,7 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
 
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
-      
+
       boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
 
       // adding theory and experimenta covariance
@@ -2132,21 +2125,21 @@ namespace Gambit
         if (flav_debug) cout<<"Initialised Flav reader in SL_measurements"<<endl;
 
         // B-> tau nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_Btaunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_Btaunu");
         // B-> D tau nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_BDtaunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_BDtaunu");
         // B-> D* tau nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_BDstartaunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_BDstartaunu");
         // B-> D mu nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_BDmunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_BDmunu");
         // B-> D* mu nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_BDstarmunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_BDstarmunu");
         // Ds-> tau nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_Dstaunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_Dstaunu");
         // Ds -> mu nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_Dsmunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_Dsmunu");
         // D -> mu nu
-        red.read_yaml_mesurement("flav_data.yaml", "BR_Dmunu");
+        red.read_yaml_measurement("flav_data.yaml", "BR_Dmunu");
 
         red.create_global_corr();
 

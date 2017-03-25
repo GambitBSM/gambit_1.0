@@ -61,7 +61,7 @@ namespace Gambit
       double th_error;
       std::string name;
       std::string exp_source;
-      std::string th_source;
+      std::string th_error_source;
       std::string th_error_type;
       std::vector<Correlation> corr;
     };

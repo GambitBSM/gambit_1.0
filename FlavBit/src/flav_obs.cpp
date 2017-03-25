@@ -61,77 +61,55 @@ namespace Gambit
       return true;
     }
 
-
-    // now the extraction operators for these types
-    void operator >> (const YAML::Node& node, Correlation& c) {
-      string tmp;
+    /// Extraction operator for correlation
+    void operator >> (const YAML::Node& node, Correlation& c)
+    {
       // safety
-      //cout<<"READING CORRELATION"<<endl;
-      tmp = node["name"].as<std::string>();
-      if(tmp=="NONE") return;
+      string name = node["name"].as<std::string>();
+      if (name == "NONE") return;
       // reading correlation
-      //cout<<"Should not be here"<<endl;
-      c.corr_name= node["name"].as<std::string>();
-      c.corr_val = node["exp_value"].as<double>();
-      //cout<<"let's see:"<<endl;
-      //cout<<c.corr_name<<endl;
-      //cout<<c.corr_val <<endl;
-
+      c.corr_name= name;
+      c.corr_val = node["value"].as<double>();
     }
-    void operator >> (const YAML::Node& node, Measurement& v) {
 
+    /// Extraction operator for measurement
+    void operator >> (const YAML::Node& node, Measurement& v)
+    {
       v.name=node["name"].as<std::string>();
-
       v.is_limit = node["islimit"].as<bool>();
-
-
-      if(v.is_limit== true)
-	{
-	  v.limit=node["limit"].as<double>();
-	  v.exp_value=-1.;
-	  v.exp_stat_error=-1.;
-	  v.exp_sys_error=-1.;
-	  v.exp_error=-1.;
-	  v.th_error_type="NONE";
-	  v.th_error=-1.;
-	}
-      else
-	{
-	  v.exp_value= node["exp_value"].as<double>();
-	  //cout<<v.exp_value<<endl;
-	  v.exp_stat_error = node["exp_stat_error"].as<double>();
-	  //cout<<v.exp_stat_error<<endl;
-	  v.exp_sys_error = node["exp_sys_error"].as<double>();
-	  //cout << v.exp_stat_error << endl;
-	  // v.exp_stat_error_plus=node["exp_stat_error_plus"].as<double>();
-	  // v.exp_sys_error_plus=node["exp_sys_error_plus"].as<double>();
-	  v.th_error=node["th_error"].as<double>();
-	  //cout << v.th_error <<endl;
-	  // v.th_error_plus=node["th_error_plus"].as<double>();
-	  //adding the errors with
-	  v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
-	  //v.exp_error_minus=sqrt(v.exp_sys_error_minus*v.exp_sys_error_minus+v.exp_stat_error_minus*v.exp_stat_error_minus);
-	  v.limit=-1.;
-	  v.th_error_type=node["th_error_type"].as<std::string>();
-	  // cout<<v.th_error_type<<endl;
-	}
       v.exp_source = node["exp_source"].as<std::string>();
       v.th_error_source = node["th_error_source"].as<std::string>();
+
+      if (v.is_limit)
+      {
+        v.limit=node["limit"].as<double>();
+        v.exp_value=-1.;
+        v.exp_stat_error=-1.;
+        v.exp_sys_error=-1.;
+        v.exp_error=-1.;
+        v.th_error_type="NONE";
+        v.th_error=-1.;
+      }
+      else
+      {
+        v.limit=-1.;
+        v.exp_value= node["exp_value"].as<double>();
+        v.exp_stat_error = node["exp_stat_error"].as<double>();
+        v.exp_sys_error = node["exp_sys_error"].as<double>();
+        v.th_error=node["th_error"].as<double>();
+        v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
+        v.th_error_type=node["th_error_type"].as<std::string>();
+      }
+
       // now the correlation
       const YAML::Node& correlations = node["correlation"];
-      for(unsigned i=0;i<correlations.size();++i) {
-	Correlation corr_tmp;
-	correlations[i] >> corr_tmp;
-	//	cout<<"Correlation name: "<<corr_tmp.corr_name<<endl;
-	if(corr_tmp.corr_name !=""  ) v.corr.push_back(corr_tmp);
-
-
-      }// for loop inside correlation
-      //cout<<"Corrleation size: "<<v.corr[0].size()<<endl;
-
+      for (unsigned i=0; i<correlations.size(); ++i)
+      {
+        Correlation corr_tmp;
+        correlations[i] >> corr_tmp;
+        if (corr_tmp.corr_name != "") v.corr.push_back(corr_tmp);
+      }
     }
-
-
 
     Flav_reader::Flav_reader(string loc)
     {
@@ -148,9 +126,7 @@ namespace Gambit
       int OK=1;
       string path=measurement_location+"/"+name;
       std::ifstream fin(path.c_str());
-      //YAML::Parser parser(fin);
       YAML::Node doc = YAML::Load(fin);
-      // parser.GetNextDocument(doc);
       number_measurements=0;
       for(unsigned i=0;i<doc.size();++i)
 	{
@@ -163,27 +139,26 @@ namespace Gambit
       if(debug) cout<<"Number of measurements: "<<number_measurements<<endl;
       return OK;
     }
-    void Flav_reader::read_yaml_mesurement(string name, string measurement_name)
+
+    void Flav_reader::read_yaml_measurement(string name, string measurement_name)
     {
       string path=measurement_location+"/"+name;
       std::ifstream fin(path.c_str());
-      //YAML::Parser parser(fin);
       YAML::Node doc = YAML::Load(fin);
       Measurement mes_tmp;
 
-      if(debug) cout<<measurement_name.c_str()<<endl;
+      if (debug) cout << measurement_name.c_str() << endl;
 
-      for(unsigned i=0;i<doc.size();++i)
-	{
-	  Measurement mes_tmp;
-	  doc[i] >> mes_tmp;
-	  if(mes_tmp.name!=measurement_name.c_str()) continue;
+      for (unsigned i=0; i<doc.size(); ++i)
+      {
+        Measurement mes_tmp;
+        doc[i] >> mes_tmp;
+        if(mes_tmp.name!=measurement_name.c_str()) continue;
 
-	  measurements.push_back(mes_tmp);
-	  number_measurements++;
-	  if(debug) cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.exp_value<<endl;
-	}
-
+        measurements.push_back(mes_tmp);
+        number_measurements++;
+        if (debug) cout << "Increasing " << measurement_name << " " << mes_tmp.name << " " << mes_tmp.exp_value << endl;
+      }
     }
 
 

@@ -60,7 +60,7 @@ namespace Gambit
       int read_yaml(str name); // reads a yaml file
       int read_root(str name); // reads a root saved histogram
       int read(str name); // reads root or yaml files, by checking the name
-      void read_yaml_mesurement(str name, str measurement_name) ;
+      void read_yaml_measurement(str name, str measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
       void debug_mode(bool k) {debug= k;};

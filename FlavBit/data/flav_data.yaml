@@ -90,7 +90,7 @@
   exp_source: PDG
   th_error: 0.06
   th_error_type: M
-  th_error_source:
+  th_error_source: NONE
   correlation:
   - name: NONE
 
