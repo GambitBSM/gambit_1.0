@@ -124,7 +124,7 @@ namespace Gambit
 
       if(ModelInUse("WC"))
         {
-          BEreq::Init_param(&result);
+	  //          BEreq::Init_param(&result);
           result.SM=1;  // needed according to Nazila
           result.Re_DeltaC7=*Param["Re_DeltaC7"];
           result.Re_DeltaC9=*Param["Re_DeltaC9"];
@@ -1722,6 +1722,8 @@ namespace Gambit
       using namespace Pipes::SI_AI_BKstarmumu;
 
       if(flav_debug)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
+      
+      struct parameters param = *Dep::SuperIso_modelinfo;
 
       if(param.model<0)
 	{

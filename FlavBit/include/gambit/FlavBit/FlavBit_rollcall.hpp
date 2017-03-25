@@ -1338,10 +1338,7 @@ START_MODULE
     #define FUNCTION SI_AI_BKstarmumu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(AI_BKstarmumu, (libsuperiso), double, (double, double, double*, double*, double*, struct parameters*, double))
-    BACKEND_REQ(CW_calculator, (libsuperiso), void, (int, double*, double*, double*, double, struct parameters*))
-    BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    BACKEND_REQ(SI_AI_BKstarmumu_CONV, (libsuperiso),  double, (struct parameters*))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1351,10 +1348,7 @@ START_MODULE
     #define FUNCTION SI_AI_BKstarmumu_zero
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(AI_BKstarmumu_zero, (libsuperiso), double, (double*, double*, double*, struct parameters*, double))
-    BACKEND_REQ(CW_calculator, (libsuperiso), void, (int, double*, double*, double*, double, struct parameters*))
-    BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
-    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    BACKEND_REQ(SI_AI_BKstarmumu_zero_CONV, (libsuperiso),  double, (struct parameters*))
     #undef FUNCTION
   #undef CAPABILITY
 
