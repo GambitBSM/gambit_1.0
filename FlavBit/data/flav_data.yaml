@@ -1,10 +1,10 @@
 - name: BR_Bs2mumu
   islimit: false
-  value: 2.8e-9
-  exp_stat_error: 0.7e-9
-  exp_sys_error: 0.0e-9
+  value: 3.0e-9
+  exp_stat_error: 0.6e-9
+  exp_sys_error: 0.25e-9
   th_error: 0.1
-  source: Nature 522
+  source: 1703.05747
   error_type: M
   correlation:
   - name: NONE
@@ -22,15 +22,14 @@
 
 - name: BR_b2sgamma
   islimit: false
-  value: 343.e-6
-  exp_stat_error: 21.e-6
-  exp_sys_error: 7.e-6
-  th_error: 23.e-6
-  source: HFAG
+  value: 322.e-6
+  exp_stat_error: 15.e-6
+  exp_sys_error: 0.e-6
+  th_error: 0.0714
+  source: 1702.04571, 1503.01791
   error_type: M
   correlation:
   - name: NONE
-
 
 - name: BR_Btaunu
   islimit: false
@@ -87,7 +86,6 @@
   correlation:
   - name: NONE
 
-
 - name: BR_Dstaunu
   islimit: false
   value: 3.625e-2
@@ -121,6 +119,8 @@
   correlation:
   - name: NONE
 
+##########################################
+
 - name: FL_B0Kstar0mumu_0.1_0.98
   islimit: false
   value: 0.263
@@ -131,7 +131,6 @@
   source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
-
 
 - name: AFB_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -144,7 +143,6 @@
   correlation:
   - name: S4_B0Kstar0mumu_0.1_0.98
     value: 0.11
-
 
 - name: S3_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -168,7 +166,6 @@
   correlation:
   - name: AFB_B0Kstar0mumu_0.1_0.98
     value: 0.11
-
 
 - name: S5_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -266,7 +263,6 @@
   - name: S5_B0Kstar0mumu_1.1-2.5
     value: -0.22
 
-
 - name: S5_B0Kstar0mumu_1.1-2.5
   islimit: false
   value: 0.137
@@ -285,7 +281,6 @@
   - name: S9_B0Kstar0mumu_1.1-2.5
     value: -0.21
 
-
 - name: S7_B0Kstar0mumu_1.1-2.5
   islimit: false
   value: -0.219
@@ -302,7 +297,6 @@
   - name: S9_B0Kstar0mumu_1.1-2.5
     value: 0.23
 
-
 - name: S8_B0Kstar0mumu_1.1-2.5
   islimit: false
   value: -0.098
@@ -316,7 +310,6 @@
     value: -0.10
   - name: S7_B0Kstar0mumu_1.1-2.5
     value: -0.11
-
 
 - name: S9_B0Kstar0mumu_1.1-2.5
   islimit: false
@@ -334,7 +327,6 @@
   - name: S7_B0Kstar0mumu_1.1-2.5
     value: 0.23
 
-
 ##########################################
 
 - name: FL_B0Kstar0mumu_2.5-4
@@ -351,7 +343,6 @@
   - name: S4_B0Kstar0mumu_2.5-4
     value: -0.14
 
-
 - name: AFB_B0Kstar0mumu_2.5-4
   islimit: false
   value: -0.118
@@ -366,8 +357,6 @@
   - name: S9_B0Kstar0mumu_2.5-4
     value: 0.10
 
-
-
 - name: S3_B0Kstar0mumu_2.5-4
   islimit: false
   value: 0.035
@@ -379,7 +368,6 @@
   correlation:
   - name: FL_B0Kstar0mumu_2.5-4
     value: -0.13
-
 
 - name: S4_B0Kstar0mumu_2.5-4
   islimit: false
@@ -397,7 +385,6 @@
   - name: S8_B0Kstar0mumu_2.5-4
     value: 0.12
 
-
 - name: S5_B0Kstar0mumu_2.5-4
   islimit: false
   value: -0.022
@@ -411,7 +398,6 @@
     value: -0.19
   - name: S9_B0Kstar0mumu_2.5-4
     value: 0.10
-
 
 - name: S7_B0Kstar0mumu_2.5-4
   islimit: false
@@ -452,11 +438,7 @@
   - name: AFB_B0Kstar0mumu_2.5-4
     value: 0.10
 
-
-
 ##########################################
-
-
 
 - name: FL_B0Kstar0mumu_4-6
   islimit: false
@@ -470,7 +452,6 @@
   - name: S5_B0Kstar0mumu_4-6
     value: 0.10
 
-
 - name: AFB_B0Kstar0mumu_4-6
   islimit: false
   value: 0.025
@@ -483,7 +464,6 @@
   - name: S4_B0Kstar0mumu_4-6
     value: -0.10
 
-
 - name: S3_B0Kstar0mumu_4-6
   islimit: false
   value: 0.035
@@ -495,7 +475,6 @@
   correlation:
   - name: S7_B0Kstar0mumu_4-6
     value: -0.10
-
 
 - name: S4_B0Kstar0mumu_4-6
   islimit: false
@@ -511,7 +490,6 @@
   - name: AFB_B0Kstar0mumu_4-6
     value: -0.10
 
-
 - name: S5_B0Kstar0mumu_4-6
   islimit: false
   value: -0.146
@@ -525,7 +503,6 @@
     value: 0.10
   - name: S4_B0Kstar0mumu_4-6
     value: 0.10
-
 
 - name: S7_B0Kstar0mumu_4-6
   islimit: false
@@ -541,7 +518,6 @@
   - name: S9_B0Kstar0mumu_4-6
     value: -0.15
 
-
 - name: S8_B0Kstar0mumu_4-6
   islimit: false
   value: 0.167
@@ -552,7 +528,6 @@
   source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
-
 
 - name: S9_B0Kstar0mumu_4-6
   islimit: false
@@ -565,8 +540,6 @@
   correlation:
   - name: S7_B0Kstar0mumu_4-6
     value: -0.15
-
-
 
 ##########################################
 
@@ -581,7 +554,6 @@
   correlation:
   - name: AFB_B0Kstar0mumu_6-8
     value: -0.31
-
 
 - name: AFB_B0Kstar0mumu_6-8
   islimit: false
@@ -599,7 +571,6 @@
   - name: S5_B0Kstar0mumu_6-8
     value: -0.16
 
-
 - name: S3_B0Kstar0mumu_6-8
   islimit: false
   value: -0.042
@@ -613,7 +584,6 @@
     value: -0.16
   - name: S5_B0Kstar0mumu_6-8
     value: -0.23
-
 
 - name: S4_B0Kstar0mumu_6-8
   islimit: false
@@ -633,7 +603,6 @@
   - name: S8_B0Kstar0mumu_6-8
     value: -0.11
 
-
 - name: S5_B0Kstar0mumu_6-8
   islimit: false
   value: -0.327
@@ -652,7 +621,6 @@
   - name: S7_B0Kstar0mumu_6-8
     value: -0.14
 
-
 - name: S7_B0Kstar0mumu_6-8
   islimit: false
   value: -0.141
@@ -666,7 +634,6 @@
     value: -0.14
   - name: S8_B0Kstar0mumu_6-8
     value: 0.10
-
 
 - name: S8_B0Kstar0mumu_6-8
   islimit: false
@@ -682,7 +649,6 @@
   - name: S7_B0Kstar0mumu_6-8
     value: 0.10
 
-
 - name: S9_B0Kstar0mumu_6-8
   islimit: false
   value: -0.004
@@ -693,7 +659,6 @@
   source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
-
 
 #############################################
 
@@ -715,7 +680,6 @@
   - name: S9_B0Kstar0mumu_15-17
     value: 0.14
 
-
 - name: AFB_B0Kstar0mumu_15-17
   islimit: false
   value: 0.411
@@ -732,7 +696,6 @@
   - name: S5_B0Kstar0mumu_15-17
     value: -0.20
 
-
 - name: S3_B0Kstar0mumu_15-17
   islimit: false
   value: -0.142
@@ -746,7 +709,6 @@
     value: 0.26
   - name: S9_B0Kstar0mumu_15-17
     value: 0.10
-
 
 - name: S4_B0Kstar0mumu_15-17
   islimit: false
@@ -766,7 +728,6 @@
   - name: S8_B0Kstar0mumu_15-17
     value: 0.19
 
-
 - name: S5_B0Kstar0mumu_15-17
   islimit: false
   value: -0.316
@@ -782,7 +743,6 @@
     value: -0.20
   - name: S7_B0Kstar0mumu_15-17
     value: 0.12
-
 
 - name: S7_B0Kstar0mumu_15-17
   islimit: false
@@ -800,7 +760,6 @@
   - name: S9_B0Kstar0mumu_15-17
     value: -0.23
 
-
 - name: S8_B0Kstar0mumu_15-17
   islimit: false
   value: 0.003
@@ -811,12 +770,11 @@
   source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_15-17
-    value: 0.19                
-  - name: S7_B0Kstar0mumu_15-17   
-    value: 0.25                   
-  - name: S9_B0Kstar0mumu_15-17   
-    value: -0.11                   
-
+    value: 0.19
+  - name: S7_B0Kstar0mumu_15-17
+    value: 0.25
+  - name: S9_B0Kstar0mumu_15-17
+    value: -0.11
 
 - name: S9_B0Kstar0mumu_15-17
   islimit: false
@@ -827,15 +785,14 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: FL_B0Kstar0mumu_15-17   
-    value: 0.14                   
-  - name: S3_B0Kstar0mumu_15-17   
-    value: 0.10                   
-  - name: S7_B0Kstar0mumu_15-17   
-    value: -0.23                   
-  - name: S8_B0Kstar0mumu_15-17   
-    value: -0.11                   
-
+  - name: FL_B0Kstar0mumu_15-17
+    value: 0.14
+  - name: S3_B0Kstar0mumu_15-17
+    value: 0.10
+  - name: S7_B0Kstar0mumu_15-17
+    value: -0.23
+  - name: S8_B0Kstar0mumu_15-17
+    value: -0.11
 
 ##########################################
 
@@ -848,9 +805,8 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: AFB_B0Kstar0mumu_17-19   
-    value: -0.35                   
-
+  - name: AFB_B0Kstar0mumu_17-19
+    value: -0.35
 
 - name: AFB_B0Kstar0mumu_17-19
   islimit: false
@@ -861,13 +817,12 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: FL_B0Kstar0mumu_17-19 
-    value: -0.35                
-  - name: S4_B0Kstar0mumu_17-19 
-    value: -0.17                
-  - name: S5_B0Kstar0mumu_17-19 
-    value: -0.11                
-
+  - name: FL_B0Kstar0mumu_17-19
+    value: -0.35
+  - name: S4_B0Kstar0mumu_17-19
+    value: -0.17
+  - name: S5_B0Kstar0mumu_17-19
+    value: -0.11
 
 - name: S3_B0Kstar0mumu_17-19
   islimit: false
@@ -878,11 +833,10 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: S4_B0Kstar0mumu_17-19 
-    value: -0.15                  
-  - name: S5_B0Kstar0mumu_17-19 
-    value: -0.39                  
-
+  - name: S4_B0Kstar0mumu_17-19
+    value: -0.15
+  - name: S5_B0Kstar0mumu_17-19
+    value: -0.39
 
 - name: S4_B0Kstar0mumu_17-19
   islimit: false
@@ -893,15 +847,14 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: S3_B0Kstar0mumu_17-19 
-    value: -0.15                
-  - name: S5_B0Kstar0mumu_17-19 
-    value: 0.10                
-  - name: AFB_B0Kstar0mumu_17-19 
-    value: -0.17                
-  - name: S8_B0Kstar0mumu_17-19 
-    value: 0.18                
-
+  - name: S3_B0Kstar0mumu_17-19
+    value: -0.15
+  - name: S5_B0Kstar0mumu_17-19
+    value: 0.10
+  - name: AFB_B0Kstar0mumu_17-19
+    value: -0.17
+  - name: S8_B0Kstar0mumu_17-19
+    value: 0.18
 
 - name: S5_B0Kstar0mumu_17-19
   islimit: false
@@ -912,13 +865,12 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: S3_B0Kstar0mumu_17-19 
-    value: -0.39                
-  - name: S4_B0Kstar0mumu_17-19 
-    value: 0.10                
-  - name: AFB_B0Kstar0mumu_17-19 
-    value: -0.11                
-
+  - name: S3_B0Kstar0mumu_17-19
+    value: -0.39
+  - name: S4_B0Kstar0mumu_17-19
+    value: 0.10
+  - name: AFB_B0Kstar0mumu_17-19
+    value: -0.11
 
 - name: S7_B0Kstar0mumu_17-19
   islimit: false
@@ -929,11 +881,10 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: S8_B0Kstar0mumu_17-19 
-    value: 0.34                
-  - name: S9_B0Kstar0mumu_17-19 
-    value: -0.15                
-
+  - name: S8_B0Kstar0mumu_17-19
+    value: 0.34
+  - name: S9_B0Kstar0mumu_17-19
+    value: -0.15
 
 - name: S8_B0Kstar0mumu_17-19
   islimit: false
@@ -944,13 +895,12 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: S4_B0Kstar0mumu_17-19 
-    value: 0.18                
-  - name: S7_B0Kstar0mumu_17-19 
-    value: 0.34                
-  - name: S9_B0Kstar0mumu_17-19 
-    value: -0.11                
-
+  - name: S4_B0Kstar0mumu_17-19
+    value: 0.18
+  - name: S7_B0Kstar0mumu_17-19
+    value: 0.34
+  - name: S9_B0Kstar0mumu_17-19
+    value: -0.11
 
 - name: S9_B0Kstar0mumu_17-19
   islimit: false
@@ -961,8 +911,7 @@
   error_type: A
   source: LHCb-CONF-2015-002
   correlation:
-  - name: S7_B0Kstar0mumu_17-19 
-    value: -0.15                
-  - name: S8_B0Kstar0mumu_17-19 
-    value: -0.11                
-
+  - name: S7_B0Kstar0mumu_17-19
+    value: -0.15
+  - name: S8_B0Kstar0mumu_17-19
+    value: -0.11
