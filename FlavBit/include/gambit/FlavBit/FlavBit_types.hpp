@@ -52,17 +52,18 @@ namespace Gambit
     /// FIXME Marcin add documentation!!!
     struct Measurement
     {
-      double value;
+      bool is_limit;
+      double limit;
+      double exp_value;
       double exp_stat_error;
       double exp_sys_error;
-      double th_error;
       double exp_error;
-      double limit;
-      bool is_limit;
-      std::vector<Correlation> corr;
+      double th_error;
       std::string name;
-      std::string source;
-      std::string error_type;
+      std::string exp_source;
+      std::string th_source;
+      std::string th_error_type;
+      std::vector<Correlation> corr;
     };
 
     /// FIXME Marcin add documentation!!!

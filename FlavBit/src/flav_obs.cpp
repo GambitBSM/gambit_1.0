@@ -72,7 +72,7 @@ namespace Gambit
       // reading correlation
       //cout<<"Should not be here"<<endl;
       c.corr_name= node["name"].as<std::string>();
-      c.corr_val = node["value"].as<double>();
+      c.corr_val = node["exp_value"].as<double>();
       //cout<<"let's see:"<<endl;
       //cout<<c.corr_name<<endl;
       //cout<<c.corr_val <<endl;
@@ -88,17 +88,17 @@ namespace Gambit
       if(v.is_limit== true)
 	{
 	  v.limit=node["limit"].as<double>();
-	  v.value=-1.;
+	  v.exp_value=-1.;
 	  v.exp_stat_error=-1.;
 	  v.exp_sys_error=-1.;
 	  v.exp_error=-1.;
-	  v.error_type="NONE";
+	  v.th_error_type="NONE";
 	  v.th_error=-1.;
 	}
       else
 	{
-	  v.value= node["value"].as<double>();
-	  //cout<<v.value<<endl;
+	  v.exp_value= node["exp_value"].as<double>();
+	  //cout<<v.exp_value<<endl;
 	  v.exp_stat_error = node["exp_stat_error"].as<double>();
 	  //cout<<v.exp_stat_error<<endl;
 	  v.exp_sys_error = node["exp_sys_error"].as<double>();
@@ -112,10 +112,11 @@ namespace Gambit
 	  v.exp_error=sqrt( v.exp_stat_error*v.exp_stat_error + v.exp_sys_error*v.exp_sys_error );
 	  //v.exp_error_minus=sqrt(v.exp_sys_error_minus*v.exp_sys_error_minus+v.exp_stat_error_minus*v.exp_stat_error_minus);
 	  v.limit=-1.;
-	  v.error_type=node["error_type"].as<std::string>();
-	  // cout<<v.error_type<<endl;
+	  v.th_error_type=node["th_error_type"].as<std::string>();
+	  // cout<<v.th_error_type<<endl;
 	}
-      v.source = node["source"].as<std::string>();
+      v.exp_source = node["exp_source"].as<std::string>();
+      v.th_error_source = node["th_error_source"].as<std::string>();
       // now the correlation
       const YAML::Node& correlations = node["correlation"];
       for(unsigned i=0;i<correlations.size();++i) {
@@ -180,7 +181,7 @@ namespace Gambit
 
 	  measurements.push_back(mes_tmp);
 	  number_measurements++;
-	  if(debug) cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.value<<endl;
+	  if(debug) cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.exp_value<<endl;
 	}
 
     }
@@ -193,7 +194,7 @@ namespace Gambit
       cout<<"Name: "<<mes.name<<endl;
       if(!mes.is_limit) cout<<"Stat/sys errror: "<<mes.exp_stat_error<<"/"<<mes.exp_sys_error<<endl;
       else cout<<"Limit: "<<mes.limit<<endl;
-      cout<<"Source: "<<mes.source<<endl;
+      cout<<"Experimental source: "<<mes.exp_source<<endl;
       cout<<"Correlations:"<<endl;
       cout<<"Error plus/minus: "<<mes.exp_error<<endl;
       for(unsigned i=0;i<mes.corr.size();++i)
@@ -282,7 +283,7 @@ namespace Gambit
 
       for(int i=0; i<number_measurements;++i)
 	{
-	  M_measurement(i,0)=measurements[i].value;
+	  M_measurement(i,0)=measurements[i].exp_value;
 	}
       if(debug) cout<<M_measurement<<endl;
 
