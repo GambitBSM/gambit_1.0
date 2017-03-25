@@ -53,7 +53,6 @@ namespace Gambit
     struct Measurement
     {
       bool is_limit;
-      double limit;
       double exp_value;
       double exp_stat_error;
       double exp_sys_error;
