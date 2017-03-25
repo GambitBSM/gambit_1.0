@@ -77,6 +77,7 @@ namespace Gambit
     {
       v.name=node["name"].as<std::string>();
       v.is_limit = node["islimit"].as<bool>();
+      v.exp_value= node["exp_value"].as<double>();
       v.exp_source = node["exp_source"].as<std::string>();
       v.exp_stat_error = node["exp_stat_error"].as<double>();
       v.exp_sys_error = node["exp_sys_error"].as<double>();
@@ -84,19 +85,6 @@ namespace Gambit
       v.th_error=node["th_error"].as<double>();
       v.th_error_type=node["th_error_type"].as<std::string>();
       v.th_error_source = node["th_error_source"].as<std::string>();
-
-      if (v.is_limit)
-      {
-        v.limit=node["limit"].as<double>();
-        v.exp_value=-1.;
-      }
-      else
-      {
-        v.limit=-1.;
-        v.exp_value= node["exp_value"].as<double>();
-      }
-
-      // now the correlation
       const YAML::Node& correlations = node["correlation"];
       for (unsigned i=0; i<correlations.size(); ++i)
       {
@@ -162,22 +150,17 @@ namespace Gambit
     {
       cout<<"################### Mesurement"<<endl;
       cout<<"Name: "<<mes.name<<endl;
-      if(!mes.is_limit) cout<<"Stat/sys errror: "<<mes.exp_stat_error<<"/"<<mes.exp_sys_error<<endl;
-      else cout<<"Limit: "<<mes.limit<<endl;
+      cout<<(mes.is_limit ? "Limit" : "Value")<<": "<<mes.exp_value<<endl;
+      cout<<"Stat/sys errror: "<< mes.exp_stat_error<<"/"<<mes.exp_sys_error<<endl;
+      cout<<"Error plus/minus: "<<mes.exp_error<<endl;
       cout<<"Experimental source: "<<mes.exp_source<<endl;
       cout<<"Correlations:"<<endl;
-      cout<<"Error plus/minus: "<<mes.exp_error<<endl;
       for(unsigned i=0;i<mes.corr.size();++i)
-  {
-    cout<<mes.corr[i].corr_name<<"  "<<mes.corr[i].corr_val<<endl;
-
-  }
+      {
+        cout<<mes.corr[i].corr_name<<"  "<<mes.corr[i].corr_val<<endl;
+      }
       cout<<"########## END"<<endl;
-
     }
-
-
-
 
     void Flav_reader::create_global_corr()
     {
@@ -189,10 +172,6 @@ namespace Gambit
       M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_cov_inv = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-
-
-
-
 
       for(int i =0; i<number_measurements;++i)
 	{
