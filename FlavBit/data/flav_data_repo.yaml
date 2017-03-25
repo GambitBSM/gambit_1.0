@@ -1,232 +1,216 @@
 - name: BR_Bs2mumu
   islimit: false
-  exp_value: 3.0e-9
-  exp_stat_error: 0.6e-9
-  exp_sys_error: 0.25e-9
-  exp_source: 1703.05747
-  th_error: 0.1
-  th_error_type: M
-  th_error_source: NONE
+  value: 2.8e-9
+  exp_stat_error: 0.7e-9
+  exp_sys_error: 0.0e-9
+  th_error: 0.0
+  source: Nature 522
+  error_type: M
   correlation:
   - name: NONE
 
 - name: BR_B02mumu
   islimit: false
-  exp_value: 3.9e-10
+  value: 3.9e-10
   exp_stat_error: 1.5e-10
   exp_sys_error: 0.0e-10
-  exp_source: Nature 522
-  th_error: 0.1
-  th_error_type: M
-  th_error_source: NONE
+  th_error: 0.0
+  source: Nature 522
+  error_type: M
   correlation:
   - name: NONE
 
 - name: BR_b2sgamma
   islimit: false
-  exp_value: 322.e-6
-  exp_stat_error: 15.e-6
-  exp_sys_error: 0.e-6
-  exp_source: 1702.04571
-  th_error: 0.0714
-  th_error_type: M
-  th_error_source: 1503.01791
+  value: 343.e-6
+  exp_stat_error: 21.e-6
+  exp_sys_error: 7.e-6
+  th_error: 0.0
+  source: HFAG
+  error_type: M
   correlation:
   - name: NONE
 
+
 - name: BR_Btaunu
   islimit: false
-  exp_value: 1.64e-4
+  value: 1.64e-4
   exp_stat_error: 0.34e-4
   exp_sys_error: 0.0
-  exp_source: PDG
-  th_error: 0.2
-  th_error_type: M
-  th_error_source: NONE
+  th_error: 0.0
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
 - name: BR_BDtaunu
   islimit: false
-  exp_value: 1.04e-2
+  value: 1.04e-2
   exp_stat_error: 0.35e-2
   exp_sys_error: 0.18e-2
-  exp_source: PDG
-  th_error: 0.06
-  th_error_type: M
-  th_error_source: NONE
+  th_error: 0.00
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
 - name: BR_BDmunu
   islimit: false
-  exp_value: 2.19e-2
+  value: 2.19e-2
   exp_stat_error: 0.12e-2
   exp_sys_error: 0.
-  exp_source: PDG
-  th_error: 0.06
-  th_error_type: M
-  th_error_source: NONE
+  th_error: 0.0
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
 - name: BR_BDstartaunu
   islimit: false
-  exp_value: 1.84e-2
+  value: 1.84e-2
   exp_stat_error: 0.22e-2
-  exp_sys_error: 0.0
-  exp_source: PDG
+  exp_sys_error: 0.
   th_error: 0.06
-  th_error_type: M
-  th_error_source: NONE
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
 - name: BR_BDstarmunu
   islimit: false
-  exp_value: 4.93e-2
+  value: 4.93e-2
   exp_stat_error: 0.11e-2
-  exp_sys_error: 0.0
-  exp_source: PDG
+  exp_sys_error: 0.
   th_error: 0.06
-  th_error_type: M
-  th_error_source: NONE
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
+
 - name: BR_Dstaunu
   islimit: false
-  exp_value: 3.625e-2
+  value: 3.625e-2
   exp_stat_error: 0.32e-2
-  exp_sys_error: 0.0
-  exp_source: PDG
-  th_error: 0.03
-  th_error_type: M
-  th_error_source: 0902.2393
+  exp_sys_error: 0.
+  th_error: 0.06
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
 - name: BR_Dsmunu
   islimit: false
-  exp_value: 55.6e-2
+  value: 55.6e-2
   exp_stat_error: 2.5e-2
-  exp_sys_error: 0.0
-  exp_source: PDG
-  th_error: 0.03
-  th_error_type: M
-  th_error_source: 0902.2393
+  exp_sys_error: 0.
+  th_error: 0.06
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
 
 - name: BR_Dmunu
   islimit: false
-  exp_value: 3.82e-4
+  value: 3.82e-4
   exp_stat_error: 0.33e-4
-  exp_sys_error: 0.0
-  exp_source: PDG
-  th_error: 0.03
-  th_error_type: M
-  th_error_source: 0902.2393
+  exp_sys_error: 0.
+  th_error: 0.06
+  error_type: M
+  source: PDG
   correlation:
   - name: NONE
-
-##########################################
 
 - name: FL_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: 0.263
+  value: 0.263
   exp_stat_error: 0.046
   exp_sys_error: 0.016
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
+
 - name: AFB_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: -0.003
+  value: -0.003
   exp_stat_error: 0.057
   exp_sys_error: 0.006
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_0.1_0.98
     value: 0.11
 
+
 - name: S3_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: -0.036
+  value: -0.036
   exp_stat_error: 0.063
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: S4_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: 0.082
+  value: 0.082
   exp_stat_error: 0.070
   exp_sys_error: 0.008
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: AFB_B0Kstar0mumu_0.1_0.98
     value: 0.11
 
+
 - name: S5_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: 0.170
+  value: 0.170
   exp_stat_error: 0.060
   exp_sys_error: 0.018
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: S7_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: 0.015
+  value: 0.015
   exp_stat_error: 0.059
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: S8_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: 0.079
+  value: 0.079
   exp_stat_error: 0.077
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: S9_B0Kstar0mumu_0.1_0.98
   islimit: false
-  exp_value: -0.083
+  value: -0.083
   exp_stat_error: 0.060
   exp_sys_error: 0.003
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
@@ -234,25 +218,23 @@
 
 - name: FL_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: 0.660
+  value: 0.660
   exp_stat_error: 0.088
   exp_sys_error: 0.021
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: AFB_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: -0.191
+  value: -0.191
   exp_stat_error: 0.069
   exp_sys_error: 0.010
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_1.1-2.5
     value: -0.14
@@ -263,38 +245,36 @@
 
 - name: S3_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: -0.077
+  value: -0.077
   exp_stat_error: 0.089
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: S4_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: -0.077
+  value: -0.077
   exp_stat_error: 0.112
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_1.1-2.5
     value: -0.22
 
+
 - name: S5_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: 0.137
+  value: 0.137
   exp_stat_error: 0.094
   exp_sys_error: 0.008
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_1.1-2.5
     value: -0.22
@@ -305,15 +285,15 @@
   - name: S9_B0Kstar0mumu_1.1-2.5
     value: -0.21
 
+
 - name: S7_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: -0.219
+  value: -0.219
   exp_stat_error: 0.093
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_1.1-2.5
     value: -0.11
@@ -322,30 +302,30 @@
   - name: S9_B0Kstar0mumu_1.1-2.5
     value: 0.23
 
+
 - name: S8_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: -0.098
+  value: -0.098
   exp_stat_error: 0.107
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: AFB_B0Kstar0mumu_1.1-2.5
     value: -0.10
   - name: S7_B0Kstar0mumu_1.1-2.5
     value: -0.11
 
+
 - name: S9_B0Kstar0mumu_1.1-2.5
   islimit: false
-  exp_value: -0.119
+  value: -0.119
   exp_stat_error: 0.087
   exp_sys_error: 0.002
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_1.1-2.5
     value: -0.21
@@ -354,60 +334,61 @@
   - name: S7_B0Kstar0mumu_1.1-2.5
     value: 0.23
 
+
 ##########################################
 
 - name: FL_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: 0.887
+  value: 0.887
   exp_stat_error: 0.089
   exp_sys_error: 0.018
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S3_B0Kstar0mumu_2.5-4
     value: -0.13
   - name: S4_B0Kstar0mumu_2.5-4
     value: -0.14
 
+
 - name: AFB_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: -0.118
+  value: -0.118
   exp_stat_error: 0.075
   exp_sys_error: 0.007
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S8_B0Kstar0mumu_2.5-4
     value: -0.10
   - name: S9_B0Kstar0mumu_2.5-4
     value: 0.10
 
+
+
 - name: S3_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: 0.035
+  value: 0.035
   exp_stat_error: 0.101
   exp_sys_error: 0.006
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_2.5-4
     value: -0.13
 
+
 - name: S4_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: -0.234
+  value: -0.234
   exp_stat_error: 0.132
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_2.5-4
     value: -0.14
@@ -416,42 +397,41 @@
   - name: S8_B0Kstar0mumu_2.5-4
     value: 0.12
 
+
 - name: S5_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: -0.022
+  value: -0.022
   exp_stat_error: 0.110
   exp_sys_error: 0.006
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_2.5-4
     value: -0.19
   - name: S9_B0Kstar0mumu_2.5-4
     value: 0.10
 
+
 - name: S7_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: 0.068
+  value: 0.068
   exp_stat_error: 0.119
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
 - name: S8_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: 0.030
+  value: 0.030
   exp_stat_error: 0.123
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_2.5-4
     value: 0.12
@@ -460,154 +440,157 @@
 
 - name: S9_B0Kstar0mumu_2.5-4
   islimit: false
-  exp_value: -0.092
+  value: -0.092
   exp_stat_error: 0.108
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_2.5-4
     value: 0.10
   - name: AFB_B0Kstar0mumu_2.5-4
     value: 0.10
 
+
+
 ##########################################
+
+
 
 - name: FL_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: 0.611
+  value: 0.611
   exp_stat_error: 0.052
   exp_sys_error: 0.018
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_4-6
     value: 0.10
 
+
 - name: AFB_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: 0.025
+  value: 0.025
   exp_stat_error: 0.050
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_4-6
     value: -0.10
 
+
 - name: S3_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: 0.035
+  value: 0.035
   exp_stat_error: 0.069
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S7_B0Kstar0mumu_4-6
     value: -0.10
 
+
 - name: S4_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: -0.219
+  value: -0.219
   exp_stat_error: 0.086
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_4-6
     value: 0.10
   - name: AFB_B0Kstar0mumu_4-6
     value: -0.10
 
+
 - name: S5_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: -0.146
+  value: -0.146
   exp_stat_error: 0.078
   exp_sys_error: 0.007
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_4-6
     value: 0.10
   - name: S4_B0Kstar0mumu_4-6
     value: 0.10
 
+
 - name: S7_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: -0.016
+  value: -0.016
   exp_stat_error: 0.080
   exp_sys_error: 0.003
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S3_B0Kstar0mumu_4-6
     value: -0.10
   - name: S9_B0Kstar0mumu_4-6
     value: -0.15
 
+
 - name: S8_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: 0.167
+  value: 0.167
   exp_stat_error: 0.097
   exp_sys_error: 0.006
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
 
+
 - name: S9_B0Kstar0mumu_4-6
   islimit: false
-  exp_value: -0.032
+  value: -0.032
   exp_stat_error: 0.073
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S7_B0Kstar0mumu_4-6
     value: -0.15
+
+
 
 ##########################################
 
 - name: FL_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: 0.579
+  value: 0.579
   exp_stat_error: 0.043
   exp_sys_error: 0.015
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: AFB_B0Kstar0mumu_6-8
     value: -0.31
 
+
 - name: AFB_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: 0.152
+  value: 0.152
   exp_stat_error: 0.040
   exp_sys_error: 0.007
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_6-8
     value: -0.31
@@ -616,30 +599,30 @@
   - name: S5_B0Kstar0mumu_6-8
     value: -0.16
 
+
 - name: S3_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: -0.042
+  value: -0.042
   exp_stat_error: 0.057
   exp_sys_error: 0.006
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_6-8
     value: -0.16
   - name: S5_B0Kstar0mumu_6-8
     value: -0.23
 
+
 - name: S4_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: -0.296
+  value: -0.296
   exp_stat_error: 0.065
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S3_B0Kstar0mumu_6-8
     value: -0.16
@@ -650,15 +633,15 @@
   - name: S8_B0Kstar0mumu_6-8
     value: -0.11
 
+
 - name: S5_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: -0.327
+  value: -0.327
   exp_stat_error: 0.073
   exp_sys_error: 0.009
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S3_B0Kstar0mumu_6-8
     value: -0.23
@@ -669,59 +652,59 @@
   - name: S7_B0Kstar0mumu_6-8
     value: -0.14
 
+
 - name: S7_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: -0.141
+  value: -0.141
   exp_stat_error: 0.073
   exp_sys_error: 0.003
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_6-8
     value: -0.14
   - name: S8_B0Kstar0mumu_6-8
     value: 0.10
 
+
 - name: S8_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: -0.007
+  value: -0.007
   exp_stat_error: 0.072
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_6-8
     value: -0.11
   - name: S7_B0Kstar0mumu_6-8
     value: 0.10
 
+
 - name: S9_B0Kstar0mumu_6-8
   islimit: false
-  exp_value: -0.004
+  value: -0.004
   exp_stat_error: 0.070
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: NONE
+
 
 #############################################
 
 - name: FL_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: 0.349
+  value: 0.349
   exp_stat_error: 0.040
   exp_sys_error: 0.009
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S3_B0Kstar0mumu_15-17
     value: 0.26
@@ -731,16 +714,16 @@
     value: -0.50
   - name: S9_B0Kstar0mumu_15-17
     value: 0.14
+
 
 - name: AFB_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: 0.411
+  value: 0.411
   exp_stat_error: 0.040
   exp_sys_error: 0.008
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_15-17
     value: -0.50
@@ -749,30 +732,30 @@
   - name: S5_B0Kstar0mumu_15-17
     value: -0.20
 
+
 - name: S3_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: -0.142
+  value: -0.142
   exp_stat_error: 0.046
   exp_sys_error: 0.007
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_15-17
     value: 0.26
   - name: S9_B0Kstar0mumu_15-17
     value: 0.10
 
+
 - name: S4_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: -0.321
+  value: -0.321
   exp_stat_error: 0.053
   exp_sys_error: 0.007
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: FL_B0Kstar0mumu_15-17
     value: -0.10
@@ -783,15 +766,15 @@
   - name: S8_B0Kstar0mumu_15-17
     value: 0.19
 
+
 - name: S5_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: -0.316
+  value: -0.316
   exp_stat_error: 0.051
   exp_sys_error: 0.009
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_15-17
     value: 0.26
@@ -800,15 +783,15 @@
   - name: S7_B0Kstar0mumu_15-17
     value: 0.12
 
+
 - name: S7_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: 0.061
+  value: 0.061
   exp_stat_error: 0.058
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S5_B0Kstar0mumu_15-17
     value: 0.12
@@ -817,168 +800,169 @@
   - name: S9_B0Kstar0mumu_15-17
     value: -0.23
 
+
 - name: S8_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: 0.003
+  value: 0.003
   exp_stat_error: 0.060
   exp_sys_error: 0.003
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
   - name: S4_B0Kstar0mumu_15-17
-    value: 0.19
-  - name: S7_B0Kstar0mumu_15-17
-    value: 0.25
-  - name: S9_B0Kstar0mumu_15-17
-    value: -0.11
+    value: 0.19                
+  - name: S7_B0Kstar0mumu_15-17   
+    value: 0.25                   
+  - name: S9_B0Kstar0mumu_15-17   
+    value: -0.11                   
+
 
 - name: S9_B0Kstar0mumu_15-17
   islimit: false
-  exp_value: -0.019
+  value: -0.019
   exp_stat_error: 0.055
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: FL_B0Kstar0mumu_15-17
-    value: 0.14
-  - name: S3_B0Kstar0mumu_15-17
-    value: 0.10
-  - name: S7_B0Kstar0mumu_15-17
-    value: -0.23
-  - name: S8_B0Kstar0mumu_15-17
-    value: -0.11
+  - name: FL_B0Kstar0mumu_15-17   
+    value: 0.14                   
+  - name: S3_B0Kstar0mumu_15-17   
+    value: 0.10                   
+  - name: S7_B0Kstar0mumu_15-17   
+    value: -0.23                   
+  - name: S8_B0Kstar0mumu_15-17   
+    value: -0.11                   
+
 
 ##########################################
 
 - name: FL_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: 0.354
+  value: 0.354
   exp_stat_error: 0.048
   exp_sys_error: 0.025
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: AFB_B0Kstar0mumu_17-19
-    value: -0.35
+  - name: AFB_B0Kstar0mumu_17-19   
+    value: -0.35                   
+
 
 - name: AFB_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: 0.305
+  value: 0.305
   exp_stat_error: 0.048
   exp_sys_error: 0.013
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: FL_B0Kstar0mumu_17-19
-    value: -0.35
-  - name: S4_B0Kstar0mumu_17-19
-    value: -0.17
-  - name: S5_B0Kstar0mumu_17-19
-    value: -0.11
+  - name: FL_B0Kstar0mumu_17-19 
+    value: -0.35                
+  - name: S4_B0Kstar0mumu_17-19 
+    value: -0.17                
+  - name: S5_B0Kstar0mumu_17-19 
+    value: -0.11                
+
 
 - name: S3_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: -0.188
+  value: -0.188
   exp_stat_error: 0.076
   exp_sys_error: 0.017
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: S4_B0Kstar0mumu_17-19
-    value: -0.15
-  - name: S5_B0Kstar0mumu_17-19
-    value: -0.39
+  - name: S4_B0Kstar0mumu_17-19 
+    value: -0.15                  
+  - name: S5_B0Kstar0mumu_17-19 
+    value: -0.39                  
+
 
 - name: S4_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: -0.266
+  value: -0.266
   exp_stat_error: 0.065
   exp_sys_error: 0.010
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: S3_B0Kstar0mumu_17-19
-    value: -0.15
-  - name: S5_B0Kstar0mumu_17-19
-    value: 0.10
-  - name: AFB_B0Kstar0mumu_17-19
-    value: -0.17
-  - name: S8_B0Kstar0mumu_17-19
-    value: 0.18
+  - name: S3_B0Kstar0mumu_17-19 
+    value: -0.15                
+  - name: S5_B0Kstar0mumu_17-19 
+    value: 0.10                
+  - name: AFB_B0Kstar0mumu_17-19 
+    value: -0.17                
+  - name: S8_B0Kstar0mumu_17-19 
+    value: 0.18                
+
 
 - name: S5_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: -0.323
+  value: -0.323
   exp_stat_error: 0.062
   exp_sys_error: 0.009
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: S3_B0Kstar0mumu_17-19
-    value: -0.39
-  - name: S4_B0Kstar0mumu_17-19
-    value: 0.10
-  - name: AFB_B0Kstar0mumu_17-19
-    value: -0.11
+  - name: S3_B0Kstar0mumu_17-19 
+    value: -0.39                
+  - name: S4_B0Kstar0mumu_17-19 
+    value: 0.10                
+  - name: AFB_B0Kstar0mumu_17-19 
+    value: -0.11                
+
 
 - name: S7_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: 0.044
+  value: 0.044
   exp_stat_error: 0.072
   exp_sys_error: 0.013
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: S8_B0Kstar0mumu_17-19
-    value: 0.34
-  - name: S9_B0Kstar0mumu_17-19
-    value: -0.15
+  - name: S8_B0Kstar0mumu_17-19 
+    value: 0.34                
+  - name: S9_B0Kstar0mumu_17-19 
+    value: -0.15                
+
 
 - name: S8_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: 0.013
+  value: 0.013
   exp_stat_error: 0.067
   exp_sys_error: 0.005
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: S4_B0Kstar0mumu_17-19
-    value: 0.18
-  - name: S7_B0Kstar0mumu_17-19
-    value: 0.34
-  - name: S9_B0Kstar0mumu_17-19
-    value: -0.11
+  - name: S4_B0Kstar0mumu_17-19 
+    value: 0.18                
+  - name: S7_B0Kstar0mumu_17-19 
+    value: 0.34                
+  - name: S9_B0Kstar0mumu_17-19 
+    value: -0.11                
+
 
 - name: S9_B0Kstar0mumu_17-19
   islimit: false
-  exp_value: -0.094
+  value: -0.094
   exp_stat_error: 0.067
   exp_sys_error: 0.004
-  exp_source: LHCb-CONF-2015-002
   th_error: 0
-  th_error_type: A
-  th_error_source: NONE
+  error_type: A
+  source: LHCb-CONF-2015-002
   correlation:
-  - name: S7_B0Kstar0mumu_17-19
-    value: -0.15
-  - name: S8_B0Kstar0mumu_17-19
-    value: -0.11
+  - name: S7_B0Kstar0mumu_17-19 
+    value: -0.15                
+  - name: S8_B0Kstar0mumu_17-19 
+    value: -0.11                
+

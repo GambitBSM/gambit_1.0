@@ -1,110 +1,94 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  FIXME
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Marcin Chrzaszcz
+///  \date FIXME
+///
+///
+///  *********************************************
+
 #ifndef FLAV_OBS_H
 #define FLAV_OBS_H
 
-
-#include <string>
-#include <iostream>
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <vector>
-#include <iostream>
-#include <stdio.h>
-#include <fstream>
-#include <sstream>
-#include <cmath>
 #include "yaml-cpp/yaml.h"
-
-//#include "flav_obs.h"
+#include "gambit/FlavBit/FlavBit_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-#include "gambit/FlavBit/FlavBit_types.hpp"          
 
+namespace Gambit
+{
+  namespace FlavBit
+  {
 
-
-                 
-namespace Gambit 
-{                
-  namespace FlavBit  
-  {                  
- 
-    using namespace std; 
-
-
-
+    /// FIXME Marcin add documentation here!!!
     class Flav_reader
     {
     private:
 
       double **b2sll_cov;
-  
-  
-      vector <string> names_obs;
-      vector< Measurement > measurements;
-      string measurement_location;
-      bool debug;
-      //      int number_measurements;
-      int get_measurement_for_corr(string);
+      std::vector <str> names_obs;
+      std::vector< Measurement > measurements;
+      str measurement_location;
+      int get_measurement_for_corr(str);
       bool check_corr_matrix();
-  
       bool use_P;
       bool use_S;
+      bool debug;
 
       boost::numeric::ublas::matrix<double> M_measurement;
-      
       boost::numeric::ublas::matrix<double> M_glob_correlation;
       boost::numeric::ublas::matrix<double> M_glob_correlation_inv;
-      
       boost::numeric::ublas::matrix<double> M_glob_cov;
       boost::numeric::ublas::matrix<double> M_glob_cov_inv;
-
       boost::numeric::ublas::matrix<double> th_err;
 
-
-      
-      
     public:
-      
-      int number_measurements;   
 
+      int number_measurements;
 
-      Flav_reader(string loc);
-      int read_yaml(string name); // reads a yaml file
-      int read_root(string name); // reads a root saved histogram
-      int read(string name); // reads root or yaml files, by checking the name
-      void read_yaml_mesurement(string name, string measurement_name) ;
+      Flav_reader(str loc);
+      int read_yaml(str name); // reads a yaml file
+      int read_root(str name); // reads a root saved histogram
+      int read(str name); // reads root or yaml files, by checking the name
+      void read_yaml_measurement(str name, str measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
       void debug_mode(bool k) {debug= k;};
       void create_global_corr();
       void print_corr_matrix();
-      void print_cov_matrix(); 
+      void print_cov_matrix();
       void print_cov_inv_matrix();
       //double calc_Chi2(vector<double> theory, vector<double> theory_error);
       boost::numeric::ublas::matrix<double> get_cov(){return M_glob_cov;};
       boost::numeric::ublas::matrix<double> get_exp_value(){return M_measurement;};
-      boost::numeric::ublas::matrix<double> get_th_err(){return th_err;};   
-      
+      boost::numeric::ublas::matrix<double> get_th_err(){return th_err;};
 
-      
     };
+
     // theory errors, this is the moust ugly code I have ever written, don't look!
-    
-       class Kstarmumu_theory_errr   
-       {   
+       class Kstarmumu_theory_errr
+       {
        private:
 	 int size_obs;
-	 vector<string> names_obs;
-	 vector< vector< double > >covariance;
-	 std::map<string,int> map_kstarmumu;
-	 
+	 std::vector<str> names_obs;
+	 std::vector< std::vector< double > >covariance;
+	 std::map<str,int> map_kstarmumu;
+
        public:
 	 Kstarmumu_theory_errr()
 	 {
 	   size_obs=128;
-	   names_obs= vector<string>(size_obs);
+	   names_obs= std:: vector<str>(size_obs);
 	   names_obs[0]="BR_B0Kstar0mumu_0.1-2";
 	   names_obs[1]="AFB_B0Kstar0mumu_0.1-2";
 	   names_obs[2]="FL_B0Kstar0mumu_0.1-2";
@@ -240,7 +224,7 @@ namespace Gambit
 	     }
 	   for(int i=0;i<size_obs;++i)
 	     {
-	       covariance.push_back(vector<double>(size_obs));
+	       covariance.push_back(std::vector<double>(size_obs));
 	     }
 	   covariance[0][0]=2.8287e-16;
 	   covariance[0][1]=2.4226e-11;
@@ -16627,27 +16611,27 @@ covariance[127][125]=-7.0250e-11;
 covariance[127][126]=1.5746e-03;
 covariance[127][127]=9.9732e-02;
 
-		 
-		 
+
+
 	 };
-	   
-	 boost::numeric::ublas::matrix<double> get_cov_theory(vector<string> observables)
+
+	 boost::numeric::ublas::matrix<double> get_cov_theory(std::vector<str> observables)
 	 {
 	     boost::numeric::ublas::matrix<double> cov_th(observables.size(), observables.size());
 	     for(unsigned i=0;i<observables.size();++i)
 	       {
 		 for(unsigned j=0;j<observables.size();++j)
-		   {                                  
+		   {
 		     cov_th(i,j)=covariance[map_kstarmumu[observables[i]]][ map_kstarmumu[observables[j]]];
-		     
-		     
+
+
 		       }
-	       }	     
+	       }
 	     return  cov_th;
 	 };
-	 
-	 
-      
+
+
+
        };
   }
 }
