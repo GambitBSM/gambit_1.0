@@ -25,7 +25,7 @@
   START_CAPABILITY                          
 
     #define FUNCTION find_min_lambda
-    START_FUNCTION(triplet<double>)
+    START_FUNCTION(dbl_dbl_bool)
     DEPENDENCY(SMINPUTS, SMInputs)
     //DEPENDENCY(SingletDM_pole_mh, double)
     DEPENDENCY(SingletDM_spectrum,/*TAG*/ Spectrum)
@@ -45,7 +45,7 @@
 
     #define FUNCTION get_likelihood
     START_FUNCTION(double)
-    DEPENDENCY(vacuum_stability, triplet<double>)
+    DEPENDENCY(vacuum_stability, dbl_dbl_bool)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -55,7 +55,7 @@
     START_CAPABILITY
     #define FUNCTION get_expected_lifetime
     START_FUNCTION(double)
-    DEPENDENCY(vacuum_stability, triplet<double>)
+    DEPENDENCY(vacuum_stability, dbl_dbl_bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -63,7 +63,7 @@
     START_CAPABILITY
     #define FUNCTION get_check_perturb_min_lambda
     START_FUNCTION(double)
-    DEPENDENCY(vacuum_stability, triplet<double>)
+    DEPENDENCY(vacuum_stability, dbl_dbl_bool)
     #undef FUNCTION
   #undef CAPABILITY
 

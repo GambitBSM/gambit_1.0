@@ -42,10 +42,9 @@ namespace Gambit {
       // Smear jet momenta
       ATLAS::smearJets(eventOut.jets());
 
-      // Unset b-tags outside |eta|=5
-      /// @todo Same as DELPHES... but surely we can't actually do b-tags outside |eta| < 2.5? (or even less, due to jet radius)
+      // Unset b-tags outside |eta|=2.5
       for (HEPUtils::Jet* j : eventOut.jets()) {
-        if (j->abseta() > 5.0) j->set_btag(false);
+        if (j->abseta() > 2.5) j->set_btag(false);
       }
     }
 
@@ -76,28 +75,9 @@ namespace Gambit {
       // Smear jet momenta
       CMS::smearJets(eventOut.jets());
 
-      // Electron smearing and efficiency
-      /*ATLAS::applyElectronTrackingEff(eventOut.electrons());
-      ATLAS::smearElectronEnergy(eventOut.electrons());
-      ATLAS::applyElectronEff(eventOut.electrons());
-
-      // Muon smearing and efficiency
-      ATLAS::applyMuonTrackEff(eventOut.muons());
-      ATLAS::smearMuonMomentum(eventOut.muons());
-      ATLAS::applyMuonEff(eventOut.muons());
-
-      // Apply hadronic tau reco efficiency *in the analyses* -- it's specific to LHC run & working-point
-      //ATLAS::applyTauEfficiency(eventOut.taus());
-      //Smear taus
-      ATLAS::smearTaus(eventOut.taus());
-
-      // Smear jet momenta
-      ATLAS::smearJets(eventOut.jets());*/
-
-      // Unset b-tags outside |eta|=5
-      /// @todo Same as DELPHES... but surely we can't actually do b-tags outside |eta| < 2.5? (or even less, due to jet radius)
+      // Unset b-tags outside |eta|=2.5
       for (HEPUtils::Jet* j : eventOut.jets()) {
-        if (j->abseta() > 5.0) j->set_btag(false);
+        if (j->abseta() > 2.5) j->set_btag(false);
       }
     }
 
@@ -108,8 +88,7 @@ namespace Gambit {
       result.clear();
 
       std::vector<FJNS::PseudoJet> bhadrons; //< for input to FastJet b-tagging
-      std::vector<HEPUtils::Particle> bpartons;
-      std::vector<HEPUtils::Particle> tauCandidates;
+      std::vector<HEPUtils::Particle> bpartons, cpartons, tauCandidates;
       HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass of non-final particles to gather b-hadrons and taus
@@ -117,28 +96,38 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-        if(p.idAbs()==5) {
-          std::vector<int> bDaughterList = p.daughterList();
-          bool isGoodB=true;
-
+        /// @todo Temporarily using quark-based tagging instead -- fix
+        if (p.idAbs() == 5) {
+          bool isGoodB = true;
+          const std::vector<int> bDaughterList = p.daughterList();
           for (size_t daughter = 0; daughter < bDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[bDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-            if(daughterID == 5)isGoodB=false;
+            if (daughterID == 5) isGoodB = false;
           }
-
-          if(isGoodB){
+          if (isGoodB)
             bpartons.push_back(HEPUtils::Particle(mk_p4(p.p()), p.id()));
-          }
+        }
 
+        // Find last c-hadrons in decay chains as the best proxy for c-tagging
+        /// @todo Temporarily using quark-based tagging instead -- fix
+        if (p.idAbs() == 4) {
+          bool isGoodC = true;
+          const std::vector<int> cDaughterList = p.daughterList();
+          for (size_t daughter = 0; daughter < cDaughterList.size(); daughter++) {
+            const Pythia8::Particle& pDaughter = pevt[cDaughterList[daughter]];
+            int daughterID = pDaughter.idAbs();
+            if (daughterID == 4) isGoodC = false;
+          }
+          if (isGoodC)
+            cpartons.push_back(HEPUtils::Particle(mk_p4(p.p()), p.id()));
         }
 
         // Find tau candidates
         if (p.idAbs() == MCUtils::PID::TAU) {
-          std::vector<int> tauDaughterList = p.daughterList();
           HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
-
+          const std::vector<int> tauDaughterList = p.daughterList();
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
@@ -196,19 +185,27 @@ namespace Gambit {
       /// @todo Use ghost tagging?
       /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
       for (auto& pj : pjets) {
+        HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
+
         /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
-
-        HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
-        for (auto& pb : bpartons) {
-          if (jetMom.deltaR_eta(pb.mom()) < 0.4) {
+        for (HEPUtils::Particle& pb : bpartons) {
+          if (jetMom.deltaR_eta(pb.mom()) < 0.4) { ///< @todo Hard-coded radius!!!
             isB = true;
             break;
           }
         }
 
+        bool isC = false;
+        for (HEPUtils::Particle& pc : cpartons) {
+          if (jetMom.deltaR_eta(pc.mom()) < 0.4) { ///< @todo Hard-coded radius!!!
+            isC = true;
+            break;
+          }
+        }
+
         bool isTau = false;
-        for (auto& ptau : tauCandidates){
+        for (HEPUtils::Particle& ptau : tauCandidates){
           if (jetMom.deltaR_eta(ptau.mom()) < 0.5){
             isTau = true;
             break;
@@ -222,7 +219,7 @@ namespace Gambit {
           result.add_particle(gp);
         }
 
-        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC));
       }
 
       /// Calculate missing momentum
@@ -326,7 +323,9 @@ namespace Gambit {
         /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
         const bool isB = HEPUtils::any(pj.constituents(),
                  [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
-        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+        const bool isC = HEPUtils::any(pj.constituents(),
+                 [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::CQUARK; });
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC));
 
         bool isTau=false;
         for(auto& ptau : tauCandidates){

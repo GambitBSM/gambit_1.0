@@ -226,8 +226,10 @@ set(patch "${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks")
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast") # -fast sometimes makes xsecs come out as NaN, but we catch that and invalidate those points.
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -Wno-deprecated-declarations -fno-math-errno -funsafe-math-optimizations -fno-rounding-math -fno-signaling-nans -fcx-limited-range") # Including all flags from -ffast-math except -ffinite-math-only which has proved to cause incorrect results.
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fno-math-errno -funsafe-math-optimizations -fno-rounding-math -fno-signaling-nans -fcx-limited-range") # Including all flags from -ffast-math except -ffinite-math-only which has proved to cause incorrect results.
+  set_compiler_warning("no-extra" pythia_CXXFLAGS)
+  set_compiler_warning("no-deprecated-declarations" pythia_CXXFLAGS)
 endif()
 
 # - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
@@ -589,9 +591,7 @@ set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
 # - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
-endif()
+set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}
@@ -614,9 +614,7 @@ set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
 # - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
-endif()
+set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}

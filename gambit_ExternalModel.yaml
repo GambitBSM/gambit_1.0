@@ -1,12 +1,8 @@
 # GAMBIT Initialization file (in YAML)
 #
-# Christoph Weniger <c.weniger@uva.nl>
-# June, July 2013
+# Martin White <martin.white@adelaide.edu.au>
+# March 2017
 #
-# Ben Farmer <ben.farmer@gmail.com>
-# Dec 2013
-#
-
 
 ###################################
 # Input parameter declarations
@@ -14,7 +10,17 @@
 
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
+
+  # Note that this is set up to look like a CMSSM scan
+  # It does not in fact use the CMSSM parameters
+  # This is simply an easy way to satisfy dependencies
+  
+  CMSSM:
+    M0: 70
+    M12: 350
+    A0: 0
+    TanBeta: 10
+    SignMu: 1
 
 ##############################
 # Printer setup
@@ -62,55 +68,12 @@ ObsLikes:
   - purpose:    Likelihood
     capability: LHC_Combined_LogLike
 
-  # TODO: Test the functionality of these likelihood functions
-  # Test LEP SUSY limit slepton likelihoods
-  #- purpose:    Likelihood
-  #  capability: ALEPH_Selectron_LLike
-
-  #- purpose:    Likelihood
-  #  capability: ALEPH_Smuon_LLike
-
-  #- purpose:    Likelihood
-  #  capability: ALEPH_Stau_LLike
-
-  #- purpose:    Likelihood
-  #  capability: L3_Selectron_LLike
-
-  #- purpose:    Likelihood
-  #  capability: L3_Smuon_LLike
-
-  #- purpose:    Likelihood
-  #  capability: L3_Stau_LLike
-
-  ## Test LEP SUSY limit gaugino likelihoods
-  #- purpose:    Likelihood
-  #  capability: L3_Neutralino_All_Channels_LLike
-
-  #- purpose:    Likelihood
-  #  capability: L3_Neutralino_Leptonic_LLike
-
-  #- purpose:    Likelihood
-  #  capability: L3_Chargino_All_Channels_LLike
-
-  #- purpose:    Likelihood
-  #  capability: L3_Chargino_Leptonic_LLike
-
-  #- purpose:    Likelihood
-  #  capability: OPAL_Chargino_Hadronic_LLike
-
-  #- purpose:    Likelihood
-  #  capability: OPAL_Chargino_SemiLeptonic_LLike
-
-  #- purpose:    Likelihood
-  #  capability: OPAL_Chargino_Leptonic_LLike
-
-  #- purpose:    Likelihood
-  #  capability: OPAL_Chargino_All_Channels_LLike
-
-  #- purpose:    Likelihood
-  #  capability: OPAL_Neutralino_Hadronic_LLike
-
-
+  - purpose:    Observable
+    capability: MSSM_spectrum
+    type:       map_str_dbl
+     
+  - purpose:    Observable
+    capability: SLHA1_violation
 #########################
 # Rule entries
 #########################
@@ -119,26 +82,57 @@ Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
-  - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum  
-    options:
-      invalid_point_fatal: true
-
-  - capability: Higgs_decay_rates
-    function: MSSM_h0_1_decays
-
-  - capability: h0_2_decay_rates
-    function: h0_2_decays
-
-  - capability: A0_decay_rates
-    function: A0_decays
-
-  - capability: H_plus_decay_rates
-    function: H_plus_decays
-      
+  # Satisfy decay rate dependencies, but the information is never used
   - capability: decay_rates
     function: all_decays
 
+  # Satisfy spectrum dependencies, but the information is never used
+  - capability: unimproved_MSSM_spectrum
+    function: get_CMSSM_spectrum
+    options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  # Satisfy MSSM spectrum dependencies, but information is never used
+  - capability: MSSM_spectrum
+    type: Spectrum
+    function: make_MSSM_precision_spectrum_none
+
+  # Satisfy Higgs rate dependencies, but information is never used
+  - capability: Reference_SM_Higgs_decay_rates
+    function: Ref_SM_Higgs_decays_table
+  - capability: Reference_SM_other_Higgs_decay_rates
+    function: Ref_SM_other_Higgs_decays_table
+  - capability: Reference_SM_A0_decay_rates
+    function: Ref_SM_A0_decays_table
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
+  - capability: t_decay_rates
+    function: t_decays
+
+ # Satisfy Higgs dependencies, but information is never used
+  - capability: Higgs_Couplings
+    function: MSSM_higgs_couplings_pwid
+
+ # Specify the ATLAS simulation parameters
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
@@ -146,6 +140,7 @@ Rules:
       partonOnly: false
       antiktR: 0.4
 
+ # Specify the CMS simulation parameters
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
@@ -173,22 +168,30 @@ Rules:
 
   - capability:  ColliderOperator
     function: operateLHCLoop
+    backends:
+    - {backend: Pythia,  version: 8.212.EM}
     options:
       nEvents: 5000
-      pythiaNames: ["Pythia_ExternalModel"]
+      pythiaNames: ["Pythia_external"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
+
+  - capability: HardScatteringEvent
+    backends:
+    - {backend: Pythia,  version: 8.212.EM}
 
   - capability:  HardScatteringSim
     function:  getPythiaFileReader
+    backends:
+    - {backend: Pythia,  version: 8.212.EM}
     options:
       ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
       ###   backend. So, this must only be set if the user chooses a different Pythia.
-      #Pythia_doc_path: "Backends/installed/Pythia/8.212/EM/share/Pythia8/xmldoc/"
-      Pythia_ExternalModel: ["UserModel:all = on",
-			     "PartonLevel:MPI = off",
-                             "PartonLevel:ISR = on",
-                             "PartonLevel:FSR = off",
-                             "HadronLevel:all = off"]
+      Pythia_doc_path: "Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"
+      Pythia_external: ["UserModel:all = on",
+		        "PartonLevel:MPI = off",
+                        "PartonLevel:ISR = on",
+                        "PartonLevel:FSR = off",
+                        "HadronLevel:all = off"]
       SLHA_filenames:
         - ColliderBit/data/param_card_GambitDemo_UFO_test.dat
 
