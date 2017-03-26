@@ -58,8 +58,6 @@ namespace Gambit
 
       Flav_reader(str loc);
       int read_yaml(str name); // reads a yaml file
-      int read_root(str name); // reads a root saved histogram
-      int read(str name); // reads root or yaml files, by checking the name
       void read_yaml_measurement(str name, str measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
