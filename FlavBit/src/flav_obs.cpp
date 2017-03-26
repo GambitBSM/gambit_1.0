@@ -16,8 +16,10 @@
 ///  *********************************************
 
 #include "yaml-cpp/yaml.h"
-#include "gambit/FlavBit/flav_obs.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #include "gambit/FlavBit/FlavBit_types.hpp"
+#include "gambit/FlavBit/flav_obs.hpp"
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
@@ -227,7 +229,7 @@ namespace Gambit
       if(debug) cout<<"Inverted"<<endl;
       if(debug) cout<<M_glob_cov_inv<<endl;
 
-      // calcul;atin the the measurement vector:
+      // declare the the measurement vector
       M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,1);
 
       for(int i=0; i<number_measurements;++i)
@@ -305,7 +307,13 @@ namespace Gambit
         for( int j=0 ; j< number_measurements; ++j)
         {
           if(i==j&&M_glob_correlation(i,i)!=1) { cout<<"Error, diagonal element diff. 1!!"<<endl; return false; }
-          if(M_glob_correlation(i,j) !=M_glob_correlation(j,i)){ cout<<"Error: Matrix not symmetric"<<endl; return false; }
+          if(M_glob_correlation(i,j) !=M_glob_correlation(j,i))
+          {
+            cout << "Correlation matrix " << i << "," << j << " = " << M_glob_correlation(i,j) << endl;
+            cout << "Correlation matrix " << i << "," << j << " = " << M_glob_correlation(j,i) << endl;
+            FlavBit_error().raise(LOCAL_INFO, "Correlation matrix not symmetric");
+            return false;
+          }
         }
       }
       return OK;

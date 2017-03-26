@@ -142,20 +142,20 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
-  - name: NONE
-
-- name: AFB_B0Kstar0mumu_0.1_0.98
-  islimit: false
-  exp_value: -0.003
-  exp_stat_error: 0.057
-  exp_sys_error: 0.006
-  exp_source: LHCb-CONF-2015-002
-  th_error: 0
-  th_error_type: A
-  th_error_source: NONE
-  correlation:
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: 0.06
   - name: S4_B0Kstar0mumu_0.1_0.98
-    value: 0.11
+    value: 0.00
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: 0.03
+  - name: AFB_B0Kstar0mumu_0.1_0.98
+    value: 0.04
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: -0.02
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: 0.07
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: 0.08
 
 - name: S3_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -167,7 +167,20 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
-  - name: NONE
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: 0.06
+  - name: S4_B0Kstar0mumu_0.1_0.98
+    value: 0.01
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: 0.10
+  - name: AFB_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: -0.07
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: -0.01
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: -0.03
 
 - name: S4_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -179,8 +192,20 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: 0.01
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: 0.08
   - name: AFB_B0Kstar0mumu_0.1_0.98
     value: 0.11
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: 0.07
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: 0.02
 
 - name: S5_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -192,7 +217,45 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
-  - name: NONE
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: 0.03
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: 0.10
+  - name: S4_B0Kstar0mumu_0.1_0.98
+    value: 0.08
+  - name: AFB_B0Kstar0mumu_0.1_0.98
+    value: 0.05
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: -0.01
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: 0.04
+
+- name: AFB_B0Kstar0mumu_0.1_0.98
+  islimit: false
+  exp_value: -0.003
+  exp_stat_error: 0.057
+  exp_sys_error: 0.006
+  exp_source: LHCb-CONF-2015-002
+  th_error: 0
+  th_error_type: A
+  th_error_source: NONE
+  correlation:
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: 0.04
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: S4_B0Kstar0mumu_0.1_0.98
+    value: 0.11
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: 0.05
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: 0.03
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: -0.07
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: 0.02
 
 - name: S7_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -204,7 +267,20 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
-  - name: NONE
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: -0.02
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: -0.07
+  - name: S4_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: -0.01
+  - name: AFB_B0Kstar0mumu_0.1_0.98
+    value: 0.03
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: 0.01
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: 0.11
 
 - name: S8_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -216,7 +292,20 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
-  - name: NONE
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: 0.07
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: -0.01
+  - name: S4_B0Kstar0mumu_0.1_0.98
+    value: 0.07
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: 0.00
+  - name: AFB_B0Kstar0mumu_0.1_0.98
+    value: -0.07
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: 0.01
+  - name: S9_B0Kstar0mumu_0.1_0.98
+    value: 0.02
 
 - name: S9_B0Kstar0mumu_0.1_0.98
   islimit: false
@@ -228,7 +317,20 @@
   th_error_type: A
   th_error_source: NONE
   correlation:
-  - name: NONE
+  - name: FL_B0Kstar0mumu_0.1_0.98
+    value: 0.08
+  - name: S3_B0Kstar0mumu_0.1_0.98
+    value: -0.03
+  - name: S4_B0Kstar0mumu_0.1_0.98
+    value: 0.02
+  - name: S5_B0Kstar0mumu_0.1_0.98
+    value: 0.04
+  - name: AFB_B0Kstar0mumu_0.1_0.98
+    value: 0.02
+  - name: S7_B0Kstar0mumu_0.1_0.98
+    value: 0.11
+  - name: S8_B0Kstar0mumu_0.1_0.98
+    value: 0.02
 
 ##########################################
 
@@ -429,7 +531,7 @@
     value: -0.11
   - name: S7_B0Kstar0mumu_1.1-2.5
     value: 0.23
-  - name: S9_B0Kstar0mumu_1.1-2.5
+  - name: S8_B0Kstar0mumu_1.1-2.5
     value: -0.04
 
 ##########################################
@@ -1212,7 +1314,7 @@
     value: -0.02
   - name: S7_B0Kstar0mumu_15-17
     value: 0.25
-   - name: S9_B0Kstar0mumu_15-17
+  - name: S9_B0Kstar0mumu_15-17
     value: -0.11
 
 - name: S9_B0Kstar0mumu_15-17
