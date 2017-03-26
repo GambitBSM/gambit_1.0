@@ -11,13 +11,13 @@
 #
  
 #======== Input parameter declarations =======
-Parameters: 
-  # Prior type is "none" because postprocessor 'scanner' will read in old points
-  NormalDist:
-    mu:
-      prior_type: none
-    sigma:
-      prior_type: none
+#Parameters: 
+#  # Prior type is "none" because postprocessor 'scanner' will read in old points
+#  NormalDist:
+#    mu:
+#      prior_type: none
+#    sigma:
+#      prior_type: none
 
 #======== Prior setup ========
 #Priors:
@@ -52,8 +52,9 @@ Scanner:
       plugin: postprocessor
 
       # 'purpose' name assigned to log-likelihood for this 'scan'
-      like: LogLike3
-
+      #like: LogLike3
+      like: None
+ 
       # label given to result of likelihood reweighting. Can overwrite old name, if 'permit_discard_old_likes' is 'true'.
       reweighted_like: reweighted_LogLike2
 
@@ -130,11 +131,11 @@ Scanner:
  
                    
 #======== Observables of interest ========
-ObsLikes:
-  - purpose:      LogLike3
-    capability:   normaldist_loglike
-    module:       ExampleBit_A
-    type:         double
+#ObsLikes:
+#  - purpose:      LogLike3
+#    capability:   normaldist_loglike
+#    module:       ExampleBit_A
+#    type:         double
 
 #======== Rule entries ========
 Rules:
