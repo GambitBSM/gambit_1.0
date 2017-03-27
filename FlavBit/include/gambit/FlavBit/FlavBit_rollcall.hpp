@@ -1478,7 +1478,9 @@ START_MODULE
     DEPENDENCY(BDmunu, double)
     DEPENDENCY(BDstartaunu, double)
     DEPENDENCY(BDstarmunu, double)
-    #undef FUNCTION
+    DEPENDENCY(RD, double)
+    DEPENDENCY(RDstar, double)
+   #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY SL_LL
