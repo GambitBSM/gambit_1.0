@@ -130,6 +130,35 @@
   correlation:
   - name: NONE
 
+- name: RDstar
+  islimit: false
+  exp_value: 0.310
+  exp_stat_error: 0.015
+  exp_sys_error: 0.008
+  exp_source: HFAG16
+  th_error: 0.003
+  th_error_type: A
+  th_error_source: Phys.Rev.D85,094025(2012)
+  correlation:
+  - name: RD
+    value: -0.23
+
+- name: RD
+  islimit: false
+  exp_value: 0.403
+  exp_stat_error: 0.040
+  exp_sys_error: 0.024
+  exp_source: HFAG16
+  th_error: 0.011
+  th_error_type: A
+  th_error_source: Phys.Rev.D92,034506(2015)
+  correlation:
+  - name: RDstar
+    value: -0.23
+			
+
+		    
+
 ##########################################
 
 - name: FL_B0Kstar0mumu_0.1_0.98
