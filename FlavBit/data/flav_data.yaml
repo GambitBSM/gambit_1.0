@@ -46,35 +46,11 @@
   correlation:
   - name: NONE
 
-- name: BR_BDtaunu
-  islimit: false
-  exp_value: 1.04e-2
-  exp_stat_error: 0.35e-2
-  exp_sys_error: 0.18e-2
-  exp_source: PDG16
-  th_error: 0.06
-  th_error_type: M
-  th_error_source: NONE
-  correlation:
-  - name: NONE
-
 - name: BR_BDmunu
   islimit: false
   exp_value: 2.19e-2
   exp_stat_error: 0.12e-2
   exp_sys_error: 0.
-  exp_source: PDG16
-  th_error: 0.06
-  th_error_type: M
-  th_error_source: NONE
-  correlation:
-  - name: NONE
-
-- name: BR_BDstartaunu
-  islimit: false
-  exp_value: 1.84e-2
-  exp_stat_error: 0.22e-2
-  exp_sys_error: 0.0
   exp_source: PDG16
   th_error: 0.06
   th_error_type: M
@@ -155,9 +131,9 @@
   correlation:
   - name: RDstar
     value: -0.23
-			
 
-		    
+
+
 
 ##########################################
 
