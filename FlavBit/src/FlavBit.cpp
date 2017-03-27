@@ -2107,7 +2107,7 @@ namespace Gambit
     void SL_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::SL_measurements;
-
+      
       static bool first = true;
       const int n_experiments=8;
       static double th_err[n_experiments];
@@ -2127,14 +2127,18 @@ namespace Gambit
         // B-> tau nu
         red.read_yaml_measurement("flav_data.yaml", "BR_Btaunu");
         // B-> D tau nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_BDtaunu");
+        //red.read_yaml_measurement("flav_data.yaml", "BR_BDtaunu");
         // B-> D* tau nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_BDstartaunu");
+        //red.read_yaml_measurement("flav_data.yaml", "BR_BDstartaunu");
         // B-> D mu nu
         red.read_yaml_measurement("flav_data.yaml", "BR_BDmunu");
         // B-> D* mu nu
         red.read_yaml_measurement("flav_data.yaml", "BR_BDstarmunu");
-        // Ds-> tau nu
+	// RD
+	red.read_yaml_measurement("flav_data.yaml", "RD");
+	// RDstar
+	red.read_yaml_measurement("flav_data.yaml", "RDstar");
+	// Ds-> tau nu
         red.read_yaml_measurement("flav_data.yaml", "BR_Dstaunu");
         // Ds -> mu nu
         red.read_yaml_measurement("flav_data.yaml", "BR_Dsmunu");
@@ -2162,13 +2166,17 @@ namespace Gambit
       // B-> tau nu SI
       theory[0] = *Dep::Btaunu;
       // B-> D tau nu
-      theory[1] = *Dep::BDtaunu;
+      //theory[1] = *Dep::BDtaunu;
       // B-> D* tau nu
-      theory[2] = *Dep::BDstartaunu;
+      //theory[2] = *Dep::BDstartaunu;
       // B-> D mu nu
-      theory[3] = *Dep::BDmunu;
+      theory[1] = *Dep::BDmunu;
       // B-> D* mu nu
-      theory[4] = *Dep::BDstarmunu;
+      theory[2] = *Dep::BDstarmunu;
+      // RD
+      theory[3] = *Dep::RD;
+      // RDstar
+      theory[4] = *Dep::RDstar;
       // Ds-> tau nu
       theory[5] = *Dep::Dstaunu;
       // Ds -> mu nu
