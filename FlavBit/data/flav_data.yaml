@@ -6,7 +6,7 @@
   exp_source: 1703.05747
   th_error: 0.1
   th_error_type: M
-  th_error_source: NONE
+  th_error_source: 1208.0934
   correlation:
   - name: NONE
 
@@ -18,7 +18,7 @@
   exp_source: Nature 522
   th_error: 0.1
   th_error_type: M
-  th_error_source: NONE
+  th_error_source: 1208.0934
   correlation:
   - name: NONE
 
