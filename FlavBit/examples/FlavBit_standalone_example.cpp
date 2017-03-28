@@ -31,7 +31,7 @@ using namespace FlavBit::Functown;      // Functors wrapping the module's actual
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 // Default SLHA file for input, if not given on the command line.
-std::string inputfile("FlavBit/data/example.slha");
+std::string infile("FlavBit/data/example.slha");
 
 QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
 
@@ -43,7 +43,7 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
-      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputfile, Spectrum::mc_info(), Spectrum::mr_info());
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(infile, Spectrum::mc_info(), Spectrum::mr_info());
     }
 
   }
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 
     cout << "starting" << endl;
     // Get the SLHA filename from the command line, if it has been given.
-    if (argc >= 2) inputfile = argv[1];
+    if (argc >= 2) infile = argv[1];
 
     cout << "starting" << endl;
 

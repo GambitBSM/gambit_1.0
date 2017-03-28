@@ -721,11 +721,11 @@ namespace Gambit
     /// Calculating Br in B0->mumu decays
     // *************************************************
 
-    void SI_Bdmumu(double &result)
+    void SI_Bmumu(double &result)
     {
-      using namespace Pipes::SI_Bdmumu;
+      using namespace Pipes::SI_Bmumu;
 
-      if(flav_debug)  cout<<"Starting SI_Bdmumu"<<endl;
+      if(flav_debug)  cout<<"Starting SI_Bmumu"<<endl;
 
       struct parameters param = *Dep::SuperIso_modelinfo;
 
@@ -736,11 +736,11 @@ namespace Gambit
       }
       else
       {
-        result=BEreq::Bdll_CONV(&param, byVal(flav));
+        result=BEreq::Bll_CONV(&param, byVal(flav));
       }
 
-      if(flav_debug) printf("BR(Bd->mumu)=%.3e\n",result);
-      if(flav_debug)  cout<<"Finished SI_Bdmumu"<<endl;
+      if(flav_debug) printf("BR(B->mumu)=%.3e\n",result);
+      if(flav_debug)  cout<<"Finished SI_Bmumu"<<endl;
     }
 
     // *************************************************
@@ -1756,11 +1756,11 @@ namespace Gambit
 
     // *************************************************
 
-    void FH_FlavorObs(fh_FlavorObs &result)
+    void FH_FlavourObs(fh_FlavourObs &result)
     {
-      using namespace Pipes::FH_FlavorObs;
+      using namespace Pipes::FH_FlavourObs;
 
-      if(flav_debug)  cout<<"Starting FH_FlavorObs"<<endl;
+      if(flav_debug)  cout<<"Starting FH_FlavourObs"<<endl;
 
       fh_real bsgMSSM;     // B -> Xs gamma in MSSM
       fh_real bsgSM;       // B -> Xs gamma in SM
@@ -1774,18 +1774,24 @@ namespace Gambit
            deltaMsMSSM, deltaMsSM,
            bsmumuMSSM, bsmumuSM);
 
-      fh_FlavorObs FlavorObs;
-      FlavorObs.Bsg_MSSM = bsgMSSM;
-      FlavorObs.Bsg_SM = bsgSM;
-      FlavorObs.deltaMs_MSSM = deltaMsMSSM;
-      FlavorObs.deltaMs_SM = deltaMsSM;
-      FlavorObs.Bsmumu_MSSM = bsmumuMSSM;
-      FlavorObs.Bsmumu_SM = bsmumuSM;
+      fh_FlavourObs FlavourObs;
+      FlavourObs.Bsg_MSSM = bsgMSSM;
+      FlavourObs.Bsg_SM = bsgSM;
+      FlavourObs.deltaMs_MSSM = deltaMsMSSM;
+      FlavourObs.deltaMs_SM = deltaMsSM;
+      FlavourObs.Bsmumu_MSSM = bsmumuMSSM;
+      FlavourObs.Bsmumu_SM = bsmumuSM;
 
-      result = FlavorObs;
-      if(flav_debug) cout<<"Finished FH_FlavorObs"<<endl;
+      result = FlavourObs;
+      if(flav_debug) cout<<"Finished FH_FlavourObs"<<endl;
     }
 
+    ///These functions extract observables from a FeynHiggs flavour result
+    ///@{
+    void FH_bsgamma(double &result) { result = Pipes::FH_bsgamma::Dep::FH_FlavourObs->Bsg_MSSM; }
+    void FH_Bsmumu (double &result) { result = Pipes::FH_Bsmumu::Dep::FH_FlavourObs->Bsmumu_MSSM; }
+    void FH_deltaMs(double &result) { result = Pipes::FH_deltaMs::Dep::FH_FlavourObs->deltaMs_MSSM; }
+    ///@}
 
     // *************************************************
     /// reading measurements for b->sll
@@ -1995,7 +2001,7 @@ namespace Gambit
       using namespace Pipes::b2ll_measurements;
 
       static bool first = true;
-      static double fractional_theory_bs2mumu_error, fractional_theory_bd2mumu_error;
+      static double fractional_theory_bs2mumu_error, fractional_theory_b2mumu_error;
 
       if (flav_debug) cout<<"Starting b2ll_measurements"<<endl;
 
@@ -2016,7 +2022,7 @@ namespace Gambit
 
         // SuperIso doesn't provide the errors, so we need to take them from paper
         fractional_theory_bs2mumu_error = red.get_th_err()(0,0);
-        fractional_theory_bd2mumu_error = red.get_th_err()(1,0);
+        fractional_theory_b2mumu_error = red.get_th_err()(1,0);
 
         measurement_assym.value_exp=red.get_exp_value();
         measurement_assym.cov_exp=red.get_cov();
@@ -2032,15 +2038,15 @@ namespace Gambit
 
       // Get theory prediction
       measurement_assym.value_th(0,0)=*Dep::Bsmumu_untag;
-      measurement_assym.value_th(1,0)=*Dep::Bdmumu;
+      measurement_assym.value_th(1,0)=*Dep::Bmumu;
 
       // Compute error on theory prediction and populate the covariance matrix
       double theory_bs2mumu_error=*Dep::Bsmumu_untag*fractional_theory_bs2mumu_error;
-      double theory_bd2mumu_error=*Dep::Bdmumu*fractional_theory_bd2mumu_error;
+      double theory_b2mumu_error=*Dep::Bmumu*fractional_theory_b2mumu_error;
       measurement_assym.cov_th(0,0)=theory_bs2mumu_error*theory_bs2mumu_error;
       measurement_assym.cov_th(0,1)=0.;
       measurement_assym.cov_th(1,0)=0.;
-      measurement_assym.cov_th(1,1)=theory_bd2mumu_error*theory_bd2mumu_error;
+      measurement_assym.cov_th(1,1)=theory_b2mumu_error*theory_b2mumu_error;
 
       // Save the differences between theory and experiment
       measurement_assym.diff.clear();
@@ -2107,7 +2113,7 @@ namespace Gambit
     void SL_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::SL_measurements;
-      
+
       static bool first = true;
       const int n_experiments=8;
       static double th_err[n_experiments];

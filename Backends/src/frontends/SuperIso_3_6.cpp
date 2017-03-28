@@ -327,7 +327,7 @@ BE_NAMESPACE
 
 
   //###################################################################################
-  double Bdll_CONV(struct parameters *param, int flav)
+  double Bll_CONV(struct parameters *param, int flav)
   {
     double result = 0.;
 
@@ -348,7 +348,7 @@ BE_NAMESPACE
       C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
       CQ_calculator(2,byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
 
-      result = Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
+      result = Bll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
     }
 
     return result;
@@ -357,7 +357,7 @@ BE_NAMESPACE
 
 
   //###################################################################################
-  double Bdll_CONV_WC(struct parameters *param, int flav)
+  double Bll_CONV_WC(struct parameters *param, int flav)
   {
     double result = 0.;
 
@@ -404,7 +404,7 @@ BE_NAMESPACE
         cout<<"CKM WC: "<<param->BR_BXclnu_exp<<param->Vts<< param->Vtb<< param->Vcb<<endl;
 
 
-        result = Bdll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
+        result = Bll(byVal(flav),(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),param,byVal(mu_b));
       }
 
     return result;

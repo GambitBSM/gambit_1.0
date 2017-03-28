@@ -492,6 +492,17 @@ Rules:
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
+  # FlavBit
+
+  # Use SuperIso instead of FeynHiggs for b->sgamma
+  - capability: bsgamma
+    function: SI_bsgamma
+
+  # Use SuperIso instead of FeynHiggs for B_s->mumu
+  - capability: Bsmumu_untag
+    function: SI_Bsmumu_untag
+
+
 Logger:
 
   redirection:
