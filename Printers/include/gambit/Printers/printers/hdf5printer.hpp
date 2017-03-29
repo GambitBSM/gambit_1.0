@@ -31,10 +31,10 @@
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/VertexBufferBase.hpp"
 #include "gambit/Printers/VertexBuffer_mpitags.hpp"
+#include "gambit/Printers/printers/hdf5types.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
-#include "gambit/Elements/printable_types.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Logs/logger.hpp"
@@ -134,10 +134,6 @@ namespace Gambit
         /// Constructor (for construction via inifile options)
         HDF5Printer(const Options&, BasePrinter* const primary = NULL);
 
-        /// Auxilliary mode constructor (for construction in scanner plugins)
-        // **deprecated**
-        //HDF5Printer(const Options&, std::string&, bool synchronised);
-
         /// Tasks common to the various constructors
         void common_constructor(const Options&);
 
@@ -159,22 +155,9 @@ namespace Gambit
 
         ///@{ Print functions
         using BasePrinter::_print; // Tell compiler we are using some of the base class overloads of this on purpose.
-        /// Templatable print functions
-        void _print(int       const&, const std::string&, const int, const uint, const ulong);
-        void _print(uint      const&, const std::string&, const int, const uint, const ulong);
-        void _print(long      const&, const std::string&, const int, const uint, const ulong);
-        void _print(ulong     const&, const std::string&, const int, const uint, const ulong);
-        void _print(longlong  const&, const std::string&, const int, const uint, const ulong);
-        void _print(ulonglong const&, const std::string&, const int, const uint, const ulong);
-        void _print(float     const&, const std::string&, const int, const uint, const ulong);
-        void _print(double    const&, const std::string&, const int, const uint, const ulong);
-        /// 'Custom' print functions
-        void _print(std::vector<double>  const&, const std::string&, const int, const uint, const ulong);
-        void _print(bool                 const&, const std::string&, const int, const uint, const ulong);
-        void _print(map_str_dbl          const&, const std::string&, const int, const uint, const ulong);
-        void _print(ModelParameters      const&, const std::string&, const int, const uint, const ulong);
-        void _print(triplet<double>      const&, const std::string&, const int, const uint, const ulong);
-        void _print(DM_nucleon_couplings const&, const std::string&, const int, const uint, const ulong);
+        #define DECLARE_PRINT(r,data,i,elem) void _print(elem const&, const std::string&, const int, const uint, const ulong);
+        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_PRINT, , HDF5TYPES)
+        #undef DECLARE_PRINT
         ///@}
 
         /// @{ HDF5Printer-specific functions
@@ -241,21 +224,18 @@ namespace Gambit
         void check_sync(const std::string& label, const int sync_type, bool checkall);
 
         #ifdef WITH_MPI
-        /// Reserved tags for MPI messages
-        /// First reserved tag is for messages registering/requesting a new tag.
-        // enum Tags { TAG_REQ=0; } //defined in hdf5tools.hpp
 
         /// Retrieve MPI communicator object used by this printer
         GMPI::Comm& get_Comm() { return myComm; }
         #endif
 
-        // Check if the buffers are full and waiting to be emptied
-        // By default this only empties buffers if they are full. Use
-        // flag to force the flush for the finalise buffer dumps.
+        /// Check if the buffers are full and waiting to be emptied
+        /// By default this only empties buffers if they are full. Use
+        /// flag to force the flush for the finalise buffer dumps.
         void empty_sync_buffers(bool force=false);
 
         /// Check whether printing to a new parameter space point is about to occur
-        // and perform adjustments needed to prepare the printer.
+        /// and perform adjustments needed to prepare the printer.
         void check_for_new_point(const PPIDpair&);
 
         /// Retrieve index from global lookup table, with error checking
@@ -276,24 +256,12 @@ namespace Gambit
         /// Retrieve the "resume" flag
         bool get_resume() { return resume; }
 
-        /// Retrieve the starting position in output datasets for new data
-        //bool get_startpos() { return startpos; } // OBSOLETE
-
-        /// Retreive any stored PPIDpairs from previous runs (resume mode)
-        /// OBSOLETE
-        //const std::vector<PPIDpair>& get_previous_points() { return previous_points; }
-
         /// Clear previous points list
         void clear_previous_points() { std::vector<PPIDpair>().swap(previous_points); } // This technique also shrinks the capacity of the vector, which 'clear' does not do.
 
         /// Scan for existing temporary files, in preparation for combining them
         /// Should only do this if scan is resuming, and if we are process rank 0.
         void prepare_and_combine_tmp_files();
-
-        /// Gather MPIrank/pointID pairs from an existing output file
-        /// Along the way, verify that datasets in the output file have consistent lengths
-        /// OBSOLETE
-        //std::vector<PPIDpair> gather_old_PPIDs();
 
         PPIDpair get_highest_PPID_from_HDF5(hid_t group_id);
 
@@ -319,14 +287,9 @@ namespace Gambit
            // Extract a buffer from the manager corresponding to this
            auto& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label);
 
-           // { debug
-           //if(label=="pointID") std::cout << "rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<label<<" = "<<value<<std::endl;
-           // }
-
-
            #ifdef HDEBUG_MODE
-           std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<typeid(T).name()<<", "<<label<<" = "<<value<<std::endl;
-           std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": pointID="<<pointID<<", mpirank="<<mpirank<<std::endl;
+             std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<typeid(T).name()<<", "<<label<<" = "<<value<<std::endl;
+             std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": pointID="<<pointID<<", mpirank="<<mpirank<<std::endl;
            #endif
 
            PPIDpair ppid(pointID,mpirank);
@@ -475,6 +438,117 @@ namespace Gambit
     DEFINE_BUFFMAN_GETTER(float    )
     DEFINE_BUFFMAN_GETTER(double   )
 
+
+    /// @{ Templated H5P_LocalBufferManager member functions
+
+    template<class BuffType>
+    void H5P_LocalBufferManager<BuffType>::init(HDF5Printer* p, bool sync)
+    {
+      /* Set global behaviour flag */
+      synchronised = sync;
+
+      /* Attempt to attach to printer */
+      if(p==NULL)
+      {
+        std::ostringstream errmsg;
+        errmsg << "Error! Tried to initialise a H5P_LocalBufferManager with a null pointer! Need an actual HDF5Printer object in order to work. This is a bug in the HDF5Printer class, please report it.";
+        printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+      if(not ready()) {
+        printer = p;
+      } else {
+        std::ostringstream errmsg;
+        errmsg << "Error! Tried to initialise a H5P_LocalBufferManager twice! This is a bug in the HDF5Printer class, please report it.";
+        printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+    }
+
+    template<class BuffType>
+    BuffType& H5P_LocalBufferManager<BuffType>::get_buffer(const int vertexID, const unsigned int aux_i, const std::string& label)
+    {
+      if(not ready()) {
+        std::ostringstream errmsg;
+        errmsg << "Error! Tried to retrieve a buffer from a buffer manager without first initialising it! This is a bug in the HDF5Printer class, please report it.";
+        printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+
+      VBIDpair key;
+      key.vertexID = vertexID;
+      key.index    = aux_i;
+
+      typename std::map<VBIDpair, BuffType>::iterator it = local_buffers.find(key);
+
+      if( it == local_buffers.end() )
+      {
+        error_if_key_exists(local_buffers, key, "local_buffers");
+        // No local buffer exists for this output stream yet, so make one
+        // But check first if another printer manager is already handling this
+        // output stream. If so, we relinquish control over it and silence the
+        // new output stream.
+        bool silence = false;
+        #ifdef DEBUG_MODE
+          std::cout<<"Preparing to create new print output stream..."<<std::endl;
+          std::cout<<"...label = "<<label<<std::endl;
+          std::cout<<"...is stream already managed? "<<printer->is_stream_managed(key)<<std::endl;
+          std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
+          std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
+        #endif
+        if( printer->is_stream_managed(key) )
+        {
+          silence = true;
+        }
+        #ifdef DEBUG_MODE
+          std::cout<<"...is silenced? "<<silence<<std::endl;
+        #endif
+
+        // Create the new buffer object
+        hid_t loc(-1);
+        if(synchronised)
+        {
+          loc = printer->get_location();
+        }
+        else // write to the RA group
+        {
+          loc = printer->get_RA_location();
+        }
+
+        local_buffers[key] = BuffType( loc
+                                      , label/*deconstruct?*/
+                                      , vertexID
+                                      , aux_i
+                                      , synchronised
+                                      , silence
+                                      , false /*printer->get_resume() -- In this new version of the HDF5Printer we write temporary files and then combine them at the end of the scan, so each individual buffer no longer needs to be in 'resume' mode, it can just start anew and be combined with the old data later on */
+                                      , access /* r/w mode. Buffers can now be used for reading also. */
+                                      );
+
+        // Get the new (possibly silenced) buffer back out of the map
+        it = local_buffers.find(key);
+
+        // Add a pointer to the new buffer to the full list as well
+        if(not silence) printer->insert_buffer( key, it->second );
+
+        // Force increment the buffer to "catch it up" to the current sync
+        // position, in case it has been created "late".
+        // We subtract one because another increment will happen after
+        // the print statement (that triggered the creation of the new
+        // buffer) completes.
+        if(synchronised) it->second.fast_forward(printer->get_sync_pos()-1);
+      }
+
+      if( it == local_buffers.end() )
+      {
+        std::ostringstream errmsg;
+        errmsg << "Error! Failed to retrieve newly created buffer (label="<<label<<") from local_buffers map! Key was: ("<<vertexID<<","<<aux_i<<")"<<std::endl;
+        printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+
+      return it->second;
+    }
+
+    /// @}
+
+
     // Avoid cluttering up "macro namespace"
     #undef DEFINE_BUFFMAN_GETTER
     #undef BT
@@ -484,8 +558,11 @@ namespace Gambit
     LOAD_PRINTER(hdf5, HDF5Printer)
 
   } // end namespace Printers
+
 } // end namespace Gambit
 
-#undef DEBUG_MODE
+#ifdef DEBUG_MODE
+  #undef DEBUG_MODE
+#endif
 
 #endif

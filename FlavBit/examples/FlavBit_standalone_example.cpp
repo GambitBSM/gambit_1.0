@@ -142,9 +142,9 @@ int main(int argc, char** argv)
 
     // b2ll_measurements depends on:
     // - Bsmumu_untag
-    // - Bdmumu
+    // - Bmumu
     b2ll_measurements.resolveDependency(&SI_Bsmumu_untag);
-    b2ll_measurements.resolveDependency(&SI_Bdmumu);
+    b2ll_measurements.resolveDependency(&SI_Bmumu);
 
     // Resolve dependencies of SI_Bsmumu_untag
     // These are:
@@ -154,16 +154,16 @@ int main(int argc, char** argv)
     SI_Bsmumu_untag.resolveDependency(&SI_fill);
     SI_Bsmumu_untag.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bsll_untag_CONV);
 
-    // Resolve dependencies of SI_Bdmumu
+    // Resolve dependencies of SI_Bmumu
     // These are:
     //  - SI_fill
     // Plus BE reqs:
-    // - Bdmumu
+    // - Bmumu
     // - CW_calculator
     // - C_calculator_base1
     // - CQ_calculator
-    SI_Bdmumu.resolveDependency(&SI_fill);
-    SI_Bdmumu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bdll_CONV);
+    SI_Bmumu.resolveDependency(&SI_fill);
+    SI_Bmumu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bll_CONV);
 
     // Now do the semi-leptonic likelihood SL_LL
     // This depends on:
@@ -229,9 +229,9 @@ int main(int argc, char** argv)
     std::cout << FlavBit::Pipes::SI_fill::BEreq::slha_adjust.name() << std::endl;
 
     // Double-check which backend requirements have been filled with what
-    std::cout << std::endl << "My function SI_Bdmumu  has had its backend requirement on Bdll_CONV filled by:" << std::endl;
-    std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.origin() << "::";
-    std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.name() << std::endl;
+    std::cout << std::endl << "My function SI_Bmumu  has had its backend requirement on Bll_CONV filled by:" << std::endl;
+    std::cout << FlavBit::Pipes::SI_Bmumu::BEreq::Bll_CONV.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_Bmumu::BEreq::Bll_CONV.name() << std::endl;
 
     // Double-check which dependencies have been filled with whatever (not every combination is shown)
     std::cout << std::endl << "My function SI_fill has had its dependency on MSSM_spectrum filled by:" << endl;
@@ -276,7 +276,7 @@ int main(int argc, char** argv)
 
       // Calculate the B -> ll likelihood
       SI_Bsmumu_untag.reset_and_calculate();
-      SI_Bdmumu.reset_and_calculate();
+      SI_Bmumu.reset_and_calculate();
       b2ll_measurements.reset_and_calculate();
       b2ll_likelihood.reset_and_calculate();
       loglike = b2ll_likelihood(0);

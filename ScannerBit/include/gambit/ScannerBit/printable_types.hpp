@@ -1,39 +1,40 @@
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
-///  \file                                       
-///                                               
+///  \file
+///
 ///  Preprocessor sequence of functor types that
-///  should be allowed to print when using 
-///  ScannerBit in standalone mode.  Add to 
-///  this as necessary.                          
-///                                               
+///  should be allowed to print when using
+///  ScannerBit in standalone mode.  Add to
+///  this as necessary.
+///
 ///  *********************************************
-///                                               
-///  Authors:                                     
-///                                               
+///
+///  Authors:
+///
 ///  \author Pat Scott
-///          (p.scott@imperial.ac.uk)    
+///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Jun
 ///
 ///  \author Ben Farmer
-///          (benjamin.farmer@fysik.su.se) 
+///          (benjamin.farmer@fysik.su.se)
 ///  \date 2016 Feb
-///                                               
+///
 ///  *********************************************
 
-#ifndef __scannerbit_printable_types_hpp__                 
-#define __scannerbit_printable_types_hpp__                 
+#ifndef __scannerbit_printable_types_hpp__
+#define __scannerbit_printable_types_hpp__
 
 #include <string>
 #include <map>
 
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/model_parameters.hpp"
+
+
 namespace Gambit
 {
-  class ModelParameters; // Forward declaration
-  typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
-
   //  Types that scanner plugins are allowed to print.
-  //  Covers just basic types, vectors of those types, and 
+  //  Covers just basic types, vectors of those types, and
   //  a couple of extras needed by scanners.
   #define SCANNER_SIMPLE_TYPES \
     (bool)                     \
@@ -41,16 +42,16 @@ namespace Gambit
     (short int)(unsigned short int) \
     (long)(unsigned long)   \
     (long long)(unsigned long long)      \
-    (float)(double)            
-  
+    (float)(double)
+
   // Bool has weird behaviour in vectors, so need a version without bool.
   #define SCANNER_SIMPLE_TYPES_NOBOOL \
     (int)(unsigned int) \
     (short int)(unsigned short int) \
     (long)(unsigned long)   \
     (long long)(unsigned long long)      \
-    (float)(double)            
-  
+    (float)(double)
+
   #define SCANNER_VECTOR_TYPES  \
     (std::vector<bool>)         \
     (std::vector<int>)          \
@@ -62,20 +63,20 @@ namespace Gambit
     (std::vector<long long>)     \
     (std::vector<unsigned long long>)    \
     (std::vector<float>)        \
-    (std::vector<double>)      
-  
+    (std::vector<double>)
+
   #define SCANNER_PRINTABLE_TYPES \
     SCANNER_SIMPLE_TYPES       \
     SCANNER_VECTOR_TYPES       \
     (map_str_dbl)              \
     (Gambit::ModelParameters)
-  
+
   #define SCANNER_RETRIEVABLE_TYPES  \
     (double)                   \
     (std::string)              \
     (std::vector<double>)      \
     (map_str_dbl)              \
-    (Gambit::ModelParameters)         
- 
+    (Gambit::ModelParameters)
+
 }
 #endif

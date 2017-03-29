@@ -32,6 +32,7 @@
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Printers/printers/asciitypes.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 // MPI bindings
@@ -138,24 +139,12 @@ namespace Gambit
         // Could use macros again to generate identical print functions
         // for all types that have a << operator already defined.
 
+        ///@{ Print functions
         using BasePrinter::_print; // Tell compiler we are using some of the base class overloads of this on purpose.
-        /// Macro to add all the simple print functions that just print via a simple template function
-        #define ASIMPLEPRINT_DECL(r,data,elem) \
-          void _print(elem const&, const std::string&, const int, const uint, const ulong);
-
-        #define DECL_ASCII_SIMPLE_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(ASIMPLEPRINT_DECL, _, TYPES)
-        DECL_ASCII_SIMPLE_PRINTS(SCANNER_SIMPLE_TYPES)
-        DECL_ASCII_SIMPLE_PRINTS(SCANNER_VECTOR_TYPES)
-
-        // Extra Scanner-friendly types to print
-        void _print(map_str_dbl const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(triplet<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(DM_nucleon_couplings const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-
-        // Scanner-unfriendly print functions
-        #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
-        void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        #endif
+        #define DECLARE_PRINT(r,data,i,elem) void _print(elem const&, const std::string&, const int, const uint, const ulong);
+        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_PRINT, , ASCIITYPES)
+        #undef DECLARE_PRINT
+        ///@}
 
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads

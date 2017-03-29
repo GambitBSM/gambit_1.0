@@ -19,6 +19,7 @@
 
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
+#include "gambit/Printers/printers/hdf5types.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
 #include "gambit/Utils/cats.hpp"
@@ -26,8 +27,10 @@
 #ifndef __hdf5_reader_hpp__
 #define __hdf5_reader_hpp__
 
-namespace Gambit {
-  namespace Printers {
+namespace Gambit
+{
+  namespace Printers
+  {
 
     /// Length of dataset chunks read into memory during certain search operations.
     /// For maximum efficiency this should probably match the chunking length used
@@ -104,23 +107,11 @@ namespace Gambit {
         virtual std::size_t get_type(const std::string& label);
         virtual std::set<std::string> get_all_labels(); // Get all dataset labels
 
-        /// Templatable retrieve functions
+        /// Retrieve functions
         using BaseReader::_retrieve; // Tell compiler we are using some of the base class overloads of this on purpose.
-        bool _retrieve(int      &, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(uint     &, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(long     &, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(ulong    &, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(longlong &, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(ulonglong&, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(float    &, const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(double   &, const std::string& label, const uint rank, const ulong pointID);
-        /// 'Custom' retrieve functions
-        bool _retrieve(bool&,                 const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(std::vector<double>&,  const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(map_str_dbl&,          const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(ModelParameters&,      const std::string& label, const uint rank, const ulong pointID);
-        bool _retrieve(DM_nucleon_couplings&, const std::string& label, const uint rank, const ulong pointID);
-        /// @}
+        #define DECLARE_RETRIEVE(r,data,i,elem) bool _retrieve(elem&, const std::string&, const uint, const ulong);
+        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_RETRIEVE, , HDF5TYPES)
+        #undef DECLARE_RETRIEVE
 
       private:
         // Location of HDF5 datasets to be read
@@ -192,6 +183,45 @@ namespace Gambit {
         }
 
     };
+
+    /// Buffer retrieve function
+    template<class T>
+    BuffPair<T>& H5P_LocalReadBufferManager<T>::get_buffer(const int vertexID, const unsigned int aux_i, const std::string& label, hid_t location_id)
+    {
+     VBIDpair key;
+     key.vertexID = vertexID;
+     key.index    = aux_i;
+
+     typename std::map<VBIDpair, BuffPair<T>>::iterator it = local_buffers.find(key);
+
+     if( it == local_buffers.end() )
+     {
+       error_if_key_exists(local_buffers, key, "local_buffers");
+       // No local buffer exists for this output stream yet, so make one
+
+       // Create the new buffer objects
+       if(location_id<0)
+       {
+          std::ostringstream errmsg;
+          errmsg << "Failed to created HDF5 read buffer '"<<label<<"'! The suppied location_id does not point to a valid location in a HDF5 file!";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+
+       local_buffers[key] = BuffPair<T>(location_id,label);
+
+       // Get the new buffer back out of the map
+       it = local_buffers.find(key);
+     }
+
+     if( it == local_buffers.end() )
+     {
+       std::ostringstream errmsg;
+       errmsg << "Error! Failed to retrieve newly created buffer (label="<<label<<") from local_buffers map! Key was: ("<<vertexID<<","<<aux_i<<")"<<std::endl;
+       printer_error().raise(LOCAL_INFO, errmsg.str());
+     }
+
+     return it->second;
+    }
 
     /// Define the buffermanager getter specialisations
     #define DEFINE_BUFFMAN_GETTER(TYPE) \
