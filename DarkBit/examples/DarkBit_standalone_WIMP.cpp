@@ -301,6 +301,7 @@ int main(int argc, char* argv[])
     // density is always the measured one (despite relic density results)
 
     // ---- Relic density fraction options ----
+    RD_fraction_from_oh2.resolveDependency(&RD_oh2_general);
     RD_fraction_from_oh2.setOption<std::string>("mode", "one");
 
     // ---- Gamma-ray yields ----
@@ -335,9 +336,6 @@ int main(int argc, char* argv[])
     cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
     cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
-    cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-    cascadeMC_LoopManager.resolveDependency(SimYieldTablePointer);
-    cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_WIMP);
     std::vector<functor*> nested_functions = initVector<functor*>(
         &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
     cascadeMC_LoopManager.setNestedList(nested_functions);

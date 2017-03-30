@@ -185,6 +185,14 @@ int main(int argc, char* argv[])
 
     // Assume for direct and indirect detection likelihoods that dark matter
     // density is always the measured one (regardless of relic density results)
+    if (slha_version == 1)
+    {
+      RD_fraction_from_oh2.resolveDependency(&RD_oh2_MicrOmegas);
+    }
+    else
+    {
+      RD_fraction_from_oh2.resolveDependency(&RD_oh2_DarkSUSY);
+    }
     RD_fraction_from_oh2.setOption<std::string>("mode", "one");
     RD_fraction_from_oh2.reset_and_calculate();
 
@@ -376,9 +384,6 @@ int main(int argc, char* argv[])
 
       // Set up MC loop manager for cascade MC
       cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
-      cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-      cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
-      cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_MSSM);
       std::vector<functor*> nested_functions = initVector<functor*>(
           &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
       cascadeMC_LoopManager.setNestedList(nested_functions);
