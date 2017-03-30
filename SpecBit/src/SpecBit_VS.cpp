@@ -140,7 +140,7 @@ namespace Gambit
     return lambda1;
     }
     
-    void find_min_lambda(triplet<double>& age_pair)
+    void find_min_lambda(dbl_dbl_bool& vs_tuple)
     {
       using namespace flexiblesusy;
       using namespace softsusy;
@@ -310,7 +310,7 @@ namespace Gambit
         
         LB=u;
         #ifdef SPECBIT_DEBUG
-        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4); // compute tunnelling rate
+        double p=exp(4*140-26/(abs(0.5*lambda_min)))*pow(LB/(1.2e19),4); // compute tunnelling rate
         if (p>1)
         {
             cout<< "vacuum is unstable" << endl;
@@ -320,8 +320,8 @@ namespace Gambit
             cout<< "vacuum is metastable" << endl;
         }
         #endif
-       
-        lifetime=1/(exp(3*140-2600/(abs(lambda_min)/0.01))*pow(1/(1.2e19),3)*pow(LB,4));
+        double pi2_8_over3 = 8.* pow ( pi , 2 ) / 3.;
+        lifetime=1/(exp(3*140-pi2_8_over3/(abs(0.5*lambda_min)))*pow(1/(1.2e19),3)*pow(LB,4));
       }
       else // quartic coupling always positive, set output to default values
       {
@@ -338,39 +338,55 @@ namespace Gambit
       cout << "perturbativity checked up to " << LB << " result = " << perturbative << endl;
       #endif
       
-      age_pair = triplet<double>(lifetime,LB,perturb); // output all three results as a triplet, perturb could be bool but all 3 need to be doubles for this type
+      vs_tuple = dbl_dbl_bool(lifetime,LB,perturb); // output all three results as a triplet, perturb could be bool but all 3 need to be doubles for this type
      
     }
 
 
     // the functions below are used to extract the desired outputs from find_min_lambda
 
+    // gives expected lifetime in units of years, if stable give extremly large number (1e300)
     void get_expected_lifetime(double &lifetime)
     {
       namespace myPipe = Pipes::get_expected_lifetime;//
       using namespace Gambit;
-      triplet<double> age = *myPipe::Dep::vacuum_stability;
-      if (age.central==1e300){lifetime=1e300;}else{
-      lifetime=age.central*(6.5821195e-16)/(31536000);}// gives expected lifetime in units of years, if stable give extremly large number
-                                                       // (choose nice round number, 1e300, as this is easily identified without using and Inf as the output instead)
+      dbl_dbl_bool vs_tuple =  *myPipe::Dep::vacuum_stability;
+      
+      if (vs_tuple.first<1e300)
+      {
+        lifetime=vs_tuple.first*(6.5821195e-16)/(31536000);
+      }
+      else
+      {
+        lifetime=1e300;
+      }
     }
-    
 
+    // log of the likelihood
     void get_likelihood(double &result)
     {
       namespace myPipe = Pipes::get_likelihood;
       using namespace Gambit;
-      triplet<double> age = *myPipe::Dep::vacuum_stability;
-      result=((- ( 1 / ( age.central ) ) * exp(140) * (1/ (1.2e19) ) )  ); // log of the likelihood
+      dbl_dbl_bool vs_tuple =  *myPipe::Dep::vacuum_stability;
+      result=((- ( 1 / ( vs_tuple.first ) ) * exp(140) * (1/ (1.2e19) ) )  );
     }
     
     
+    // returns lnlike, very negative if pertub is 1, 0 otherwise
     void get_check_perturb_min_lambda(double &result)
     {
       namespace myPipe = Pipes::get_check_perturb_min_lambda;
       using namespace Gambit;
-      triplet<double> age = *myPipe::Dep::vacuum_stability;
-      result=-age.lower*(1e100); // returns lnlike, very negative if pertub is 1, 0 otherwise
+      dbl_dbl_bool vs_tuple =  *myPipe::Dep::vacuum_stability;
+      
+      if (vs_tuple.flag)
+      {
+        result = - 1e100;
+      }
+      else
+      {
+        result = 0;
+      }
     }
 
     

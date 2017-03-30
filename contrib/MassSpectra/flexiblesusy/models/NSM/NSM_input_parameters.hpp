@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:26
+// File generated at Sat 27 Aug 2016 12:40:23
 
 #ifndef NSM_INPUT_PARAMETERS_H
 #define NSM_INPUT_PARAMETERS_H
@@ -40,6 +40,9 @@ struct NSM_input_parameters {
    Lambda5Input(0), vSInput(0), Qin(0)
 
    {}
+
+   Eigen::ArrayXd get() const;
+   void set(const Eigen::ArrayXd&);
 };
 
 std::ostream& operator<<(std::ostream&, const NSM_input_parameters&);

@@ -24,6 +24,9 @@
 #include "config.h"
 #include "numerics.h"
 
+#include <limits>
+#include <cmath>
+
 #define WARN_IF_ZERO(p,fun)                     \
    if (is_zero(p))                              \
       WARNING(#fun ": " #p " is zero!");
@@ -157,13 +160,7 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
 {
    const double alphaDRbar = data.alpha_em_drbar;
    const double mz_pole    = data.mz_pole;
-   const double scale      = data.scale;
    const double gfermi     = data.fermi_contant;
-
-   if (!is_equal(scale, mz_pole)) {
-      WARNING("Weinberg_angle::calculate() called at scale "
-              << scale << " != MZ_pole(" << mz_pole << ")");
-   }
 
    unsigned iteration = 0;
    bool not_converged = true;
@@ -171,9 +168,23 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
    double rho_new = rho_start, sin_new = sin_start;
 
    while (not_converged && iteration < number_of_iterations) {
-      const double deltaR
+      double deltaR
          = calculate_delta_r(rho_old, sin_old, data, susy_contributions,
                              number_of_loops);
+
+      if (deltaR > 1.) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_r > 1");
+#endif
+         deltaR = 0.;
+      }
+
+      if (!std::isfinite(deltaR)) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_r non-finite");
+#endif
+         deltaR = 0.;
+      }
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
@@ -189,9 +200,16 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
 
       sin_new = Sin(theta);
 
-      const double deltaRho
+      double deltaRho
          = calculate_delta_rho(rho_old, sin_new, data, susy_contributions,
                                number_of_loops);
+
+      if (!std::isfinite(deltaRho)) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_rho non-finite");
+#endif
+         deltaRho = 0.;
+      }
 
       if (Abs(deltaRho) < 1.0)
          rho_new = 1.0 / (1.0 - deltaRho);
@@ -231,6 +249,7 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
  * @param add_susy_contributions add SUSY particle contributions
+ * @param number_of_loops loop order (0, 1, 2)
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.5) and (C.5) from hep-ph/9606211
  */
@@ -304,6 +323,7 @@ double Weinberg_angle::calculate_delta_rho(
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
  * @param add_susy_contributions add SUSY particle contributions
+ * @param number_of_loops loop order (0, 1, 2)
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.5) and (C.5) from hep-ph/9606211
  */
@@ -431,6 +451,7 @@ double Weinberg_angle::calculate_delta_vb_sm(
   const double sinThetaW2 = Sqr(sinThetaW);
   const double outcos  = Sqrt(1.0 - sinThetaW2);
   const double alphaDRbar = data.alpha_em_drbar;
+  const double scale   = data.scale;
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    WARN_IF_ZERO(rho, calculate_delta_vb_sm)
@@ -443,7 +464,8 @@ double Weinberg_angle::calculate_delta_vb_sm(
   const double deltaVbSm =
      rho * alphaDRbar / (4.0 * Pi * sinThetaW2) *
      (6.0 + log(cw2) / sw2 *
-      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos))));
+      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos)))
+      - 4. * Log(Sqr(mz/scale)));
 
   return deltaVbSm;
 }
@@ -453,7 +475,6 @@ double Weinberg_angle::calculate_delta_vb_sm(
  * renormalizations \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as given in
  * Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211 .
  *
- * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
  *
@@ -680,6 +701,14 @@ double Weinberg_angle::rho_2(double r)
 {
    const double Pi2 = Pi * Pi;
 
+   if (r <= std::numeric_limits<double>::epsilon()) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+      WARNING("rho_2: value of r is invalid: r = " << r);
+      WARNING("-> setting 2-loop corrections ~ xt^2 to 0");
+#endif
+      return 0.;
+   }
+
    if (r <= 1.9) {
       const double r2 = Sqr(r);
       return 19.0 - 16.5 * r + 43.0 * r2 / 12.0 + 7.0 / 120.0 * r2 * r -
@@ -705,7 +734,6 @@ double Weinberg_angle::rho_2(double r)
  *
  * @param p momentum
  * @param mt top-quark mass
- * @param mb botton-quark mass
  * @param data model parameters
  *
  * @return 1-loop top-quark contribution to W boson self-energy
@@ -761,8 +789,6 @@ double Weinberg_angle::calculate_self_energy_z_top(
  *
  * @param self_energy_w full W boson self-energy
  * @param p momentum
- * @param mt_drbar top-quark DR-bar mass
- * @param mb_drbar bottom-quark DR-bar mass
  * @param data model parameters
  *
  * @return W self-energy with top DR-bar mass replaced by top pole mass
@@ -788,9 +814,8 @@ double Weinberg_angle::replace_mtop_in_self_energy_w(
  * Replaces the 1-loop top-quark DR-bar mass contribution in the given
  * Z boson self-energy by the 1-loop top-quark pole mass contribution.
  *
- * @param self_energy_w full Z boson self-energy
+ * @param self_energy_z full Z boson self-energy
  * @param p momentum
- * @param mt_drbar top-quark DR-bar mass
  * @param data model parameters
  *
  * @return Z self-energy with top DR-bar mass replaced by top pole mass

@@ -164,32 +164,18 @@ Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
          - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
 }
 
-DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
+namespace {
 
-  const double eps = TOLERANCE * 1.0e-20;
-
-  DoubleVector dydx(1);
-  dydx(1) = -log(fabs(1 - t + eps)) / (t + eps);
-
-  return dydx;
+/// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
+template <typename T>
+T divide_finite(T a, T b) {
+   T result = a / b;
+   if (!std::isfinite(result))
+      result = std::numeric_limits<T>::max();
+   return result;
 }
 
-/*
-double dilog(double x) {
-  // Set global variables so that integration function can access them
-  double from = 0.0, to = x, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-
-  DoubleVector v(1); 
-  double eps = TOLERANCE * 1.0e-5;
-  v(1) = 1.0; 
-
-  // Runge-Kutta, f(b) = int^b0 I(x) dx, I is integrand => d f / db = I(b)
-  // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
-  integrateOdes(v, from, to, eps, guess, hmin, dilogarg, odeStepper); 
-  
-  return v(1) - 1.0;
-}
-*/
+} // anonymous namespace
 
 // Returns real part of integral
 double bIntegral(int n1, double p, double m1, double m2, double mt) {
@@ -266,27 +252,27 @@ double b0(double p, double m1, double m2, double q) {
   const double dmSq = mMaxSq - mMinSq;
   const double s = pSq + dmSq;
 
-  const double pTest = sqr(p) / sqr(mMax);
+  const double pTest = divide_finite(pSq, mMaxSq);
   /// Decides level at which one switches to p=0 limit of calculations
-  const double pTolerance = 1.0e-6; 
+  const double pTolerance = 1.0e-10;
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    const Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
     
     Complex xPlus, xMinus;
 
-    xPlus = (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon))) /
-      (2. * sqr(p));
-    xMinus = 2. * (sqr(mMax) - iEpsilon) / 
-      (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon)));
+    xPlus = (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) /
+      (2. * pSq);
+    xMinus = 2. * (mMaxSq - iEpsilon) /
+      (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
 
     ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
   } else {
     if (close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
-      const double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin);
+      const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
       if (Mmin2 < 1.e-30) {
 	ans = 1.0 - log(Mmax2 / sqr(q));
       } else {
@@ -338,7 +324,7 @@ double b0_fast(double p, double m1, double m2, double q) {
   const double dmSq = mMaxSq - mMinSq;
   const double s = pSq + dmSq, s2 = sqr(s);
 
-  const double pTest = pSq / mMaxSq;
+  const double pTest = divide_finite(pSq, mMaxSq);
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-6;
 
@@ -393,7 +379,7 @@ double b1(double p, double m1, double m2, double q) {
   double ans = 0.;
 
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
-  const double pTest = p2 / maximum(m12, sqr(m2));
+  const double pTest = divide_finite(p2, maximum(m12, m22));
 
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-4; 
@@ -401,12 +387,29 @@ double b1(double p, double m1, double m2, double q) {
   if (pTest > pTolerance) {
     ans = (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
 	   * b0(p, m1, m2, q)) / (2.0 * p2);
-  } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL)
-	     && fabs(m2) > 1.0e-15) { ///< checked
-    ans = 0.5 * (1. + log(q2 / m22) +
-		 sqr(m12 / (m12 - m22)) * log(m22 / m12) +
-		 0.5 * (m12 + m22) / (m12 - m22)
-		 );
+  } else if (fabs(m1) > 1.0e-15 && fabs(m2) > 1.0e-15) { ///< checked
+    const double m14 = sqr(m12), m24 = sqr(m22);
+    const double m16 = m12*m14 , m26 = m22*m24;
+    const double m18 = sqr(m14), m28 = sqr(m24);
+    const double p4 = sqr(p2);
+    if (fabs(m12 - m22) < pTolerance * maximum(m12, m22)) {
+       ans = 0.08333333333333333*p2/m22
+          + 0.008333333333333333*p4/m24
+          + sqr(m12 - m22)*(0.041666666666666664/m24 +
+                            0.016666666666666666*p2/m26 +
+                            0.005357142857142856*p4/m28)
+          + (m12 - m22)*(-0.16666666666666666/m22 -
+                         0.03333333333333333*p2/m24 -
+                         0.007142857142857142*p4/m26)
+          - 0.5*log(m22/q2);
+    } else {
+       ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*log(m12/m22))/(4.*sqr(m12 - m22))
+          + (p2*(4*pow(m12 - m22,3)*
+                 (2*m14 + 5*m12*m22 - m24) +
+                 (3*m18 + 44*m16*m22 - 36*m14*m24 - 12*m12*m26 + m28)*p2
+                 - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*log(m12/m22)))/
+          (24.*pow(m12 - m22,6)) - 0.5*log(m22/q2);
+    }
   } else {
     ans = bIntegral_threadsave(1, p, m1, m2, q);
   }
@@ -440,7 +443,7 @@ double b22(double p,  double m1, double m2, double q) {
   
   /// Decides level at which one switches to p=0 limit of calculations
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
-  const double pTolerance = 1.0e-6; 
+  const double pTolerance = 1.0e-10;
 
   if (p2 < pTolerance * maximum(m12, m22) ) {
     // m1 == m2 with good accuracy
@@ -490,9 +493,18 @@ double d0(double m1, double m2, double m3, double m4) {
   if (close(m1, m2, EPSTOL)) {
     double m2sq = sqr(m2), m3sq = sqr(m3), m4sq = sqr(m4);
 
-    if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) 
+    if (close(m2,0.,EPSTOL)) {
+       // d0 is undefined for m1 == m2 == 0
+       return 0.;
+    } else if (close(m3,0.,EPSTOL)) {
+       return (-sqr(m2) + sqr(m4) - sqr(m2) * log(sqr(m4/m2)))/
+          sqr(m2 * sqr(m2) - m2 * sqr(m4));
+    } else if (close(m4,0.,EPSTOL)) {
+       return (-sqr(m2) + sqr(m3) - sqr(m2) * log(sqr(m3/m2)))/
+          sqr(m2 * sqr(m2) - m2 * sqr(m3));
+    } else if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) {
       return 1.0 / (6.0 * sqr(m2sq));
-    else if (close(m2, m3, EPSTOL)) {
+    } else if (close(m2, m3, EPSTOL)) {
       return (sqr(m2sq) - sqr(m4sq) + 2.0 * m4sq * m2sq * log(m4sq / m2sq)) / 
 	(2.0 * m2sq * sqr(m2sq - m4sq) * (m2sq - m4sq));
     } else if (close(m2, m4, EPSTOL)) {
@@ -533,34 +545,58 @@ double c0(double m1, double m2, double m3) {
   double c0l = C0(psq, psq, psq, m1*m1, m2*m2, m3*m3).real();
 #endif
 
-  double ans;
+  double ans = 0.;
 
-  if (close(m2, m3, EPSTOL)) {
+  if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m2 == m3 == 0
+     ans = 0.;
+  } else if (close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m2 == m3 == 0
+     ans = 0.;
+  } else if (close(m1,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m3 == 0
+     ans = 0.;
+  } else if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m2 == 0
+     ans= 0.;
+  } else if (close(m1,0.,EPSTOL)) {
+     if (close(m2,m3,EPSTOL)) {
+        ans = -1./sqr(m2);
+     } else {
+        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
+     }
+  } else if (close(m2,0.,EPSTOL)) {
+     if (close(m1,m3,EPSTOL)) {
+        ans = -1./sqr(m1);
+     } else {
+        ans = log(sqr(m3/m1))/(sqr(m1) - sqr(m3));
+     }
+  } else if (close(m3,0.,EPSTOL)) {
+     if (close(m1,m2,EPSTOL)) {
+        ans = -1./sqr(m1);
+     } else {
+        ans = log(sqr(m2/m1))/(sqr(m1) - sqr(m2));
+     }
+  } else if (close(m2, m3, EPSTOL)) {
     if (close(m1, m2, EPSTOL)) {
       ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
-    }
-    else {
+    } else {
       ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
                + 1.0 / (sqr(m1) - sqr(m2)) ) ; // checked 14.10.02
     }
+  } else if (close(m1, m2, EPSTOL)) {
+     ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
+             / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
+  } else if (close(m1, m3, EPSTOL)) {
+     ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
+             / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
+  } else {
+     ans = (1.0 / (sqr(m2) - sqr(m3)) *
+            (sqr(m2) / (sqr(m1) - sqr(m2)) *
+             log(sqr(m2) / sqr(m1)) -
+             sqr(m3) / (sqr(m1) - sqr(m3)) *
+             log(sqr(m3) / sqr(m1))) );
   }
-  else
-    if (close(m1, m2, EPSTOL)) {
-      ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
-               / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
-    }
-    else
-      if (close(m1, m3, EPSTOL)) {
-        ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3))) 
-                 / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
-      }
-      else {
-	ans = (1.0 / (sqr(m2) - sqr(m3)) * 
-		   (sqr(m2) / (sqr(m1) - sqr(m2)) *
-		    log(sqr(m2) / sqr(m1)) -
-		    sqr(m3) / (sqr(m1) - sqr(m3)) *
-		    log(sqr(m3) / sqr(m1))) );
-      }
 
 #ifdef USE_LOOPTOOLS
   if (!close(c0l, ans, 1.0e-3)) {

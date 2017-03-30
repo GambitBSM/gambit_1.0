@@ -199,10 +199,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_Settings& operator=(const Abstract_Settings&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Settings from backend Pythia_8_212_EM. The function Abstract_Settings::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 Settings* get_init_wptr()
                 {
@@ -216,10 +213,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_Settings()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Settings from backend Pythia_8_212_EM. The function Abstract_Settings::~Abstract_Settings in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_Settings() =0;
         };
     }
     

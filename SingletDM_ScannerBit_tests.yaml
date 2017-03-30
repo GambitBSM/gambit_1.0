@@ -250,6 +250,10 @@ ObsLikes:
 
 Rules:
 
+
+  - capability: HB_ModelParameters
+    function: SMLikeHiggs_ModelParameters
+
   - capability: GA_AnnYield
     function: GA_AnnYield_General
     options:
@@ -390,6 +394,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+  debug: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e4

@@ -703,8 +703,8 @@ Line::operator<< <long double>(const long double& number)
 
 
 /**
- * Container of \Lines that resembles a block in a SLHA structure.
- * This class is a named container of \Lines that resembles a block in
+ * Container of Lines that resembles a block in a SLHA structure.
+ * This class is a named container of Lines that resembles a block in
  * a SLHA structure. Unlike a block in a SLHA structure, a %Block can
  * contain any number of block definitions or it can be completely
  * empty.
@@ -712,12 +712,12 @@ Line::operator<< <long double>(const long double& number)
  * Access to the elements of the %Block is provided by the
  * operator[]() and at() functions. These take one or more strings
  * resp. ints as argument(s) and compare them against the first
- * strings of the contained \Lines (the ints are converted to strings
+ * strings of the contained Lines (the ints are converted to strings
  * before comparison). The first Line that matches the provided
  * arguments is then returned, or if no matching Line is found, an
  * empty Line is appended to the %Block (operator[]()) or
  * \c std::out_of_range is thrown (at()). The special argument
- * \c "(any)" will be considered equal to all strings in the \Lines.
+ * \c "(any)" will be considered equal to all strings in the Lines.
  * For example, <tt>at("(any)", "2")</tt> returns the first Line whose
  * second element is \c "2".
  */
@@ -808,7 +808,7 @@ public:
    * \return Reference to \c *this.
    *
    * This function reads non-empty lines from \p is, transforms them
-   * into \Lines and adds them to the end of the %Block. Lines from
+   * into Lines and adds them to the end of the %Block. Lines from
    * \p is are read until the second block definition is encountered
    * or until the end of the stream, whatever comes first. If \p is
    * contains a block definition and the current name of the %Block is
@@ -1291,8 +1291,8 @@ public:
 
   // introspection
   /**
-   * \brief Counts all \Lines that match a given key.
-   * \param key First strings of the \Lines that will be counted.
+   * \brief Counts all Lines that match a given key.
+   * \param key First strings of the Lines that will be counted.
    * \return Number of lines whose first strings equal \p key.
    */
   size_type
@@ -1305,7 +1305,7 @@ public:
   size() const
   { return impl_.size(); }
 
-  /** Returns the number of data \Lines in the %Block. */
+  /** Returns the number of data Lines in the %Block. */
   size_type
   data_size() const
   {
@@ -1374,7 +1374,7 @@ public:
    * \param first, last Input iterators to the initial and final
    *   positions in a sequence.
    *
-   * This function inserts copies of the \Lines in the range
+   * This function inserts copies of the Lines in the range
    * [\p first, \p last) into the %Block before the specified
    * \p position and thus enlarges the %Block accordingly.
    */
@@ -1446,12 +1446,12 @@ public:
   }
 
   /**
-   * \brief Erases all \Lines that match the provided key.
-   * \param key First strings of the \Lines to be erased.
-   * \return The number of \Lines erased.
+   * \brief Erases all Lines that match the provided key.
+   * \param key First strings of the Lines to be erased.
+   * \return The number of Lines erased.
    *
    * This function takes a key (which is a vector of strings) and
-   * erases all \Lines whose first strings are equal to the strings
+   * erases all Lines whose first strings are equal to the strings
    * in \p key.
    */
   size_type
@@ -1495,7 +1495,7 @@ public:
   }
 
   /**
-   * \brief Reformats all \Lines in the %Block.
+   * \brief Reformats all Lines in the %Block.
    * \sa Line::reformat()
    */
   void
@@ -1503,7 +1503,7 @@ public:
   { std::for_each(begin(), end(), std::mem_fun_ref(&value_type::reformat)); }
 
   /**
-   * \brief Comments all \Lines in the %Block.
+   * \brief Comments all Lines in the %Block.
    * \sa Line::comment()
    */
   void
@@ -1511,7 +1511,7 @@ public:
   { std::for_each(begin(), end(), std::mem_fun_ref(&value_type::comment)); }
 
   /**
-   * \brief Uncomments all \Lines in the %Block.
+   * \brief Uncomments all Lines in the %Block.
    * \sa Line::uncomment()
    */
   void
@@ -1593,13 +1593,13 @@ private:
 
 
 /**
- * Container of \Blocks that resembles a complete SLHA structure.
- * This class is a container of \Blocks that resembles a complete SLHA
+ * Container of Blocks that resembles a complete SLHA structure.
+ * This class is a container of Blocks that resembles a complete SLHA
  * structure. Its name is an abbreviation of "collection" since it is
- * a collection of \Blocks. The elements of %Coll objects can be
+ * a collection of Blocks. The elements of %Coll objects can be
  * accessed via their names (which are always compared
  * case-insensitive) with the operator[]() and at() functions and
- * access to single fields, \Lines and \Blocks via the Key type is
+ * access to single fields, Lines and Blocks via the Key type is
  * provided by the field(), line() and block() functions. To fill this
  * container, the functions read() or str() can be used which read
  * data from an input stream or a string, respectively.
@@ -1656,7 +1656,7 @@ public:
    * \returns Reference to \c *this.
    *
    * This function reads non-empty lines from \p is, transforms them
-   * into \Lines, which are collected into the corresponding \Blocks
+   * into Lines, which are collected into the corresponding Blocks
    * that are added to the %Coll.
    */
   Coll&
@@ -2106,8 +2106,8 @@ public:
 
   // introspection
   /**
-   * \brief Counts all \Blocks with a given name.
-   * \param blockName Name of the \Blocks that will be counted.
+   * \brief Counts all Blocks with a given name.
+   * \param blockName Name of the Blocks that will be counted.
    * \return Number of blocks whose name equals \p blockName.
    */
   size_type
@@ -2212,7 +2212,7 @@ public:
    * \param first, last Input iterators to the initial and final
    *   positions in a sequence.
    *
-   * This function inserts copies of the \Blocks in the range
+   * This function inserts copies of the Blocks in the range
    * [\p first, \p last) into the %Coll before the specified
    * \p position and thus enlarges the %Coll accordingly.
    */
@@ -2282,9 +2282,9 @@ public:
   }
 
   /**
-   * \brief Erases all \Blocks with a given name.
-   * \param blockName Name of the \Blocks to be erased.
-   * \return The number of \Blocks erased.
+   * \brief Erases all Blocks with a given name.
+   * \param blockName Name of the Blocks to be erased.
+   * \return The number of Blocks erased.
    */
   size_type
   erase(const key_type& blockName)
@@ -2318,7 +2318,7 @@ public:
   { impl_.clear(); }
 
   /**
-   * \brief Reformats all \Blocks in the %Coll.
+   * \brief Reformats all Blocks in the %Coll.
    * \sa Block::reformat()
    */
   void
@@ -2326,7 +2326,7 @@ public:
   { std::for_each(begin(), end(), std::mem_fun_ref(&value_type::reformat)); }
 
   /**
-   * \brief Comments all \Blocks in the %Coll.
+   * \brief Comments all Blocks in the %Coll.
    * \sa Block::comment()
    */
   void
@@ -2334,7 +2334,7 @@ public:
   { std::for_each(begin(), end(), std::mem_fun_ref(&value_type::comment)); }
 
   /**
-   * \brief Uncomments all \Blocks in the %Coll.
+   * \brief Uncomments all Blocks in the %Coll.
    * \sa Block::uncomment()
    */
   void

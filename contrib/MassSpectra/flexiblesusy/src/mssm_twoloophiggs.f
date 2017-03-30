@@ -6695,11 +6695,3 @@ c$$$      k = 3d0*ht**2/(16d0*Pi**2)**2
 
       return
       end
-
-
-      subroutine dummy
-      
-      print *,"example"
-      return
-      end
-

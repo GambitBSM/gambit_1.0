@@ -311,7 +311,7 @@ namespace Gambit
                double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
 
                double fraction = time_waited_d/total_timeout; 
-               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"\% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
+               LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"%% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
                
                if(not timedout)
                {
@@ -699,9 +699,9 @@ namespace Gambit
             // Doh timed out
             if(use_mpi_abort)
             { 
-              #ifdef MPI_DEBUG_OUTPUT
+              //#ifdef MPI_DEBUG_OUTPUT
               std::cerr << "rank " << COMM_WORLD.Get_rank() << ": FinalizeWithTimeout failed to sync for clean MPI shutdown, calling MPI_Abort..." << std::endl;
-              #endif
+              //#endif
               COMM_WORLD.Abort();
             }
           }

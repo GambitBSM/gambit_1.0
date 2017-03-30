@@ -22,14 +22,32 @@
 #include <map>
 #include "gambit/Utils/model_parameters.hpp"
 
-typedef unsigned int uint;
-typedef unsigned long ulong;
+typedef short int          sint;
+typedef unsigned short int usint;
+//typedef int                
+typedef unsigned int       uint;
+typedef long int           lint;
+typedef unsigned long int  ulint;
+typedef long long int      llint;
+typedef unsigned long long int ullint;
+
 typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
- 
+
+// Complete set of distinct integer types 
+#define ALL_INT_TYPES\
+(sint)\
+(usint)\
+(int)\
+(uint)\
+(lint)\
+(ulint)\
+(llint)\
+(ullint)
+
 // Types that Gambit printers can output (if printer plugin is properly equipped)
 #define PRINTABLE_TYPES  \
+ALL_INT_TYPES            \
 (bool)                   \
-(int)(uint)(long)(ulong) \
 (float)(double)          \
 (std::vector<bool>)      \
 (std::vector<int>)       \

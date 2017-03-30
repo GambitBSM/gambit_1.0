@@ -75,19 +75,14 @@ START_MODULE
       DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(MSSM63atQ,CMSSM)
-      // CMSSM
+      // For debugging using DarkSUSY native interface to ISASUGRA
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-      // MSSM7 -- not used at the moment!?
-      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
-      BACKEND_REQ(dssusy, (), void, (int&,int&))
       // Initialize DarkSUSY with SLHA file
       BACKEND_REQ(dsSLHAread, (), void, (const char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
       // Initialize DarkSUSY with SLHA object (convenience function)
       BACKEND_REQ(initFromSLHAeaAndDecayTable, (), int, (const SLHAstruct&, const DecayTable&))
-      // Print higgs widths
-      BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -147,8 +142,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
-        DEPENDENCY(RD_eff_annrate_DSprep, int)
-        BACKEND_REQ(dsanwx, (), double, (double&))
+      DEPENDENCY(RD_eff_annrate_DSprep, int)
+      BACKEND_REQ(dsanwx, (), double, (double&))
     #undef FUNCTION
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
@@ -390,6 +385,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY set_gamLike_GC_halo
+  START_CAPABILITY
+    #define FUNCTION set_gamLike_GC_halo
+      START_FUNCTION(bool)
+      DEPENDENCY(GalacticHalo, GalacticHaloProperties)
+      BACKEND_REQ(set_halo_profile, (gamLike), void, (int, const std::vector<double> &, const std::vector<double> &, double))
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
@@ -406,6 +410,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -416,6 +421,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -426,6 +432,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY

@@ -47,10 +47,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_ResonanceGmZ& operator=(const Abstract_ResonanceGmZ&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ResonanceGmZ from backend Pythia_8_212. The function Abstract_ResonanceGmZ::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 ResonanceGmZ* get_init_wptr()
                 {
@@ -64,10 +61,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_ResonanceGmZ()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::ResonanceGmZ from backend Pythia_8_212. The function Abstract_ResonanceGmZ::~Abstract_ResonanceGmZ in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_ResonanceGmZ() =0;
         };
     }
     

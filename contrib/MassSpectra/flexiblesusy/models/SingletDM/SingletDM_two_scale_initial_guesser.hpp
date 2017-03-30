@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 16:41:47
+// File generated at Sat 27 Aug 2016 12:43:04
 
 #ifndef SingletDM_TWO_SCALE_INITIAL_GUESSER_H
 #define SingletDM_TWO_SCALE_INITIAL_GUESSER_H
@@ -56,7 +56,7 @@ public:
 
 private:
    SingletDM<Two_scale>* model; ///< pointer to model class
-   softsusy::QedQcd oneset;       ///< Standard Model low-energy data
+   softsusy::QedQcd qedqcd;       ///< Standard Model low-energy data
    double mu_guess; ///< guessed DR-bar mass of up-quark
    double mc_guess; ///< guessed DR-bar mass of charm-quark
    double mt_guess; ///< guessed DR-bar mass of top-quark

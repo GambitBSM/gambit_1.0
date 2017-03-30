@@ -6,7 +6,7 @@ Parameters:
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
-      range:  [19, 67] 
+      range:  [19, 67]
     sigmal:
       range:  [31, 85]
     deltau:
@@ -23,25 +23,25 @@ Parameters:
       fixed_value: 1
     Ad_3:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     Au_3:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     M2:
       prior_type: double_log_flat_join
-      ranges: [-1e4, -1e2, 1e2, 1e4]    
+      ranges: [-1e4, -1e2, 1e2, 1e4]
     TanBeta:
       range: [3.0, 70.0]
       prior_type: flat
     mHd2:
       prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]    
+      ranges: [-1e8, -1e4, 1e4, 1e8]
     mHu2:
       prior_type: double_log_flat_join
-      ranges: [-1e8, -1e4, 1e4, 1e8]    
+      ranges: [-1e8, -1e4, 1e4, 1e8]
     mf2:
       prior_type: double_log_flat_join
-      ranges: [0, 0, 1e4, 1e8]    
+      ranges: [0, 0, 1e4, 1e8]
 
   Halo_gNFW_rho0:
     rho0:
@@ -153,11 +153,11 @@ ObsLikes:
     - capability: lnL_W_mass
       purpose:    LogLike
 
-    - capability: lnL_sinW2_eff
-      purpose:    LogLike
+    #- capability: lnL_sinW2_eff
+    #  purpose:    LogLike
 
-    - capability: lnL_deltarho
-      purpose:    LogLike
+    #- capability: lnL_deltarho
+    #  purpose:    LogLike
 
     - capability:  lnL_gm2
       purpose:     LogLike
@@ -328,7 +328,7 @@ Rules:
       pole_mass_loop_order:  2
       ewsb_loop_order:       2
       beta_loop_order:       2
-      threshold_corrections_loop_order: 1
+      threshold_corrections_loop_order: 2
       use_higgs_2loop_at_as: true
       use_higgs_2loop_ab_as: true
       use_higgs_2loop_at_at: true
@@ -337,8 +337,8 @@ Rules:
 
   - capability: MSSM_spectrum
     type: Spectrum
-    #function: make_MSSM_precision_spectrum_none
-    function: make_MSSM_precision_spectrum_W
+    function: make_MSSM_precision_spectrum_none
+    #function: make_MSSM_precision_spectrum_W
     #function: make_MSSM_precision_spectrum_H_W
     # The following options only have an impact when using make_MSSM_precision_spectrum_H_W.
     # Choose to take FeynHiggs' prediction for the Higgs mass (rather then FlexibleSUSY's).
@@ -357,13 +357,13 @@ Rules:
   #- backend: FeynHiggs
   #  version: 2.11.3
   # If you want to do it from the yaml file now, you need to do this:
-  - capability: FH_Couplings_output
-    backends:
-    - {backend: FeynHiggs, version: 2.11.3}
-  - capability: FH_Precision
-    backends:
-    - {backend: FeynHiggs, version: 2.11.3}
-  # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W 
+  #- capability: FH_Couplings_output
+  #  backends:
+  #  - {backend: FeynHiggs, version: 2.11.3}
+  #- capability: FH_Precision
+  #  backends:
+  #  - {backend: FeynHiggs, version: 2.11.3}
+  # The following two rules only have an impact when using make_MSSM_precision_spectrum_H_W
   #- capability: prec_HiggsMasses
   #  backends:
   #  - {backend: FeynHiggs, version: 2.11.3}
@@ -460,8 +460,6 @@ Rules:
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:
-      #This defaults to true; set it false to ignore all these analyses
-      useATLAS: true
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                            "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                            "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
@@ -470,8 +468,6 @@ Rules:
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:
-      #This defaults to true; set it false to ignore all these analyses
-      useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 

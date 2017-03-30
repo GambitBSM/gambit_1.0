@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:32:32
+// File generated at Sat 27 Aug 2016 12:50:36
 
 /**
  * @file CMSSM_two_scale_model_slha.cpp
@@ -38,6 +38,7 @@ CLASSNAME::CMSSM_slha(const CMSSM_input_parameters& input_)
    , physical_slha()
    , ckm(Eigen::Matrix<std::complex<double>,3,3>::Identity())
    , pmns(Eigen::Matrix<std::complex<double>,3,3>::Identity())
+   , convert_masses_to_slha(true)
 {
 }
 
@@ -46,9 +47,13 @@ CLASSNAME::CMSSM_slha(const CMSSM_input_parameters& input_)
  * BPMZ convention) and converts parameters to SLHA.
  *
  * @param model_ model class in BPMZ convention
+ * @param do_convert_masses_to_slha whether to convert majorana
+ *    fermion masses to SLHA convention (allow them to be negative)
  */
-CLASSNAME::CMSSM_slha(const CMSSM<Two_scale>& model_)
+CLASSNAME::CMSSM_slha(const CMSSM<Two_scale>& model_,
+                            bool do_convert_masses_to_slha)
    : CMSSM<Two_scale>(model_)
+   , convert_masses_to_slha(do_convert_masses_to_slha)
 {
    convert_to_slha();
 }
@@ -72,7 +77,9 @@ void CLASSNAME::calculate_spectrum()
 void CLASSNAME::convert_to_slha()
 {
    physical_slha = get_physical();
-   physical_slha.convert_to_slha();
+
+   if (convert_masses_to_slha)
+      physical_slha.convert_to_slha();
 
    convert_yukawa_couplings_to_slha();
    calculate_ckm_matrix();
@@ -147,6 +154,17 @@ void CLASSNAME::print(std::ostream& ostr) const
            "SLHA convention:\n"
            "----------------------------------------\n";
    physical_slha.print(ostr);
+}
+
+void CLASSNAME::set_convert_masses_to_slha(bool flag)
+{
+   convert_masses_to_slha = flag;
+}
+
+std::ostream& operator<<(std::ostream& ostr, const CMSSM_slha<Two_scale>& model)
+{
+   model.print(ostr);
+   return ostr;
 }
 
 } // namespace flexiblesusy

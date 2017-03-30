@@ -111,7 +111,7 @@ namespace Gambit
             virtual std::string AccessError(std::string state) const;
 
             // Fill an SLHAea object with spectrum information
-            virtual void add_to_SLHAea(SLHAstruct& slha, bool include_SLHA1_blocks = false) const;
+            virtual void add_to_SLHAea(int slha_version, SLHAstruct& slha) const;
 
             /// TODO: Need to implement this properly...
             /// Copy low energy spectrum information from another model object
@@ -154,179 +154,110 @@ namespace Gambit
      /// a safer way if we choose , while still giving the option of
      /// flexibility.
 
-     struct  MSSM_strs
+     struct MSSM_strs
      {
-       /// some strings are used in multiple mass
+       MSSM_strs();
+       /// some strings are used in multiple masses
        /// comments indicate first map they appear
        /// dimension 2, no index
-       const str BMu = "BMu";
-       const str mHd2 = "mHd2";
-       const str mHu2 = "mHu2";
+       static const str BMu ;
+       static const str mHd2;
+       static const str mHu2;
        /// dimension 2, 2 indices
-       const str mq2 =  "mq2";
-       const str ml2 =  "ml2";
-       const str md2 =  "md2";
-       const str mu2 =  "mu2";
-       const str me2 =  "me2";
+       static const str mq2;
+       static const str ml2;
+       static const str md2;
+       static const str mu2;
+       static const str me2;
        /// dimension 1, no index
-       const str M1 =  "M1";
-       const str M2 =  "M2";
-       const str M3 =  "M3";
-       const str Mu =  "Mu";
-       const str vu =  "vu";
-       const str vd =  "vd";
+       static const str M1;
+       static const str M2;
+       static const str M3;
+       static const str Mu;
+       static const str vu;
+       static const str vd;
        /// dimension 1, 2 indices
-       const str TYd =  "TYd";
-       const str TYe =  "TYe";
-       const str TYu =  "TYu";
-       const str ad  =  "ad";
-       const str ae  =  "ae";
-       const str au  =  "au";
+       static const str TYd;
+       static const str TYe;
+       static const str TYu;
+       static const str ad;
+       static const str ae;
+       static const str au;
        /// dimension 0, no index
-       const str g1  =  "g1";
-       const str g2  =  "g2";
-       const str g3  =  "g3";
+       static const str g1;
+       static const str g2;
+       static const str g3;
        /// dimension 0, no index, special map
-       const str tanbeta = "tanbeta";
-       const str sinW2 = "sinW2";
+       static const str tanbeta;
+       static const str sinW2;
        /// dimension 1, no index, special map
-       const str mA2 = "mA2";
+       static const str mA2;
        /// dimension 0, 2 indices
-       const str Yd  =  "Yd";
-       const str Yu  =  "Yu";
-       const str Ye  =  "Ye";
-       /// For DRbar mass eigenstates
-       /// may remve if / when we get rid of the DRbar mass es
-       /// dimension 1, 1 index
-       // const str Sd   =  "Sd";
-       // const str Su   =  "Su";
-       // const str Se   =  "Se";
-       // const str Snu  =  "Snu";
-       // const str h0   =  "h0";
-       // const str A0   =  "A0";
-       // const str Hplus   =  "H+";
-       // const str chiplus =  "chi+";
-       // const str chi0 =  "chi0";
-       // const str d    =  "d";
-       // const str u    =  "u";
-       // const str eminus   =  "e";
-       // const str e    =  "e";
-       // const str dbar =  "dbar";
-       // const str ubar =   "ubar";
-       // const str eplus   = "e+";
+       static const str Yd;
+       static const str Yu;
+       static const str Ye;
 
        ///Pole mass
        /// dimension 1, no index , special for setters
-       const str gluino = "~g";
-       const str A0 = "A0";
-       const str Hplus= "H+";
-       const str Hminus ="H-";
-       const str Goldstone0 ="Goldstone0";
-       const str Goldstoneplus ="Goldstone+";
-       const str Goldstoneminus ="Goldstone-";
-       const str Wplus = "W+";
-       const str Wminus = "W-";
-       const str Z0 = "Z0";
+       static const str gluino;
+       static const str A0;
+       static const str Hplus;
+       static const str Hminus;
+       static const str Goldstone0;
+       static const str Goldstoneplus;
+       static const str Goldstoneminus;
+       static const str Wplus;
+       static const str Wminus;
+       static const str Z0;
 
 
        /// dimension 1, 1 index , special for setters
-       const str su        =   "~u";
-       const str sd    =   "~d";
-       const str se    =   "~e-";
-       const str snu     =   "~nu";
-       const str chiplus   =   "~chi+";
-       const str chi0      =   "~chi0";
-       const str h0    =   "h0";
-       const str subar     =   "~ubar";
-       const str sdbar     =   "~dbar";
-       const str seplus    =   "~e+";
-       const str snubar    =   "~nubar";
-       const str chiminus  =   "~chi-";
+       static const str su     ;
+       static const str sd	;
+       static const str se	;
+       static const str snu	;
+       static const str chiplus;
+       static const str chi0   ;
+       static const str h0	;
+       static const str subar  ;
+       static const str sdbar  ;
+       static const str seplus ;
+       static const str snubar ;
+       static const str chiminus;
 
        /// @{ "Metadata" vectors
        // TODO: replace with a more integrated system
 
        /// @{ Pole_Mass tagged entries
-
-       // pole mass strings with no index
-       const std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
-                 Hminus, Goldstone0,
-                 Goldstoneplus,
-                 Goldstoneminus,
-                 Wplus, Wminus, Z0 );
-
-       // as above but without Z0 since we do not predict that mass
-       const std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
-                 Hminus, Goldstone0,
-                 Goldstoneplus,
-                 Goldstoneminus,
-                 Wplus, Wminus );
-
-       /// pole mass strings with 1 index
-       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, se,
-                                                       subar, sdbar, seplus,
-                   chiplus, chiminus, chi0, h0,
-                   snu, snubar );
-
-       ///  pole mass strings with 1 index and six entries
-       const std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, se,
-                subar, sdbar, seplus );
-
-       ///  pole mass strings with 1 index and four entries
-       const std::vector<str> pole_mass_strs_1_4  = initVector( chi0 );
-
-       ///  pole mass strings with 1 index and three entries
-       const std::vector<str> pole_mass_strs_1_3  = initVector( snu, snubar );
-
-       ///  pole mass strings with 1 index and two entries
-       const std::vector<str> pole_mass_strs_1_2  = initVector( chiplus, chiminus, h0 );
-
+       static const std::vector<str> pole_mass_strs;
+       static const std::vector<str> pole_mass_pred;
+       static const std::vector<str> pole_mass_strs_1;
+       static const std::vector<str> pole_mass_strs_1_6;
+       static const std::vector<str> pole_mass_strs_1_4;
+       static const std::vector<str> pole_mass_strs_1_3;
+       static const std::vector<str> pole_mass_strs_1_2;
        /// @}
 
        /// @{ Pole_Mixing tagged entries
-
-       ///  2 index, 6x6 entries
-       const std::vector<str> pole_mixing_strs_2_6x6  = initVector( sd, su, se );
-
-       ///  2 index, 4x4 entries
-       const std::vector<str> pole_mixing_strs_2_4x4  = initVector( chi0 );
-
-       ///  2 index, 3x3 entries
-       const std::vector<str> pole_mixing_strs_2_3x3  = initVector( snu );
-
-       ///  2 index, 2x2 entries
-       const std::vector<str> pole_mixing_strs_2_2x2  = initVector( h0, A0, Hplus, chiminus, chiplus );
-
+       static const std::vector<str> pole_mixing_strs_2_6x6;
+       static const std::vector<str> pole_mixing_strs_2_4x4;
+       static const std::vector<str> pole_mixing_strs_2_3x3;
+       static const std::vector<str> pole_mixing_strs_2_2x2;
        /// @}
 
        /// @{ mass2 tagged entries
-
-       // no index
-       const std::vector<str> mass2_strs = initVector( BMu, mHd2, mHu2, mA2 );
-
-       // two-index, 3x3 entries
-       const std::vector<str> mass2_strs_2_3x3= initVector( mq2, ml2, md2, mu2, me2 );
-
+       static const std::vector<str> mass2_strs;
+       static const std::vector<str> mass2_strs_2_3x3;
        /// @}
 
        /// @{ mass1 tagged entries
-
-       // no index
-       const std::vector<str> mass1_strs = initVector( M1, M2, M3, Mu, vu, vd );
-
-       // two-index, 3x3 entries
-       const std::vector<str> mass1_strs_2_3x3 = initVector( TYd, TYe, TYu, ad, ae, au );
-
+       static const std::vector<str> mass1_strs;
+       static const std::vector<str> mass1_strs_2_3x3;
        /// @}
 
        /// @{ dimensionless tagged entries
-
-       // no index
-       const std::vector<str> dimensionless_strs = initVector( g1, g2, g3, tanbeta, sinW2 );
-
-       // two-index, 3x3 entries
-       const std::vector<str> dimensionless_strs_2_3x3 = initVector( Yd, Yu, Ye );
-
+       static const std::vector<str> dimensionless_strs;
+       static const std::vector<str> dimensionless_strs_2_3x3;
        /// @}
 
        /// TODO: left out mass_eigenstate entries for now

@@ -306,7 +306,7 @@ Rules:
       pole_mass_loop_order:  2
       ewsb_loop_order:       2
       beta_loop_order:       2
-      threshold_corrections_loop_order: 1
+      threshold_corrections_loop_order: 2
       use_higgs_2loop_at_as: true
       use_higgs_2loop_ab_as: true
       use_higgs_2loop_at_at: true

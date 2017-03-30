@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 22 Feb 2016 17:30:32
+// File generated at Sat 27 Aug 2016 12:43:49
 
 #include "SingletDMZ3_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -28,6 +28,10 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+#define TRACE_STRUCT_TYPE Soft_traces
+#define CALCULATE_TRACES() calc_soft_traces(TRACE_STRUCT);
+
+const int SingletDMZ3_soft_parameters::numberOfParameters;
 
 SingletDMZ3_soft_parameters::SingletDMZ3_soft_parameters(const SingletDMZ3_input_parameters& input_)
    : SingletDMZ3_susy_parameters(input_)
@@ -56,22 +60,29 @@ Eigen::ArrayXd SingletDMZ3_soft_parameters::beta() const
 
 SingletDMZ3_soft_parameters SingletDMZ3_soft_parameters::calc_beta() const
 {
-   Soft_traces soft_traces;
-   calc_soft_traces(soft_traces);
+   double beta_mu3 = 0.;
+   double beta_muS = 0.;
+   double beta_muH = 0.;
+   double beta_v = 0.;
 
-   double beta_mu3(calc_beta_mu3_one_loop(TRACE_STRUCT));
-   double beta_muS(calc_beta_muS_one_loop(TRACE_STRUCT));
-   double beta_muH(calc_beta_muH_one_loop(TRACE_STRUCT));
-   double beta_v(calc_beta_v_one_loop(TRACE_STRUCT));
+   if (get_loops() > 0) {
+      TRACE_STRUCT_TYPE TRACE_STRUCT;
+      CALCULATE_TRACES();
 
-   if (get_loops() > 1) {
-      beta_mu3 += calc_beta_mu3_two_loop(TRACE_STRUCT);
-      beta_muS += calc_beta_muS_two_loop(TRACE_STRUCT);
-      beta_muH += calc_beta_muH_two_loop(TRACE_STRUCT);
-      beta_v += calc_beta_v_two_loop(TRACE_STRUCT);
+      beta_mu3 += calc_beta_mu3_one_loop(TRACE_STRUCT);
+      beta_muS += calc_beta_muS_one_loop(TRACE_STRUCT);
+      beta_muH += calc_beta_muH_one_loop(TRACE_STRUCT);
+      beta_v += calc_beta_v_one_loop(TRACE_STRUCT);
 
-      if (get_loops() > 2) {
+      if (get_loops() > 1) {
+         beta_mu3 += calc_beta_mu3_two_loop(TRACE_STRUCT);
+         beta_muS += calc_beta_muS_two_loop(TRACE_STRUCT);
+         beta_muH += calc_beta_muH_two_loop(TRACE_STRUCT);
+         beta_v += calc_beta_v_two_loop(TRACE_STRUCT);
 
+         if (get_loops() > 2) {
+
+         }
       }
    }
 
@@ -109,7 +120,7 @@ Eigen::ArrayXd SingletDMZ3_soft_parameters::get() const
 void SingletDMZ3_soft_parameters::print(std::ostream& ostr) const
 {
    SingletDMZ3_susy_parameters::print(ostr);
-   ostr << "soft parameters:\n";
+   ostr << "soft parameters at Q = " << get_scale() << ":\n";
    ostr << "mu3 = " << mu3 << '\n';
    ostr << "muS = " << muS << '\n';
    ostr << "muH = " << muH << '\n';
@@ -130,23 +141,33 @@ void SingletDMZ3_soft_parameters::set(const Eigen::ArrayXd& pars)
 
 void SingletDMZ3_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) const
 {
-   TRACE_STRUCT.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
-   TRACE_STRUCT.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
-   TRACE_STRUCT.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
-   TRACE_STRUCT.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
-      .trace());
-   TRACE_STRUCT.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
-      .trace());
+   if (get_loops() > 0) {
+      TRACE_STRUCT.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
+      TRACE_STRUCT.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
+      TRACE_STRUCT.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
 
+   }
+
+   if (get_loops() > 1) {
+      TRACE_STRUCT.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
+         .trace());
+      TRACE_STRUCT.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
+         .trace());
+
+   }
+
+   if (get_loops() > 2) {
+
+   }
 }
 
 std::ostream& operator<<(std::ostream& ostr, const SingletDMZ3_soft_parameters& soft_pars)
 {
-   soft_pars.print(std::cout);
+   soft_pars.print(ostr);
    return ostr;
 }
 

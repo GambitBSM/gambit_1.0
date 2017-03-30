@@ -53,10 +53,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             Abstract_EReadError& operator=(const Abstract_EReadError&) { return *this; }
    
-            virtual void init_wrapper()
-            {
-               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::EReadError from backend gm2calc_1_3_0. The function Abstract_EReadError::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-            }
+            virtual void init_wrapper() =0;
    
             EReadError* get_init_wptr()
             {
@@ -70,10 +67,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                return *wptr;
             }
    
-            virtual ~Abstract_EReadError()
-            {
-               std::cerr << "BOSS WARNING: Problem detected with the BOSSed class gm2calc::EReadError from backend gm2calc_1_3_0. The function Abstract_EReadError::~Abstract_EReadError in GAMBIT should never have been called..." << std::endl;
-            }
+            virtual ~Abstract_EReadError() =0;
       };
    }
    

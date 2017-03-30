@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (FIXME @blah.edu)
 ///  \date 2012 Mar
@@ -17,7 +17,7 @@
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun, 2014 Mar, 2015 Apr
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
 ///
@@ -31,7 +31,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/util_types.hpp"    
+#include "gambit/Utils/util_types.hpp"
 
 #ifndef __DarkSUSY_types_hpp__
 #define __DarkSUSY_types_hpp__
@@ -42,13 +42,6 @@ namespace Gambit
   {
       Fdouble ibcom_x, ibcom_z, ibcom_mx, ibcom_mp1, ibcom_mp2;
       Finteger intch, intyield;
-  };
-
-// MSSM-7 initialization - no longer in use!?
-  struct DS_MSSMPAR
-  {
-      Fdouble tanbe, mu, m2, m1, m3, ma;
-      Farray<Fdouble,1,3> mass2u, mass2q, mass2d,  mass2l, mass2e, asoftu, asoftd, asofte;
   };
 
   struct DS_MSPCTM
@@ -82,7 +75,7 @@ namespace Gambit
         Finteger lsp;
         Finteger kln;
     };
-    
+
     struct DS_VRTXS
     {
         Farray< Fdouble_complex,1,50,1,50,1,50 > gl;
@@ -130,7 +123,7 @@ namespace Gambit
     {
         Finteger modeltype;
     };
-  /*    struct DS_MSSMPAR
+    struct DS_MSSMPAR
     {
         Fdouble tanbe;
         Fdouble mu;
@@ -146,7 +139,7 @@ namespace Gambit
         Farray< Fdouble,1,3 > asoftu;
         Farray< Fdouble,1,3 > asoftd;
         Farray< Fdouble,1,3 > asofte;
-	}; */
+	  };
     struct DS_MSSMSWITCH
     {
         Fdouble msquarks;
@@ -226,22 +219,22 @@ namespace Gambit
       Farray<Fdouble,1,300> tgev,fh,fg,fe,fp;
       Finteger nf,khi,klo,dofcode;
   };
-  
+
   struct DS_RDERRORS
   {
       Finteger rderr,rdwar,rdinit;
   };
-  
+
   struct DS_RDPARS
   {
-      Fdouble cosmin,waccd,dpminr,dpthr,wdiffr,wdifft; 
+      Fdouble cosmin,waccd,dpminr,dpthr,wdiffr,wdifft;
       Fdouble hstep,hmin,compeps,xinit,xfinal,umax,cfr,pmax;
   };
 
   struct DS_DDCOM
   {
       Farray<Fdouble, 7, 12> ftp;
-      Farray<Fdouble, 7, 12> ftn;      
+      Farray<Fdouble, 7, 12> ftn;
       Fdouble delu;
       Fdouble deld;
       Fdouble dels;
@@ -254,7 +247,7 @@ namespace Gambit
   struct DS_NUCOM
   {
       Farray<Fdouble, 1, 29> wabr;
-      Farray<Fdouble, 1, 29, 1, 3> was0br;      
+      Farray<Fdouble, 1, 29, 1, 3> was0br;
       Farray<Fdouble, 1, 15> wascbr;
       Farray<Fdouble, 1, 3> was0m;
       Fdouble wascm;
@@ -262,7 +255,7 @@ namespace Gambit
       Fdouble wasv;
       Fdouble wasigsip;
       Fdouble wasigsdp;
-      Flogical dswasetupcalled;      
+      Flogical dswasetupcalled;
   };
 
   struct DS_HMCOM

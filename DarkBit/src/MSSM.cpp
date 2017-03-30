@@ -30,8 +30,10 @@
 
 #include "gambit/Utils/mpiwrapper.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  namespace DarkBit
+  {
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -119,14 +121,14 @@ namespace Gambit {
         }
       }
 
-      // use SLHA format for initialization
+      // use SLHA2 format for initialization
       else if (ModelInUse("MSSM63atQ") || ModelInUse("CMSSM"))
       {
-        // Retrieve SLHAea object from spectrum object 
+        // Retrieve SLHAea object from spectrum object
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
-        SLHAstruct mySLHA = mySpec.getSLHAea();
+        SLHAstruct mySLHA = mySpec.getSLHAea(2);
 
-        // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
+        // Use an actual SLHA2 file.  DarkSUSY is on its own wrt (s)particle widths this way.
         /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
@@ -254,13 +256,13 @@ namespace Gambit {
       const Spectrum& matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum& spec = matched_spectra.get_HE();
       const SubSpectrum& SM   = matched_spectra.get_LE();
-      const SMInputs& SMI  = matched_spectra.get_SMInputs();  
+      const SMInputs& SMI  = matched_spectra.get_SMInputs();
 
       // Get SM masses
       #define getSMmass(Name, spinX2)                                         \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
-        Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));   
+        Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));
       getSMmass("e-_1",     1)
       getSMmass("e+_1",     1)
       getSMmass("e-_2",     1)
@@ -313,7 +315,7 @@ namespace Gambit {
       #define getMSSMmass(Name, spinX2)                                             \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
-        Name , TH_ParticleProperty(std::abs(spec.get(Par::Pole_Mass,Name)), spinX2)));  
+        Name , TH_ParticleProperty(std::abs(spec.get(Par::Pole_Mass,Name)), spinX2)));
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)

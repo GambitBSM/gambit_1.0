@@ -49,14 +49,12 @@ set(ver "5.1.3")
 set(dl "http://www.fysik.su.se/~edsjo/darksusy/tars/${name}-${ver}.tar.gz")
 set(md5 "ca95ffa083941a469469710fab2f3c97")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
-  PATCH_COMMAND patch -p1 < ${patch}/patchDS_sharedlib_+_threadsafety.dif
-        COMMAND patch -p1 -d src < ${patch}/patchDS.dif
-        COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${patch}/patchISA.dif
+  PATCH_COMMAND patch -p1 < ${patch}
         # FIXME parallel relic density routines don't work yet.
         #COMMAND patch -b -p2 -d src < ${patch}/patchDS_OMP_src.dif
         #COMMAND patch -b -p2 -d include < ${patch}/patchDS_OMP_include.dif
@@ -69,48 +67,13 @@ ExternalProject_Add(${name}_${ver}
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
-# DarkSUSY
-set(name "darksusy")
-set(ver "5.1.1")
-set(dl "http://www.fysik.su.se/~edsjo/darksusy/tars/${name}-${ver}.tar.gz")
-set(md5 "ebeb0e1cfb4d834858e120190e423f62")
-set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}")
-set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
-set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(_ld_prefix "-Wl,-all_load")
-  set(_ld_suffix "")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  set(_ld_prefix "-Wl,--whole-archive")
-  set(_ld_suffix "-Wl,--no-whole-archive")
-endif()
-set(libs ${_ld_prefix} lib/libFH.a lib/libHB.a lib/libdarksusy.a lib/libisajet.a ${_ld_suffix})
-ExternalProject_Add(${name}_${ver}
-  DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
-  SOURCE_DIR ${dir}
-  BUILD_IN_SOURCE 1
-  PATCH_COMMAND patch -p1 -d src < ${patch}/patchDS.dif
-        COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${patch}/patchISA.dif
-        #COMMAND patch -p2 -d src < ${patch}/patchDS_OMP_src.dif
-        #COMMAND patch -p2 -d include < ${patch}/patchDS_OMP_include.dif
- # FIXME DarkSUSY segfaults with -O2 setting
- #CONFIGURE_COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
-  CONFIGURE_COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
-        COMMAND ar d lib/libdarksusy.a ${remove_files_from_libdarksusy} || true
-        COMMAND ar d lib/libisajet.a ${remove_files_from_libisajet} || true
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o lib/libdarksusy.so
-)
-add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-
 
 # SuperIso
 set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
 set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}beta.tgz")  # Note "beta" suffix!
-set(md5 "0e1278a88dc2a7838e737edd53525978")
+set(md5 "84771f32a9dfa3957b2c842064adb82f")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
@@ -263,12 +226,14 @@ set(md5 "0886d1b2827d8f0cd2ae69b925045f40")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks")
 
-# - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra
+# - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra.
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast") # -fast sometimes makes xsecs come out as NaN, but we catch that and invalidate those points.
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fno-math-errno -funsafe-math-optimizations -fno-rounding-math -fno-signaling-nans -fcx-limited-range") # Including all flags from -ffast-math except -ffinite-math-only which has proved to cause incorrect results.
+  set_compiler_warning("no-extra" pythia_CXXFLAGS)
+  set_compiler_warning("no-deprecated-declarations" pythia_CXXFLAGS)
 endif()
 
 # - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
@@ -278,7 +243,7 @@ else()
   set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
 endif()
 
-# - Add option to turn of intel IPO if insufficient memory exists to use it.
+# - Add option to turn off intel IPO if insufficient memory exists to use it.
 option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimization on/off" ON)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND NOT "${PYTHIA_OPT}")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -no-ipo -ip")
@@ -392,6 +357,13 @@ set(dl "http://astro.ic.ac.uk/sites/default/files/susyhit-${ver}.tar_.gz_.txt")
 set(md5 "493c7ba3a07e192918d3412875fb386a")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
+
+# - Due to a bug/instability in SUSYHIT, switch off optimization for Intel compilers
+set(susyhit_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(susyhit_Fortran_FLAGS "${susyhit_Fortran_FLAGS} -O0")
+endif()
+
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
            COMMAND ${CMAKE_COMMAND} -E rename ${backend_download}/susyhit-${ver}.tar_.gz_.txt ${backend_download}/susyhit-${ver}.tar.gz
@@ -399,7 +371,7 @@ ExternalProject_Add(${name}_${ver}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -p1 < ${patch}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${susyhit_Fortran_FLAGS}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
@@ -626,6 +598,13 @@ ExternalProject_Add(${name}_${ver}
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
 
+# Eigen3 include dir
+# Needed by flexiblesusy and gm2calc, so add it if gm2calc isn't ditched
+# (flexiblesusy will add it itself if it needs it)
+if(NOT ";${itch};" MATCHES ";gm2calc;" )
+  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
+  include_directories("${EIGEN3_DIR}")
+endif()
 
 # gm2calc
 set(name "gm2calc")
@@ -636,9 +615,7 @@ set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
 # - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
-endif()
+set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}
@@ -661,9 +638,7 @@ set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
 # - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS} -Wno-deprecated-declarations")
-endif()
+set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}

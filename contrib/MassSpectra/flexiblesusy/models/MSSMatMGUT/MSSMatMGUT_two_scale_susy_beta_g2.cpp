@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:31:58
+// File generated at Sat 27 Aug 2016 12:44:53
 
 #include "MSSMatMGUT_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -73,11 +73,25 @@ double MSSMatMGUT_susy_parameters::calc_beta_g2_three_loop(const Susy_traces& su
 {
    DEFINE_PROJECTOR(3,3,3,3)
 
+   const double traceAdjYdYd = TRACE_STRUCT.traceAdjYdYd;
+   const double traceAdjYeYe = TRACE_STRUCT.traceAdjYeYe;
+   const double traceAdjYuYu = TRACE_STRUCT.traceAdjYuYu;
+   const double traceAdjYdYdAdjYdYd = TRACE_STRUCT.traceAdjYdYdAdjYdYd;
+   const double traceAdjYeYeAdjYeYe = TRACE_STRUCT.traceAdjYeYeAdjYeYe;
+   const double traceAdjYuYuAdjYdYd = TRACE_STRUCT.traceAdjYuYuAdjYdYd;
+   const double traceAdjYuYuAdjYuYu = TRACE_STRUCT.traceAdjYuYuAdjYuYu;
 
 
    double beta_g2;
 
-   beta_g2 = 0;
+   beta_g2 = Re(0.04*Power(g2,3)*threeLoop*(-457*Power(g1,4) + 875*Power(
+      g2,4) + 1100*Power(g3,4) + 600*traceAdjYdYdAdjYdYd + 200*
+      traceAdjYeYeAdjYeYe + 300*traceAdjYuYuAdjYdYd + 600*traceAdjYuYuAdjYuYu -
+      145*traceAdjYuYu*Sqr(g1) - 825*traceAdjYuYu*Sqr(g2) + 45*Sqr(g1)*Sqr(g2)
+      - 5*traceAdjYeYe*(21*Sqr(g1) + 55*Sqr(g2)) - 800*traceAdjYuYu*Sqr(g3) -
+      40*Sqr(g1)*Sqr(g3) + 600*Sqr(g2)*Sqr(g3) - 5*traceAdjYdYd*(-60*
+      traceAdjYeYe + 11*Sqr(g1) + 165*Sqr(g2) + 160*Sqr(g3)) + 450*Sqr(
+      traceAdjYdYd) + 50*Sqr(traceAdjYeYe) + 450*Sqr(traceAdjYuYu)));
 
 
    return beta_g2;

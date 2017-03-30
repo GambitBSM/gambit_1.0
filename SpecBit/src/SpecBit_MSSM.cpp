@@ -24,6 +24,10 @@
 ///          (t.e.gonzalo@fys.uio.no)
 ///  \date 2016 June
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015, 2016
+///
 ///  *********************************************
 
 #include <string>
@@ -185,7 +189,7 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the
       // one-stop-shop for all spectrum information, including the model interface object.
-      MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
+      MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.5.1");
 
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns on the 'allow_new' option for the override setter, which allows
@@ -214,11 +218,16 @@ namespace Gambit
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12,  true);
       mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12,  true);
 
-      // Do the lightest Higgs mass seperately.  The default in most codes is 3 GeV. That seems like
+      // Do the lightest Higgs mass separately.  The default in most codes is 3 GeV. That seems like
       // an underestimate if the stop masses are heavy enough, but an overestimate for most points.
       double rd_mh1 = 2.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, "h0", 1, true);
-      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, "h0", 1, true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mh1, ms.h0, 1, true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mh1, ms.h0, 1, true);
+
+      // Do the W mass separately.  Here we use 10 MeV based on the size of corrections from two-loop papers and advice from Dominik Stockinger.
+      double rd_mW = 0.01 / mssmspec.get(Par::Pole_Mass, "W+");
+      mssmspec.set_override(Par::Pole_Mass_1srd_high, rd_mW, "W+", true);
+      mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mW, "W+", true);
 
       // Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())
@@ -289,8 +298,12 @@ namespace Gambit
          slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum->slha");
       #endif
 
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = runOptions.getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = runOptions.getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
       // Package QedQcd SubSpectrum object, MSSM SubSpectrum object, and SMInputs struct into a 'full' Spectrum object
-      return Spectrum(qedqcdspec,mssmspec,sminputs,&input_Param);
+      return Spectrum(qedqcdspec,mssmspec,sminputs,&input_Param,mass_cut,mass_ratio_cut);
     }
 
 
@@ -301,9 +314,7 @@ namespace Gambit
        Eigen::Matrix<double,3,3> output;
        for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
        {
-         std::stringstream parname;
-         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         output(i,j) = *Param.at(parname.str());
+         output(i,j) = *Param.at(rootname + "_" + to_string(i+1) + to_string(j+1));
        }
        return output;
     }
@@ -312,11 +323,10 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) for(int j=i; j<3; ++j)
+       for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
        {
-         std::stringstream parname;
-         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         output(i,j) = *Param.at(parname.str());
+         str parname = rootname + "_" + ( i < j ? to_string(i+1) + to_string(j+1) : to_string(j+1) + to_string(i+1));
+         output(i,j) = *Param.at(parname);
        }
        return output;
     }
@@ -527,12 +537,8 @@ namespace Gambit
       // Only allow neutralino LSPs.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
-      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename,true);
-      }
+      // Drop SLHA files if requested
+      result.drop_SLHAs_if_requested(myPipe::runOptions, "GAMBIT_unimproved_spectrum");
 
     }
 
@@ -547,12 +553,7 @@ namespace Gambit
       fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
-      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file, including legacy SLHA1 blocks.
-        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename,true);
-      }
+      result.drop_SLHAs_if_requested(myPipe::runOptions, "GAMBIT_unimproved_spectrum");
     }
 
     // Runs MSSM spectrum generator with GUT scale input
@@ -565,12 +566,7 @@ namespace Gambit
       fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
-      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
-      {
-        // Spit out the full spectrum as an SLHA file.
-        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
-        result.getSLHA(filename);
-      }
+      result.drop_SLHAs_if_requested(myPipe::runOptions, "GAMBIT_unimproved_spectrum");
     }
 
     void get_GUTMSSMB_spectrum (Spectrum &/*result*/)
@@ -591,10 +587,16 @@ namespace Gambit
       result = &matched_spectra.get_LE();
     }
 
-    /// Extract an SLHAea version of the spectrum contained in a Spectrum object
-    void get_MSSM_spectrum_as_SLHAea (SLHAstruct &result)
+    /// Extract an SLHAea version of the spectrum contained in a Spectrum object, in SLHA1 format
+    void get_MSSM_spectrum_as_SLHAea_SLHA1(SLHAstruct &result)
     {
-      result = (*Pipes::get_MSSM_spectrum_as_SLHAea::Dep::unimproved_MSSM_spectrum).getSLHAea();
+      result = Pipes::get_MSSM_spectrum_as_SLHAea_SLHA1::Dep::unimproved_MSSM_spectrum->getSLHAea(1);
+    }
+
+    /// Extract an SLHAea version of the spectrum contained in a Spectrum object, in SLHA2 format
+    void get_MSSM_spectrum_as_SLHAea_SLHA2(SLHAstruct &result)
+    {
+      result = Pipes::get_MSSM_spectrum_as_SLHAea_SLHA2::Dep::unimproved_MSSM_spectrum->getSLHAea(2);
     }
 
     /// Get an MSSMSpectrum object from an SLHA file
@@ -640,8 +642,12 @@ namespace Gambit
         ncycle++;
       }
 
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
       // Create Spectrum object from the slhaea object
-      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
+      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha, mass_cut, mass_ratio_cut);
 
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
@@ -655,14 +661,19 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAstruct;
       const SLHAstruct& input_slha_tmp = *myPipe::Dep::unimproved_MSSM_spectrum; // Retrieve dependency on SLHAstruct
 
+      /// @TODO @FIXME this needs to be fixed -- is it needed any more?  Where is this GAMBIT block supposed to be written?
       SLHAstruct input_slha(input_slha_tmp); // Copy struct (for demo adding of GAMBIT block only)
       // For example; add this to your input SLHAstruct:
       input_slha["GAMBIT"][""] << "BLOCK" << "GAMBIT";
       input_slha["GAMBIT"][""] <<      1  << 1e99 << "# Input scale";
-      std::cout << input_slha << std::endl; // test
+      std::cout << input_slha << std::endl; // test.
+
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
 
       // Create Spectrum object from the slhaea object
-      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
+      result = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha, mass_cut, mass_ratio_cut);
 
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
@@ -1162,46 +1173,61 @@ namespace Gambit
 /////////////////////////////
 
     /// @{ Convert MSSM type Spectrum object into a map, so it can be printed
-    void fill_map_from_MSSMspectrum(std::map<std::string,double>&, const Spectrum&);
+    template<class Contents>
+    void fill_map_from_subspectrum(std::map<std::string,double>&, const SubSpectrum&);
+
+    /// Adds additional information from interesting combinations of MSSM parameters
+    void add_extra_MSSM_parameter_combinations(std::map<std::string,double>& specmap, const SubSpectrum& mssm)
+    {
+      double At = 0;
+      double Yt = mssm.get(Par::dimensionless, "Yu", 3, 3);
+      if(std::abs(Yt) > 1e-12)
+      {
+        At = mssm.get(Par::mass1, "TYu", 3, 3) / Yt;
+      }
+      double MuSUSY = mssm.get(Par::mass1, "Mu");
+      double tb = mssm.get(Par::dimensionless, "tanbeta");
+      specmap["Xt"] = At - MuSUSY / tb;
+      /// Determine which states are the third gens then add them for printing
+      str msf1, msf2;
+      /// Since this is for printing we only want to invalidate the point if this is completely wrong.  We can also plot the mixing if we are suspicious.
+      const static double tol = 0.5;
+      const static bool pt_error = true;
+      slhahelp::family_state_mix_matrix("~u", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["mstop1"] =  mssm.get(Par::Pole_Mass, msf1);
+      specmap["mstop2"] =  mssm.get(Par::Pole_Mass, msf2);
+      slhahelp::family_state_mix_matrix("~d", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["msbottom1"] =  mssm.get(Par::Pole_Mass, msf1);
+      specmap["msbottom2"] =  mssm.get(Par::Pole_Mass, msf2);
+      slhahelp::family_state_mix_matrix("~e-", 3, msf1, msf2, mssm, tol, LOCAL_INFO, pt_error);
+      specmap["mstau1"] =  mssm.get(Par::Pole_Mass, msf1);
+      specmap["mstau2"] =  mssm.get(Par::Pole_Mass, msf2);
+    }
+
     void get_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_as_map;
       const Spectrum& mssmspec(*myPipe::Dep::MSSM_spectrum);
-      fill_map_from_MSSMspectrum(specmap, mssmspec);
-      /// Add additional information from interesting combinations of parameters
-      double At = 0;
-      double Yt = mssmspec.get_HE().get(Par::dimensionless, "Yu", 3, 3);
-      if(std::abs(Yt) > 1e-12)
-      {
-        At = mssmspec.get_HE().get(Par::mass1, "TYu", 3, 3) / Yt;
-      }
-      double MuSUSY = mssmspec.get_HE().get(Par::mass1, "Mu");
-      double tb = mssmspec.get_HE().get(Par::dimensionless, "tanbeta");
-      specmap["Xt"] = At - MuSUSY / tb;
-      /// Determine which states are the stops then add them for printing
-      const SubSpectrum& mssm = mssmspec.get_HE();
-      str mst1, mst2;
-      /// Since this is for printing I only want to invalidate the point if this is completely wrong.  We can also plot the mixing if we are suspicious.
-      const static double tol = 0.5;
-      const static bool pt_error = true;
-      slhahelp::family_state_mix_matrix("~u", 3, mst1, mst2, mssm, tol, LOCAL_INFO, pt_error);
-      specmap["mstop1"] =  mssm.get(Par::Pole_Mass, mst1);
-      specmap["mstop2"] =  mssm.get(Par::Pole_Mass, mst2);
-
+      fill_map_from_subspectrum<SpectrumContents::SM>  (specmap, mssmspec.get_LE());
+      fill_map_from_subspectrum<SpectrumContents::MSSM>(specmap, mssmspec.get_HE());
+      add_extra_MSSM_parameter_combinations(specmap, mssmspec.get_HE());
     }
     void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
       namespace myPipe = Pipes::get_unimproved_MSSM_spectrum_as_map;
       const Spectrum& mssmspec(*myPipe::Dep::unimproved_MSSM_spectrum);
-      fill_map_from_MSSMspectrum(specmap, mssmspec);
+      fill_map_from_subspectrum<SpectrumContents::SM>  (specmap, mssmspec.get_LE());
+      fill_map_from_subspectrum<SpectrumContents::MSSM>(specmap, mssmspec.get_HE());
+      add_extra_MSSM_parameter_combinations(specmap, mssmspec.get_HE());
     }
     /// @}
 
-    /// Common function to fill the spectrum map from a Spectrum object
-    void fill_map_from_MSSMspectrum(std::map<std::string,double>& specmap, const Spectrum& mssmspec)
+    /// Extract all parameters from a subspectrum and put them into a map
+    template<class Contents>
+    void fill_map_from_subspectrum(std::map<std::string,double>& specmap, const SubSpectrum& subspec)
     {
-      /// Add everything... use spectrum contents routines to automate task
-      static const SpectrumContents::MSSM contents;
+      /// Add everything... use spectrum contents routines to automate task (make sure to use correct template parameter!)
+      static const Contents contents;
       static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
 
       for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
@@ -1218,14 +1244,14 @@ namespace Gambit
          {
            std::ostringstream label;
            label << name <<" "<< Par::toString.at(tag);
-           specmap[label.str()] = mssmspec.get_HE().get(tag,name);
-           //std::cout << label.str() <<", " << mssmspec.get_HE().has(tag,name,overrides_only) << "," << mssmspec.get_HE().has(tag,name,ignore_overrides) << std::endl; // debugging
+           specmap[label.str()] = subspec.get(tag,name);
+           //std::cout << label.str() <<", " << subspec.has(tag,name,overrides_only) << "," << subspec.has(tag,name,ignore_overrides) << std::endl; // debugging
            // Check again ignoring overrides (if the value has an override defined)
-           if(mssmspec.get_HE().has(tag,name,overrides_only) and
-              mssmspec.get_HE().has(tag,name,ignore_overrides))
+           if(subspec.has(tag,name,overrides_only) and
+              subspec.has(tag,name,ignore_overrides))
            {
              label << " (unimproved)";
-             specmap[label.str()] = mssmspec.get_HE().get(tag,name,ignore_overrides);
+             specmap[label.str()] = subspec.get(tag,name,ignore_overrides);
              //std::cout << label.str() << ": " << specmap[label.str()];
            }
          }
@@ -1235,14 +1261,14 @@ namespace Gambit
            for(int i = 1; i<=shape[0]; ++i) {
              std::ostringstream label;
              label << name <<"_"<<i<<" "<< Par::toString.at(tag);
-             specmap[label.str()] = mssmspec.get_HE().get(tag,name,i);
-             //std::cout << label.str() <<", " << mssmspec.get_HE().has(tag,name,i,overrides_only) << "," << mssmspec.get_HE().has(tag,name,i,ignore_overrides) << std::endl; // debugging
+             specmap[label.str()] = subspec.get(tag,name,i);
+             //std::cout << label.str() <<", " << subspec.has(tag,name,i,overrides_only) << "," << subspec.has(tag,name,i,ignore_overrides) << std::endl; // debugging
              // Check again ignoring overrides
-             if(mssmspec.get_HE().has(tag,name,i,overrides_only) and
-                mssmspec.get_HE().has(tag,name,i,ignore_overrides))
+             if(subspec.has(tag,name,i,overrides_only) and
+                subspec.has(tag,name,i,ignore_overrides))
              {
                label << " (unimproved)";
-               specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,ignore_overrides);
+               specmap[label.str()] = subspec.get(tag,name,i,ignore_overrides);
                //std::cout << label.str() << ": " << specmap[label.str()];
              }
            }
@@ -1254,13 +1280,13 @@ namespace Gambit
              for(int j = 1; j<=shape[0]; ++j) {
                std::ostringstream label;
                label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
-               specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,j);
+               specmap[label.str()] = subspec.get(tag,name,i,j);
                // Check again ignoring overrides
-               if(mssmspec.get_HE().has(tag,name,i,j,overrides_only) and
-                  mssmspec.get_HE().has(tag,name,i,j,ignore_overrides))
+               if(subspec.has(tag,name,i,j,overrides_only) and
+                  subspec.has(tag,name,i,j,ignore_overrides))
                {
                  label << " (unimproved)";
-                 specmap[label.str()] = mssmspec.get_HE().get(tag,name,i,j,ignore_overrides);
+                 specmap[label.str()] = subspec.get(tag,name,i,j,ignore_overrides);
                }
              }
            }
@@ -1270,14 +1296,13 @@ namespace Gambit
          {
            // ERROR
            std::ostringstream errmsg;
-           errmsg << "Error, invalid parameter received while converting MSSMspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
+           errmsg << "Error, invalid parameter received while converting SubSpectrum with contents \""<<contents.getName()<<"\" to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
            errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape;
            SpecBit_error().forced_throw(LOCAL_INFO,errmsg.str());
          }
       }
 
     }
-
 
     /// @} End Gambit module functions
 

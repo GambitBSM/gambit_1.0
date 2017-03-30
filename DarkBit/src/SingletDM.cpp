@@ -221,14 +221,14 @@ namespace Gambit
     std::map<std::string, daFunk::Funk> get_f_vs_mass(std::string filename)
     {
       // Higgs branching ratios and total width Gamma [GeV], as function of
-      // mass [GeV] (90 - 150 GeV)
+      // mass [GeV] (80 - 1000 GeV)
       ASCIItableReader table(filename);
-      std::vector<std::string> colnames =
-        initVector<std::string>("mass", "bb", "tautau", "mumu",
-            "ss", "cc", "tt", "gg", "gammagamma", "Zgamma",
-            "WW", "ZZ", "Gamma");
+      const static std::vector<str> colnames = initVector<std::string>("mass",
+       "bb", "bb+", "bb-", "tautau", "tautau+", "tautau-", "mumu", "mumu+", "mumu-",
+       "ss", "ss+", "ss-", "cc", "cc+", "cc-", "tt", "tt+", "tt-", "gg", "gg+", "gg-",
+       "gammagamma", "gammagamma+", "gammagamma-", "Zgamma", "Zgamma+", "Zgamma-",
+       "WW", "WW+", "WW-", "ZZ", "ZZ+", "ZZ-", "Gamma", "Gamma+", "Gamma-");
       table.setcolnames(colnames);
-
       std::map<std::string, daFunk::Funk> f_vs_mass;
       for (auto it = colnames.begin(); it != colnames.end(); it++)
       {
@@ -246,7 +246,7 @@ namespace Gambit
 
       // Initialize Higgs decay tables (static, hence only once)
       static std::map<string, daFunk::Funk> f_vs_mass =
-        get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
+        get_f_vs_mass(GAMBIT_DIR "/Elements/data/Higgs_decay_1307.1347.dat");
 
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
@@ -260,7 +260,7 @@ namespace Gambit
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));    
+       (Name , TH_ParticleProperty(SM.get(Par::Pole_Mass,Name), spinX2)));
       #define addParticle(Name, Mass, spinX2)                                   \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));

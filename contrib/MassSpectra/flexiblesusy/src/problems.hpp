@@ -304,9 +304,14 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
    for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
            it = non_pert_pars.begin(), end = non_pert_pars.end();
         it != end; ++it) {
-      ostr << "non-perturbative " << it->first
-           << " [|" << it->first << "|(" << it->second.scale << ") = "
-           << it->second.value << " > " << it->second.threshold << "], ";
+      ostr << "non-perturbative " << it->first;
+      if (it->second.threshold > 0) {
+         ostr << " [|" << it->first << "|(" << it->second.scale << ") = "
+              << it->second.value << " > " << it->second.threshold << "], ";
+      } else {
+         ostr << " [" << it->first << "(" << it->second.scale << ") = "
+              << it->second.value << "], ";
+      }
    }
 }
 

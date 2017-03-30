@@ -16,13 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:50
+// File generated at Sat 27 Aug 2016 12:40:25
 
 #ifndef SSM_SLHA_IO_H
 #define SSM_SLHA_IO_H
 
 #include "SSM_two_scale_model_slha.hpp"
 #include "SSM_info.hpp"
+#include "SSM_observables.hpp"
 #include "SSM_physical.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
@@ -37,7 +38,9 @@
 #define PHYSICAL(p) model.get_physical().p
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
+#define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
+#define OBSERVABLES observables
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -62,19 +65,23 @@ public:
    void fill(SSM_input_parameters&) const;
    void fill(SSM_mass_eigenstates&) const;
    template <class T> void fill(SSM_slha<T>&) const;
+   void fill(Physical_input&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
+   void set_block(const std::string& str, SLHA_io::Position position = SLHA_io::back) { slha_io.set_block(str, position); }
+   void set_blocks(const std::vector<std::string>& vec, SLHA_io::Position position = SLHA_io::back) { slha_io.set_blocks(vec, position); }
    void set_extpar(const SSM_input_parameters&);
-   template <class T> void set_extra(const SSM_slha<T>&, const SSM_scales&);
+   template <class T> void set_extra(const SSM_slha<T>&, const SSM_scales&, const SSM_observables&);
    void set_minpar(const SSM_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const SSM_slha<T>&);
    template <class T> void set_spectrum(const SSM<T>&);
    void set_spinfo(const Problems<SSM_info::NUMBER_OF_PARTICLES>&);
+   void set_print_imaginary_parts_of_majorana_mixings(bool);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 
@@ -82,16 +89,14 @@ public:
    static void fill_extpar_tuple(SSM_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const SSM_slha<T>&, const softsusy::QedQcd&, const SSM_scales&);
+   static void fill_slhaea(SLHAea::Coll&, const SSM_slha<T>&, const softsusy::QedQcd&, const SSM_scales&, const SSM_observables&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const SSM_slha<T>&, const softsusy::QedQcd&);
-
-   template <class T>
-   static SLHAea::Coll fill_slhaea(const SSM_slha<T>&, const softsusy::QedQcd&, const SSM_scales&);
+   static SLHAea::Coll fill_slhaea(const SSM_slha<T>&, const softsusy::QedQcd&, const SSM_scales&, const SSM_observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
+   bool print_imaginary_parts_of_majorana_mixings;
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = 6;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
@@ -119,7 +124,8 @@ void SSM_slha_io::fill(SSM_slha<T>& model) const
 template <class T>
 void SSM_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const SSM_slha<T>& model,
-   const softsusy::QedQcd& qedqcd, const SSM_scales& scales)
+   const softsusy::QedQcd& qedqcd, const SSM_scales& scales,
+   const SSM_observables& observables)
 {
    SSM_slha_io slha_io;
    const SSM_input_parameters& input = model.get_input();
@@ -133,7 +139,7 @@ void SSM_slha_io::fill_slhaea(
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales);
+      slha_io.set_extra(model, scales, observables);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
@@ -141,20 +147,11 @@ void SSM_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll SSM_slha_io::fill_slhaea(
-   const SSM_slha<T>& model, const softsusy::QedQcd& qedqcd)
-{
-   SSM_scales scales;
-
-   return fill_slhaea(model, qedqcd, scales);
-}
-
-template <class T>
-SLHAea::Coll SSM_slha_io::fill_slhaea(
    const SSM_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const SSM_scales& scales)
+   const SSM_scales& scales, const SSM_observables& observables)
 {
    SLHAea::Coll slhaea;
-   SSM_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
+   SSM_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
 
    return slhaea;
 }
@@ -191,13 +188,16 @@ void SSM_slha_io::set_model_parameters(const SSM_slha<T>& model)
       std::ostringstream block;
       block << "Block HMIX Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
             << FORMAT_ELEMENT(3, (MODELPARAMETER(v)), "v")
+            << FORMAT_ELEMENT(51, (MODELPARAMETER(vS)), "vS")
             << FORMAT_ELEMENT(31, (MODELPARAMETER(K1)), "K1")
             << FORMAT_ELEMENT(32, (MODELPARAMETER(K2)), "K2")
+            << FORMAT_ELEMENT(35, (MODELPARAMETER(Kappa)), "Kappa")
             << FORMAT_ELEMENT(33, (MODELPARAMETER(LambdaS)), "LambdaS")
             << FORMAT_ELEMENT(34, (MODELPARAMETER(MS)), "MS")
       ;
       slha_io.set_block(block);
    }
+
 
 }
 
@@ -208,7 +208,8 @@ void SSM_slha_io::set_model_parameters(const SSM_slha<T>& model)
  */
 template <class T>
 void SSM_slha_io::set_extra(
-   const SSM_slha<T>& model, const SSM_scales& scales)
+   const SSM_slha<T>& model, const SSM_scales& scales,
+   const SSM_observables& observables)
 {
    const SSM_physical physical(model.get_physical_slha());
 
@@ -257,7 +258,9 @@ void SSM_slha_io::set_spectrum(const SSM_slha<T>& model)
 #undef PHYSICAL
 #undef PHYSICAL_SLHA
 #undef LOCALPHYSICAL
+#undef MODEL
 #undef MODELPARAMETER
+#undef OBSERVABLES
 #undef LowEnergyConstant
 #undef SCALES
 

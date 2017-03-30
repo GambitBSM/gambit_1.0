@@ -86,7 +86,14 @@ namespace Gambit
            "SLHAea object has DECAY block with < 3 entries in its block definition.");
           int pdg = SLHAea::to<int>(block_def->at(1));
           // Add an entry containing the info in this block
-          operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context,
+          int local_context = context;
+          if (force_SM_fermion_gauge_eigenstates)
+          {
+            int abspdg = std::abs(pdg);
+            // Select SM fermions, including 4th gen, and force gauge eigenstates (context = 1).
+            if (abspdg < 19 and abspdg != 9 and abspdg != 10) local_context = 1;
+          }
+          operator()(std::pair<int,int>(pdg,local_context)) = Entry(*block, block_def, context,
            force_SM_fermion_gauge_eigenstates, calculator, calculator_version);
         }
       }
@@ -261,7 +268,7 @@ namespace Gambit
           int context_local = context;
           if (force_SM_fermion_gauge_eigenstates)
           {
-            int abspdg = abs(pdg);
+            int abspdg = std::abs(pdg);
             // Select SM fermions, including 4th gen, and force gauge eigenstates (context = 1).
             if (abspdg < 19 and abspdg != 9 and abspdg != 10) context_local = 1;
           }

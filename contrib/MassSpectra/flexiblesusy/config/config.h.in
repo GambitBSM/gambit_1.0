@@ -62,6 +62,9 @@
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 
+/* Enable sqlite */
+@DEFINE_ENABLE_SQLITE@
+
 /* Enable multi-threading */
 @DEFINE_ENABLE_THREADS@
 
@@ -70,3 +73,6 @@
 
 /* Enable <random> header */
 @DEFINE_ENABLE_RANDOM@
+
+/* Enable statements for addons */
+@DEFINE_ENABLE_ADDONS@

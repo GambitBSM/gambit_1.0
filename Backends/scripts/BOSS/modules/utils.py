@@ -633,6 +633,7 @@ def findType(el_input):
         prev_tag = ''
         while ('type' in el.keys()) or ('returns' in el.keys()):
 
+
             # Get xml id to move further through the xml file
             if el.tag in ['FunctionType', 'Function', 'Method', 'OperatorMethod']:
 
@@ -641,6 +642,10 @@ def findType(el_input):
                 type_id = el.get('returns')
             else:
                 type_id = el.get('type')
+
+            # id='_0' refer to elements not resolved by CastXML. Should be safe to stop here.
+            if type_id == '_0':
+                break
 
             # Check for reference or pointer type
             if el.tag == 'ReferenceType':
@@ -1614,9 +1619,10 @@ def isHeader(file_el):
     is_header = False
 
     file_name = file_el.get('name')
-    if '.' in file_name:
-        extension = file_name.rsplit('.',1)[1]
-        if extension.lower() in ['hpp', 'h']:
+    extension = os.path.splitext(file_name)[1]
+    
+    if extension != '':
+        if extension.lower() in ['.hpp', '.h', '.hh', '.hxx', cfg.header_extension.lower()]:
             is_header = True
 
     return is_header
@@ -2169,9 +2175,10 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     castxml_cmd = castxml_path + ' --castxml-gccxml -x c++'
 
     # Add castxml settings from cfg file
-    castxml_cmd += ' --castxml-cc-' + cfg.castxml_cc_id + ' ' + cfg.castxml_cc
+    castxml_cmd += ' --castxml-cc-' + cfg.castxml_cc_id + ' "(" ' + cfg.castxml_cc
     if cfg.castxml_cc_opt != '':
         castxml_cmd += ' ' + cfg.castxml_cc_opt
+    castxml_cmd += ' ")" '
 
     # - Add include paths
     for incl_path in include_paths_list:

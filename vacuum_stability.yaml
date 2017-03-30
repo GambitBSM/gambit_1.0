@@ -64,13 +64,13 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [166.499,166.499]
+        range: [125,125]
         #prior_type: flat
       QEWSB: 173
 
 
     SingletDM:
-      mS: 1901.14
+      mS: 60
       lambda_hS: 0.0573671 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well

@@ -12,6 +12,7 @@ SLHAEA_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME):
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -21,6 +22,7 @@ install-src::
 endif
 
 clean-$(MODNAME):
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 

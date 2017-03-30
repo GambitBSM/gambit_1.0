@@ -51,7 +51,7 @@ namespace Gambit
     // Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     // (currently does nothing for ostream printer)
-    void ostreamPrinter::initialise(const std::vector<int>& functors_to_print) { }
+    void ostreamPrinter::initialise(const std::vector<int>& /*functors_to_print*/) { }
  
     // Tell printer that we have moved to a new model point
     void ostreamPrinter::endline() { }
@@ -61,38 +61,38 @@ namespace Gambit
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
-    void ostreamPrinter::print(double const& value, const std::string& label, const int IDcode)
+    void ostreamPrinter::print(double const& value, const std::string& label, const int /*IDcode*/)
     {
       if (verbose) {std::cout<<"printing a double using ostreamPrinter!"<<std::endl;}
-      my_ostream<<value<<std::endl;       
+      my_ostream<<label<<": "<<value<<std::endl;       
     }
 
-    void ostreamPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode)
+    void ostreamPrinter::print(std::vector<double> const& value, const std::string& label, const int /*IDcode*/)
     {
       if (verbose) {std::cout<<"printing a std::vector<double> using ostreamPrinter!"<<std::endl;}
-      my_ostream<<value<<std::endl;       
+      my_ostream<<label<<": "<<value<<std::endl;       
     }
     
     
-    void ostreamPrinter::print(int const& value, const std::string& label, const int IDcode)
+    void ostreamPrinter::print(int const& value, const std::string& label, const int /*IDcode*/)
     {
       if (verbose) {std::cout<<"printing an int using ostreamPrinter!"<<std::endl;}
-      my_ostream<<value<<std::endl;       
+      my_ostream<<label<<": "<<value<<std::endl;       
     }
 
-    void ostreamPrinter::print(std::vector<int> const& value, const std::string& label, const int IDcode)
+    void ostreamPrinter::print(std::vector<int> const& value, const std::string& label, const int /*IDcode*/)
     {
       if (verbose) {std::cout<<"printing a std::vector<int> using ostreamPrinter!"<<std::endl;}
-      my_ostream<<value<<std::endl;       
+      my_ostream<<label<<": "<<value<<std::endl;       
     }
 
 
-    void ostreamPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode)
+    void ostreamPrinter::print(ModelParameters const& value, const std::string& label, const int /*IDcode*/)
     {
       std::map<std::string, double> parameter_map = value.getValues();
       typedef std::map<std::string, double>::iterator map_it;
       if (verbose) {std::cout<<"printing a ModelParameters object using ostreamPrinter!"<<std::endl;}
-      my_ostream << "[";
+      my_ostream << label << ": [";
       for (map_it it = parameter_map.begin(); it != parameter_map.end(); it++)
       {
         my_ostream << it->first <<":"<< it->second << ", ";

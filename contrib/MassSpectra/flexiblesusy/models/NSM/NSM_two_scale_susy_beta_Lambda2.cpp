@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:23
+// File generated at Sat 27 Aug 2016 12:40:15
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double NSM_susy_parameters::calc_beta_Lambda2_one_loop(const Susy_traces& susy_t
 
    double beta_Lambda2;
 
-   beta_Lambda2 = Re(-2*oneOver16PiSqr*(36*Sqr(Lambda2) + Sqr(Lambda3)));
+   beta_Lambda2 = Re(2*oneOver16PiSqr*(36*Sqr(Lambda2) + Sqr(Lambda3)));
 
 
    return beta_Lambda2;
@@ -58,9 +58,9 @@ double NSM_susy_parameters::calc_beta_Lambda2_two_loop(const Susy_traces& susy_t
    double beta_Lambda2;
 
    beta_Lambda2 = Re(-4*twoLoop*(816*Power(Lambda2,3) + 4*Power(Lambda3,3
-      ) - 3*traceYdAdjYd*Sqr(Lambda3) - traceYeAdjYe*Sqr(Lambda3) - 3*
-      traceYuAdjYu*Sqr(Lambda3) + 20*Lambda2*Sqr(Lambda3) + Sqr(g1)*Sqr(Lambda3
-      ) + 3*Sqr(g2)*Sqr(Lambda3)));
+      ) + 3*traceYdAdjYd*Sqr(Lambda3) + traceYeAdjYe*Sqr(Lambda3) + 3*
+      traceYuAdjYu*Sqr(Lambda3) + 20*Lambda2*Sqr(Lambda3) - Sqr(g1)*Sqr(Lambda3
+      ) - 3*Sqr(g2)*Sqr(Lambda3)));
 
 
    return beta_Lambda2;

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:36:20
+// File generated at Sat 27 Aug 2016 12:40:44
 
 #ifndef SSM_PHYSICAL_H
 #define SSM_PHYSICAL_H
@@ -34,19 +34,23 @@ struct SSM_physical {
    void clear();
    void convert_to_hk();   ///< converts pole masses to HK convention
    void convert_to_slha(); ///< converts pole masses to SLHA convention
+   Eigen::ArrayXd get() const; ///< returns array with all masses and mixings
+   void set(const Eigen::ArrayXd&); ///< set all masses and mixings
+   Eigen::ArrayXd get_masses() const; ///< returns array with all masses
+   void set_masses(const Eigen::ArrayXd&); ///< set all masses
    void print(std::ostream&) const;
 
+   double MVG;
    double MHp;
    Eigen::Array<double,3,1> MFv;
    double MAh;
-   double MVZ;
    Eigen::Array<double,2,1> Mhh;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
    Eigen::Array<double,3,1> MFe;
-   double MVG;
-   double MVP;
    double MVWp;
+   double MVP;
+   double MVZ;
 
    Eigen::Matrix<double,2,2> ZH;
    Eigen::Matrix<std::complex<double>,3,3> Vd;
@@ -55,6 +59,7 @@ struct SSM_physical {
    Eigen::Matrix<std::complex<double>,3,3> Uu;
    Eigen::Matrix<std::complex<double>,3,3> Ve;
    Eigen::Matrix<std::complex<double>,3,3> Ue;
+   Eigen::Matrix<double,2,2> ZZ;
 
 };
 

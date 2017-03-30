@@ -59,7 +59,7 @@ inline std::ostream & operator <<(std::ostream & left, const Complex & s) {
 
 ///Formatted input
 inline std::istream & operator >> (std::istream & left, Complex & v) {
-  double r, i;
+  double r = 0., i = 0.;
   left >> r >> i;
   v = Complex(r,i);
   return left;

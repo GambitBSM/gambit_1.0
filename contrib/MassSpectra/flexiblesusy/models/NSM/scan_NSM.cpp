@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:36:03
+// File generated at Sat 27 Aug 2016 12:40:45
 
 #include "NSM_input_parameters.hpp"
 #include "NSM_spectrum_generator.hpp"
@@ -29,6 +29,8 @@
 
 #include <iostream>
 #include <cstring>
+
+#define INPUTPARAMETER(p) input.p
 
 namespace flexiblesusy {
 
@@ -98,8 +100,14 @@ int main(int argc, char* argv[])
    NSM_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
-   softsusy::QedQcd oneset;
-   oneset.toMz();
+   softsusy::QedQcd qedqcd;
+
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
+   } catch (const std::string& s) {
+      ERROR(s);
+      return EXIT_FAILURE;
+   }
 
    NSM_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
@@ -117,9 +125,10 @@ int main(int argc, char* argv[])
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
-      input.Lambda1Input = *it;
+      INPUTPARAMETER(Lambda1Input) = *it;
 
-      spectrum_generator.run(oneset, input);
+
+      spectrum_generator.run(qedqcd, input);
 
       const NSM_slha<algorithm_type> model(spectrum_generator.get_model());
       const NSM_physical& pole_masses = model.get_physical_slha();
@@ -129,7 +138,7 @@ int main(int argc, char* argv[])
       const bool error = problems.have_problem();
 
       cout << "  "
-           << std::setw(12) << std::left << input.Lambda1Input << ' '
+           << std::setw(12) << std::left << *it << ' '
            << std::setw(12) << std::left << higgs << ' '
            << std::setw(12) << std::left << error;
       if (error) {

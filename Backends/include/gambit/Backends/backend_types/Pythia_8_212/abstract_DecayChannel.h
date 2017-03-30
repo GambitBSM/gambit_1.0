@@ -95,10 +95,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_DecayChannel& operator=(const Abstract_DecayChannel&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::DecayChannel from backend Pythia_8_212. The function Abstract_DecayChannel::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 DecayChannel* get_init_wptr()
                 {
@@ -112,10 +109,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_DecayChannel()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::DecayChannel from backend Pythia_8_212. The function Abstract_DecayChannel::~Abstract_DecayChannel in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_DecayChannel() =0;
         };
     }
     

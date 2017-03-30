@@ -23,7 +23,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 
 #include "gambit/Elements/spectrum.hpp"
-#include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
+#include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_macros.hpp"
 
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
@@ -36,15 +36,12 @@
 #include "gambit/SpecBit/SingletDMZ3Spec.hpp"
 #include "gambit/SpecBit/SingletDMSpec.hpp"
 
-
-//#include "gambit/SpecBit/SMskeleton.hpp"
-
-
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/src/ew_input.hpp"
-#include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
+#include "flexiblesusy/src/lowe.h"
 #include "flexiblesusy/src/numerics2.hpp"
 #include "flexiblesusy/src/two_loop_corrections.hpp"
+
 // Switch for debug mode
 //#define SPECBIT_DEBUG
 
@@ -65,40 +62,27 @@ namespace Gambit
       // Initialise an object to carry the Singlet plus Higgs sector information
       Models::SingletDMModel singletmodel;
 
-
       // quantities needed to fill container spectrum, intermediate calculations
       double alpha_em = 1.0 / sminputs.alphainv;
-      double mz2 = pow(sminputs.mZ,2);
-      double GF = sminputs.GF;
-      double sinW2cosW2 = Pi * alpha_em / (pow(2,0.5) * mz2 * GF ) ;
-
-
+      double C = alpha_em * Pi / (sminputs.GF * pow(2,0.5));
+      double sinW2 = 0.5 - pow( 0.25 - C/pow(sminputs.mZ,2) , 0.5);
+      double cosW2 = 0.5 + pow( 0.25 - C/pow(sminputs.mZ,2) , 0.5);
       double e = pow( 4*Pi*( alpha_em ),0.5) ;
-
-
-      double sin2W = pow(2 * sinW2cosW2, 0.5);
-      double tW = 0.5* asin( sin2W );
-      double sinW2 = pow( sin (tW) , 2);
-      double cosW2 = pow( cos (tW) , 2);
-
 
       // Higgs sector
       double mh   = *myPipe::Param.at("mH");
       singletmodel.HiggsPoleMass   = mh;
 
-      double vev        = 1. / sqrt(sqrt(2.)*GF);
+      double vev        = 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.HiggsVEV        = vev;
       //singletmodel.LambdaH   = GF*pow(mh,2)/pow(2,0.5) ;
 
       // Scalar singlet sector
-
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
       singletmodel.SingletLambdaS   = 0;
 
-
       // Standard model
-
       singletmodel.sinW2 = sinW2;
 
       // gauge couplings
@@ -106,17 +90,14 @@ namespace Gambit
       singletmodel.g2 = e / cosW2;
       singletmodel.g3   = pow( 4*Pi*( sminputs.alphaS ),0.5) ;
 
-      double sqrt2v = pow(2.0,0.5)/vev;
       // Yukawas
-
+      double sqrt2v = pow(2.0,0.5)/vev;
       singletmodel.Yu[0] = sqrt2v * sminputs.mU;
       singletmodel.Yu[1] = sqrt2v * sminputs.mCmC;
       singletmodel.Yu[2] = sqrt2v * sminputs.mT;
-
       singletmodel.Ye[0] = sqrt2v * sminputs.mE;
       singletmodel.Ye[1] = sqrt2v * sminputs.mMu;
       singletmodel.Ye[2] = sqrt2v * sminputs.mTau;
-
       singletmodel.Yd[0] = sqrt2v * sminputs.mD;
       singletmodel.Yd[1] = sqrt2v * sminputs.mS;
       singletmodel.Yd[2] = sqrt2v * sminputs.mBmB;
@@ -124,12 +105,16 @@ namespace Gambit
       // Create a SubSpectrum object to wrap the EW sector information
       Models::ScalarSingletDMSimpleSpec singletspec(singletmodel);
 
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
       // We don't supply a LE subspectrum here; an SMSimpleSpec will therefore be automatically created from 'sminputs'
-      result = Spectrum(singletspec,sminputs,&myPipe::Param);
+      result = Spectrum(singletspec,sminputs,&myPipe::Param,mass_cut,mass_ratio_cut);
+
     }
 
 
-  //  template <class MI,class SI,class SIinfo>
     template<class MI,class SI>
     Spectrum run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
@@ -205,30 +190,21 @@ namespace Gambit
       const typename MI::Problems& problems = spectrum_generator.get_problems();
 
       MI model_interface(spectrum_generator,oneset,input);
-
-
-      SI singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // new templated spectrum class name
-      //SingletDMSpec<MI> singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // should be 1.2.4?
-
+      SI singletdmspec(model_interface, "FlexibleSUSY", "1.5.1");
 
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",true);
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",true);
       singletdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", true);
 
-
       singletdmspec.set_override(Par::Pole_Mass_1srd_high,0.0, "h0_1", true);
       singletdmspec.set_override(Par::Pole_Mass_1srd_low,0.0,"h0_1", true);
-
-
-
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
-
-            // Deal with points where spectrum generator encountered a problem
+      // Deal with points where spectrum generator encountered a problem
       #ifdef SPECBIT_DEBUG
         std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
         std::cout<<"Warning? "<<problems.have_warning()<<std::endl;
@@ -237,29 +213,30 @@ namespace Gambit
       {
          if( runOptions.getValueOrDef<bool>(false,"invalid_point_fatal") )
          {
-            ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
-            // just die.
             std::ostringstream errmsg;
-            errmsg << "A serious problem was encountered during spectrum generation!; ";
-            errmsg << "Message from FlexibleSUSY below:" << std::endl;
+            errmsg << "A serious problem was encountered during spectrum generation!";
+            errmsg << "Message from FlexibleSUSY:" << std::endl;
             problems.print_problems(errmsg);
             problems.print_warnings(errmsg);
             SpecBit_error().raise(LOCAL_INFO,errmsg.str());
          }
          else
          {
-            /// Check what the problem was
-            /// see: contrib/MassSpectra/flexiblesusy/src/problems.hpp
+            // Check what the problem was
+            // see: contrib/MassSpectra/flexiblesusy/src/problems.hpp
             std::ostringstream msg;
-
             problems.print_problems(msg);
             invalid_point().raise(msg.str()); //TODO: This message isn't ending up in the logs.
          }
       }
 
-      return Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
-    }
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = runOptions.getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = runOptions.getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
 
+      return Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param, mass_cut, mass_ratio_cut);
+
+    }
 
 
     template <class T>
@@ -287,65 +264,59 @@ namespace Gambit
 
     bool check_perturb(const Spectrum& spec,double scale,int pts)
     {
-    using namespace flexiblesusy;
-    using namespace Gambit;
-    using namespace SpecBit;
-    std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
-    double step = log10(scale) / pts;
-    double runto;
+      using namespace flexiblesusy;
+      using namespace Gambit;
+      using namespace SpecBit;
+      std::unique_ptr<SubSpectrum> SingletDM = spec.clone_HE();
+      double step = log10(scale) / pts;
+      double runto;
 
-    double ul=3.5449077018110318; // sqrt(4*Pi), maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
-    for (int i=0;i<pts;i++)
-    {
-    runto = pow(10,step*float(i+1.0)); // scale to run spectrum to
-    if (runto<100){runto=200.0;}// avoid running to low scales
-
-    SingletDM -> RunToScale(runto);
-
-    static const SpectrumContents::SingletDM contents;
-    static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters_with_tag(Par::dimensionless);
-
-    for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
-          it != required_parameters.end(); ++it)
+      const double ul = std::sqrt(4.0 * Pi); // Maximum value for perturbative couplings, same perturbativity bound that FlexibleSUSY uses
+      for (int i=0;i<pts;i++)
       {
-         const Par::Tags        tag   = it->tag();
-         const std::string      name  = it->name();
-         const std::vector<int> shape = it->shape();
-           std::ostringstream label;
-           label << name <<" "<< Par::toString.at(tag);
+        runto = pow(10,step*float(i+1.0)); // scale to run spectrum to
+        if (runto<100){runto=200.0;}// avoid running to low scales
+
+        SingletDM -> RunToScale(runto);
+
+        static const SpectrumContents::SingletDM contents;
+        static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters_with_tag(Par::dimensionless);
+
+        for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+              it != required_parameters.end(); ++it)
+        {
+          const Par::Tags        tag   = it->tag();
+          const std::string      name  = it->name();
+          const std::vector<int> shape = it->shape();
+          std::ostringstream label;
+          label << name <<" "<< Par::toString.at(tag);
           if(shape.size()==1 and shape[0]==1)
-         {
-           if (abs(SingletDM->get(tag,name))>ul)
-           {
-            return false;
-           }
-         }
-
+          {
+            if (abs(SingletDM->get(tag,name))>ul) return false;
+          }
           else if(shape.size()==1 and shape[0]>1)
-         {
-           for(int k = 1; k<=shape[0]; ++k) {
-           if (abs(SingletDM->get(tag,name,k))>ul)
-           {
-            return false;
-           }
-
-           }
+          {
+            for(int k = 1; k<=shape[0]; ++k)
+            {
+              if (abs(SingletDM->get(tag,name,k))>ul) return false;
+            }
           }
           else if(shape.size()==2)
-         {
-           for(int k = 1; k<=shape[0]; ++k) {
-             for(int j = 1; j<=shape[0]; ++j) {
-             if (abs(SingletDM->get(tag,name,k,j))>ul)
-           {
-            return false;
-           }
-           }
-           }
+          {
+            for(int k = 1; k<=shape[0]; ++k)
+            {
+              for(int j = 1; j<=shape[0]; ++j)
+              {
+                if (abs(SingletDM->get(tag,name,k,j))>ul) return false;
+              }
+            }
           }
-    }
 
-    }
-    return true;
+        }
+      }
+
+      return true;
+
     }
 
     void get_SingletDM_spectrum_pole(Spectrum& result)
@@ -357,7 +328,6 @@ namespace Gambit
       double scale = runOptions.getValueOrDef<double>(173.34,"FS_high_scale");
       SingletDM_input_parameters input;
       fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
-
       result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
       int check_perturb_pts = runOptions.getValueOrDef<double>(10,"check_perturb_pts");
@@ -366,16 +336,16 @@ namespace Gambit
 
       if (do_check_perturb)
       {
-      if (!check_perturb(result,check_perturb_scale,check_perturb_pts))
-      {
-      // invalidate point as spectrum not perturbative up to scale
-      std::ostringstream msg;
-      msg << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  std::endl;
-      #ifdef SPECBIT_DEBUG
-      cout << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  endl;
-      #endif
-      invalid_point().raise(msg.str());
-      }
+        if (!check_perturb(result,check_perturb_scale,check_perturb_pts))
+        {
+          // invalidate point as spectrum not perturbative up to scale
+          std::ostringstream msg;
+          msg << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  std::endl;
+          #ifdef SPECBIT_DEBUG
+            cout << "Spectrum not perturbative up to scale = " << check_perturb_scale <<  endl;
+          #endif
+          invalid_point().raise(msg.str());
+        }
       }
 
     }

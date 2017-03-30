@@ -18,7 +18,9 @@
 
 
 LIBSSM_SRC += \
+	models/SSM/SSM_two_scale_soft_beta_Kappa.cpp \
 	models/SSM/SSM_two_scale_soft_beta_K1.cpp \
 	models/SSM/SSM_two_scale_soft_beta_MS.cpp \
 	models/SSM/SSM_two_scale_soft_beta_mu2.cpp \
-	models/SSM/SSM_two_scale_soft_beta_v.cpp
+	models/SSM/SSM_two_scale_soft_beta_v.cpp \
+	models/SSM/SSM_two_scale_soft_beta_vS.cpp

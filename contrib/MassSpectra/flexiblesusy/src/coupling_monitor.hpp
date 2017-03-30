@@ -48,8 +48,8 @@ namespace flexiblesusy {
  *    Eigen::ArrayXd get_parameters(const MSSM& model) {
  *       return model.get();
  *    }
- *    std::vector<std::string> get_parameter_names(const MSSM& model) const {
- *       return model.get_parameter_names();
+ *    std::vector<std::string> get_parameter_names() const {
+ *       return ...;
  *    }
  * };
  *
@@ -153,7 +153,7 @@ void Coupling_monitor<Model,DataGetter>::write_parameter_names_line(std::ofstrea
       return;
 
    const std::size_t number_of_couplings = couplings.front().second.size();
-   const std::vector<std::string> parameter_names(data_getter.get_parameter_names(model));
+   const std::vector<std::string> parameter_names(data_getter.get_parameter_names());
 
    if (number_of_couplings != parameter_names.size()) {
       ERROR("number of couplings != length of list of parameter names");
@@ -179,7 +179,7 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
       return;
 
    const std::size_t number_of_couplings = couplings.front().second.size();
-   const std::vector<std::string> parameter_names(data_getter.get_parameter_names(model));
+   const std::vector<std::string> parameter_names(data_getter.get_parameter_names());
 
    if (number_of_couplings != parameter_names.size()) {
       ERROR("number of couplings != length of list of parameter names");

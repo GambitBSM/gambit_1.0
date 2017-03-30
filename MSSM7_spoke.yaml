@@ -16,11 +16,11 @@ Parameters:
     SignMu: 1
     Ad_3: 1000
     Au_3: 2680
-    M2: 690
-#      range: [450,850]
+    M2: #690
+      range: [450,850]
     TanBeta: 23
-    mHd2: #9.86e7
-      range: [9.2e7, 1.03e8]
+    mHd2: 9.86e7
+#      range: [9.2e7, 1.03e8]
     mHu2: 1.4e4
     mf2: 3.8e6
 
@@ -44,7 +44,8 @@ Printer:
   printer: ascii
 
   options:
-    output_file: "mHd2.txt"
+    #output_file: "mHd2.txt"
+    output_file: "M2.txt"
 
 Scanner:
 
@@ -106,9 +107,9 @@ Rules:
  
   # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
   - capability: RD_oh2
-    #function: RD_oh2_general
+    function: RD_oh2_general
     #function: RD_oh2_DarkSUSY
-    function: RD_oh2_MicrOmegas
+    #function: RD_oh2_MicrOmegas
     options:
       fast: 1
       omtype: 1
@@ -124,8 +125,8 @@ Rules:
 
   # Use DarkSUSY or MicrOmegas for calculating direct detection couplings
   - capability: DD_couplings
-    #function: DD_couplings_DarkSUSY
-    function: DD_couplings_MicrOmegas
+    function: DD_couplings_DarkSUSY
+    #function: DD_couplings_MicrOmegas
 
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
@@ -152,19 +153,19 @@ Rules:
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: prec_HiggsMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: Higgs_Couplings
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_HiggsProd
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_MSSMMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
   #  version: 2.11.3

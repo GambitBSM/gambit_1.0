@@ -25,9 +25,11 @@ LIBLEGACY     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 LIBLEGACY_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBLEGACY)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -40,13 +42,18 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBLEGACY_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBLEGACY)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBLEGACY_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBLEGACY)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

@@ -76,10 +76,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_LHdecayTable& operator=(const Abstract_LHdecayTable&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::LHdecayTable from backend Pythia_8_212_EM. The function Abstract_LHdecayTable::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 LHdecayTable* get_init_wptr()
                 {
@@ -93,10 +90,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_LHdecayTable()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::LHdecayTable from backend Pythia_8_212_EM. The function Abstract_LHdecayTable::~Abstract_LHdecayTable in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_LHdecayTable() =0;
         };
     }
     

@@ -1,6 +1,113 @@
-diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
---- susyhit_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/hdecay.f	2016-09-27 17:52:24.341987247 +0100
+diff -rupN susyhit_1.5_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
+--- susyhit_1.5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/hdecay.f	2017-02-22 18:45:30.380116023 +0000
+@@ -1,7 +1,7 @@
+ C ==================================================================
+ C ================= PROGRAM HDECAY: COMMENTS =======================
+ C ==================================================================
+-C The program version HDECAY 3.4 has been modified to be linked 
++C The program version HDECAY 3.4 has been modified to be linked
+ C to SDECAY in order to complete the program package
+ C SUSYHIT - SU(spect)-S(deca)Y-H(decay)-I(n)Terface
+ C
+@@ -17,36 +17,36 @@ C                       * VERSION 3.4
+ C                       *****************
+ C
+ C
+-C  This program calculates the total decay widths and the branching 
+-C  ratios of the C Standard Model Higgs boson (HSM) as well as those 
+-C  of the neutral (HL= the light CP-even, HH= the heavy CP-even, HA= 
++C  This program calculates the total decay widths and the branching
++C  ratios of the C Standard Model Higgs boson (HSM) as well as those
++C  of the neutral (HL= the light CP-even, HH= the heavy CP-even, HA=
+ C  the pseudoscalar) and the charged (HC) Higgs bosons of the Minimal
+ C  Supersymmetric extension of the Standard Model (MSSM). It includes:
+ C
+ C - All the decay channels which are kinematically allowed and which
+-C   have branching ratios larger than 10**(-4). 
++C   have branching ratios larger than 10**(-4).
+ C
+ C - All QCD corrections to the fermionic and gluonic decay modes.
+ C   Most of these corrections are mapped into running masses in a
+-C   consistent way with some freedom for including high order terms. 
++C   consistent way with some freedom for including high order terms.
+ C
+ C - Below--threshold three--body decays with off--shell top quarks
+ C   or ONE off-shell gauge boson, as well as some decays with one
+-C   off-shell Higgs boson in the MSSM. 
++C   off-shell Higgs boson in the MSSM.
+ C
+ C - Double off-shell decays: HSM,HL,HH --> W*W*,Z*Z* -->4 fermions,
+ C   which could be important for Higgs masses close to MW or MZ.
+ C
+-C - In the MSSM, the radiative corrections with full squark mixing and 
+-C   uses the RG improved values of Higgs masses and couplings with the 
++C - In the MSSM, the radiative corrections with full squark mixing and
++C   uses the RG improved values of Higgs masses and couplings with the
+ C   main NLO corrections implemented (based on M.Carena, M. Quiros and
+-C   C.E.M. Wagner, Nucl. Phys. B461 (1996) 407, hep-ph/9508343). 
++C   C.E.M. Wagner, Nucl. Phys. B461 (1996) 407, hep-ph/9508343).
+ C
+-C - In the MSSM, all the decays into CHARGINOS, NEUTRALINOS, SLEPTONS 
+-C   and SQUARKS (with mixing in the stop and sbottom sectors). 
++C - In the MSSM, all the decays into CHARGINOS, NEUTRALINOS, SLEPTONS
++C   and SQUARKS (with mixing in the stop and sbottom sectors).
+ C
+ C - Chargino, slepton and squark loops in the 2 photon decays and squark
+-C   loops in the gluonic decays (including QCD corrections). 
++C   loops in the gluonic decays (including QCD corrections).
+ C
+ C  ===================================================================
+ C  This program has been written by A.Djouadi, J.Kalinowski, M.
+@@ -105,18 +105,18 @@ C VUS:      CKM PARAMETER V_US
+ C VCB:      CKM PARAMETER V_CB
+ C VUB/VCB:  RATIO V_UB/V_CB
+ C 1ST AND 2ND GENERATION:
+-C MSL1:      SUSY BREAKING MASS PARAMETERS OF LEFT HANDED SLEPTONS 
+-C MER1:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SLEPTONS 
++C MSL1:      SUSY BREAKING MASS PARAMETERS OF LEFT HANDED SLEPTONS
++C MER1:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SLEPTONS
+ C MQL1:      SUSY BREAKING MASS PARAMETERS OF LEFT HANDED SUPS
+ C MUR1:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SUPS
+-C MDR1:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SDOWNS 
++C MDR1:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SDOWNS
+ C 3RD GENERATION:
+-C MSL:      SUSY BREAKING MASS PARAMETERS OF LEFT HANDED STAUS 
+-C MER:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED STAUS 
++C MSL:      SUSY BREAKING MASS PARAMETERS OF LEFT HANDED STAUS
++C MER:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED STAUS
+ C MSQ:      SUSY BREAKING MASS PARAMETERS OF LEFT HANDED STOPS
+ C MUR:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED STOPS
+-C MDR:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SBOTTOMS 
+-C AL:       STAU TRILINEAR SOFT BREAKING TERMS 
++C MDR:      SUSY BREAKING MASS PARAMETERS OF RIGHT HANDED SBOTTOMS
++C AL:       STAU TRILINEAR SOFT BREAKING TERMS
+ C AU:       STOP TRILINEAR SOFT BREAKING TERMS
+ C AD:       SBOTTOM TRILINEAR SOFT BREAKING TERMS
+ C MU:       SUSY HIGGS MASS PARAMETER
+@@ -133,8 +133,8 @@ C
+ C ON-SH-WZ: =0: INCLUDE DOUBLE OFF-SHELL PAIR DECAYS PHI --> W*W*,Z*Z*
+ C           =1: INCLUDE ONLY SINGLE OFF-SHELL DECAYS PHI --> W*W,Z*Z
+ C
+-C IPOLE:    =0 COMPUTES RUNNING HIGGS MASSES (FASTER) 
+-C           =1 COMPUTES POLE HIGGS MASSES 
++C IPOLE:    =0 COMPUTES RUNNING HIGGS MASSES (FASTER)
++C           =1 COMPUTES POLE HIGGS MASSES
+ C
+ C OFF-SUSY: =0: INCLUDE DECAYS (AND LOOPS) INTO SUPERSYMMETRIC PARTICLES
+ C           =1: EXCLUDE DECAYS (AND LOOPS) INTO SUPERSYMMETRIC PARTICLES
+@@ -142,9 +142,9 @@ C
+ C INDIDEC:  =0: PRINT OUT SUMS OF CHARGINO/NEUTRALINO/SFERMION DECAYS
+ C           =1: PRINT OUT INDIVIDUAL CHARGINO/NEUTRALINO/SFERMION DECAYS
+ C
+-C NF-GG:    NUMBER OF LIGHT FLAVORS INCLUDED IN THE GLUONIC DECAYS 
++C NF-GG:    NUMBER OF LIGHT FLAVORS INCLUDED IN THE GLUONIC DECAYS
+ C            PHI --> GG* --> GQQ (3,4 OR 5)
+-C           
++C
+ C IGOLD:    =0: EXCLUDE DECAYS INTO GRAVITINO + GAUGINO
+ C           =1: INCLUDE DECAYS INTO GRAVITINO + GAUGINO
+ C
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -19,6 +126,33 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  
  c change susyhit
  c      STOP
+@@ -223,7 +223,7 @@ c end change susyhit
+      .          GMSU(2),GMSD(2),GMSE(2),GMSN(2)
+       DIMENSION HLBRSC(2,2),HLBRSN(4,4),HHBRSC(2,2),HHBRSN(4,4),
+      .          HABRSC(2,2),HABRSN(4,4),HCBRSU(2,4),
+-     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2) 
++     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2)
+       DIMENSION AC1(2,2),AC2(2,2),AC3(2,2),
+      .          AN1(4,4),AN2(4,4),AN3(4,4),
+      .          ACNL(2,4),ACNR(2,4)
+@@ -293,7 +293,7 @@ c -------------- common blocks needed in
+      .              BHHSQDR,BHHST(2,2),BHHSB(2,2),BHHSTAU(2,2),
+      .              BHASTAU,BHASB,BHAST,
+      .              BHCSL00,BHCSL11,BHCSL21,BHCSQ,BHCSTB(2,2)
+-      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN 
++      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN
+       COMMON/GOLDST_HDEC/AXMPL,AXMGD,IGOLD
+       COMMON/WIGOLD_HDEC/HLBRGD,HABRGD,HHBRGD,HCBRGD
+       COMMON/FLAGS_HDEC/INDIDEC
+@@ -311,7 +311,7 @@ c change susyhit
+          OPEN(NPAR,FILE='br.input')
+       endif
+ 
+-c -- needed parameters, read in via sdecay from susyhit.in, which are not 
++c -- needed parameters, read in via sdecay from susyhit.in, which are not
+ c -- given by the slhaspectrum.in file --
+ 
+       ams    = amsin
 @@ -327,8 +327,8 @@ c -- given by the slhaspectrum.in file -
  c -- parameters to be defined which are not given by the --
  c -- slhaspectrum.in file --
@@ -45,6 +179,24 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  
  c -- G_F --
           if(smval(2).ne.0.D0) then
+@@ -386,7 +388,7 @@ c -- the MSbar couplings g1,g2 at the sc
+          swcalc  = dsqrt(sw2calc)
+ c -- in case the gauge couplings are not given at the scale Q --
+          if(gaugeval(1).eq.0.D0.or.gaugeval(2).eq.0.D0) then
+-c -- v at the scale Q --         
++c -- v at the scale Q --
+           if(smval(2).eq.0.D0.and.hmixval(3).ne.unlikely) then
+            vewsb = hmixval(3)
+            gf = 1/dsqrt(2.D0)/vewsb**2
+@@ -397,7 +399,7 @@ c -- v at the scale Q --
+           g1ew = g2ew*swcalc/cwcalc
+          endif
+ 
+-c -- neutralino and chargino masses --      
++c -- neutralino and chargino masses --
+ 
+          slhaneut(1) =dabs(massval(28))
+          slhaneut(2) =dabs(massval(29))
 @@ -503,8 +505,9 @@ c -- the mass mb(mb)_MSbar --
        fmtau = amtau
        fms = ams
@@ -56,7 +208,601 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
         del = 1.d-10
         mbl = mbmsbar
         mbu = 2*mbmsbar
-@@ -2342,7 +2345,7 @@ c ----------------------------- c
+@@ -578,7 +581,7 @@ c The mixing parameter mu in the MS_bar
+       endif
+ 
+ 
+-c The soft SUSY breaking parameters M1, M2 in the MS_bar scheme 
++c The soft SUSY breaking parameters M1, M2 in the MS_bar scheme
+       am1msbar = m_softval(1)*(1.D0+g1ew**2/16.D0/pi**2*0.D0)
+       am2msbar = m_softval(2)*(1.D0+g2ew**2/16.D0/pi**2*2.D0)
+ 
+@@ -764,7 +767,7 @@ c end change susyhit
+       WRITE(NPAR,8)'NNLO (M) = ',NNLO
+       WRITE(NPAR,8)'ON-SHELL = ',IONSH
+       WRITE(NPAR,8)'ON-SH-WZ = ',IONWZ
+-      WRITE(NPAR,8)'IPOLE    = ',IPOLE 
++      WRITE(NPAR,8)'IPOLE    = ',IPOLE
+       WRITE(NPAR,8)'OFF-SUSY = ',IOFSUSY
+       WRITE(NPAR,8)'INDIDEC  = ',INDIDEC
+       WRITE(NPAR,8)'NF-GG    = ',NFGG
+@@ -803,7 +806,7 @@ c end change susyhit
+      .          GMSU(2),GMSD(2),GMSE(2),GMSN(2)
+       DIMENSION HLBRSC(2,2),HLBRSN(4,4),HHBRSC(2,2),HHBRSN(4,4),
+      .          HABRSC(2,2),HABRSN(4,4),HCBRSU(2,4),
+-     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2) 
++     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2)
+       DIMENSION AC1(2,2),AC2(2,2),AC3(2,2),
+      .          AN1(4,4),AN2(4,4),AN3(4,4),
+      .          ACNL(2,4),ACNR(2,4)
+@@ -854,7 +857,7 @@ c end change susyhit
+      .              BHHSQDR,BHHST(2,2),BHHSB(2,2),BHHSTAU(2,2),
+      .              BHASTAU,BHASB,BHAST,
+      .              BHCSL00,BHCSL11,BHCSL21,BHCSQ,BHCSTB(2,2)
+-      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN 
++      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN
+       COMMON/GOLDST_HDEC/AXMPL,AXMGD,IGOLD
+       COMMON/WIGOLD_HDEC/HLBRGD,HABRGD,HHBRGD,HCBRGD
+       COMMON/FLAGS_HDEC/INDIDEC
+@@ -868,9 +871,9 @@ c end change susyhit
+       IF(IHIGGS.EQ.1.OR.IHIGGS.EQ.5) THEN
+        OPEN(NLA,FILE='br.l1')
+        OPEN(NLB,FILE='br.l2')
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        OPEN(NSUSYL,FILE='br.ls')
+-       IF(INDIDEC.NE.0)THEN 
++       IF(INDIDEC.NE.0)THEN
+         OPEN(NSUSYLA,FILE='br.ls1')
+         OPEN(NSUSYLB,FILE='br.ls2')
+         OPEN(NSUSYLC,FILE='br.ls3')
+@@ -884,9 +887,9 @@ c end change susyhit
+        OPEN(NHA,FILE='br.h1')
+        OPEN(NHB,FILE='br.h2')
+        OPEN(NHC,FILE='br.h3')
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        OPEN(NSUSYH,FILE='br.hs')
+-       IF(INDIDEC.NE.0)THEN 
++       IF(INDIDEC.NE.0)THEN
+         OPEN(NSUSYHA,FILE='br.hs1')
+         OPEN(NSUSYHB,FILE='br.hs2')
+         OPEN(NSUSYHC,FILE='br.hs3')
+@@ -899,9 +902,9 @@ c end change susyhit
+       IF(IHIGGS.EQ.3.OR.IHIGGS.EQ.5) THEN
+        OPEN(NAA,FILE='br.a1')
+        OPEN(NAB,FILE='br.a2')
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        OPEN(NSUSYA,FILE='br.as')
+-       IF(INDIDEC.NE.0)THEN 
++       IF(INDIDEC.NE.0)THEN
+         OPEN(NSUSYAA,FILE='br.as1')
+         OPEN(NSUSYAB,FILE='br.as2')
+         OPEN(NSUSYAC,FILE='br.as3')
+@@ -912,9 +915,9 @@ c end change susyhit
+       IF(IHIGGS.EQ.4.OR.IHIGGS.EQ.5) THEN
+        OPEN(NCA,FILE='br.c1')
+        OPEN(NCB,FILE='br.c2')
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        OPEN(NSUSYC,FILE='br.cs')
+-       IF(INDIDEC.NE.0)THEN 
++       IF(INDIDEC.NE.0)THEN
+         OPEN(NSUSYCA,FILE='br.cs1')
+         OPEN(NSUSYCB,FILE='br.cs2')
+         OPEN(NSUSYCC,FILE='br.cs3')
+@@ -983,8 +986,8 @@ C--SETUP THE HEADS OF THE TABLES IN THE
+       AMSM = AMAR
+       AMA = AMAR
+ 
+-      IF(IHIGGS.NE.0)THEN 
+-C *******************************  SUSY OUTPUT 
++      IF(IHIGGS.NE.0)THEN
++C *******************************  SUSY OUTPUT
+ 
+        CALL GAUGINO_HDEC(AMU,AM2,B,A,GMC,GMN,XMN,AC1,AC2,AC3,
+      .              AN1,AN2,AN3,ACNL,ACNR,AGDL,AGDA,AGDH,AGDC)
+@@ -993,7 +996,7 @@ C *******************************  SUSY
+       AMT00 = AMT0
+       AMT0 = 3.D8
+       CALL SFERMION_HDEC(TSC,BSC,AMSQ,AMUR,AMDR,AMEL,AMER,AL,AU,AD,AMU,
+-     .               GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN, 
++     .               GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN,
+      .               GLEE,GLTT,GLBB,GHEE,GHTT,GHBB,
+      .               GAEE,GATT,GABB,GCEN,GCTB)
+       AMT0 = AMT00
+@@ -1009,7 +1012,7 @@ c     write(97,*)glb,glt,glvv,ghb,ght,gh
+       IF(IOFSUSY.EQ.0)THEN
+ C--WRITE THE GAUGINO MASSES/ TB, MU AND M2 IN THE SUSY DATA-FILE
+ C--WRITE THE SFERMION MASSES/ SUSY MASSES AND COUPLINGS IN SUSY DATA-FILE
+-C 
++C
+        IF(IHIGGS.EQ.1.OR.IHIGGS.EQ.5) THEN
+        WRITE(NSUSYL,347) TGBET,AM2,AMU,AMSQ
+        WRITE(NSUSYL,348) GMC(1),GMC(2),GMN(1),GMN(2),GMN(3),GMN(4)
+@@ -1033,7 +1036,7 @@ C
+          WRITE(NSUSYLC,69)
+          WRITE(NSUSYLC,*)
+          WRITE(NSUSYLD,*)'   MHL        SNL SNL    SEL SEL    '//
+-     .   'SER SER    STA1 STA1  STA1 STA2  STA2 STA2' 
++     .   'SER SER    STA1 STA1  STA1 STA2  STA2 STA2'
+          WRITE(NSUSYLD,69)
+          WRITE(NSUSYLD,*)
+          WRITE(NSUSYLE,*)'   MHL        SUL SUL    SUR SUR    '//
+@@ -1070,7 +1073,7 @@ C
+          WRITE(NSUSYHC,69)
+          WRITE(NSUSYHC,*)
+          WRITE(NSUSYHD,*)'   MHH        SNL SNL    SEL SEL    '//
+-     .   'SER SER    STA1 STA1  STA1 STA2  STA2 STA2' 
++     .   'SER SER    STA1 STA1  STA1 STA2  STA2 STA2'
+          WRITE(NSUSYHD,69)
+          WRITE(NSUSYHD,*)
+          WRITE(NSUSYHE,*)'   MHH        SUL SUL    SUR SUR    '//
+@@ -1146,9 +1149,9 @@ C
+ 348    FORMAT('C1=',F7.3,1X,'C2=',F8.3,1X,'N1=',F7.3,1X,'N2=',F7.3,1X,
+      .        'N3=',F8.3,1X,'N4=',F8.3)
+ 349    FORMAT('MST1=',G12.6,1X,'MST2=',G12.6,1X,
+-     .        'MSUL=',G12.6,1X,'MSUR=',G12.6) 
++     .        'MSUL=',G12.6,1X,'MSUR=',G12.6)
+ 350    FORMAT('MSB1=',G12.6,1X,'MSB2=',G12.6,1X,
+-     .        'MSDL=',G12.6,1X,'MSDR=',G12.6) 
++     .        'MSDL=',G12.6,1X,'MSDR=',G12.6)
+ 351    FORMAT('TAU1=',F8.3,1X,'TAU2=',F8.3,1X,'EL=',F8.3,1X,
+      .        'ER=',F8.3,1X,'NL=',F8.3)
+ C
+@@ -1175,7 +1178,7 @@ C **************************************
+      .          GMSU(2),GMSD(2),GMSE(2),GMSN(2)
+       DIMENSION HLBRSC(2,2),HLBRSN(4,4),HHBRSC(2,2),HHBRSN(4,4),
+      .          HABRSC(2,2),HABRSN(4,4),HCBRSU(2,4),
+-     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2) 
++     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2)
+       DIMENSION AC1(2,2),AC2(2,2),AC3(2,2),
+      .          AN1(4,4),AN2(4,4),AN3(4,4),
+      .          ACNL(2,4),ACNR(2,4)
+@@ -1245,7 +1248,7 @@ C **************************************
+      .              BHHSQDR,BHHST(2,2),BHHSB(2,2),BHHSTAU(2,2),
+      .              BHASTAU,BHASB,BHAST,
+      .              BHCSL00,BHCSL11,BHCSL21,BHCSQ,BHCSTB(2,2)
+-      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN 
++      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN
+       COMMON/GOLDST_HDEC/AXMPL,AXMGD,IGOLD
+       COMMON/WIGOLD_HDEC/HLBRGD,HABRGD,HHBRGD,HCBRGD
+       COMMON/FLAGS_HDEC/INDIDEC
+@@ -1290,7 +1293,7 @@ c end change susyhit
+          ibb=-5
+          it =6
+          itb=-6
+-         
++
+          ie   =11
+          ine  =12
+          imu  =13
+@@ -1328,13 +1331,13 @@ c end change susyhit
+          ic1 =1000024
+          ic2 =1000037
+ 
+-         intau1=1000016 
+-         intau2=2000016 
++         intau1=1000016
++         intau2=2000016
+          inel  =1000012
+          iner  =2000012
+          inmul =1000014
+          inmur =2000014
+-      
++
+          isell =1000011
+          iselr =2000011
+          ismul =1000013
+@@ -1561,7 +1564,7 @@ c --------------------------------------
+ c ------------------- c
+ c The gauge couplings c
+ c ------------------- c
+- 
++
+ c     del = 1.d-8
+ c     g2ew0 = g2ew
+ c80   g2test  = g2ew/(1-g2ew0**2/96/pi**2*2)
+@@ -1662,7 +1665,7 @@ c ----------------------------- c
+                write(nout,100) 25,smwdth,'SM Higgs decays'
+ 
+                write(nout,101)
+-      
++
+                if(smbrb.ne.0.D0) then
+       write(nout,102) smbrb,2,ib,ibb        ,'BR(H -> b       bb     )'
+                endif
+@@ -1679,28 +1682,28 @@ c ----------------------------- c
+       write(nout,102) smbrc,2,ic,icb        ,'BR(H -> c       cb     )'
+                endif
+                if(smbrt.ne.0.D0) then
+-      write(nout,102) smbrt,2,it,itb        ,'BR(H -> t       tb     )' 
++      write(nout,102) smbrt,2,it,itb        ,'BR(H -> t       tb     )'
+                endif
+                if(smbrg.ne.0.D0) then
+-      write(nout,102) smbrg,2,igl,igl       ,'BR(H -> g       g      )' 
++      write(nout,102) smbrg,2,igl,igl       ,'BR(H -> g       g      )'
+                endif
+                if(smbrga.ne.0.D0) then
+-      write(nout,102) smbrga,2,iga,iga      ,'BR(H -> gam     gam    )'  
++      write(nout,102) smbrga,2,iga,iga      ,'BR(H -> gam     gam    )'
+                endif
+                if(smbrzga.ne.0.D0) then
+-      write(nout,102) smbrzga,2,iga,iz      ,'BR(H -> Z       gam    )' 
++      write(nout,102) smbrzga,2,iga,iz      ,'BR(H -> Z       gam    )'
+                endif
+                if(smbrw.ne.0.D0) then
+-      write(nout,102) smbrw,2,iwc,-iwc      ,'BR(H -> W+      W-     )' 
++      write(nout,102) smbrw,2,iwc,-iwc      ,'BR(H -> W+      W-     )'
+                endif
+                if(smbrz.ne.0.D0) then
+-      write(nout,102) smbrz,2,iz,iz         ,'BR(H -> Z       Z      )' 
++      write(nout,102) smbrz,2,iz,iz         ,'BR(H -> Z       Z      )'
+                endif
+ 
+             elseif(smwdth.eq.0.D0) then
+                write(nout,99)
+                write(nout,100) 25,0.000000000E+00,'SM Higgs decays'
+-               
++
+             endif
+          endif
+ 
+@@ -1729,70 +1732,70 @@ c ----------------------------- c
+       write(nout,102) hlbrc,2,ic,icb        ,'BR(h -> c       cb     )'
+       endif
+       if(hlbrt.ne.0.D0) then
+-      write(nout,102) hlbrt,2,it,itb        ,'BR(h -> t       tb     )' 
++      write(nout,102) hlbrt,2,it,itb        ,'BR(h -> t       tb     )'
+       endif
+       if(hlbrg.ne.0.D0) then
+-      write(nout,102) hlbrg,2,igl,igl       ,'BR(h -> g       g      )' 
++      write(nout,102) hlbrg,2,igl,igl       ,'BR(h -> g       g      )'
+       endif
+       if(hlbrga.ne.0.D0) then
+-      write(nout,102) hlbrga,2,iga,iga      ,'BR(h -> gam     gam    )' 
++      write(nout,102) hlbrga,2,iga,iga      ,'BR(h -> gam     gam    )'
+       endif
+       if(hlbrzga.ne.0.D0) then
+-      write(nout,102) hlbrzga,2,iga,iz      ,'BR(h -> Z       gam    )' 
++      write(nout,102) hlbrzga,2,iga,iz      ,'BR(h -> Z       gam    )'
+       endif
+       if(hlbrw.ne.0.D0) then
+-      write(nout,102) hlbrw,2,iwc,-iwc      ,'BR(h -> W+      W-     )' 
++      write(nout,102) hlbrw,2,iwc,-iwc      ,'BR(h -> W+      W-     )'
+       endif
+       if(hlbrz.ne.0.D0) then
+-      write(nout,102) hlbrz,2,iz,iz         ,'BR(h -> Z       Z      )' 
++      write(nout,102) hlbrz,2,iz,iz         ,'BR(h -> Z       Z      )'
+       endif
+       if(hlbrsc(1,1).ne.0.D0) then
+-      write(nout,102) hlbrsc(1,1),2,ic1,-ic1,'BR(h -> ~chi_1+ ~chi_1-)' 
++      write(nout,102) hlbrsc(1,1),2,ic1,-ic1,'BR(h -> ~chi_1+ ~chi_1-)'
+       endif
+       if(hlbrsc(2,2).ne.0.D0) then
+-      write(nout,102) hlbrsc(2,2),2,ic2,-ic2,'BR(h -> ~chi_2+ ~chi_2-)' 
++      write(nout,102) hlbrsc(2,2),2,ic2,-ic2,'BR(h -> ~chi_2+ ~chi_2-)'
+       endif
+       if(hlbrsc(1,2).ne.0.D0) then
+-      write(nout,102) hlbrsc(1,2),2,ic1,-ic2,'BR(h -> ~chi_1+ ~chi_2-)' 
++      write(nout,102) hlbrsc(1,2),2,ic1,-ic2,'BR(h -> ~chi_1+ ~chi_2-)'
+       endif
+       if(hlbrsc(2,1).ne.0.D0) then
+-      write(nout,102) hlbrsc(2,1),2,ic2,-ic1,'BR(h -> ~chi_2+ ~chi_1-)' 
++      write(nout,102) hlbrsc(2,1),2,ic2,-ic1,'BR(h -> ~chi_2+ ~chi_1-)'
+       endif
+-      hlbrsn1(1,2) = 2.D0*hlbrsn(1,2) 
+-      hlbrsn1(1,3) = 2.D0*hlbrsn(1,3) 
++      hlbrsn1(1,2) = 2.D0*hlbrsn(1,2)
++      hlbrsn1(1,3) = 2.D0*hlbrsn(1,3)
+       hlbrsn1(1,4) = 2.D0*hlbrsn(1,4)
+-      hlbrsn1(2,3) = 2.D0*hlbrsn(2,3) 
+-      hlbrsn1(2,4) = 2.D0*hlbrsn(2,4)  
+-      hlbrsn1(3,4) = 2.D0*hlbrsn(3,4)  
++      hlbrsn1(2,3) = 2.D0*hlbrsn(2,3)
++      hlbrsn1(2,4) = 2.D0*hlbrsn(2,4)
++      hlbrsn1(3,4) = 2.D0*hlbrsn(3,4)
+       if(hlbrsn(1,1).ne.0.D0) then
+-      write(nout,102) hlbrsn(1,1),2,in1,in1 ,'BR(h -> ~chi_10 ~chi_10)' 
++      write(nout,102) hlbrsn(1,1),2,in1,in1 ,'BR(h -> ~chi_10 ~chi_10)'
+       endif
+       if(hlbrsn(2,2).ne.0.D0) then
+-      write(nout,102) hlbrsn(2,2),2,in2,in2 ,'BR(h -> ~chi_20 ~chi_20)' 
++      write(nout,102) hlbrsn(2,2),2,in2,in2 ,'BR(h -> ~chi_20 ~chi_20)'
+       endif
+       if(hlbrsn(3,3).ne.0.D0) then
+-      write(nout,102) hlbrsn(3,3),2,in3,in3 ,'BR(h -> ~chi_30 ~chi_30)' 
++      write(nout,102) hlbrsn(3,3),2,in3,in3 ,'BR(h -> ~chi_30 ~chi_30)'
+       endif
+       if(hlbrsn(4,4).ne.0.D0) then
+-      write(nout,102) hlbrsn(4,4),2,in4,in4 ,'BR(h -> ~chi_40 ~chi_40)' 
++      write(nout,102) hlbrsn(4,4),2,in4,in4 ,'BR(h -> ~chi_40 ~chi_40)'
+       endif
+       if(hlbrsn(1,2).ne.0.D0) then
+-      write(nout,102) hlbrsn1(1,2),2,in1,in2,'BR(h -> ~chi_10 ~chi_20)' 
++      write(nout,102) hlbrsn1(1,2),2,in1,in2,'BR(h -> ~chi_10 ~chi_20)'
+       endif
+       if(hlbrsn(1,3).ne.0.D0) then
+-      write(nout,102) hlbrsn1(1,3),2,in1,in3,'BR(h -> ~chi_10 ~chi_30)' 
++      write(nout,102) hlbrsn1(1,3),2,in1,in3,'BR(h -> ~chi_10 ~chi_30)'
+       endif
+       if(hlbrsn(1,4).ne.0.D0) then
+-      write(nout,102) hlbrsn1(1,4),2,in1,in4,'BR(h -> ~chi_10 ~chi_40)' 
++      write(nout,102) hlbrsn1(1,4),2,in1,in4,'BR(h -> ~chi_10 ~chi_40)'
+       endif
+       if(hlbrsn(2,3).ne.0.D0) then
+-      write(nout,102) hlbrsn1(2,3),2,in2,in3,'BR(h -> ~chi_20 ~chi_30)' 
++      write(nout,102) hlbrsn1(2,3),2,in2,in3,'BR(h -> ~chi_20 ~chi_30)'
+       endif
+       if(hlbrsn(2,4).ne.0.D0) then
+-      write(nout,102) hlbrsn1(2,4),2,in2,in4,'BR(h -> ~chi_20 ~chi_40)' 
++      write(nout,102) hlbrsn1(2,4),2,in2,in4,'BR(h -> ~chi_20 ~chi_40)'
+       endif
+       if(hlbrsn(3,4).ne.0.D0) then
+-      write(nout,102) hlbrsn1(3,4),2,in3,in4,'BR(h -> ~chi_30 ~chi_40)' 
++      write(nout,102) hlbrsn1(3,4),2,in3,in4,'BR(h -> ~chi_30 ~chi_40)'
+       endif
+       bhlslnl1 = bhlslnl/3.D0
+       bhlslel1 = bhlslel/2.D0
+@@ -1878,9 +1881,9 @@ c ----------------------------- c
+      .u_1+)'
+       endif
+       if(bhlslnl1.ne.0.D0) then
+-      write(nout,102) bhlslnl1,2,inel,-inel  ,'BR(h -> ~nu_eL  ~nu_eL*  
++      write(nout,102) bhlslnl1,2,inel,-inel  ,'BR(h -> ~nu_eL  ~nu_eL*
+      . )'
+-      write(nout,102) bhlslnl1,2,inmul,-inmul,'BR(h -> ~nu_muL ~nu_muL* 
++      write(nout,102) bhlslnl1,2,inmul,-inmul,'BR(h -> ~nu_muL ~nu_muL*
+      . )'
+       write(nout,102) bhlslnl1,2,intau1,-intau1,'BR(h -> ~nu_tauL ~nu_ta
+      .uL*)'
+@@ -1917,83 +1920,83 @@ c ----------------------------- c
+       write(nout,102) hhbrc,2,ic,icb        ,'BR(H -> c       cb     )'
+       endif
+       if(hhbrt.ne.0.D0) then
+-      write(nout,102) hhbrt,2,it,itb        ,'BR(H -> t       tb     )' 
++      write(nout,102) hhbrt,2,it,itb        ,'BR(H -> t       tb     )'
+       endif
+       if(hhbrg.ne.0.D0) then
+-      write(nout,102) hhbrg,2,igl,igl       ,'BR(H -> g       g      )' 
++      write(nout,102) hhbrg,2,igl,igl       ,'BR(H -> g       g      )'
+       endif
+       if(hhbrga.ne.0.D0) then
+-      write(nout,102) hhbrga,2,iga,iga      ,'BR(H -> gam     gam    )' 
++      write(nout,102) hhbrga,2,iga,iga      ,'BR(H -> gam     gam    )'
+       endif
+       if(hhbrzga.ne.0.D0) then
+-      write(nout,102) hhbrzga,2,iz,iga      ,'BR(H -> Z       gam    )' 
++      write(nout,102) hhbrzga,2,iz,iga      ,'BR(H -> Z       gam    )'
+       endif
+       if(hhbrw.ne.0.D0) then
+-      write(nout,102) hhbrw,2,iwc,-iwc      ,'BR(H -> W+      W-     )' 
++      write(nout,102) hhbrw,2,iwc,-iwc      ,'BR(H -> W+      W-     )'
+       endif
+       if(hhbrz.ne.0.D0) then
+-      write(nout,102) hhbrz,2,iz,iz         ,'BR(H -> Z       Z      )' 
++      write(nout,102) hhbrz,2,iz,iz         ,'BR(H -> Z       Z      )'
+       endif
+       if(hhbrh.ne.0.D0) then
+-      write(nout,102) hhbrh,2,ihl,ihl       ,'BR(H -> h       h      )' 
++      write(nout,102) hhbrh,2,ihl,ihl       ,'BR(H -> h       h      )'
+       endif
+       if(hhbra.ne.0.D0) then
+-      write(nout,102) hhbra,2,iha,iha       ,'BR(H -> A       A      )' 
++      write(nout,102) hhbra,2,iha,iha       ,'BR(H -> A       A      )'
+       endif
+       if(hhbraz.ne.0.D0) then
+-      write(nout,102) hhbraz,2,iz,iha       ,'BR(H -> Z       A      )' 
++      write(nout,102) hhbraz,2,iz,iha       ,'BR(H -> Z       A      )'
+       endif
+       if(hhbrhw.ne.0.D0) then
+       write(nout,102) hhbrhw/2.D0,2,iwc,-ihc,'BR(H -> W+      H-     )'
+       write(nout,102) hhbrhw/2.D0,2,-iwc,ihc,'BR(H -> W-      H+     )'
+       endif
+       if(hhbrsc(1,1).ne.0.D0) then
+-      write(nout,102) hhbrsc(1,1),2,ic1,-ic1,'BR(H -> ~chi_1+ ~chi_1-)' 
++      write(nout,102) hhbrsc(1,1),2,ic1,-ic1,'BR(H -> ~chi_1+ ~chi_1-)'
+       endif
+       if(hhbrsc(2,2).ne.0.D0) then
+-      write(nout,102) hhbrsc(2,2),2,ic2,-ic2,'BR(H -> ~chi_2+ ~chi_2-)' 
++      write(nout,102) hhbrsc(2,2),2,ic2,-ic2,'BR(H -> ~chi_2+ ~chi_2-)'
+       endif
+       if(hhbrsc(1,2).ne.0.D0) then
+-      write(nout,102) hhbrsc(1,2),2,ic1,-ic2,'BR(H -> ~chi_1+ ~chi_2-)' 
++      write(nout,102) hhbrsc(1,2),2,ic1,-ic2,'BR(H -> ~chi_1+ ~chi_2-)'
+       endif
+       if(hhbrsc(2,1).ne.0.D0) then
+-      write(nout,102) hhbrsc(2,1),2,ic2,-ic1,'BR(H -> ~chi_2+ ~chi_1-)' 
++      write(nout,102) hhbrsc(2,1),2,ic2,-ic1,'BR(H -> ~chi_2+ ~chi_1-)'
+       endif
+       if(hhbrsn(1,1).ne.0.D0) then
+-      write(nout,102) hhbrsn(1,1),2,in1,in1 ,'BR(H -> ~chi_10 ~chi_10)' 
++      write(nout,102) hhbrsn(1,1),2,in1,in1 ,'BR(H -> ~chi_10 ~chi_10)'
+       endif
+       if(hhbrsn(2,2).ne.0.D0) then
+-      write(nout,102) hhbrsn(2,2),2,in2,in2 ,'BR(H -> ~chi_20 ~chi_20)' 
++      write(nout,102) hhbrsn(2,2),2,in2,in2 ,'BR(H -> ~chi_20 ~chi_20)'
+       endif
+       if(hhbrsn(3,3).ne.0.D0) then
+-      write(nout,102) hhbrsn(3,3),2,in3,in3 ,'BR(H -> ~chi_30 ~chi_30)' 
++      write(nout,102) hhbrsn(3,3),2,in3,in3 ,'BR(H -> ~chi_30 ~chi_30)'
+       endif
+       if(hhbrsn(4,4).ne.0.D0) then
+-      write(nout,102) hhbrsn(4,4),2,in4,in4 ,'BR(H -> ~chi_40 ~chi_40)' 
++      write(nout,102) hhbrsn(4,4),2,in4,in4 ,'BR(H -> ~chi_40 ~chi_40)'
+       endif
+-      hhbrsn1(1,2) = 2.D0*hhbrsn(1,2) 
+-      hhbrsn1(1,3) = 2.D0*hhbrsn(1,3) 
++      hhbrsn1(1,2) = 2.D0*hhbrsn(1,2)
++      hhbrsn1(1,3) = 2.D0*hhbrsn(1,3)
+       hhbrsn1(1,4) = 2.D0*hhbrsn(1,4)
+-      hhbrsn1(2,3) = 2.D0*hhbrsn(2,3) 
+-      hhbrsn1(2,4) = 2.D0*hhbrsn(2,4)  
+-      hhbrsn1(3,4) = 2.D0*hhbrsn(3,4)  
++      hhbrsn1(2,3) = 2.D0*hhbrsn(2,3)
++      hhbrsn1(2,4) = 2.D0*hhbrsn(2,4)
++      hhbrsn1(3,4) = 2.D0*hhbrsn(3,4)
+       if(hhbrsn1(1,2).ne.0.D0) then
+-      write(nout,102) hhbrsn1(1,2),2,in1,in2,'BR(H -> ~chi_10 ~chi_20)' 
++      write(nout,102) hhbrsn1(1,2),2,in1,in2,'BR(H -> ~chi_10 ~chi_20)'
+       endif
+       if(hhbrsn1(1,3).ne.0.D0) then
+-      write(nout,102) hhbrsn1(1,3),2,in1,in3,'BR(H -> ~chi_10 ~chi_30)' 
++      write(nout,102) hhbrsn1(1,3),2,in1,in3,'BR(H -> ~chi_10 ~chi_30)'
+       endif
+       if(hhbrsn1(1,4).ne.0.D0) then
+-      write(nout,102) hhbrsn1(1,4),2,in1,in4,'BR(H -> ~chi_10 ~chi_40)' 
++      write(nout,102) hhbrsn1(1,4),2,in1,in4,'BR(H -> ~chi_10 ~chi_40)'
+       endif
+       if(hhbrsn1(2,3).ne.0.D0) then
+-      write(nout,102) hhbrsn1(2,3),2,in2,in3,'BR(H -> ~chi_20 ~chi_30)' 
++      write(nout,102) hhbrsn1(2,3),2,in2,in3,'BR(H -> ~chi_20 ~chi_30)'
+       endif
+       if(hhbrsn1(2,4).ne.0.D0) then
+-      write(nout,102) hhbrsn1(2,4),2,in2,in4,'BR(H -> ~chi_20 ~chi_40)' 
++      write(nout,102) hhbrsn1(2,4),2,in2,in4,'BR(H -> ~chi_20 ~chi_40)'
+       endif
+       if(hhbrsn1(3,4).ne.0.D0) then
+-      write(nout,102) hhbrsn1(3,4),2,in3,in4,'BR(H -> ~chi_30 ~chi_40)' 
++      write(nout,102) hhbrsn1(3,4),2,in3,in4,'BR(H -> ~chi_30 ~chi_40)'
+       endif
+       bhhslnl1 = bhhslnl/3.D0
+       bhhslel1 = bhhslel/2.D0
+@@ -2079,9 +2082,9 @@ c ----------------------------- c
+      .u_1+)'
+       endif
+       if(bhhslnl1.ne.0.D0) then
+-      write(nout,102) bhhslnl1,2,inel,-inel  ,'BR(H -> ~nu_eL  ~nu_eL*  
++      write(nout,102) bhhslnl1,2,inel,-inel  ,'BR(H -> ~nu_eL  ~nu_eL*
+      . )'
+-      write(nout,102) bhhslnl1,2,inmul,-inmul,'BR(H -> ~nu_muL ~nu_muL* 
++      write(nout,102) bhhslnl1,2,inmul,-inmul,'BR(H -> ~nu_muL ~nu_muL*
+      . )'
+       write(nout,102) bhhslnl1,2,intau1,-intau1,'BR(H -> ~nu_tauL ~nu_ta
+      .uL*)'
+@@ -2118,67 +2121,67 @@ c ----------------------------- c
+       write(nout,102) abrc,2,ic,icb         ,'BR(A -> c       cb     )'
+       endif
+       if(abrt.ne.0.D0) then
+-      write(nout,102) abrt,2,it,itb         ,'BR(A -> t       tb     )' 
++      write(nout,102) abrt,2,it,itb         ,'BR(A -> t       tb     )'
+       endif
+       if(abrg.ne.0.D0) then
+-      write(nout,102) abrg,2,igl,igl        ,'BR(A -> g       g      )' 
++      write(nout,102) abrg,2,igl,igl        ,'BR(A -> g       g      )'
+       endif
+       if(abrga.ne.0.D0) then
+-      write(nout,102) abrga,2,iga,iga       ,'BR(A -> gam     gam    )' 
++      write(nout,102) abrga,2,iga,iga       ,'BR(A -> gam     gam    )'
+       endif
+       if(abrzga.ne.0.D0) then
+-      write(nout,102) abrzga,2,iz,iga       ,'BR(A -> Z       gam    )' 
++      write(nout,102) abrzga,2,iz,iga       ,'BR(A -> Z       gam    )'
+       endif
+       if(abrz.ne.0.D0) then
+-      write(nout,102) abrz,2,iz,ihl         ,'BR(A -> Z       h      )' 
++      write(nout,102) abrz,2,iz,ihl         ,'BR(A -> Z       h      )'
+       endif
+       if(habrsc(1,1).ne.0.D0) then
+-      write(nout,102) habrsc(1,1),2,ic1,-ic1,'BR(A -> ~chi_1+ ~chi_1-)' 
++      write(nout,102) habrsc(1,1),2,ic1,-ic1,'BR(A -> ~chi_1+ ~chi_1-)'
+       endif
+       if(habrsc(2,2).ne.0.D0) then
+-      write(nout,102) habrsc(2,2),2,ic2,-ic2,'BR(A -> ~chi_2+ ~chi_2-)' 
++      write(nout,102) habrsc(2,2),2,ic2,-ic2,'BR(A -> ~chi_2+ ~chi_2-)'
+       endif
+       if(habrsc(1,2).ne.0.D0) then
+-      write(nout,102) habrsc(1,2),2,ic1,-ic2,'BR(A -> ~chi_1+ ~chi_2-)' 
++      write(nout,102) habrsc(1,2),2,ic1,-ic2,'BR(A -> ~chi_1+ ~chi_2-)'
+       endif
+       if(habrsc(2,1).ne.0.D0) then
+-      write(nout,102) habrsc(2,1),2,ic2,-ic1,'BR(A -> ~chi_2+ ~chi_1-)' 
++      write(nout,102) habrsc(2,1),2,ic2,-ic1,'BR(A -> ~chi_2+ ~chi_1-)'
+       endif
+-      habrsn1(1,2) = 2.D0*habrsn(1,2) 
+-      habrsn1(1,3) = 2.D0*habrsn(1,3) 
++      habrsn1(1,2) = 2.D0*habrsn(1,2)
++      habrsn1(1,3) = 2.D0*habrsn(1,3)
+       habrsn1(1,4) = 2.D0*habrsn(1,4)
+-      habrsn1(2,3) = 2.D0*habrsn(2,3) 
+-      habrsn1(2,4) = 2.D0*habrsn(2,4)  
+-      habrsn1(3,4) = 2.D0*habrsn(3,4)  
++      habrsn1(2,3) = 2.D0*habrsn(2,3)
++      habrsn1(2,4) = 2.D0*habrsn(2,4)
++      habrsn1(3,4) = 2.D0*habrsn(3,4)
+       if(habrsn(1,1).ne.0.D0) then
+-      write(nout,102) habrsn(1,1),2,in1,in1 ,'BR(A -> ~chi_10 ~chi_10)' 
++      write(nout,102) habrsn(1,1),2,in1,in1 ,'BR(A -> ~chi_10 ~chi_10)'
+       endif
+       if(habrsn(2,2).ne.0.D0) then
+-      write(nout,102) habrsn(2,2),2,in2,in2 ,'BR(A -> ~chi_20 ~chi_20)' 
++      write(nout,102) habrsn(2,2),2,in2,in2 ,'BR(A -> ~chi_20 ~chi_20)'
+       endif
+       if(habrsn(3,3).ne.0.D0) then
+-      write(nout,102) habrsn(3,3),2,in3,in3 ,'BR(A -> ~chi_30 ~chi_30)' 
++      write(nout,102) habrsn(3,3),2,in3,in3 ,'BR(A -> ~chi_30 ~chi_30)'
+       endif
+       if(habrsn(4,4).ne.0.D0) then
+-      write(nout,102) habrsn(4,4),2,in4,in4 ,'BR(A -> ~chi_40 ~chi_40)' 
++      write(nout,102) habrsn(4,4),2,in4,in4 ,'BR(A -> ~chi_40 ~chi_40)'
+       endif
+       if(habrsn1(1,2).ne.0.D0) then
+-      write(nout,102) habrsn1(1,2),2,in1,in2,'BR(A -> ~chi_10 ~chi_20)' 
++      write(nout,102) habrsn1(1,2),2,in1,in2,'BR(A -> ~chi_10 ~chi_20)'
+       endif
+       if(habrsn1(1,3).ne.0.D0) then
+-      write(nout,102) habrsn1(1,3),2,in1,in3,'BR(A -> ~chi_10 ~chi_30)' 
++      write(nout,102) habrsn1(1,3),2,in1,in3,'BR(A -> ~chi_10 ~chi_30)'
+       endif
+       if(habrsn1(1,4).ne.0.D0) then
+-      write(nout,102) habrsn1(1,4),2,in1,in4,'BR(A -> ~chi_10 ~chi_40)' 
++      write(nout,102) habrsn1(1,4),2,in1,in4,'BR(A -> ~chi_10 ~chi_40)'
+       endif
+       if(habrsn1(2,3).ne.0.D0) then
+-      write(nout,102) habrsn1(2,3),2,in2,in3,'BR(A -> ~chi_20 ~chi_30)' 
++      write(nout,102) habrsn1(2,3),2,in2,in3,'BR(A -> ~chi_20 ~chi_30)'
+       endif
+       if(habrsn1(2,4).ne.0.D0) then
+-      write(nout,102) habrsn1(2,4),2,in2,in4,'BR(A -> ~chi_20 ~chi_40)' 
++      write(nout,102) habrsn1(2,4),2,in2,in4,'BR(A -> ~chi_20 ~chi_40)'
+       endif
+       if(habrsn1(3,4).ne.0.D0) then
+-      write(nout,102) habrsn1(3,4),2,in3,in4,'BR(A -> ~chi_30 ~chi_40)' 
++      write(nout,102) habrsn1(3,4),2,in3,in4,'BR(A -> ~chi_30 ~chi_40)'
+       endif
+       if(habrst.ne.0.D0) then
+       write(nout,102) habrst/2.D0,2,ist1,-ist2,'BR(A -> ~t_1    ~t_2*  )
+@@ -2284,19 +2287,19 @@ c ----------------------------- c
+       write(nout,102) hcbrsq1,2,iscl,-issl  ,'BR(H+ -> ~c_L    ~s_L*  )'
+       endif
+       if(hcbrstb(1,1).ne.0.D0) then
+-      write(nout,102) hcbrstb(1,1),2,ist1,-isb1,'BR(H+ -> ~t_1    ~b_1* 
++      write(nout,102) hcbrstb(1,1),2,ist1,-isb1,'BR(H+ -> ~t_1    ~b_1*
+      . )'
+       endif
+       if(hcbrstb(2,2).ne.0.D0) then
+-      write(nout,102) hcbrstb(2,2),2,ist2,-isb2,'BR(H+ -> ~t_2    ~b_2* 
++      write(nout,102) hcbrstb(2,2),2,ist2,-isb2,'BR(H+ -> ~t_2    ~b_2*
+      . )'
+       endif
+       if(hcbrstb(1,2).ne.0.D0) then
+-      write(nout,102) hcbrstb(1,2),2,ist1,-isb2,'BR(H+ -> ~t_1    ~b_2* 
++      write(nout,102) hcbrstb(1,2),2,ist1,-isb2,'BR(H+ -> ~t_1    ~b_2*
+      . )'
+       endif
+       if(hcbrstb(2,1).ne.0.D0) then
+-      write(nout,102) hcbrstb(2,1),2,ist2,-isb1,'BR(H+ -> ~t_2    ~b_1* 
++      write(nout,102) hcbrstb(2,1),2,ist2,-isb1,'BR(H+ -> ~t_2    ~b_1*
+      . )'
+       endif
+ 
+@@ -2338,11 +2341,11 @@ c ----------------------------- c
+      .1x,A)
+  106  format(3x,1P,E16.8,0P,3x,I2,3x,(I9,1x),(I9,1x),(I9,1x),(I9,1x),
+      .2x,'#',1x,A)
+- 105  format('#') 
++ 105  format('#')
  
         close(nout)
  
@@ -65,7 +811,650 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  
        IF(IHIGGS.EQ.0)THEN
        WRITE(NSA,20)AMSM,SMBRB,SMBRL,SMBRM,SMBRS,SMBRC,SMBRT
-@@ -5620,8 +5623,8 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@ -2352,7 +2355,7 @@ c ----------------------------- c
+       IF(IHIGGS.EQ.1.OR.IHIGGS.EQ.5)THEN
+       WRITE(NLA,20)AML,HLBRB,HLBRL,HLBRM,HLBRS,HLBRC,HLBRT
+       WRITE(NLB,20)AML,HLBRG,HLBRGA,HLBRZGA,HLBRW,HLBRZ,HLWDTH
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        WRITE(NSUSYL,22)AML,HLBRCHT,HLBRNET,HLBRSL,HLBRSQT,HLBRGD
+        IF(INDIDEC.NE.0)THEN
+         WRITE(NSUSYLA,23)AML,HLBRSC(1,1),HLBRSC(2,2),
+@@ -2370,7 +2373,7 @@ c ----------------------------- c
+         WRITE(NSUSYLE,21)AML,BHLSQUL,BHLSQUR,BHLSQDL,BHLSQDR
+       WRITE(NSUSYLF,20)AML,BHLSB(1,1),BHLSB(1,2)+BHLSB(2,1),BHLSB(2,2),
+      .                   BHLST(1,1),BHLST(1,2)+BHLST(2,1),BHLST(2,2)
+-       ENDIF 
++       ENDIF
+       ENDIF
+       ENDIF
+ 
+@@ -2378,7 +2381,7 @@ c ----------------------------- c
+       WRITE(NHA,20)AMH,HHBRB,HHBRL,HHBRM,HHBRS,HHBRC,HHBRT
+       WRITE(NHB,20)AMH,HHBRG,HHBRGA,HHBRZGA,HHBRW,HHBRZ
+       WRITE(NHC,20)AMH,HHBRH,HHBRA,HHBRAZ,HHBRHW,HHWDTH
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        WRITE(NSUSYH,22)AMH,HHBRCHT,HHBRNET,HHBRSL,HHBRSQT,HHBRGD
+        IF(INDIDEC.NE.0)THEN
+         WRITE(NSUSYHA,23)AMH,HHBRSC(1,1),HHBRSC(2,2),
+@@ -2403,7 +2406,7 @@ c ----------------------------- c
+       IF(IHIGGS.EQ.3.OR.IHIGGS.EQ.5)THEN
+       WRITE(NAA,20)AMA,ABRB,ABRL,ABRM,ABRS,ABRC,ABRT
+       WRITE(NAB,22)AMA,ABRG,ABRGA,ABRZGA,ABRZ,AWDTH
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        WRITE(NSUSYA,22)AMA,HABRCHT,HABRNET,HABRSL,HABRST+HABRSB,HABRGD
+        IF(INDIDEC.NE.0)THEN
+         WRITE(NSUSYAA,23)AMA,HABRSC(1,1),HABRSC(2,2),
+@@ -2424,7 +2427,7 @@ c ----------------------------- c
+       IF(IHIGGS.EQ.4.OR.IHIGGS.EQ.5)THEN
+       WRITE(NCA,20)AMCH,HCBRB,HCBRL,HCBRM,HCBRS,HCBRC,HCBRT
+       WRITE(NCB,22)AMCH,HCBRBU,HCBRW,HCBRA,HCWDTH
+-      IF(IOFSUSY.EQ.0)THEN 
++      IF(IOFSUSY.EQ.0)THEN
+        WRITE(NSUSYC,21)AMCH,HCBRCNT,HCBRSL,HCBRSQT,HCBRGD
+        IF(INDIDEC.NE.0)THEN
+         WRITE(NSUSYCA,21)AMCH,HCBRSU(1,1),HCBRSU(1,2),
+@@ -2461,7 +2464,7 @@ c ----------------------------- c
+      .          GMSU(2),GMSD(2),GMSE(2),GMSN(2)
+       DIMENSION HLBRSC(2,2),HLBRSN(4,4),HHBRSC(2,2),HHBRSN(4,4),
+      .          HABRSC(2,2),HABRSN(4,4),HCBRSU(2,4),
+-     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2) 
++     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2)
+       DIMENSION AC1(2,2),AC2(2,2),AC3(2,2),
+      .          AN1(4,4),AN2(4,4),AN3(4,4),
+      .          ACNL(2,4),ACNR(2,4)
+@@ -2512,7 +2515,7 @@ c ----------------------------- c
+      .              BHHSQDR,BHHST(2,2),BHHSB(2,2),BHHSTAU(2,2),
+      .              BHASTAU,BHASB,BHAST,
+      .              BHCSL00,BHCSL11,BHCSL21,BHCSQ,BHCSTB(2,2)
+-      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN 
++      COMMON/SMASS_HDEC/GMN,XMN,GMC,GMST,GMSB,GMSL,GMSU,GMSD,GMSE,GMSN
+       COMMON/GOLDST_HDEC/AXMPL,AXMGD,IGOLD
+       COMMON/WIGOLD_HDEC/HLBRGD,HABRGD,HHBRGD,HCBRGD
+ 
+@@ -2523,26 +2526,26 @@ c ----------------------------- c
+ 
+       IF(IHIGGS.EQ.1.OR.IHIGGS.EQ.5) THEN
+        CLOSE(NLA)
+-       CLOSE(NLB) 
++       CLOSE(NLB)
+        CLOSE(NSUSYL)
+       ENDIF
+ 
+       IF(IHIGGS.EQ.2.OR.IHIGGS.EQ.5) THEN
+        CLOSE(NHA)
+-       CLOSE(NHB) 
++       CLOSE(NHB)
+        CLOSE(NHC)
+        CLOSE(NSUSYH)
+       ENDIF
+ 
+       IF(IHIGGS.EQ.3.OR.IHIGGS.EQ.5) THEN
+        CLOSE(NAA)
+-       CLOSE(NAB) 
++       CLOSE(NAB)
+        CLOSE(NSUSYA)
+       ENDIF
+ 
+       IF(IHIGGS.EQ.4.OR.IHIGGS.EQ.5) THEN
+        CLOSE(NCA)
+-       CLOSE(NCB) 
++       CLOSE(NCB)
+        CLOSE(NSUSYC)
+       ENDIF
+ 
+@@ -2572,10 +2575,10 @@ C ======================================
+      .          GMSN(2)
+       DIMENSION HLBRSC(2,2),HLBRSN(4,4),HHBRSC(2,2),
+      .          HHBRSN(4,4),HABRSC(2,2),HABRSN(4,4),HCBRSU(2,4),
+-     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2) 
++     .          HHBRST(2,2),HHBRSB(2,2),HCBRSTB(2,2)
+       DIMENSION WHLCH(2,2),WHLNE(4,4),WHHCH(2,2),WHHNE(4,4),
+      .          WHACH(2,2),WHANE(4,4),WHCCN(2,4),
+-     .          WHHST(2,2),WHHSB(2,2),WHHSTAU(2,2),WHCSTB(2,2), 
++     .          WHHST(2,2),WHHSB(2,2),WHHSTAU(2,2),WHCSTB(2,2),
+      .          WHLST(2,2),WHLSB(2,2),WHLSTAU(2,2)
+       DIMENSION WHLGD(4),WHCGD(2),WHHGD(4),WHAGD(4)
+       DIMENSION AGDL(4),AGDA(4),AGDH(4),AGDC(2)
+@@ -2626,7 +2629,7 @@ C ======================================
+      .              BHASTAU,BHASB,BHAST,
+      .              BHCSL00,BHCSL11,BHCSL21,BHCSQ,BHCSTB(2,2)
+       COMMON/SMASS_HDEC/AMNEUT,XMNEUT,AMCHAR,AMST,AMSB,AMSL,
+-     .              AMSU,AMSD,AMSE,AMSN 
++     .              AMSU,AMSD,AMSE,AMSN
+       COMMON/COUP_HDEC/GAT,GAB,GLT,GLB,GHT,GHB,GZAH,GZAL,
+      .            GHHH,GLLL,GHLL,GLHH,GHAA,GLAA,GLVV,GHVV,
+      .            GLPM,GHPM,B,A
+@@ -2764,7 +2767,7 @@ C                              SM HIGGS
+ C        =========================================================
+       AMXX=AMH
+       AMH=AMSM
+-C     =============  RUNNING MASSES 
++C     =============  RUNNING MASSES
+       RMS = RUNM_HDEC(AMH,3)
+       RMC = RUNM_HDEC(AMH,4)
+       RMB = RUNM_HDEC(AMH,5)
+@@ -2780,7 +2783,7 @@ C     =============  RUNNING MASSES
+       AS4=ALPHAS_HDEC(AMH,2)
+       AMB0=AMB
+ C     AMT0=AMT
+-C     =============== PARTIAL WIDTHS 
++C     =============== PARTIAL WIDTHS
+ C  H ---> G G
+ C
+        EPS=1.D-8
+@@ -3133,7 +3136,7 @@ C  H ---> Z Z
+       ENDIF
+       ENDIF
+ C
+-C    ==========  TOTAL WIDTH AND BRANCHING RATIOS 
++C    ==========  TOTAL WIDTH AND BRANCHING RATIOS
+ C
+       WTOT=HLL+HMM+HSS+HCC+HBB+HTT+HGG+HGA+HZGA+HWW+HZZ
+       SMBRT=HTT/WTOT
+@@ -3163,7 +3166,7 @@ C
+       TSC = (AMSQ+AMUR+AMDR)/3
+       BSC = (AMSQ+AMUR+AMDR)/3
+       CALL SFERMION_HDEC(TSC,BSC,AMSQ,AMUR,AMDR,AMEL,AMER,AL,AU,AD,AMU,
+-     .               AMST,AMSB,AMSL,AMSU,AMSD,AMSE,AMSN, 
++     .               AMST,AMSB,AMSL,AMSU,AMSD,AMSE,AMSN,
+      .               GLEE,GLTT,GLBB,GHEE,GHTT,GHBB,
+      .               GAEE,GATT,GABB,GCEN,GCTB)
+ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@ -3193,7 +3196,7 @@ C
+ C        =========================================================
+ C                           LIGHT CP EVEN HIGGS DECAYS
+ C        =========================================================
+-C     =============  RUNNING MASSES 
++C     =============  RUNNING MASSES
+       RMS = RUNM_HDEC(AML,3)
+       RMC = RUNM_HDEC(AML,4)
+       RMB = RUNM_HDEC(AML,5)
+@@ -3211,7 +3214,7 @@ C     AMT0=3.D8
+       AMB0=AMB
+ C     AMT0=AMT
+ 
+-C     =============== PARTIAL WIDTHS 
++C     =============== PARTIAL WIDTHS
+ C  H ---> G G
+        EPS=1.D-8
+        NFEXT = 3
+@@ -3223,7 +3226,7 @@ C  H ---> G G
+        CTC = 4*AMC**2/AML**2*DCMPLX(1D0,-EPS)
+        CAC = 2*CTC*(1+(1-CTC)*CF(CTC))*GLT
+ C
+-       IF(IOFSUSY.EQ.0) THEN 
++       IF(IOFSUSY.EQ.0) THEN
+        CSB1= 4*AMSB(1)**2/AML**2*DCMPLX(1D0,-EPS)
+        CSB2= 4*AMSB(2)**2/AML**2*DCMPLX(1D0,-EPS)
+        CST1= 4*AMST(1)**2/AML**2*DCMPLX(1D0,-EPS)
+@@ -3247,15 +3250,15 @@ C
+      .      *CSDR*(1-CSDR*CF(CSDR))
+ 
+        ELSE
+-       CXB1=0.D0 
+-       CXB2=0.D0 
+-       CXT1=0.D0 
+-       CXT2=0.D0 
+-
+-       CXUL=0.D0 
+-       CXUR=0.D0 
+-       CXDL=0.D0 
+-       CXDR=0.D0 
++       CXB1=0.D0
++       CXB2=0.D0
++       CXT1=0.D0
++       CXT2=0.D0
++
++       CXUL=0.D0
++       CXUR=0.D0
++       CXDL=0.D0
++       CXDR=0.D0
+        ENDIF
+ 
+        FQCD=HGGQCD(ASG,NFEXT)
+@@ -3481,7 +3484,7 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        CAL = 1.D0  * 2*CTL*(1+(1-CTL)*CF(CTL))*GLB
+        CAW = -(2+3*CTW+3*CTW*(2-CTW)*CF(CTW))*GLVV
+        CAH = -AMZ**2/2/AMCH**2*CTH*(1-CTH*CF(CTH))*GLPM
+-       IF(IOFSUSY.EQ.0) THEN 
++       IF(IOFSUSY.EQ.0) THEN
+         RMSU1 = RUNMS_HDEC(AML/2,AMSU(1))
+         RMSU2 = RUNMS_HDEC(AML/2,AMSU(2))
+         RMSD1 = RUNMS_HDEC(AML/2,AMSD(1))
+@@ -3498,8 +3501,8 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+         CST2= 4*RMST2**2/AML**2*DCMPLX(1D0,-EPS)
+         CSL1= 4*AMSL(1)**2/AML**2*DCMPLX(1D0,-EPS)
+         CSL2= 4*AMSL(2)**2/AML**2*DCMPLX(1D0,-EPS)
+-        CAX1= AMW/XMCHAR(1) * 2*CX1*(1+(1-CX1)*CF(CX1))*2*AC2(1,1) 
+-        CAX2= AMW/XMCHAR(2) * 2*CX2*(1+(1-CX2)*CF(CX2))*2*AC2(2,2) 
++        CAX1= AMW/XMCHAR(1) * 2*CX1*(1+(1-CX1)*CF(CX1))*2*AC2(1,1)
++        CAX2= AMW/XMCHAR(2) * 2*CX2*(1+(1-CX2)*CF(CX2))*2*AC2(2,2)
+ 
+         CSEL = 4*AMSE(1)**2/AML**2*DCMPLX(1D0,-EPS)
+         CSER = 4*AMSE(2)**2/AML**2*DCMPLX(1D0,-EPS)
+@@ -3539,7 +3542,7 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+         XFAC = CDABS(CAT+CAB+CAC+CAL+CAW+CAH+CAX1+CAX2
+      .      +  CXEL+CXER+CXUL+CXUR+CXDL+CXDR
+      .      +  CXB1+CXB2+CXT1+CXT2+CXL1+CXL2)**2
+-       ELSE 
++       ELSE
+         XFAC = CDABS(CAT+CAB+CAC+CAL+CAW+CAH)**2
+        ENDIF
+        HGA=HVV(AML,0.D0)*(ALPH/PI)**2/16.D0*XFAC
+@@ -3726,7 +3729,7 @@ C  H ---> H+ W+
+       HHW=GF/8.D0/DSQRT(2D0)/PI*AMZ**2*AMW**2/AML*CHW*GHVV**2
+       ENDIF
+ 
+-C  ============================ SUSY DECAYS 
++C  ============================ SUSY DECAYS
+       IF(IOFSUSY.EQ.0) THEN
+ C
+ C  HL ----> CHARGINOS
+@@ -3734,26 +3737,26 @@ C
+       DO 711 I=1,2
+       DO 711 J=1,2
+       IF (AML.GT.AMCHAR(I)+AMCHAR(J)) THEN
+-      WHLCH(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AML 
++      WHLCH(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AML
+      .     *LAMB_HDEC(AMCHAR(I)**2/AML**2,AMCHAR(J)**2/AML**2)
+      .     *( (AC2(I,J)**2+AC2(J,I)**2)*(AML**2-AMCHAR(I)
+-     .         **2-AMCHAR(J)**2)-4.D0*AC2(I,J)*AC2(J,I)* 
+-     .         XMCHAR(I)*XMCHAR(J) ) 
++     .         **2-AMCHAR(J)**2)-4.D0*AC2(I,J)*AC2(J,I)*
++     .         XMCHAR(I)*XMCHAR(J) )
+       ELSE
+       WHLCH(I,J)=0.D0
+       ENDIF
+       WHLCHT=WHLCH(1,1)+WHLCH(1,2)+WHLCH(2,1)+WHLCH(2,2)
+  711  CONTINUE
+ C
+-C  HL ----> NEUTRALINOS 
++C  HL ----> NEUTRALINOS
+ C
+       DO 712 I=1,4
+       DO 712 J=1,4
+       IF (AML.GT.AMNEUT(I)+AMNEUT(J)) THEN
+-      WHLNE(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AML 
++      WHLNE(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AML
+      .         *AN2(I,J)**2*(AML**2-(XMNEUT(I)+XMNEUT(J))**2)
+      .         *LAMB_HDEC(AMNEUT(I)**2/AML**2,AMNEUT(J)**2/AML**2)
+-      ELSE 
++      ELSE
+       WHLNE(I,J)=0.D0
+       ENDIF
+  712  CONTINUE
+@@ -3762,7 +3765,7 @@ C
+      .       +WHLNE(3,1)+WHLNE(3,2)+WHLNE(3,3)+WHLNE(3,4)
+      .       +WHLNE(4,1)+WHLNE(4,2)+WHLNE(4,3)+WHLNE(4,4)
+ CCC
+-C  HL ----> SLEPTONS 
++C  HL ----> SLEPTONS
+ C
+       IF (AML.GT.2.D0*AMSE(1)) THEN
+       WHLSLEL=2*GF/2.D0/DSQRT(2D0)/PI*AMZ**4/AML*DSIN(B+A)**2
+@@ -3795,10 +3798,10 @@ C
+       ENDIF
+  718  CONTINUE
+ 
+-      WHLSLT=WHLSTAU(1,1)+WHLSTAU(2,1)+WHLSTAU(1,2)+WHLSTAU(2,2) 
++      WHLSLT=WHLSTAU(1,1)+WHLSTAU(2,1)+WHLSTAU(1,2)+WHLSTAU(2,2)
+      .       +WHLSLEL+WHLSLER+WHLSLNL
+ C
+-C  HL ----> SQUARKS 
++C  HL ----> SQUARKS
+ C
+       IF (AML.GT.2.D0*AMSU(1)) THEN
+       WHLSQUL=6*GF/2.D0/DSQRT(2D0)/PI*AMZ**4/AML*DSIN(B+A)**2
+@@ -3829,9 +3832,9 @@ C
+       ENDIF
+ 
+       WHLSQ=WHLSQUL+WHLSQUR+WHLSQDL+WHLSQDR
+-      
++
+ C
+-C  HL ----> STOPS 
++C  HL ----> STOPS
+       SUSY = 1
+       DO 713 I=1,2
+       DO 713 J=1,2
+@@ -3850,7 +3853,7 @@ c      write(6,*)'h -> stop: ',I,J,AML,A
+       ENDIF
+  713  CONTINUE
+ C
+-C  HL ----> SBOTTOMS 
++C  HL ----> SBOTTOMS
+       SUSY = 1
+       DO 714 I=1,2
+       DO 714 J=1,2
+@@ -3869,11 +3872,11 @@ c      write(6,*)'h -> sbot: ',I,J,AML,A
+       ENDIF
+  714  CONTINUE
+ C
+-      WHLSTT=WHLST(1,1)+WHLST(1,2)+WHLST(2,1)+WHLST(2,2) 
+-      WHLSBB=WHLSB(1,1)+WHLSB(1,2)+WHLSB(2,1)+WHLSB(2,2) 
++      WHLSTT=WHLST(1,1)+WHLST(1,2)+WHLST(2,1)+WHLST(2,2)
++      WHLSBB=WHLSB(1,1)+WHLSB(1,2)+WHLSB(2,1)+WHLSB(2,2)
+       WHLSQT=WHLSTT+WHLSBB+WHLSQ
+ 
+-      ELSE 
++      ELSE
+       WHLCHT=0.D0
+       WHLNET=0.D0
+       WHLSLT=0.D0
+@@ -3909,7 +3912,7 @@ C   HL ---> GOLDSTINOS
+        WHLGDT=0
+       ENDIF
+ 
+-C    ==========  TOTAL WIDTH AND BRANCHING RATIOS 
++C    ==========  TOTAL WIDTH AND BRANCHING RATIOS
+       WTOT=HLL+HMM+HSS+HCC+HBB+HTT+HGG+HGA+HZGA+HWW+HZZ+HAA+HAZ+HHW
+      .    +WHLCHT+WHLNET+WHLSLT+WHLSQT + WHLGDT
+       HLBRT=HTT/WTOT
+@@ -3934,11 +3937,11 @@ C    ==========  TOTAL WIDTH AND BRANCHI
+       DO 812 J=1,4
+       HLBRSN(I,J)=WHLNE(I,J)/WTOT
+ 812   CONTINUE
+-      HLBRCHT=WHLCHT/WTOT 
+-      HLBRNET=WHLNET/WTOT 
+-      HLBRSL=WHLSLT/WTOT 
+-      HLBRSQ=WHLSQ/WTOT 
+-      HLBRSQT=WHLSQT/WTOT 
++      HLBRCHT=WHLCHT/WTOT
++      HLBRNET=WHLNET/WTOT
++      HLBRSL=WHLSLT/WTOT
++      HLBRSQ=WHLSQ/WTOT
++      HLBRSQT=WHLSQT/WTOT
+       HLBRGD =WHLGDT/WTOT
+       HLWDTH=WTOT
+ 
+@@ -3960,19 +3963,19 @@ C    ==========  TOTAL WIDTH AND BRANCHI
+       ENDIF
+ 
+       IF(IHIGGS.GT.1)THEN
+-      
++
+ 
+ C        =========================================================
+ C                       CHARGED HIGGS DECAYS
+ C        =========================================================
+       TB=TGBET
+-C     =============  RUNNING MASSES 
++C     =============  RUNNING MASSES
+       RMS = RUNM_HDEC(AMCH,3)
+       RMC = RUNM_HDEC(AMCH,4)
+       RMB = RUNM_HDEC(AMCH,5)
+       RMT = RUNM_HDEC(AMCH,6)
+       ASH=ALPHAS_HDEC(AMCH,2)
+-C     =============== PARTIAL WIDTHS 
++C     =============== PARTIAL WIDTHS
+ C  H+ ---> MU NMU
+       IF(AMCH.LE.AMMUON) THEN
+        HMN = 0
+@@ -4114,7 +4117,7 @@ C  H+ ---> W H
+         IF(AMCH.LE.DABS(AMW-AML))THEN
+          HWH=0
+         ELSE
+-         HWH=9.D0*GF**2/16.D0/PI**3*AMW**4*AMCH*GHVV**2	
++         HWH=9.D0*GF**2/16.D0/PI**3*AMW**4*AMCH*GHVV**2
+      .      *HVH((AML/AMCH)**2,(AMW/AMCH)**2)
+         ENDIF
+        ELSEIF (AMCH.LT.XM2) THEN
+@@ -4155,7 +4158,7 @@ C  H+ ---> W A
+         IF(AMCH.LE.DABS(AMW-AMA))THEN
+          HWA=0
+         ELSE
+-         HWA=9.D0*GF**2/16.D0/PI**3*AMW**4*AMCH	
++         HWA=9.D0*GF**2/16.D0/PI**3*AMW**4*AMCH
+      .      *HVH((AMA/AMCH)**2,(AMW/AMCH)**2)
+         ENDIF
+        ELSE
+@@ -4169,7 +4172,7 @@ C  H+ ---> W A
+        ENDIF
+       ENDIF
+ 
+-C  ======================= SUSY DECAYS 
++C  ======================= SUSY DECAYS
+       IF(IOFSUSY.EQ.0) THEN
+ C
+ C  H+ ----> CHARGINOS+NEUTRALINOS
+@@ -4189,38 +4192,38 @@ C
+       WHCCNT=WHCCN(1,1)+WHCCN(1,2)+WHCCN(1,3)+WHCCN(1,4)
+      .      +WHCCN(2,1)+WHCCN(2,2)+WHCCN(2,3)+WHCCN(2,4)
+ C
+-C  H+ ----> SLEPTONS 
++C  H+ ----> SLEPTONS
+ C
+       IF (AMCH.GT.AMSE(1)+AMSN(1)) THEN
+       WHCSL00=2*GF/4.D0/DSQRT(2D0)/PI*AMW**4/AMCH*DSIN(2.D0*B)**2
+      .     *LAMB_HDEC(AMSE(1)**2/AMCH**2,AMSN(1)**2/AMCH**2)
+-      ELSE 
++      ELSE
+       WHCSL00=0.D0
+       ENDIF
+ 
+       IF (AMCH.GT.AMSL(1)+AMSN(1)) THEN
+       WHCSL11=GF/2.D0/DSQRT(2D0)/PI*AMW**4/AMCH*GCEN(1,1)**2
+      .     *LAMB_HDEC(AMSL(1)**2/AMCH**2,AMSN(1)**2/AMCH**2)
+-      ELSE 
++      ELSE
+       WHCSL11=0.D0
+       ENDIF
+ 
+       IF (AMCH.GT.AMSL(2)+AMSN(1)) THEN
+       WHCSL21=GF/2.D0/DSQRT(2D0)/PI*AMW**4/AMCH*GCEN(1,2)**2
+      .     *LAMB_HDEC(AMSL(2)**2/AMCH**2,AMSN(1)**2/AMCH**2)
+-      ELSE 
++      ELSE
+       WHCSL21=0.D0
+       ENDIF
+ 
+       WHCSLT=WHCSL00+WHCSL11+WHCSL21
+ 
+ C
+-C  H+ ----> SQUARKS 
++C  H+ ----> SQUARKS
+ C
+       IF (AMCH.GT.AMSU(1)+AMSD(1)) THEN
+       WHCSQ=6*GF/4.D0/DSQRT(2D0)/PI*AMW**4/AMCH*DSIN(2.D0*B)**2
+      .     *LAMB_HDEC(AMSU(1)**2/AMCH**2,AMSD(1)**2/AMCH**2)
+-      ELSE 
++      ELSE
+       WHCSQ=0.D0
+       ENDIF
+ C
+@@ -4235,9 +4238,9 @@ C
+ 
+  753  CONTINUE
+ C
+-      WHCSQT=WHCSQ+WHCSTB(1,1)+WHCSTB(1,2)+WHCSTB(2,1)+WHCSTB(2,2) 
++      WHCSQT=WHCSQ+WHCSTB(1,1)+WHCSTB(1,2)+WHCSTB(2,1)+WHCSTB(2,2)
+ 
+-      ELSE 
++      ELSE
+       WHCCNT=0.D0
+       WHCSLT=0.D0
+       WHCSQT=0.D0
+@@ -4269,7 +4272,7 @@ C   HC ---> GOLDSTINOS
+        WHCGDT=0
+       ENDIF
+ C
+-C    ==========  TOTAL WIDTH AND BRANCHING RATIOS 
++C    ==========  TOTAL WIDTH AND BRANCHING RATIOS
+ C
+       WTOT=HLN+HMN+HSU+HBU+HSC+HBC+HBT+HWH+HWA+WHCCNT+WHCSLT+WHCSQT
+      .    +WHCGDT
+@@ -4288,9 +4291,9 @@ C
+       HCBRSU(I,J)=WHCCN(I,J)/WTOT
+ 851   CONTINUE
+       HCBRCNT=WHCCNT/WTOT
+-      HCBRSL=WHCSLT/WTOT 
+-      HCBRSQ=WHCSQ/WTOT 
+-      HCBRSQT=WHCSQT/WTOT 
++      HCBRSL=WHCSLT/WTOT
++      HCBRSQ=WHCSQ/WTOT
++      HCBRSQT=WHCSQT/WTOT
+       DO 853 I=1,2
+       DO 853 J=1,2
+       HCBRSTB(I,J)=WHCSTB(I,J)/WTOT
+@@ -4313,11 +4316,11 @@ C
+       ENDIF
+ 
+       IF(IHIGGS.EQ.2.OR.IHIGGS.EQ.5)THEN
+-     
++
+ C        =========================================================
+ C                       HEAVY CP EVEN HIGGS DECAYS
+ C        =========================================================
+-C     =============  RUNNING MASSES 
++C     =============  RUNNING MASSES
+       RMS = RUNM_HDEC(AMH,3)
+       RMC = RUNM_HDEC(AMH,4)
+       RMB = RUNM_HDEC(AMH,5)
+@@ -4335,7 +4338,7 @@ C     AMT0=3.D8
+       AMB0=AMB
+ C     AMT0=AMT
+ 
+-C     =============== PARTIAL WIDTHS 
++C     =============== PARTIAL WIDTHS
+ C  H ---> G G
+        EPS=1.D-8
+        NFEXT = 3
+@@ -4347,7 +4350,7 @@ C  H ---> G G
+        CTC = 4*AMC**2/AMH**2*DCMPLX(1D0,-EPS)
+        CAC = 2*CTC*(1+(1-CTC)*CF(CTC))*GHT
+ C
+-       IF(IOFSUSY.EQ.0) THEN 
++       IF(IOFSUSY.EQ.0) THEN
+        CSB1= 4*AMSB(1)**2/AMH**2*DCMPLX(1D0,-EPS)
+        CSB2= 4*AMSB(2)**2/AMH**2*DCMPLX(1D0,-EPS)
+        CST1= 4*AMST(1)**2/AMH**2*DCMPLX(1D0,-EPS)
+@@ -4371,10 +4374,10 @@ C
+        CXDR=-2*(-1.D0/3.D0*SS)*AMZ**2/AMSD(2)**2*DCOS(A+B)
+      .      *CSDR*(1-CSDR*CF(CSDR))
+        ELSE
+-       CXB1=0.D0 
+-       CXB2=0.D0 
+-       CXT1=0.D0 
+-       CXT2=0.D0 
++       CXB1=0.D0
++       CXB2=0.D0
++       CXT1=0.D0
++       CXT2=0.D0
+        CXUL=0.D0
+        CXUR=0.D0
+        CXDL=0.D0
+@@ -4640,7 +4643,7 @@ C  H ---> GAMMA GAMMA
+        CAL = 1.D0  * 2*CTL*(1+(1-CTL)*CF(CTL))*GHB
+        CAW = -(2+3*CTW+3*CTW*(2-CTW)*CF(CTW))*GHVV
+        CAH = -AMZ**2/2/AMCH**2*CTH*(1-CTH*CF(CTH))*GHPM
+-       IF(IOFSUSY.EQ.0) THEN 
++       IF(IOFSUSY.EQ.0) THEN
+         RMSU1 = RUNMS_HDEC(AMH/2,AMSU(1))
+         RMSU2 = RUNMS_HDEC(AMH/2,AMSU(2))
+         RMSD1 = RUNMS_HDEC(AMH/2,AMSD(1))
+@@ -4651,8 +4654,8 @@ C  H ---> GAMMA GAMMA
+         RMST2 = RUNMS_HDEC(AMH/2,AMST(2))
+         CX1 = 4*AMCHAR(1)**2/AMH**2*DCMPLX(1D0,-EPS)
+         CX2 = 4*AMCHAR(2)**2/AMH**2*DCMPLX(1D0,-EPS)
+-        CAX1= AMW/XMCHAR(1) * 2*CX1*(1+(1-CX1)*CF(CX1))*2*AC1(1,1) 
+-        CAX2= AMW/XMCHAR(2) * 2*CX2*(1+(1-CX2)*CF(CX2))*2*AC1(2,2) 
++        CAX1= AMW/XMCHAR(1) * 2*CX1*(1+(1-CX1)*CF(CX1))*2*AC1(1,1)
++        CAX2= AMW/XMCHAR(2) * 2*CX2*(1+(1-CX2)*CF(CX2))*2*AC1(2,2)
+         CSL1= 4*AMSL(1)**2/AMH**2*DCMPLX(1D0,-EPS)
+         CSL2= 4*AMSL(2)**2/AMH**2*DCMPLX(1D0,-EPS)
+         CSB1= 4*RMSB1**2/AMH**2*DCMPLX(1D0,-EPS)
+@@ -4696,7 +4699,7 @@ C  H ---> GAMMA GAMMA
+         XFAC = CDABS(CAT+CAB+CAC+CAL+CAW+CAH+CAX1+CAX2
+      .       +  CXEL+CXER+CXUL+CXUR+CXDL+CXDR
+      .       +  CXB1+CXB2+CXT1+CXT2+CXL1+CXL2)**2
+-       ELSE 
++       ELSE
+         XFAC = CDABS(CAT+CAB+CAC+CAL+CAW+CAH)**2
+        ENDIF
+        HGA=HVV(AMH,0.D0)*(ALPH/PI)**2/16.D0*XFAC
+@@ -5488,32 +5491,32 @@ C  H ---> H+ W+
+        ENDIF
+       ENDIF
+ 
+-C ========================== SUSY DECAYS 
++C ========================== SUSY DECAYS
+ C
+       IF(IOFSUSY.EQ.0) THEN
+ C  HH ----> CHARGINOS
+       DO 741 I=1,2
+       DO 741 J=1,2
+       IF (AMH.GT.AMCHAR(I)+AMCHAR(J)) THEN
+-      WHHCH(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AMH 
++      WHHCH(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AMH
+      .     *LAMB_HDEC(AMCHAR(I)**2/AMH**2,AMCHAR(J)**2/AMH**2)
+      .     *( (AC1(I,J)**2+AC1(J,I)**2)*(AMH**2-AMCHAR(I)
+-     .         **2-AMCHAR(J)**2)-4.D0*AC1(I,J)*AC1(J,I)* 
+-     .         XMCHAR(I)*XMCHAR(J) ) 
++     .         **2-AMCHAR(J)**2)-4.D0*AC1(I,J)*AC1(J,I)*
++     .         XMCHAR(I)*XMCHAR(J) )
+       ELSE
+       WHHCH(I,J)=0.D0
+       ENDIF
+  741  CONTINUE
+       WHHCHT=WHHCH(1,1)+WHHCH(1,2)+WHHCH(2,1)+WHHCH(2,2)
+ C
+-C  HH ----> NEUTRALINOS 
++C  HH ----> NEUTRALINOS
+       DO 742 I=1,4
+       DO 742 J=1,4
+       IF (AMH.GT.AMNEUT(I)+AMNEUT(J)) THEN
+       WHHNE(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AMH
+      .         *AN1(I,J)**2*(AMH**2-(XMNEUT(I)+XMNEUT(J))**2)
+      .         *LAMB_HDEC(AMNEUT(I)**2/AMH**2,AMNEUT(J)**2/AMH**2)
+-      ELSE 
++      ELSE
+       WHHNE(I,J)=0.D0
+       ENDIF
+  742  CONTINUE
+@@ -5522,7 +5525,7 @@ C  HH ----> NEUTRALINOS
+      .       +WHHNE(3,1)+WHHNE(3,2)+WHHNE(3,3)+WHHNE(3,4)
+      .       +WHHNE(4,1)+WHHNE(4,2)+WHHNE(4,3)+WHHNE(4,4)
+ C
+-C  HH ----> SLEPTONS 
++C  HH ----> SLEPTONS
+ C
+       IF (AMH.GT.2.D0*AMSE(1)) THEN
+       WHHSLEL=2*GF/2.D0/DSQRT(2D0)/PI*AMZ**4/AMH*DCOS(B+A)**2
+@@ -5555,10 +5558,10 @@ C
+       ENDIF
+  748  CONTINUE
+ 
+-      WHHSLT=WHHSTAU(1,1)+WHHSTAU(1,2)+WHHSTAU(2,1)+WHHSTAU(2,2) 
++      WHHSLT=WHHSTAU(1,1)+WHHSTAU(1,2)+WHHSTAU(2,1)+WHHSTAU(2,2)
+      .       +WHHSLEL+WHHSLER+WHHSLNL
+ C
+-C  HH ----> SQUARKS 
++C  HH ----> SQUARKS
+ C
+       IF (AMH.GT.2.D0*AMSU(1)) THEN
+       WHHSQUL=6*GF/2.D0/DSQRT(2D0)/PI*AMZ**4/AMH*DCOS(B+A)**2
+@@ -5590,7 +5593,7 @@ C
+ 
+       WHHSQ=WHHSQUL+WHHSQUR+WHHSQDL+WHHSQDR
+ C
+-C  HH ----> STOPS 
++C  HH ----> STOPS
+       SUSY = 1
+       DO 743 I=1,2
+       DO 743 J=1,2
+@@ -5609,7 +5612,7 @@ c      write(6,*)'H -> stop: ',I,J,AMH,A
+       ENDIF
+  743  CONTINUE
+ C
+-C  HH ----> SBOTTOMS 
++C  HH ----> SBOTTOMS
+       SUSY = 1
+       DO 744 I=1,2
+       DO 744 J=1,2
+@@ -5620,19 +5623,19 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         WHHSB(I,J)=3*GF*AMZ**4/2.D0/DSQRT(2.D0)/PI*GHBB(I,J)**2*
       .       LAMB_HDEC(AMSB(I)**2/AMH**2,AMSB(J)**2/AMH**2)/AMH
       .      *SUSY
@@ -76,12 +1465,1101 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
  c      write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1
        ELSE
        WHHSB(I,J)=0.D0
-@@ -9753,6 +9756,18 @@ c     * /(1.+deltamt)**4.
+       ENDIF
+  744  CONTINUE
+ C
+-      WHHSTT=WHHST(1,1)+WHHST(1,2)+WHHST(2,1)+WHHST(2,2) 
+-      WHHSBB=WHHSB(1,1)+WHHSB(1,2)+WHHSB(2,1)+WHHSB(2,2) 
++      WHHSTT=WHHST(1,1)+WHHST(1,2)+WHHST(2,1)+WHHST(2,2)
++      WHHSBB=WHHSB(1,1)+WHHSB(1,2)+WHHSB(2,1)+WHHSB(2,2)
+       WHHSQT=WHHSTT+WHHSBB+WHHSQ
+ C
+-      ELSE 
++      ELSE
+       WHHCHT=0.D0
+       WHHNET=0.D0
+       WHHSLT=0.D0
+@@ -5668,7 +5671,7 @@ C   HH ---> GOLDSTINOS
+        WHHGDT=0
+       ENDIF
+ C
+-C    ==========  TOTAL WIDTH AND BRANCHING RATIOS 
++C    ==========  TOTAL WIDTH AND BRANCHING RATIOS
+       WTOT=HLL+HMM+HSS+HCC+HBB+HTT+HGG+HGA+HZGA+HWW+HZZ+HHH+HAA+HAZ
+      .    +HHW+WHHCHT+WHHNET+WHHSLT+WHHSQT + WHHGDT
+       HHBRT=HTT/WTOT
+@@ -5694,8 +5697,8 @@ C    ==========  TOTAL WIDTH AND BRANCHI
+       DO 842 J=1,4
+       HHBRSN(I,J)=WHHNE(I,J)/WTOT
+ 842   CONTINUE
+-      HHBRCHT=WHHCHT/WTOT 
+-      HHBRNET=WHHNET/WTOT 
++      HHBRCHT=WHHCHT/WTOT
++      HHBRNET=WHHNET/WTOT
+       HHBRSL=WHHSLT/WTOT
+       HHBRSQ=WHHSQ/WTOT
+       HHBRSQT=WHHSQT/WTOT
+@@ -5727,12 +5730,12 @@ C    ==========  TOTAL WIDTH AND BRANCHI
+ 
+       ENDIF
+ 
+-      IF(IHIGGS.EQ.3.OR.IHIGGS.EQ.5)THEN 
++      IF(IHIGGS.EQ.3.OR.IHIGGS.EQ.5)THEN
+ C
+ C        =========================================================
+ C                       CP ODD  HIGGS DECAYS
+ C        =========================================================
+-C     =============  RUNNING MASSES 
++C     =============  RUNNING MASSES
+       RMS = RUNM_HDEC(AMA,3)
+       RMC = RUNM_HDEC(AMA,4)
+       RMB = RUNM_HDEC(AMA,5)
+@@ -6003,13 +6006,13 @@ C  A ---> GAMMA GAMMA
+      .     * CFACQ_HDEC(1,AMA,XRMC)
+        CTL = 4*AMTAU**2/AMA**2*DCMPLX(1D0,-EPS)
+        CAL = 1.D0  * CTL*CF(CTL)*GAB
+-       IF(IOFSUSY.EQ.0) THEN 
++       IF(IOFSUSY.EQ.0) THEN
+         CX1 = 4*AMCHAR(1)**2/AMA**2*DCMPLX(1D0,-EPS)
+         CX2 = 4*AMCHAR(2)**2/AMA**2*DCMPLX(1D0,-EPS)
+-        CAX1= AMW/XMCHAR(1) * CX1*CF(CX1) * 2*AC3(1,1) 
+-        CAX2= AMW/XMCHAR(2) * CX2*CF(CX2) * 2*AC3(2,2) 
++        CAX1= AMW/XMCHAR(1) * CX1*CF(CX1) * 2*AC3(1,1)
++        CAX2= AMW/XMCHAR(2) * CX2*CF(CX2) * 2*AC3(2,2)
+         XFAC = CDABS(CAT+CAB+CAC+CAL+CAX1+CAX2)**2
+-       ELSE 
++       ELSE
+         XFAC = CDABS(CAT+CAB+CAC+CAL)**2
+        ENDIF
+        HGA=GF/(32.D0*PI*DSQRT(2.D0))*AMA**3*(ALPH/PI)**2*XFAC
+@@ -6081,9 +6084,9 @@ C  A ---> H Z* ---> HFF
+        ENDIF
+       ENDIF
+ C
+-C ========================== SUSY DECAYS  
++C ========================== SUSY DECAYS
+ C
+-      IF(IOFSUSY.EQ.0) THEN 
++      IF(IOFSUSY.EQ.0) THEN
+ C  A ----> CHARGINOS
+       DO 731 I=1,2
+       DO 731 J=1,2
+@@ -6091,21 +6094,21 @@ C  A ----> CHARGINOS
+       WHACH(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AMA
+      .     *LAMB_HDEC(AMCHAR(I)**2/AMA**2,AMCHAR(J)**2/AMA**2)
+      .     *( (AC3(I,J)**2+AC3(J,I)**2)*(AMA**2-AMCHAR(I)
+-     .         **2-AMCHAR(J)**2)+4.D0*AC3(I,J)*AC3(J,I)* 
+-     .         XMCHAR(I)*XMCHAR(J) ) 
+-      ELSE 
++     .         **2-AMCHAR(J)**2)+4.D0*AC3(I,J)*AC3(J,I)*
++     .         XMCHAR(I)*XMCHAR(J) )
++      ELSE
+       WHACH(I,J)=0.D0
+       ENDIF
+  731  CONTINUE
+       WHACHT=WHACH(1,1)+WHACH(1,2)+WHACH(2,1)+WHACH(2,2)
+-C  A ----> NEUTRALINOS 
++C  A ----> NEUTRALINOS
+       DO 732 I=1,4
+       DO 732 J=1,4
+       IF (AMA.GT.AMNEUT(I)+AMNEUT(J)) THEN
+       WHANE(I,J)=GF*AMW**2/(2*PI*DSQRT(2.D0))/AMA
+      .         *AN3(I,J)**2*(AMA**2-(XMNEUT(I)-XMNEUT(J))**2)
+      .         *LAMB_HDEC(AMNEUT(I)**2/AMA**2,AMNEUT(J)**2/AMA**2)
+-      ELSE 
++      ELSE
+       WHANE(I,J)=0.D0
+       ENDIF
+  732  CONTINUE
+@@ -6114,7 +6117,7 @@ C  A ----> NEUTRALINOS
+      .       +WHANE(3,1)+WHANE(3,2)+WHANE(3,3)+WHANE(3,4)
+      .       +WHANE(4,1)+WHANE(4,2)+WHANE(4,3)+WHANE(4,4)
+ 
+-C  A ----> STAU'S 
++C  A ----> STAU'S
+ C
+       IF(AMA.GT.AMSL(1)+AMSL(2)) THEN
+       WHASL=GF*AMZ**4/DSQRT(2.D0)/PI*GAEE**2*
+@@ -6123,7 +6126,7 @@ C
+       WHASL=0.D0
+       ENDIF
+ C
+-C  A ----> STOPS 
++C  A ----> STOPS
+ C
+       SUSY = 1
+       IF(AMA.GT.AMST(1)+AMST(2)) THEN
+@@ -6140,7 +6143,7 @@ c      write(6,*)'A -> stop: ',AMA,AMST(
+       WHAST=0.D0
+       ENDIF
+ C
+-C  A ----> SBOTTOMS 
++C  A ----> SBOTTOMS
+ C
+       SUSY = 1
+       IF(AMA.GT.AMSB(1)+AMSB(2)) THEN
+@@ -6157,7 +6160,7 @@ c      write(6,*)'A -> sbot: ',AMA,AMSB(
+       WHASB=0.D0
+       ENDIF
+ C
+-      ELSE 
++      ELSE
+       WHACHT=0.D0
+       WHANET=0.D0
+       WHASL=0.D0
+@@ -6191,7 +6194,7 @@ C   HA ---> GOLDSTINOS
+        WHAGDT=0
+       ENDIF
+ C
+-C    ==========  TOTAL WIDTH AND BRANCHING RATIOS 
++C    ==========  TOTAL WIDTH AND BRANCHING RATIOS
+       WTOT=HLL+HMM+HSS+HCC+HBB+HGG+HGA+HZGA+HAZ+HTT
+      .    +WHACHT+WHANET+WHASL+WHAST+WHASB + WHAGDT
+       ABRT=HTT/WTOT
+@@ -6212,13 +6215,13 @@ C    ==========  TOTAL WIDTH AND BRANCHI
+       DO 832 J=1,4
+       HABRSN(I,J)=WHANE(I,J)/WTOT
+ 832   CONTINUE
+-      HABRCHT=WHACHT/WTOT      
+-      HABRNET=WHANET/WTOT      
+-      HABRSL=WHASL/WTOT 
+-      HABRST=WHAST/WTOT 
+-      HABRSB=WHASB/WTOT 
++      HABRCHT=WHACHT/WTOT
++      HABRNET=WHANET/WTOT
++      HABRSL=WHASL/WTOT
++      HABRST=WHAST/WTOT
++      HABRSB=WHASB/WTOT
+       HABRGD=WHAGDT/WTOT
+-C 
++C
+       AWDTH=WTOT
+ 
+       BHASTAU = WHASL/WTOT
+@@ -6230,7 +6233,7 @@ C    ===================================
+ 
+       RETURN
+       END
+- 
++
+       DOUBLE PRECISION FUNCTION BIJ_HDEC(X,Y)
+       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+       DOUBLE PRECISION LAMB_HDEC
+@@ -6308,11 +6311,11 @@ C **************************************
+       SB = DSIN(BET)
+       CB = DCOS(BET)
+       AMAR = AMA
+-C  ============ HEAVIEST CHARGINO MASS NEEDED FOR SUBH ========== 
++C  ============ HEAVIEST CHARGINO MASS NEEDED FOR SUBH ==========
+       if(islhai.eq.0) then
+          AMCHI2=AM2**2+AMU**2+2.D0*AMW**2+DSQRT((AM2**2-AMU**2)**2
+      .        +4.D0*AMW**4*DCOS(2.D0*BET)**2+4.D0*AMW**2*
+-     .        (AM2**2+AMU**2+2.D0*AMU*AM2*DSIN(2.D0*BET) ) ) 
++     .        (AM2**2+AMU**2+2.D0*AMU*AM2*DSIN(2.D0*BET) ) )
+          AMCHI=DSQRT(0.5D0*AMCHI2)
+       else
+          amchi = slhachar(2)
+@@ -6377,7 +6380,7 @@ c end change susyhit
+       AML2=AMLR**2
+       AMH2=AMHR**2
+       AMP2=AMCH**2
+-C ========== HIGGS COUPLINGS 
++C ========== HIGGS COUPLINGS
+       SBMA = SB*CA-CB*SA
+       CBMA = CB*CA+SB*SA
+       SBPA = SB*CA+CB*SA
+@@ -6457,10 +6460,10 @@ C ========== HIGGS COUPLINGS
+        ENDIF
+       ENDIF
+ C ===============================================================
+-C ========== POLE MASSES 
++C ========== POLE MASSES
+       if(islhai.eq.0) then
+       IF(IMODEL.EQ.1)THEN
+-      IF(IPOLE.EQ.1) THEN 
++      IF(IPOLE.EQ.1) THEN
+        MT=RUNM_HDEC(AMT,6)
+        MB=RUNM_HDEC(AMT,5)
+        SW2=1.D0-AMW**2/AMZ**2
+@@ -6500,7 +6503,7 @@ C===== SBOTTOM MASSES
+        ENDIF
+        CSB= DCOS(THEB)
+        SSB= DSIN(THEB)
+-C===== LIGHT HIGGS COUPLINGS 
++C===== LIGHT HIGGS COUPLINGS
+        GLTT(1,1)=-SBPA*(0.5D0*CST**2-2.D0/3.D0*SW2*DCOS(2*THET) )
+      .     +MT**2/AMZ**2*GLT + MT*SST*CST/AMZ**2*(AU*GLT+AMU*GHT)
+        GLTT(2,2)=-SBPA*(0.5D0*SST**2+2.D0/3.D0*SW2*DCOS(2*THET) )
+@@ -6517,7 +6520,7 @@ C===== LIGHT HIGGS COUPLINGS
+      .    + MB*DCOS(2*THEB)/2.D0/AMZ**2*(AD*GLB-AMU*GHB)
+        GLBB(2,1)=-2*SBPA*SSB*CSB*(-1.D0/3.D0*SW2+0.25D0)
+      .     + MB*DCOS(2*THEB)/2.D0/AMZ**2*(AD*GLB-AMU*GHB)
+-C===== HEAVY HIGGS COUPLINGS 
++C===== HEAVY HIGGS COUPLINGS
+        GHTT(1,1)=CBPA*(0.5D0*CST**2-2.D0/3.D0*SW2*DCOS(2*THET))
+      .     +MT**2/AMZ**2*GHT + MT*SST*CST/AMZ**2*(AU*GHT-AMU*GLT)
+        GHTT(2,2)=CBPA*(0.5D0*SST**2+2.D0/3.D0*SW2*DCOS(2*THET))
+@@ -6534,10 +6537,10 @@ C===== HEAVY HIGGS COUPLINGS
+      .     + MB*DCOS(2*THEB)/2.D0/AMZ**2*(AD*GHB+AMU*GLB)
+        GHBB(2,1)=2*CBPA*SSB*CSB*(-1.D0/3.D0*SW2+0.25D0)
+      .     + MB*DCOS(2*THEB)/2.D0/AMZ**2*(AD*GHB+AMU*GLB)
+-C===== PSEUDOSCALAR HIGGS COUPLINGS 
+-       GATT=MT/2.D0/AMZ**2*(AMU+AU*GAT) 
+-       GABB=MB/2.D0/AMZ**2*(AMU+AD*GAB) 
+-C======= LOOP CORRECTIONS  
++C===== PSEUDOSCALAR HIGGS COUPLINGS
++       GATT=MT/2.D0/AMZ**2*(AMU+AU*GAT)
++       GABB=MB/2.D0/AMZ**2*(AMU+AD*GAB)
++C======= LOOP CORRECTIONS
+        XDLT=GF/(2.D0*DSQRT(2.D0)*PI**2)*GLT**2*(-2.D0*MT**2+0.5D0*AML2)
+      .     *DREAL(F0_HDEC(MT,MT,AML2))
+      .     *3*MT**2
+@@ -6593,15 +6596,15 @@ C--BUG IN CARENA ET AL. FIXED
+        XDASB=GF/(1.D0*DSQRT(2.D0)*PI**2)*GABB**2*
+      .       DREAL(F0_HDEC(MSB(1),MSB(2),AMA2))
+      .     *3*AMZ**4
+-      
++
+        AML=DSQRT(AML2+XDLT+XDLB+XDLST+XDLSB)
+-       AMH=DSQRT(AMH2+XDHT+XDHB+XDHST+XDHSB)  
+-       AMA=DSQRT(AMA2+XDAT+XDAB+XDAST+XDASB)  
++       AMH=DSQRT(AMH2+XDHT+XDHB+XDHST+XDHSB)
++       AMA=DSQRT(AMA2+XDAT+XDAB+XDAST+XDASB)
+       ELSE
+        AML=AMLR
+-       AMH=AMHR     
+-       AMA=AMAR     
+-      ENDIF 
++       AMH=AMHR
++       AMA=AMAR
++      ENDIF
+       ELSE
+        AML=AMLR
+        AMH=AMHR
+@@ -7320,7 +7323,7 @@ C     **********************************
+ C	  CHARGINO AND NEUTRALINO MASS MATRICES AND COUPLINGS
+ C     ****************************************************************
+       SUBROUTINE GAUGINO_HDEC(MU,M2,B,A,MC,MN,XMN,AC1,AC2,AC3,AN1,AN2
+-     .                 ,AN3,ACNL,ACNR,AGDL,AGDA,AGDH,AGDC)            
++     .                 ,AN3,ACNL,ACNR,AGDL,AGDA,AGDH,AGDC)
+       IMPLICIT REAL*8(A-H,K-Z)
+       COMPLEX*16 CXA,CXB,CXC,CXD,CX1,CX2,CX3
+       DIMENSION MC(2),MN(4),XMN(4),Z(4,4),ZX(4,4),U(2,2),V(2,2),
+@@ -7385,7 +7388,7 @@ C     *********** MASSES AND COUPLINGS:
+             ZX(I,4)=(-XMN(I)*(M2-XMN(I))*(M1-XMN(I))-MZ**2*CB*CB*
+      .           ((M1-M2)*CW**2+M2-XMN(I)))/MZ/(M2-XMN(I))
+      .           /SW/(MU*CB+XMN(I)*SB)
+-            ZX(I,1)=1.D0/DSQRT(1.D0+ZX(I,2)**2+ZX(I,3)**2+ZX(I,4)**2) 
++            ZX(I,1)=1.D0/DSQRT(1.D0+ZX(I,2)**2+ZX(I,3)**2+ZX(I,4)**2)
+             YZ(I,1)=ZX(I,1)
+             YZ(I,2)=ZX(I,2)*ZX(I,1)
+             YZ(I,3)=ZX(I,3)*ZX(I,1)
+@@ -7426,7 +7429,7 @@ C     *************  ORDERING THE DISORD
+        IORD(2) = IREM(2)
+        IORD(3) = IREM(1)
+       ENDIF
+-C 
++C
+       DO 98 J=1,4
+       I=IORD(J)
+       XMN(J)=YMN(I)
+@@ -7520,7 +7523,7 @@ C MY CONVENTION
+                  V(1,J)=V(2,J)
+                  V(2,J)=BV(J)
+               ENDDO
+-           ENDIF        
++           ENDIF
+            MC(1)=DABS(XMC(1))
+            MC(2)=DABS(XMC(2))
+            slhaxchar(1) = mc(1)
+@@ -7543,18 +7546,18 @@ C     ************  CHARGINO COUPLINGS T
+ 	S(I,J)=DSQRT(1.D0/2.D0)*U(J,1)*V(I,2)
+  12	CONTINUE
+ 	DO 22 I=1,2
+-	DO 22 J=1,2	
++	DO 22 J=1,2
+ 	AC1(I,J)= Q(I,J)*DCOS(A)+S(I,J)*DSIN(A)
+ 	AC2(I,J)=-Q(I,J)*DSIN(A)+S(I,J)*DCOS(A)
+ 	AC3(I,J)= Q(I,J)*DSIN(B)+S(I,J)*DCOS(B)
+  22	CONTINUE
+-C     **** CHARGINO-NEUTRALINO COUPLINGS TO CHARGED HIGGS BOSONS 
++C     **** CHARGINO-NEUTRALINO COUPLINGS TO CHARGED HIGGS BOSONS
+ 	DO 13 I=1,2
+ 	DO 13 J=1,4
+         ACNL(I,J)=DCOS(B)*(Z(J,4)*V(I,1)+(Z(J,2)+Z(J,1)*TW)
+-     .       *V(I,2)/DSQRT(2.D0)) 
++     .       *V(I,2)/DSQRT(2.D0))
+         ACNR(I,J)=DSIN(B)*(Z(J,3)*U(I,1)-(Z(J,2)+Z(J,1)*TW)
+-     .       *U(I,2)/DSQRT(2.D0)) 
++     .       *U(I,2)/DSQRT(2.D0))
+  13     CONTINUE
+ 
+ C   ************* HIGGS--NEUTRALINO--GOLDSTINO COUPLINGS
+@@ -7572,11 +7575,11 @@ C   ************* CHARGED HIGGS--CHARGIN
+        END
+ 
+ C   ****************************************************************
+-C     SUBROUTINE FOR SFERMION MASSES, MIXING AND COUPLINGS 
++C     SUBROUTINE FOR SFERMION MASSES, MIXING AND COUPLINGS
+ C   ****************************************************************
+ 
+       SUBROUTINE SFERMION_HDEC(TSC,BSC,MQL,MUR,MDR,MEL,MER,AL,AT,AB,MU,
+-     .                    MST,MSB,MSL,MSU,MSD,MSE,MSN, 
++     .                    MST,MSB,MSL,MSU,MSD,MSE,MSN,
+      .                    GLEE,GLTT,GLBB,GHEE,GHTT,GHBB,
+      .                    GAEE,GATT,GABB,GCEN,GCTB)
+ 
+@@ -7615,21 +7618,21 @@ c     MT = RUNM_HDEC(AMT,6)
+ c     MB = RUNM_HDEC(AMT,5)
+ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+       ML = AMTAU
+-C FIRST TWO GENERATIONS:  NO MIXING INCLUDED 
++C FIRST TWO GENERATIONS:  NO MIXING INCLUDED
+       if(islhai.eq.0) then
+-C UP SQUARKS: 
++C UP SQUARKS:
+          MSTL2=MQL1**2+(0.5D0-2.D0/3.D0*SW2)*MZ**2*DCOS(2.D0*B)
+-         MSTR2=MUR1**2+2.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B) 
++         MSTR2=MUR1**2+2.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B)
+          MSU(1)=DSQRT(MSTL2)
+          MSU(2)=DSQRT(MSTR2)
+ C DOWN SQUARKS
+          MSBL2=MQL1**2+(-0.5D0+1.D0/3.D0*SW2)*MZ**2*DCOS(2.D0*B)
+-         MSBR2=MDR1**2-1.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B) 
++         MSBR2=MDR1**2-1.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B)
+          MSD(1)=DSQRT(MSBL2)
+          MSD(2)=DSQRT(MSBR2)
+ C SLEPTONS
+          MSEL2=MEL1**2+(-0.5D0+SW2)*MZ**2*DCOS(2.D0*B)
+-         MSER2=MER1**2- SW2*MZ**2*DCOS(2.D0*B) 
++         MSER2=MER1**2- SW2*MZ**2*DCOS(2.D0*B)
+          MSNL2=MEL1**2+0.5D0*MZ**2*DCOS(2.D0*B)
+          MSE(1)=DSQRT(MSEL2)
+          MSE(2)=DSQRT(MSER2)
+@@ -7641,15 +7644,15 @@ C
+ C STOP MASSES/MIXING
+ C
+       MSTL2=MQL**2+(0.5D0-2.D0/3.D0*SW2)*MZ**2*DCOS(2.D0*B)
+-      MSTR2=MUR**2+2.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B) 
++      MSTR2=MUR**2+2.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B)
+       MLRT=AT-MU/TB
+       DELT=(MSTL2-MSTR2)**2+4*MT**2*MLRT**2
+       MST12=MT**2+0.5D0*(MSTL2+MSTR2-DSQRT(DELT))
+       MST22=MT**2+0.5D0*(MSTL2+MSTR2+DSQRT(DELT))
+-        IF(MST12.LT.0.D0)THEN 
++        IF(MST12.LT.0.D0)THEN
+       PRINT *, 'MSTOP**2 is negative!!!!'
+-      GOTO 111 
+-      ELSE 
++      GOTO 111
++      ELSE
+       MST(1)=DSQRT(MST12)
+       MST(2)=DSQRT(MST22)
+       IF(MSTL2.EQ.MSTR2) THEN
+@@ -7658,14 +7661,14 @@ C
+        THET=0.5D0*DATAN(2.D0*MT*MLRT / (MSTL2-MSTR2) )
+        IF(MSTL2.GT.MSTR2) THET = THET + PI/2
+       ENDIF
+-        ENDIF 
++        ENDIF
+       CT= DCOS(THET)
+-      ST= DSIN(THET) 
++      ST= DSIN(THET)
+ C
+ C SBOTTOM MASSES/MIXING
+ C
+       MSBL2=MQL**2+(-0.5D0+1.D0/3.D0*SW2)*MZ**2*DCOS(2.D0*B)
+-      MSBR2=MDR**2-1.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B) 
++      MSBR2=MDR**2-1.D0/3.D0*SW2*MZ**2*DCOS(2.D0*B)
+       MLRB=AB-MU*TB
+       DELB=(MSBL2-MSBR2)**2+4*MB**2*MLRB**2
+       MSB12=MB**2+0.5D0*(MSBL2+MSBR2-DSQRT(DELB))
+@@ -7682,15 +7685,15 @@ C
+        THEB=0.5D0*DATAN(2.D0*MB*MLRB / (MSBL2-MSBR2) )
+        IF(MSBL2.GT.MSBR2) THEB = THEB + PI/2
+       ENDIF
+-        ENDIF  
++        ENDIF
+       CB= DCOS(THEB)
+-      SB= DSIN(THEB) 
++      SB= DSIN(THEB)
+ 
+ C
+ C  STAU MASSES/MIXING
+ C
+       MSEL2=MEL**2+(-0.5D0+SW2)*MZ**2*DCOS(2.D0*B)
+-      MSER2=MER**2- SW2*MZ**2*DCOS(2.D0*B) 
++      MSER2=MER**2- SW2*MZ**2*DCOS(2.D0*B)
+       MSNL2=MEL**2+0.5D0*MZ**2*DCOS(2.D0*B)
+       MLRE=AL-MU*TB
+       DELE=(MSEL2-MSER2)**2+4*ML**2*MLRE**2
+@@ -7708,9 +7711,9 @@ C
+        THEL=0.5D0*DATAN(2.D0*ML*MLRE / (MSEL2-MSER2) )
+        IF(MSEL2.GT.MSER2) THEL = THEL + PI/2
+       ENDIF
+-        ENDIF  
++        ENDIF
+       CL= DCOS(THEL)
+-      SL= DSIN(THEL) 
++      SL= DSIN(THEL)
+ 
+       else
+          do i=1,2,1
+@@ -7733,7 +7736,7 @@ c maggie changed 28/12/2008
+          thet=dacos(ct)
+          theb=dacos(cb)
+          thel=dacos(cl)
+-         
++
+          if(slhasit.le.0.D0) then
+             if(thet.ge.0.D0) then
+                thet = -1.D0*thet
+@@ -7745,7 +7748,7 @@ c maggie changed 28/12/2008
+                theb = -1.D0*theb
+             endif
+          endif
+-         
++
+          if(slhasil.le.0.D0) then
+             if(thel.ge.0.D0) then
+                thel = -1.D0*thel
+@@ -7755,80 +7758,80 @@ c end maggie changed 28/12/2008
+       endif
+ C
+ C LIGHT CP--EVEN HIGGS COUPLINGS TO STOPS
+-C 
+-      GLTT(1,1)=-DSIN(B+A)*(0.5D0*CT**2-2.D0/3.D0*SW2*DCOS(2*THET)) 
++C
++      GLTT(1,1)=-DSIN(B+A)*(0.5D0*CT**2-2.D0/3.D0*SW2*DCOS(2*THET))
+      .    + MT**2/MZ**2*GLT + MT*ST*CT/MZ**2*(AT*GLT+MU*GHT)
+       GLTT(2,2)=-DSIN(B+A)*(0.5D0*ST**2+2.D0/3.D0*SW2*DCOS(2*THET))
+      .    + MT**2/MZ**2*GLT - MT*ST*CT/MZ**2*(AT*GLT+MU*GHT)
+       GLTT(1,2)=-2*DSIN(B+A)*ST*CT*(2.D0/3.D0*SW2-0.25D0)
+-     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GLT+MU*GHT) 
++     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GLT+MU*GHT)
+       GLTT(2,1)=-2*DSIN(B+A)*ST*CT*(2.D0/3.D0*SW2-0.25D0)
+-     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GLT+MU*GHT) 
++     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GLT+MU*GHT)
+ C
+ C LIGHT CP--EVEN HIGGS COUPLINGS TO SBOTTOMS
+ C
+-      GLBB(1,1)=-DSIN(B+A)*(-0.5D0*CB**2+1.D0/3.D0*SW2*DCOS(2*THEB)) 
++      GLBB(1,1)=-DSIN(B+A)*(-0.5D0*CB**2+1.D0/3.D0*SW2*DCOS(2*THEB))
+      .    + MB**2/MZ**2*GLB + MB*SB*CB/MZ**2*(AB*GLB-MU*GHB)
+-      GLBB(2,2)=-DSIN(B+A)*(-0.5D0*SB**2-1.D0/3.D0*SW2*DCOS(2*THEB)) 
++      GLBB(2,2)=-DSIN(B+A)*(-0.5D0*SB**2-1.D0/3.D0*SW2*DCOS(2*THEB))
+      .    + MB**2/MZ**2*GLB - MB*SB*CB/MZ**2*(AB*GLB-MU*GHB)
+       GLBB(1,2)=-2*DSIN(B+A)*SB*CB*(-1.D0/3.D0*SW2+0.25D0)
+-     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GLB-MU*GHB) 
++     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GLB-MU*GHB)
+       GLBB(2,1)=-2*DSIN(B+A)*SB*CB*(-1.D0/3.D0*SW2+0.25D0)
+-     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GLB-MU*GHB) 
++     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GLB-MU*GHB)
+ 
+ C
+-C LIGHT CP--EVEN HIGGS COUPLINGS TO STAU'S 
++C LIGHT CP--EVEN HIGGS COUPLINGS TO STAU'S
+ C
+-      GLEE(1,1)=-DSIN(B+A)*(-0.5D0*CL**2+SW2*DCOS(2*THEL)) 
++      GLEE(1,1)=-DSIN(B+A)*(-0.5D0*CL**2+SW2*DCOS(2*THEL))
+      .    + ML**2/MZ**2*GLB + ML*SL*CL/MZ**2*(AL*GLB-MU*GHB)
+-      GLEE(2,2)=-DSIN(B+A)*(-0.5D0*SL**2-SW2*DCOS(2*THEL)) 
++      GLEE(2,2)=-DSIN(B+A)*(-0.5D0*SL**2-SW2*DCOS(2*THEL))
+      .    + ML**2/MZ**2*GLB - ML*SL*CL/MZ**2*(AL*GLB-MU*GHB)
+       GLEE(1,2)=-2*DSIN(B+A)*SL*CL*(-SW2+0.25D0)
+-     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GLB-MU*GHB) 
++     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GLB-MU*GHB)
+       GLEE(2,1)=-2*DSIN(B+A)*SL*CL*(-SW2+0.25D0)
+-     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GLB-MU*GHB) 
++     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GLB-MU*GHB)
+ C
+ C HEAVY CP--EVEN HIGGS COUPLINGS TO STOPS
+ C
+-      GHTT(1,1)=DCOS(B+A)*(0.5D0*CT**2-2.D0/3.D0*SW2*DCOS(2*THET)) 
++      GHTT(1,1)=DCOS(B+A)*(0.5D0*CT**2-2.D0/3.D0*SW2*DCOS(2*THET))
+      .    + MT**2/MZ**2*GHT + MT*ST*CT/MZ**2*(AT*GHT-MU*GLT)
+       GHTT(2,2)= DCOS(B+A)*(0.5D0*ST**2+2.D0/3.D0*SW2*DCOS(2*THET))
+      .    + MT**2/MZ**2*GHT - MT*ST*CT/MZ**2*(AT*GHT-MU*GLT)
+       GHTT(1,2)=2*DCOS(B+A)*ST*CT*(2.D0/3.D0*SW2-0.25D0)
+-     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GHT-MU*GLT) 
++     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GHT-MU*GLT)
+       GHTT(2,1)=2*DCOS(B+A)*ST*CT*(2.D0/3.D0*SW2-0.25D0)
+-     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GHT-MU*GLT) 
++     .    + MT*DCOS(2*THET)/2.D0/MZ**2*(AT*GHT-MU*GLT)
+ C
+ C HEAVY CP--EVEN HIGGS COUPLINGS TO SBOTTOMS
+ C
+-      GHBB(1,1)= DCOS(B+A)*(-0.5D0*CB**2+1.D0/3.D0*SW2*DCOS(2*THEB)) 
++      GHBB(1,1)= DCOS(B+A)*(-0.5D0*CB**2+1.D0/3.D0*SW2*DCOS(2*THEB))
+      .    + MB**2/MZ**2*GHB + MB*SB*CB/MZ**2*(AB*GHB+MU*GLB)
+-      GHBB(2,2)= DCOS(B+A)*(-0.5D0*SB**2-1.D0/3.D0*SW2*DCOS(2*THEB)) 
++      GHBB(2,2)= DCOS(B+A)*(-0.5D0*SB**2-1.D0/3.D0*SW2*DCOS(2*THEB))
+      .    + MB**2/MZ**2*GHB - MB*SB*CB/MZ**2*(AB*GHB+MU*GLB)
+       GHBB(1,2)=2*DCOS(B+A)*SB*CB*(-1.D0/3.D0*SW2+0.25D0)
+-     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GHB+MU*GLB) 
++     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GHB+MU*GLB)
+       GHBB(2,1)=2*DCOS(B+A)*SB*CB*(-1.D0/3.D0*SW2+0.25D0)
+-     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GHB+MU*GLB) 
++     .    + MB*DCOS(2*THEB)/2.D0/MZ**2*(AB*GHB+MU*GLB)
+ C
+-C HEAVY CP--EVEN HIGGS COUPLINGS TO STAU'S 
++C HEAVY CP--EVEN HIGGS COUPLINGS TO STAU'S
+ C
+-      GHEE(1,1)= DCOS(B+A)*(-0.5D0*CL**2+SW2*DCOS(2*THEL)) 
++      GHEE(1,1)= DCOS(B+A)*(-0.5D0*CL**2+SW2*DCOS(2*THEL))
+      .    + ML**2/MZ**2*GHB + ML*SL*CL/MZ**2*(AL*GHB+MU*GLB)
+-      GHEE(2,2)= DCOS(B+A)*(-0.5D0*SL**2-SW2*DCOS(2*THEL)) 
++      GHEE(2,2)= DCOS(B+A)*(-0.5D0*SL**2-SW2*DCOS(2*THEL))
+      .    + ML**2/MZ**2*GHB - ML*SL*CL/MZ**2*(AL*GHB+MU*GLB)
+       GHEE(1,2)=2*DCOS(B+A)*SL*CL*(-SW2+0.25D0)
+-     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GHB+MU*GLB) 
++     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GHB+MU*GLB)
+       GHEE(2,1)=2*DCOS(B+A)*SL*CL*(-SW2+0.25D0)
+-     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GHB+MU*GLB) 
++     .    + ML*DCOS(2*THEL)/2.D0/MZ**2*(AL*GHB+MU*GLB)
+ 
+ C
+-C PSEUDOSCALAR COUPLINGS 
++C PSEUDOSCALAR COUPLINGS
+ C
+-      GATT=MT/2.D0/MZ**2*(MU+AT*GAT) 
+-      GABB=MB/2.D0/MZ**2*(MU+AB*GAB) 
+-      GAEE=ML/2.D0/MZ**2*(MU+AL*GAB) 
++      GATT=MT/2.D0/MZ**2*(MU+AT*GAT)
++      GABB=MB/2.D0/MZ**2*(MU+AB*GAB)
++      GAEE=ML/2.D0/MZ**2*(MU+AL*GAB)
+ C
+-C CHARGED HIGGS COUPLINGS STOPS/SBOTTOMS 
++C CHARGED HIGGS COUPLINGS STOPS/SBOTTOMS
+ C
+       CLL=(MW**2*DSIN(2*B)-MT**2*GAT-MB**2*GAB)/DSQRT(2.D0)/MW**2
+       CRR=-MT*MB*(GAT+GAB)/DSQRT(2.D0)/MW**2
+@@ -7840,14 +7843,14 @@ C
+       GCTB(2,2)=+ST*SB*CLL+CT*CB*CRR-ST*CB*CLR-CT*SB*CRL
+ 
+ C
+-C CHARGED HIGGS COUPLINGS TAU'S AND NEUTRINOS 
++C CHARGED HIGGS COUPLINGS TAU'S AND NEUTRINOS
+ C
+       CLL=(MW**2*DSIN(2*B)-ML**2*GAB)/DSQRT(2.D0)/MW**2
+       CLR=-ML*(MU+AL*GAB)/DSQRT(2.D0)/MW**2
+       GCEN(1,1)=CL*CLL+SL*CLR
+       GCEN(1,2)=-SL*CLL+CL*CLR
+       GCEN(2,1)=0.D0
+-      GCEN(2,2)=0.D0 
++      GCEN(2,2)=0.D0
+ 
+ C--FILL COMMON BLOCK GLUINO_HDEC FOR SUSY-QCD CORRECTIONS TO
+ C  HIGGS -> BB, SQUARKS
+@@ -7874,9 +7877,9 @@ C  HIGGS -> BB, SQUARKS
+        XATT(1,2) = GATT
+        XATT(2,1) = -GATT
+ 
+-      RETURN 
++      RETURN
+ 111   STOP
+-      END 
++      END
+ 
+ C ******************************************************************
+ 
+@@ -8047,10 +8050,15 @@ C---------------------------------------
+       ELSE
+        NF=6
+       ENDIF
++      IF(Q.LE.XLB(NF))THEN    !Added by PS to prevent NaN widths 24/1/2017
++        QP = 1.000001*XLB(NF)
++      ELSE
++        QP = Q
++      ENDIF
+       IF(N.EQ.1)THEN
+-        ALPHAS_HDEC=ALS1(NF,Q)
++        ALPHAS_HDEC=ALS1(NF,QP)
+       ELSE
+-        ALPHAS_HDEC=ALS2(NF,Q)
++        ALPHAS_HDEC=ALS2(NF,QP)
+       ENDIF
+       RETURN
+       END
+@@ -8180,6 +8188,23 @@ C--YY = ARRAY OF 4 DISCRETE FUNCTION-VAL
+       X1=DLOG(XX(2))
+       X2=DLOG(XX(3))
+       X3=DLOG(XX(4))
++C--REVERT TO LINEAR INTERPOLATION IF ANY NEGATIVE VALUES (PS Added to avoid NaN widths for H+->tb 22/2/2017)
++      IF (ANY(YY .LT. 0)) THEN
++        IF (YY(2) .GT. 0) THEN
++          I = 2
++        ELSE
++          IF (YY(1) .LT. 0.) STOP 'Too many negative YYs in FINT_HDEC'
++          I = 1
++        ENDIF
++        IF (YY(3) .GT. 0) THEN
++          J = 3
++        ELSE
++          IF (YY(4) .LT. 0.) STOP 'Too many negative YYs in FINT_HDEC'
++          J = 4
++        ENDIF
++        FINT_HDEC = YY(I)+(Z-XX(I))/(XX(J)-XX(I))*(YY(J)-YY(I))
++        RETURN
++      ENDIF
+       Y0=DLOG(YY(1))
+       Y1=DLOG(YY(2))
+       Y2=DLOG(YY(3))
+@@ -8200,7 +8225,7 @@ C--REAL DILOGARITHM (SPENCE-FUNCTION)
+       SP_HDEC = DREAL(LI2_HDEC(CX))
+       RETURN
+       END
+- 
++
+       COMPLEX*16 FUNCTION LI2_HDEC(X)
+ C--COMPLEX DILOGARITHM (SPENCE-FUNCTION)
+       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+@@ -8242,7 +8267,7 @@ C--COMPLEX DILOGARITHM (SPENCE-FUNCTION)
+         RETURN
+       ENDIF
+       END
+- 
++
+       COMPLEX*16 FUNCTION CLI2_HDEC(X)
+ C--TAYLOR-EXPANSION FOR COMPLEX DILOGARITHM (SPENCE-FUNCTION)
+       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+@@ -8258,7 +8283,7 @@ C--TAYLOR-EXPANSION FOR COMPLEX DILOGARI
+       CLI2_HDEC=Z**2*CLI2_HDEC+Z
+       RETURN
+       END
+- 
++
+       DOUBLE PRECISION FUNCTION FACTRL_HDEC(N)
+ C--DOUBLE PRECISION VERSION OF FACTORIAL
+       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+@@ -8269,7 +8294,7 @@ C--DOUBLE PRECISION VERSION OF FACTORIAL
+ 999   CONTINUE
+       RETURN
+       END
+- 
++
+       SUBROUTINE BERNINI_HDEC(N)
+ C--INITIALIZATION OF COEFFICIENTS FOR POLYLOGARITHMS
+       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+@@ -8277,10 +8302,10 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
+       COMMON/BERNOULLI_HDEC/B2(18),B12(18),B3(18)
+       COMMON/CONST_HDEC/ZETA2,ZETA3
+       COMMON/POLY_HDEC/NBER
+- 
++
+       NBER=N
+       PI=4.D0*DATAN(1.D0)
+- 
++
+       B(1)=-1.D0/2.D0
+       B(2)=1.D0/6.D0
+       B(3)=0.D0
+@@ -8301,7 +8326,7 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
+       B(18)=43867.D0/798.D0
+       ZETA2=PI**2/6.D0
+       ZETA3=1.202056903159594D0
+- 
++
+       DO 995 I=1,18
+         B2(I)=B(I)/FACTRL_HDEC(I+1)
+         B12(I)=DFLOAT(I+1)/FACTRL_HDEC(I+2)*B(I)/2.D0
+@@ -8314,7 +8339,7 @@ C--INITIALIZATION OF COEFFICIENTS FOR PO
+         B3(I)=B3(I)+PB(J+1)*PB(I-J+1)/FACTRL_HDEC(I-J)/FACTRL_HDEC(J+1)
+      .                                            /DFLOAT(I+1)
+ 996   CONTINUE
+- 
++
+       RETURN
+       END
+ 
+@@ -8485,7 +8510,7 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ c     write(6,*)cof1,cof2+cof3
+       RETURN
+       END
+- 
++
+ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+       SUBROUTINE BOTSUSY_HDEC(GLB,GHB,GAB,XGLB,XGHB,XGAB,SCALE,IL)
+@@ -8497,7 +8522,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       XGAB = GAB*(1+DGAB)
+       RETURN
+       END
+- 
++
+       SUBROUTINE DMBAPP_HDEC(ICASE,DGLB,DGHB,DGAB,SCALE,IL)
+       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+       DIMENSION AMCHAR(2),AMNEUT(4),XMNEUT(4),
+@@ -8515,7 +8540,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      .            GLPM,GHPM,B,A
+       COMMON/BREAK_HDEC/AMEL,AMER,AMSQ,AMUR,AMDR,AL,AU,AD,AMU,AM2
+       COMMON/SMASS_HDEC/AMNEUT,XMNEUT,AMCHAR,XMST,XMSB,AMSL,
+-     .              AMSU,AMSD,AMSE,AMSN 
++     .              AMSU,AMSD,AMSE,AMSN
+       PI = 4*DATAN(1.D0)
+       V  = 1/DSQRT(2*DSQRT(2D0)*GF)
+       TANB = DTAN(B)
+@@ -8543,7 +8568,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      .                  AMSU(1),AMSU(2),AMSD(1),AMSD(2))
+        FQCD = 1+ASH/PI*CQCD
+       ENDIF
+- 
++
+       ASH = ALPHAS_HDEC(SCALQCD,2)
+       IF(ICASE.EQ.0)THEN
+        DELTAMB = 2*ASH/3/PI*AMG*AMU*TANB*T_HDEC(SBOT1,SBOT2,AMG)*FQCD
+@@ -8599,50 +8624,50 @@ c     write(6,*)'delta_b: ',deltamb, ash
+ 
+       RETURN
+       END
+- 
++
+ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ ***********************************************************************
+         FUNCTION ETA_HDEC(C1,C2)
+ ***********************************************************************
+-*       COMPLEX ETA-FUNKTION                                           
++*       COMPLEX ETA-FUNKTION
+ *---------------------------------------------------------------------*
+-*       8.06.90    ANSGAR DENNER                                       
++*       8.06.90    ANSGAR DENNER
+ ***********************************************************************
+-        IMPLICIT   LOGICAL(A-Z)                                        
++        IMPLICIT   LOGICAL(A-Z)
+         COMPLEX*16 ETA_HDEC,C1,C2
+-        REAL*8     PI,IM1,IM2,IM12                                     
+-                                                                       
+-        PI     = 4D0*DATAN(1D0)                                        
+-        IM1    = DIMAG(C1)                                             
+-        IM2    = DIMAG(C2)                                             
+-        IM12   = DIMAG(C1*C2)                                          
+-                                                                       
+-        IF(IM1.LT.0D0.AND.IM2.LT.0D0.AND.IM12.GT.0D0) THEN             
++        REAL*8     PI,IM1,IM2,IM12
++
++        PI     = 4D0*DATAN(1D0)
++        IM1    = DIMAG(C1)
++        IM2    = DIMAG(C2)
++        IM12   = DIMAG(C1*C2)
++
++        IF(IM1.LT.0D0.AND.IM2.LT.0D0.AND.IM12.GT.0D0) THEN
+             ETA_HDEC = DCMPLX(0D0,2D0*PI)
+-        ELSE IF (IM1.GT.0D0.AND.IM2.GT.0D0.AND.IM12.LT.0D0) THEN       
++        ELSE IF (IM1.GT.0D0.AND.IM2.GT.0D0.AND.IM12.LT.0D0) THEN
+             ETA_HDEC = DCMPLX(0D0,-2D0*PI)
+-        ELSE                                                           
++        ELSE
+             ETA_HDEC = DCMPLX(0D0)
+-        END IF                                                         
+-        END                                                            
++        END IF
++        END
+ 
+ ***********************************************************************
+         FUNCTION ETAS_HDEC(Y,R,RS)
+ ***********************************************************************
+-*       MODIFIED ETA-FUNKTION                                           
++*       MODIFIED ETA-FUNKTION
+ *---------------------------------------------------------------------*
+-*       18.1.94   SD                                       
++*       18.1.94   SD
+ ***********************************************************************
+-        IMPLICIT   LOGICAL(A-Z)                                        
++        IMPLICIT   LOGICAL(A-Z)
+         COMPLEX*16 ETA_HDEC,ETAS_HDEC,Y,R,RS
+         REAL*8     PI,IMY,IMRS
+-                                                                       
+-        PI     = 4D0*DATAN(1D0)                                        
++
++        PI     = 4D0*DATAN(1D0)
+ 
+ 	IF( DIMAG(R).NE.0D0 ) THEN
+ 	    ETAS_HDEC = ETA_HDEC(Y,R)
+-	ELSE	    
++	ELSE
+ 	    IF( DREAL(R).GT.0D0 ) THEN
+ 		ETAS_HDEC = DCMPLX(0D0,0D0)
+ 	    ELSE
+@@ -8654,7 +8679,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *					  )/4D0
+ 	    ENDIF
+ 	ENDIF
+-        END                                                            
++        END
+ 
+ ***********************************************************************
+         FUNCTION SQE_HDEC(A,B,C)
+@@ -8663,7 +8688,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ *---------------------------------------------------------------------*
+ *       13.1.92  SD						      *
+ ***********************************************************************
+-        IMPLICIT REAL*8 (A-Z)                                        
++        IMPLICIT REAL*8 (A-Z)
+         COMPLEX*16 A,B,C,SQE_HDEC,X1,X2
+ 
+ 	X1=(-B+SQRT(B**2-4D0*A*C))/2D0/A
+@@ -8675,7 +8700,7 @@ C%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 	   SQE_HDEC=X2
+ 	ENDIF
+ 
+-        END                                                            
++        END
+ 
+ ************************************************************************
+         FUNCTION D04_HDEC(P1,P2,P3,P4,P12,P23,M1,M2,M3,M4)
+@@ -9189,45 +9214,45 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+ c ---------------------------------------------------------------------
+       real*8 function B02_HDEC(s,m1,m2,mu2)
+ 
+-      implicit none 
++      implicit none
+ 
+-      real*8     s,m1,m2,mu2,m12,m22 
+-      complex*16 zkappa,x1,x2 
++      real*8     s,m1,m2,mu2,m12,m22
++      complex*16 zkappa,x1,x2
+ 
+-      m12 = m1**2 
+-      m22 = m2**2 
++      m12 = m1**2
++      m22 = m2**2
+ 
+       zkappa=cdsqrt(dcmplx(s**2+m12**2+m22**2
+      &                     -2.D0*(s*m12+s*m22+m12*m22)))
+ 
+       if (s.eq.0.D0) then
+          if (m12.eq.m22) then
+-            B02_HDEC=-dlog(m12/mu2) 
++            B02_HDEC=-dlog(m12/mu2)
+          else
+             B02_HDEC=1.D0 - m12/(m12-m22)*dlog(m12/mu2)
+-     &                 + m22/(m12-m22)*dlog(m22/mu2) 
++     &                 + m22/(m12-m22)*dlog(m22/mu2)
+          endif
+-      else 
+-         if ((m12.eq.0.D0).and.(m22.eq.0.D0)) then 
++      else
++         if ((m12.eq.0.D0).and.(m22.eq.0.D0)) then
+             B02_HDEC=2.D0 - dlog(s/mu2)
+-         elseif ((m12.eq.s).and.(m22.eq.0.D0)) then 
++         elseif ((m12.eq.s).and.(m22.eq.0.D0)) then
+             B02_HDEC=2.D0 - dlog(m12/mu2)
+-         elseif ((m22.eq.s).and.(m12.eq.0.D0)) then 
++         elseif ((m22.eq.s).and.(m12.eq.0.D0)) then
+             B02_HDEC=2.D0 - dlog(m22/mu2)
+          elseif (m12.eq.0.D0) then
+             B02_HDEC=2.D0 - (s-m22)/s*dlog( dabs(m22-s)/m22 )
+      &                 - dlog(m22/mu2)
+          elseif (m22.eq.0.D0) then
+-            B02_HDEC=2.D0 - (s-m12)/s*dlog( dabs(m12-s)/m12 ) 
++            B02_HDEC=2.D0 - (s-m12)/s*dlog( dabs(m12-s)/m12 )
+      &                 - dlog(m12/mu2)
+          else
+             x1=dcmplx( (s-m22+m12+zkappa)/(2.D0*s) )
+             x2=dcmplx( (s-m22+m12-zkappa)/(2.D0*s) )
+-            B02_HDEC=dreal( 2.D0+ dlog(mu2/m22) 
+-     &                       + x1*cdlog(1.D0-1.D0/x1) 
++            B02_HDEC=dreal( 2.D0+ dlog(mu2/m22)
++     &                       + x1*cdlog(1.D0-1.D0/x1)
+      &                       + x2*cdlog(1.D0-1.D0/x2))
+          endif
+-      endif 
++      endif
+ 
+       return
+       end
+@@ -9236,14 +9261,14 @@ c --------------------------------------
+ 
+ c ---------------------------------------------------------------------
+       real*8 function BP02_HDEC(s,m1,m2,mu2)
+-      
+-      implicit none 
+ 
+-      real*8     s,m1,m2,mu2,m12,m22 
++      implicit none
++
++      real*8     s,m1,m2,mu2,m12,m22
+       complex*16 zkappa,x1,x2
+-      
++
+       m12 = m1**2
+-      m22 = m2**2 
++      m22 = m2**2
+ 
+       zkappa=cdsqrt(dcmplx(s**2+m12**2+m22**2
+      &                    -2.D0*(s*m12+s*m22+m12*m22)))
+@@ -9252,20 +9277,20 @@ c --------------------------------------
+          if (m12.eq.m22) then
+             BP02_HDEC=1.D0/(6.D0*m12)
+          else
+-            BP02_HDEC=( (m12+m22)/2.D0 
+-     &        - m12*m22/(m12-m22)*dlog(m12/m22) )/(m12-m22)**2 
++            BP02_HDEC=( (m12+m22)/2.D0
++     &        - m12*m22/(m12-m22)*dlog(m12/m22) )/(m12-m22)**2
+          endif
+-      elseif ((s.eq.m12).and.(m22.eq.0.D0)) then 
++      elseif ((s.eq.m12).and.(m22.eq.0.D0)) then
+          BP02_HDEC=( -1.D0 + dlog(m12/mu2)/2.D0 )/m12
+-      elseif ((s.eq.m22).and.(m12.eq.0.D0)) then 
++      elseif ((s.eq.m22).and.(m12.eq.0.D0)) then
+          BP02_HDEC=( -1.D0 + dlog(m22/mu2)/2.D0 )/m22
+-      else 
++      else
+          x1=dcmplx( (s-m22+m12+zkappa)/(2.D0*s) )
+          x2=dcmplx( (s-m22+m12-zkappa)/(2.D0*s) )
+          BP02_HDEC=dreal( -1.D0 + ( x1*(1.D0-x1)*cdlog(1.D0-1.D0/x1)
+-     &                     - x2*(1.D0-x2)*cdlog(1.D0-1.D0/x2) )  
++     &                     - x2*(1.D0-x2)*cdlog(1.D0-1.D0/x2) )
+      &                                                  /(x1-x2) )/s
+-      endif 
++      endif
+ 
+       return
+       end
+@@ -9398,7 +9423,7 @@ C     RESPECTIVELY,  AND MU IS THE SUPER
+ C     HIGGS MASS PARAMETER. WE USE THE  CONVENTIONS FROM
+ C     THE PHYSICS REPORT OF HABER AND KANE: LEFT RIGHT
+ C     STOP MIXING TERM PROPORTIONAL TO (AU - MU/TANB).
+-C     MCHI IS THE HEAVIEST CHARGINO MASS. 
++C     MCHI IS THE HEAVIEST CHARGINO MASS.
+ C     WE USE AS INPUT TANB DEFINED AT THE SCALE MTOP.
+ 
+ C     OUTPUT: MH,HM,MCH, SA = SIN(ALPHA), CA= COS(ALPHA), TANBA
+@@ -9412,7 +9437,7 @@ c
+ c       Program based on the work by M. Carena, M. Quiros
+ c       and C.E.M. Wagner, "Effective potential methods and
+ c       the Higgs mass spectrum in the MSSM", Nucl. Phys.
+-c       B461 (1996) 407. 
++c       B461 (1996) 407.
+ c
+ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ 
+@@ -9428,7 +9453,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       MCHI = MCHI0
+       TANBA = TANB
+       TANBT = TANB
+-      
++
+       PI = 4*DATAN(1D0)
+       MZ = AMZ
+       MW = AMW
+@@ -9526,10 +9551,10 @@ cccccccccccccccccccccccccccccccccccccccc
+       IF(MQ.GT.MD) DLAMBDA3 = -1./32./PI**2*G1**2*HD**2*TPD
+       IF(MQ.LT.MD.OR.MQ.EQ.MD) DLAMBDA3 = 3./64./PI**2*HD**2*
+      *(G2**2-G1**2/3.)*TPD
+-      
+-      IF(MQ.GT.MUR) DLAMBDA3 = DLAMBDA3 - 
++
++      IF(MQ.GT.MUR) DLAMBDA3 = DLAMBDA3 -
+      *1./16./PI**2*G1**2*HU**2*TP
+-      IF(MQ.LT.MUR.OR.MQ.EQ.MUR) DLAMBDA3 = DLAMBDA3 + 
++      IF(MQ.LT.MUR.OR.MQ.EQ.MUR) DLAMBDA3 = DLAMBDA3 +
+      * 3./64./PI**2*HU**2*(G2**2+G1**2/3.)*TP
+ 
+       IF(MQ.LT.MUR) DLAMBDA4 = -3./32./PI**2*G2**2*HU**2*TP
+@@ -9538,28 +9563,28 @@ cccccccccccccccccccccccccccccccccccccccc
+ C
+       LAMBDA1 = ((G1**2 + G2**2)/4.)*
+      *(1.-3.*HD**2*(TPD + TDPD)/8./PI**2)
+-     *+(3.*HD**4./16./PI**2) *TPD*(1.   
+-     *+ (3.*HD**2/2. + HU**2/2.       
+-     *- 8.*G3**2) * (TPD + 2.*TDPD)/16./PI**2) 
+-     *+(3.*HD**4./8./PI**2) *TDPD*(1.  + (3.*HD**2/2. + HU**2/2.       
+-     *- 8.*G3**2) * TDPD/16./PI**2) + DLAMBDA1 
++     *+(3.*HD**4./16./PI**2) *TPD*(1.
++     *+ (3.*HD**2/2. + HU**2/2.
++     *- 8.*G3**2) * (TPD + 2.*TDPD)/16./PI**2)
++     *+(3.*HD**4./8./PI**2) *TDPD*(1.  + (3.*HD**2/2. + HU**2/2.
++     *- 8.*G3**2) * TDPD/16./PI**2) + DLAMBDA1
+ C
+       LAMBDA2 = ((G1**2 + G2**2)/4.)*(1.-3.*HU**2*
+      *(TP + TDP)/8./PI**2)
+-     *+(3.*HU**4./16./PI**2) *TP*(1.   
+-     *+ (3.*HU**2/2. + HD**2/2.       
+-     *- 8.*G3**2) * (TP + 2.*TDP)/16./PI**2) 
+-     *+(3.*HU**4./8./PI**2) *TDP*(1. + (3.*HU**2/2. + HD**2/2.       
++     *+(3.*HU**4./16./PI**2) *TP*(1.
++     *+ (3.*HU**2/2. + HD**2/2.
++     *- 8.*G3**2) * (TP + 2.*TDP)/16./PI**2)
++     *+(3.*HU**4./8./PI**2) *TDP*(1. + (3.*HU**2/2. + HD**2/2.
+      *- 8.*G3**2) * TDP/16./PI**2) + DLAMBDA2  + DLAMBDAP2
+ C
+       LAMBDA3 = ((G2**2 - G1**2)/4.)*(1.-3.*
+      *(HU**2)*(TP + TDP)/16./PI**2 -3.*
+-     *(HD**2)*(TPD + TDPD)/16./PI**2) +DLAMBDA3 
++     *(HD**2)*(TPD + TDPD)/16./PI**2) +DLAMBDA3
+ C
+       LAMBDA4 = (- G2**2/2.)*(1.
+      *-3.*(HU**2)*(TP + TDP)/16./PI**2
+      *-3.*(HD**2)*(TPD + TDPD)/16./PI**2) +DLAMBDA4
+-C     
++C
+ 	LAMBDA5 = 0.
+ 	LAMBDA6 = 0.
+ 	LAMBDA7 = 0.
+@@ -9590,7 +9615,7 @@ C--EXTENSION OF CARENA ET AL.: TRAFO MAS
+         LAMBDA4 = LAMBDA4+DLAM4
+ C--END OF EXTENSION
+  3790	CONTINUE
+-CCCCCCCCCCCCCCC    END OF CHARGINOS AND NEUTRALINOS  CCCCCCCCCCCC 
++CCCCCCCCCCCCCCC    END OF CHARGINOS AND NEUTRALINOS  CCCCCCCCCCCC
+ 
+ 
+ C--EXTENSION OF CARENA ET AL.: TRAFO MASS MATRIX -> LAMBDA_I
+@@ -9604,7 +9629,7 @@ C--EXTENSION OF CARENA ET AL.: TRAFO MAS
+       LAMBDA5 = LAMBDA5+DLAM5
+       LAMBDA6 = LAMBDA6+DLAM6
+       LAMBDA7 = LAMBDA7+DLAM7
+-      
++
+       M2(1,1) = 2.*V**2*(LAMBDA1*COSB**2+2.*LAMBDA6*
+      *COSB*SINB + LAMBDA5*SINB**2) + MA**2*SINB**2
+       M2(2,2) = 2.*V**2*(LAMBDA5*COSB**2+2.*LAMBDA7*
+@@ -9629,16 +9654,16 @@ C !!!!!!!!!!!!!!!!!!!
+       MCH2=MA**2+(LAMBDA5-LAMBDA4)*V**2
+ C !!!!!!!!!!!!!!!!!!!
+       MCH=DSQRT(MCH2)
+-      HMP = DSQRT(HM2P) 
++      HMP = DSQRT(HM2P)
+       IF(MH2P.LT.0.)GOTO 5555
+-      MHP = DSQRT(MH2P) 
++      MHP = DSQRT(MH2P)
+ C
+       SIN2ALPHA = 2.*M2P(1,2)/DSQRT(TRM2P**2-4.D0*DETM2P)
+       COS2ALPHA = (M2P(1,1)-M2P(2,2))/DSQRT(TRM2P**2-4.D0*DETM2P)
+       IF(COS2ALPHA.GT.0.) ALPHA = DASIN(SIN2ALPHA)/2.D0
+       IF(COS2ALPHA.LT.0.) ALPHA = -PI/2.D0-DASIN(SIN2ALPHA)/2.D0
+       SA = DSIN(ALPHA)
+-      CA = DCOS(ALPHA)  
++      CA = DCOS(ALPHA)
+       SQBMA = (SINB*CA - COSB*SA)**2
+ 
+ 5555  RETURN
+@@ -9660,7 +9685,7 @@ C
+         MD2   = MD**2
+         TANBA = TANB
+         SINBA = TANBA/DSQRT(TANBA**2+1.D0)
+-        COSBA = SINBA/TANBA        
++        COSBA = SINBA/TANBA
+         SINB = TANB/DSQRT(TANB**2+1.D0)
+         COSB = SINB/TANB
+ 
+@@ -9679,7 +9704,7 @@ C
+       G1 = DSQRT(ALPHA1*4.*PI)
+       G2 = DSQRT(ALPHA2*4.*PI)
+       G3 = DSQRT(ALPHA3*4.*PI)
+-      
++
+         IF(MQ.GT.MUR) MST = MQ
+         IF(MUR.GT.MQ.OR.MUR.EQ.MQ) MST = MUR
+         MSUSYT = DSQRT(MST**2  + MTOP**2)
+@@ -9753,6 +9778,18 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
          MBOT2 = DSQRT(MBOT4)
 +c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-+c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high 
++c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high
 +c>>> MSUSY) in GAMBIT.
 +c>>> Pat Scott 27/9/2016
 +        mtop2 = rmtop**2*(1+bt2*tt- al2*tt/2 - 2*deltamt)
@@ -95,12 +2573,44 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
          mb = mb/(1+deltamb)
  
          VH1(1,1) = 1./TANBST
-@@ -10051,6 +10066,17 @@ c     * /(1.+deltamt)**4.
+@@ -9824,11 +9861,11 @@ C***************************************
+      *  + MTOP4/(SINBT**4)*(AT**2/
+      *    (STOP1**2-STOP2**2))**2*G(STOP12,STOP22)
+      *  + MZ**2*(-2*MTOP2*F1T+MTOP2*AT**2*F2T)/SINBT**2
+- 
++
+         DLAM2B = MBOT4/(COSBB**4)*MU**4/(SBOT1**2
+      *    -SBOT2**2)**2*G(SBOT12,SBOT22)
+      *    + MZ**2*MBOT2*MU**2*TANBSB**2*F2B/SINBB**2
+- 
++
+         DLAM3T = MTOP4/(SINBT**4)*
+      *    MU**2/(STOP1**2-STOP2**2)*(LOG(STOP1**2/STOP2**2)/2.D0
+      *  + AT**2/(STOP1**2-STOP2**2)*G(STOP12,STOP22))
+@@ -9972,7 +10009,7 @@ c       write(*,*) 'xyz',x,y,z
+         MD2   = MD**2
+         TANBA = TANB
+         SINBA = TANBA/DSQRT(TANBA**2+1.D0)
+-        COSBA = SINBA/TANBA        
++        COSBA = SINBA/TANBA
+         SINB = TANB/DSQRT(TANB**2+1.D0)
+         COSB = SINB/TANB
+ 
+@@ -9992,7 +10029,7 @@ c       write(*,*) 'xyz',x,y,z
+       G1 = DSQRT(ALPHA1*4.*PI)
+       G2 = DSQRT(ALPHA2*4.*PI)
+       G3 = DSQRT(ALPHA3*4.*PI)
+-      
++
+         IF(MQ.GT.MUR) MST = MQ
+         IF(MUR.GT.MQ.OR.MUR.EQ.MQ) MST = MUR
+         MSUSYT = DSQRT(MST**2  + MTOP**2)
+@@ -10051,26 +10088,37 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
  	MBOT2 = DSQRT(MBOT4)
 +c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-+c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high 
++c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high
 +c>>> MSUSY) in GAMBIT.
 +c>>> Pat Scott 27/9/2016
 +        mtop2 = rmtop**2*(1+bt2*tt- al2*tt/2 - 2*deltamt)
@@ -111,14 +2621,40 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
 +        mbot4 = mbot2**2
 +c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  
-         STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
+-        STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
++        STOP12 = (MQ2 + MUR2)*.5 + MTOP2
       *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
-@@ -10124,6 +10150,17 @@ c     * /(1.+deltamt)**4.
+      *   +(((G2**2-5.*G1**2/3.)/4.*(H1T**2-H2T**2) +
+      *   MQ2 - MUR2)**2*0.25 + MTOP2*(AT-MU/TANBST)**2)**.5
+ 
+-        STOP22 = (MQ2 + MUR2)*.5 + MTOP2 
+-     *  +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2) 
++        STOP22 = (MQ2 + MUR2)*.5 + MTOP2
++     *  +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
+      *   - (((G2**2-5.*G1**2/3.)/4.*(H1T**2-H2T**2) +
+-     *  MQ2 - MUR2)**2*0.25 
++     *  MQ2 - MUR2)**2*0.25
+      *  + MTOP2*(AT-MU/TANBST)**2)**.5
+ 
+         IF(STOP22.LT.0.) GOTO 4237
+ 
+-        SBOT12 = (MQ2 + MD2)*.5  
++        SBOT12 = (MQ2 + MD2)*.5
+      *   - 1./8.*(G2**2+G1**2)*(H1B**2-H2B**2)
+      *  + (((G1**2/3.-G2**2)/4.*(H1B**2-H2B**2) +
+      *  MQ2 - MD2)**2*0.25 + MBOT2*(AB-MU*TANBSB)**2)**.5
+ 
+-        SBOT22 = (MQ2 + MD2)*.5  
++        SBOT22 = (MQ2 + MD2)*.5
+      *   - 1./8.*(G2**2+G1**2)*(H1B**2-H2B**2)
+      *   - (((G1**2/3.-G2**2)/4.*(H1B**2-H2B**2) +
+      *   MQ2 - MD2)**2*0.25 + MBOT2*(AB-MU*TANBSB)**2)**.5
+@@ -10124,26 +10172,37 @@ c     * /(1.+deltamt)**4.
       * /(1.+deltamb)**4.
          MTOP2 = DSQRT(MTOP4)
  	MBOT2 = DSQRT(MBOT4)
 +c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-+c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high 
++c>>> Imported from HDECAY 6.51 for stability at large deltamt/b (high
 +c>>> MSUSY) in GAMBIT.
 +c>>> Pat Scott 27/9/2016
 +        mtop2 = rmtop**2*(1+bt2*tt- al2*tt/2 - 2*deltamt)
@@ -129,12 +2665,93 @@ diff -rupN susyhit_pristine/hdecay.f installed/susyhit/1.5/hdecay.f
 +        mbot4 = mbot2**2
 +c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  
-         STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
+-        STOP12 = (MQ2 + MUR2)*.5 + MTOP2 
++        STOP12 = (MQ2 + MUR2)*.5 + MTOP2
       *   +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
-Binary files susyhit_pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
-diff -rupN susyhit_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
---- susyhit_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/lightst3bod.f	2016-09-27 17:48:47.941984286 +0100
+      *   +(((G2**2-5.*G1**2/3.)/4.*(H1T**2-H2T**2) +
+      *   MQ2 - MUR2)**2*0.25 + MTOP2*(AT-MU/TANBST)**2)**.5
+ 
+-        STOP22 = (MQ2 + MUR2)*.5 + MTOP2 
+-     *  +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2) 
++        STOP22 = (MQ2 + MUR2)*.5 + MTOP2
++     *  +1./8.*(G2**2+G1**2)*(H1T**2-H2T**2)
+      *   - (((G2**2-5.*G1**2/3.)/4.*(H1T**2-H2T**2) +
+-     *  MQ2 - MUR2)**2*0.25 
++     *  MQ2 - MUR2)**2*0.25
+      *  + MTOP2*(AT-MU/TANBST)**2)**.5
+ 
+         IF(STOP22.LT.0.) GOTO 4237
+ 
+-        SBOT12 = (MQ2 + MD2)*.5  
++        SBOT12 = (MQ2 + MD2)*.5
+      *   - 1./8.*(G2**2+G1**2)*(H1B**2-H2B**2)
+      *  + (((G1**2/3.-G2**2)/4.*(H1B**2-H2B**2) +
+      *  MQ2 - MD2)**2*0.25 + MBOT2*(AB-MU*TANBSB)**2)**.5
+ 
+-        SBOT22 = (MQ2 + MD2)*.5  
++        SBOT22 = (MQ2 + MD2)*.5
+      *   - 1./8.*(G2**2+G1**2)*(H1B**2-H2B**2)
+      *   - (((G1**2/3.-G2**2)/4.*(H1B**2-H2B**2) +
+      *   MQ2 - MD2)**2*0.25 + MBOT2*(AB-MU*TANBSB)**2)**.5
+@@ -10369,9 +10428,9 @@ C>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ 
+ c change susyhit
+ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+-c Comment by Maggie: For use of hdecay.f within SUSYHIT, I put the file 
++c Comment by Maggie: For use of hdecay.f within SUSYHIT, I put the file
+ c dmb.f, which is separate in the program package HDECAY, into the file
+-c hdecay.f in order to reduce the number of separate files within the 
++c hdecay.f in order to reduce the number of separate files within the
+ c program package SUSYHIT.
+ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+       double precision function t134p_hdec(am1,am2,mu)
+@@ -10404,9 +10463,9 @@ c cccccccccccccccccccccccccccccccccccccc
+       t134p_hdec = dummy/mu**2
+       return
+       end
+- 
++
+ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+- 
++
+       double precision function t134_hdec(am1,am2,am3,mu)
+       implicit double precision (a-h,o-z)
+       double precision m1,m2,m3,mu,ll1,ll2,ll3
+@@ -10441,9 +10500,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       t134_hdec = dummy/mu**2
+       return
+       end
+- 
++
+ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+- 
++
+       double precision function
+      .       felw_hdec(scale,amu,amg,amsb1,amsb2,amst1,amst2,amt)
+       implicit double precision (b-h,o-q,s-z), complex*16 (a,r)
+@@ -10816,9 +10875,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+       return
+       end
+- 
++
+ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+- 
++
+       double precision function fqcd_hdec(scale,amt,amg,amsb1,amsb2,
+      .                           amst1,amst2,amsu1,amsu2,amsd1,amsd2)
+       implicit double precision (b-h,o-q,s-z), complex*16 (a,r)
+@@ -11353,5 +11412,5 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+       return
+       end
+- 
++
+ c end change susyhit
+Binary files susyhit_1.5_pristine/libsusyhit.so and installed/susyhit/1.5/libsusyhit.so differ
+diff -rupN susyhit_1.5_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
+--- susyhit_1.5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst3bod.f	2017-02-22 17:36:33.632692012 +0000
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -189,9 +2806,9 @@ diff -rupN susyhit_pristine/lightst3bod.f installed/susyhit/1.5/lightst3bod.f
        COMMON/SD_coupewsb/alsew,g2ew,g1ew
        COMMON/SD_mwmzpole/amwp,amzp
  c---- ramona cahnged 2/2/15
-diff -rupN susyhit_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
---- susyhit_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/lightst4bod.f	2016-09-27 17:48:47.941984286 +0100
+diff -rupN susyhit_1.5_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
+--- susyhit_1.5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/lightst4bod.f	2017-02-22 17:36:33.636692011 +0000
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -426,9 +3043,9 @@ diff -rupN susyhit_pristine/lightst4bod.f installed/susyhit/1.5/lightst4bod.f
        COMMON/SD_hmass/ama,aml,amh,amch,amar
  c----- ramona added 4/11/14
        COMMON/SD_mwmzpole/amwp,amzp
-diff -rupN susyhit_pristine/makefile installed/susyhit/1.5/makefile
---- susyhit_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/makefile	2016-09-27 17:48:47.941984286 +0100
+diff -rupN susyhit_1.5_pristine/makefile installed/susyhit/1.5/makefile
+--- susyhit_1.5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/makefile	2017-02-22 17:36:33.636692011 +0000
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -453,9 +3070,9 @@ diff -rupN susyhit_pristine/makefile installed/susyhit/1.5/makefile
 -	rm -f *.o
 \ No newline at end of file
 +	rm -f *.o
-diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
---- susyhit_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/susyhit/1.5/sdecay.f	2016-09-27 17:48:47.949984286 +0100
+diff -rupN susyhit_1.5_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
+--- susyhit_1.5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/susyhit/1.5/sdecay.f	2017-02-22 17:36:33.640692011 +0000
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
@@ -1424,7 +4041,7 @@ diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
 +      do i = 1,2,1
 +         qcdcorrsbok(i) = sbottot2nlo(i) .ge. 0.D0
 +         if (.not.qcdcorrsbok(i)) sbottot2nlo(i) =
-+     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(2))
++     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(i))
 +      enddo
 +
 +
@@ -1477,8 +4094,8 @@ diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
        do i=1,4,1
 -         brsb1neutt(i)=sb1neutt(i)/sbottot2(1)
 -         brsb2neutt(i)=sb2neutt(i)/sbottot2(2)
-+         if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot2(1)    !Modified by GAMBIT
-+         if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot2(2)    !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot(1)    !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot(2)    !Modified by GAMBIT
        end do
        do i=1,2,1
 -         brsb1chart(i) = sb1chart(i)/sbottot2(1)
@@ -1494,19 +4111,19 @@ diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
 -      brsb2hh   = sb2hh/sbottot2(2)
 -      brsb2ha   = sb2ha/sbottot2(2)
 -      brsb2zbot = sb2zbot/sbottot2(2)
-+         if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot2(1)  !Modified by GAMBIT
-+         if(qcdcorrsbok(2)) brsb2chart(i) = sb2chart(i)/sbottot2(2)  !Modified by GAMBIT
-+         if(qcdcorrsbok(1)) brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)   !Modified by GAMBIT
-+         if(qcdcorrsbok(2)) brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)   !Modified by GAMBIT
-+         if(qcdcorrsbok(1)) brsb1wst(i)   = sb1wst(i)/sbottot2(1)    !Modified by GAMBIT
-+         if(qcdcorrsbok(2)) brsb2wst(i)   = sb2wst(i)/sbottot2(2)    !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot(1)  !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2chart(i) = sb2chart(i)/sbottot(2)  !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1hcst(i)  = sb1hcst(i)/sbottot(1)   !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2hcst(i)  = sb2hcst(i)/sbottot(2)   !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1wst(i)   = sb1wst(i)/sbottot(1)    !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2wst(i)   = sb2wst(i)/sbottot(2)    !Modified by GAMBIT
 +      end do
-+      if(qcdcorrsbok(1)) brsb1glui = sb1glui/sbottot2(1)             !Modified by GAMBIT
-+      if(qcdcorrsbok(2)) brsb2glui = sb2glui/sbottot2(2)             !Modified by GAMBIT
-+      if(qcdcorrsbok(2)) brsb2hl   = sb2hl/sbottot2(2)               !Modified by GAMBIT
-+      if(qcdcorrsbok(2)) brsb2hh   = sb2hh/sbottot2(2)               !Modified by GAMBIT
-+      if(qcdcorrsbok(2)) brsb2ha   = sb2ha/sbottot2(2)               !Modified by GAMBIT
-+      if(qcdcorrsbok(2)) brsb2zbot = sb2zbot/sbottot2(2)             !Modified by GAMBIT
++      if(qcdcorrsbok(1)) brsb1glui = sb1glui/sbottot(1)             !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2glui = sb2glui/sbottot(2)             !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2hl   = sb2hl/sbottot(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2hh   = sb2hh/sbottot(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2ha   = sb2ha/sbottot(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2zbot = sb2zbot/sbottot(2)             !Modified by GAMBIT
  
  c -- for the 3-body decays --
  
@@ -1648,3 +4265,54 @@ diff -rupN susyhit_pristine/sdecay.f installed/susyhit/1.5/sdecay.f
        COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
        COMMON/SD_weinberg/sw,cw
        COMMON/SD_mixang/alp_mssm,tanbeta
+@@ -42649,9 +43302,13 @@ c --------------------------------------
+          else
+             x1=dcmplx( (s-m22+m12+zkappa)/(2.D0*s) )
+             x2=dcmplx( (s-m22+m12-zkappa)/(2.D0*s) )
+-            SD_B02=dreal( 2.D0+ dlog(mu2/m22) 
+-     .                       + x1*cdlog(1.D0-1.D0/x1) 
+-     .                       + x2*cdlog(1.D0-1.D0/x2))
++            SD_B02=2.D0+ dlog(mu2/m22)
++            ! Added by Pat Scott Oct 15 2016 to fix numerical divergence when x1 or x2 underflows to 0.
++            ! In this case, use the fact that lim_{x->0} x*log(1-1/x) = 0 to discard the irrelevant term.
++            if (x1 .ne. (0.d0, 0.d0))
++     .       SD_B02=SD_B02+dreal(x1*cdlog(1.D0-1.D0/x1))
++            if (x2 .ne. (0.d0, 0.d0))
++     .       SD_B02=SD_B02+dreal(x2*cdlog(1.D0-1.D0/x2))
+          endif
+       endif 
+ 
+@@ -42665,7 +43322,7 @@ c --------------------------------------
+       implicit none 
+ 
+       real*8     s,m1,m2,mu2,m12,m22 
+-      complex*16 zkappa,x1,x2
++      complex*16 zkappa,x1,x2,fx1,fx2
+       
+       m12 = m1**2
+       m22 = m2**2 
+@@ -42709,10 +43366,20 @@ c--- end ramona changed
+       else 
+          x1=dcmplx( (s-m22+m12+zkappa)/(2.D0*s) )
+          x2=dcmplx( (s-m22+m12-zkappa)/(2.D0*s) )
+-         SD_BP02=dreal( -1.D0 + ( x1*(1.D0-x1)*cdlog(1.D0-1.D0/x1)
+-     .                     - x2*(1.D0-x2)*cdlog(1.D0-1.D0/x2) )  
+-     .                                                  /(x1-x2) )/s
+-      endif 
++         ! Added by Pat Scott Oct 15 2016 to fix numerical divergence when x1 or x2 underflows to 0.
++         ! In this case, use the fact that lim_{x->0} x*log(1-1/x) = 0 to discard the irrelevant term.
++         if (x1 .ne. (0.d0, 0.d0)) then
++           fx1 = x1*(1.D0-x1)*cdlog(1.D0-1.D0/x1)
++         else
++           fx1 = 0.d0
++         endif
++         if (x2 .ne. (0.d0, 0.d0)) then
++           fx2 = x2*(1.D0-x2)*cdlog(1.D0-1.D0/x2)
++         else
++           fx2 = 0.d0
++         endif
++         SD_BP02=dreal( -1.D0 + (fx1 - fx2)/(x1-x2) ) / s
++      endif
+ 
+       return
+       end

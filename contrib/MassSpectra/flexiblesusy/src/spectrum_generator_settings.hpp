@@ -49,6 +49,9 @@ public:
       force_output,          ///< [12] force output
       top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
       beta_zero_threshold,   ///< [14] beta function zero threshold
+      calculate_observables, ///< [15] calculate observables (a_muon, ...)
+      force_positive_masses, ///< [16] force positive masses of majoran fermions
+      pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
@@ -60,6 +63,7 @@ public:
    void reset();               ///< resets all settings to their defaults
 
    Two_loop_corrections get_two_loop_corrections() const;
+   void set_two_loop_corrections(const Two_loop_corrections&);
 
 private:
    double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings

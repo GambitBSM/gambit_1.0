@@ -36,10 +36,7 @@ LOAD_LIBRARY
 BE_FUNCTION(init, void, (int), "init", "init")
 BE_FUNCTION(set_data_path, void, (const std::string &), "set_data_path", "set_data_path")
 BE_FUNCTION(lnL, double, (int, const std::vector<double> &, const std::vector<double> &), "lnL", "lnL")
-BE_FUNCTION(set_MW_profile, void, (const std::vector<double> &, const std::vector<double> &, double), "set_MW_profile", "set_MW_profile")
-
-// Dependence on global halo properties
-BE_INI_DEPENDENCY(GalacticHalo, GalacticHaloProperties)
+BE_FUNCTION(set_halo_profile, void, (int, const std::vector<double> &, const std::vector<double> &, double), "set_halo_profile", "set_halo_profile")
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

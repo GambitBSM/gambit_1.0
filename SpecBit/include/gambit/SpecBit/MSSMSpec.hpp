@@ -79,19 +79,33 @@ namespace Gambit
 
       // Fill an SLHAea object with spectrum information
       template <class MI>
-      void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha, bool include_SLHA1_blocks) const
+      void MSSMSpec<MI>::add_to_SLHAea(int slha_version, SLHAstruct& slha) const
       {
 
         // Here we assume that all SM input info comes from the SMINPUT object,
         // and all low-E stuff (quark pole masses and the like) come from the LE subspectrum.
 
+        // Note that the SMINPUT object's dump-to-SLHAea function does not know how to discriminate
+        // between SLHA1 and SLHA2, but that doesn't matter, as the SM parameters defined in SLHA2
+        // just constitute additional blocks/block entries, not replacements for SLHA1 blocks.  In the
+        // MSSM sector, this is not true, and we take care to write version-specific blocks here.
+
         std::ostringstream comment;
 
+        // SPINFO block
         SLHAea_add_block(slha, "SPINFO");
         SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+backend_name);
         SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+backend_version+" ("+backend_name+")");
 
+        // MINPAR block
         SLHAea_add_block(slha, "MINPAR");
+        if (this->has(Par::dimensionless,"TanBeta_input"))
+        {
+          SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::dimensionless,"TanBeta_input","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        }
+        slha["MINPAR"][""] << 4 << sgn(this->get(Par::mass1,"Mu")) << "# sign(mu)";
+
+        // HMIX block
         SLHAea_add_block(slha, "HMIX",this->GetScale());
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass1,"Mu","HMIX",1,"# mu DRbar");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::dimensionless,"tanbeta","HMIX",2,"# tan(beta) = vu/vd DRbar");
@@ -104,64 +118,96 @@ namespace Gambit
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
-        if (this->has(Par::dimensionless,"TanBeta_input"))
-        {
-          SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::dimensionless,"TanBeta_input","MINPAR",3,"# tanbeta(mZ)^DRbar");
-        }
-        slha["MINPAR"][""] << 4 << sgn(this->get(Par::mass1,"Mu")) << "# sign(mu)";
 
+        // GAUGE block
         SLHAea_add_block(slha, "GAUGE",this->GetScale());
         // Scale gY is in SU(5)/GUT normalisation internally; convert it to SM normalisation for SLHA output by multiplying by sqrt(3/5).
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::dimensionless,"g1","GAUGE",1,"# g'  = g1 = gY DRbar", true, 0.7745966692414834);
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::dimensionless,"g2","GAUGE",2,"# g   = g2      DRbar");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::dimensionless,"g3","GAUGE",3,"# g_s = g3      DRbar");
 
-        int pdg_codes[33] = {24,25,35,37,36,1000021,1000024,1000037,1000012,1000014,1000016,1000022,1000023,1000025,1000035,1000001,1000003,1000005,
-                             2000001,2000003,2000005,1000011,1000013,1000015,2000011,2000013,2000015,1000002,1000004,1000006,2000002,2000004,2000006};
-        for(int i=0;i<33;i++)
+        const int pdg_codes[33] = {24,25,35,37,36,1000021,1000024,1000037,1000022,1000023,1000025,1000035,1000006,2000006,1000005,2000005,1000015,2000015,1000012,1000014,1000016,1000001,1000003,
+                                   2000001,2000003,1000011,1000013,2000011,2000013,1000002,1000004,2000002,2000004,};
+
+        // Here we add the SLHA1-specific stuff, for backwards compatibility with backwards backends.
+        if (slha_version == 1)
         {
-          str comment("# "+Models::ParticleDB().long_name(pdg_codes[i], 0));
-          SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
+          const str slha1_sfermions[21] = {"~t_1", "~t_2", "~b_1", "~b_2", "~tau_1", "~tau_2", "~nu_e_L", "~nu_mu_L", "~nu_tau_L", "~d_L", "~s_L", "~d_R",
+                                           "~s_R", "~e_L", "~mu_L", "~e_R", "~mu_R", "~u_L", "~c_L", "~u_R", "~c_R"};
+          str slha2_sfermions[21];
+
+          // STOPMIX, SBOTMIX and STAUMIX blocks
+          slhahelp::attempt_to_add_SLHA1_mixing("STOPMIX", slha, "~u", *this, 1.0, slha2_sfermions[0], slha2_sfermions[1], true);
+          slhahelp::attempt_to_add_SLHA1_mixing("SBOTMIX", slha, "~d", *this, 1.0, slha2_sfermions[2], slha2_sfermions[3], true);
+          slhahelp::attempt_to_add_SLHA1_mixing("STAUMIX", slha, "~e-", *this, 1.0, slha2_sfermions[4], slha2_sfermions[5], true);
+
+          // MASS block.  Do everything except sfermions the same way as SLHA2.
+          for(int i=0;i<12;i++)
+          {
+            str comment("# "+Models::ParticleDB().long_name(pdg_codes[i], 0));
+            SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
+          }
+          for(int i=0;i<21;i++)
+          {
+            if (i > 5)
+            {
+              double max_mixing; // Don't actually care about this; we're going to SLHA1 whether it is a good approximation or not.
+              slha2_sfermions[i] = slhahelp::mass_es_from_gauge_es(slha1_sfermions[i], max_mixing, *this);
+            }
+            SLHAea_add(slha, "MASS", pdg_codes[i+12], this->get(Par::Pole_Mass, slha2_sfermions[i]), slha1_sfermions[i]);
+          }
+        }
+        else if (slha_version == 2)
+        {
+          // MASS block
+          for(int i=0;i<33;i++)
+          {
+            str comment("# "+Models::ParticleDB().long_name(pdg_codes[i], 0));
+            SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
+          }
+
+          // USQMIX, DSQMIX, SELMIX
+          sspair S[3] = {sspair("USQMIX","~u"), sspair("DSQMIX","~d"), sspair("SELMIX","~e-")};
+          for (int k=0;k<3;k++)
+          {
+            SLHAea_add_block(slha, S[k].first,this->GetScale());
+            for(int i=1;i<7;i++) for(int j=1;j<7;j++)
+            {
+              comment.str(""); comment << "# " << S[k].second << "-type sfermion mixing (" << i << "," << j << ")";
+              SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, S[k].second, i, j, S[k].first, i, j, comment.str());
+            }
+          }
+
+          // SNUMIX block
+          sspair V("SNUMIX","~nu");
+          SLHAea_add_block(slha, V.first,this->GetScale());
+          for(int i=1;i<4;i++) for(int j=1;j<4;j++)
+          {
+            comment.str(""); comment << "# " << V.second << " mixing matrix (" << i << "," << j << ")";
+            SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, V.second, i, j, V.first, i, j, comment.str());
+          }
+
+        }
+        else
+        {
+          SpecBit_error().raise(LOCAL_INFO, "Unrecognised version of SLHA standard; only SLHA1 and SLHA2 are permitted.");
         }
 
+        // MSOFT block (SLHA1 and SLHA2) plus MSL2, MSE2, MSQ2, MSU2 and MSD2 blocks (SLHA2 only)
         SLHAea_add_block(slha, "MSOFT",this->GetScale());
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass1,"M1","MSOFT",1,"# bino mass parameter M1");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass1,"M2","MSOFT",2,"# wino mass parameter M2");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass1,"M3","MSOFT",3,"# gluino mass parameter M3");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass2,"mHd2","MSOFT",21,"# d-type Higgs mass parameter mHd2");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,*this,Par::mass2,"mHu2","MSOFT",22,"# u-type Higgs mass parameter mHu2");
-
-        sspair A[3] = {sspair("AU","Au"), sspair("AD","Ad"), sspair("AE","Ae")};
-        sspair Y[3] = {sspair("YU","Yu"), sspair("YD","Yd"), sspair("YE","Ye")};
-        sspair T[3] = {sspair("TU","TYu"), sspair("TD","TYd"), sspair("TE","TYe")};
-        for (int k=0;k<3;k++)
-        {
-          SLHAea_add_block(slha, A[k].first,this->GetScale());
-          SLHAea_add_block(slha, Y[k].first,this->GetScale());
-          SLHAea_add_block(slha, T[k].first,this->GetScale());
-          for(int i=1;i<4;i++)
-          {
-            comment.str(""); comment << "# " << A[k].second << "(" << i << "," << i << ")";
-            double invTii = 1.0/this->get(Par::dimensionless,Y[k].second,i,i);
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::mass1, T[k].second, i, i, A[k].first, i, i, comment.str(), true, invTii);
-            for(int j=1;j<4;j++)
-            {
-              comment.str(""); comment << "# " << Y[k].second << "(" << i << "," << j << ")";
-              SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::dimensionless, Y[k].second, i, j, Y[k].first, i, j, comment.str());
-              comment.str(""); comment << "# " << T[k].second << "(" << i << "," << j << ")";
-              SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::mass1, T[k].second, i, j, T[k].first, i, j, comment.str());
-            }
-          }
-        }
-
         sspair M[5] = {sspair("MSL2","ml2"), sspair("MSE2","me2"), sspair("MSQ2","mq2"), sspair("MSU2","mu2"), sspair("MSD2","md2")};
         for (int k=0;k<5;k++)
         {
-          SLHAea_add_block(slha, M[k].first,this->GetScale());
+          if (slha_version == 2) SLHAea_add_block(slha, M[k].first,this->GetScale());
           for(int i=1;i<4;i++) for(int j=1;j<4;j++)
           {
             comment.str(""); comment << M[k].second << "(" << i << "," << j << ")";
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::mass2, M[k].second, i, j, M[k].first, i, j, "# " + comment.str());
+            if (slha_version == 2) SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::mass2, M[k].second, i, j, M[k].first, i, j, "# " + comment.str());
             if (i== j)
             {
               double entry = this->get(Par::mass2, M[k].second, i, j);
@@ -170,17 +216,41 @@ namespace Gambit
           }
         }
 
-        sspair S[3] = {sspair("USQMIX","~u"), sspair("DSQMIX","~d"), sspair("SELMIX","~e-")};
+        // Yukawa and trilinear blocks.  YU, YD and YE, plus [YU, YD and YE; SLHA1 only], or [TU, TD and TE; SLHA2 only].
+        sspair A[3] = {sspair("AU","Au"), sspair("AD","Ad"), sspair("AE","Ae")};
+        sspair Y[3] = {sspair("YU","Yu"), sspair("YD","Yd"), sspair("YE","Ye")};
+        sspair T[3] = {sspair("TU","TYu"), sspair("TD","TYd"), sspair("TE","TYe")};
         for (int k=0;k<3;k++)
         {
-          SLHAea_add_block(slha, S[k].first,this->GetScale());
-          for(int i=1;i<7;i++) for(int j=1;j<7;j++)
+          SLHAea_add_block(slha, Y[k].first,this->GetScale());
+          if (slha_version == 1) SLHAea_add_block(slha, A[k].first,this->GetScale());
+          if (slha_version == 2) SLHAea_add_block(slha, T[k].first,this->GetScale());
+          for(int i=1;i<4;i++)
           {
-            comment.str(""); comment << "# " << S[k].second << "-type sfermion mixing (" << i << "," << j << ")";
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, S[k].second, i, j, S[k].first, i, j, comment.str());
+            if (slha_version == 1)
+            {
+              comment.str(""); comment << "# " << A[k].second << "(" << i << "," << i << ")";
+              double invTii = 1.0/this->get(Par::dimensionless,Y[k].second,i,i);
+              SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::mass1, T[k].second, i, i, A[k].first, i, i, comment.str(), true, invTii);
+            }
+            for(int j=1;j<4;j++)
+            {
+              comment.str(""); comment << "# " << Y[k].second << "(" << i << "," << j << ")";
+              SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::dimensionless, Y[k].second, i, j, Y[k].first, i, j, comment.str());
+              if (slha_version == 2)
+              {
+                comment.str(""); comment << "# " << T[k].second << "(" << i << "," << j << ")";
+                SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::mass1, T[k].second, i, j, T[k].first, i, j, comment.str());
+              }
+            }
           }
         }
 
+        // ALPHA block
+        SLHAea_add_block(slha, "ALPHA", this->GetScale());
+        slha["ALPHA"][""] << asin(this->get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
+
+        // UMIX and VMIX blocks, plus some FlexibleSUSY-only extensions: PSEUDOSCALARMIX, SCALARMIX and CHARGEMIX.
         sspair U[5] = {sspair("UMIX","~chi-"), sspair("VMIX","~chi+"), sspair("PSEUDOSCALARMIX","A0"), sspair("SCALARMIX","h0"), sspair("CHARGEMIX","H+")};
         for (int k=0;k<5;k++)
         {
@@ -192,34 +262,13 @@ namespace Gambit
           }
         }
 
-        SLHAea_add_block(slha, "ALPHA", this->GetScale());
-        slha["ALPHA"][""] << asin(this->get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
-
-        sspair V("SNUMIX","~nu");
-        SLHAea_add_block(slha, V.first,this->GetScale());
-        for(int i=1;i<4;i++) for(int j=1;j<4;j++)
-        {
-          comment.str(""); comment << "# " << V.second << " mixing matrix (" << i << "," << j << ")";
-          SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, V.second, i, j, V.first, i, j, comment.str());
-        }
-
+        // NMIX block
         sspair N("NMIX","~chi0");
         SLHAea_add_block(slha, N.first,this->GetScale());
         for(int i=1;i<5;i++) for(int j=1;j<5;j++)
         {
           comment.str(""); comment << "# " << N.second << " mixing matrix (" << i << "," << j << ")";
           SLHAea_add_from_subspec(slha, LOCAL_INFO,*this, Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
-        }
-
-        // Here we add some SLHA1 legacy stuff, for backwards compatibility with backwards backends.
-        if (include_SLHA1_blocks)
-        {
-          slha.push_back("# The following are SLHA1 blocks, provided for backwards compatibility with");
-          slha.push_back("# codes that are not SLHA2 compliant.");
-          str s1, s2;
-          slhahelp::attempt_to_add_SLHA1_mixing("STOPMIX", slha, "~u", *this, 1.0, s1, s2, true);
-          slhahelp::attempt_to_add_SLHA1_mixing("SBOTMIX", slha, "~d", *this, 1.0, s1, s2, true);
-          slhahelp::attempt_to_add_SLHA1_mixing("STAUMIX", slha, "~e-", *this, 1.0, s1, s2, true);
         }
 
       }
@@ -551,7 +600,7 @@ namespace Gambit
 
       /// @{ Fillers for "Running" parameters
 
-      // Filler function for getter function pointer maps 
+      // Filler function for getter function pointer maps
       template <class MI>
       typename MSSMSpec<MI>::GetterMaps MSSMSpec<MI>::fill_getter_maps()
       {
@@ -881,7 +930,7 @@ namespace Gambit
           tmp_map["~chi+"] = FInfo1M( &set_MCha_pole_slha<Model>, i01 );
           tmp_map["~chi0"] = FInfo1M( &set_MChi_pole_slha<Model>, i0123 );
           tmp_map["h0"] =  FInfo1M( &set_Mhh_pole_slha<Model>, i01 );
-          
+
           map_collection[Par::Pole_Mass].map1_extraM = tmp_map;
         }
 

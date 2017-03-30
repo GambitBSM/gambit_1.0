@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:25
+// File generated at Sat 27 Aug 2016 12:40:18
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -72,7 +72,7 @@ Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Ye_two_loop(const Susy_
       135*traceYuAdjYu*Sqr(g2) + 54*Sqr(g1)*Sqr(g2) + 15*traceYeAdjYe*(5*Sqr(
       g1) + 3*Sqr(g2)) + 480*traceYuAdjYu*Sqr(g3) + 5*traceYdAdjYd*(5*Sqr(g1) +
       27*Sqr(g2) + 96*Sqr(g3)) + 144*Sqr(Lambda1) + 24*Sqr(Lambda3)) + 9*((-36
-      *traceYdAdjYd - 12*traceYeAdjYe - 36*traceYuAdjYu + 64*Lambda1 + 43*Sqr(
+      *traceYdAdjYd - 12*traceYeAdjYe - 36*traceYuAdjYu - 64*Lambda1 + 43*Sqr(
       g1) + 45*Sqr(g2))*(Ye*Ye.adjoint()*Ye) + 8*(Ye*Ye.adjoint()*Ye*Ye.adjoint
       ()*Ye)))).real();
 

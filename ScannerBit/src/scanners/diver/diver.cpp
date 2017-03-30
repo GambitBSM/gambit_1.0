@@ -105,10 +105,10 @@ scanner_plugin(Diver, version(1, 0, 0))
     int    nDiscrete           = get_inifile_value<int>   ("nDiscrete",          0);      // Number of parameters that are to be treated as discrete
     bool   partitionDiscrete   = get_inifile_value<bool>  ("partitionDiscrete",  false);  // Split the population evenly amongst discrete parameters and evolve separately
     int    maxciv              = get_inifile_value<int>   ("maxciv",             1);      // Maximum number of civilisations
-    int    maxgen              = get_inifile_value<int>   ("maxgen",             500);    // Maximum number of generations per civilisation
+    int    maxgen              = get_inifile_value<int>   ("maxgen",             5000);   // Maximum number of generations per civilisation
     int    NP                  = get_inifile_value<int>   ("NP");                         // Population size (individuals per generation)
     double Cr                  = get_inifile_value<double>("Cr",                 0.9);    // Crossover factor
-    double lambda              = get_inifile_value<double>("lambda",             0.8);    // Mixing factor between best and rand/current
+    double lambda              = get_inifile_value<double>("lambda",             0.0);    // Mixing factor between best and rand/current
     bool   current             = get_inifile_value<bool>  ("current",            false);  // Use current vector for mutation
     bool   expon               = get_inifile_value<bool>  ("expon",              false);  // Use exponential crossover
     int    bndry               = get_inifile_value<int>   ("bndry",              3);      // Boundary constraint: 1=brick wall, 2=random re-initialization, 3=reflection
@@ -119,7 +119,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     bool   removeDuplicates    = get_inifile_value<bool>  ("removeDuplicates",   true);   // Weed out duplicate vectors within a single generation
     bool   doBayesian          =                                                 false;   // Calculate approximate log evidence and posterior weightings
     double maxNodePop          =                                                 1.9;     // Population at which node is partitioned in binary space partitioning for posterior
-    double Ztolerance          =                                                 0.1;     // Input tolerance in log-evidence
+    double Ztolerance          =                                                 0.01;    // Input tolerance in log-evidence
     int    savecount           = get_inifile_value<int>   ("savecount",          1);      // Save progress every savecount generations
     bool   native_output       = get_inifile_value<bool>  ("full_native_output", true);   // Output .raw file (Diver native sample output format)
     int    init_pop_strategy   = get_inifile_value<int>   ("init_population_strategy", 2);// Initialisation strategy: 0=one shot, 1=n-shot, 2=n-shot with error if no valid vectors found.
@@ -143,7 +143,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     }
 
     // Scale factors
-    std::vector<double> Fvec = get_inifile_value<std::vector<double> >("F", initVector<double>(0.6));
+    std::vector<double> Fvec = get_inifile_value<std::vector<double> >("F", initVector<double>(0.7));
     int nF = Fvec.size();                                                                 // Size of the array indicating scale factors
     double F[nF];                                                                         // Scale factor(s).
     std::copy(Fvec.begin(), Fvec.end(), F);

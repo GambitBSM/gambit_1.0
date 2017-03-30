@@ -141,10 +141,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 Abstract_Vec4& operator=(const Abstract_Vec4&) { return *this; }
     
-                virtual void init_wrapper()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Vec4 from backend Pythia_8_212_EM. The function Abstract_Vec4::init_wrapper() in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual void init_wrapper() =0;
     
                 Vec4* get_init_wptr()
                 {
@@ -158,10 +155,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                     return *wptr;
                 }
     
-                virtual ~Abstract_Vec4()
-                {
-                    std::cerr << "BOSS WARNING: Problem detected with the BOSSed class Pythia8::Vec4 from backend Pythia_8_212_EM. The function Abstract_Vec4::~Abstract_Vec4 in GAMBIT should never have been called..." << std::endl;
-                }
+                virtual ~Abstract_Vec4() =0;
         };
     }
     

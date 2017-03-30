@@ -18,6 +18,7 @@ NUHMSSM_TWO_SCALE_MK := \
 		$(NUHMSSM_TWO_SCALE_SOFT_MK)
 
 NUHMSSM_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.NUHMSSM_generated \
 		$(DIR)/LesHouches.in.NUHMSSM
 
 NUHMSSM_GNUPLOT := \
@@ -34,9 +35,11 @@ LIBNUHMSSM_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBNUHMSSM_SRC += \
+		$(DIR)/NUHMSSM_effective_couplings.cpp \
 		$(DIR)/NUHMSSM_mass_eigenstates.cpp \
 		$(DIR)/NUHMSSM_info.cpp \
 		$(DIR)/NUHMSSM_input_parameters.cpp \
+		$(DIR)/NUHMSSM_observables.cpp \
 		$(DIR)/NUHMSSM_slha_io.cpp \
 		$(DIR)/NUHMSSM_physical.cpp \
 		$(DIR)/NUHMSSM_utilities.cpp \
@@ -55,6 +58,7 @@ EXENUHMSSM_SRC += \
 		$(DIR)/scan_NUHMSSM.cpp
 LIBNUHMSSM_HDR += \
 		$(DIR)/NUHMSSM_convergence_tester.hpp \
+		$(DIR)/NUHMSSM_effective_couplings.hpp \
 		$(DIR)/NUHMSSM_high_scale_constraint.hpp \
 		$(DIR)/NUHMSSM_mass_eigenstates.hpp \
 		$(DIR)/NUHMSSM_info.hpp \
@@ -63,6 +67,7 @@ LIBNUHMSSM_HDR += \
 		$(DIR)/NUHMSSM_low_scale_constraint.hpp \
 		$(DIR)/NUHMSSM_model.hpp \
 		$(DIR)/NUHMSSM_model_slha.hpp \
+		$(DIR)/NUHMSSM_observables.hpp \
 		$(DIR)/NUHMSSM_physical.hpp \
 		$(DIR)/NUHMSSM_slha_io.hpp \
 		$(DIR)/NUHMSSM_spectrum_generator_interface.hpp \
@@ -140,11 +145,12 @@ SARAH_MODEL_FILES_NUHMSSM := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIBNUHMSSM)
+all-$(MODNAME): $(LIBNUHMSSM) $(EXENUHMSSM_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -164,16 +170,21 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBNUHMSSM_DEP)
 		-rm -f $(EXENUHMSSM_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBNUHMSSM)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBNUHMSSM_OBJ)
 		-rm -f $(EXENUHMSSM_OBJ)
 
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBNUHMSSM)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXENUHMSSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -206,7 +217,7 @@ $(METACODE_STAMP_NUHMSSM):
 		@true
 endif
 
-$(LIBNUHMSSM_DEP) $(EXENUHMSSM_DEP) $(LIBNUHMSSM_OBJ) $(EXENUHMSSM_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBNUHMSSM_DEP) $(EXENUHMSSM_DEP) $(LIBNUHMSSM_OBJ) $(EXENUHMSSM_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBNUHMSSM_DEP) $(EXENUHMSSM_DEP) $(LIBNUHMSSM_OBJ) $(EXENUHMSSM_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -216,7 +227,7 @@ $(LIBNUHMSSM): $(LIBNUHMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBNUHMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBNUHMSSM_DEP) $(EXENUHMSSM_DEP)
 ALLSRC += $(LIBNUHMSSM_SRC) $(EXENUHMSSM_SRC)

@@ -61,6 +61,7 @@ namespace Gambit {
         void setName(const std::string& name);
   
       public:
+        std::string getName() const {return my_name;}
 
         /// Function to retreive all parameters
         std::vector<SpectrumParameter> all_parameters() const;

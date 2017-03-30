@@ -6,29 +6,19 @@ Parameters:
     M12: 507.013
     SignMu: 1
     TanBeta: 56.6243
-  Halo_Einasto:
-    rho0: 0.35
-    rhos: 0.02
+  Halo_gNFW_rho0:
+    rho0: 0.3
     v0: 255.0
     vesc: 530.0
     vrot: 230.0
     rs: 22.0
     r_sun: 10.0
-    alpha: 1.3
+    alpha: 1.0
+    beta: 3.0
+    gamma: 1.2
      
 
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      fixed_value: 40.0
-    sigmal:
-      fixed_value: 50.0
-    deltau:
-      fixed_value: 0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
 
 
 Priors:
@@ -62,11 +52,8 @@ ObsLikes:
     - capability: lnL_FermiLATdwarfs
       purpose:    LogLike
 
-    - capability: LUX_2013_LogLikelihood
+    - capability: lnL_HESSGC
       purpose:    LogLike
-
-    - capability: LUX_2013_Signal
-      purpose: Observable
 
     - capability: lnL_rho0
       purpose: LogLike
@@ -80,11 +67,12 @@ ObsLikes:
     - capability: lnL_vesc
       purpose: LogLike
 
-    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
-    - capability: lnL_SI_nuclear_parameters
-      purpose:    LogLike
-
 Rules:
+
+#  - capability: lnL_FermiGC
+#    function: lnL_FermiGC_gamLike
+#    options:
+#      version: externalJ
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
@@ -148,25 +136,25 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
+  # Make sure to use the latest version (2.12.0) of FeynHiggs for everything.
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: prec_HiggsMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: Higgs_Couplings
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_HiggsProd
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
   - capability: FH_MSSMMasses
     backends:
-    - {backend: FeynHiggs, version: 2.11.3}
+    - {backend: FeynHiggs, version: 2.12.0}
 
-  # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
+  # Choose to take FeynHiggs 2.12.0's prediction for the Higgs mass (rather then FlexibleSUSY's).
   # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
   # with the FH error estimate, to estimate the theoretical error on the prediction.
   - capability: MSSM_spectrum

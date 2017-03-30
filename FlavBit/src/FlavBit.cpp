@@ -122,8 +122,8 @@ namespace Gambit
       using namespace myPipe;
       using namespace std;
 
-      // Obtain SLHAea object from spectrum
-      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
+      // Obtain SLHAea object from spectrum, in SLHA2 format
+      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea(2);
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
 
@@ -503,7 +503,7 @@ namespace Gambit
       {
         result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
       }
-    
+
       if(flav_debug) printf("BR(Bs->mumu)_untag=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_Bsmumu_untag"<<endl;
     }
@@ -717,14 +717,14 @@ namespace Gambit
         int gen_tau_D        = 3;
         int charge_tau_D     = 0;// D* is the charged version
         double obs_tau_D[3];
-        result=BEreq::BRBDlnu(byVal(gen_tau_D), byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), obs_tau_D, &param);
+        result=BEreq::BRBDlnu(byVal(gen_tau_D), byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), byVal(obs_tau_D), &param);
       }
 
       if(flav_debug) printf("BR(B-> D tau nu )=%.3e\n",result);
       if(flav_debug)  cout<<"Finished SI_BDtaunu"<<endl;
     }
 
-    
+
     // *************************************************
     /// Calculating Br B -> D tau nu
     // *************************************************
@@ -748,7 +748,7 @@ namespace Gambit
         int gen_mu_D        =2;
         int charge_mu_D     =0;// D* is the charged version
         double obs_mu_D[3];
-        result= BEreq::BRBDlnu(byVal(gen_mu_D), byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), obs_mu_D, &param);
+        result= BEreq::BRBDlnu(byVal(gen_mu_D), byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), byVal(obs_mu_D), &param);
       }
 
       if(flav_debug) printf("BR(B->D mu nu)=%.3e\n",result);
@@ -775,7 +775,7 @@ namespace Gambit
         int gen_tau_Dstar        =3;
         int charge_tau_Dstar     =1;// D* is the charged version
         double obs_tau_Dstar[3];
-        result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), obs_tau_Dstar, &param);
+        result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), byVal(obs_tau_Dstar), &param);
       }
 
       if(flav_debug) printf("BR(B->Dstar tau nu)=%.3e\n",result);
@@ -802,7 +802,7 @@ namespace Gambit
         int gen_mu_Dstar        =2;
         int charge_mu_Dstar     =1;// D* is the charged version
         double obs_mu_Dstar[3];
-        result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), obs_mu_Dstar, &param);
+        result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), byVal(obs_mu_Dstar), &param);
       }
 
       if(flav_debug) printf("BR(B->Dstar mu nu)=%.3e\n",result);
@@ -1214,10 +1214,10 @@ namespace Gambit
       else
       {
         double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11];
-    
+
         double mu_W=2.*param.mass_W;
         double mu_b=param.mass_b_pole;
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         result = BEreq::AI_BKstarmumu(1.,6.,byVal(C0b),byVal(C1b),byVal(C2b),&param,byVal(mu_b));
@@ -1247,7 +1247,7 @@ namespace Gambit
 
         double mu_W=2.*param.mass_W;
         double mu_b=param.mass_b_pole;
-    
+
         BEreq::CW_calculator(2,byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
         BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
         result = BEreq::AI_BKstarmumu_zero(byVal(C0b),byVal(C1b),byVal(C2b),&param,byVal(mu_b));
@@ -1468,7 +1468,7 @@ namespace Gambit
       if (flav_debug) cout<<"Starting b2sgamma_measurements"<<endl;
 
       double theory_prediction= *Dep::bsgamma;
-      
+
       if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<endl;
 
       Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
@@ -1481,16 +1481,16 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
       boost::numeric::ublas::matrix<double> M_cov=red.get_cov();
       boost::numeric::ublas::matrix<double> th_err=red.get_th_err();
-      
+
       if (flav_debug) cout<<"Experiment: "<<M_exp<<" "<<sqrt(M_cov(0,0))<<" "<<th_err<<endl;
-      
+
       double exp_meas=M_exp(0,0);
       double exp_b2sgamma_err=sqrt(M_cov(0,0));
       double theory_b2sgamma_err=th_err(0,0)*std::abs(theory_prediction);
 
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
-      
+
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas,  theory_b2sgamma_err, exp_b2sgamma_err, profile);
 
     }
@@ -1659,8 +1659,8 @@ namespace Gambit
       double theory_Dmunu=*Dep::Dmunu;
       // B-> D tau nu
       double theory_BDtaunu=*Dep::BDtaunu;
-      // B-> D* tau nu 
-      double theory_BDstartaunu=*Dep::BDstartaunu; 
+      // B-> D* tau nu
+      double theory_BDstartaunu=*Dep::BDstartaunu;
       // B-> D mu nu
       double theory_BDmunu=*Dep::BDmunu;
       // B-> D* mu nu
