@@ -716,7 +716,6 @@ namespace Gambit
     }
 
 
-
     // *************************************************
     /// Calculating Br in B0->mumu decays
     // *************************************************
@@ -1705,7 +1704,6 @@ namespace Gambit
     }
 
 
-
     // *************************************************
     /// Calculating isospin asymmetry of B-> K* mu mu
     // *************************************************
@@ -1802,8 +1800,9 @@ namespace Gambit
     }
     ///@}
 
+
     // *************************************************
-    /// reading measurements for b->sll
+    /// Measurements for b->sll
     // *************************************************
 
     void b2sll_measurements(Flav_measurement_assym &measurement_assym)
@@ -1918,11 +1917,10 @@ namespace Gambit
       if (flav_debug) cout<<"Finished b2sll_measurements function"<<endl;
     }
 
-    // *************************************************
-    /// likelihood for b->sll
-    // *************************************************
 
-
+    // *************************************************
+    /// Likelihood for b->sll
+    // *************************************************
     void b2sll_likelihood(double &result)
     {
       using namespace Pipes::b2sll_likelihood;
@@ -1961,32 +1959,35 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
 
     }
+
+
     // *************************************************
-    /// measurement for Delta Ms
+    /// Likelihood for Delta Ms
     // *************************************************
-    void DeltaMs_likelihood(double &result)
+
+    void deltaMB_likelihood(double &result)
     {
-      using namespace Pipes::DeltaMs_likelihood;
+      using namespace Pipes::deltaMB_likelihood;
       static bool first = true;
       static double exp_meas, exp_DeltaMs_err, th_err;
 
-      if (flav_debug) cout << "Starting Delta_Ms_likelihood"<<endl; 
-            
+      if (flav_debug) cout << "Starting Delta_Ms_likelihood"<<endl;
+
       if (first)
-	{
-	  Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-	  red.debug_mode(flav_debug);
-	  if (flav_debug) cout<<"Initialised Flav reader in Delta_Ms_likelihood"<<endl;
-	  red.read_yaml_measurement("flav_data.yaml", "DeltaMs");
-	  red.create_global_corr(); // here we have a single measurement ;) so let's be sneaky:
-	  exp_meas = red.get_exp_value()(0,0);
-	  exp_DeltaMs_err = sqrt(red.get_cov()(0,0));
-	  th_err=red.get_th_err()(0,0);
-	  first = false;
-	}
+      {
+        Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+        red.debug_mode(flav_debug);
+        if (flav_debug) cout<<"Initialised Flav reader in Delta_Ms_likelihood"<<endl;
+        red.read_yaml_measurement("flav_data.yaml", "DeltaMs");
+        red.create_global_corr(); // here we have a single measurement ;) so let's be sneaky:
+        exp_meas = red.get_exp_value()(0,0);
+        exp_DeltaMs_err = sqrt(red.get_cov()(0,0));
+        th_err=red.get_th_err()(0,0);
+        first = false;
+      }
 
       if (flav_debug) cout << "Experiment: " << exp_meas << " " << exp_DeltaMs_err << " " << th_err << endl;
-      
+
       // Now we do the stuff that actually depends on the parameters
       double theory_prediction= *Dep::DeltaMs;
       double theory_DeltaMs_err=th_err*std::abs(theory_prediction);
@@ -1997,9 +1998,12 @@ namespace Gambit
 
       result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas, theory_DeltaMs_err, exp_DeltaMs_err, profile);
     }
+
+
     // *************************************************
-    /// measurement for b->s gamma
+    /// Likelihood for b->s gamma
     // *************************************************
+
     void b2sgamma_likelihood(double &result)
     {
       using namespace Pipes::b2sgamma_likelihood;
@@ -2038,8 +2042,9 @@ namespace Gambit
 
 
     // *************************************************
-    /// measurement for b->mumu
+    /// Measurements for b->mumu
     // *************************************************
+
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2ll_measurements;
@@ -2105,9 +2110,8 @@ namespace Gambit
 
 
     // *************************************************
-    /// likelihood for b->mumu
+    /// Likelihood for b->mumu
     // *************************************************
-
     void b2ll_likelihood(double &result)
     {
       using namespace Pipes::b2ll_likelihood;
@@ -2151,7 +2155,7 @@ namespace Gambit
 
 
     // *************************************************
-    /// measurement Semileptonic B decays
+    /// Measurements for tree-level leptonic and semileptonic B decays
     // *************************************************
 
     void SL_measurements(Flav_measurement_assym &measurement_assym)
@@ -2184,11 +2188,11 @@ namespace Gambit
         red.read_yaml_measurement("flav_data.yaml", "BR_BDmunu");
         // B-> D* mu nu
         red.read_yaml_measurement("flav_data.yaml", "BR_BDstarmunu");
-	// RD
-	red.read_yaml_measurement("flav_data.yaml", "RD");
-	// RDstar
-	red.read_yaml_measurement("flav_data.yaml", "RDstar");
-	// Ds-> tau nu
+        // RD
+        red.read_yaml_measurement("flav_data.yaml", "RD");
+        // RDstar
+        red.read_yaml_measurement("flav_data.yaml", "RDstar");
+        // Ds-> tau nu
         red.read_yaml_measurement("flav_data.yaml", "BR_Dstaunu");
         // Ds -> mu nu
         red.read_yaml_measurement("flav_data.yaml", "BR_Dsmunu");
@@ -2251,7 +2255,7 @@ namespace Gambit
     }
 
     // *************************************************
-    /// likelihood for  Semileptonic B decays
+    /// Likelihood for tree-level leptonic and semileptonic B decays
     // *************************************************
 
     void SL_likelihood(double &result)

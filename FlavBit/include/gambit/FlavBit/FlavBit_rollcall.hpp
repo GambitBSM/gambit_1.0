@@ -882,9 +882,9 @@ START_MODULE
   //  Likelihoods
   //###############################################
 
-  #define CAPABILITY DeltaMs_LL
+  #define CAPABILITY deltaMB_LL
   START_CAPABILITY
-    #define FUNCTION DeltaMs_likelihood
+    #define FUNCTION deltaMB_likelihood
     START_FUNCTION(double)
     DEPENDENCY(DeltaMs, double)
     #undef FUNCTION
