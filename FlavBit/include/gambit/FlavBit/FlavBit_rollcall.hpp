@@ -863,7 +863,7 @@ START_MODULE
     START_FUNCTION(fh_FlavourObs)
     DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
     BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.10, 2.11, 2.12), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
