@@ -861,17 +861,16 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION FH_FlavourObs
     START_FUNCTION(fh_FlavourObs)
-    DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
     BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: B_s mass difference
-  #define CAPABILITY deltaMs
+  #define CAPABILITY DeltaMs
   START_CAPABILITY
-    #define FUNCTION FH_deltaMs
+    #define FUNCTION FH_DeltaMs
     START_FUNCTION(double)
     DEPENDENCY(FH_FlavourObs, fh_FlavourObs)
     #undef FUNCTION
@@ -881,6 +880,14 @@ START_MODULE
   //###############################################
   //  Likelihoods
   //###############################################
+
+  #define CAPABILITY deltaMB_LL
+  START_CAPABILITY
+    #define FUNCTION deltaMB_likelihood
+    START_FUNCTION(double)
+    DEPENDENCY(DeltaMs, double)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   #define CAPABILITY b2sgamma_LL
   START_CAPABILITY
