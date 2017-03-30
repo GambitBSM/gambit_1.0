@@ -1788,9 +1788,18 @@ namespace Gambit
 
     ///These functions extract observables from a FeynHiggs flavour result
     ///@{
-    void FH_bsgamma(double &result) { result = Pipes::FH_bsgamma::Dep::FH_FlavourObs->Bsg_MSSM; }
-    void FH_Bsmumu (double &result) { result = Pipes::FH_Bsmumu::Dep::FH_FlavourObs->Bsmumu_MSSM; }
-    void FH_deltaMs(double &result) { result = Pipes::FH_deltaMs::Dep::FH_FlavourObs->deltaMs_MSSM; }
+    void FH_bsgamma(double &result)
+    {
+      result = Pipes::FH_bsgamma::Dep::FH_FlavourObs->Bsg_MSSM;
+    }
+    void FH_Bsmumu (double &result)
+    {
+      result = Pipes::FH_Bsmumu::Dep::FH_FlavourObs->Bsmumu_MSSM;
+    }
+    void FH_DeltaMs(double &result)
+    {
+      result = Pipes::FH_DeltaMs::Dep::FH_FlavourObs->deltaMs_MSSM;
+    }
     ///@}
 
     // *************************************************
@@ -1952,7 +1961,42 @@ namespace Gambit
       if(flav_debug_LL) cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
 
     }
+    // *************************************************
+    /// measurement for Delta Ms
+    // *************************************************
+    void DeltaMs_likelihood(double &result)
+    {
+      using namespace Pipes::DeltaMs_likelihood;
+      static bool first = true;
+      static double exp_meas, exp_DeltaMs_err, th_err;
 
+      if (flav_debug) cout << "Starting Delta_Ms_likelihood"<<endl; 
+            
+      if (first)
+	{
+	  Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+	  red.debug_mode(flav_debug);
+	  if (flav_debug) cout<<"Initialised Flav reader in Delta_Ms_likelihood"<<endl;
+	  red.read_yaml_measurement("flav_data.yaml", "DeltaMs");
+	  red.create_global_corr(); // here we have a single measurement ;) so let's be sneaky:
+	  exp_meas = red.get_exp_value()(0,0);
+	  exp_DeltaMs_err = sqrt(red.get_cov()(0,0));
+	  th_err=red.get_th_err()(0,0);
+	  first = false;
+	}
+
+      if (flav_debug) cout << "Experiment: " << exp_meas << " " << exp_DeltaMs_err << " " << th_err << endl;
+      
+      // Now we do the stuff that actually depends on the parameters
+      double theory_prediction= *Dep::DeltaMs;
+      double theory_DeltaMs_err=th_err*std::abs(theory_prediction);
+      if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<" +/- "<<theory_DeltaMs_err<<endl;
+
+      /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
+      bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
+
+      result = Stats::gaussian_loglikelihood(theory_prediction, exp_meas, theory_DeltaMs_err, exp_DeltaMs_err, profile);
+    }
     // *************************************************
     /// measurement for b->s gamma
     // *************************************************

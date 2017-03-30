@@ -869,9 +869,9 @@ START_MODULE
   #undef CAPABILITY
 
   // Observable: B_s mass difference
-  #define CAPABILITY deltaMs
+  #define CAPABILITY DeltaMs
   START_CAPABILITY
-    #define FUNCTION FH_deltaMs
+    #define FUNCTION FH_DeltaMs
     START_FUNCTION(double)
     DEPENDENCY(FH_FlavourObs, fh_FlavourObs)
     #undef FUNCTION
@@ -881,6 +881,14 @@ START_MODULE
   //###############################################
   //  Likelihoods
   //###############################################
+
+  #define CAPABILITY DeltaMs_LL
+  START_CAPABILITY
+    #define FUNCTION DeltaMs_likelihood
+    START_FUNCTION(double)
+    DEPENDENCY(DeltaMs, double)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   #define CAPABILITY b2sgamma_LL
   START_CAPABILITY
