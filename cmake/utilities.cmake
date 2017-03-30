@@ -402,6 +402,17 @@ function(add_standalone_tarballs modules version)
 
   add_custom_target(standalone_tarballs)
 
+  file(WRITE "${CMAKE_BINARY_DIR}/tarball_info.cmake"
+   "#*** GAMBIT ***********************\n"
+   "# This file automatically generated \n"
+   "# by utlities.cmake. Do not modify. \n"
+   "#**********************************\n\n"
+   "set(GAMBIT_VERSION_MAJOR ${GAMBIT_VERSION_MAJOR})\n"
+   "set(GAMBIT_VERSION_MINOR ${GAMBIT_VERSION_MINOR})\n"
+   "set(GAMBIT_VERSION_REVISION ${GAMBIT_VERSION_REVISION})\n"
+   "set(GAMBIT_VERSION_PATCH ${GAMBIT_VERSION_PATCH})\n"
+   "set(GAMBIT_VERSION_FULL ${GAMBIT_VERSION_FULL})\n")
+
   foreach(module ${modules})
 
     set(dirname "${module}_${version}")
@@ -415,6 +426,7 @@ function(add_standalone_tarballs modules version)
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Utils ${dirname}/Utils
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Printers ${dirname}/Printers
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/cmake ${dirname}/cmake
+                                      COMMAND ${CMAKE_COMMAND} -E copy tarball_info.cmake ${dirname}/cmake/
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/config ${dirname}/config
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/contrib ${dirname}/contrib
                                       COMMAND ${CMAKE_COMMAND} -E remove -f ${module}.tar
@@ -430,6 +442,7 @@ function(add_standalone_tarballs modules version)
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Elements ${dirname}/Elements
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Backends ${dirname}/Backends
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/cmake ${dirname}/cmake
+                                      COMMAND ${CMAKE_COMMAND} -E copy tarball_info.cmake ${dirname}/cmake/
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/config ${dirname}/config
                                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/contrib ${dirname}/contrib
                                       COMMAND ${CMAKE_COMMAND} -E remove -f ${module}.tar

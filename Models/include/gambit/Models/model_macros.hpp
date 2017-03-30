@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 May, June, July
@@ -31,16 +31,11 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-#ifndef STANDALONE
-  #include "gambit/Core/ini_functions.hpp"
-  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN) \
-                                                                  MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                  
-#else
-  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
-#endif
-
 #ifdef __model_rollcall_hpp__
   #include "gambit/Elements/module_macros_incore.hpp"
+  #ifndef STANDALONE
+    #include "gambit/Core/ini_functions.hpp"
+  #endif
   #define START_MODEL                                             CORE_START_MODEL
   #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
@@ -57,8 +52,14 @@
   #define INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)           MODULE_INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
 
+#ifndef STANDALONE
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN) \
+                                                                  MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)
+#else
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
+#endif
 
-// MACRO DEFINITIONS. 
+// MACRO DEFINITIONS.
 
 //  ****************************************************************************
 /// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
@@ -120,7 +121,7 @@
   MODULE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)
 
 
-/// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
+/// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same
 /// machinery.
 #define CORE_START_MODEL                                                       \
                                                                                \
@@ -145,7 +146,7 @@
                                                                                \
         namespace Accessors                                                    \
         {                                                                      \
-          /* Add appropriate 'provides' check to confirm the parameters object 
+          /* Add appropriate 'provides' check to confirm the parameters object
              as a CAPABILITY of this model. */                                 \
           template <>                                                          \
           bool provides<Gambit::Tags::CAT(MODEL,_parameters)>(){return true;}  \
@@ -172,8 +173,8 @@
 /// CAPABILITY, so that module functions can then draw upon them like any
 /// other capabilities. Draws from CORE_START_CAPABILITY macro.
 /// So far we only allow parameters of type double (currently the parameter
-/// object cannot store anything else anyway). If we really want to allow 
-/// integer or maybe complex parameters later we could extend some things in 
+/// object cannot store anything else anyway). If we really want to allow
+/// integer or maybe complex parameters later we could extend some things in
 /// here.
 #define CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                           \
                                                                                \
@@ -219,7 +220,7 @@
   CORE_DEPENDENCY(CAT(MODEL,_parameters),ModelParameters,MODEL,PARAMETER,      \
    IS_MODEL)                                                                   \
                                                                                \
-  /* Define the actual parameter setting function, now that we have the        
+  /* Define the actual parameter setting function, now that we have the
      functor and its dependency */                                             \
   namespace Gambit                                                             \
   {                                                                            \
@@ -231,8 +232,8 @@
       {                                                                        \
                                                                                \
         /* The wrapper function which extracts the value of PARAMETER from
-           the parameter object. This is the analogue of a module function, 
-           and is what will be wrapped in a functor for processing by the 
+           the parameter object. This is the analogue of a module function,
+           and is what will be wrapped in a functor for processing by the
            core */                                                             \
         void PARAMETER (double &result)                                        \
         {                                                                      \
@@ -247,7 +248,7 @@
                                                                                \
   }                                                                            \
 
-  
+
 /// Macro to define parameter.  Does not create a corresponding CAPABILITY;
 /// use MAP_TO_CAPABILITY to do this after calling DEFINEPAR(S).
 #define DEFINEPAR(PARAMETER)                                                   \
@@ -281,7 +282,7 @@
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    /* Add tags which specify that MODEL_X_parameters is a known capability/dep\  
+    /* Add tags which specify that MODEL_X_parameters is a known capability/dep\
     in GAMBIT. */                                                              \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL_X,_parameters))                     \
                                                                                \
@@ -376,26 +377,26 @@
 /// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 /// @{
 #define INTERPRET_AS_PARENT_DEPENDENCY(DEP, TYPE)                              \
-  INTERPRET_AS_X_DEPENDENCY(PARENT, DEP, TYPE)                                
+  INTERPRET_AS_X_DEPENDENCY(PARENT, DEP, TYPE)
 #define CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)                                \
-  INTERPRET_AS_X_FUNCTION_FULL(PARENT,FUNC,0)                                        
+  INTERPRET_AS_X_FUNCTION_FULL(PARENT,FUNC,0)
 /// @}
 
 /// Macro to get to model namespace easily
-#define MODEL_NAMESPACE Gambit::Models::MODEL 
+#define MODEL_NAMESPACE Gambit::Models::MODEL
 
-/// Macro to easily get the Pipes for an INTERPRET_AS_X function, for retrieving 
+/// Macro to easily get the Pipes for an INTERPRET_AS_X function, for retrieving
 /// dependencies
 #define USE_MODEL_PIPE(MODEL_X)                                                 \
   using namespace MODEL_NAMESPACE::Pipes::CAT(MODEL_X,_parameters);             \
 
 
-/// Macros to create and register primary model functors. 
+/// Macros to create and register primary model functors.
 ///
 /// We need this extra wrapper in order to define these special functors and add
-/// them to the Core's primary model functor list (no other functors allowed here).         
+/// them to the Core's primary model functor list (no other functors allowed here).
 /// @{
-  
+
 /// Main version of MAKE_FUNCTOR modified to build primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)            \
   /* Create the function wrapper object (functor) */                           \
