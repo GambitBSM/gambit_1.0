@@ -14,12 +14,12 @@
 ///
 ///  *********************************************
 
+#include "gambit/Models/models/NUHM2.hpp"
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
+#include "gambit/Utils/model_parameters.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/logger.hpp"
-
-#include "gambit/Models/models/NUHM2.hpp"
-
 
 #define MODEL NUHM2 
   void MODEL_NAMESPACE::NUHM2_to_MSSM30atMGUT (const ModelParameters &myP, ModelParameters &targetP)

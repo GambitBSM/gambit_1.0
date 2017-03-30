@@ -25,6 +25,8 @@
 #ifndef __MSSM63atQ_hpp__
 #define __MSSM63atQ_hpp__
 
+#include "gambit/Models/model_macros.hpp"
+
 /// FlexibleSUSY compatible general (63 parameters plus sign, plus input scale) MSSM parameterisation
 #define MODEL MSSM63atQ
   START_MODEL

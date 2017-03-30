@@ -33,12 +33,16 @@
 #include <sstream>
 #include <utility>
 
-#include "gambit/Utils/util_types.hpp"
+//#include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Utils/yaml_variadic_functions.hpp"
+#include "gambit/Utils/local_info.hpp"
 
 namespace Gambit
 {
+  /// Shorthand for a standard string
+  typedef std::string str;
 
   ///  A small wrapper object for 'options' nodes.
   ///  These can be extracted from the prior, observable/likelihood and rules sections of the

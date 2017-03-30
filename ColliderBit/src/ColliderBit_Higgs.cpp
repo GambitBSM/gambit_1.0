@@ -35,6 +35,7 @@
 #include <vector>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
 //#define COLLIDERBIT_DEBUG

@@ -30,6 +30,8 @@
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Elements/equivalency_singleton.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/regex.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Logs/logging.hpp"
