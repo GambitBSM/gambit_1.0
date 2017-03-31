@@ -1,6 +1,0 @@
-This directory contains tools for deriving fudge factors from ATLAS analyses. The data files are the results of simulation runs in parameter spaces used by ATLAS to set CLs limits. The scripts allow you to plot the ATLAS limit, plot the limit from the simulation run, and tune a fudge factor such that the two curves coincide.
-
-Currently here:
-
-a) A rough script for plotting a user contour in a rather unfriendly form, for the ATLAS 5.8 fb^-1 0 lep analysis
-b) No ATLAS limits (this need to be cribbed from the relevant papers)

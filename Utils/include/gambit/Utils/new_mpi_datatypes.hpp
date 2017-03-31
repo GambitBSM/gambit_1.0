@@ -24,6 +24,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include <ostream>
 
 // Code!
 namespace Gambit
@@ -83,52 +84,76 @@ namespace Gambit
       long int pointID;
       unsigned int rank;
       PPIDpair() 
-        : pointID(0)
+        : pointID(-1)
         , rank(0)
       {}
       PPIDpair(const long int p, const int r)
         : pointID(p)
         , rank(r)
       {}
+      friend std::ostream& operator<<(std::ostream&, const PPIDpair&);
     };
 
     // Needed by std::map for comparison of keys of type VBIDpair
     bool operator<(const PPIDpair& l, const PPIDpair& r);
     bool operator==(const PPIDpair& l, const PPIDpair& r);
     bool operator!=(const PPIDpair& l, const PPIDpair& r);
-   
+
+    // To use PPIDpairs in std::unordered_map/set, need to provide hashing and equality functions
+    struct PPIDHash{ 
+      size_t operator()(const PPIDpair &key) const { 
+        return std::hash<long int>()(key.pointID) ^ std::hash<unsigned int>()(key.rank);
+      }
+    };
+
+    struct PPIDEqual{
+      bool operator()(const PPIDpair &lhs, const PPIDpair &rhs) const {
+        return lhs == rhs; // use the operator we already defined (why doesn't the STL do this?)
+      }
+    };
+
+    // stream overloads (for easy std::out)
+    // Null pointID object, use for unassigned pointIDs
+    const PPIDpair nullpoint;
+
   } // end namespace Printers
 
-  #ifdef WITH_MPI
-  /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>::type() to VBIDpair and PPIDpair types
-  namespace GMPI { 
-     template<> 
-     struct get_mpi_data_type<Printers::VBIDpair> 
-     { 
-       static MPI_Datatype type();
-     }; 
-     template<> 
-     struct get_mpi_data_type<Printers::VBIDtrip> 
-     { 
-       static MPI_Datatype type();
-     }; 
-     template<> 
-     struct get_mpi_data_type<Printers::PPIDpair> 
-     { 
-       static MPI_Datatype type();
-     }; 
-  }
-  /// Declare MPI datatype for structs VBIDpair and PPIDpair (which is what the above functions will 'get')
-  extern MPI_Datatype mpi_VBIDpair_type;
-  extern MPI_Datatype mpi_VBIDtrip_type;
-  extern MPI_Datatype mpi_PPIDpair_type;
+  // DEPRECATED! We no longer actually send this stuff via MPI, 
+  // and there were slight issues with non-standards compliance
+  // that generate warnings on some compilers, so I am flagging
+  // this for deletion, though it was a bit complicated to
+  // figure out so I can't bring myself to delete it yet.
+  //
+  // #ifdef WITH_MPI
+  // /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>::type() to VBIDpair and PPIDpair types
+  // namespace GMPI { 
+  //    template<> 
+  //    struct get_mpi_data_type<Printers::VBIDpair> 
+  //    { 
+  //      static MPI_Datatype type();
+  //    }; 
+  //    template<> 
+  //    struct get_mpi_data_type<Printers::VBIDtrip> 
+  //    { 
+  //      static MPI_Datatype type();
+  //    }; 
+  //    template<> 
+  //    struct get_mpi_data_type<Printers::PPIDpair> 
+  //    { 
+  //      static MPI_Datatype type();
+  //    }; 
+  // }
+  // /// Declare MPI datatype for structs VBIDpair and PPIDpair (which is what the above functions will 'get')
+  // extern MPI_Datatype mpi_VBIDpair_type;
+  // extern MPI_Datatype mpi_VBIDtrip_type;
+  // extern MPI_Datatype mpi_PPIDpair_type;
 
-  /// Need declaration in order to use these in mpiwrapper.cpp (Init function)
-  namespace Printers {
-     void queue_mpidefs();
-  }
-
-  #endif
+  // /// Need declaration in order to use these in mpiwrapper.cpp (Init function)
+  // namespace Printers {
+  //    void queue_mpidefs();
+  // }
+  //
+  // #endif
 
 } // end namespace Gambit
 

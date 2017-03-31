@@ -29,6 +29,7 @@
 /// POSIX filesystem libraries
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <libgen.h>
 
@@ -139,7 +140,19 @@ namespace Gambit
       }
       return s;
     }
+   
+    /// Check if a string represents an integer
+    /// From: http://stackoverflow.com/a/2845275/1447953
+    bool isInteger(const std::string & s)
+    {
+       if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
     
+       char * p ;
+       strtol(s.c_str(), &p, 10) ;
+    
+       return (*p == 0) ;
+    }
+
     /// Copy a std::string to a character array, stripping the null termination character.  Good for sending to Fortran.
     void strcpy2f(char* arr, int len, str s)
     {
@@ -158,6 +171,15 @@ namespace Gambit
        std::string prefix = path.substr(0,found);
        recursive_mkdir( prefix.c_str() );
        return path;
+    }
+
+    /// Check if a file exists
+    bool file_exists(const std::string& filename)
+    { 
+        //std::ifstream file(filename);
+        //return not file.fail();
+        struct stat buffer;
+        return (stat(filename.c_str(), &buffer) == 0);
     }
 
     /// Return a vector of strings listing the contents of a directory (POSIX)
@@ -306,7 +328,31 @@ namespace Gambit
     {
       return a * a;
     }
-    
+ 
+    /// Checks whether `str' ends with `suffix'
+    // credit: http://stackoverflow.com/a/41041484/1447953
+    bool endsWith(const std::string& str, const std::string& suffix) 
+    {
+      if (&suffix == &str) return true; // str and suffix are the same string
+      if (suffix.length() > str.length()) return false;
+      size_t delta = str.length() - suffix.length();
+      for (size_t i = 0; i < suffix.length(); ++i) {
+          if (suffix[i] != str[delta + i]) return false;
+      }
+      return true;
+    }     
+   
+    // Inspired by the above. Checks whether 'str' begins with 'prefix'
+    bool startsWith(const std::string& str, const std::string& prefix) 
+    {
+      if (&prefix == &str) return true; // str and prefix are the same string
+      if (prefix.length() > str.length()) return false;
+      for (size_t i = 0; i < prefix.length(); ++i) {
+          if (prefix[i] != str[i]) return false;
+      }
+      return true;
+    }     
+   
     
   }
 

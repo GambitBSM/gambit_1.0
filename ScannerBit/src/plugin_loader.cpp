@@ -29,8 +29,6 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
-#include <sys/types.h> // for 'stat' function
-#include <sys/stat.h>  //    "         "
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
@@ -39,6 +37,7 @@
 #include "gambit/Utils/table_formatter.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
 
 namespace Gambit
@@ -312,7 +311,7 @@ namespace Gambit
 
                     table.no_newline() << "" << "";
                     out << "\x1b[01m\x1b[04mPRIOR LIST\x1b[0m\n" << std::endl;
-                    out << format_for_screen("For information in a specific prior, see its prior group's dianostic via \"./gambit group_name\".");
+                    out << format_for_screen("For information on a specific prior, see its prior group's diagnostic via \"./gambit group_name\".");
                     out << table.str() << std::endl;
                     out << "\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
                     if (node["priors"])
@@ -649,11 +648,7 @@ namespace Gambit
             /// Check persistence file to see if we should be using the alternative min_LogL value
             bool pluginInfo::check_alt_min_LogL_state() const
             {
-                //std::ifstream file(def_out_path+"/ALT_MIN_LOGL_IN_USE");
-                //return not file.fail();
-                std::string state_fname(def_out_path+"/ALT_MIN_LOGL_IN_USE");
-                struct stat buffer;
-                return (stat(state_fname.c_str(), &buffer) == 0);
+                return Utils::file_exists(def_out_path+"/ALT_MIN_LOGL_IN_USE");
             }
 
             pluginInfo::~pluginInfo()

@@ -11,13 +11,13 @@
 ///
 ///  (add name and date if you modify)
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Feb
 ///
-///  \author Peter Athron  
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2015 
+///  \date 2015
 //
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -70,7 +70,7 @@ namespace Gambit
     std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
     throw(e);
   }
-    
+
   /// Helper function for passing default backend information at initialisation
   int pass_default_to_backendinfo(str be, str def)
   {
@@ -94,7 +94,7 @@ namespace Gambit
   }
 
   /// Runtime addition of model to GAMBIT model database
-  int add_model(str model, str parent)   
+  int add_model(str model, str parent)
   {
     try
     {
@@ -128,7 +128,7 @@ namespace Gambit
   }
 
   /// Register a model functor.
-  int register_model_functor(std::map<str, bool(*)()> map_bools, std::map<str, str> iCanDo, 
+  int register_model_functor(std::map<str, bool(*)()> map_bools, std::map<str, str> iCanDo,
    bool(*provides_function)(), str function, str capability)
   {
     try
@@ -139,8 +139,8 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-  
-  /// Call push back on a vector of strings 
+
+  /// Call push back on a vector of strings
   int vectorstr_push_back(std::vector<str>& vec, str s)
   {
     try
@@ -150,7 +150,7 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-  
+
   /// Notify a backend functor of which models it can be used with
   int set_allowed_models(functor& be_functor, std::vector<str>& allowed_at_be_level, str models_string)
   {
@@ -159,22 +159,55 @@ namespace Gambit
       // Strip out parentheses
       models_string = models_string.substr(1,models_string.length()-2);
       // Get the models explicitly allowed in this command
-      std::vector<str> models = Utils::delimiterSplit(models_string, ",");    
-      models.insert(models.end(), allowed_at_be_level.begin(), allowed_at_be_level.end());
+      std::vector<str> models = Utils::delimiterSplit(models_string, ",");
+      // Harmonise any models declared as allowed for the backend as a whole with those exlicitly allowed in this command.
+      if (not allowed_at_be_level.empty())
+      {
+        // If there are no models explicitly allowed, just inherit the allowed models from the backend as a whole.
+        if (models.empty())
+        {
+          models.insert(models.end(), allowed_at_be_level.begin(), allowed_at_be_level.end());
+        }
+        // If there are models explicitly allowed, and models allowed at the whole-backend level, make sure their declarations are consistent.
+        else
+        {
+          // Loop over all the models explicitly allowed here, and make sure they fit with at least one of those declared at the backend level.
+          for (std::vector<str>::const_iterator it = models.begin(); it != models.end(); ++it)
+          {
+            bool found_match;
+            for (std::vector<str>::const_iterator jt = allowed_at_be_level.begin(); jt != allowed_at_be_level.end(); ++jt)
+            {
+              found_match = Models::ModelDB().upstream_of(*jt,*it);
+              if (found_match) break;
+            }
+            if (not found_match)
+            {
+              std::stringstream msg;
+              msg << "Conflicting model compatibility information provided for backend function or variable" << endl
+                  << be_functor.origin() << "::" << be_functor.name() << "." << endl
+                  << "The frontend header for " << be_functor.origin() << " declares that this function or variable" << endl
+                  << "can be used with model " << *it << ", but that model is not interpretable (via ancestry or friend" << endl
+                  << "relationships) as any of the models declared as allowed for the entire backend with the BE_ALLOW_MODELS" << endl
+                  << "directive.  If the current declarations were to be taken at face value, this function/variable would " << endl
+                  << "*never* be activated, for any model.  Please correct one or the other of these declarations." << endl;
+              backend_error().raise(LOCAL_INFO, msg.str());
+            }
+          }
+        }
+      }
+      // Allow the models
       if (not models.empty())
       {
-        // Add all the models that have been designated as allowed at the backend level
         for (std::vector<str>::const_iterator it = models.begin(); it != models.end(); ++it)
         {
-          // Allow the model
           be_functor.setAllowedModel(*it);
         }
       }
-    }                                                                    
+    }
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-     
+
   /// Load a backend library
   int loadLibrary(str be, str ver, str sv, void*& pHandle, bool with_BOSS)
   {
@@ -205,12 +238,12 @@ namespace Gambit
         #else
           Backends::backendInfo().override_path(be, ver, ".so loaded but path unverified (system lacks dlinfo)");
         #endif
-        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) 
+        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver)
                  << LogTags::backends << LogTags::info << EOM;
         Backends::backendInfo().works[be+ver] = true;
       }
       else
-      {       
+      {
         std::ostringstream err;
         str error = dlerror();
         Backends::backendInfo().dlerrors[be+ver] = error;
@@ -220,12 +253,12 @@ namespace Gambit
         backend_warning().raise(LOCAL_INFO,err.str());
         Backends::backendInfo().works[be+ver] = false;
       }
-    }                                                                    
+    }
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
 
-  /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.  
+  /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.
   void attempt_backend_path_override(str& be, str& ver, const char* name)
   {
     char *fullname = realpath(name, NULL);
@@ -244,7 +277,7 @@ namespace Gambit
   }
 
   /// Register a backend with the logging system
-  int register_backend_with_log(str s) 
+  int register_backend_with_log(str s)
   {
     try
     {
@@ -260,7 +293,7 @@ namespace Gambit
   int register_type(str bever, str classname)
   {
     try
-    {  
+    {
       Utils::strip_whitespace_except_after_const(classname);
       Backends::backendInfo().classes[bever].insert(classname);
     }
@@ -268,12 +301,12 @@ namespace Gambit
     return 0;
   }
 
-  /// Disable a backend functor if its library is missing or the symbol cannot be found. 
+  /// Disable a backend functor if its library is missing or the symbol cannot be found.
   int set_backend_functor_status(functor& be_functor, str symbol_name)
   {
     bool present = Backends::backendInfo().works.at(be_functor.origin() + be_functor.version());
     try
-    {  
+    {
       if (not present)
       {
         be_functor.setStatus(-1);
@@ -291,12 +324,12 @@ namespace Gambit
     return 0;
   }
 
-  /// Disable a backend initialisation function if the backend is missing. 
+  /// Disable a backend initialisation function if the backend is missing.
   int set_BackendIniBit_functor_status(functor& ini_functor, str be, str v)
   {
     bool present = Backends::backendInfo().works.at(be + v);
     try
-    {  
+    {
       if (not present)
       {
         ini_functor.setStatus(-4);
@@ -306,20 +339,20 @@ namespace Gambit
     return 0;
   }
 
-  /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
+  /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.
   int get_ctor_status(str be, str ver, str name, str barename, str args, str symbol_name)
   {
     bool present = Backends::backendInfo().works.at(be+ver);
     try
-    {  
+    {
       const str path = Backends::backendInfo().corrected_path(be,ver);
-      Backends::backendInfo().factory_args[be+ver+fixns(barename)].insert(args); 
+      Backends::backendInfo().factory_args[be+ver+fixns(barename)].insert(args);
       if (not present)
       {
         std::ostringstream err;
         Backends::backendInfo().classes_OK[be+ver] = false;
         Backends::backendInfo().constructor_status[be+ver+fixns(barename+args)] = "lib absent";
-        return -1;  
+        return -1;
       }
       else if (dlerror() != NULL)
       {
@@ -330,7 +363,7 @@ namespace Gambit
             << std::endl << "The BOSSed type relying on factory " << name << args
             << " will be unavailable." << std::endl;
         backend_warning().raise(LOCAL_INFO, err.str());
-        return -2;  
+        return -2;
       }
       else
       {
@@ -356,7 +389,7 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return mytag;
   }
-  
+
   /// Register a function with a module.
   int register_function(module_functor_common& f, bool can_manage, safe_ptr<bool>* done,
    std::map<str,str>& iCanDo, std::map<str, bool(*)()>& map, bool(&provides)(), safe_ptr<Options>& opts)
@@ -386,10 +419,10 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-  
+
   /// Set the classloading requirements of a given functor.
   int set_classload_requirements(module_functor_common& f, str be, str verstr, str default_ver)
-  {                                                                        
+  {
     try
     {
       // Split up the passed version string into individual versions
@@ -412,39 +445,39 @@ namespace Gambit
   namespace slhahelp
   {
 
-    /// map from gauge eigenstate strings to string, index pairs  
-    std::map<str, p_int_string> init_gauge_label_to_index_type() 
+    /// map from gauge eigenstate strings to string, index pairs
+    std::map<str, p_int_string> init_gauge_label_to_index_type()
     {
        std::map<str, p_int_string> gauge_label_to_index_type;
-       
+
        gauge_label_to_index_type["~e_L"]      = std::make_pair(1,"~e-");
        gauge_label_to_index_type["~mu_L"]     = std::make_pair(2,"~e-");
        gauge_label_to_index_type["~tau_L"]    = std::make_pair(3,"~e-");
        gauge_label_to_index_type["~e_R"]      = std::make_pair(4,"~e-");
        gauge_label_to_index_type["~mu_R"]     = std::make_pair(5,"~e-");
        gauge_label_to_index_type["~tau_R"]    = std::make_pair(6,"~e-");
-  
+
        gauge_label_to_index_type["~d_L"]      = std::make_pair(1,"~d");
        gauge_label_to_index_type["~s_L"]      = std::make_pair(2,"~d");
        gauge_label_to_index_type["~b_L"]      = std::make_pair(3,"~d");
        gauge_label_to_index_type["~d_R"]      = std::make_pair(4,"~d");
        gauge_label_to_index_type["~s_R"]      = std::make_pair(5,"~d");
-       gauge_label_to_index_type["~b_R"]      = std::make_pair(6,"~d");   
-  
+       gauge_label_to_index_type["~b_R"]      = std::make_pair(6,"~d");
+
        gauge_label_to_index_type["~u_L"]      = std::make_pair(1,"~u");
        gauge_label_to_index_type["~c_L"]      = std::make_pair(2,"~u");
        gauge_label_to_index_type["~t_L"]      = std::make_pair(3,"~u");
        gauge_label_to_index_type["~u_R"]      = std::make_pair(4,"~u");
        gauge_label_to_index_type["~c_R"]      = std::make_pair(5,"~u");
-       gauge_label_to_index_type["~t_R"]      = std::make_pair(6,"~u"); 
-  
+       gauge_label_to_index_type["~t_R"]      = std::make_pair(6,"~u");
+
        gauge_label_to_index_type["~nu_e_L"]   = std::make_pair(1,"~nu");
        gauge_label_to_index_type["~nu_mu_L"]  = std::make_pair(2,"~nu");
        gauge_label_to_index_type["~nu_tau_L"] = std::make_pair(3,"~nu");
-       
+
        return gauge_label_to_index_type;
     }
-  
+
     /// map from mass eigenstate strings to string, index pairs
     std::map<str, p_int_string> init_mass_label_to_index_type()
     {
@@ -455,33 +488,33 @@ namespace Gambit
        mass_label_to_index_type["~e-_4"] = std::make_pair(4,"~e-");
        mass_label_to_index_type["~e-_5"] = std::make_pair(5,"~e-");
        mass_label_to_index_type["~e-_6"] = std::make_pair(6,"~e-");
-  
+
        mass_label_to_index_type["~d_1"]  = std::make_pair(1,"~d");
        mass_label_to_index_type["~d_2"]  = std::make_pair(2,"~d");
        mass_label_to_index_type["~d_3"]  = std::make_pair(3,"~d");
        mass_label_to_index_type["~d_4"]  = std::make_pair(4,"~d");
        mass_label_to_index_type["~d_5"]  = std::make_pair(5,"~d");
-       mass_label_to_index_type["~d_6"]  = std::make_pair(6,"~d");   
-  
+       mass_label_to_index_type["~d_6"]  = std::make_pair(6,"~d");
+
        mass_label_to_index_type["~u_1"]  = std::make_pair(1,"~u");
        mass_label_to_index_type["~u_2"]  = std::make_pair(2,"~u");
        mass_label_to_index_type["~u_3"]  = std::make_pair(3,"~u");
        mass_label_to_index_type["~u_4"]  = std::make_pair(4,"~u");
        mass_label_to_index_type["~u_5"]  = std::make_pair(5,"~u");
-       mass_label_to_index_type["~u_6"]  = std::make_pair(6,"~u"); 
-  
+       mass_label_to_index_type["~u_6"]  = std::make_pair(6,"~u");
+
        mass_label_to_index_type["~nu_1"] = std::make_pair(1,"~nu");
        mass_label_to_index_type["~nu_2"] = std::make_pair(2,"~nu");
-       mass_label_to_index_type["~nu_3"] = std::make_pair(3,"~nu");     
-       
+       mass_label_to_index_type["~nu_3"] = std::make_pair(3,"~nu");
+
        return  mass_label_to_index_type;
     }
-  
-    /// map to extract info from family state   
-    std::map<str, pair_string_ints> init_familystate_label() 
+
+    /// map to extract info from family state
+    std::map<str, pair_string_ints> init_familystate_label()
     {
        std::map<str, pair_string_ints> familystate_label;
-      
+
        //pairs labeling family, mass
        pair_ints const three_one(3,1);
        pair_ints const three_two(3,2);
@@ -489,7 +522,7 @@ namespace Gambit
        pair_ints const two_two(3,2);
        pair_ints const one_one(3,1);
        pair_ints const one_two(3,2);
-    
+
        //triplet labelling type, generation and mass order of family states
        pair_string_ints const stop1("~u",three_one);
        pair_string_ints const stop2("~u",three_two);
@@ -514,44 +547,44 @@ namespace Gambit
        pair_string_ints const snue1("~nu",three_one);
        pair_string_ints const snumu1("~nu",two_one);
        pair_string_ints const snutau1("~nu",one_one);
-  
-       familystate_label["~t_1"]    =  stop1; 
+
+       familystate_label["~t_1"]    =  stop1;
        familystate_label["~t_2"]    = stop2;
-       familystate_label["~b_1"]    = sbot1; 
-       familystate_label["~b_2"]    = sbot2; 
-       familystate_label["~tau_1"]  = stau1; 
+       familystate_label["~b_1"]    = sbot1;
+       familystate_label["~b_2"]    = sbot2;
+       familystate_label["~tau_1"]  = stau1;
        familystate_label["~tau_2"]  = stau2;
-       
-       familystate_label["~c_1"]    = scharm1; 
+
+       familystate_label["~c_1"]    = scharm1;
        familystate_label["~c_2"]    = scharm2;
-       familystate_label["~s_1"]    = sstrange1; 
-       familystate_label["~s_2"]    = sstrange2; 
-       familystate_label["~muon_1"] = smuon1; 
+       familystate_label["~s_1"]    = sstrange1;
+       familystate_label["~s_2"]    = sstrange2;
+       familystate_label["~muon_1"] = smuon1;
        familystate_label["~muon_2"] = smuon2;
-       
+
        //  maybe we shouldn't do first gen it's confusing
-       familystate_label["~u_1"]    = sup1; 
+       familystate_label["~u_1"]    = sup1;
        familystate_label["~u_2"]    = sup2;
-       familystate_label["~d_1"]    = sdown1; 
-       familystate_label["~d_2"]    = sdown2; 
-       familystate_label["~e-_1"]   = selectron1; 
+       familystate_label["~d_1"]    = sdown1;
+       familystate_label["~d_2"]    = sdown2;
+       familystate_label["~e-_1"]   = selectron1;
        familystate_label["~e-_2"]   = selectron2;
 
        // these are even less needed since no l-r mixing without r state
        familystate_label["~nu_1"]   = snue1;
        familystate_label["~nu_2"]   = snumu1;
        familystate_label["~nu_3"]   = snutau1;
-       
+
        return familystate_label;
-  
+
     }
-    
+
     ///map to obtain left_right gauge_pairs from state info
-    /// helps us reuse other routiones with string arguments 
+    /// helps us reuse other routiones with string arguments
     std::map<p_int_string, std::vector<str> >  init_type_family_to_gauge_states()
     {
        std::map<p_int_string, std::vector<str> > type_family_to_gauge_states;
-      
+
        type_family_to_gauge_states[std::make_pair(3,"~u")] = initVector<str>("~t_L","~t_R");
        type_family_to_gauge_states[std::make_pair(3,"~d")] = initVector<str>("~b_L","~b_R");
        type_family_to_gauge_states[std::make_pair(3,"~e-")]= initVector<str>("~tau_L","~tau_R");
@@ -560,48 +593,48 @@ namespace Gambit
        type_family_to_gauge_states[std::make_pair(2,"~e-")]= initVector<str>("~mu_L","~mu_R");
        type_family_to_gauge_states[std::make_pair(1,"~u")] = initVector<str>("~u_L","~u_R");
        type_family_to_gauge_states[std::make_pair(1,"~d")] = initVector<str>("~d_L","~d_R");
-       type_family_to_gauge_states[std::make_pair(1,"~e-")]= initVector<str>("~e_L","~e_R"); 
+       type_family_to_gauge_states[std::make_pair(1,"~e-")]= initVector<str>("~e_L","~e_R");
        //no sneutrino gauges pairs as no right sneutrino
- 
+
        return type_family_to_gauge_states;
-    }    
-  
+    }
+
     /// maps directly from family string to left_right gauge_pairs
-    /// helps us reuse other routines that take string arguments 
+    /// helps us reuse other routines that take string arguments
     std::map<str, std::vector<str> > init_family_state_to_gauge_state()
     {
        std::map<str, std::vector<str> > family_state_to_gauge_state;
-       
+
        family_state_to_gauge_state["~t_1"]    = initVector<str>("~t_L","~t_R");
        family_state_to_gauge_state["~t_2"]    = initVector<str>("~t_L","~t_R");
        family_state_to_gauge_state["~b_1"]    = initVector<str>("~b_L","~b_R");
        family_state_to_gauge_state["~b_2"]    = initVector<str>("~b_L","~b_R");
        family_state_to_gauge_state["~tau_1"]  = initVector<str>("~tau_L","~tau_R");
        family_state_to_gauge_state["~tau_2"]  = initVector<str>("~tau_L","~tau_R");
-       
+
        family_state_to_gauge_state["~c_1"]    = initVector<str>("~c_L","~c_R");
        family_state_to_gauge_state["~c_2"]    = initVector<str>("~c_L","~c_R");
        family_state_to_gauge_state["~s_1"]    = initVector<str>("~s_L","~s_R");
        family_state_to_gauge_state["~s_2"]    = initVector<str>("~s_L","~s_R");
        family_state_to_gauge_state["~muon_1"] = initVector<str>("~mu_L","~mu_R");
        family_state_to_gauge_state["~muon_2"] = initVector<str>("~mu_L","~mu_R");
-       
+
        family_state_to_gauge_state["~u_1"]    = initVector<str>("~u_L","~u_R");
        family_state_to_gauge_state["~u_2"]    = initVector<str>("~u_L","~u_R");
        family_state_to_gauge_state["~d_1"]    = initVector<str>("~d_L","~d_R");
        family_state_to_gauge_state["~d_2"]    = initVector<str>("~d_L","~d_R");
        family_state_to_gauge_state["~e-_1"]   = initVector<str>("~e_L","~e_R");
        family_state_to_gauge_state["~e-_2"]   = initVector<str>("~e_L","~e_R");
-       
+
        return family_state_to_gauge_state;
     }
-    
+
     ///maps directly from gauge_es string to familystates
-    /// helps us reuse other routines that take string arguments 
+    /// helps us reuse other routines that take string arguments
     std::map<str, std::vector<str> >  init_gauge_es_to_family_states()
     {
        std::map<str, std::vector<str> >  gauge_es_to_family_states;
-      
+
        gauge_es_to_family_states["~t_L"]   = initVector<str>("~t_1","~t_2");
        gauge_es_to_family_states["~t_R"]   = initVector<str>("~t_1","~t_2");
        gauge_es_to_family_states["~b_L"]   = initVector<str>("~b_1","~b_2");
@@ -614,41 +647,41 @@ namespace Gambit
        gauge_es_to_family_states["~s_R"]   = initVector<str>("~s_1","~s_2");
        gauge_es_to_family_states["~mu_L"]  = initVector<str>("~mu_1","~mu_2");
        gauge_es_to_family_states["~mu_R"]  = initVector<str>("~mu_1","~mu_2");
-  
+
        gauge_es_to_family_states["~u_L"]   = initVector<str>("~u_1","~u_2");
        gauge_es_to_family_states["~u_R"]   = initVector<str>("~u_1","~u_2");
        gauge_es_to_family_states["~d_L"]   = initVector<str>("~d_1","~d_2");
        gauge_es_to_family_states["~d_R"]   = initVector<str>("~d_1","~d_2");
        gauge_es_to_family_states["~e_L"]   = initVector<str>("~e-_1","~e-_2");
        gauge_es_to_family_states["~e_R"]   = initVector<str>("~e-_1","~e-_2");
-  
-       return gauge_es_to_family_states;       
+
+       return gauge_es_to_family_states;
     }
-  
-    /// map from string representing type (ie up-squarks, down-squarks or 
-    /// charged sleptons) to appropriate set of mass eigenstates 
-    std::map<str,std::vector<str> > init_type_to_vec_of_mass_es() 
+
+    /// map from string representing type (ie up-squarks, down-squarks or
+    /// charged sleptons) to appropriate set of mass eigenstates
+    std::map<str,std::vector<str> > init_type_to_vec_of_mass_es()
     {
        std::map<str,std::vector<str> > type_to_vec_of_mass_es;
-       
+
        type_to_vec_of_mass_es["~u"]  = initVector<str>("~u_1", "~u_2", "~u_3", "~u_4", "~u_5", "~u_6");
-       type_to_vec_of_mass_es["~d"]  = initVector<str>("~d_1", "~d_2", "~d_3", "~d_4", "~d_5", "~d_6"); 
+       type_to_vec_of_mass_es["~d"]  = initVector<str>("~d_1", "~d_2", "~d_3", "~d_4", "~d_5", "~d_6");
        type_to_vec_of_mass_es["~e-"] = initVector<str>("~e-_1", "~e-_2", "~e-_3", "~e-_4", "~e-_5", "~e-_6");
-       type_to_vec_of_mass_es["~nu"] = initVector<str>("~nu_1", "~nu_2", "~nu_3");      
+       type_to_vec_of_mass_es["~nu"] = initVector<str>("~nu_1", "~nu_2", "~nu_3");
 
        return type_to_vec_of_mass_es;
     }
-    
-    /// map from string representing type (ie up-squarks, down-squarks or 
-    /// charged sleptons) to appropriate set of gauge eigenstates 
+
+    /// map from string representing type (ie up-squarks, down-squarks or
+    /// charged sleptons) to appropriate set of gauge eigenstates
     std::map<str,std::vector<str> > init_type_to_vec_of_gauge_es()
     {
        std::map<str,std::vector<str> > type_to_vec_of_gauge_es;
 
        type_to_vec_of_gauge_es["~u"]  = initVector<str>("~u_L", "~c_L", "~t_L", "~u_R", "~c_R", "~t_R");
-       type_to_vec_of_gauge_es["~d"]  = initVector<str>("~d_L", "~s_L", "~b_L", "~d_R", "~s_R", "~b_R"); 
+       type_to_vec_of_gauge_es["~d"]  = initVector<str>("~d_L", "~s_L", "~b_L", "~d_R", "~s_R", "~b_R");
        type_to_vec_of_gauge_es["~e-"] = initVector<str>("~e_L", "~mu_L", "~tau_L", "~e_R", "~mu_R", "~tau_R");
-       type_to_vec_of_gauge_es["~nu"] = initVector<str>("~nu_e_L", "~nu_mu_L", "~nu_tau_L");      
+       type_to_vec_of_gauge_es["~nu"] = initVector<str>("~nu_e_L", "~nu_mu_L", "~nu_tau_L");
 
        return type_to_vec_of_gauge_es;
     }

@@ -56,11 +56,9 @@ BE_INI_FUNCTION
   }
   scan_level = false;
 
-  // retrive SMInputs dependency
-  const SMInputs& sminputs = *Dep::SMINPUTS;
-
   // retrieve MSSM_spectrum dependency
   const Spectrum& fullspectrum = *Dep::unimproved_MSSM_spectrum;
+  const SMInputs& sminputs = fullspectrum.get_SMInputs();
   const SubSpectrum& spec = fullspectrum.get_HE();
   SLHAea::Coll slhaea = fullspectrum.getSLHAea(2);
 

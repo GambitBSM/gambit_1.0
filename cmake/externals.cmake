@@ -70,7 +70,9 @@ endif()
 add_custom_target(backends)
 
 # Arrange make scanners command (will be filled in from scanners.cmake)
-add_custom_target(scanners)
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  add_custom_target(scanners)
+endif()
 
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
@@ -117,8 +119,10 @@ function(set_as_default_version type name default)
   add_dependencies(${type}s ${name})
 endfunction()
 
-include(cmake/scanners.cmake)
 include(cmake/backends.cmake)
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  include(cmake/scanners.cmake)
+endif()
 
 # Print outcomes of BOSSing efforts
 if(NOT needs_BOSSing STREQUAL "")

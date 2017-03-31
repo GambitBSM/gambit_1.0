@@ -5,14 +5,14 @@
 ///  A collection of tools for interacting with
 ///  HDF5 databases.
 ///
-///  Currently I am using the C++ bindings for 
+///  Currently I am using the C++ bindings for
 ///  HDF5, however they are a bit crap and it may
 ///  be better to just write our own.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 May
@@ -22,20 +22,25 @@
 ///  \date 2015 Jul
 ///
 ///  *********************************************
- 
+
 #ifndef __hdf5tools_hpp__
 #define __hdf5tools_hpp__
 
+// Standard library
 #include <cstdint>
 #include <memory>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 
+// GAMBIT
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 
+// HDF5
 #include <hdf5.h>
+
+// Boost
 #include <boost/utility/enable_if.hpp>
 
 
@@ -64,16 +69,12 @@
 
 namespace Gambit
 {
-  
+
   namespace Printers
   {
 
-      /// Typedefs for managed H5 pointers
-      //typedef std::shared_ptr<H5::CommonFG> H5FGPtr; // common ancestor of H5File and Group
-      //typedef std::shared_ptr<H5::H5File> H5FilePtr;
-      //typedef std::shared_ptr<H5::Group>  H5GroupPtr;
-      
-      namespace HDF5 { 
+      namespace HDF5
+      {
 
          /// @{ File and group manipulation
 
@@ -84,16 +85,16 @@ namespace Gambit
          hid_t openFile(const std::string& fname, bool overwrite=false);
 
          /// Close hdf5 file
-         void closeFile(hid_t file);
+         hid_t closeFile(hid_t file);
 
          /// Check if hdf5 file exists and can be opened in read/write mode
          bool checkFileReadable(const std::string& fname, std::string& msg);
          /// Thin wrapper for the above to discard failure message
-         inline bool checkFileReadable(const std::string& fname) 
+         inline bool checkFileReadable(const std::string& fname)
          { std::string garbage; return checkFileReadable(fname, garbage); }
 
          /// Check if a group exists and can be accessed
-         bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg);   
+         bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg);
          /// Thin wrapper for the above to discard failure message
          inline bool checkGroupReadable(hid_t location, const std::string& groupname)
          { std::string garbage; return checkGroupReadable(location, groupname, garbage); }
@@ -122,23 +123,50 @@ namespace Gambit
           * If no accessmode has H5Utils::DONOTCREATE flag set, then returns NULL if group
           * does not yet exist.
           *
-          */ 
+          */
          hid_t openGroup(hid_t file_id, const std::string& name, bool nocreate=false);
- 
+
          /// Close group
-         void closeGroup(hid_t group);
+         hid_t closeGroup(hid_t group);
+
+         /// List object names in a group
+         std::vector<std::string> lsGroup(hid_t group_id);
+
+         /// Get type of an object in a group
+         hid_t getH5DatasetType(hid_t group_id, const std::string& dset_name);
+
+         /// Release datatype identifier
+         hid_t closeType(hid_t type_id);
 
          /// @}
 
          /// @{ Dataset and dataspace manipulation
- 
+
+         /// Open dataset
+         hid_t openDataset(hid_t dset_id, const std::string& name, bool error_off=false);
+
+         /// Close dataset
+         hid_t closeDataset(hid_t dset_id);
+
+         /// Get dataspace
+         hid_t getSpace(hid_t dset_id);
+
+         /// Close dataspace
+         hid_t closeSpace(hid_t space_id);
+
+         /// Get simple dataspace extent
+         hssize_t getSimpleExtentNpoints(hid_t dset_id);
+
+         /// Get name of dataset
+         std::string getName(hid_t dset_id);
+
          /// @}
 
       }
 
-      /// Base template is left undefined in order to raise 
+      /// Base template is left undefined in order to raise
       /// a compile error if specialisation doesn't exist.
-      template<typename T, typename Enable=void> 
+      template<typename T, typename Enable=void>
       struct get_hdf5_data_type;
 
       /// True types
@@ -157,13 +185,34 @@ namespace Gambit
       template<> struct get_hdf5_data_type<double>            { static hid_t type() { return H5T_NATIVE_DOUBLE ; } };
       template<> struct get_hdf5_data_type<long double>       { static hid_t type() { return H5T_NATIVE_LDOUBLE; } };
       template<> struct get_hdf5_data_type<bool>              { static hid_t type() { return H5T_NATIVE_UINT8  ; } };
-      // Bools are a bit trickier because C has no built-in boolean type (until recently; anyway 
+      // Bools are a bit trickier because C has no built-in boolean type (until recently; anyway
       // the HDF5 libraries were written in C before this existed). We also want something that
       // will be recognised as a bool by h5py. For now we just use an unsigned int.
+
+      // Macro sequence for iterating over all allowed output types
+      #define H5_OUTPUT_TYPES \
+        (char) \
+        (short) \
+        (int) \
+        (long) \
+        (long long) \
+        (unsigned char) \
+        (unsigned short) \
+        (unsigned int) \
+        (unsigned long) \
+        (unsigned long long) \
+        (float) \
+        (double) \
+        (long double) \
+        (bool)
+
+      /// DEBUG: print to stdout all HDF5 type IDs
+      void printAllH5Types(void);
+
       /// @}
 
       /// Typedef'd types; enabled only where they differ from the true types.
-      /// @{      
+      /// @{
       SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int8_t,   H5T_NATIVE_INT8)
       SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint8_t,  H5T_NATIVE_UINT8)
       SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int16_t,  H5T_NATIVE_INT16)

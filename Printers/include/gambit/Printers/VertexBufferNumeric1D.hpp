@@ -98,24 +98,25 @@ namespace Gambit {
           bool  buffer_valid[LENGTH]; // Array telling us which buffer entries are properly filled
           T     buffer_entries[LENGTH];
 
-          /// Buffers to store data waiting to be sent via MPI
-          #ifdef WITH_MPI
-          BuffTags myTags; // Collection of MPI tags needed for passing messages
-          GMPI::Comm printerComm; // MPI communicator object from printer
+          // DEPRECATED! No more MPI stuff needed.
+          // /// Buffers to store data waiting to be sent via MPI
+          // #ifdef WITH_MPI
+          // BuffTags myTags; // Collection of MPI tags needed for passing messages
+          // GMPI::Comm printerComm; // MPI communicator object from printer
 
-          int  send_buffer_valid[LENGTH];
-          T    send_buffer_entries[LENGTH];
-          bool send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
+          // int  send_buffer_valid[LENGTH];
+          // T    send_buffer_entries[LENGTH];
+          // bool send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
 
-          // Request handles for tracking status of a sent message
-          MPI_Request req_valid  =MPI_REQUEST_NULL;
-          MPI_Request req_entries=MPI_REQUEST_NULL;
+          // // Request handles for tracking status of a sent message
+          // MPI_Request req_valid  =MPI_REQUEST_NULL;
+          // MPI_Request req_entries=MPI_REQUEST_NULL;
 
-          // Status handles
-          MPI_Status stat_valid; 
-          MPI_Status stat_entries;
-          #endif
-          /// @}
+          // // Status handles
+          // MPI_Status stat_valid; 
+          // MPI_Status stat_entries;
+          // #endif
+          // /// @}
  
           /// @{ Buffer variables for random access writing
           /// Queue for random access writes to dataset (independent of main buffer)
@@ -125,27 +126,28 @@ namespace Gambit {
           /// Current length of the RA write queue
           uint  RA_queue_length = 0;
 
-          #ifdef WITH_MPI
-          /// MPI buffers, flags, and status+request handles for RA messages
-          T        send_buffer_RA_write_q[LENGTH];
-          PPIDpair send_buffer_RA_write_loc[LENGTH];
-          uint     send_buffer_RA_q_len;
-          uint     null_message;
-          bool     RA_send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
+          // DEPRECATED! No more MPI stuff needed
+          // #ifdef WITH_MPI
+          // /// MPI buffers, flags, and status+request handles for RA messages
+          // T        send_buffer_RA_write_q[LENGTH];
+          // PPIDpair send_buffer_RA_write_loc[LENGTH];
+          // uint     send_buffer_RA_q_len;
+          // uint     null_message;
+          // bool     RA_send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
 
-          // Request handles for tracking status of a sent message
-          MPI_Request req_RA_write_q  =MPI_REQUEST_NULL;
-          MPI_Request req_RA_write_loc=MPI_REQUEST_NULL;
-          MPI_Request req_RA_q_len    =MPI_REQUEST_NULL;
-          MPI_Request req_RA_SENT     =MPI_REQUEST_NULL;
+          // // Request handles for tracking status of a sent message
+          // MPI_Request req_RA_write_q  =MPI_REQUEST_NULL;
+          // MPI_Request req_RA_write_loc=MPI_REQUEST_NULL;
+          // MPI_Request req_RA_q_len    =MPI_REQUEST_NULL;
+          // MPI_Request req_RA_SENT     =MPI_REQUEST_NULL;
 
-          // Status handles
-          MPI_Status stat_RA_write_q;
-          MPI_Status stat_RA_write_loc;
-          MPI_Status stat_RA_q_len;
-          MPI_Status stat_RA_SENT;
-          #endif
-          /// @}
+          // // Status handles
+          // MPI_Status stat_RA_write_q;
+          // MPI_Status stat_RA_write_loc;
+          // MPI_Status stat_RA_q_len;
+          // MPI_Status stat_RA_SENT;
+          // #endif
+          // /// @}
       
           /// MPI rank for this process
           uint myRank = 0;
@@ -168,37 +170,38 @@ namespace Gambit {
             , PPID_of_last_append(null_PPID)
           {}
 
-          #ifdef WITH_MPI
-          VertexBufferNumeric1D(
-                const std::string& label 
-              , const int vID
-              , const unsigned int i
-              , const bool sync
-              , const bool sil
-              , const bool resume
-              , const BuffTags& tags
-              , const GMPI::Comm& pComm
-           ): VertexBufferBase(label,vID,i,sync,sil,resume,true)
-            , buffer_valid() 
-            , buffer_entries()
-            , myTags(tags)
-            , printerComm(pComm)
-            , PPID_of_last_append(null_PPID)
-          {
-             myRank = pComm.Get_rank();
+          // DEPRECATED! No more MPI needed
+          // #ifdef WITH_MPI
+          // VertexBufferNumeric1D(
+          //       const std::string& label 
+          //     , const int vID
+          //     , const unsigned int i
+          //     , const bool sync
+          //     , const bool sil
+          //     , const bool resume
+          //     , const BuffTags& tags
+          //     , const GMPI::Comm& pComm
+          //  ): VertexBufferBase(label,vID,i,sync,sil,resume,true)
+          //   , buffer_valid() 
+          //   , buffer_entries()
+          //   , myTags(tags)
+          //   , printerComm(pComm)
+          //   , PPID_of_last_append(null_PPID)
+          // {
+          //    myRank = pComm.Get_rank();
 
-             //Debugging
-             #ifdef BUF_DEBUG
-             std::cout<<this->get_label()<<": My tags are: "
-                <<tags.SYNC_data  <<", "
-                <<tags.SYNC_valid <<", "
-                <<tags.RA_queue   <<", "
-                <<tags.RA_loc     <<", "
-                <<tags.RA_length  <<", "
-                <<std::endl; 
-             #endif
-          }
-          #endif
+          //    //Debugging
+          //    #ifdef BUF_DEBUG
+          //    std::cout<<this->get_label()<<": My tags are: "
+          //       <<tags.SYNC_data  <<", "
+          //       <<tags.SYNC_valid <<", "
+          //       <<tags.RA_queue   <<", "
+          //       <<tags.RA_loc     <<", "
+          //       <<tags.RA_length  <<", "
+          //       <<std::endl; 
+          //    #endif
+          // }
+          // #endif
 
           // No-MPI constructor. Can also be used with MPI, if output
           // is to be combined post-run.
@@ -209,18 +212,19 @@ namespace Gambit {
               , const bool sync
               , const bool sil
               , const bool resume
-           ): VertexBufferBase(label,vID,i,sync,sil,resume,false)
+              , const char access
+           ): VertexBufferBase(label,vID,i,sync,sil,resume,false,access)
             , buffer_valid() 
             , buffer_entries()
-            #ifdef WITH_MPI
-            , myTags()
-            , printerComm()
-            #endif
+            // #ifdef WITH_MPI
+            // , myTags()
+            // , printerComm()
+            // #endif
             , PPID_of_last_append(null_PPID)
           {
-             #ifdef WITH_MPI
-             myRank = printerComm.Get_rank();
-             #endif
+             // #ifdef WITH_MPI
+             // myRank = printerComm.Get_rank();
+             // #endif
           }
 
 
@@ -264,24 +268,24 @@ namespace Gambit {
           /// Write externally-supplied buffer to HDF5 dataset
           virtual void write_external_to_disk(const T (&values)[LENGTH], const bool (&isvalid)[LENGTH]) = 0;
 
-          #ifdef WITH_MPI
-          // Probe for a sync buffer MPI message from a process
-          virtual bool probe_sync_mpi_message(uint,int*);
+          // #ifdef WITH_MPI
+          // // Probe for a sync buffer MPI message from a process
+          // virtual bool probe_sync_mpi_message(uint,int*);
 
-          // Probe for a RA buffer MPI message from a process
-          virtual bool probe_RA_mpi_message(uint);
+          // // Probe for a RA buffer MPI message from a process
+          // virtual bool probe_RA_mpi_message(uint);
 
-          // Retrieve sync buffer data from an MPI message from a known process rank
-          // Should only be triggered if a valid message is known to exist to be retrieved!
-          virtual void get_sync_mpi_message(uint,int);
+          // // Retrieve sync buffer data from an MPI message from a known process rank
+          // // Should only be triggered if a valid message is known to exist to be retrieved!
+          // virtual void get_sync_mpi_message(uint,int);
 
-          // Retrieve RA buffer data from an MPI message from a known process rank
-          // Should only be triggered if a valid message is known to exist to be retrieved!
-          virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
+          // // Retrieve RA buffer data from an MPI message from a known process rank
+          // // Should only be triggered if a valid message is known to exist to be retrieved!
+          // virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
 
-          // Update myTags with valid values
-          virtual void update_myTags(uint);
-          #endif
+          // // Update myTags with valid values
+          // virtual void update_myTags(uint);
+          // #endif
 
           // Report queue length (e.g. for checking that it is empty during finalise)
           virtual uint get_RA_queue_length() { return RA_queue_length; }
@@ -315,7 +319,7 @@ namespace Gambit {
             if(pID!=null_PPID and pID==PPID_of_last_append)
             {
                std::ostringstream errmsg;
-               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" (vID="<<this->get_vertexID()<<", index="<<this->get_index()<<") but supplied PPID matches PPID_of_last_append, i.e. the previous append was to the same point! This indicates a bug in the buffer calling code.";
+               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" (vID="<<this->get_vertexID()<<", index="<<this->get_index()<<") but supplied PPID matches PPID_of_last_append, i.e. the previous append was to the same point (rank="<<pID.rank<<", pointID="<<pID.pointID<<")! This indicates a bug in the buffer calling code.";
                printer_error().raise(LOCAL_INFO, errmsg.str());
             }
 
@@ -401,60 +405,60 @@ namespace Gambit {
       void VertexBufferNumeric1D<T,L>::flush()
       {
          if(not this->is_silenced()) {
-            #ifdef WITH_MPI
-            // Prepate to send buffer data to master node
-            const int masterRank = 0;
-            if(this->MPI_mode()==true and myRank!=masterRank)
-            { // MPI-mode worker node instructions
-               if(not send_buffer_ready)
-               { 
-                  // Make sure previous messages are out of the send buffer before sending new ones.
-                  MPI_Wait(&req_valid, &stat_valid);
-                  MPI_Wait(&req_entries, &stat_entries);
-                  send_buffer_ready = true;
-               }
-               /// Compute how many points are to be sent to the master
-               /// (should be a full buffers worth, except at the end of the
-               /// run)
-               std::size_t n_points_to_send = this->get_head_position(); //head should point to the index of the next empty buffer slot (or just past the end of the buffer), which is the number of slots preceding it, which are the ones we want to send. Should be equal to 'bufferlength' most of the time.
+            // #ifdef WITH_MPI
+            // // Prepate to send buffer data to master node
+            // const int masterRank = 0;
+            // if(this->MPI_mode()==true and myRank!=masterRank)
+            // { // MPI-mode worker node instructions
+            //    if(not send_buffer_ready)
+            //    { 
+            //       // Make sure previous messages are out of the send buffer before sending new ones.
+            //       MPI_Wait(&req_valid, &stat_valid);
+            //       MPI_Wait(&req_entries, &stat_entries);
+            //       send_buffer_ready = true;
+            //    }
+            //    /// Compute how many points are to be sent to the master
+            //    /// (should be a full buffers worth, except at the end of the
+            //    /// run)
+            //    std::size_t n_points_to_send = this->get_head_position(); //head should point to the index of the next empty buffer slot (or just past the end of the buffer), which is the number of slots preceding it, which are the ones we want to send. Should be equal to 'bufferlength' most of the time.
 
-               /// Copy buffer data into the send buffer 
-               for(uint i=0; i<n_points_to_send; i++)
-               {
-                  send_buffer_valid[i]   = buffer_valid[i];
-                  send_buffer_entries[i] = buffer_entries[i];
-               }
+            //    /// Copy buffer data into the send buffer 
+            //    for(uint i=0; i<n_points_to_send; i++)
+            //    {
+            //       send_buffer_valid[i]   = buffer_valid[i];
+            //       send_buffer_entries[i] = buffer_entries[i];
+            //    }
 
-               /// Check that we actually have a set of valid tags 
-               /// If we don't have them yet, throw an error. 
-               /// Should be retrieved after
-               /// one loop of the master, so if it is a whole buffer
-               /// length behind then something is probably wrong.
-               /// If we need to deal with this possibility (very slow
-               /// loop on master) then some rethinking is needed here.
-               if(not myTags.valid)
-               {
-                  std::ostringstream errmsg;
-                  errmsg << "Error! Buffer "<<this->get_label()<<" (sync) is full, but MPI tags have not yet been received from the master process! These should have been sent one loop of the master after the creation of this buffer, and it is now one bufferlength since then, so it seems that the master is stuck relative to this process. This could potentially happen legitimately, but unfortunately the hdf5printer can't handle this corner case just yet.";
-                  printer_error().raise(LOCAL_INFO, errmsg.str());           
-               }
+            //    /// Check that we actually have a set of valid tags 
+            //    /// If we don't have them yet, throw an error. 
+            //    /// Should be retrieved after
+            //    /// one loop of the master, so if it is a whole buffer
+            //    /// length behind then something is probably wrong.
+            //    /// If we need to deal with this possibility (very slow
+            //    /// loop on master) then some rethinking is needed here.
+            //    if(not myTags.valid)
+            //    {
+            //       std::ostringstream errmsg;
+            //       errmsg << "Error! Buffer "<<this->get_label()<<" (sync) is full, but MPI tags have not yet been received from the master process! These should have been sent one loop of the master after the creation of this buffer, and it is now one bufferlength since then, so it seems that the master is stuck relative to this process. This could potentially happen legitimately, but unfortunately the hdf5printer can't handle this corner case just yet.";
+            //       printer_error().raise(LOCAL_INFO, errmsg.str());           
+            //    }
 
-               /// Perform non-blocking sends
-               #ifdef MPI_DEBUG
-               std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Isend-ing buffers to master"<<std::endl;
-               #endif
-               this->printerComm.Isend(send_buffer_valid,   n_points_to_send, masterRank, this->myTags.SYNC_valid, &req_valid);
-               this->printerComm.Isend(send_buffer_entries, n_points_to_send, masterRank, this->myTags.SYNC_data,  &req_entries);
-               send_buffer_ready = false;
-            }
-            else
-            {  // Master node instructions
-               // (and worker node instructions in non-MPI mode)
-               write_to_disk();
-            }
-            #else
+            //    /// Perform non-blocking sends
+            //    #ifdef MPI_DEBUG
+            //    std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Isend-ing buffers to master"<<std::endl;
+            //    #endif
+            //    this->printerComm.Isend(send_buffer_valid,   n_points_to_send, masterRank, this->myTags.SYNC_valid, &req_valid);
+            //    this->printerComm.Isend(send_buffer_entries, n_points_to_send, masterRank, this->myTags.SYNC_data,  &req_entries);
+            //    send_buffer_ready = false;
+            // }
+            // else
+            // {  // Master node instructions
+            //    // (and worker node instructions in non-MPI mode)
+            //    write_to_disk();
+            // }
+            // #else
             write_to_disk();
-            #endif
+            // #endif
             clear();
          }
       } 
@@ -471,60 +475,61 @@ namespace Gambit {
         }
 
         if(not this->is_silenced()) {
-            #ifdef WITH_MPI
-            // Prepate to send buffer data to master node
-            const int masterRank = 0;            
-            if(this->MPI_mode()==true and myRank!=masterRank and RA_queue_length!=0)
-            { // Worker node instructions
-               if(not RA_send_buffer_ready)
-               { 
-                  // Make sure previous messages are out of the send buffer before sending new ones.
-                  MPI_Wait(&req_RA_write_q,   &stat_RA_write_q);
-                  MPI_Wait(&req_RA_write_loc, &stat_RA_write_loc);
-                  MPI_Wait(&req_RA_q_len,     &stat_RA_q_len);
-                  MPI_Wait(&req_RA_SENT,      &stat_RA_SENT);
-                  RA_send_buffer_ready = true;
-               }
-               /// Copy buffer data into the send buffer 
-               send_buffer_RA_q_len = RA_queue_length;
-               for(uint i=0; i<RA_queue_length; i++)
-               {
-                  send_buffer_RA_write_q[i]   = RA_write_queue[i];
-                  send_buffer_RA_write_loc[i] = RA_write_locations[i];
-               }
+            // DEPRECATED! All processes now write their output independently, and we combine it at the end.
+            // #ifdef WITH_MPI
+            // // Prepate to send buffer data to master node
+            // const int masterRank = 0;            
+            // if(this->MPI_mode()==true and myRank!=masterRank and RA_queue_length!=0)
+            // { // Worker node instructions
+            //    if(not RA_send_buffer_ready)
+            //    { 
+            //       // Make sure previous messages are out of the send buffer before sending new ones.
+            //       MPI_Wait(&req_RA_write_q,   &stat_RA_write_q);
+            //       MPI_Wait(&req_RA_write_loc, &stat_RA_write_loc);
+            //       MPI_Wait(&req_RA_q_len,     &stat_RA_q_len);
+            //       MPI_Wait(&req_RA_SENT,      &stat_RA_SENT);
+            //       RA_send_buffer_ready = true;
+            //    }
+            //    /// Copy buffer data into the send buffer 
+            //    send_buffer_RA_q_len = RA_queue_length;
+            //    for(uint i=0; i<RA_queue_length; i++)
+            //    {
+            //       send_buffer_RA_write_q[i]   = RA_write_queue[i];
+            //       send_buffer_RA_write_loc[i] = RA_write_locations[i];
+            //    }
 
-               /// Check that we actually have a set of valid tags 
-               /// If we don't have them yet, throw an error. 
-               /// Should be retrieved after
-               /// one loop of the master, so if it is a whole buffer
-               /// length behind then something is probably wrong.
-               /// If we need to deal with this possibility (very slow
-               /// loop on master) then some rethinking is needed here.
-               if(not myTags.valid)
-               {
-                  std::ostringstream errmsg;
-                  errmsg << "Error! Buffer "<<this->get_label()<<" (RA) is full, but MPI tags have not yet been received from the master process! These should have been sent one loop of the master after the creation of this buffer, and it is now one bufferlength since then, so it seems that the master is stuck relative to this process. This could potentially happen legitimately, but unfortunately the hdf5printer can't handle this corner case just yet.";
-                  printer_error().raise(LOCAL_INFO, errmsg.str());           
-               }
+            //    /// Check that we actually have a set of valid tags 
+            //    /// If we don't have them yet, throw an error. 
+            //    /// Should be retrieved after
+            //    /// one loop of the master, so if it is a whole buffer
+            //    /// length behind then something is probably wrong.
+            //    /// If we need to deal with this possibility (very slow
+            //    /// loop on master) then some rethinking is needed here.
+            //    if(not myTags.valid)
+            //    {
+            //       std::ostringstream errmsg;
+            //       errmsg << "Error! Buffer "<<this->get_label()<<" (RA) is full, but MPI tags have not yet been received from the master process! These should have been sent one loop of the master after the creation of this buffer, and it is now one bufferlength since then, so it seems that the master is stuck relative to this process. This could potentially happen legitimately, but unfortunately the hdf5printer can't handle this corner case just yet.";
+            //       printer_error().raise(LOCAL_INFO, errmsg.str());           
+            //    }
 
-               /// Perform non-blocking sends
-               #ifdef MPI_DEBUG
-               std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Isend-ing RA buffers to master"<<std::endl;
-               #endif
-               this->printerComm.Isend(&send_buffer_RA_write_q,   bufferlength, masterRank, this->myTags.RA_queue, &req_RA_write_q);
-               this->printerComm.Isend(&send_buffer_RA_write_loc, bufferlength, masterRank, this->myTags.RA_loc, &req_RA_write_loc);
-               this->printerComm.Isend(&send_buffer_RA_q_len,     1,            masterRank, this->myTags.RA_length, &req_RA_q_len);
-               this->printerComm.Isend(&null_message,             1,            masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
-               RA_send_buffer_ready = false;
-            }
-            else
-            { // Master node instructions
-              // (and worker node instructions in non-MPI mode)
-              RA_write_to_disk(PPID_to_dsetindex);
-            }
-            #else
+            //    /// Perform non-blocking sends
+            //    #ifdef MPI_DEBUG
+            //    std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Isend-ing RA buffers to master"<<std::endl;
+            //    #endif
+            //    this->printerComm.Isend(&send_buffer_RA_write_q,   bufferlength, masterRank, this->myTags.RA_queue, &req_RA_write_q);
+            //    this->printerComm.Isend(&send_buffer_RA_write_loc, bufferlength, masterRank, this->myTags.RA_loc, &req_RA_write_loc);
+            //    this->printerComm.Isend(&send_buffer_RA_q_len,     1,            masterRank, this->myTags.RA_length, &req_RA_q_len);
+            //    this->printerComm.Isend(&null_message,             1,            masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
+            //    RA_send_buffer_ready = false;
+            // }
+            // else
+            // { // Master node instructions
+            //   // (and worker node instructions in non-MPI mode)
+            //   RA_write_to_disk(PPID_to_dsetindex);
+            // }
+            // #else
             RA_write_to_disk(PPID_to_dsetindex);
-            #endif
+            // #endif
             RA_queue_length = 0;
          }
       }
@@ -553,216 +558,217 @@ namespace Gambit {
          }
       }
 
-      #ifdef WITH_MPI
-      // Probe for a sync buffer MPI message from a process
-      template<class T, std::size_t L>
-      bool VertexBufferNumeric1D<T,L>::probe_sync_mpi_message(uint source, int* msgsize)
-      {
-         this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
-         if(not myTags.valid)
-         {
-            // Cannot probe for messages until we receive our MPI tags. Ignore them for now
-            std::cout<<"Attempted to probe for sync MPI messages in buffer "<<this->get_label()<<", but skipping this attempt since MPI tags have not yet been delivered"<<std::endl;
-            return false;
-         }
+      // DEPECATED! No longer passing data around via MPI. Each process just writes independently and we combine it at the end.
+      // #ifdef WITH_MPI
+      // // Probe for a sync buffer MPI message from a process
+      // template<class T, std::size_t L>
+      // bool VertexBufferNumeric1D<T,L>::probe_sync_mpi_message(uint source, int* msgsize)
+      // {
+      //    this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
+      //    if(not myTags.valid)
+      //    {
+      //       // Cannot probe for messages until we receive our MPI tags. Ignore them for now
+      //       std::cout<<"Attempted to probe for sync MPI messages in buffer "<<this->get_label()<<", but skipping this attempt since MPI tags have not yet been delivered"<<std::endl;
+      //       return false;
+      //    }
 
-         MPI_Status status;
-         bool is_data_msg  = printerComm.Iprobe(source, myTags.SYNC_data, &status);
-         int msgsize_data  = GMPI::Get_count<T>(&status);
-         bool is_valid_msg = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
-         int msgsize_valid = GMPI::Get_count<int>(&status);
-      
-         if(msgsize_data != msgsize_valid)
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error in buffer "<<this->get_label()<<" during probe_sync_mpi_message! Length of 'data' message ("<<msgsize_data<<") does not match length of 'validity' message ("<<msgsize_valid<<").";
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-         *msgsize = msgsize_data;
+      //    MPI_Status status;
+      //    bool is_data_msg  = printerComm.Iprobe(source, myTags.SYNC_data, &status);
+      //    int msgsize_data  = GMPI::Get_count<T>(&status);
+      //    bool is_valid_msg = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
+      //    int msgsize_valid = GMPI::Get_count<int>(&status);
+      // 
+      //    if(msgsize_data != msgsize_valid)
+      //    {
+      //       std::ostringstream errmsg;
+      //       errmsg << "Error in buffer "<<this->get_label()<<" during probe_sync_mpi_message! Length of 'data' message ("<<msgsize_data<<") does not match length of 'validity' message ("<<msgsize_valid<<").";
+      //       printer_error().raise(LOCAL_INFO, errmsg.str());
+      //    }
+      //    *msgsize = msgsize_data;
 
-         return (is_data_msg or is_valid_msg);
-      }
+      //    return (is_data_msg or is_valid_msg);
+      // }
 
-      // Probe for a random-access buffer MPI message from a process
-      template<class T, std::size_t L>
-      bool VertexBufferNumeric1D<T,L>::probe_RA_mpi_message(uint source)
-      {
-         this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
-         if(not myTags.valid)
-         {
-            // Cannot probe for messages until we receive our MPI tags. Ignore them for now
-            std::cout<<"Attempted to probe for RA MPI messages in buffer "<<this->get_label()<<", but skipping this attempt since MPI tags have not yet been delivered"<<std::endl;
-            return false;
-         }
-         bool is_q_msg   = printerComm.Iprobe(source, myTags.RA_queue);
-         bool is_loc_msg = printerComm.Iprobe(source, myTags.RA_loc);
-         bool is_len_msg = printerComm.Iprobe(source, myTags.RA_length);
-         return (is_q_msg or is_loc_msg or is_len_msg);
-      }
+      // // Probe for a random-access buffer MPI message from a process
+      // template<class T, std::size_t L>
+      // bool VertexBufferNumeric1D<T,L>::probe_RA_mpi_message(uint source)
+      // {
+      //    this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
+      //    if(not myTags.valid)
+      //    {
+      //       // Cannot probe for messages until we receive our MPI tags. Ignore them for now
+      //       std::cout<<"Attempted to probe for RA MPI messages in buffer "<<this->get_label()<<", but skipping this attempt since MPI tags have not yet been delivered"<<std::endl;
+      //       return false;
+      //    }
+      //    bool is_q_msg   = printerComm.Iprobe(source, myTags.RA_queue);
+      //    bool is_loc_msg = printerComm.Iprobe(source, myTags.RA_loc);
+      //    bool is_len_msg = printerComm.Iprobe(source, myTags.RA_length);
+      //    return (is_q_msg or is_loc_msg or is_len_msg);
+      // }
 
-      // Retrieve sync buffer data from an MPI message
-      // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
-      template<class T, std::size_t LENGTH>
-      void VertexBufferNumeric1D<T,LENGTH>::get_sync_mpi_message(uint source, int exp_length)
-      {
-        this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
-        if(exp_length < 0)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Invalid expected message length supplied ("<<exp_length<<" < 0)";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
-        uint uexp_length = exp_length;
+      // // Retrieve sync buffer data from an MPI message
+      // // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
+      // template<class T, std::size_t LENGTH>
+      // void VertexBufferNumeric1D<T,LENGTH>::get_sync_mpi_message(uint source, int exp_length)
+      // {
+      //   this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
+      //   if(exp_length < 0)
+      //   {
+      //     std::ostringstream errmsg;
+      //     errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Invalid expected message length supplied ("<<exp_length<<" < 0)";
+      //     printer_error().raise(LOCAL_INFO, errmsg.str());
+      //   }
+      //   uint uexp_length = exp_length;
 
-        if(uexp_length > LENGTH)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Expected message length ("<<uexp_length<<") is larger than the allocated buffer size (LENGTH="<<LENGTH<<")";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
+      //   if(uexp_length > LENGTH)
+      //   {
+      //     std::ostringstream errmsg;
+      //     errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Expected message length ("<<uexp_length<<") is larger than the allocated buffer size (LENGTH="<<LENGTH<<")";
+      //     printer_error().raise(LOCAL_INFO, errmsg.str());
+      //   }
 
-        // An MPI_Iprobe should have been done prior to calling this function, 
-        // in order to trigger delivery of the message to the correct buffer. 
-        // So now we trust that this buffer is indeed supposed to receive the 
-        // message. We can also use a blocking receive since we know that a
-        // message is already waiting to be sent.
+      //   // An MPI_Iprobe should have been done prior to calling this function, 
+      //   // in order to trigger delivery of the message to the correct buffer. 
+      //   // So now we trust that this buffer is indeed supposed to receive the 
+      //   // message. We can also use a blocking receive since we know that a
+      //   // message is already waiting to be sent.
 
-        // Buffers to store received message
-        int recv_buffer_valid[LENGTH];   // Would like to make this bool, but that requires MPI C++ bindings.
-        T   recv_buffer_entries[LENGTH];
+      //   // Buffers to store received message
+      //   int recv_buffer_valid[LENGTH];   // Would like to make this bool, but that requires MPI C++ bindings.
+      //   T   recv_buffer_entries[LENGTH];
 
-        //#ifdef MPI_DEBUG
-        // Double check that a message is actually waiting to be sent
-        // There is a code bug if this is not the case
-        MPI_Status status;
-        bool message_waiting1 = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
-        bool message_waiting2 = printerComm.Iprobe(source, myTags.SYNC_data,  &status);
-        if(not message_waiting1 and not message_waiting2)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error! get_sync_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
-        // Double check that the message has the expected number of elements
-        // (this must match across all the buffers we are retrieving together)
-        int msgsize = GMPI::Get_count<T>(&status);
-        if(msgsize != exp_length)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Message length ("<<msgsize<<") does not match expected length ("<<exp_length<<").";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
-        //#endif
-                         
-        #ifdef MPI_DEBUG
-        std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
-        #endif
+      //   //#ifdef MPI_DEBUG
+      //   // Double check that a message is actually waiting to be sent
+      //   // There is a code bug if this is not the case
+      //   MPI_Status status;
+      //   bool message_waiting1 = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
+      //   bool message_waiting2 = printerComm.Iprobe(source, myTags.SYNC_data,  &status);
+      //   if(not message_waiting1 and not message_waiting2)
+      //   {
+      //     std::ostringstream errmsg;
+      //     errmsg << "Error! get_sync_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
+      //     printer_error().raise(LOCAL_INFO, errmsg.str());
+      //   }
+      //   // Double check that the message has the expected number of elements
+      //   // (this must match across all the buffers we are retrieving together)
+      //   int msgsize = GMPI::Get_count<T>(&status);
+      //   if(msgsize != exp_length)
+      //   {
+      //     std::ostringstream errmsg;
+      //     errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Message length ("<<msgsize<<") does not match expected length ("<<exp_length<<").";
+      //     printer_error().raise(LOCAL_INFO, errmsg.str());
+      //   }
+      //   //#endif
+      //                    
+      //   #ifdef MPI_DEBUG
+      //   std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
+      //   #endif
 
-        printerComm.Recv(&recv_buffer_valid, msgsize, source, myTags.SYNC_valid);
-        printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
-                         
-        #ifdef MPI_DEBUG
-        std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
-        #endif
+      //   printerComm.Recv(&recv_buffer_valid, msgsize, source, myTags.SYNC_valid);
+      //   printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
+      //                    
+      //   #ifdef MPI_DEBUG
+      //   std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
+      //   #endif
 
-        // Write the buffers to disk
-        // write_external_to_disk(recv_buffer_entries,recv_buffer_valid);
+      //   // Write the buffers to disk
+      //   // write_external_to_disk(recv_buffer_entries,recv_buffer_valid);
 
-        // Rather than do external write, I think it is cleaner to just feed
-        // everything through the normal "append" system.
+      //   // Rather than do external write, I think it is cleaner to just feed
+      //   // everything through the normal "append" system.
 
-        for(int i=0; i<msgsize; i++)
-        {          
-          // Push an element of the received data into the buffer
-          if(recv_buffer_valid[i])
-          {
-            append(recv_buffer_entries[i]);
-          }
-          else 
-          {
-            skip_append();
-          }         
+      //   for(int i=0; i<msgsize; i++)
+      //   {          
+      //     // Push an element of the received data into the buffer
+      //     if(recv_buffer_valid[i])
+      //     {
+      //       append(recv_buffer_entries[i]);
+      //     }
+      //     else 
+      //     {
+      //       skip_append();
+      //     }         
 
-          // Check if we need to do a write to disk 
-          // Note; the buffer should have been emptied (if needed)
-          // BEFORE get_sync_mpi_message() was called, so the if the 
-          // first append in this loop fails due to the buffer
-          // being full then this indicates that that was 
-          // probably not done.
-          if(sync_buffer_is_full())
-          {
-            #ifdef MPI_DEBUG
-            std::cout<<"rank "<<myRank<<": During get_sync_mpi_message; Buffer "<<this->get_label()<<" full, emptying it..."<<std::endl;
-            #endif
-            flush();
-          } 
-        }
-      }
+      //     // Check if we need to do a write to disk 
+      //     // Note; the buffer should have been emptied (if needed)
+      //     // BEFORE get_sync_mpi_message() was called, so the if the 
+      //     // first append in this loop fails due to the buffer
+      //     // being full then this indicates that that was 
+      //     // probably not done.
+      //     if(sync_buffer_is_full())
+      //     {
+      //       #ifdef MPI_DEBUG
+      //       std::cout<<"rank "<<myRank<<": During get_sync_mpi_message; Buffer "<<this->get_label()<<" full, emptying it..."<<std::endl;
+      //       #endif
+      //       flush();
+      //     } 
+      //   }
+      // }
 
-      // Retrieve RA buffer data from an MPI message
-      // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
-      template<class T, std::size_t LENGTH>
-      void VertexBufferNumeric1D<T,LENGTH>::get_RA_mpi_message(uint source, const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
-      {
-        this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
-        // An MPI_Iprobe should have been done prior to calling this function, 
-        // in order to trigger delivery of the message to the correct buffer. 
-        // So now we trust that this buffer is indeed supposed to receive the 
-        // message. We can also use a blocking receive since we know that a
-        // message is already waiting to be sent.
+      // // Retrieve RA buffer data from an MPI message
+      // // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
+      // template<class T, std::size_t LENGTH>
+      // void VertexBufferNumeric1D<T,LENGTH>::get_RA_mpi_message(uint source, const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
+      // {
+      //   this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
+      //   // An MPI_Iprobe should have been done prior to calling this function, 
+      //   // in order to trigger delivery of the message to the correct buffer. 
+      //   // So now we trust that this buffer is indeed supposed to receive the 
+      //   // message. We can also use a blocking receive since we know that a
+      //   // message is already waiting to be sent.
 
-        // Buffers to store received messages
-        T        recv_buffer_RA_write_q[LENGTH];
-        PPIDpair recv_buffer_RA_write_loc[LENGTH];
-        uint     recv_buffer_RA_q_len;
+      //   // Buffers to store received messages
+      //   T        recv_buffer_RA_write_q[LENGTH];
+      //   PPIDpair recv_buffer_RA_write_loc[LENGTH];
+      //   uint     recv_buffer_RA_q_len;
 
-        #ifdef MPI_DEBUG
-        // Double check that a message is actually waiting to be sent
-        // There is a code bug if this is not the case
-        MPI_Status status;
-        bool message_waiting1 = printerComm.Iprobe(source, myTags.RA_queue,  &status);
-        bool message_waiting2 = printerComm.Iprobe(source, myTags.RA_loc,    &status);
-        bool message_waiting3 = printerComm.Iprobe(source, myTags.RA_length, &status);
-        if(not message_waiting1 and not message_waiting2 and not message_waiting3) {
-          std::ostringstream errmsg;
-          errmsg << "Error! get_RA_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
-        #endif
+      //   #ifdef MPI_DEBUG
+      //   // Double check that a message is actually waiting to be sent
+      //   // There is a code bug if this is not the case
+      //   MPI_Status status;
+      //   bool message_waiting1 = printerComm.Iprobe(source, myTags.RA_queue,  &status);
+      //   bool message_waiting2 = printerComm.Iprobe(source, myTags.RA_loc,    &status);
+      //   bool message_waiting3 = printerComm.Iprobe(source, myTags.RA_length, &status);
+      //   if(not message_waiting1 and not message_waiting2 and not message_waiting3) {
+      //     std::ostringstream errmsg;
+      //     errmsg << "Error! get_RA_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
+      //     printer_error().raise(LOCAL_INFO, errmsg.str());
+      //   }
+      //   #endif
 
-        uint null_message;
-        printerComm.Recv(&recv_buffer_RA_write_q,   LENGTH, source, myTags.RA_queue );
-        printerComm.Recv(&recv_buffer_RA_write_loc, LENGTH, source, myTags.RA_loc   );
-        printerComm.Recv(&recv_buffer_RA_q_len,     1,      source, myTags.RA_length);
-        printerComm.Recv(&null_message,             1,      source, RA_BUFFERS_SENT); // absorbs one off the queue if there are several
+      //   uint null_message;
+      //   printerComm.Recv(&recv_buffer_RA_write_q,   LENGTH, source, myTags.RA_queue );
+      //   printerComm.Recv(&recv_buffer_RA_write_loc, LENGTH, source, myTags.RA_loc   );
+      //   printerComm.Recv(&recv_buffer_RA_q_len,     1,      source, myTags.RA_length);
+      //   printerComm.Recv(&null_message,             1,      source, RA_BUFFERS_SENT); // absorbs one off the queue if there are several
 
-        #ifdef MPI_DEBUG
-        std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received random-access buffer from rank "<<source<<". Sending write commands through my RA buffers."<<std::endl;
-        #endif
+      //   #ifdef MPI_DEBUG
+      //   std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received random-access buffer from rank "<<source<<". Sending write commands through my RA buffers."<<std::endl;
+      //   #endif
 
-        // feed all write commands through the master process RA_write commands
-        for(uint i=0; i<recv_buffer_RA_q_len; i++)
-        {
-           RA_write(recv_buffer_RA_write_q[i], recv_buffer_RA_write_loc[i], PPID_to_dsetindex);
-        }
-      }
+      //   // feed all write commands through the master process RA_write commands
+      //   for(uint i=0; i<recv_buffer_RA_q_len; i++)
+      //   {
+      //      RA_write(recv_buffer_RA_write_q[i], recv_buffer_RA_write_loc[i], PPID_to_dsetindex);
+      //   }
+      // }
 
-      // Update myTags with valid values
-      template<class T, std::size_t L>
-      void VertexBufferNumeric1D<T,L>::update_myTags(uint first_tag)
-      {
-        this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
-        if(myTags.valid)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error! Tried to update MPI tags for buffer "<<this->get_label()<<", but the current tags are already valid!";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-        }
-        myTags = BuffTags(first_tag);
-        return;
-      }
+      // // Update myTags with valid values
+      // template<class T, std::size_t L>
+      // void VertexBufferNumeric1D<T,L>::update_myTags(uint first_tag)
+      // {
+      //   this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
+      //   if(myTags.valid)
+      //   {
+      //     std::ostringstream errmsg;
+      //     errmsg << "Error! Tried to update MPI tags for buffer "<<this->get_label()<<", but the current tags are already valid!";
+      //     printer_error().raise(LOCAL_INFO, errmsg.str());
+      //   }
+      //   myTags = BuffTags(first_tag);
+      //   return;
+      // }
 
-      #endif
+      // #endif
 
       /// Extract (copy) a record
       template<class T, std::size_t L>

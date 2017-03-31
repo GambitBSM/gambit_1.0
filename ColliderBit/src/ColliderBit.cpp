@@ -2744,9 +2744,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const SubSpectrum& mssm = spec.get_HE();
-      const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
-      const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
+      static const double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
+      static const bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
       const double mass_stau1=spec.get(Par::Pole_Mass,stau1_string);
@@ -2880,6 +2881,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       double max_mixing;
       const SubSpectrum& mssm = spec.get_HE();
       str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
@@ -2947,9 +2949,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const SubSpectrum& mssm = spec.get_HE();
-      const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
-      const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
+      static const double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
+      static const bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
       const double mass_stau1=spec.get(Par::Pole_Mass,stau1_string);
@@ -3018,6 +3021,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
@@ -3142,6 +3146,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
@@ -3257,6 +3262,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
@@ -3337,6 +3343,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
@@ -3423,6 +3430,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
@@ -3497,13 +3505,13 @@ namespace Gambit
       //   }
       // #endif
       using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-
       using std::pow;
       using std::log;
+      static const double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      static const bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const SubSpectrum& mssm = spec.get_HE();
       const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -3624,13 +3632,14 @@ namespace Gambit
       //   }
       // #endif
       using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      static const double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      static const bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
       using std::pow;
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const SubSpectrum& mssm = spec.get_HE();
       const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -3729,13 +3738,11 @@ namespace Gambit
       //   }
       // #endif
       using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
-
-      using std::pow;
-      using std::log;
+      static const double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      static const bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const SubSpectrum& mssm = spec.get_HE();
       const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -3832,6 +3839,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);

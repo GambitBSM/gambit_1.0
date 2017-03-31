@@ -3,6 +3,7 @@
 """Displays the tree structure of a hdf5 file"""
 
 import h5py
+import numpy as np
 import sys
 
 def usage():
@@ -15,6 +16,11 @@ if(len(sys.argv)!=2): usage()
 
 filename = sys.argv[1]  #choose file to display via command line
 
+def chunksum(array):
+   """Take the sum over a dataset without reading the whole thing into memory"""
+   step = 10000
+   chunksums = [sum(array[current: current+step]) for current in xrange(0, len(array), step)]
+   return sum(chunksums)
 
 print filename
 f = h5py.File(filename,'r')
@@ -69,10 +75,13 @@ def printcontents(item,prelines):
             print prelines+line+name
             printcontents(subitem,prelines+nextpreline)
     except AttributeError:  #item is not a directory; assume it is a dataset and spit out its attributes instead
-        print prelines+'    dtype: {0:<10} shape: {1:<10}'.format(item.dtype,item.shape)
+        sys.stdout.write(prelines+'    dtype: {0:<10} shape: {1:<10}'.format(item.dtype,item.shape))
+        if item.dtype == "uint8": sys.stdout.write(" Sum: {0:<10}".format(chunksum(item))) 
+        sys.stdout.write('\n')
         for name,subitem in item.attrs.items():
             print prelines+'    '+name+': '+str(subitem)
 
+print ' /'
 printcontents(f,'')
                                         
 quit()

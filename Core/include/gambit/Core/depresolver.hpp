@@ -7,12 +7,12 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Apr, May, Jun, Jul
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Aug, Nov
 ///  \date 2014 Aug
@@ -176,7 +176,7 @@ namespace Gambit
         /// Initialise the printer object with a list of functors for it to expect to be printed.
         void initialisePrinter();
 
-        /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
+        /// Deactivate functors that are not allowed to be used with the model(s) being scanned.
         void makeFunctorsModelCompatible();
 
         /// Resolution of individual module function dependencies
@@ -210,7 +210,7 @@ namespace Gambit
         /// Main function for resolution of backend requirements
         void resolveVertexBackend(VertexID);
 
-        /// Find backend function matching any one of a number of capability-type pairs. 
+        /// Find backend function matching any one of a number of capability-type pairs.
         functor* solveRequirement(std::set<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
@@ -248,8 +248,15 @@ namespace Gambit
         /// Saved calling order for functions
         std::list<VertexID> function_order;
 
+        /// Saved calling order for functions required to compute single ObsLike entries
+        std::map<VertexID, std::vector<VertexID>> SortedParentVertices;
+
         /// Temporary map for loop manager -> list of nested functions
         std::map<VertexID, std::set<VertexID>> loopManagerMap;
+
+        /// Map from nested function -> list of fulfilled dependencies that need
+        /// to be passed on to its loop manager when it is selected
+        std::map<VertexID, std::set<VertexID>> edges_to_force_on_manager;
 
         /// Indices associated with graph vertices (used by printers to identify functors)
         IndexMap index;
@@ -259,7 +266,7 @@ namespace Gambit
 
         /// Global flag for triggering printing of timing data
         bool print_timing = false;
- 
+
   };
   }
 }

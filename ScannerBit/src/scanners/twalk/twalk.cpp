@@ -38,8 +38,6 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
 
         Gambit::Options txt_options;
         txt_options.setValue("synchronised",false);
-        //txt_options.setValue("output_file", "output");
-        //txt_options.setValue("info_file", "info");
         get_printer().new_stream("txt", txt_options);
 
         int pdim = get_inifile_value<int>("projection_dimension", 4);
@@ -55,14 +53,14 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                         get_inifile_value<double>("sqrtR", 1.001),
                         get_inifile_value<int>("chain_number", 1 + pdim + numtasks),
                         get_inifile_value<bool>("hyper_grid", true),
-                        get_inifile_value<int>("cut", 1000) //FIXME cut not yet implemented.  Should be renamed to "burn_in"
+                        get_inifile_value<int>("burn_in", 1000)
                 );
 
         return 0;
     }
 }
 
-void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double sqrtR, const int NThreads, const bool hyper_grid, const int cut)
+void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double sqrtR, const int NThreads, const bool hyper_grid, const int /*burn_in*/) //FIXME burn_in not yet implemented
 {
     std::vector<double> chisq(NThreads);
     std::vector<double> aNext(ma);
@@ -73,7 +71,6 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     std::vector<int> count(NThreads, 1);
     int t, tt;
     int total = 1, ttotal = 0, Nlength = 1;
-    //std::vector<RandomPlane *>gDev(NThreads);
 
     std::vector<std::vector<double>> covT(NThreads, std::vector<double>(ma, 0.0));
     std::vector<std::vector<double>> avgT(NThreads, std::vector<double>(ma, 0.0));
@@ -103,7 +100,6 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     int numtasks = 1;
     int rank = 0;
 #endif
-    //RandomPlane gDev(proj, ma, din, alim, alimt, rand);
     std::vector<RanNumGen *> gDev;
     for (int i = 0; i < NThreads; i++)
     {
@@ -157,7 +153,6 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
 #endif
 
     std::cout << "Metropolis Hastings/TWalk Algorthm Started"  << std::endl;
-    //std::cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << "\n\tR = "  << std::endl;//double div = 0.9836;
 
     do
     {
@@ -197,7 +192,6 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
             chisqnext = -LogLike(aNext);
             ans = chisqnext - chisq[t] - logZ;
             next_id = LogLike->getPtID();
-            //std::cout << ans << "   " << chisqnext << "   " << chisq[t] << std::endl;
             if ((ans <= 0.0)||(gDev[0]->ExpDev() >= ans))
             {
                 out_stream->print(mult[t], "mult", ranks[t], ids[t]);
@@ -243,7 +237,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
                 cnt += *it;
             }
 
-            if (total%NThreads == 0) //cnt >= cut*NThreads &&
+            if (total%NThreads == 0) //cnt >= burn_in*NThreads &&
             {
                 for (int ttt = 0; ttt < NThreads; ttt++) for (int i = 0; i < ma; i++)
                 {
@@ -297,7 +291,6 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
                     cont = true;
             if (cnt % 100 == 0)
             std::cout << "points = " << cnt  << "( " << cnt/double(NThreads) << ")" << "\n\taccept ratio = " << (double)cnt/(double)total/(double)numtasks << "\n\tR = " << Ravg/ma << std::endl;
-            //std::cout << "\033[3A\tpoints = " << count  << "( " << count/double(NThreads) << ")" << "\n\taccept ratio = " << blank << (double)count/(double)totall << "\n\tR = " << Ravg/ma << std::endl;
 #ifdef WITH_MPI
         }
         MPI_Barrier(MPI_COMM_WORLD);

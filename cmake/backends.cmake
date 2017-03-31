@@ -454,7 +454,7 @@ set(name "higgsbounds")
 set(ver "4.3.1")
 set(lib "libhiggsbounds")
 set(dl "https://www.hepforge.org/archive/higgsbounds/HiggsBounds-${ver}.tar.gz")
-set(md5 "baedc05601cae27cef4d10a8086fdd7b")
+set(md5 "c1667613f814a9f0297d1f11a8b3ef34")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(hb_tab_name "higgsbounds_tables")
 set(hb_tab_ver "0.0")
@@ -545,10 +545,13 @@ set_as_default_version("backend" ${name} ${ver})
 # Eigen3 include dir
 # Needed by flexiblesusy and gm2calc, so add it if gm2calc isn't ditched
 # (flexiblesusy will add it itself if it needs it)
-if(NOT ";${itch};" MATCHES ";gm2calc;" )
-  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-  include_directories("${EIGEN3_DIR}")
-endif()
+# if(NOT ";${itch};" MATCHES ";gm2calc;" )
+#   set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
+#   include_directories("${EIGEN3_DIR}")
+# endif()
+# EDIT: ok that wasn't working, seems to be needed for frontend headers always? Adding permanently:
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
+include_directories("${EIGEN3_DIR}")
 
 # gm2calc
 set(name "gm2calc")

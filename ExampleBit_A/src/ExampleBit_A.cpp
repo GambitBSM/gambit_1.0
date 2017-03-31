@@ -163,7 +163,20 @@ namespace Gambit
       {
         for (int i=0; i<N; ++i)
         {
-          loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+          double mu = *Param["mu"];
+          double sigma = *Param["sigma"];
+          if(Utils::isnan(mu) or Utils::isnan(sigma))
+          {
+            ExampleBit_A_error().raise(LOCAL_INFO,"NaN detected in input parameters for model"
+            " NormalDist! This may indicate a bug in the scanner plugin you are using.");
+          }
+          if(sigma==0.)
+          { 
+             // likelihood is nan if sigma=0, so the point is invalid.
+             invalid_point().raise("NormalDist::sigma = 0; likelihood is NaN, point invalid.");
+          }
+
+          loglTotal += logf(samples[i], mu, sigma);
         }
       }
       else

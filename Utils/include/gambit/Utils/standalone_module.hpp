@@ -8,8 +8,8 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott  
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2014 Feb
 ///
@@ -22,8 +22,8 @@
 
 #include "gambit/Utils/standalone_utils.hpp"
 #include "gambit/Logs/logger.hpp"
-#include "gambit/Backends/backend_rollcall.hpp"
 #include "gambit/Models/model_rollcall.hpp"
+#include "gambit/Backends/backend_rollcall.hpp"
 #include "gambit/Utils/static_members.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Elements/module_macros_incore.hpp"

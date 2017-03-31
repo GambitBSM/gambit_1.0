@@ -31,19 +31,26 @@ using namespace FlavBit::Functown;      // Functors wrapping the module's actual
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 // Default SLHA file for input, if not given on the command line.
-std::string inputfile("FlavBit/data/example.slha");
+std::string infile("FlavBit/data/example.slha");
 
-QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(FlavBit, unimproved_MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, relabelSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT), (unimproved_MSSM_spectrum, Spectrum))
 
 namespace Gambit
 {
   namespace FlavBit
   {
 
-    // Make a GAMBIT spectrum object from an SLHA file
+    // Make an unimproved GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
-      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputfile, Spectrum::mc_info(), Spectrum::mr_info());
+      outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(infile, Spectrum::mc_info(), Spectrum::mr_info());
+    }
+
+    // Relabel it as a complete spectrum
+    void relabelSpectrum(Spectrum& outSpec)
+    {
+      outSpec = *Pipes::relabelSpectrum::Dep::unimproved_MSSM_spectrum;
     }
 
   }
@@ -52,20 +59,16 @@ namespace Gambit
 int main(int argc, char** argv)
 {
 
-  cout << "starting" << endl;
+  cout << "Starting FlavBit_standalone" << endl;
 
   try
   {
 
-    cout << "starting" << endl;
     // Get the SLHA filename from the command line, if it has been given.
-    if (argc >= 2) inputfile = argv[1];
-
-    cout << "starting" << endl;
+    if (argc >= 2) infile = argv[1];
 
     // Make a logging object
     std::map<std::string, std::string> loggerinfo;
-    cout << "starting" << endl;
 
     // Define where the logs will end up
     std::string prefix("runs/FlavBit_standalone/logs/");
@@ -88,7 +91,31 @@ int main(int argc, char** argv)
     std::cout << " I can calculate: " << endl << iCanDo << std::endl;
     std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
 
+    // Notify all module functions that care of the model being scanned.
     createSpectrum.notifyOfModel("MSSM30atQ");
+    relabelSpectrum.notifyOfModel("MSSM30atQ");
+    SI_fill.notifyOfModel("MSSM30atQ");
+
+    // Arrange the spectrum chain
+    relabelSpectrum.resolveDependency(&createSpectrum);
+
+    // Set up the deltaMB_LL likelihood
+    // Have to resolve dependencies by hand
+    // deltaMB_likelihood depends on:
+    //    - deltaMs
+    deltaMB_likelihood.resolveDependency(&FH_DeltaMs);
+
+    // FH_deltaMs depends on:
+    //    - FH_FlavourObs
+    FH_DeltaMs.resolveDependency(&FH_FlavourObs);
+
+    // FH_FlavourObs has only one backend requirement:
+    //    - FHFlavour
+    FH_FlavourObs.resolveBackendReq(&Backends::FeynHiggs_2_11_3::Functown::FHFlavour);
+
+    // The FeynHiggs initialisation function depends on:
+    //    - unimproved_MSSM_spectrum
+    FeynHiggs_2_11_3_init.resolveDependency(&createSpectrum);
 
     // Set up the b2sll_LL likelihood
     // Have to resolve dependencies by hand
@@ -101,7 +128,7 @@ int main(int argc, char** argv)
     //   - BEreq slha_adjust
     //   - BEopt SuperIso, 3.4
     //   - MSSM_spectrum
-    SI_fill.resolveDependency(&createSpectrum);
+    SI_fill.resolveDependency(&relabelSpectrum);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Init_param);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::slha_adjust);
 
@@ -142,9 +169,9 @@ int main(int argc, char** argv)
 
     // b2ll_measurements depends on:
     // - Bsmumu_untag
-    // - Bdmumu
+    // - Bmumu
     b2ll_measurements.resolveDependency(&SI_Bsmumu_untag);
-    b2ll_measurements.resolveDependency(&SI_Bdmumu);
+    b2ll_measurements.resolveDependency(&SI_Bmumu);
 
     // Resolve dependencies of SI_Bsmumu_untag
     // These are:
@@ -154,16 +181,16 @@ int main(int argc, char** argv)
     SI_Bsmumu_untag.resolveDependency(&SI_fill);
     SI_Bsmumu_untag.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bsll_untag_CONV);
 
-    // Resolve dependencies of SI_Bdmumu
+    // Resolve dependencies of SI_Bmumu
     // These are:
     //  - SI_fill
     // Plus BE reqs:
-    // - Bdmumu
+    // - Bmumu
     // - CW_calculator
     // - C_calculator_base1
     // - CQ_calculator
-    SI_Bdmumu.resolveDependency(&SI_fill);
-    SI_Bdmumu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bdll_CONV);
+    SI_Bmumu.resolveDependency(&SI_fill);
+    SI_Bmumu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Bll_CONV);
 
     // Now do the semi-leptonic likelihood SL_LL
     // This depends on:
@@ -172,24 +199,22 @@ int main(int argc, char** argv)
 
     // Resolve dependencies of SL_measurements
     // which are:
+    // - RD
+    // - RDstar
+    // - BDmunu
+    // - BDstarmunu
     // - Btaunu
-    // - BDtaunu
-    // - Kmunu_pimunu
     // - Dstaunu
     // - Dsmunu
     // - Dmunu
-    // - BDmunu
-    // - BDstartaunu
-    // - BDstarmunu
-    SL_measurements.resolveDependency(&SI_Btaunu);
-    SL_measurements.resolveDependency(&SI_BDtaunu);
-    SL_measurements.resolveDependency(&SI_Kmunu_pimunu);
-    SL_measurements.resolveDependency(&SI_Dstaunu);
-    SL_measurements.resolveDependency(&SI_Dsmunu);
-    SL_measurements.resolveDependency(&SI_Dmunu);
+    SL_measurements.resolveDependency(&SI_RD);
+    SL_measurements.resolveDependency(&SI_RDstar);
     SL_measurements.resolveDependency(&SI_BDmunu);
-    SL_measurements.resolveDependency(&SI_BDstartaunu);
     SL_measurements.resolveDependency(&SI_BDstarmunu);
+    SL_measurements.resolveDependency(&SI_Btaunu);
+    SL_measurements.resolveDependency(&SI_Dsmunu);
+    SL_measurements.resolveDependency(&SI_Dstaunu);
+    SL_measurements.resolveDependency(&SI_Dmunu);
 
     // Resolve all of the individual dependencies and backend reqs
     // These are:
@@ -229,9 +254,9 @@ int main(int argc, char** argv)
     std::cout << FlavBit::Pipes::SI_fill::BEreq::slha_adjust.name() << std::endl;
 
     // Double-check which backend requirements have been filled with what
-    std::cout << std::endl << "My function SI_Bdmumu  has had its backend requirement on Bdll_CONV filled by:" << std::endl;
-    std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.origin() << "::";
-    std::cout << FlavBit::Pipes::SI_Bdmumu::BEreq::Bdll_CONV.name() << std::endl;
+    std::cout << std::endl << "My function SI_Bmumu  has had its backend requirement on Bll_CONV filled by:" << std::endl;
+    std::cout << FlavBit::Pipes::SI_Bmumu::BEreq::Bll_CONV.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_Bmumu::BEreq::Bll_CONV.name() << std::endl;
 
     // Double-check which dependencies have been filled with whatever (not every combination is shown)
     std::cout << std::endl << "My function SI_fill has had its dependency on MSSM_spectrum filled by:" << endl;
@@ -267,16 +292,27 @@ int main(int argc, char** argv)
       double loglike;
       std::cout << std::endl;
 
-      // Call the initialisation functions for all backends that are in use.
+      // Initialise the spectra
+      createSpectrum.reset_and_calculate();
+      relabelSpectrum.reset_and_calculate();
+
+      // Initialise the backends
       SuperIso_3_6_init.reset_and_calculate();
+      FeynHiggs_2_11_3_init.reset_and_calculate();
 
       // Now call the module functions in an appropriate order
-      createSpectrum.reset_and_calculate();
       SI_fill.reset_and_calculate();
+
+      // Calculate the B meson mass asymmetry likelihood
+      FH_FlavourObs.reset_and_calculate();
+      FH_DeltaMs.reset_and_calculate();
+      deltaMB_likelihood.reset_and_calculate();
+      loglike = deltaMB_likelihood(0);
+      std::cout << "B meson mass asymmetry log-likelihood: " << loglike << std::endl;
 
       // Calculate the B -> ll likelihood
       SI_Bsmumu_untag.reset_and_calculate();
-      SI_Bdmumu.reset_and_calculate();
+      SI_Bmumu.reset_and_calculate();
       b2ll_measurements.reset_and_calculate();
       b2ll_likelihood.reset_and_calculate();
       loglike = b2ll_likelihood(0);

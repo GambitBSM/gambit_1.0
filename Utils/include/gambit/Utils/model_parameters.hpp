@@ -120,11 +120,24 @@ namespace Gambit {
 
       /// Define many new parameters at once via an array of char arrays
       void _definePars(const char** array);
-  
+ 
+      /// Getters/setters for model and output names
+      std::string getModelName();
+      std::string getOutputName();
+      void setModelName (const std::string&);
+      void setOutputName(const std::string&);
+ 
     private:
 
       /// Internal map representation of parameters and their values
       std::map<std::string,double> _values;
+
+      /// Name of the model; currently not actually used, will always be blank in GAMBIT
+      std::string modelname;
+
+      /// Output name (string used for labelling in output, related to the model_functor which produced these parameters)
+      /// Currently used only by the postprocessor ScannerBit plugin and reader plugins.
+      std::string outputname;
 
   };
 

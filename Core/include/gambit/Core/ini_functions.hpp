@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Core-only functions for triggering 
+///  Core-only functions for triggering
 ///  initialisation code.
 ///
 ///  *********************************************
@@ -12,7 +12,7 @@
 ///
 ///  (add name and date if you modify)
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Feb
 ///
@@ -21,18 +21,15 @@
 #ifndef __ini_functions_core_hpp__
 #define __ini_functions_core_hpp__
 
-//#include "gambit/Utils/util_types.hpp"
-//#include "gambit/Elements/functors.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 namespace Gambit
 {
-  typedef std::string str;
-
-  /// Forward declarations 
+  /// Forward declarations
   class functor;
   class module_functor_common;
   class primary_model_functor;
-   
+
   /// Register a module with the Core.
   int register_module(str);
 
@@ -40,7 +37,7 @@ namespace Gambit
   int register_module_functor_core(module_functor_common&);
 
   /// Register a model functor with the Core.
-  int register_model_functor_core(primary_model_functor&);  
+  int register_model_functor_core(primary_model_functor&);
 
   /// Register a backend with the Core
   int register_backend(str, str);

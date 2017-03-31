@@ -15,10 +15,10 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/util_types.hpp"
-
 #ifndef __FeynHiggs_types_hpp__
 #define __FeynHiggs_types_hpp__
+
+#include "gambit/Utils/util_types.hpp"
 
 // indexing macros from FeynHiggs' "FHCouplings.h", FH v2.10.2, edited
 
@@ -189,8 +189,8 @@ namespace Gambit
     fh_complex deltaZH[3][3];
   };
 
-  // Container for FeynHiggs Flavor observable information (from FHFlavour backend function)
-  struct fh_FlavorObs
+  // Container for FeynHiggs Flavour observable information (from FHFlavour backend function)
+  struct fh_FlavourObs
   {
     fh_real Bsg_MSSM;     // B -> Xs gamma in MSSM
     fh_real Bsg_SM;       // B -> Xs gamma in SM
