@@ -707,7 +707,10 @@ BE_NAMESPACE
     slha["GAMBIT"][""] << 1 << *m_GUT << "# Input scale of (upper) boundary contidions, e.g. GUT scale";
 
     // Create Spectrum object from the slhaea object
-    Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha);
+    static const Spectrum::mc_info mass_cut;
+    static const Spectrum::mr_info mass_ratio_cut;
+
+   Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha, mass_cut, mass_ratio_cut);
 
     // Add the high scale variable by hand, TODO: this should be done already in the function above
     spectrum.get_HE().set_override(Par::mass1,SLHAea::to<double>(slha.at("GAMBIT").at(1).at(1)), "high_scale", true);
@@ -1534,6 +1537,7 @@ BE_INI_FUNCTION
     // 110, write ouput for LHC observables
     // GAMBIT: private variable, cannot import
     // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
-   
+
+
 }
 END_BE_INI_FUNCTION
