@@ -643,23 +643,29 @@ namespace Gambit
     //
     //////////////////////////////////////////////////////////////////////////
 
-    void RD_fraction_from_oh2(double &result)
+    void RD_fraction_one(double &result)
     {
-      using namespace Pipes::RD_fraction_from_oh2;
-      result = -1;
-      double oh2_theory = *Dep::RD_oh2;
+      result = 1.0;
+      logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
+    }
+
+    void RD_fraction_leq_one(double &result)
+    {
+      using namespace Pipes::RD_fraction_leq_one;
       /// Option oh2_obs<double>: Set reference dark matter density (Oh2) for this module function (default 0.1188)
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
-      /// Option mode<str::string>: Set fraction mode (one, leq_one, any ; default is "one")
-      std::string mode = runOptions->getValueOrDef<std::string>("one", "mode");
-      if (mode ==  "one")
-        result = 1;
-      if (mode == "leq_one")
-        result = std::min(1., oh2_theory/oh2_obs);
-      if (mode == "any")
-        result = oh2_theory/oh2_obs;
-      if (result == -1)
-        DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_fraction: Unknown mode (options: one, leq_one, any)");
+      double oh2_theory = *Dep::RD_oh2;
+      result = std::min(1., oh2_theory/oh2_obs);
+      logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
+    }
+
+    void RD_fraction_rescaled(double &result)
+    {
+      using namespace Pipes::RD_fraction_rescaled;
+      /// Option oh2_obs<double>: Set reference dark matter density (Oh2) for this module function (default 0.1188)
+      double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      double oh2_theory = *Dep::RD_oh2;
+      result = oh2_theory/oh2_obs;
       logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
     }
 

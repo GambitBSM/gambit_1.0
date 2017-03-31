@@ -195,9 +195,17 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Fraction of the relic density constituted by the DM candidate under investigation
   #define CAPABILITY RD_fraction
   START_CAPABILITY
-    #define FUNCTION RD_fraction_from_oh2
+    #define FUNCTION RD_fraction_one
+      START_FUNCTION(double)
+    #undef FUNCTION
+    #define FUNCTION RD_fraction_leq_one
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+    #define FUNCTION RD_fraction_rescaled
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
     #undef FUNCTION

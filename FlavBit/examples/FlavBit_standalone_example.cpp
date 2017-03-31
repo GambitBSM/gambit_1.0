@@ -33,17 +33,24 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 // Default SLHA file for input, if not given on the command line.
 std::string infile("FlavBit/data/example.slha");
 
-QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(FlavBit, unimproved_MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, relabelSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT), (unimproved_MSSM_spectrum, Spectrum))
 
 namespace Gambit
 {
   namespace FlavBit
   {
 
-    // Make a GAMBIT spectrum object from an SLHA file
+    // Make an unimproved GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(infile, Spectrum::mc_info(), Spectrum::mr_info());
+    }
+
+    // Relabel it as a complete spectrum
+    void relabelSpectrum(Spectrum& outSpec)
+    {
+      outSpec = *Pipes::relabelSpectrum::Dep::unimproved_MSSM_spectrum;
     }
 
   }
@@ -52,20 +59,16 @@ namespace Gambit
 int main(int argc, char** argv)
 {
 
-  cout << "starting" << endl;
+  cout << "Starting FlavBit_standalone" << endl;
 
   try
   {
 
-    cout << "starting" << endl;
     // Get the SLHA filename from the command line, if it has been given.
     if (argc >= 2) infile = argv[1];
 
-    cout << "starting" << endl;
-
     // Make a logging object
     std::map<std::string, std::string> loggerinfo;
-    cout << "starting" << endl;
 
     // Define where the logs will end up
     std::string prefix("runs/FlavBit_standalone/logs/");
@@ -88,7 +91,31 @@ int main(int argc, char** argv)
     std::cout << " I can calculate: " << endl << iCanDo << std::endl;
     std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
 
+    // Notify all module functions that care of the model being scanned.
     createSpectrum.notifyOfModel("MSSM30atQ");
+    relabelSpectrum.notifyOfModel("MSSM30atQ");
+    SI_fill.notifyOfModel("MSSM30atQ");
+
+    // Arrange the spectrum chain
+    relabelSpectrum.resolveDependency(&createSpectrum);
+
+    // Set up the deltaMB_LL likelihood
+    // Have to resolve dependencies by hand
+    // deltaMB_likelihood depends on:
+    //    - deltaMs
+    deltaMB_likelihood.resolveDependency(&FH_DeltaMs);
+
+    // FH_deltaMs depends on:
+    //    - FH_FlavourObs
+    FH_DeltaMs.resolveDependency(&FH_FlavourObs);
+
+    // FH_FlavourObs has only one backend requirement:
+    //    - FHFlavour
+    FH_FlavourObs.resolveBackendReq(&Backends::FeynHiggs_2_11_3::Functown::FHFlavour);
+
+    // The FeynHiggs initialisation function depends on:
+    //    - unimproved_MSSM_spectrum
+    FeynHiggs_2_11_3_init.resolveDependency(&createSpectrum);
 
     // Set up the b2sll_LL likelihood
     // Have to resolve dependencies by hand
@@ -101,7 +128,7 @@ int main(int argc, char** argv)
     //   - BEreq slha_adjust
     //   - BEopt SuperIso, 3.4
     //   - MSSM_spectrum
-    SI_fill.resolveDependency(&createSpectrum);
+    SI_fill.resolveDependency(&relabelSpectrum);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Init_param);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::slha_adjust);
 
@@ -172,24 +199,22 @@ int main(int argc, char** argv)
 
     // Resolve dependencies of SL_measurements
     // which are:
+    // - RD
+    // - RDstar
+    // - BDmunu
+    // - BDstarmunu
     // - Btaunu
-    // - BDtaunu
-    // - Kmunu_pimunu
     // - Dstaunu
     // - Dsmunu
     // - Dmunu
-    // - BDmunu
-    // - BDstartaunu
-    // - BDstarmunu
-    SL_measurements.resolveDependency(&SI_Btaunu);
-    SL_measurements.resolveDependency(&SI_BDtaunu);
-    SL_measurements.resolveDependency(&SI_Kmunu_pimunu);
-    SL_measurements.resolveDependency(&SI_Dstaunu);
-    SL_measurements.resolveDependency(&SI_Dsmunu);
-    SL_measurements.resolveDependency(&SI_Dmunu);
+    SL_measurements.resolveDependency(&SI_RD);
+    SL_measurements.resolveDependency(&SI_RDstar);
     SL_measurements.resolveDependency(&SI_BDmunu);
-    SL_measurements.resolveDependency(&SI_BDstartaunu);
     SL_measurements.resolveDependency(&SI_BDstarmunu);
+    SL_measurements.resolveDependency(&SI_Btaunu);
+    SL_measurements.resolveDependency(&SI_Dsmunu);
+    SL_measurements.resolveDependency(&SI_Dstaunu);
+    SL_measurements.resolveDependency(&SI_Dmunu);
 
     // Resolve all of the individual dependencies and backend reqs
     // These are:
@@ -267,12 +292,23 @@ int main(int argc, char** argv)
       double loglike;
       std::cout << std::endl;
 
-      // Call the initialisation functions for all backends that are in use.
+      // Initialise the spectra
+      createSpectrum.reset_and_calculate();
+      relabelSpectrum.reset_and_calculate();
+
+      // Initialise the backends
       SuperIso_3_6_init.reset_and_calculate();
+      FeynHiggs_2_11_3_init.reset_and_calculate();
 
       // Now call the module functions in an appropriate order
-      createSpectrum.reset_and_calculate();
       SI_fill.reset_and_calculate();
+
+      // Calculate the B meson mass asymmetry likelihood
+      FH_FlavourObs.reset_and_calculate();
+      FH_DeltaMs.reset_and_calculate();
+      deltaMB_likelihood.reset_and_calculate();
+      loglike = deltaMB_likelihood(0);
+      std::cout << "B meson mass asymmetry log-likelihood: " << loglike << std::endl;
 
       // Calculate the B -> ll likelihood
       SI_Bsmumu_untag.reset_and_calculate();

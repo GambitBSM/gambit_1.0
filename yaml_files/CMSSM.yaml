@@ -270,9 +270,7 @@ Rules:
 
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
-    function: RD_fraction_from_oh2
-    options:
-      mode: leq_one
+    function: RD_fraction_leq_one
 
   # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
   - capability: RD_oh2
