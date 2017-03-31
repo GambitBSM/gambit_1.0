@@ -46,7 +46,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-#define COLLIDERBIT_DEBUG
+// #define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -1428,7 +1428,6 @@ namespace Gambit
         double bestexp_dll_exp = 0, bestexp_dll_obs = 0;
         for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR)
         {
-          // cout << "In signal region loop" << endl;
           SignalRegionData srData = analysisResults[analysis][SR];
 
           // Actual observed number of events
