@@ -120,10 +120,10 @@ Scanner:
         #file: "runs/spartan_multinest_hdf5/samples/results.hdf5"
         #file: "tmp.hdf5"
         #group: "/" 
-        #file: "runs/largetest_diver+hdf5/samples/results.hdf5"
-        #group: "/gambit_data" 
-        file: "runs/largetest_multinest+hdf5/samples/results.hdf5"
-        group: "/gambit_data3" 
+        file: "runs/largetest_diver+hdf5/samples/results.hdf5"
+        group: "/gambit_data" 
+        #file: "runs/largetest_multinest+hdf5/samples/results.hdf5"
+        #group: "/gambit_data3" 
         
 
 #  objectives:
