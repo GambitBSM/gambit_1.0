@@ -288,7 +288,8 @@ def main(argv):
                                 scanbit_cxx_flags[plug_type[i]][directory] += flags
 
                 # Add plugin source files to CMakeLists.txt.  Only add those for non-excluded plugins.
-                if(last_plugin_file[3] == "excluded"):
+                # bjf> added "!=[]" to the conditional due to error during cmake. Hope it makes sense.
+                if(last_plugin_file!=[] and last_plugin_file[3] == "excluded"):
                     exclude_list += [last_plugin_file[0]+" "+".".join([y for y in last_plugin_file[2] if y != ""])]
                 else:
                     cmakelist_txt_out_tmp += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"

@@ -185,11 +185,11 @@ int main(int argc, char* argv[])
 
     // Assume for direct and indirect detection likelihoods that dark matter
     // density is always the measured one (regardless of relic density results)
-    RD_fraction_fixed.reset_and_calculate();
+    RD_fraction_one.reset_and_calculate();
 
     // Initialize DarkSUSY Local Halo Model
     DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&ExtractLocalMaxwellianHalo);
-    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
+    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_one);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
-    DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
+    DDCalc_1_0_0_init.resolveDependency(&RD_fraction_one);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     if (slha_version == 1)
       DDCalc_1_0_0_init.resolveDependency(&DD_couplings_MicrOmegas);
@@ -375,9 +375,6 @@ int main(int argc, char* argv[])
 
       // Set up MC loop manager for cascade MC
       cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
-      cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-      cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
-      cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_MSSM);
       std::vector<functor*> nested_functions = initVector<functor*>(
           &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
       cascadeMC_LoopManager.setNestedList(nested_functions);
@@ -431,7 +428,7 @@ int main(int argc, char* argv[])
 
       // Calculate Fermi LAT dwarf likelihood
       lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
-      lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_fixed);
+      lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
       lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
       lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
 

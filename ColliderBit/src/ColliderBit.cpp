@@ -1957,20 +1957,22 @@ namespace Gambit
     /// @{
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
-      static const ALEPHSelectronLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::ALEPH_Selectron_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static ALEPHSelectronLimitAt208GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 115., 0., 100., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
+          dumped=true;
+        }
+      #endif
 
       double max_mixing;
       const SubSpectrum& mssm = spec.get_HE();
@@ -2024,20 +2026,22 @@ namespace Gambit
 
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
-      static const ALEPHSmuonLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::ALEPH_Smuon_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static ALEPHSmuonLimitAt208GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 115., 0., 100., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
+          dumped=true;
+        }
+      #endif
 
       double max_mixing;
       const SubSpectrum& mssm = spec.get_HE();
@@ -2091,20 +2095,23 @@ namespace Gambit
 
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
-      static const ALEPHStauLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::ALEPH_Stau_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static ALEPHStauLimitAt208GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 115., 0., 100., spec.get(Par::Pole_Mass,23,0),
+           "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const SubSpectrum& mssm = spec.get_HE();
       const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
       const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
@@ -2159,20 +2166,22 @@ namespace Gambit
 
     void L3_Selectron_Conservative_LLike(double& result)
     {
-      static const L3SelectronLimitAt205GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::L3_Selectron_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3SelectronLimitAt205GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 115., 0., 100., spec.get(Par::Pole_Mass,23,0),
+           "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
+          dumped=true;
+        }
+      #endif
 
       double max_mixing;
       const SubSpectrum& mssm = spec.get_HE();
@@ -2227,20 +2236,23 @@ namespace Gambit
 
     void L3_Smuon_Conservative_LLike(double& result)
     {
-      static const L3SmuonLimitAt205GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-      static bool dumped=false;
-      if(!dumped)
-      {
-        limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
-        dumped=true;
-      }
-      #endif
       using namespace Pipes::L3_Smuon_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3SmuonLimitAt205GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 115., 0., 100., spec.get(Par::Pole_Mass,23,0),
+           "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       double max_mixing;
       const SubSpectrum& mssm = spec.get_HE();
       str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
@@ -2294,20 +2306,23 @@ namespace Gambit
 
     void L3_Stau_Conservative_LLike(double& result)
     {
-      static const L3StauLimitAt205GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 115., 0., 100., "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::L3_Stau_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3StauLimitAt205GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 115., 0., 100., spec.get(Par::Pole_Mass,23,0),
+           "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const SubSpectrum& mssm = spec.get_HE();
       const static double tol = runOptions->getValueOrDef<double>(1e-5, "family_mixing_tolerance");
       const static bool pterror = runOptions->getValueOrDef<bool>(false, "family_mixing_tolerance_invalidates_point_only");
@@ -2365,20 +2380,23 @@ namespace Gambit
     /// @{
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
-      static const L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::L3_Neutralino_All_Channels_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(0., 200., 0., 100., spec.get(Par::Pole_Mass,23,0),
+           "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
@@ -2489,20 +2507,23 @@ namespace Gambit
 
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
-      static const L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-      static bool dumped=false;
-      if(!dumped)
-      {
-        limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
-        dumped=true;
-      }
-      #endif
       using namespace Pipes::L3_Neutralino_Leptonic_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(0., 200., 0., 100., spec.get(Par::Pole_Mass,23,0),
+           "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);
@@ -2604,20 +2625,23 @@ namespace Gambit
 
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
-      static const L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 100., 0., 100., "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::L3_Chargino_All_Channels_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 100., 0., 100., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
@@ -2684,20 +2708,23 @@ namespace Gambit
 
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
-      static const L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(45., 100., 0., 100., "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::L3_Chargino_Leptonic_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(45., 100., 0., 100., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
@@ -2770,20 +2797,23 @@ namespace Gambit
 
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
-      static const OPALCharginoHadronicLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::OPAL_Chargino_Hadronic_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static OPALCharginoHadronicLimitAt208GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(75., 105., 0., 105., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec.get(Par::Pole_Mass,1000024, 0);
@@ -2848,23 +2878,25 @@ namespace Gambit
 
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
-      static const OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
+      using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
+      using std::pow;
+      using std::log;
+
+      const static OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+
       #ifdef COLLIDERBIT_DEBUG
         static bool dumped=false;
         if(!dumped)
         {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
+          limitContainer.dumpPlotData(75., 105., 0., 105., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
           dumped=true;
         }
       #endif
-      using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
-      using std::pow;
-      using std::log;
-
-      const Spectrum& spec = *Dep::MSSM_spectrum;
       const SubSpectrum& mssm = spec.get_HE();
       const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -2975,23 +3007,25 @@ namespace Gambit
 
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
-      static const OPALCharginoLeptonicLimitAt208GeV limitContainer;
+      using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
+      using std::pow;
+      using std::log;
+
+      const static OPALCharginoLeptonicLimitAt208GeV limitContainer;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+
       #ifdef COLLIDERBIT_DEBUG
         static bool dumped=false;
         if(!dumped)
         {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
+          limitContainer.dumpPlotData(75., 105., 0., 105., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
           dumped=true;
         }
       #endif
-      using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
-      using std::pow;
-      using std::log;
-
-      const Spectrum& spec = *Dep::MSSM_spectrum;
       const SubSpectrum& mssm = spec.get_HE();
       const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -3080,23 +3114,25 @@ namespace Gambit
 
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
-      static const OPALCharginoAllChannelsLimitAt208GeV limitContainer;
+      using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
+      using std::pow;
+      using std::log;
+
+      const static OPALCharginoAllChannelsLimitAt208GeV limitContainer;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      const Spectrum& spec = *Dep::MSSM_spectrum;
+
       #ifdef COLLIDERBIT_DEBUG
         static bool dumped=false;
         if(!dumped)
         {
-          limitContainer.dumpPlotData(75., 105., 0., 105., "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
+          limitContainer.dumpPlotData(75., 105., 0., 105., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
           dumped=true;
         }
       #endif
-      using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
 
-      using std::pow;
-      using std::log;
-
-      const Spectrum& spec = *Dep::MSSM_spectrum;
       const SubSpectrum& mssm = spec.get_HE();
       const DecayTable& decays = *Dep::decay_rates;
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -3179,20 +3215,23 @@ namespace Gambit
 
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
-      static const OPALNeutralinoHadronicLimitAt208GeV limitContainer;
-      #ifdef COLLIDERBIT_DEBUG
-        static bool dumped=false;
-        if(!dumped)
-        {
-          limitContainer.dumpPlotData(0., 200., 0., 100., "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
-          dumped=true;
-        }
-      #endif
       using namespace Pipes::OPAL_Neutralino_Hadronic_Conservative_LLike;
       using std::pow;
       using std::log;
 
+      const static OPALNeutralinoHadronicLimitAt208GeV limitContainer;
       const Spectrum& spec = *Dep::MSSM_spectrum;
+
+      #ifdef COLLIDERBIT_DEBUG
+        static bool dumped=false;
+        if(!dumped)
+        {
+          limitContainer.dumpPlotData(0., 200., 0., 100., spec.get(Par::Pole_Mass,23,0),
+         "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
+          dumped=true;
+        }
+      #endif
+
       const DecayTable& decays = *Dep::decay_rates;
       const double mass_neut1 = spec.get(Par::Pole_Mass,1000022, 0);
       const double mass_neut2 = spec.get(Par::Pole_Mass,1000023, 0);

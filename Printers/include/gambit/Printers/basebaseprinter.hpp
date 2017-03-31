@@ -33,25 +33,45 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 
 // Gambit
+#include "gambit/ScannerBit/printable_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 namespace Gambit
 {
   // Forward declarations needed for some of the _print/_retrieve functions
   class ModelParameters;
+  typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
+
 
   namespace Printers 
   {
     // Convenienece typedefs for printers
     typedef unsigned int      uint;
     typedef unsigned long int ulong;
-    typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
+    typedef long long int          longlong;
+    typedef unsigned long long int ulonglong;
+
+    /// Helper template functions to retrieve type IDs for a type.
+    /// ID is just a unique integer for each printable type
+    template<class T>
+    std::size_t getTypeID(void)
+    { 
+       std::ostringstream err;
+       err << "getTypeID failed! No typeID known for requested type! (with compiler name: "<<typeid(T).name()<<")";   
+       printer_error().raise(LOCAL_INFO,err.str());
+       return 0; 
+    }
 
     class BaseBasePrinter  
     {
+      private:
+        int rank;
+        std::set<std::string> print_list; // List of names of data that may be printed (i.e. with printme=true)
+
       public:
-        BaseBasePrinter(): printer_enabled(true) {}
+        BaseBasePrinter(): rank(0), printer_enabled(true) {}
         virtual ~BaseBasePrinter() {}
         /// Function to signal to the printer to write buffer contents to disk
         //virtual void flush() {}; // TODO: needed?
@@ -59,8 +79,15 @@ namespace Gambit
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
         virtual void reset(bool force=false) = 0;
 
-        /// Retrieve MPI rank
-        virtual int getRank() = 0;
+        /// Retrieve/Set MPI rank (setting is useful for e.g. the postprocessor to re-print points from other ranks)
+        int  getRank() {return rank;}
+        void setRank(int r) {rank = r;}
+
+        /// Retrieve/Set print list for this printer
+        /// Required by e.g. postprocessor.
+        std::set<std::string> getPrintList() {return print_list;}
+        void                  setPrintList(std::set<std::string>& in) {print_list = in;}        
+        void                  addToPrintList(std::string& in) {print_list.insert(in);}
 
         /// Signal printer that scan is finished, and final output needs to be performed
         virtual void finalise(bool abnormal=false) = 0;
@@ -84,13 +111,13 @@ namespace Gambit
         }
 
         // Overload which automatically determines a unique ID code
-        // based on the label. Used by scanner plugin.
+        // based on the label.
         template<typename T>
-        inline void print(T const& in, const std::string& label,
-                           const uint rank,
-                           const ulong pointID)
+        void print(T const& in, const std::string& label,
+                   const uint rank,
+                   const ulong pointID)
         {
-          print(in, label, get_aux_param_id(label), rank, pointID);
+          if(printer_enabled) _print(in, label, rank, pointID);
         }
 
       protected:
@@ -121,15 +148,15 @@ namespace Gambit
           printer_error().raise(LOCAL_INFO,err.str());         
         }
 
-        /// Declarations of minimal print functions needed by ScannerBit
-        #define SCANNER_PRINTABLE_TYPES \
-          (bool)                     \
-          (int)(uint)(long)(ulong)   \
-          (float)(double)            \
-          (std::vector<bool>)        \
-          (std::vector<int>)         \
-          (std::vector<double>)      \
-          (map_str_dbl)              \
+        /// Same for overloaded function
+        template<typename T>
+        void _print(T const& in, const std::string& label,
+                    const uint rank,
+                    const ulong pointID)
+        {
+           _print(in,label,rank,pointID);
+        }
+
 
         // Virtual print methods for base printer classes
         #define VPRINT(r,data,elem)                                \
@@ -147,6 +174,14 @@ namespace Gambit
               << "\n   vertexID   : " << vertexID                 \
               << "\n   Type       : " << STRINGIFY(elem);         \
           printer_error().raise(LOCAL_INFO,err.str());          \
+        } \
+        \
+        /* version that assigns vertexID automatically */         \
+        virtual void _print(elem const& in, const std::string& label, \
+                           const uint rank, \
+                           const ulong pointID)               \
+        {                                                         \
+           _print(in,label,get_param_id(label),rank,pointID); \
         }
 
         #define ADD_VIRTUAL_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(VPRINT, _, TYPES)
@@ -202,8 +237,11 @@ namespace Gambit
       public:
         virtual ~BaseBaseReader() {};
 
-        virtual std::pair<uint, ulong> get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
-        virtual std::pair<uint, ulong> get_next_point() = 0; // Get next rank/ptID pair in data file
+        virtual void reset() = 0; // Reset 'read head' position to first entry
+        virtual ulong get_dataset_length() = 0; // Get length of input dataset (used e.g. by postprocessor to divide post-processing workload via MPI)
+        virtual PPIDpair get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
+        virtual ulong    get_current_index() = 0; // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
+        virtual PPIDpair get_next_point() = 0; // Get next rank/ptID pair in data file
         virtual bool eoi() = 0; // Check if 'current point' is past the end of the data file (and thus invalid!)
 
         /// Printer-retrieve dispatch function. If a virtual function override exists for
@@ -220,26 +258,65 @@ namespace Gambit
         /// in different cases...
         ///
         /// Note, cannot overload based on return type, so need to use an "out" parameter
+        /// In addition, there may not be a valid result printed for a given entry, so
+        /// an extra output flag "out_valid" must be set to indicate whether the entry
+        /// was marked invalid in the old output. Use the return value for this.
         template<typename T>
-        void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
-          _retrieve(out, label, rank, pointID);
+          return _retrieve(out, label, rank, pointID);
         }
 
         /// Overload for 'retrieve' that uses the current point as the input for rank/pointID
         template<typename T>
-        void retrieve(T& out, const std::string& label)
+        bool retrieve(T& out, const std::string& label)
         {
-          std::pair<uint, ulong> pt = get_current_point();
-          retrieve(out, label, pt.first, pt.second);
+          PPIDpair pt = get_current_point();
+          return retrieve(out, label, pt.rank, pt.pointID);
         }
 
+        /// Retrieve and directly print data to new output
+        bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer, const uint rank, const ulong pointID)
+        {
+           /// Just use the same label for input and output
+           return retrieve_and_print(label, label, printer, rank, pointID);
+        }
+
+        /// Retrieve and directly print data to new output, renaming the output to something new
+        /// Implemented in BasePrinter where complete type info is available.
+        virtual bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer, const uint rank, const ulong pointID) = 0;
+
+        /// Overload for 'retrieve_and_print' that uses the current point as the input for rank/pointID
+        bool retrieve_and_print(const std::string& label, BaseBasePrinter& printer)
+        {
+           /// Uses same label for input and output
+           return retrieve_and_print(label, label, printer);
+        }
+    
+        /// As above, but allows for different input/output labels
+        bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer)
+        {
+          PPIDpair pt = get_current_point();
+          return retrieve_and_print(in_label, out_label, printer, pt.rank, pt.pointID);
+        }
+
+        /// Get type information for a data entry, i.e. defines the C++ type which this should be
+        /// retrieved as, not what it is necessarily literally stored as in the output.
+        /// It isn't human readable, it is just for matching retrieved data to a print type,
+        /// mainly for the 'retrieve_and_print' function.
+        /// Needs to be implemented in each complete derived Reader class
+        virtual std::size_t get_type(const std::string& label) = 0;
+ 
+        /// Get list of output labels that can be retrieved by this printer. 
+        /// Needs to be implemented in each complete derived Reader class
+        virtual std::set<std::string> get_all_labels() = 0;
+  
       protected:
         /// Default _retrieve function. Throws an error if no virtual
         /// function matching the type of the attempted retrieval is
         /// found.        
         template<typename T>
-        void _retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool _retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
           std::ostringstream err;                               
                                                                 
@@ -253,18 +330,12 @@ namespace Gambit
               << "\n   Label      : " << label                  
               << "\n   Type       : " << STRINGIFY(T);       
           printer_error().raise(LOCAL_INFO,err.str());         
+          return false;
         }
       
-        #define SCANNER_RETRIEVABLE_TYPES  \
-        (double)                   \
-        (std::string)              \
-        (std::vector<double>)      \
-        (map_str_dbl)              \
-        (ModelParameters)          \
-
         // Virtual retrieval methods for base printer classes
         #define VRETRIEVE(r,data,elem)            \
-        virtual void _retrieve(elem& /*output*/,  \
+        virtual bool _retrieve(elem& /*output*/,  \
                        const std::string& label,  \
                        const uint /*rank*/,       \
                        const ulong /*pointID*/    \
@@ -279,6 +350,7 @@ namespace Gambit
               << "\n   Label      : " << label                    \
               << "\n   Type       : " << STRINGIFY(elem);         \
           printer_warning().raise(LOCAL_INFO,err.str());          \
+          return false;                                           \
         }
 
         #define ADD_VIRTUAL_RETRIEVALS(TYPES) BOOST_PP_SEQ_FOR_EACH(VRETRIEVE, _, TYPES)

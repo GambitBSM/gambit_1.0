@@ -429,7 +429,7 @@ namespace Gambit
     // Functions to changes the capability associated with a Spectrum object to
     // "SM_spectrum"
     //TODO: "temporarily" removed
-    //void convert_MSSM_to_SM   (/*TAG*/ Spectrum &result) {result = *Pipes::convert_MSSM_to_SM::Dep::unimproved_MSSM_spectrum;}
+    //void convert_MSSM_to_SM   (Spectrum &result) {result = *Pipes::convert_MSSM_to_SM::Dep::unimproved_MSSM_spectrum;}
 
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}

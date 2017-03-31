@@ -7,12 +7,15 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///          p.scott@imperial.ac.uk
 ///  \date 2015 Aug
 ///
 ///  *************************
+
+#ifndef __nulike_types_hpp__
+#define __nulike_types_hpp__
 
 namespace Gambit
 {
@@ -21,3 +24,5 @@ namespace Gambit
   typedef double(*nuyield_function_pointer)(const double&, const int&, void*&);
 
 }
+
+#endif /* defined __nulike_types_hpp__ */

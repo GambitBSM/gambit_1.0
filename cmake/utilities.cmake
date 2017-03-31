@@ -104,8 +104,11 @@ include(cmake/cleaning.cmake)
 # Macro to write some shell commands to clean an external code.  Adds clean-[package] and nuke-[package]
 macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
-  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
-                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+  string(REPLACE "." "_" safe_package ${package})
+  set(reset_file "${CMAKE_BINARY_DIR}/BOSS_reset_info/reset_info.${safe_package}.boss")
+  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-BOSS ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
+                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true
+                                     COMMAND [ -e ${reset_file} ] && python ${BOSS_dir}/boss.py -r ${reset_file} || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-download-failed ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
@@ -348,6 +351,134 @@ function(add_standalone executablename)
 endfunction()
 
 
+# Function to retrieve version number from git
+macro(get_version_from_git major minor revision patch full)
+
+  set(${major} "")
+  set(${minor} "")
+  set(${revision} "")
+  set(${patch} "")
+  set(${full} "")
+
+  execute_process(COMMAND git describe --tags --abbrev=0 OUTPUT_VARIABLE ${full})
+
+  string(REGEX MATCH "v([0-9]*)\\." ${major} "${${full}}")
+  if ("${${major}}" STREQUAL "")
+    string(REGEX MATCH "^([0-9]*)\\." ${major} "${${full}}")
+    string(REGEX REPLACE "^([0-9]*)\\." "\\1" ${major} "${${major}}")
+  else()
+    string(REGEX REPLACE "v([0-9]*)\\." "\\1" ${major} "${${major}}")
+  endif()
+
+  string(REGEX MATCH "\\.([0-9]*)\\." ${minor} "${${full}}")
+  if ("${${minor}}" STREQUAL "")
+    string(REGEX MATCH "\\.([0-9]*)" ${minor} "${${full}}")
+    string(REGEX REPLACE "\\.([0-9]*)" "\\1" ${minor} "${${minor}}")
+    set(${revision} "0")
+  else()
+    string(REGEX REPLACE "\\.([0-9]*)\\." "\\1" ${minor} "${${minor}}")
+    string(REGEX MATCH "\\.([0-9]*)-" ${revision} "${${full}}")
+    if ("${${revision}}" STREQUAL "")
+      string(REGEX MATCH "\\.([0-9]*)\n" ${revision} "${${full}}")
+      string(REGEX REPLACE "\\.([0-9]*)\n" "\\1" ${revision} "${${revision}}")
+    else()
+      string(REGEX REPLACE "\\.([0-9]*)-" "\\1" ${revision} "${${revision}}")
+    endif()
+  endif()
+  string(REGEX MATCH "-(.*)\n" ${patch} "${${full}}")
+  string(REGEX REPLACE "-(.*)\n" "\\1" ${patch} "${${patch}}")
+
+  if ("${${patch}}" STREQUAL "")
+    set(${full} "${${major}}.${${minor}}.${${revision}}")
+  else()
+    set(${full} "${${major}}.${${minor}}.${${revision}}-${${patch}}")
+  endif()
+
+endmacro()
+
+
+# Function to add all standalone tarballs as targets
+function(add_standalone_tarballs modules version)
+
+  add_custom_target(standalone_tarballs)
+
+  file(WRITE "${CMAKE_BINARY_DIR}/tarball_info.cmake"
+   "#*** GAMBIT ***********************\n"
+   "# This file automatically generated \n"
+   "# by utlities.cmake. Do not modify. \n"
+   "#**********************************\n\n"
+   "set(GAMBIT_VERSION_MAJOR ${GAMBIT_VERSION_MAJOR})\n"
+   "set(GAMBIT_VERSION_MINOR ${GAMBIT_VERSION_MINOR})\n"
+   "set(GAMBIT_VERSION_REVISION ${GAMBIT_VERSION_REVISION})\n"
+   "set(GAMBIT_VERSION_PATCH ${GAMBIT_VERSION_PATCH})\n"
+   "set(GAMBIT_VERSION_FULL ${GAMBIT_VERSION_FULL})\n")
+
+  foreach(module ${modules})
+
+    set(dirname "${module}_${version}")
+
+    if ("${module}" STREQUAL "ScannerBit")
+      add_custom_target(${module}.tar COMMAND ${CMAKE_COMMAND} -E remove_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E make_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/CMakeLists.txt ${dirname}/
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/${module} ${dirname}/${module}
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Logs ${dirname}/Logs
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Utils ${dirname}/Utils
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Printers ${dirname}/Printers
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/cmake ${dirname}/cmake
+                                      COMMAND ${CMAKE_COMMAND} -E copy tarball_info.cmake ${dirname}/cmake/
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/config ${dirname}/config
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/contrib ${dirname}/contrib
+                                      COMMAND ${CMAKE_COMMAND} -E remove -f ${module}.tar
+                                      COMMAND ${CMAKE_COMMAND} -E tar c ${module}.tar ${dirname})
+    else()
+      add_custom_target(${module}.tar COMMAND ${CMAKE_COMMAND} -E remove_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E make_directory ${dirname}
+                                      COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/CMakeLists.txt ${dirname}/
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/${module} ${dirname}/${module}
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Logs ${dirname}/Logs
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Utils ${dirname}/Utils
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Models ${dirname}/Models
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Elements ${dirname}/Elements
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Backends ${dirname}/Backends
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/cmake ${dirname}/cmake
+                                      COMMAND ${CMAKE_COMMAND} -E copy tarball_info.cmake ${dirname}/cmake/
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/config ${dirname}/config
+                                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/contrib ${dirname}/contrib
+                                      COMMAND ${CMAKE_COMMAND} -E remove -f ${module}.tar
+                                      COMMAND ${CMAKE_COMMAND} -E tar c ${module}.tar ${dirname})
+    endif()
+
+    add_dependencies(${module}.tar nuke-all)
+    add_dependencies(standalone_tarballs ${module}.tar)
+
+  endforeach()
+
+  # Add a special ad-hoc command to make a tarball containing SpecBit, DecayBit and PrecisionBit
+  set(dirname "3Bit_${version}")
+  add_custom_target(3Bit.tar COMMAND ${CMAKE_COMMAND} -E remove_directory ${dirname}
+                             COMMAND ${CMAKE_COMMAND} -E make_directory ${dirname}
+                             COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/CMakeLists.txt ${dirname}/
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/SpecBit ${dirname}/SpecBit
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/DecayBit ${dirname}/DecayBit
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/PrecisionBit ${dirname}/PrecisionBit
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Logs ${dirname}/Logs
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Utils ${dirname}/Utils
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Models ${dirname}/Models
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Elements ${dirname}/Elements
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Backends ${dirname}/Backends
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/cmake ${dirname}/cmake
+                             COMMAND ${CMAKE_COMMAND} -E copy tarball_info.cmake ${dirname}/cmake/
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/config ${dirname}/config
+                             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/contrib ${dirname}/contrib
+                             COMMAND ${CMAKE_COMMAND} -E remove -f 3Bit.tar
+                             COMMAND ${CMAKE_COMMAND} -E tar c 3Bit.tar ${dirname})
+  add_dependencies(3Bit.tar nuke-all)
+  add_dependencies(standalone_tarballs 3Bit.tar)
+
+endfunction()
+
+
 # Simple function to find specific Python modules
 macro(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
@@ -391,10 +522,10 @@ macro(BOSS_backend name backend_version)
     endif()
     ExternalProject_Add_Step(${name}_${ver} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} ${name}_${backend_version_safe}
+      COMMAND python ${BOSS_dir}/boss.py ${BOSS_includes} ${name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
-      COMMAND cp -r ${BOSS_dir}/BOSS_output/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
-      COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${name_in_frontend}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp
+      COMMAND cp -r BOSS_output/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
+      COMMAND cp BOSS_output/frontends/${name_in_frontend}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp
       DEPENDEES patch
       DEPENDERS configure
     )

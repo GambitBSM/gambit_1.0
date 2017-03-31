@@ -42,7 +42,9 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
-#include "gambit/Printers/baseprinter.hpp"
+#ifndef NO_PRINTERS
+  #include "gambit/Printers/baseprinter.hpp"
+#endif
 
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/io/ios_state.hpp>
@@ -153,41 +155,43 @@ namespace Gambit
       return safe_ptr<TYPE>(myValue);
     }
 
-    /// Printer function
-    template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int thread_num)
-    {
-      // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
-      // TODO: though actually the printer system will probably cark it if printing from multiple threads is
-      // attempted, because it uses the VertexID to differentiate print streams, and this is shared among threads.
-      // Can fix by requiring a VertexID+thread_num pair, but I am leaving this for later.
-      init_memory();                 // Init memory if this is the first run through.
-      if(myPrintFlag and not already_printed[thread_num] and type()!="void") // myPrintFlag should anyway not be true for void result types
+    #ifndef NO_PRINTERS
+      /// Printer function
+      template <typename TYPE>
+      void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int thread_num)
       {
-        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
-        int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
-                                            // In the auxilliary printing system we may tell the printer to overwrite
-                                            // the output of other ranks.
-        logger() << LogTags::debug << "Printing "<<myLabel<<" (vID="<<myVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
-        printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
-        already_printed[thread_num] = true;
+        // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
+        // TODO: though actually the printer system will probably cark it if printing from multiple threads is
+        // attempted, because it uses the VertexID to differentiate print streams, and this is shared among threads.
+        // Can fix by requiring a VertexID+thread_num pair, but I am leaving this for later.
+        init_memory();                 // Init memory if this is the first run through.
+        if(myPrintFlag and not already_printed[thread_num] and type()!="void") // myPrintFlag should anyway not be true for void result types
+        {
+          if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
+          int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
+                                              // In the auxilliary printing system we may tell the printer to overwrite
+                                              // the output of other ranks.
+          logger() << LogTags::debug << "Printing "<<myLabel<<" (vID="<<myVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
+          printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
+          already_printed[thread_num] = true;
+        }
+
+        // Print timing info if requested (independent of whether printing actual result)
+        if(myTimingPrintFlag and not already_printed_timing[thread_num])
+        {
+          if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
+          int rank = printer->getRank();
+          std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
+          logger() << LogTags::debug << "Printing "<<myTimingLabel<<" (vID="<<myTimingVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
+          printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
+          already_printed_timing[thread_num] = true;
+        }
       }
 
-      // Print timing info if requested (independent of whether printing actual result)
-      if(myTimingPrintFlag and not already_printed_timing[thread_num])
-      {
-        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
-        int rank = printer->getRank();
-        std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
-        logger() << LogTags::debug << "Printing "<<myTimingLabel<<" (vID="<<myTimingVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
-        printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
-        already_printed_timing[thread_num] = true;
-      }
-    }
-
-    /// Printer function (no-thread-index short-circuit)
-    template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
+      /// Printer function (no-thread-index short-circuit)
+      template <typename TYPE>
+      void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
+    #endif
 
   // Backend_functor_common class method definitions
 

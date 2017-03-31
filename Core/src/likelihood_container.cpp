@@ -138,7 +138,7 @@ namespace Gambit
   }
 
   /// Evaluate total likelihood function
-  double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
+  double Likelihood_Container::main(std::unordered_map<std::string, double> &in)
   {
     logger() << LogTags::core << LogTags::debug << "Entered Likelihood_Container::main" << EOM;
 
@@ -162,18 +162,21 @@ namespace Gambit
     {
       tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
       logger() << "Informed scanner that early shutdown is in progress and it should secure all its output files if possible." << EOM;
-      if(not scanner_can_quit())
-      {
-        // If the scanner does not have a built-in mechanism for halting the scan early, then we will assume
-        // responsiblity for the process and attempt to shut the scan down from our side.
-        signaldata().attempt_soft_shutdown();
-      }
+    }
+
+    // Decide if we need to skip the likelihood calculation due to shutdown procedure
+    if(signaldata().shutdown_begun() and not scanner_can_quit())
+    {
+      // If the scanner does not have a built-in mechanism for halting the scan early, then we will assume
+      // responsiblity for the process and attempt to shut the scan down from our side.
+      signaldata().attempt_soft_shutdown();
       lnlike = alt_min_valid_lnlike; // Always use this larger value to avoid scanner deadlocks (e.g. MultiNest refuses to progress without a likelihood above its minimum threshold)
       point_invalidated = true; // Will prevent this likelihood value from being flagged as 'valid' by the printer
-      logger() << "Shutdown in progess! Returning min_valid_lnlike to ScannerBit instead of computing likelihood." << EOM;
+      logger() << "Shutdown in progess! The scanner is not flagged as being able to shut itself down, so are managing the shutdown from the likelihood container side. Returning min_valid_lnlike to ScannerBit instead of computing likelihood." << EOM;
     }
     else // Do the normal likelihood calculation
     {
+      // If the shutdown has been triggered but the quit flag is present, then we let the likelihood evaluation proceed as normal.
 
       bool compute_aux = true;
 

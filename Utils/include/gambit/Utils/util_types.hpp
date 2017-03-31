@@ -7,12 +7,12 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott  
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr
 ///
-///  \author Ben Farmer  
+///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu)
 ///  \date 2013 Jun
 ///
@@ -24,7 +24,7 @@
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Nov
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Jan, Mar
 ///  \date 2015 Jan, Feb
@@ -37,6 +37,7 @@
 #ifndef __util_types_hpp__
 #define __util_types_hpp__
 
+#include <map>
 #include <string>
 #include <sstream>
 #include <omp.h>
@@ -56,6 +57,8 @@ namespace Gambit
   typedef std::pair<str, str> sspair;
   /// Shorthand for a pair of doubles
   typedef std::pair<double, double> ddpair;
+  /// Shorthand for a string-to-double map
+  typedef std::map<std::string,double> map_str_dbl;
 
   // Useful unqualified functions
   using std::cout;
@@ -89,7 +92,7 @@ namespace Gambit
      : central(in.central),
        upper(in.upper),
        lower(in.lower)
-    {}    
+    {}
     /// Copy assignment operator
     triplet<TYPE>& operator = (const triplet<TYPE>& in) {
       central = in.central;
@@ -98,7 +101,7 @@ namespace Gambit
       return *this;
     }
   };
-  
+
   // a tuple containg two doubles and a bool
   struct dbl_dbl_bool
   {
@@ -122,7 +125,7 @@ namespace Gambit
      : first(in.first),
        second(in.second),
        flag(in.flag)
-    {}    
+    {}
     /// Copy assignment operator
     dbl_dbl_bool& operator = (const dbl_dbl_bool& in) {
       first = in.first;
@@ -130,13 +133,13 @@ namespace Gambit
       flag = in.flag;
       return *this;
     }
-  }; 
-  
-  
+  };
+
+
 
   /// A safe pointer that throws an informative error if you try to dereference
   /// it when nullified, and cannot be used to overwrite the thing it points to.
-  template <typename TYPE> 
+  template <typename TYPE>
   class safe_ptr
   {
 
@@ -150,24 +153,24 @@ namespace Gambit
 
       /// Dereference pointer
       virtual const TYPE& operator*() const
-      { 
+      {
         if (ptr == NULL) dieGracefully();
         return *ptr;
-      }        
+      }
 
       /// Dereference pointer as if it is an array
       virtual const TYPE& operator[](int index) const
-      { 
+      {
         if (ptr == NULL) dieGracefully();
         return *(ptr+index);
-      }        
+      }
 
       /// Access is allowed to const member functions only
       virtual const TYPE* operator->() const
-      { 
+      {
         if (ptr == NULL) dieGracefully();
         return ptr;
-      }        
+      }
 
     protected:
 
@@ -189,7 +192,7 @@ namespace Gambit
   };
 
 
-  /// A safe pointer designed to point at an array, and return the entry in that array 
+  /// A safe pointer designed to point at an array, and return the entry in that array
   /// corresponding to the current OpenMP thread.
   template <typename TYPE>
   class omp_safe_ptr : public safe_ptr<TYPE>
@@ -202,10 +205,10 @@ namespace Gambit
 
       /// Dereference pointer
       virtual const TYPE& operator*() const
-      { 
+      {
         if (this->ptr == NULL) safe_ptr<TYPE>::dieGracefully();
         return *(this->ptr+omp_get_thread_num());
-      }        
+      }
 
   };
 
@@ -213,7 +216,7 @@ namespace Gambit
   /// it when nullified, but unlike safe_ptr it can be used to overwrite the thing it points to.
   /// However, it is not possible to change the address of this pointer without using the 'set'
   /// function (in which case you presumably know what you're doing).
-  template <typename TYPE> 
+  template <typename TYPE>
   class safe_variable_ptr
   {
 
@@ -234,25 +237,25 @@ namespace Gambit
 
       /// Dereference pointer
       TYPE& operator*()
-      { 
+      {
         if (ptr == NULL) dieGracefully();
         return *ptr;
-      }        
+      }
 
       /// Dereference pointer as if it is an array
       TYPE& operator[](int index)
-      { 
+      {
         if (ptr == NULL) dieGracefully();
         return *(ptr+index);
-      }        
+      }
 
       /// Access member functions
       TYPE* operator->()
-      { 
+      {
         if (ptr == NULL) dieGracefully();
         return ptr;
-      }        
-          
+      }
+
     protected:
 
       /// The actual underlying pointer
@@ -266,21 +269,21 @@ namespace Gambit
                    "\ndependency that has not been activated because the necessary condition"
                    "\nhas not been met.";
         utils_error().raise(LOCAL_INFO,errmsg);
-      } 
+      }
 
   };
 
 
   /// Array class that matches the memory structure and functionality of arrays in Fortran codes
   /// Syntax: Farray<[type], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
-  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class! 
-  /// This would break the crucial memory structure.  
+  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!
+  /// This would break the crucial memory structure.
   template <typename T, int... lims>
   class Farray
   {
     protected:
-      static_assert(sizeof...(lims)%2==0,    "Farray error: Odd number of index limits.");      
-      static_assert(sizeof...(lims)!=0,      "Farray error: No array index limits given.");        
+      static_assert(sizeof...(lims)%2==0,    "Farray error: Odd number of index limits.");
+      static_assert(sizeof...(lims)!=0,      "Farray error: No array index limits given.");
       // Allowed array access types (expand if necessary)
       typedef mult_types< short, const short, short&, const short&,
                           unsigned short, const unsigned short, unsigned short&, const unsigned short&,
@@ -289,7 +292,7 @@ namespace Gambit
                           long, const long, long&, const long&,
                           unsigned long, const unsigned long, unsigned long&, const unsigned long&,
                           long long , const long long, long long&, const long long&,
-                          unsigned long long, const unsigned long long, unsigned long long&, const unsigned long long&> allowed_types;     
+                          unsigned long long, const unsigned long long, unsigned long long&, const unsigned long long&> allowed_types;
       // Helper structs for calculating number of elements
       template<int... _lims>
       struct calc_nElem{};
@@ -306,65 +309,65 @@ namespace Gambit
         static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
       };
     public:
-      typedef calc_nElem<lims... > nElem;   
-      T array[nElem::val]; 
+      typedef calc_nElem<lims... > nElem;
+      T array[nElem::val];
       Farray(){}
-      Farray(Farray<T,lims... > &in){*this = in;} 
+      Farray(Farray<T,lims... > &in){*this = in;}
       template <typename ... Args>
-      typename enable_if_all_member<allowed_types, T&, Args...>::type::type      
+      typename enable_if_all_member<allowed_types, T&, Args...>::type::type
       operator () (Args ... a)
-      {   
-        static_assert(2*sizeof...(a)==sizeof...(lims), "Farray error: Invalid number of arguments passed to () operator.");              
-        int indices[] = {int(a)...};             
+      {
+        static_assert(2*sizeof...(a)==sizeof...(lims), "Farray error: Invalid number of arguments passed to () operator.");
+        int indices[] = {int(a)...};
         int limits[] = {lims...};
         int idx = 0;
         // Calculate index for array access
-        for (int i = 0; i < int(sizeof...(lims)/2); ++i) 
+        for (int i = 0; i < int(sizeof...(lims)/2); ++i)
         {
           int idx_i = indices[i];
           if(idx_i<limits[2*i] || idx_i>limits[2*i+1])
           {
             str errmsg = "Farray error: Array index out of bounds.";
             utils_error().raise(LOCAL_INFO,errmsg);
-          } 
-          idx_i -= limits[2*i];                            
+          }
+          idx_i -= limits[2*i];
           for (int j=0; j<i; j++) idx_i *= (limits[2*j+1]-limits[2*j]+1);
           idx += idx_i;
-        }   
-        return array[idx];   
-      }      
+        }
+        return array[idx];
+      }
       template <typename ... Args>
       typename enable_if_all_member<allowed_types, const T&, Args...>::type::type
       operator () (Args ... a) const
-      {      
-        static_assert(2*sizeof...(a)==sizeof...(lims), "Farray error: Invalid number of arguments passed to () operator.");         
-        int indices[] = {int(a)...};             
+      {
+        static_assert(2*sizeof...(a)==sizeof...(lims), "Farray error: Invalid number of arguments passed to () operator.");
+        int indices[] = {int(a)...};
         int limits[] = {lims...};
         int idx = 0;
         // Calculate index for array access
-        for (int i = 0; i < (sizeof...(lims)/2); ++i) 
+        for (int i = 0; i < (sizeof...(lims)/2); ++i)
         {
           int idx_i = indices[i];
           if(idx_i<limits[2*i] || idx_i>limits[2*i+1])
           {
             str errmsg = "Farray error: Array index out of bounds.";
             utils_error().raise(LOCAL_INFO,errmsg);
-          } 
-          idx_i -= limits[2*i];                                          
+          }
+          idx_i -= limits[2*i];
           for (int j=0; j<i; j++) idx_i *= limits[2*j+1]-limits[2*j]+1;
           idx += idx_i;
-        }             
-        return array[idx];   
+        }
+        return array[idx];
       }
       Farray<T,lims... >& operator= (const Farray<T,lims... > &orig)
       {
         if (this == &orig) return *this;
-        for (int i=0; i<nElem::val; ++i) 
+        for (int i=0; i<nElem::val; ++i)
         {
           array[i] = orig.array[i];
-        }        
+        }
         return *this;
-      }        
+      }
       Farray(const T val)
       {
         for (int i=0; i<nElem::val; i++)
@@ -381,22 +384,22 @@ namespace Gambit
         return *this;
       }
   };
-  
+
   /// Farray specialization for Fortran strings. This is a 1-dimensional char array with indices 1 to len.
   /// It has assignment operators for standard string types, and accessors that return std::string objects.
   /// Strings longer than len will be truncated by the assignment operators, and shorter strings will be given trailing spaces.
   /// Syntax: Fstring<[string length]>
-  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!   
+  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!
   template <int len>
   class Fstring : public Farray<char,1,len>
   {
     public:
       Fstring(){}
       Fstring(const std::string &in)  {*this = in;}
-      Fstring(const char* in)         {*this = in;}   
-      Fstring(char in)                {*this = in;}         
-      template<int ilen>        
-      Fstring(const Fstring<ilen> &in){*this = in;}       
+      Fstring(const char* in)         {*this = in;}
+      Fstring(char in)                {*this = in;}
+      template<int ilen>
+      Fstring(const Fstring<ilen> &in){*this = in;}
       Fstring& operator= (const std::string &in)
       {
         for(unsigned int i=0; i<len; i++)
@@ -412,7 +415,7 @@ namespace Gambit
           Farray<char,1,len>::array[i] = (i<std::strlen(in)) ? in[i] : ' ';
         }
         return *this;
-      }        
+      }
       Fstring& operator= (char in)
       {
         Farray<char,1,len>::array[0] = in;
@@ -421,7 +424,7 @@ namespace Gambit
           Farray<char,1,len>::array[i] = ' ';
         }
         return *this;
-      }          
+      }
       template<int ilen>
       Fstring& operator= (const Fstring<ilen> &in)
       {
@@ -437,7 +440,7 @@ namespace Gambit
       {
         return std::string(Farray<char,1,len>::array,len);
       }
-      /// Get std::string copy of the Fstring without trailing spaces      
+      /// Get std::string copy of the Fstring without trailing spaces
       std::string trimmed_str() const
       {
         int idx;
@@ -447,7 +450,7 @@ namespace Gambit
           if(Farray<char,1,len>::array[idx] != ' ') break;
         }
         return std::string(Farray<char,1,len>::array,idx+1);
-      }        
+      }
       // Overloaded == operator with std::strings
       bool operator== (std::string str)
       {
@@ -461,38 +464,38 @@ namespace Gambit
   /// (the array index for the letters in the strings should not be passed).
   /// This operator returns references to Fstring objects that can be assigned to and read from.
   /// Syntax: FstringArray<[string length], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
-  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!   
+  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!
   template <int len, int... lims>
   class FstringArray : public Farray<char,1,len, lims... >
   {
     public:
       template <typename ... Args>
-      typename enable_if_all_member<typename Farray<char,1,len, lims... >::allowed_types, Fstring<len>&, Args...>::type::type      
+      typename enable_if_all_member<typename Farray<char,1,len, lims... >::allowed_types, Fstring<len>&, Args...>::type::type
       operator () (Args ... a)
-      {   
-        static_assert(2*sizeof...(a)==sizeof...(lims), "FstringArray error: Invalid number of arguments passed to () operator");              
-        int indices[] = {1,int(a)...};             
+      {
+        static_assert(2*sizeof...(a)==sizeof...(lims), "FstringArray error: Invalid number of arguments passed to () operator");
+        int indices[] = {1,int(a)...};
         int limits[] = {1,len,lims...};
         int idx = 0;
         // Calculate index for array access
-        for (int i = 0; i < int((sizeof...(lims)+2)/2); ++i) 
+        for (int i = 0; i < int((sizeof...(lims)+2)/2); ++i)
         {
           int idx_i = indices[i];
           if(idx_i<limits[2*i] || idx_i>limits[2*i+1])
           {
             str errmsg = "FstringArray error: Array index out of bounds.";
             utils_error().raise(LOCAL_INFO,errmsg);
-          } 
-          idx_i -= limits[2*i];                            
+          }
+          idx_i -= limits[2*i];
           for (int j=0; j<i; j++) idx_i *= (limits[2*j+1]-limits[2*j]+1);
           idx += idx_i;
-        }   
-        return *reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims... >::array[idx]);  
-      }     
+        }
+        return *reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims... >::array[idx]);
+      }
   };
-  
-  /// Fortran complex type. Use typdef versions instead of the 
-  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!     
+
+  /// Fortran complex type. Use typdef versions instead of the
+  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!
   template <typename T>
   class FcomplexT
   {
@@ -565,7 +568,7 @@ namespace Gambit
       FcomplexT operator * (const FcomplexT<T2> &in)
       {
         FcomplexT out;
-     
+
         out.re = re*in.re - im*in.im;
         out.im = re*in.im + im*in.re;
 
@@ -576,7 +579,7 @@ namespace Gambit
       FcomplexT operator / (const FcomplexT<T2> &in)
       {
         FcomplexT out = (*this)*in;
-        
+
         if(in.abs() != 0)
         {
           out.re /= in.abs();
@@ -587,7 +590,7 @@ namespace Gambit
           out.re = 0;
           out.im = 0;
         }
-       
+
         return out;
       }
   };
@@ -597,24 +600,24 @@ namespace Gambit
   typedef FcomplexT<float>  Fcomplex;
   typedef FcomplexT<float>  Fcomplex8;
   typedef FcomplexT<double> Fcomplex16;
-  typedef FcomplexT<double> Fdouble_complex;  
-  typedef FcomplexT<long double> Flongdouble_complex;  
-  typedef char              Fcharacter;  
+  typedef FcomplexT<double> Fdouble_complex;
+  typedef FcomplexT<long double> Flongdouble_complex;
+  typedef char              Fcharacter;
   typedef double            Fdouble;
   typedef double            Fdouble_precision;
-  typedef double            Fdoubleprecision;    
+  typedef double            Fdoubleprecision;
   typedef int               Finteger;
-  typedef short             Finteger2;  
-  typedef long int          Finteger4;  
-  typedef long long         Finteger8;  
+  typedef short             Finteger2;
+  typedef long int          Finteger4;
+  typedef long long         Finteger8;
   typedef bool              Flogical;
-  typedef bool              Flogical1;  
+  typedef bool              Flogical1;
   typedef float             Freal;
   typedef float             Freal4;
   typedef double            Freal8;
   typedef long double       Freal16;
-  
-  
+
+
 }
 #endif //defined __util_types_hpp__
 

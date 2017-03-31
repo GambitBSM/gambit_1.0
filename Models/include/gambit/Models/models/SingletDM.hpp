@@ -28,7 +28,7 @@
   // translate this model into SingletDM_running
   INTERPRET_AS_PARENT_FUNCTION(SingletDM_to_SingletDM_running)
   // if this transformation depends on the spectrum uncomment following line
-  // INTERPRET_AS_PARENT_DEPENDENCY(SingletDM_spectrum, /*TAG*/ Spectrum)
+  // INTERPRET_AS_PARENT_DEPENDENCY(SingletDM_spectrum, Spectrum)
 
 
   DEFINEPARS(mS, lambda_hS)

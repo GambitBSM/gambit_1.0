@@ -59,6 +59,9 @@ namespace Gambit {
             /// Different printers can use different modes.
             bool MPImode;
 
+            /// flag to indicate the buffer access mode (i.e. read/write)
+            char access;
+   
          protected:
             /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
             bool sync_buffer_full = false;
@@ -79,7 +82,7 @@ namespace Gambit {
               #endif
             }   
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode, const char a) 
               : label(l)
               , vertexID(vID)
               , index(i)
@@ -87,6 +90,7 @@ namespace Gambit {
               , silenced(sil)
               , resume(r)
               , MPImode(mode)
+              , access(a)
             {
               #ifdef HDF5_DEBUG
               std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
@@ -106,6 +110,7 @@ namespace Gambit {
             std::string get_label()   { return label; }
 
             /// @{ Buffer status getters
+            char access_mode()        { return access; }
             bool sync_buffer_is_full(){ return sync_buffer_full; }
             bool sync_buffer_is_empty(){ return sync_buffer_empty; }
             bool is_synchronised()    { return synchronised; }
@@ -170,24 +175,24 @@ namespace Gambit {
             // Needed for checking that dataset sizes on disk are consistent
             virtual ulong get_dataset_length() = 0;
 
-            #ifdef WITH_MPI
-            // Probe for a sync buffer MPI message from a process
-            virtual bool probe_sync_mpi_message(uint,int*) = 0;
+            // #ifdef WITH_MPI
+            // // Probe for a sync buffer MPI message from a process
+            // virtual bool probe_sync_mpi_message(uint,int*) = 0;
 
-            // Probe for a RA buffer MPI message from a process
-            virtual bool probe_RA_mpi_message(uint) = 0;
+            // // Probe for a RA buffer MPI message from a process
+            // virtual bool probe_RA_mpi_message(uint) = 0;
 
-            // Retrieve sync buffer data from an MPI message from a known process rank
-            // Should only be triggered if a valid message is known to exist to be retrieved!
-            virtual void get_sync_mpi_message(uint,int) = 0;
+            // // Retrieve sync buffer data from an MPI message from a known process rank
+            // // Should only be triggered if a valid message is known to exist to be retrieved!
+            // virtual void get_sync_mpi_message(uint,int) = 0;
   
-            // Retrieve RA buffer data from an MPI message from a known process rank
-            // Should only be triggered if a valid message is known to exist to be retrieved!
-            virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>&) = 0;
+            // // Retrieve RA buffer data from an MPI message from a known process rank
+            // // Should only be triggered if a valid message is known to exist to be retrieved!
+            // virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>&) = 0;
  
-            // Update MPI tags with valid values
-            virtual void update_myTags(uint) = 0;
-            #endif
+            // // Update MPI tags with valid values
+            // virtual void update_myTags(uint) = 0;
+            // #endif
 
             // getter for donethispoint
             bool donepoint() {return donethispoint;}

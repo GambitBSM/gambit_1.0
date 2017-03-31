@@ -37,7 +37,7 @@ set(source_files src/ascii_table_reader.cpp
                  src/threadsafe_rng.cpp
                  src/util_functions.cpp
                  src/yaml_parser_base.cpp
-)                 
+)
 
 set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/boost_fallbacks.hpp
@@ -54,10 +54,11 @@ set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/signal_handling.hpp
                  include/gambit/Utils/signal_helpers.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp
+                 include/gambit/Utils/standalone_module.hpp
                  include/gambit/Utils/standalone_utils.hpp
                  include/gambit/Utils/static_members.hpp
                  include/gambit/Utils/statistics.hpp
-                 include/gambit/Utils/stream_overloads.hpp 
+                 include/gambit/Utils/stream_overloads.hpp
                  include/gambit/Utils/threadsafe_rng.hpp
                  include/gambit/Utils/table_formatter.hpp
                  include/gambit/Utils/type_index.hpp

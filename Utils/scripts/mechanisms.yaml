@@ -1,11 +1,11 @@
-drawing_order: [focus_point, chargino_coannihilation, stau_coannihilation, sbottom_coannihilation, stop_coannihilation, A0-H0_funnel, Z-h0_funnel]
+drawing_order: [chargino_coannihilation, A0-H0_funnel, sbottom_coannihilation, stop_coannihilation, stau_coannihilation, Z-h0_funnel]
 
-focus_point:
-  extra_1D_plots: "112 11 105"
-  datastream: "'#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::Mu mass1':11 'np.abs(safe_ratio($11,$105))':112"
-  cut: "112:{0.7,1.3}"
-  label: "11:'$\\mu$ (GeV)' 112:'$\\mu / m_{\\chi^0_1}$'"
-  colour: blue
+#focus_point:
+#  extra_1D_plots: "112 11 105"
+#  datastream: "'#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::Mu mass1':11 'np.abs(safe_ratio($11,$105))':112"
+#  cut: "112:{0.7,1.3}"
+#  label: "11:'$\\mu$ (GeV)' 112:'$\\mu / m_{\\chi^0_1}$'"
+#  colour: purple
 
 chargino_coannihilation:
   extra_1D_plots: "112 106 105"
@@ -20,7 +20,7 @@ stau_coannihilation:
   datastream: "'safe_ratio($110,$105)':112"
   cut: "112:{1.0,1.2}"
   label: "112:'$m_{\\\\tilde{\\\\tau}_1} / m_{\\chi^0_1}$'"
-  colour: purple
+  colour: blue
 
 sbottom_coannihilation:
   extra_1D_plots: "112 109 105"
@@ -42,6 +42,20 @@ A0-H0_funnel:
   cut: "114:{1.6,2.4}"
   label: "112:'$m_{A^0} / m_{\\chi^0_1}$' 113:'$m_{H^0} / m_{\\chi^0_1}$' 114:'$m_{\textrm{heavy boson}} / m_{\\chi^0_1}$'"
   colour: orange
+
+#A0-H0_funnel_higgsino:
+#  extra_1D_plots: "112 113 114 115 116 117 101 103 105"
+#  datastream: "'safe_ratio($101,$105)':112 'safe_ratio($103,$105)':113 'closest_to(2.0,$112,$113)':114 '#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::~chi0_(1,3) Pole_Mixing':115 '#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::~chi0_(1,4) Pole_Mixing':116 '$115*$115 + $116*$116':117"
+#  cut: "114:{1.6,2.4} 117:{0.5,1.0}"
+#  label: "112:'$m_{A^0} / m_{\\chi^0_1}$' 113:'$m_{H^0} / m_{\\chi^0_1}$' 114:'$m_{\textrm{heavy boson}} / m_{\\chi^0_1}$' 115:'$\\chi^0$ mixing matrix entry $W_{1,3}$' 116:'$\\chi^0$ mixing matrix entry $W_{1,4}$' 117:'Higgsino fraction $Z_h$'"
+#  colour: orange
+
+#A0-H0_funnel_gaugino:
+#  extra_1D_plots: "112 113 114 115 116 117 101 103 105"
+#  datastream: "'safe_ratio($101,$105)':112 'safe_ratio($103,$105)':113 'closest_to(2.0,$112,$113)':114 '#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::~chi0_(1,3) Pole_Mixing':115 '#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::~chi0_(1,4) Pole_Mixing':116 '$115*$115 + $116*$116':117"
+#  cut: "114:{1.6,2.4} 117:{0.0,0.5}"
+#  label: "112:'$m_{A^0} / m_{\\chi^0_1}$' 113:'$m_{H^0} / m_{\\chi^0_1}$' 114:'$m_{\textrm{heavy boson}} / m_{\\chi^0_1}$' 115:'$\\chi^0$ mixing matrix entry $W_{1,3}$' 116:'$\\chi^0$ mixing matrix entry $W_{1,4}$' 117:'Higgsino fraction $Z_h$'"
+#  colour: pink
 
 Z-h0_funnel:
   extra_1D_plots: "112 113 114 11 102 105"

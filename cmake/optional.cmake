@@ -129,10 +129,11 @@ endif()
 # Check for HDF5 libraries
 find_package(HDF5 QUIET COMPONENTS C)
 if(HDF5_FOUND)
-  include_directories(${HDF5_INCLUDE_DIR})
-  message("-- Found HDF5 libraries")
+  include_directories(${HDF5_INCLUDE_DIR})  # for older versions of cmake
+  include_directories(${HDF5_INCLUDE_DIRS}) # for newer cmake
+  message("-- Found HDF5 libraries: ${HDF5_LIBRARIES}")
   if (VERBOSE)
-   message(STATUS ${HDF5_LIBRARIES})
+    message(STATUS ${HDF5_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR})
   endif()
 else()
   message("${BoldRed}   No HDF5 C libraries found. Excluding hdf5printer from GAMBIT configuration.${ColourReset}")

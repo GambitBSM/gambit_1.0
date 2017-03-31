@@ -64,10 +64,10 @@ BE_FUNCTION(FHGetPara, void, (int&,int&,
             Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
             Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
 
-BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
+BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&,
         Farray<fh_complex, 1,3, 1,3>&), "fhhiggscorr_", "FHHiggsCorr")
 
-BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
+BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&,
             Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
 
 BE_FUNCTION(FHSelectUZ, void, (int&,int&,int&,int&), "fhselectuz_", "FHSelectUZ")
@@ -78,7 +78,6 @@ BE_FUNCTION(FHCouplings, void, (int&, Farray< fh_complex,1,681>&, Farray< fh_com
 BE_FUNCTION(FHHiggsProd, void, (int&, fh_real&, Farray< fh_real,1,52>&), "fhhiggsprod_", "FHHiggsProd")
 
 // Initialisation function (dependencies)
-BE_INI_DEPENDENCY(SMINPUTS, SMInputs)                   // Need SLHA2 SMINPUTS to initialize FH
 BE_INI_DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)   // Need MSSM spectrum inputs to initialize FH
 
 // Undefine macros to avoid conflict with other backends

@@ -7,9 +7,9 @@
 
 # ~~~~~ CASTXML options ~~~~~
 
-# See CastXML documentation for details on these options: 
+# See CastXML documentation for details on these options:
 #
-#   https://github.com/CastXML/CastXML/blob/master/doc/manual/castxml.1.rst 
+#   https://github.com/CastXML/CastXML/blob/master/doc/manual/castxml.1.rst
 #
 
 castxml_cc_id  = 'gnu'      # Reference compiler: 'gnu', 'gnu-c', 'msvc', 'msvc-c'
@@ -36,7 +36,7 @@ input_files = [
     '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src/gm2_error.hpp',
 ]
 include_paths = [
-    '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src', 
+    '../../../Backends/installed/gm2calc/'+gambit_backend_version+'/src',
     '../../../contrib/eigen3.2.8' # This should be learned from GAMBIT somehow to future-protect against version changes (and if user uses own library!)
 ]
 base_paths = ['../../../Backends/installed/gm2calc/'+gambit_backend_version]
@@ -90,10 +90,10 @@ extra_output_dir = 'BOSS_output'
 # Dictionary value: header file with containing type declaration.
 #
 # Example:
-#   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp", 
+#   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp",
 #                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
-known_classes = { 
+known_classes = {
     "Eigen::Matrix" : "<Eigen/Core>",
     "Eigen::Array" : "<Eigen/Core>",
 }
@@ -101,7 +101,7 @@ known_classes = {
 
 # ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
 
-# The listed pragma directives will be added before/after including the 
+# The listed pragma directives will be added before/after including the
 # the BOSS-generated headers in GAMBIT.
 
 pragmas_begin = [
