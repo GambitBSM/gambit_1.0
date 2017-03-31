@@ -43,7 +43,6 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logging.hpp"
-#include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/io/ios_state.hpp>
@@ -145,7 +144,6 @@ namespace Gambit
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
     /// Getter indicating if the timing data for this function's execution should be printed
-    /// (Note; might be good to activate this for ALL functors)
     bool functor::requiresTimingPrinting() const { if (this == NULL) failBigTime("requiresTimingPrinting"); return false; }
     /// Getter for the printer label
     str functor::label()       const { if (this == NULL) failBigTime("label"); return myLabel; }
@@ -193,6 +191,20 @@ namespace Gambit
     str functor::loopManagerCapability()
     {
       utils_error().raise(LOCAL_INFO,"The loopManagerCapability method has not been defined in this class.");
+      return "none";
+    }
+
+    /// Getter for revealing the name of the wrapped function's assigned loop manager
+    str functor::loopManagerName()
+    {
+      utils_error().raise(LOCAL_INFO,"The loopManagerName method has not been defined in this class.");
+      return "none";
+    }
+
+    /// Getter for revealing the module of the wrapped function's assigned loop manager
+    str functor::loopManagerOrigin()
+    {
+      utils_error().raise(LOCAL_INFO,"The loopManagerOrigin method has not been defined in this class.");
       return "none";
     }
 
@@ -319,23 +331,25 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
     }
 
-    /// Print function
-    void functor::print(Printers::BasePrinter*, const int, int)
-    {
-      str warn_msg = "This is the functor base class print function! This should not\n";
-      warn_msg += "be used; the print function should be redefined in daughter\n"
-                  "functor classes. If this is running there is a problem somewhere.\n"
-                  "Currently only functors derived from module_functor_common<!=void>\n"
-                  "are allowed to try to print themselves; i.e. backend and void\n"
-                  "functors may not do this (they inherit this default message).";
-      utils_warning().raise(LOCAL_INFO,warn_msg);
-    }
+    #ifndef NO_PRINTERS
+      /// Print function
+      void functor::print(Printers::BasePrinter*, const int, int)
+      {
+        str warn_msg = "This is the functor base class print function! This should not\n";
+        warn_msg += "be used; the print function should be redefined in daughter\n"
+                    "functor classes. If this is running there is a problem somewhere.\n"
+                    "Currently only functors derived from module_functor_common<!=void>\n"
+                    "are allowed to try to print themselves; i.e. backend and void\n"
+                    "functors may not do this (they inherit this default message).";
+        utils_warning().raise(LOCAL_INFO,warn_msg);
+      }
 
-    /// Printer function (no-thread-index short-circuit)
-    void functor::print(Printers::BasePrinter* printer, const int pointID)
-    {
-      print(printer,pointID,0);
-    }
+      /// Printer function (no-thread-index short-circuit)
+      void functor::print(Printers::BasePrinter* printer, const int pointID)
+      {
+        print(printer,pointID,0);
+      }
+    #endif
 
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
@@ -1619,9 +1633,10 @@ namespace Gambit
     }
 
     /// Blank print methods
-    void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
-    void module_functor<void>::print(Printers::BasePrinter*, const int) {}
-
+    #ifndef NO_PRINTERS
+      void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
+      void module_functor<void>::print(Printers::BasePrinter*, const int) {}
+    #endif
 
     /// @{ Model functor class method definitions
 

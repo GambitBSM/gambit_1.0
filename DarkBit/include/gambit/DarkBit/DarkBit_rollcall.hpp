@@ -22,7 +22,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun
-///  \date 2014 Mar [RD interface to DS is working]
+///  \date 2014 Mar
 ///
 ///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
@@ -195,14 +195,19 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Fraction of the relic density constituted by the DM candidate under investigation
   #define CAPABILITY RD_fraction
   START_CAPABILITY
-    #define FUNCTION RD_fraction_from_oh2
+    #define FUNCTION RD_fraction_one
+      START_FUNCTION(double)
+    #undef FUNCTION
+    #define FUNCTION RD_fraction_leq_one
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
     #undef FUNCTION
-    #define FUNCTION RD_fraction_fixed
+    #define FUNCTION RD_fraction_rescaled
       START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -233,10 +238,6 @@ START_MODULE
     #define FUNCTION cascadeMC_LoopManager
       START_FUNCTION(void, CAN_MANAGE_LOOPS)
       DEPENDENCY(GA_missingFinalStates, std::vector<std::string>)
-      // Make sure these capabilities are run before the loop
-      DEPENDENCY(cascadeMC_DecayTable, DarkBit::DecayChain::DecayTable)
-      DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
     #undef FUNCTION
   #undef CAPABILITY
 

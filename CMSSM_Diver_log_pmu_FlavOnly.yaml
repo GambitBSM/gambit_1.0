@@ -1,0 +1,228 @@
+Parameters:
+
+  #SM parameters.
+  #StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  
+
+  #SUSY parameters.
+  CMSSM:
+    M0:
+      range: [50, 1e4]
+      prior_type: log
+    M12:
+      range: [50, 1e4]
+      prior_type: log
+    A0:
+      range: [-1e4, 1e4]
+      flat_start: -1e2
+      flat_end: 1e2
+      prior_type: double_log_flat_join
+    TanBeta:
+      range: [3.0, 70.]
+    SignMu: 1
+
+  #Dark matter halo parameters.
+
+Priors:
+
+  # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
+Printer:
+
+  printer: hdf5
+
+  options:
+    output_file: "CMSSM_FlavOnly.hdf5"
+    group: "/CMSSM"
+
+Scanner:
+
+  use_scanner: de
+
+  scanners:
+    multinest:
+      plugin: MultiNest
+      like:  LogLike
+      nlive: 5000
+      tol: 0.1
+      updInt: 1
+
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 19200
+      convthresh: 1e-5
+      verbosity: 1
+      lambdajDE: false
+
+ObsLikes:
+
+    # Flavour physics likelihoods
+    - purpose:    LogLike
+      capability: b2ll_LL
+
+    - purpose:    LogLike
+      capability: SL_LL
+
+    - purpose:    LogLike
+      capability: b2sll_LL
+
+    - purpose:    LogLike
+      capability: b2sgamma_LL
+
+
+
+Rules:
+
+  # Globally permit maximal mixing between gauge and family eigenstates
+  - options:
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
+
+
+  # Choose to get the spectrum from SpecBit proper, not an SLHA file.
+  # Options set to match benchmark point specified in SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+  - capability: unimproved_MSSM_spectrum
+    function: get_CMSSM_spectrum
+    options:
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 2
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  # Choose where to get the precision spectrum from
+  - capability: MSSM_spectrum
+    type: Spectrum
+    function: make_MSSM_precision_spectrum_none
+
+  # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
+  - capability: Reference_SM_Higgs_decay_rates
+    function: Ref_SM_Higgs_decays_table
+  - capability: Reference_SM_other_Higgs_decay_rates
+    function: Ref_SM_other_Higgs_decays_table
+  - capability: Reference_SM_A0_decay_rates
+    function: Ref_SM_A0_decays_table
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
+  - capability: t_decay_rates
+    function: t_decays
+
+  # Choose where to get the Higgs couplings from
+  - capability: Higgs_Couplings
+    function: MSSM_higgs_couplings_pwid
+
+  # Experimental values to be used in nuclear parameter likelihoods (all values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      sigmas_central: 43.0
+      sigmas_error: 8.0
+      sigmal_central: 58.0
+      sigmal_error: 9.0
+
+  # Observed value and uncertainty of local dark matter density (in GeV/cm^3)
+  - capability: lnL_rho0
+    function: lnL_rho0_lognormal
+    options:
+      rho0_obs: 0.4
+      rho0_obserr: 0.15
+
+  # Choose which type of marginalised Poisson likelihood to use for LHC likelihoods
+  - capability: LHC_Combined_LogLike
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  # ATLAS detector simulation
+  - capability: SimpleSmearingSim
+    type: "ColliderBit::BuckFastSmearATLAS"
+    function: getBuckFastATLAS
+    options:
+      partonOnly: false
+      antiktR: 0.4
+
+  # CMS detector simulation
+  - capability: SimpleSmearingSim
+    type: "ColliderBit::BuckFastSmearCMS"
+    function: getBuckFastCMS
+    options:
+      partonOnly: false
+      antiktR: 0.5
+
+  # ATLAS analysis setup. Set option useATLAS: false to ignore these analyses.
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
+    options:
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           "ATLAS_3LEPEW_20invfb"]
+
+  # CMS analysis setup. Set option useCMS: false to ignore these analyses.
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+
+  # Choose Monte Carlo event simulator and number of events to run.
+  - capability:  ColliderOperator
+    function: operateLHCLoop
+    options:
+      nEvents: 20000
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
+
+  # Define Monte Carlo event simulator and associated options.
+  - capability:  HardScatteringSim
+    function:  getPythia
+    options:
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0",
+                             "TimeShower:pTmin = 20"]
+
+Logger:
+
+  redirection:
+    [Default] : "default.log"
+    [DecayBit] : "DecayBit.log"
+    [DarkBit] : "DarkBit.log"
+    [PrecisionBit] : "PrecisionBit.log"
+    [FlavBit] : "FlavBit.log"
+    [ColliderBit] : "ColliderBit.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -5e5
+    model_invalid_for_lnlike_below_alt: -1e5
+
+  default_output_path: "runs/CMSSM/"
+  
+  debug: true

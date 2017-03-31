@@ -60,7 +60,6 @@
 # RD_annrate_DSprep_func
 # RD_eff_annrate_SUSY
 # RD_eff_annrate_from_ProcessCatalog
-# RD_fraction_fixed
 # RD_fraction_from_oh2
 # RD_oh2_DarkSUSY
 # RD_oh2_MicrOmegas

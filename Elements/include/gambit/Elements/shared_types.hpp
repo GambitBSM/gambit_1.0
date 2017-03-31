@@ -63,9 +63,6 @@ namespace Gambit
   /// Just used for example purposes in ExampleBit_A and ExampleBit_B.
   typedef double(*fptr)(int&);
 
-  /// string-to-double map
-  typedef std::map<std::string,double> map_str_dbl;
-
   /// A double in, double out function pointer
   typedef double(*fptr_dd)(double&);
 }

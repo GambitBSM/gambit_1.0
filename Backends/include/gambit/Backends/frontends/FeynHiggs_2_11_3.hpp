@@ -21,25 +21,25 @@
 #define VERSION 2.11.3
 #define SAFE_VERSION 2_11_3
 
-/* The following macro loads the library using dlopen 
+/* The following macro loads the library using dlopen
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY
 
-/* Next we use macros BE_VARIABLE and BE_FUNCTION to load pointers 
+/* Next we use macros BE_VARIABLE and BE_FUNCTION to load pointers
  * (using dlsym) to the variables and functions within the library.
- *  
+ *
  * The macros also set up a minimal interface providing 'get/set'
- * functions for the library variables and function pointers 
+ * functions for the library variables and function pointers
  * for the library functions.
- *  
- * These functions are then wrapped in functors that the core can connect 
+ *
+ * These functions are then wrapped in functors that the core can connect
  * to the modules via the rollcall system */
- 
+
 /* Syntax for BE_FUNCTION:
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
- * 
- * The last argument (capability name) is optional. 
+ *
+ * The last argument (capability name) is optional.
  * If left out (as done below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability")  */
 
@@ -84,10 +84,10 @@ BE_FUNCTION(FHGetPara, void, (int&,int&,
             Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
             Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
 
-BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
+BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&,
         Farray<fh_complex, 1,3, 1,3>&), "fhhiggscorr_", "FHHiggsCorr")
 
-BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
+BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&,
             Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
 
 BE_FUNCTION(FHSelectUZ, void, (int&,int&,int&,int&), "fhselectuz_", "FHSelectUZ")
@@ -98,7 +98,6 @@ BE_FUNCTION(FHCouplings, void, (int&, Farray< fh_complex,1,681>&, Farray< fh_com
 BE_FUNCTION(FHHiggsProd, void, (int&, fh_real&, Farray< fh_real,1,52>&), "fhhiggsprod_", "FHHiggsProd")
 
 // Initialisation function (dependencies)
-BE_INI_DEPENDENCY(SMINPUTS, SMInputs)                   // Need SLHA2 SMINPUTS to initialize FH
 BE_INI_DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)   // Need MSSM spectrum inputs to initialize FH
 
 // Undefine macros to avoid conflict with other backends

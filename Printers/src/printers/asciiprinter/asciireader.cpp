@@ -10,7 +10,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2016 Jan
@@ -81,7 +81,7 @@ namespace Gambit {
         get_next_point();
         dataset_length++;
       }
-      // Note, there is an extra iteration here (one past the end), so the length is indeed the actual length (since we started counting at zero), not the index of the last entry. 
+      // Note, there is an extra iteration here (one past the end), so the length is indeed the actual length (since we started counting at zero), not the index of the last entry.
       reset();
     }
 
@@ -92,9 +92,9 @@ namespace Gambit {
     }
 
     // Get a linear index which corresponds to the current rank/ptID pair in the iterative sense
-    ulong asciiReader::get_current_index() 
+    ulong asciiReader::get_current_index()
     {
-      return current_row; 
+      return current_row;
     }
 
     /// Reset read head position to zero
@@ -128,7 +128,7 @@ namespace Gambit {
       // Point will get returned, but check eoi() before using it! If eoi() then we didn't actually get a new point, this should still just be the previous point.
       return get_current_point();
     }
- 
+
     /// Check for end of input (or otherwise unreadable state)
     bool asciiReader::asciiReader::eoi()
     {
@@ -138,7 +138,7 @@ namespace Gambit {
       return !dataFile;
     }
 
- 
+
 
     /// Open an 'info' file and figure out what column is what
     std::map<std::string,uint> asciiReader::get_column_info(const std::string& info_filename)
@@ -147,7 +147,7 @@ namespace Gambit {
 
       std::ifstream infoFile;
       infoFile.open(info_filename);
-      
+
       if ( infoFile.fail() )
       {
         std::ostringstream err;
@@ -180,7 +180,7 @@ namespace Gambit {
       return column_map;
     }
 
-    // Advance the read-head by one row 
+    // Advance the read-head by one row
     void asciiReader::next_row()
     {
        if(eoi())
@@ -189,12 +189,12 @@ namespace Gambit {
           err << "Error! asciiReader attempted to iterate past the end of the wrapped output file ("<<dataFile_name<<")! When iterating through output please check for the end-of-iteration via 'eoi()' before calling 'get_next_point()'.";
           printer_error().raise(LOCAL_INFO,err.str());
        }
-      
+
        // Get new line data
        std::getline(dataFile, current_line);
        if(!eoi())
        {
-         // Process line and find the MPIrank and pointID entries  
+         // Process line and find the MPIrank and pointID entries
          std::istringstream iss(current_line);
          unsigned int i=0;
          std::string garbage; // can't use double, some entries might be 'none'
@@ -302,176 +302,6 @@ namespace Gambit {
        }
        return out;
     }
-    /// @}
-
-    /// @{ Retrieval functions
-
-    /// Everything is a string in the output file, so use this as the 'master' retrieve function, and the others
-    /// just wrap it in various ways
-    bool asciiReader::_retrieve(std::string& out, const std::string& label, const uint rank, const ulong pointID)
-    {
-      // return value
-      bool is_valid = true;
-
-      /// Advance read-head position until the target point is found (or throw an error if it cannot be found)
-      /// Will be fastest if we are already at the right position or only have to go forward a small number of slots
-      /// Going backwards will involve traversing the whole file forwards and looping back around from the start!
-      advance_to_point(PPIDpair(pointID,rank));
-      
-      /// Check which column is supposed to correspond with 'label'
-      uint target_col;
-      std::map<std::string,uint>::const_iterator it = column_map.find(label);
-      if(it != column_map.end())
-      {
-        target_col = it->second;
-      }
-      else
-      {
-        std::ostringstream err;
-        err << "Error! asciiReader could not retrieve requested output entry '"<<label<<"'. This label does not match any column described in the loaded 'info' file '"<<infoFile_name<<"'.";
-        printer_error().raise(LOCAL_INFO,err.str());
-      }
-
-      /// Parse the line and extract the entry
-      std::istringstream iss(current_line);
-      unsigned int i=0;
-      std::string garbage;
-      while(i<target_col)
-      {
-        iss >> garbage;
-        if(!iss)
-        {
-           std::ostringstream err;
-           err << "Error! asciiReader failed to read line '"<<current_row+1<<"', column '"<<i+1<<"' from the wrapped output file '"<<dataFile_name<<"'! The file may be corrupt, or may contain fewer columns than expected (was planning to iterate up to column '"<<target_col<<"').";
-           printer_error().raise(LOCAL_INFO,err.str());     
-        }
-        i++;
-      }
-      iss >> out;
-      if(!iss)
-      {
-         std::ostringstream err;
-         err << "Error! asciiReader failed to read line '"<<current_row+1<<"', column '"<<i+1<<"' from the wrapped output file '"<<dataFile_name<<"'! The file may be corrupt, or may contain fewer columns than expected (was planning to iterate up to column '"<<target_col<<"').";
-         printer_error().raise(LOCAL_INFO,err.str());     
-      }
-      if(out=="none")
-      {
-         // Valid data was not recorded for this quantity at this pointID. 
-         is_valid = false;
-      }
-      /// done!
-      return is_valid;
-    }
-
-    bool asciiReader::_retrieve(double& out, const std::string& label, const uint rank, const ulong pointID)
-    {
-      /// Get requested quantity as a string, then convert it to a double
-      std::string temp_out;
-      bool is_valid;
-      is_valid = _retrieve(temp_out, label, rank, pointID);
-      if(is_valid)
-      {
-        std::istringstream iss(temp_out);
-        iss >> out;
-        if(!iss)
-        {
-           std::ostringstream err;
-           err << "Error! asciiReader retrieved an element of '"<<label<<"' from the data file '"<<dataFile_name<<"', which is not marked as 'invalid', but failed to convert it to type 'double'. The data file may be corrupted, or you may have tried to use an inappropriate 'retrieve' type for this data. Error occurred while reading from row '"<<current_row<<"'. Retrieved string value was '"<<temp_out<<"'.";
-           printer_error().raise(LOCAL_INFO,err.str());     
-        }
-      }
-      else
-      {
-        out = 0; // but also marked invalid, so default number is unimportant.
-      }
-      /// done!
-      return is_valid;
-    }
-
-    /// This one is fancy, gets ALL the ModelParameters matching a certain model name
-    /// So say the labels for two parameters are:
-    ///
-    ///#NormalDist_parameters @NormalDist::primary_parameters::mu
-    ///#NormalDist_parameters @NormalDist::primary_parameters::sigma
-    ///
-    /// Then to get a ModelParameters object containing "mu" and "sigma" you should enter
-    /// 'NormalDist' as the label.
-    ///
-    ///Note:
-    ///label=("#"+func_capability+" @"+origin_name+"::"+func_name)
-    ///
-    bool asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
-    {
-      bool is_valid = true;
-      //std::cout<<"Attempting to retrieve ModelParameters for model '"<<modelname<<"'"<<std::endl;
-      /// Work out all the output labels which correspond to the input modelname
-      bool found_at_least_one(false);
-      for(std::map<std::string,uint>::const_iterator 
-          it = column_map.begin();
-          it!= column_map.end(); ++it)
-      {
-        std::string param_name; // *output* of parsing function, parameter name
-        std::string label_root; // *output* of parsing function, label minus parameter name
-        if(parse_label_for_ModelParameters(it->first, modelname, param_name, label_root))
-        {
-          // Add the found parameter name to the ModelParameters object
-          out._definePar(param_name);
-          if(found_at_least_one)
-          {
-            if(out.getOutputName()!=label_root)
-            {
-               std::ostringstream err;
-               err << "Error! ASCIIReader could not retrieve ModelParameters matching the model name '"<<modelname<<"' in the ascii file '"<<dataFile_name<<"' (while calling 'retrieve'). Candidate parameters WERE found, however their dataset labels indicate the presence of an inconsistency or ambiguity in the output. For example, we just tried to retrive a model parameter from the dataset:\n\
-  "<<*it<<"\n\
-and successfully found the parameter "<<param_name<<", however the root of the label, that is,\n\
-  "<<label_root<<"\n\
-does not match the root expected based upon previous parameter retrievals for this model, which was\n\
-  "<<out.getOutputName()<<"\n\
-This may indicate that multiple sets of model parameters are present in the output file for the same model! This is not allowed, please report this bug against whatever master YAML file (or external code?) produced the output file you are trying to read.";
-              printer_error().raise(LOCAL_INFO,err.str());     
-            }
-          }
-          else
-          {
-            out.setOutputName(label_root);
-          }
-
-          // Get the corresponding value out of the data file
-          double value; // *output* of retrieve function
-          bool tmp_is_valid;
-          tmp_is_valid = _retrieve(value, it->first, rank, pointID);
-          found_at_least_one = true;
-          if(tmp_is_valid)
-          {
-             out.setValue(param_name, value);
-             //std::cout<<"Extracted parameter "<<param_name<<", value="<<value<<std::endl;
-          }
-          else
-          {
-             // If one parameter value is 'invalid' then we cannot reconstruct 
-             // the ModelParameters object, so we mark the whole thing invalid.
-             out.setValue(param_name, 0);
-             is_valid = false;           
-          }
-        }
-      }
-
-      if(not found_at_least_one)
-      {
-        // Didn't find any matches!
-         std::ostringstream err;
-         err << "Error! asciiReader failed to find any ModelParameters matching the model name '"<<modelname<<"' in the info file '"<<infoFile_name<<"' (while calling 'retrieve'). Please check that model name and info file name are correct."; 
-         printer_error().raise(LOCAL_INFO,err.str());     
-      }
-      /// done!
-      return is_valid;
-    }
-
-    bool asciiReader::_retrieve(std::vector<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
-    bool asciiReader::_retrieve(map_str_dbl& /*out*/,        const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
-
     /// @}
 
   }

@@ -2,7 +2,7 @@
 //  *********************************************
 //
 //  MSSM63 model declaration
-//   
+//
 //
 //  *********************************************
 //
@@ -24,13 +24,14 @@
 #include "gambit/Models/models/MSSM63atQ.hpp" // Must include models which are targets of translation functions
 
 // Forward declaration of needed types
-namespace Gambit {
+namespace Gambit
+{
    class Spectrum;
 }
 
 // General GUT boundary condition parameterisation of the MSSM
 // There are several of these, compatible with different spectrum generators
-// To use a constrained GUT model like the CMSSM, there needs to be an 
+// To use a constrained GUT model like the CMSSM, there needs to be an
 // "interpret_as_X" function which translates the CMSSM parameters into
 // the appropriate general GUT parameterisation for the spectrum generator
 // being used.
@@ -43,12 +44,12 @@ namespace Gambit {
   /// Can translate this model into MSSM63atQ (where Q will then be set to MGUT)
   INTERPRET_AS_PARENT_FUNCTION(MSSM63atMGUT_to_MSSM63atQ)
   /// Depends on an MSSM spectrum, since RGEs must run in order to determine MGUT
-  INTERPRET_AS_PARENT_DEPENDENCY(unimproved_MSSM_spectrum, /*TAG*/ Spectrum)
+  INTERPRET_AS_PARENT_DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
 
   DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
- 
-  /// Mass matrices are symmetric (Hermitian, and we are restricted to real entries at the moment) 
+
+  /// Mass matrices are symmetric (Hermitian, and we are restricted to real entries at the moment)
   /// so only one 'triangle' needed.
   DEFINEPARS(mq2_11, mq2_12, mq2_13,
                      mq2_22, mq2_23,
@@ -73,7 +74,7 @@ namespace Gambit {
   DEFINEPARS(Ae_11, Ae_12, Ae_13,
              Ae_21, Ae_22, Ae_23,
              Ae_31, Ae_32, Ae_33)
-  
+
   DEFINEPARS(Ad_11, Ad_12, Ad_13,
              Ad_21, Ad_22, Ad_23,
              Ad_31, Ad_32, Ad_33)

@@ -51,8 +51,8 @@ def isLoadable(class_el, print_warning=False, check_pure_virtual_members=True):
     if not 'name' in class_el.keys():
         is_loadable = False
         return is_loadable
-    
-    class_name = classutils.getClassNameDict(class_el) 
+
+    class_name = classutils.getClassNameDict(class_el)
 
 
     # - Check if class should be ditched. If yes, return right away.
@@ -117,7 +117,7 @@ def isFundamental(el):
 def isKnownClass(el, class_name=None):
 
     import modules.classutils as classutils
-    
+
     is_known = False
 
     type_dict = findType(el)
@@ -130,7 +130,7 @@ def isKnownClass(el, class_name=None):
 
     # Get class_name dict if it is not passed in as an argument
     if class_name is None:
-        class_name = classutils.getClassNameDict(type_el) 
+        class_name = classutils.getClassNameDict(type_el)
 
     # Check if standard library class
     if isStdType(el, class_name=class_name):
@@ -211,8 +211,8 @@ def isNative(el):
     # Makes use of global variables:  base_paths
 
     is_native = False
-    can_check_tags = ['Class', 'Constructor', 'Converter', 'Destructor', 'Enumeration', 
-                      'Field', 'File', 'Function', 'Method', 'OperatorFunction', 
+    can_check_tags = ['Class', 'Constructor', 'Converter', 'Destructor', 'Enumeration',
+                      'Field', 'File', 'Function', 'Method', 'OperatorFunction',
                       'OperatorMethod', 'Struct', 'Typedef', 'Union', 'Variable']
 
     cannot_check_tags = ['Unimplemented']
@@ -268,7 +268,7 @@ def isStdType(el, class_name=None):
             namespaces_list = getNamespaces(el, include_self=True)
             if namespaces_list[0] == 'std':
                 is_std = True
-    
+
     else:
         is_std = False
 
@@ -418,10 +418,10 @@ def unpackAllSpecTemplateTypes(input_bracket, result_list):
     spec_types = getSpecTemplateTypes(input_bracket, byname=True)
 
     for type_name in spec_types:
-        
+
         if '<' in type_name:
             result_list.append(type_name)
-            unpackAllSpecTemplateTypes(type_name, result_list=result_list)            
+            unpackAllSpecTemplateTypes(type_name, result_list=result_list)
         else:
             result_list.append(type_name)
 
@@ -492,7 +492,7 @@ def getBasicTypeName(type_name):
 
         # Remove asterix and/or ampersand
         basic_type_name = basic_type_name.replace('*', '').replace('&', '')
-        
+
         # Remove 'const' and 'volatile'
         basic_type_name_list = basic_type_name.split()
         basic_type_name_list = [item for item in basic_type_name_list if item != 'const']
@@ -620,7 +620,7 @@ def findType(el_input):
     array_limits = []
 
     el = el_input
-    
+
     if el.tag in ['FundamentalType', 'Class', 'Struct', 'Enumeration']:
         type_id = el.get('id')
 
@@ -721,11 +721,11 @@ def findNewLinePos(content, line_number):
 
 def getBracketPositions(content, delims=['{','}']):
 
-    # Input:  
+    # Input:
     # - Content string
     # - List of left and right delimiters
     #
-    # Output: 
+    # Output:
     # - List of bracket positions: [l_pos, r_pos]
     #
 
@@ -753,7 +753,7 @@ def getBracketPositions(content, delims=['{','}']):
 
         if start_count and c == r_delim:
             bracket_count -= 1
-            r_pos = i 
+            r_pos = i
 
         if start_count and bracket_count == 0:
             balance = True
@@ -782,7 +782,7 @@ def addIndentation(content, indent):
 
         new_content = '\n'.join( [' '*indent + line for line in lines] )
 
-        # If the last char in content was a newline, 
+        # If the last char in content was a newline,
         # remove the indentation that was added after that newline
         if lines[-1] == '':
             new_content = new_content[:-indent]
@@ -838,7 +838,7 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
 # ====== removeTemplateBracket ========
 
 def removeTemplateBracket(type_name, return_bracket=False):
-    
+
     if ('<' in type_name) and ('>' in type_name):
 
         r_pos = type_name.rfind('>')
@@ -863,7 +863,7 @@ def removeTemplateBracket(type_name, return_bracket=False):
             raise Exception("Unbalanced template brackets in type name '%s'" % type_name)
 
         l_pos = pos
-       
+
         type_name_notempl = type_name[:l_pos] + type_name[r_pos+1:]
         template_bracket  = type_name[l_pos:r_pos+1]
 
@@ -884,7 +884,7 @@ def removeTemplateBracket(type_name, return_bracket=False):
 # ====== removeNamespace ========
 
 def removeNamespace(type_name, return_namespace=False):
-    
+
     type_name_notempl = removeTemplateBracket(type_name)
 
     if '::' in type_name_notempl:
@@ -908,7 +908,7 @@ def removeNamespace(type_name, return_namespace=False):
 def removeArgumentBracket(func_signature, return_args_bracket=False):
 
     args_bracket_start = func_signature.rfind('(')
-    
+
     func_signature_noargs = func_signature[:args_bracket_start]
     args_bracket          = func_signature[args_bracket_start:]
 
@@ -1042,7 +1042,7 @@ def constrAbsForwardDeclHeader(file_output_path):
 
     # If this is the first time this function is executed, read initial code from header_templates/ folder
     if file_output_path not in gb.new_code.keys():
-        f = open('header_templates/standard_header_template.hpp')
+        f = open(gb.boss_dir+'/header_templates/standard_header_template.hpp')
         initial_code = f.read()
         f.close()
         initial_code_tuple = (0, initial_code)
@@ -1076,7 +1076,7 @@ def constrAbsForwardDeclHeader(file_output_path):
         # Add forward decls
         n_indents   = len(namespaces)
         full_indent = ' '*n_indents*cfg.indent
-        
+
         if '<' in abstr_class_name['long_templ']:
             is_template = True
         else:
@@ -1091,19 +1091,19 @@ def constrAbsForwardDeclHeader(file_output_path):
             insert_code += full_indent + 'class ' + abstr_class_name['short_templ'] + ';\n'
         else:
             insert_code += full_indent + 'class ' + abstr_class_name['short_templ'] + ';\n'
-    
+
     # Close current namespace
     insert_code += constrNamespace(current_namespaces, 'close', indent=cfg.indent)
     insert_code += '\n'
 
     new_code = current_code[:tag_pos] + insert_code + current_code[tag_pos:]
-    
-    
+
+
     # Replace other code tags
     new_code = replaceCodeTags(new_code)
 
     new_code_tuple = (0,new_code)
-    
+
     # Overwrite existing code tuple
     gb.new_code[file_output_path]['code_tuples'] = [(new_code_tuple)]
 
@@ -1119,7 +1119,7 @@ def constrWrpForwardDeclHeader(file_output_path):
 
     # If this is the first time this function is executed, read initial code from header_templates/ folder
     if file_output_path not in gb.new_code.keys():
-        f = open('header_templates/standard_header_template.hpp')
+        f = open(gb.boss_dir+'/header_templates/standard_header_template.hpp')
         initial_code = f.read()
         f.close()
         initial_code_tuple = (0, initial_code)
@@ -1140,7 +1140,7 @@ def constrWrpForwardDeclHeader(file_output_path):
             namespace_list = namespace.split('::')
 
         n_indents = len(namespace_list)
-        
+
 
         # - Open namespace
         insert_code += constrNamespace(namespace_list, 'open')
@@ -1153,14 +1153,14 @@ def constrWrpForwardDeclHeader(file_output_path):
 
 
     new_code = current_code[:tag_pos] + insert_code + current_code[tag_pos:]
-    
+
 
     # Replace other code tags
     new_code = replaceCodeTags(new_code)
 
 
     new_code_tuple = (0,new_code)
-    
+
     # Overwrite existing code tuple
     gb.new_code[file_output_path]['code_tuples'] = [(new_code_tuple)]
 
@@ -1189,7 +1189,7 @@ def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=Fa
         else:
             base_access    = sub_el.get('access')
             base_virtual   = bool( int( sub_el.get('virtual') ) )
-            
+
             base_name_dict       = classutils.getClassNameDict(base_el)
             abstr_base_name_dict = classutils.getClassNameDict(base_el, abstract=True)
 
@@ -1305,7 +1305,7 @@ def getAllTypesInClass(class_el, include_parents=False):
             for arg_dict in args_list:
 
                 arg_type_el   = gb.id_dict[arg_dict['id']]
-                arg_type_name = classutils.getClassNameDict(arg_type_el)                
+                arg_type_name = classutils.getClassNameDict(arg_type_el)
 
                 arg_type_dict = OrderedDict([])
                 arg_type_dict['class_name'] = arg_type_name
@@ -1316,8 +1316,8 @@ def getAllTypesInClass(class_el, include_parents=False):
         if ('type' in mem_el.keys()) or ('returns' in mem_el.keys()):
 
             mem_type_dict = findType(mem_el)
-            type_el = mem_type_dict['el'] 
-            
+            type_el = mem_type_dict['el']
+
             type_name = classutils.getClassNameDict(type_el)
 
             type_dict = OrderedDict([])
@@ -1384,7 +1384,7 @@ def getMemberFunctions(class_el, include_artificial=False, include_inherited=Fal
     all_members   = []
     all_functions = []
 
-    # If include_inherited=True, append all (native) parent classes 
+    # If include_inherited=True, append all (native) parent classes
     # the list 'all_classes'
     if include_inherited:
         parent_classes = getAllParentClasses(class_el, only_loaded_classes=True)
@@ -1433,7 +1433,7 @@ def getAllTypesInFunction(func_el):
         for arg_dict in args_list:
 
             arg_type_el   = gb.id_dict[arg_dict['id']]
-            arg_type_name = classutils.getClassNameDict(arg_type_el)                
+            arg_type_name = classutils.getClassNameDict(arg_type_el)
 
             arg_type_dict = OrderedDict([])
             arg_type_dict['class_name'] = arg_type_name
@@ -1444,7 +1444,7 @@ def getAllTypesInFunction(func_el):
     if ('type' in func_el.keys()) or ('returns' in func_el.keys()) or (func_el.tag=='Constructor' and 'context' in func_el.keys()):
 
         mem_type_dict = findType(func_el)
-        type_el = mem_type_dict['el'] 
+        type_el = mem_type_dict['el']
 
         type_name = classutils.getClassNameDict(type_el)
 
@@ -1548,10 +1548,10 @@ def addIncludeGuard(code, file_name, prefix='', suffix='', uppercase=False):
 
     guard_code_top    = '#ifndef ' + guard_var + '\n' + '#define ' + guard_var + '\n'
     guard_code_bottom = '#endif /* ' + guard_var + ' */\n'
-    
+
     new_code = guard_code_top + '\n' + code + '\n' + guard_code_bottom
 
-    return new_code 
+    return new_code
 
 # ====== END: addIncludeGuard ========
 
@@ -1560,7 +1560,7 @@ def addIncludeGuard(code, file_name, prefix='', suffix='', uppercase=False):
 # ====== identifyIncludedHeaders ========
 
 def identifyIncludedHeaders(content, only_native=True):
-    
+
     return_dict = OrderedDict()
 
     # Remove comments
@@ -1574,7 +1574,7 @@ def identifyIncludedHeaders(content, only_native=True):
         line = line.strip()
 
         if line[0:8] == '#include':
-            
+
             header_file_name = line.split()[1]
 
             # Skip standard headers (of the form: #include <FILENAME>)
@@ -1620,7 +1620,7 @@ def isHeader(file_el):
 
     file_name = file_el.get('name')
     extension = os.path.splitext(file_name)[1]
-    
+
     if extension != '':
         if extension.lower() in ['.hpp', '.h', '.hh', '.hxx', cfg.header_extension.lower()]:
             is_header = True
@@ -1723,10 +1723,10 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
             elif isLoadedClass(type_el):
 
                 # For each loaded class used in this class/function, check whether the corresponding class definition can be
-                # found in the current file (above current class/function) or among the included headers. If no such class 
+                # found in the current file (above current class/function) or among the included headers. If no such class
                 # definition is found, it must be a case of simply using forward declaration.
 
-                # TODO: Why isn't it enough just to check for the 'incomplete' key in the type_el? 
+                # TODO: Why isn't it enough just to check for the 'incomplete' key in the type_el?
                 #       Need to check this again...
 
                 type_file_id = type_el.get('file')
@@ -1942,7 +1942,7 @@ def replaceCodeTags(input, file_input=False, write_file=False):
     new_content = new_content.replace('__BACKEND_VERSION__'      ,  cfg.gambit_backend_version)
     new_content = new_content.replace('__BACKEND_SAFE_VERSION__' ,  gb.gambit_backend_safeversion)
     new_content = new_content.replace('__CODE_SUFFIX__'          ,  gb.code_suffix)
-    
+
     new_content = new_content.replace('__PATH_TO_FRWD_DECLS_ABS_CLASSES_HEADER__', os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_abs_fname + cfg.header_extension))
     new_content = new_content.replace('__PATH_TO_IDENTIFICATION_HEADER__'        , os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp'))
     new_content = new_content.replace('__PATH_TO_BACKEND_UNDEFS_HEADER__'        , os.path.join(gb.gambit_backend_incl_dir, "backend_undefs.hpp"))
@@ -1981,7 +1981,7 @@ def removeCodeTags(content, remove_tags_list):
 
 def constrLoadedTypesHeaderContent():
 
-    # 
+    #
     # Construct the code lines for the loaded classes, containg all the factory symbols and argument brackets for that class
     #
     class_lines = []
@@ -2024,7 +2024,7 @@ def constrLoadedTypesHeaderContent():
 
 
     #
-    # Construct include guards with additional  ' 1' appended to the line starting with #define 
+    # Construct include guards with additional  ' 1' appended to the line starting with #define
     #
     incl_guard = addIncludeGuard('', 'loaded_types.hpp', prefix='', suffix=gb.gambit_backend_name_full)
     incl_guard_lines = incl_guard.split('\n')
@@ -2078,7 +2078,7 @@ def constrLoadedTypesHeaderContent():
     code += incl_guard_end
 
     return code
-    
+
 # ====== END: constrLoadedTypesHeaderContent ======
 
 
@@ -2091,7 +2091,7 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 
     # If this is the first time this function is executed, read initial code from header_templates/ folder
     if file_output_path not in gb.new_code.keys():
-        f = open('header_templates/standard_header_template.hpp')
+        f = open(gb.boss_dir+'/header_templates/standard_header_template.hpp')
         initial_code = f.read()
         f.close()
         initial_code_tuple = (0, initial_code)
@@ -2119,7 +2119,7 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 
         # Get namespace list
         namespace_list = getNamespaces(enum_el)
-        
+
         n_indents = len(namespace_list)
 
         # - Open namespace
@@ -2131,7 +2131,7 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
         insert_code += constrNamespace(namespace_list, 'close')
 
     new_code = current_code[:tag_pos] + insert_code + current_code[tag_pos:]
-   
+
 
     # Replace other code tags
     new_code = replaceCodeTags(new_code)
@@ -2154,9 +2154,9 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
 
     # Choose castxml executable according to platform (linux or darwin)
     if sys.platform == 'darwin':
-        castxml_path = 'castxml/darwin/bin/castxml'
+        castxml_path = gb.boss_dir+'/castxml/darwin/bin/castxml'
     else:
-        castxml_path = 'castxml/linux/bin/castxml'
+        castxml_path = gb.boss_dir+'/castxml/linux/bin/castxml'
 
     # Avoid including intel headers when in "gnu mode" by
     # temporarily unsetting some environment variables
@@ -2186,7 +2186,7 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
 
     # - Add standard include paths
     for std_incl_path in gb.std_include_paths:
-        castxml_cmd += ' -I' + std_incl_path        
+        castxml_cmd += ' -I' + std_incl_path
 
     # - Add the input file path (full path)
     castxml_cmd += ' ' + input_file_path
@@ -2231,7 +2231,7 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     # Print error report
     elif did_fail:
         raise Exception('castxml failed')
-    
+
     else:
         print '  ' + modifyText('Command finished successfully.','green')
     print
@@ -2248,17 +2248,17 @@ def pathSplitAll(path):
 
     current_path = path
     while True:
-        
+
         parts = os.path.split(current_path)
-        
+
         if parts[0] == current_path:  # Stopping criterion for absolute paths
             all_parts.insert(0, parts[0])
             break
-        
+
         elif parts[1] == current_path: # Stopping criterion for relative paths
             all_parts.insert(0, parts[1])
             break
-        
+
         else:
             current_path = parts[0]
             all_parts.insert(0, parts[1])
@@ -2307,7 +2307,7 @@ def fillAcceptedTypesList():
         #
 
         for full_name, el in gb.name_dict.items():
-            
+
 
             # Only consider types
             if el.tag not in ['Class', 'Struct', 'FundamentalType', 'Enumeration']:
@@ -2315,7 +2315,7 @@ def fillAcceptedTypesList():
 
             type_counter += 1
             if type_counter%500 == 0:
-                print '  - %i types classified...' % (type_counter)    
+                print '  - %i types classified...' % (type_counter)
 
 
             # To save a bit of time, construct class name dict once and pass to remaining checks
@@ -2382,7 +2382,7 @@ def fillAcceptedTypesList():
 
 
     # Print final number of types classified
-    print '  - %i types classified.' % (type_counter)    
+    print '  - %i types classified.' % (type_counter)
 
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
@@ -2432,7 +2432,7 @@ def isProblematicType(el):
 
                     # If this is a native type, the input type is problematic for BOSS
                     if isNative(type_el):
-                        
+
                         is_problematic = True
                         return is_problematic
 
@@ -2522,7 +2522,7 @@ def fillParentsOfLoadedClassesList():
                             gb.parents_of_loaded_classes.append(class_name['long_templ'])
 
                         # Print info
-                        msg = '  - %s is parent of %s.' % (class_name['long_templ'], full_name) 
+                        msg = '  - %s is parent of %s.' % (class_name['long_templ'], full_name)
                         if msg not in messages:
                             print msg
                             messages.append(msg)
@@ -2535,7 +2535,7 @@ def fillParentsOfLoadedClassesList():
 # ====== xmlFilesToDicts ========
 
     #
-    # Read all xml elements of all files and store in two dict of dicts: 
+    # Read all xml elements of all files and store in two dict of dicts:
     #
     # 1. all_id_dict:    file name --> xml id --> xml element
     # 2. all_name_dict:  file name --> name   --> xml element
@@ -2666,15 +2666,15 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
                 # If underlying type is a fundamental or standard type, accept it right away
                 if isFundamental(type_el) or isStdType(type_el):
                     gb.typedef_dict[typedef_name] = el
-                
+
                 # If underlying type is a class/struct, check if it's acceptable
                 elif type_el.tag in ['Class', 'Struct']:
-                    
+
                     type_name = classutils.getClassNameDict(type_el)
 
                     if type_name['long_templ'] in cfg.load_classes:
                         gb.typedef_dict[typedef_name] = el
-                
+
                 # If neither fundamental or class/struct, ignore it.
                 else:
                     pass
@@ -2707,7 +2707,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
             class_name_long  = class_name['long']
 
             if class_name_long not in gb.new_header_files.keys():
-              
+
                 abstract_header_name     = gb.abstr_header_prefix + class_name_short + cfg.header_extension
                 wrapper_header_name      = gb.wrapper_header_prefix + class_name_short + cfg.header_extension
                 wrapper_decl_header_name = gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
@@ -2717,13 +2717,13 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
                 wrapper_header_fullpath      = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + cfg.header_extension )
                 wrapper_decl_header_fullpath = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
                 wrapper_def_header_fullpath  = os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
-                
-                gb.new_header_files[class_name_long] = {    'abstract': abstract_header_name, 
-                                                            'wrapper': wrapper_header_name, 
+
+                gb.new_header_files[class_name_long] = {    'abstract': abstract_header_name,
+                                                            'wrapper': wrapper_header_name,
                                                             'wrapper_decl': wrapper_decl_header_name,
                                                             'wrapper_def': wrapper_def_header_name,
-                                                            'abstract_fullpath': abstract_header_fullpath, 
-                                                            'wrapper_fullpath': wrapper_header_fullpath, 
+                                                            'abstract_fullpath': abstract_header_fullpath,
+                                                            'wrapper_fullpath': wrapper_header_fullpath,
                                                             'wrapper_decl_fullpath': wrapper_decl_header_fullpath,
                                                             'wrapper_def_fullpath': wrapper_def_header_fullpath    }
 
@@ -2741,7 +2741,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
 
 def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
 
-    # Shell command: Pipe an include statement to the compiler and use 
+    # Shell command: Pipe an include statement to the compiler and use
     # verbose mode to print the header search paths.
     command = 'echo "#include <iostream>" | ' + cfg.castxml_cc + ' -v -x c++ -c -'
 
@@ -2754,7 +2754,7 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
     if timed_out:
         print '  ' + modifyText('ERROR: Shell command timed out.','red')
         did_fail = True
-    elif proc.returncode != 0:        
+    elif proc.returncode != 0:
         print '  ' + modifyText('ERROR: Shell command failed.','red')
         did_fail = True
 
@@ -2767,7 +2767,7 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
         print modifyText('END SHELL COMMAND OUTPUT','red')
         print
         raise Exception('Shell command failed')
-    
+
     else:
         print '  ' + modifyText('Command finished successfully.','green')
     print
@@ -2795,14 +2795,14 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
 
             if len_after_filter < len_before_filter:
                 print '  (Filtered out Intel paths to avoid conflicts with gcc headers.)'
-                print 
+                print
 
         print '  Identified %i standard include paths:' % len(std_include_paths)
         for path in std_include_paths:
             print '  - ' + path
         print
 
-    # Set global list 
+    # Set global list
     gb.std_include_paths = std_include_paths
 
 # ====== END: identifyStdIncludePaths ========
@@ -2822,20 +2822,20 @@ def isInList(search_entry, search_list, return_index=True, ignore_whitespace=Tru
         else:
             return True
     except ValueError:
-        pass    
+        pass
 
     # Search for entry after removing all whitespace
     if ignore_whitespace:
         search_entry_no_ws = "".join(search_entry.split())
         search_list_no_ws = ["".join(e.split()) for e in search_list]
-        try: 
+        try:
             i = search_list_no_ws.index(search_entry_no_ws)
             if return_index:
                 return True, i
             else:
                 return True
         except ValueError:
-            pass    
+            pass
 
     # Entry not found
     if return_index:

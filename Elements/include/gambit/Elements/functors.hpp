@@ -185,6 +185,10 @@ namespace Gambit
 
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
+      /// Getter for revealing the name of the wrapped function's assigned loop manager
+      virtual str loopManagerName();
+      /// Getter for revealing the module of the wrapped function's assigned loop manager
+      virtual str loopManagerOrigin();
 
       /// Tell the functor that the loop it manages should break now.
       virtual void breakLoop();
@@ -234,11 +238,13 @@ namespace Gambit
       /// Indicate to the functor which backends are actually loaded and working
       virtual void notifyOfBackends(std::map<str, std::set<str> >);
 
-      /// Printer function
-      virtual void print(Printers::BasePrinter* printer, const int pointID, int thread_num);
+      #ifndef NO_PRINTERS
+        /// Printer function
+        virtual void print(Printers::BasePrinter* printer, const int pointID, int thread_num);
 
-      /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer, const int pointID);
+        /// Printer function (no-thread-index short-circuit)
+        virtual void print(Printers::BasePrinter* printer, const int pointID);
+      #endif
 
       /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
       virtual invalid_point_exception* retrieve_invalid_point_exception();
@@ -710,11 +716,13 @@ namespace Gambit
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr();
 
-      /// Printer function
-      virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
+      #ifndef NO_PRINTERS
+        /// Printer function
+        virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
 
-      /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer, const int pointID);
+        /// Printer function (no-thread-index short-circuit)
+        virtual void print(Printers::BasePrinter* printer, const int pointID);
+      #endif
 
 
     protected:
@@ -747,11 +755,13 @@ namespace Gambit
       /// Calculate method
       void calculate();
 
-      /// Blank print method
-      virtual void print(Printers::BasePrinter*, const int, int);
+      #ifndef NO_PRINTERS
+        /// Blank print method
+        virtual void print(Printers::BasePrinter*, const int, int);
 
-      /// Blank print method
-      virtual void print(Printers::BasePrinter*, const int);
+        /// Blank print method
+        virtual void print(Printers::BasePrinter*, const int);
+      #endif
 
     protected:
 

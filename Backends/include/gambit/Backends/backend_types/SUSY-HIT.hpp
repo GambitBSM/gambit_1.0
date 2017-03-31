@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///  
+///
 /// \author Peter Athron
 /// \author Csaba Balazs
 /// \author Anders Kvellestad
@@ -17,10 +17,10 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/util_types.hpp"
-
 #ifndef __SUSYHIT_types_hpp__
 #define __SUSYHIT_types_hpp__
+
+#include "gambit/Utils/util_types.hpp"
 
 namespace Gambit
 {
@@ -633,7 +633,7 @@ namespace Gambit
     {
         Fdouble toptot2;
     };
-    
+
     struct flavviolation_type
     {
         Farray< Fdouble,1,3,1,3 > vckm;

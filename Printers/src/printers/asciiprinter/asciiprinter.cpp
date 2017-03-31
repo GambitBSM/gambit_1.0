@@ -2,12 +2,12 @@
 //   *********************************************
 ///  \file
 ///
-///  Ascii printer class member function definitions
+///  ASCII printer class member function definitions
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 Jul, Sep, 2014 Jan
@@ -41,9 +41,9 @@
 
 //#define AP_DEBUG_MODE
 
-#ifdef AP_DEBUG_MODE 
+#ifdef AP_DEBUG_MODE
   #define AP_DBUG(x) x
-#else 
+#else
   #define AP_DBUG(x)
 #endif
 
@@ -52,7 +52,7 @@
 namespace Gambit
 {
 
-  namespace Printers 
+  namespace Printers
   {
 
     /// Open file stream with error checking
@@ -67,7 +67,7 @@ namespace Gambit
       {
          std::ostringstream ss;
          ss << "IO error while opening file for writing! Tried to open ofstream to file \""<<filename<<"\", but encountered error bit in the created ostream.";
-         throw std::runtime_error( ss.str() ); 
+         throw std::runtime_error( ss.str() );
       }
     }
 
@@ -78,7 +78,7 @@ namespace Gambit
        data.clear();
        readyToPrint = false;
     }
- 
+
     // Printer to ascii file (i.e. table of doubles)
 
     // Common constructor tasks
@@ -103,7 +103,7 @@ namespace Gambit
       }
       else
       {
-         printer_name = "Primary";     
+         printer_name = "Primary";
 
          std::ostringstream f;
          if(options.hasKey("output_path"))
@@ -143,7 +143,7 @@ namespace Gambit
       std::ofstream output;
       open_output_file(output, output_file, std::ofstream::trunc);
       output.close();
-      
+
       std::ofstream info;
       open_output_file(info, info_file, std::ofstream::trunc);
       info.close();
@@ -154,7 +154,7 @@ namespace Gambit
       : BasePrinter(primary,options.getValueOrDef<bool>(false,"auxilliary"))
       , output_file("")
       , info_file("")
-      , bufferlength(100) 
+      , bufferlength(100)
       , global(false)
       , printer_name("")
      #ifdef WITH_MPI
@@ -166,7 +166,7 @@ namespace Gambit
       common_constructor(options);
     }
 
- 
+
     /// Destructor
     // Overload the base class virtual destructor
     asciiPrinter::~asciiPrinter()
@@ -174,7 +174,7 @@ namespace Gambit
       // Make sure buffer is completely written to disk (MOVED TO FINALISE)
       AP_DBUG( std::cout << "Destructing asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
     }
- 
+
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void asciiPrinter::initialise(const std::vector<int>& /*printmevec*/)
@@ -190,7 +190,7 @@ namespace Gambit
       //     // Add element to line of buffer (uses default (empty) constructor)
       //     buffer[i][*it];
       //   }
-      // } 
+      // }
     }
 
     /// Do final buffer dumps
@@ -201,7 +201,7 @@ namespace Gambit
     }
 
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
-    void asciiPrinter::reset(bool) 
+    void asciiPrinter::reset(bool)
     {
       std::ofstream my_fstream;
       open_output_file(my_fstream, output_file, std::ofstream::trunc);
@@ -209,18 +209,18 @@ namespace Gambit
       erase_buffer();
       lastPointID = nullpoint;
     }
- 
+
     /// Clear buffer
     void asciiPrinter::erase_buffer()
     {
-      // Used to just erase the records, but preserve vertex IDs. Not sure this is necessary, so for now just 
+      // Used to just erase the records, but preserve vertex IDs. Not sure this is necessary, so for now just
       // emptying the map.
       buffer.clear();
 
       // Obsolete; redo this
       // for (int i=0; i<bufferlength; i++)
       // {
-      //   for (LineBuf::iterator 
+      //   for (LineBuf::iterator
       //     it = buffer[i].begin(); it != buffer[i].end(); it++)
       //   {
       //     // We want to preserve the vertex ID's and just erase the vector part (second) of the map
@@ -228,16 +228,16 @@ namespace Gambit
       //   }
       // }
     }
-  
+
     // Tell printer to start a new line of the ascii output file
     void asciiPrinter::endline()
     {
       // Obsolete; no longer a virtual function either I think.
-      // std::cout<<"In acsiiPrinter: starting new printer line!"<<std::endl; 
+      // std::cout<<"In acsiiPrinter: starting new printer line!"<<std::endl;
 
       // // Move buffer location index to the next line
       // buf_loc += 1;
-      // 
+      //
       // // Check if we have filled the buffer
       // if (buf_loc >= bufferlength)
       // {
@@ -248,13 +248,13 @@ namespace Gambit
       // }
     }
 
-    // getters for internal variables 
+    // getters for internal variables
     std::string asciiPrinter::get_output_filename() { return output_file; }
     int         asciiPrinter::get_bufferlength()    { return bufferlength; }
 
     // add results to printer buffer
-    void asciiPrinter::addtobuffer(const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels, const int vID, const int rank, const int pointID) 
-    { 
+    void asciiPrinter::addtobuffer(const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels, const int vID, const int rank, const int pointID)
+    {
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
 
       // Key for accessing buffer
@@ -327,8 +327,8 @@ Debug info:\n\
       }
       //}
     }
- 
-    // write the printer buffer to file       
+
+    // write the printer buffer to file
     void asciiPrinter::dump_buffer(bool force)
     {
       // Write record of what is in each column if we haven't done so yet
@@ -345,16 +345,16 @@ Debug info:\n\
       my_fstream.precision(precision);
 
       std::map<int,int> newlineindexrecord(lineindexrecord);
-      // Work out how to organise the output file            
+      // Work out how to organise the output file
       // To do this we need to go through the buffer and find the maximum length of vector associated with each VertexID.
 
-      for (Buffer::iterator 
+      for (Buffer::iterator
         bufentry = buffer.begin(); bufentry != buffer.end(); ++bufentry)
       {
-        Record& record = bufentry->second; 
-        for (LineBuf::iterator 
+        Record& record = bufentry->second;
+        for (LineBuf::iterator
           item = record.data.begin(); item != record.data.end(); ++item)
-        { 
+        {
           //item->first  - VertexID
           //item->second - std::vector<double> (result values)
           int oldlen = newlineindexrecord[item->first];
@@ -381,14 +381,14 @@ Debug info:\n\
         for (std::map<int,int>::iterator
           it = newlineindexrecord.begin(); it != newlineindexrecord.end(); ++it)
         {
-          // try to find each key in the old lineindexrecord 
+          // try to find each key in the old lineindexrecord
           if(lineindexrecord.find(it->first)==lineindexrecord.end())
           {
             new_vIDs.push_back(it->first);
           } // otherwise see if its data increased in length
           else if(it->second > lineindexrecord.at(it->first))
           {
-            increased_lengths.push_back(it->first);    
+            increased_lengths.push_back(it->first);
           }
         }
 
@@ -418,7 +418,7 @@ Debug info:\n\
       if (info_file_written==false)
       {
         AP_DBUG( std::cout << "asciiPrinter: Writing info file..." << std::endl; )
-         
+
         std::ofstream info_fstream;
         open_output_file(info_fstream, info_file, std::ofstream::trunc); // trunc mode overwrites old content
 
@@ -444,18 +444,18 @@ Debug info:\n\
       AP_DBUG( std::cout << "lfpvfc 4" << std::endl; )
 
       // Actual dump of buffer to file
-      for (Buffer::iterator 
+      for (Buffer::iterator
         bufentry = buffer.begin(); bufentry != buffer.end(); /* Will increment in loop */ )
       {
         //std::pair<int, int> bkey = bufentry->first;
-        Record& record = bufentry->second; 
+        Record& record = bufentry->second;
         AP_DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bufentry->first.first<<", pointID="<<bufentry->first.second<<">"<< std::endl; )
         if(force or record.readyToPrint)
         {
           AP_DBUG( std::cout << "asciiPrinter: readyToPrint -- writing output..." << std::endl; )
           for (std::map<int,int>::iterator
             it = lineindexrecord.begin(); it != lineindexrecord.end(); ++it)
-          { 
+          {
             // it->first  - int VertexID
             // it->second - int length
 
@@ -465,16 +465,16 @@ Debug info:\n\
             LineBuf::iterator itdata = record.data.find(it->first);
             if( itdata == record.data.end())
             {
-               // std::stringstream errss; 
-               // errss << "Error! No data for vertex ID \"" << it->first 
-               //       << "\" found in record <rank=" << bkey.first 
+               // std::stringstream errss;
+               // errss << "Error! No data for vertex ID \"" << it->first
+               //       << "\" found in record <rank=" << bkey.first
                //       << ", pointID=" << bkey.second << ">";
                // printer_error().raise(LOCAL_INFO, errss.str());
 
                // Not an error. This can happen if evaluation of a point is abandoned midway for whatever reason
                // Register results as zero length
-               AP_DBUG( std::cout << "asciiPrinter: No data for vertex ID \"" << it->first 
-                     << "\" found in record <rank=" << bkey.first 
+               AP_DBUG( std::cout << "asciiPrinter: No data for vertex ID \"" << it->first
+                     << "\" found in record <rank=" << bkey.first
                      << ", pointID=" << bkey.second << ">, printer will output 'null'" << std::endl; )
                reslength = 0;
             }
@@ -483,8 +483,8 @@ Debug info:\n\
                results = &(itdata->second);
                reslength = results->size(); // actual length of the current results vector
             }
-            int length     = it->second;     // slots reserved in output file for these results          
- 
+            int length     = it->second;     // slots reserved in output file for these results
+
             // Print to the fstream!
             int colwidth = precision + 8;  // Just kind of guessing here; tweak as needed
             for (int j=0;j<length;j++)
@@ -511,7 +511,7 @@ Debug info:\n\
         {
           AP_DBUG( std::cout << "asciiPrinter: Not readyToPrint -- leaving in buffer" << std::endl; )
           ++bufentry;
-        } 
+        }
         // line printed, print endline character and go to next line
         my_fstream<<std::endl;
       }
@@ -523,100 +523,6 @@ Debug info:\n\
 
       AP_DBUG( std::cout << "lfpvfc 6" << std::endl; )
     }
- 
- 
-    /// @{ PRINT FUNCTIONS
-    //----------------------------
-    // Need to define one of these for every type we want to print!
-    // Could use macros again to generate identical print functions 
-    // for all types that have a << operator already defined.
-   
-    /// Template for print functions of "simple" types
-    template<class T>
-    void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    {
-      std::vector<double> vdvalue(1,value); // For now everything has to end up as a vector of doubles
-      std::vector<std::string> labels(1,label);
-      addtobuffer(vdvalue,labels,IDcode,thread,pointID);       
-    }
-
-    /// Template for print functions of vectors of "simple" types
-    template<class T>
-    void asciiPrinter::template_print_vec(std::vector<T> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    {
-      std::vector<std::string> labels;
-      std::vector<double> d_values; // Values need to be converted to doubles for printing with asciiPrinter.
-      labels.reserve(value.size());
-      d_values.reserve(value.size());
-      for(unsigned int i=0;i<value.size();i++)
-      {
-        // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
-        std::stringstream ss;
-        ss<<label<<"["<<i<<"]"; 
-        labels.push_back(ss.str());
-        d_values.push_back(value.at(i)); // Convert to double
-      }
-      addtobuffer(d_values,labels,IDcode,thread,pointID);
-    }
-
-    /// Macros to add all the simple print functions that just use the above templates
-    #define ASIMPLEPRINT(r,data,elem) \
-      void asciiPrinter::_print(elem const& value, const std::string& label, \
-                           const int IDcode, const uint rank, \
-                           const ulong pointID) \
-      { \
-        template_print(value,label,IDcode,rank,pointID); \
-      }
-    #define ASIMPLEPRINT_VEC(r,data,elem) \
-      void asciiPrinter::_print(elem const& value, const std::string& label, \
-                           const int IDcode, const uint rank, \
-                           const ulong pointID) \
-      { \
-        template_print_vec(value,label,IDcode,rank,pointID); \
-      }
-
-    #define ADD_ASCII_SIMPLE_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(ASIMPLEPRINT, _, TYPES)
-    #define ADD_ASCII_VECTOR_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(ASIMPLEPRINT_VEC, _, TYPES)
-    ADD_ASCII_SIMPLE_PRINTS(SCANNER_SIMPLE_TYPES)
-    ADD_ASCII_VECTOR_PRINTS(SCANNER_VECTOR_TYPES)
-   
-    void asciiPrinter::_print(triplet<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    {
-      std::vector<str> labels;
-      std::vector<double> values;
-      labels.reserve(3);
-      values.reserve(3);
-      labels.push_back(label+"(central)");
-      labels.push_back(label+"(lower)");
-      labels.push_back(label+"(upper)");
-      values.push_back(value.central);
-      values.push_back(value.lower);
-      values.push_back(value.upper);
-      addtobuffer(values,labels,IDcode,thread,pointID);
-    }
-
-    void asciiPrinter::_print(ModelParameters const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
-    {
-      std::map<std::string, double> parameter_map = value.getValues();
-      std::vector<std::string> names;
-      std::vector<double> vdvalue;
-      names.reserve(parameter_map.size());
-      vdvalue.reserve(parameter_map.size());
-      for (std::map<std::string, double>::iterator 
-        it = parameter_map.begin(); it != parameter_map.end(); it++)
-      {
-        std::stringstream ss;
-        ss<<label<<"::"<<it->first;
-        names.push_back( ss.str() ); 
-        vdvalue.push_back( it->second );
-      }
-      addtobuffer(vdvalue,names,IDcode,thread,pointID);
-    }
-    
-    /// @}
 
   } // end namespace printers
 } // end namespace Gambit
-
-#undef AP_DBUG
-#undef AP_DEBUG_MODE

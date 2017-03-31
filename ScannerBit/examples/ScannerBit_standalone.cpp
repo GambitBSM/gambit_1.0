@@ -34,7 +34,7 @@
 #include "gambit/ScannerBit/scan.hpp"
 
 using namespace Gambit;
-using namespace Gambit::Scanner; 
+using namespace Gambit::Scanner;
 
 Printers::PrinterManager * printerInterface = NULL;
 
@@ -55,7 +55,7 @@ cout << "\nusage: scannerbit [options] [<command>]                              
         "\n                                                                           "
         "\nRun scan:                                                                  "
         "\n   ScannerBit_standalone -f <inifile>   Start a scan using instructions from inifile  "
-        "\n                           e.g.: ScannerBit_standalone -f scannerbit.yaml  "        
+        "\n                           e.g.: ScannerBit_standalone -f scannerbit.yaml  "
         "\n                                                                           "
         "\nAvailable commands:                                                        "
         "\n   scanners              List registered scanners plugins                  "
@@ -63,17 +63,17 @@ cout << "\nusage: scannerbit [options] [<command>]                              
         "\n   plugins               List all registered plugins                       "
         "\n   <name>                Give info on a plugin or scanner                  "
         "\n                           e.g.:                                           "
-        "\n                                 ScannerBit_standalone MultiNest           "     
+        "\n                                 ScannerBit_standalone MultiNest           "
         "\n                                                                           "
         "\nBasic options:                                                             "
         "\n   --version             Display GAMBIT/ScannerBit version information     "
         "\n   -h/--help             Display this usage information                    "
         "\n   -f <inifile>          Start scan using <inifile>                        "
         "\n   -v/--verbose          Turn on verbose mode                              "
-        "\n" << endl << endl; 
+        "\n" << endl << endl;
         logger().disable();
         scan_error().silent_forced_throw();
-} 
+}
 
 int main(int argc, char **argv)
 {
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
             {
                 bail();
             }
-            
+
             return 0;
         }
         else if (std::string(argv[1]) == "objective")
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
             {
                 bail();
             }
-            
+
             return 0;
         }
         else if (std::string(argv[1]) == "scanners")
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
             {
                 bail();
             }
-            
+
             return 0;
         }
         else if (std::string(argv[1]) == "plugins")
@@ -160,31 +160,28 @@ int main(int argc, char **argv)
 
             // Initialise the random number generator, letting the RNG class choose its own default.
             Random::create_rng_engine(iniFile.getValueOrDef<std::string>("default", "rng"));
-    
+
             // Set up the printer (redirection of scan output)
-            bool resume = false; // TODO: Greg I just added this here to fix a compile error, modify as you like.
-            Printers::PrinterManager printerManager(iniFile.getPrinterNode(),resume);
-            Printers::BasePrinter& printer (*printerManager.printerptr); 
-            //Printers::BasePrinter printerManager();
+            Printers::PrinterManager printerManager(iniFile.getPrinterNode(),false);
             printerInterface = &printerManager;
 
             //Make scanner yaml node
-      YAML::Node scanner_node;
-      scanner_node["Scanner"] = iniFile.getScannerNode();
-      scanner_node["Parameters"] = iniFile.getParametersNode();
-      scanner_node["Priors"] = iniFile.getPriorsNode();
-      
-      //Create the master scan manager 
-      Scanner::Scan_Manager scan(scanner_node, &printerManager, 0);
+            YAML::Node scanner_node;
+            scanner_node["Scanner"] = iniFile.getScannerNode();
+            scanner_node["Parameters"] = iniFile.getParametersNode();
+            scanner_node["Priors"] = iniFile.getPriorsNode();
+
+            //Create the master scan manager
+            Scanner::Scan_Manager scan(scanner_node, &printerManager, 0);
 
             //Do the scan!
             logger() << "Starting scan." << EOM;
-            scan.Run(); 
+            scan.Run();
 
             #ifdef WITH_MPI
                 MPI_Finalize();
             #endif
-            
+
             std::cout << "ScannerBit has finished successfully!" << std::endl;
         }
         else
@@ -193,7 +190,7 @@ int main(int argc, char **argv)
             {
                 bail();
             }
-            
+
             return 0;
         }
     }

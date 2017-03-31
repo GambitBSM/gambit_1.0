@@ -1,21 +1,21 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
-#  Cmake preprocessor variable configuration. 
-#    
+# \file
+#
+#  Cmake preprocessor variable configuration.
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2015 Apr, Sep
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2015 Apr
-#                                               
+#
 #************************************************
 
 include(CheckIncludeFiles)
@@ -46,6 +46,5 @@ cmake_dependent_option(HAVE_GRAPHVIZ "create Graphviz files" ON "GRAPHVIZ_FOUND"
 set(outhdr "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in" ${outhdr})
 message("${BoldYellow}   Configured ${outhdr}${ColourReset}")
-
 message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 

@@ -47,7 +47,7 @@
 
     // Create Spectrum object from SMInputs structs and SM Higgs parameters,
     #define FUNCTION get_SM_spectrum
-    START_FUNCTION(/*TAG*/ Spectrum)
+    START_FUNCTION(Spectrum)
     ALLOW_MODELS(StandardModel_Higgs)
     DEPENDENCY(SMINPUTS, SMInputs)
     #undef FUNCTION

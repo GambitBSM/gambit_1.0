@@ -106,7 +106,7 @@ namespace Gambit
             double Gamma_s = virtual_SMHiggs_widths("Gamma",sqrt_s);
             double GeV2tocm3s1 = gev2cm2*s2cm;
 
-            // Explicitely close channel for off-shell top quarks
+            // Explicitly close channel for off-shell top quarks
             if ( channel == "tt" and sqrt_s < mt*2) return 0;
 
             double res = 2*lambda*lambda*v0*v0/

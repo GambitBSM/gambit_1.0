@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///  \date 2016 Feb
 ///  \author Jonathan Cornell
@@ -68,7 +68,7 @@ void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<dou
   if (mPhi != -1)
     TH_ProcessCatalog_WIMP.setOption<double>("mPhi", mPhi);
   TH_ProcessCatalog_WIMP.reset_and_calculate();
-  RD_fraction_fixed.reset_and_calculate();
+  RD_fraction_one.reset_and_calculate();
   SimYieldTable_DarkSUSY.reset_and_calculate();
   SimYieldTable_MicrOmegas.reset_and_calculate();
   GA_missingFinalStates.reset_and_calculate();
@@ -85,7 +85,7 @@ namespace Gambit
 {
   namespace DarkBit
   {
-    
+
     void TH_ProcessCatalog_WIMP(DarkBit::TH_ProcessCatalog& result)
     {
       using namespace Pipes::TH_ProcessCatalog_WIMP;
@@ -102,10 +102,10 @@ namespace Gambit
       ///////////////////////////////////////
       // Import particle masses and couplings
       ///////////////////////////////////////
-      
+
 #define addParticle(Name, Mass, spinX2)                                        \
       catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-      (Name , TH_ParticleProperty(Mass, spinX2)));    
+      (Name , TH_ParticleProperty(Mass, spinX2)));
 
       /// Option mWIMP<double>: WIMP mass in GeV (required)
       double mWIMP = runOptions->getValue<double>("mWIMP");
@@ -151,13 +151,13 @@ namespace Gambit
       TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
-      process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP); 
+      process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP);
       auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "e-_1", "phi");
       auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "e+_1", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
-          double mtot_final = 
+          double mtot_final =
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
           if ( mWIMP*2 > mtot_final * 0 && brList[i]!= 0.) //FIXME: Jonathan: Why is the zero here?
@@ -232,14 +232,14 @@ int main(int argc, char* argv[])
 
 
     // ---- Initialise logging and exceptions ----
-  
+
     initialise_standalone_logs("runs/DarkBit_standalone_WIMP/logs/");
     logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
     model_warning().set_fatal(true);
-  
-  
+
+
     // ---- Check that required backends are present ----
-    
+
     if (not Backends::backendInfo().works["DarkSUSY5.1.3"]) backend_error().raise(LOCAL_INFO, "DarkSUSY 5.1.3 is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
@@ -275,7 +275,7 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
-    DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
+    DDCalc_1_0_0_init.resolveDependency(&RD_fraction_one);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP);
 
@@ -299,7 +299,6 @@ int main(int argc, char* argv[])
 
     // Assume for direct and indirect detection likelihoods that dark matter
     // density is always the measured one (despite relic density results)
-
 
     // ---- Gamma-ray yields ----
 
@@ -333,9 +332,6 @@ int main(int argc, char* argv[])
     cascadeMC_Histograms.setOption<int>("cMC_numSpecSamples", 25);
     cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 300);
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
-    cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-    cascadeMC_LoopManager.resolveDependency(SimYieldTablePointer);
-    cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_WIMP);
     std::vector<functor*> nested_functions = initVector<functor*>(
         &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
     cascadeMC_LoopManager.setNestedList(nested_functions);
@@ -386,7 +382,7 @@ int main(int argc, char* argv[])
     // Calculate Fermi LAT dwarf likelihood
     // FIXME: Check whether Fermi lat limits can be reproduced
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
-    lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_fixed);
+    lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
     lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
 
 
@@ -523,7 +519,7 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
-          RD_fraction_fixed.reset_and_calculate();
+          RD_fraction_one.reset_and_calculate();
           SimYieldTable_DarkSUSY.reset_and_calculate();
           SimYieldTable_MicrOmegas.reset_and_calculate();
           GA_missingFinalStates.reset_and_calculate();
@@ -554,7 +550,7 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
-          RD_fraction_fixed.reset_and_calculate();
+          RD_fraction_one.reset_and_calculate();
           SimYieldTable_DarkSUSY.reset_and_calculate();
           SimYieldTable_MicrOmegas.reset_and_calculate();
           GA_missingFinalStates.reset_and_calculate();
@@ -636,7 +632,7 @@ int main(int argc, char* argv[])
           g = sqrt(s_list[j]*pi/gev2cm2) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
-          RD_fraction_fixed.reset_and_calculate();
+          RD_fraction_one.reset_and_calculate();
           DD_couplings_WIMP.setOption<double>("gps", g);
           DD_couplings_WIMP.setOption<double>("gns", g);
           DD_couplings_WIMP.setOption<double>("gpa", 0.);
@@ -705,7 +701,7 @@ int main(int argc, char* argv[])
           g = sqrt(s_list[j]*pi/(3*gev2cm2)) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
-          RD_fraction_fixed.reset_and_calculate();
+          RD_fraction_one.reset_and_calculate();
           DD_couplings_WIMP.setOption<double>("gps", 0.);
           DD_couplings_WIMP.setOption<double>("gns", 0.);
           DD_couplings_WIMP.setOption<double>("gpa", g);

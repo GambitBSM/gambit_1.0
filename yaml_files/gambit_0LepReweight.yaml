@@ -1,0 +1,263 @@
+# GAMBIT Initialization file (in YAML)
+#
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
+
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+
+
+  #SM parameters.
+  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+
+
+  CMSSM:
+    A0: 0
+    M0: 70
+    M12: 350
+    SignMu: 1
+    TanBeta: 10
+
+#======== Prior setup
+
+Priors:
+
+  # Here specify the priors, the parameters they work with, and any options as needed for that prior
+  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
+  # and then they are combined into a "composite" prior
+
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer.
+  options:
+    # name of output file
+    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+
+#======== Scanner setup
+
+Scanner:
+
+  #use_objectives: uniform
+  use_scanner: random
+
+# Scanners
+
+  scanners:
+
+    random:
+      plugin: random
+      output_file:  output
+      like:  LogLike
+      point_number: 1
+      files:
+        output_file: "weights ..."
+
+    square_grid:
+      plugin: square_grid
+      version: ">=1.0"
+      like: LogLike
+      grid_pts: 3 #NxN grid
+
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      like: LogLike
+      grid_pts: [2, 2]
+
+  objectives:
+
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]
+
+
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+   # LHC likelihoods
+    - purpose:    LogLike
+      capability: LHC_Combined_LogLike
+
+#########################
+# Auxiliary entries
+#########################
+
+Rules:
+
+
+  # Choose to get decays from DecayBit proper, not from an SLHA file.
+  - capability: decay_rates
+    function: all_decays
+
+  # Choose to get the spectrum from SpecBit proper, not an SLHA file.
+  # Options set to match benchmark point specified in SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+  - capability: unimproved_MSSM_spectrum
+    function: get_CMSSM_spectrum
+    options:
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 2
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  # Choose where to get the precision spectrum from
+  - capability: MSSM_spectrum
+    type: Spectrum
+    function: make_MSSM_precision_spectrum_none
+
+  # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
+  - capability: Reference_SM_Higgs_decay_rates
+    function: Ref_SM_Higgs_decays_table
+  - capability: Reference_SM_other_Higgs_decay_rates
+    function: Ref_SM_other_Higgs_decays_table
+  - capability: Reference_SM_A0_decay_rates
+    function: Ref_SM_A0_decays_table
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: H_plus_decay_rates
+    function: H_plus_decays
+  - capability: t_decay_rates
+    function: t_decays
+
+  # Choose where to get the Higgs couplings from
+  - capability: Higgs_Couplings
+    function: MSSM_higgs_couplings_pwid
+
+  # Choose which type of marginalised Poisson likelihood to use for LHC likelihoods
+  - capability: LHC_Combined_LogLike
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  # ATLAS detector simulation
+  - capability: SimpleSmearingSim
+    type: "ColliderBit::BuckFastSmearATLAS"
+    function: getBuckFastATLAS
+    options:
+      partonOnly: false
+      antiktR: 0.4
+
+  # CMS detector simulation
+  - capability: SimpleSmearingSim
+    type: "ColliderBit::BuckFastSmearCMS"
+    function: getBuckFastCMS
+    options:
+      partonOnly: false
+      antiktR: 0.4
+
+  # ATLAS analysis setup. Set option useATLAS: false to ignore these analyses.
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
+    options:
+      analysisNamesATLAS: ["ATLAS_13TeV_0LEP_13invfb"]
+
+  # CMS analysis setup. Set option useCMS: false to ignore these analyses.
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:
+      analysisNamesCMS: ["CMS_13TeV_0LEP_13invfb"]
+
+  # Choose Monte Carlo event simulator and number of events to run.
+  - capability:  ColliderOperator
+    function: operateLHCLoop
+    options:
+      nEvents: 5000
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
+
+  # Define Monte Carlo event simulator and associated options.
+  - capability:  HardScatteringSim
+    function:  getPythia
+    options:
+      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
+      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      #Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
+                             "PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on",
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0",
+                             "TimeShower:pTmin = 20",
+			     "Beams:eCM = 13000"]
+      #SLHA_filenames:
+      #  - gg_0_1800.slha
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirectory of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
+
+  prefix : "runs/0lep/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "dependency_resolver.log"
+    [ColliderBit] : "ColliderBit.log"
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+
+#By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+
