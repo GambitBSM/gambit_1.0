@@ -592,22 +592,11 @@ ExternalProject_Add(${name}_${ver}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -bp0 --ignore-whitespace < ${patch}_3_3_8.dif
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} $F90=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} ${lib}  
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} $F90=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} ${lib}
   INSTALL_COMMAND ""
 )
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 set_as_default_version("backend" ${name} ${ver})
-
-# Eigen3 include dir
-# Needed by flexiblesusy and gm2calc, so add it if gm2calc isn't ditched
-# (flexiblesusy will add it itself if it needs it)
-# if(NOT ";${itch};" MATCHES ";gm2calc;" )
-#   set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-#   include_directories("${EIGEN3_DIR}")
-# endif()
-# EDIT: ok that wasn't working, seems to be needed for frontend headers always? Adding permanently:
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-include_directories("${EIGEN3_DIR}")
 
 # gm2calc
 set(name "gm2calc")
@@ -616,6 +605,8 @@ set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
 set(md5 "1bddab5a411a895edd382a1f8a991c15")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
+include_directories("${EIGEN3_DIR}")
 # - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
