@@ -538,7 +538,7 @@ BE_VARIABLE(n_g, Finteger, "__mssm_data_MOD_n_g", "SPheno_MSSMspectrum")
 BE_VARIABLE(n_S0, Finteger, "__mssm_data_MOD_n_s0", "SPheno_MSSMspectrum")
 BE_VARIABLE(n_P0, Finteger, "__mssm_data_MOD_n_p0", "SPheno_MSSMspectrum")
 BE_VARIABLE(n_Spm, Finteger, "__mssm_data_MOD_n_spm", "SPheno_MSSMspectrum")
-// Cross sectionn variables
+// Cross section variables
 BE_VARIABLE(Ecms, Farray_Freal8_1_100, "__spheno_MOD_ecms", "SPheno_MSSMspectrum")
 BE_VARIABLE(Pm, Farray_Freal8_1_100, "__spheno_MOD_pm", "SPheno_MSSMspectrum")
 BE_VARIABLE(Pp, Farray_Freal8_1_100, "__spheno_MOD_pp", "SPheno_MSSMspectrum")
@@ -568,7 +568,7 @@ BE_CONV_FUNCTION(run_SPheno, int, (Spectrum&, const SMInputs&, const std::map<st
 BE_CONV_FUNCTION(Spectrum_Out, Spectrum, (const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
 BE_CONV_FUNCTION(ReadingData, void, (const SMInputs&, const std::map<str, safe_ptr<double> >&), "SPheno_MSSMspectrum")
 BE_CONV_FUNCTION(InitializeStandardModel, void, (const SMInputs&), "SPheno_MSSMspectrum")
-BE_CONV_FUNCTION(ErrorHandling, str, (const int&), "SPheno_MSSMspectrum")
+BE_CONV_FUNCTION(ErrorHandling, void, (const int&), "SPheno_MSSMspectrum")
 
 // Initialisation functions (dependencies)
 

@@ -212,13 +212,7 @@ BE_NAMESPACE
     }
    
     if(*kont != 0)
-    {
-      std::stringstream msg;
-      msg << ErrorHandling(*kont);
-      logger() << msg.str() << EOM;
-      invalid_point().raise(msg.str());
-    }
-
+      ErrorHandling(*kont);
 
     return *kont;   
  
@@ -706,15 +700,13 @@ BE_NAMESPACE
     SLHAea_add_block(slha, "GAMBIT");
     slha["GAMBIT"][""] << 1 << *m_GUT << "# Input scale of (upper) boundary contidions, e.g. GUT scale";
 
-    // Create Spectrum object from the slhaea object
+    //Create Spectrum object
     static const Spectrum::mc_info mass_cut;
     static const Spectrum::mr_info mass_ratio_cut;
+    Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha,slha,mass_cut,mass_ratio_cut);
 
-   Spectrum spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha, slha, mass_cut, mass_ratio_cut);
-
-    // Add the high scale variable by hand, TODO: this should be done already in the function above
-    spectrum.get_HE().set_override(Par::mass1,SLHAea::to<double>(slha.at("GAMBIT").at(1).at(1)), "high_scale", true);
-
+    // Add the high scale variable by hand
+    spectrum.get_HE().set_override(Par::mass1, SLHAea::to<double>(slha.at("GAMBIT").at(1).at(1)), "high_scale", true);
 
     return spectrum;
 
@@ -1155,151 +1147,155 @@ BE_NAMESPACE
   }  
 
   // Function that handles errors
-  str ErrorHandling(const int &kont)
+  void ErrorHandling(const int &kont)
   {
+
+    str message;   
 
     switch(kont)
     {
-      case -1: return "Problem in OdeInt, stepsize smaller than minimum.";
-      case -2: return "Problem in OdeInt, max val > 10^36.";
-      case -3: return "Proglem in OdeInt, too many steps.";
-      case -4: return "Proglem in OdeIntB, boundary condition not fulfilled.";
-      case -5: return "Problem in OdeIntB, stepsize smaller than minimum.";
-      case -6: return "Problem in OdeIntB, max val > 10^36.";
-      case -7: return "Problem in OdeIntB, too many steps.";
-      case -8: return "Problem in OdeIntC, boundary condition not fullfilled.";
-      case -9: return "Problem in OdeIntC, stepsize smaller than minimum.";
-      case -10: return "Problem in OdeIntC, max val > 10^36.";
-      case -11: return "Problem in OdeIntC, too many steps.";
-      case -12: return "Problem in rkqs, stepsize undeflow.";
-      case -13: return "Error in Subroutine ComplexEigenSystem. Dimensions do not match.";
-      case -14: return "Potential numerical problems in routine ComplexEigenSystem.";
-      case -15: return "Error in Subroutine RealEigenSystem. Dimensions do not match.";
-      case -16: return "Potential numerical problems in routine RealEigenSystem.";
-      case -17: return "Error in tqli.";
-      case -18: return "Problem in tqli, too many iterations.";
-      case -19: return "Function DGAUSS ... too high accuracy required.";
-      case -20: return "Subroutine DGaussInt ... Too high accuracy required.";
-      case -21: return "Problem in function kappa.";
-      case -24: return "Singular matrix in routine GaussJ.";
-      case -27: return "Problem in bsstep, stepsize undeflow.";
-      case -28: return "Routine pzextr: probable misuse, too much extrapolation";
-      case -29: return "Routine rzextr: probable misuse, too much extrapolation";
-      case -30: return "Error in Subroutine RealEigenSystem. Matrix contains NaN.";
-      case -31: return  "Error in Subroutine ComplexEigenSystem. Matrix contains NaN.";
-      case -101: return "Problem in routine CalculateRunningMasses: Qlow > mb(mb).";
-      case -102: return "Problem in routine CalculateRunningMasses: Max(Qlow, mb(mb)) > Qmax.";
-      case -201: return"Warning from Subroutine ChargedScalarMassEps1nt, a mass squared is negative.";
-      case -202: return "Warning from Subroutine ChargedScalarMassEps3, a mass squared is negative.";
-      case -203: return"Warning from Subroutine ChargedScalarMassLam3nt, a mass squared is negative.";
-      case -204: return "Severe Warning from routine CharginoMass3. Abs(h_tau)**2 < 0. Taking the square root from the negative.";
-      case -205: return "Severe Warning from routine CharginoMass5. Abs(h_tau)**2 < 0. Taking the square root from the negative.";
-      case -206: return "Warning from Subroutine PseudoScalarMassEps1nT, a mass squared is negative.";
-      case -207: return "Warning from Subroutine PseudoScalarMassEps3nT, a mass squared is negative.";
-      case -208: return "Warning from Subroutine PseudoScalarMassMSSMnT, a mass squared is negative.";
-      case -210: return "Warning from Subroutine ScalarMassEps1nT, a mass squared is negative.";
-      case -211: return "Warning form Subroutine ScalarMassEps3nT, a mass squared is negative.";
-      case -212: return "Warning from ScalarMassMSSMeff, m_h^2. Setting m_h to the sqrt(abs(m^2_h)).";
-      case -213: return "Warning from Subroutine ScalarMassMSSMnT, a mass squared is negative.";
-      case -214: return "L*k*tanbq*mu = 0 in routine ScalarMassNMSSMeff.";
-      case -215: return "m^2_{S_1^0} < 0 in routine ScalarMassNMSSMeff.";
-      case -216: return "m^2_{P_1^0} < 0 in routine ScalarMassNMSSMeff.";
-      case -217: return "m^2_{S^+} < 0 in routine ScalarMassNMSSMeff.";
-      case -219: return "Warning from routine SdwonMass3Lam. In the calculation of the masses occurred a negative mass squared.";
-      case -220: return "Warning from routine SfermionMass1. In the calculation of the masses occurred a negative mass squared.";
-      case -221: return "Warning from routine SfermionMass1. In the calculation of the masses occurred a negative mass squared.";
-      case -222: return "Warning from routine SfermionMass1mssm. In the calculation of the masses occurred a negative mass squared.";
-      case -223: return "Warning from routine SfermionMass3mssm. In the calculation of the masses occurred a negative mass squared.";
-      case -224: return "Warning from routine SquarkMass3Eps. In the calculation of the masses occurred a negative mass squared.";
-      case -225: return "Error in subroutine TreeMassesEps1. mSneutrino^2 <= 0. Setting it to 10.";
-      case -226: return "Warning from TreeMassesMSSM. mSneut2 < 0. Set to its modulus.";
-      case -227: return "Warning from TreeMassesMSSM. mP02 < 0. Set to its modulus.";
-      case -228: return "Warning from TreeMassesMSSM. mSpm2 < 0. Set to its modulus.";
-      case -229: return "Warning from TreeMassesMSSM2. mSneut2 < 0. Set to 0.";
-      case -230: return "Warning from TreeMassesMSSM2. mP02 < 0. Set to its modulus.";
-      case -231: return "Warning from TreeMassesMSSM2. mSpm2 < 0. Set to its modulus.";
-      case -232: return "Warning from TreeMassesMSSM3. mSneut2 < 0. Set to 0.";
-      case -233: return "Warning from TreeMassesNMSSM. mSneut2 < 0. Set to its modulus.";
-      
-      case -302: return "Routine LesHouches Input: unknown entry for Block MODSEL.";
-      case -303: return "Routine LesHouches Input: model must be specified before parameters.";
-      case -304: return "Routine LesHouches Input: unknown entry for Block MINPAR.";
-      case -305: return "Routine LesHouches Input: model has not been specified completly.";
-      case -306: return "Routine LesHouches Input: a serious error has been part of the input.";
-      case -307: return "Routine LesHouches Input: Higgs sector has not been fully specified.";
-      case -308: return "Routine ReadMatrixC: indices exceed the given boundaries.";
-      case -309: return "Routine ReadMatrixR: indices exceed the given boundaries.";
-      case -310: return "Routine ReadVectorC: index exceeds the given boundaries.";
-      case -311: return "Routine ReadVectorR: index exceeds the given boundaries.";
-      case -312: return "Routine ReadMatrixC: indices exceed the given boundaries";
-      case -401: return "Routine BoundaryEW: negative scalar mass squared as input.";
-      case -402: return "Routine BoundaryEW: m^2_Z(m_Z) < 0.";
-      case -403: return "Routine BoundaryEW: sin^2(θ_DR) < 0.";
-      case -404: return "Routine BoundaryEW: m^2_W < 0.";
-      case -405: return "Routine BoundaryEW: either m_(l_D R)/m_l < 0.1 or m_(l_D R)/m_l > 10.";
-      case -406: return "Routine BoundaryEW: either m_(d_D R)/m_u < 0.1 or m_(d_D R)/m_d > 10.";
-      case -407: return "Routine BoundaryEW: either m_(u_D R)/m_d < 0.1 or m_(u_D R)/m_u > 10.";
-      case -408: return "Routine RunRGE: entering non-perturbative regime.";
-      case -409: return "Routine RunRGE: nor g_1 = g_ 2 at M_GUT neither any other unification.";
-      case -410: return "Routine RunRGE: entering non-perturbative regime at M_GUT.";
-      case -411: return "Routine RunRGE: entering non-perturbative regime at M_(H_3).";
-      case -412: return "Routine Sugra: run did not converge.";
-      case -413: return "Routine Calculate_Gi_Yi: m^2_Z(m_Z) < 0.";
-      case -414: return "Routine Calculate_Gi_Yi: too many iterations to calculate m_b(m_b) in the MS scheme.";
-      case -415: return "Routine Sugra: |μ|^2 < 0 at m_Z.";
-      case -501: return "Negative mass squared in routine SleptonMass_1L.";
-      case -502: return "p^2 iteration did not converge in routine SleptonMass_1L.";
-      case -503: return "Negative mass squared in routine SneutrinoMass_1L.";
-      case -504: return "p^2 iteration did not converge in routine SneutrinoMass_1L.";
-      case -505: return "Negative mass squared in routine SquarkMass_1L.";
-      case -506: return "p^2 iteration did not converge in routine SquarkMass_1L.";
-      case -507: return "m^2_(h^0) < 0 in routine LoopMassesMSSM.";
-      case -508: return "m^2_(A^0) < 0 in routine LoopMassesMSSM.";
-      case -509: return "m^2_(H^+) < 0 in routine LoopMassesMSSM.";
-      case -510: return "|μ|^2 > 10^20 in routine LoopMassesMSSM.";
-      case -511: return "|μ|^2 < 0 in routine LoopMassesMSSM.";
-      case -512: return "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM.";
-      case -513: return "m^2_(h^0) < 0 in routine LoopMassesMSSM_2.";
-      case -514: return "m^2_(A^0) < 0 in routine LoopMassesMSSM_2.";
-      case -515: return "m^2_(H^+) < 0 in routine LoopMassesMSSM_2.";
-      case -516: return "|μ|^2 > 10^20 in routine LoopMassesMSSM_2.";
-      case -517: return "|μ|^2 < 0 in routine LoopMassesMSSM_2.";
-      case -518: return "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM_2.";
-      case -519: return "m^2_(h^0) < 0 in routine LoopMassesMSSM_3.";
-      case -520: return "m^2_(A^0) < 0 in routine LoopMassesMSSM_3.";
-      case -521: return "m^2_(H^+) < 0 in routine LoopMassesMSSM_3.";
-      case -522: return "|μ|^2 > 10^20 in routine LoopMassesMSSM_3.";
-      case -523: return "|μ|^2 < 0 in routine LoopMassesMSSM_3.";
-      case -524: return "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM_3.";
-      case -525: return "Negative mass squared in routine Sigma_SM_chirally enhanced.";
-      case -601: return "Routine PiPseudoScalar2: m^2_(~t) < 0.";
-      case -602: return "Routine PiPseudoScalar2: m^2_(~b < 0.";
-      case -603: return "Routine PiPseudoScalar2: m^2_(~τ) < 0.";
-      case -604: return "Routine PiScalar2: m^2_(~t) < 0.";
-      case -605: return "Routine PiScalar2: m^2_(~b) < 0.";
-      case -606: return "Routine PiScalar2: m^2_(~τ) < 0.";
-      case -607: return "Routine Two Loop Tadpoles: m^2_(~t) < 0.";
-      case -608: return "Routine Two Loop Tadpoles: m^2_(~b) < 0.";
-      case -609: return "Routine Two Loop Tadpoles: m^2_(~τ) < 0.";
-      case -1001: return "The size of the arrays do not match in routine ComplexEigenSystems_DP.";
-      case -1002: return "Potential numerical problems in routine ComplexEigenSystems_DP.";
-      case -1003: return "The size of the arrays do not match in routine ComplexEigenSystems_QP.";
-      case -1004: return "Potential numerical problems in routine ComplexEigenSystems_QP.";
-      case -1005: return "The size of the arrays do not match in routine RealEigenSystems_DP.";
-      case -1006: return "Potential numerical problems in routine RealEigenSystems_ DP.";
-      case -1007: return "The size of the arrays do not match in routine RealEigenSystems_QP.";
-      case -1008: return "The size of the arrays do not match in routine Tqli_QP.";
-      case -1009: return "Too many iterations in routine Tqli_QP.";
-      case -1010: return "Too many iterations in routine Tql2_QP.";
+      case -1: message = "Problem in OdeInt, stepsize smaller than minimum."; break ; 
+      case -2: message =  "Problem in OdeInt, max val > 10^36."; break ;
+      case -3: message = "Proglem in OdeInt, too many steps."; break ;
+      case -4: message = "Proglem in OdeIntB, boundary condition not fulfilled."; break ;
+      case -5: message = "Problem in OdeIntB, stepsize smaller than minimum."; break ;
+      case -6: message = "Problem in OdeIntB, max val > 10^36."; break ;
+      case -7: message = "Problem in OdeIntB, too many steps."; break ;
+      case -8: message = "Problem in OdeIntC, boundary condition not fullfilled."; break ;
+      case -9: message = "Problem in OdeIntC, stepsize smaller than minimum."; break ;
+      case -10: message = "Problem in OdeIntC, max val > 10^36."; break ;
+      case -11: message = "Problem in OdeIntC, too many steps."; break ;
+      case -12: message = "Problem in rkqs, stepsize undeflow."; break ;
+      case -13: message = "Error in Subroutine ComplexEigenSystem. Dimensions do not match."; break ;
+      case -14: message = "Potential numerical problems in routine ComplexEigenSystem."; break ;
+      case -15: message = "Error in Subroutine RealEigenSystem. Dimensions do not match."; break ;
+      case -16: message = "Potential numerical problems in routine RealEigenSystem."; break ;
+      case -17: message = "Error in tqli."; break ;
+      case -18: message = "Problem in tqli, too many iterations."; break ;
+      case -19: message = "Function DGAUSS ... too high accuracy required."; break ;
+      case -20: message = "Subroutine DGaussInt ... Too high accuracy required."; break ;
+      case -21: message = "Problem in function kappa."; break ;
+      case -24: message = "Singular matrix in routine GaussJ."; break ;
+      case -27: message = "Problem in bsstep, stepsize undeflow."; break ;
+      case -28: message = "Routine pzextr: probable misuse, too much extrapolation"; break ;
+      case -29: message = "Routine rzextr: probable misuse, too much extrapolation"; break ;
+      case -30: message = "Error in Subroutine RealEigenSystem. Matrix contains NaN."; break ;
+      case -31: message = "Error in Subroutine ComplexEigenSystem. Matrix contains NaN."; break ;
+      case -101: message = "Problem in routine CalculateRunningMasses: Qlow > mb(mb)."; break ;
+      case -102: message = "Problem in routine CalculateRunningMasses: Max(Qlow, mb(mb)) > Qmax."; break ;
+      case -201: message = "Warning from Subroutine ChargedScalarMassEps1nt, a mass squared is negative."; break ;
+      case -202: message = "Warning from Subroutine ChargedScalarMassEps3, a mass squared is negative."; break ;
+      case -203: message = "Warning from Subroutine ChargedScalarMassLam3nt, a mass squared is negative."; break ;
+      case -204: message = "Severe Warning from routine CharginoMass3. Abs(h_tau)**2 < 0. Taking the square root from the negative."; break ;
+      case -205: message = "Severe Warning from routine CharginoMass5. Abs(h_tau)**2 < 0. Taking the square root from the negative."; break ;
+      case -206: message = "Warning from Subroutine PseudoScalarMassEps1nT, a mass squared is negative."; break ;
+      case -207: message = "Warning from Subroutine PseudoScalarMassEps3nT, a mass squared is negative."; break ;
+      case -208: message = "Warning from Subroutine PseudoScalarMassMSSMnT, a mass squared is negative."; break ;
+      case -210: message = "Warning from Subroutine ScalarMassEps1nT, a mass squared is negative."; break ;
+      case -211: message = "Warning form Subroutine ScalarMassEps3nT, a mass squared is negative."; break ;
+      case -212: message = "Warning from ScalarMassMSSMeff, m_h^2. Setting m_h to the sqrt(abs(m^2_h))."; break ;
+      case -213: message = "Warning from Subroutine ScalarMassMSSMnT, a mass squared is negative."; break ;
+      case -214: message = "L*k*tanbq*mu = 0 in routine ScalarMassNMSSMeff."; break ;
+      case -215: message = "m^2_{S_1^0} < 0 in routine ScalarMassNMSSMeff."; break ;
+      case -216: message = "m^2_{P_1^0} < 0 in routine ScalarMassNMSSMeff."; break ;
+      case -217: message = "m^2_{S^+} < 0 in routine ScalarMassNMSSMeff."; break ;
+      case -219: message = "Warning from routine SdwonMass3Lam. In the calculation of the masses occurred a negative mass squared."; break ;
+      case -220: message = "Warning from routine SfermionMass1. In the calculation of the masses occurred a negative mass squared."; break ;
+      case -221: message = "Warning from routine SfermionMass1. In the calculation of the masses occurred a negative mass squared."; break ;
+      case -222: message = "Warning from routine SfermionMass1mssm. In the calculation of the masses occurred a negative mass squared."; break ;
+      case -223: message = "Warning from routine SfermionMass3mssm. In the calculation of the masses occurred a negative mass squared."; break ;
+      case -224: message = "Warning from routine SquarkMass3Eps. In the calculation of the masses occurred a negative mass squared."; break ;
+      case -225: message = "Error in subroutine TreeMassesEps1. mSneutrino^2 <= 0. Setting it to 10."; break ;
+      case -226: message = "Warning from TreeMassesMSSM. mSneut2 < 0. Set to its modulus."; break ;
+      case -227: message = "Warning from TreeMassesMSSM. mP02 < 0. Set to its modulus."; break ;
+      case -228: message = "Warning from TreeMassesMSSM. mSpm2 < 0. Set to its modulus."; break ;
+      case -229: message = "Warning from TreeMassesMSSM2. mSneut2 < 0. Set to 0."; break ;
+      case -230: message = "Warning from TreeMassesMSSM2. mP02 < 0. Set to its modulus."; break ;
+      case -231: message = "Warning from TreeMassesMSSM2. mSpm2 < 0. Set to its modulus."; break ;
+      case -232: message = "Warning from TreeMassesMSSM3. mSneut2 < 0. Set to 0."; break ;
+      case -233: message = "Warning from TreeMassesNMSSM. mSneut2 < 0. Set to its modulus."; break ;
+      case -302: message = "Routine LesHouches Input: unknown entry for Block MODSEL."; break ;
+      case -303: message = "Routine LesHouches Input: model must be specified before parameters."; break ;
+      case -304: message = "Routine LesHouches Input: unknown entry for Block MINPAR."; break ;
+      case -305: message = "Routine LesHouches Input: model has not been specified completly."; break ;
+      case -306: message = "Routine LesHouches Input: a serious error has been part of the input."; break ;
+      case -307: message = "Routine LesHouches Input: Higgs sector has not been fully specified."; break ;
+      case -308: message = "Routine ReadMatrixC: indices exceed the given boundaries."; break ;
+      case -309: message = "Routine ReadMatrixR: indices exceed the given boundaries."; break ;
+      case -310: message = "Routine ReadVectorC: index exceeds the given boundaries."; break ;
+      case -311: message = "Routine ReadVectorR: index exceeds the given boundaries."; break ;
+      case -312: message = "Routine ReadMatrixC: indices exceed the given boundaries"; break ;
+      case -401: message = "Routine BoundaryEW: negative scalar mass squared as input."; break ;
+      case -402: message = "Routine BoundaryEW: m^2_Z(m_Z) < 0."; break ;
+      case -403: message = "Routine BoundaryEW: sin^2(θ_DR) < 0."; break ;
+      case -404: message = "Routine BoundaryEW: m^2_W < 0."; break ;
+      case -405: message = "Routine BoundaryEW: either m_(l_D R)/m_l < 0.1 or m_(l_D R)/m_l > 10."; break ;
+      case -406: message = "Routine BoundaryEW: either m_(d_D R)/m_u < 0.1 or m_(d_D R)/m_d > 10."; break ;
+      case -407: message = "Routine BoundaryEW: either m_(u_D R)/m_d < 0.1 or m_(u_D R)/m_u > 10."; break ;
+      case -408: message = "Routine RunRGE: entering non-perturbative regime."; break ;
+      case -409: message = "Routine RunRGE: nor g_1 = g_ 2 at M_GUT neither any other unification."; break ;
+      case -410: message = "Routine RunRGE: entering non-perturbative regime at M_GUT."; break ;
+      case -411: message = "Routine RunRGE: entering non-perturbative regime at M_(H_3)."; break ;
+      case -412: message = "Routine Sugra: run did not converge."; break ;
+      case -413: message = "Routine Calculate_Gi_Yi: m^2_Z(m_Z) < 0."; break ;
+      case -414: message = "Routine Calculate_Gi_Yi: too many iterations to calculate m_b(m_b) in the MS scheme."; break ;
+      case -415: message = "Routine Sugra: |μ|^2 < 0 at m_Z."; break ;
+      case -501: message = "Negative mass squared in routine SleptonMass_1L."; break ;
+      case -502: message = "p^2 iteration did not converge in routine SleptonMass_1L."; break ;
+      case -503: message = "Negative mass squared in routine SneutrinoMass_1L."; break ;
+      case -504: message = "p^2 iteration did not converge in routine SneutrinoMass_1L."; break ;
+      case -505: message = "Negative mass squared in routine SquarkMass_1L."; break ;
+      case -506: message = "p^2 iteration did not converge in routine SquarkMass_1L."; break ;
+      case -507: message = "m^2_(h^0) < 0 in routine LoopMassesMSSM."; break ;
+      case -508: message = "m^2_(A^0) < 0 in routine LoopMassesMSSM."; break ;
+      case -509: message = "m^2_(H^+) < 0 in routine LoopMassesMSSM."; break ;
+      case -510: message = "|μ|^2 > 10^20 in routine LoopMassesMSSM."; break ;
+      case -511: message = "|μ|^2 < 0 in routine LoopMassesMSSM."; break ;
+      case -512: message = "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM."; break ;
+      case -513: message = "m^2_(h^0) < 0 in routine LoopMassesMSSM_2."; break ;
+      case -514: message = "m^2_(A^0) < 0 in routine LoopMassesMSSM_2."; break ;
+      case -515: message = "m^2_(H^+) < 0 in routine LoopMassesMSSM_2."; break ;
+      case -516: message = "|μ|^2 > 10^20 in routine LoopMassesMSSM_2."; break ;
+      case -517: message = "|μ|^2 < 0 in routine LoopMassesMSSM_2."; break ;
+      case -518: message = "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM_2."; break ;
+      case -519: message = "m^2_(h^0) < 0 in routine LoopMassesMSSM_3."; break ;
+      case -520: message = "m^2_(A^0) < 0 in routine LoopMassesMSSM_3."; break ;
+      case -521: message = "m^2_(H^+) < 0 in routine LoopMassesMSSM_3."; break ;
+      case -522: message = "|μ|^2 > 10^20 in routine LoopMassesMSSM_3."; break ;
+      case -523: message = "|μ|^2 < 0 in routine LoopMassesMSSM_3."; break ;
+      case -524: message = "m^2_Z(m_Z)^2 < 0 in routine LoopMassesMSSM_3."; break ;
+      case -525: message = "Negative mass squared in routine Sigma_SM_chirally enhanced."; break ;
+      case -601: message = "Routine PiPseudoScalar2: m^2_(~t) < 0."; break ;
+      case -602: message = "Routine PiPseudoScalar2: m^2_(~b < 0."; break ;
+      case -603: message = "Routine PiPseudoScalar2: m^2_(~τ) < 0."; break ;
+      case -604: message = "Routine PiScalar2: m^2_(~t) < 0."; break ;
+      case -605: message = "Routine PiScalar2: m^2_(~b) < 0."; break ;
+      case -606: message = "Routine PiScalar2: m^2_(~τ) < 0."; break ;
+      case -607: message = "Routine Two Loop Tadpoles: m^2_(~t) < 0."; break ;
+      case -608: message = "Routine Two Loop Tadpoles: m^2_(~b) < 0."; break ;
+      case -609: message = "Routine Two Loop Tadpoles: m^2_(~τ) < 0."; break ;
+      case -1001: message = "The size of the arrays do not match in routine ComplexEigenSystems_DP."; break ;
+      case -1002: message = "Potential numerical problems in routine ComplexEigenSystems_DP."; break ;
+      case -1003: message = "The size of the arrays do not match in routine ComplexEigenSystems_QP."; break ;
+      case -1004: message = "Potential numerical problems in routine ComplexEigenSystems_QP."; break ;
+      case -1005: message = "The size of the arrays do not match in routine RealEigenSystems_DP."; break ;
+      case -1006: message = "Potential numerical problems in routine RealEigenSystems_ DP."; break ;
+      case -1007: message = "The size of the arrays do not match in routine RealEigenSystems_QP."; break ;
+      case -1008: message = "The size of the arrays do not match in routine Tqli_QP."; break ;
+      case -1009: message = "Too many iterations in routine Tqli_QP."; break ;
+      case -1010: message = "Too many iterations in routine Tql2_QP."; break ;
     }
 
-    return "Unspecified error";
+    message = "Unspecified error";
+    
+    logger() << message << EOM;
+    invalid_point().raise(message);
+
+   return ;
 
   }
-  
+ 
 }
-
-
 END_BE_NAMESPACE
 
 // Initialisation function (definition)
@@ -1537,7 +1533,6 @@ BE_INI_FUNCTION
     // 110, write ouput for LHC observables
     // GAMBIT: private variable, cannot import
     // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
-
 
 }
 END_BE_INI_FUNCTION
