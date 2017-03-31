@@ -32,13 +32,12 @@
 #ifndef __signal_handling_hpp__
 #define __signal_handling_hpp__
 
-#include <string>
-#include <vector>
 #include <signal.h>
+#include <chrono>
 #include <setjmp.h>     /* jmp_buf, setjmp, longjmp */
-
-/// Forward declare YAML Node class
-namespace YAML { class Node; }
+#include "yaml-cpp/yaml.h"
+#include "exceptions.hpp"
+#include "local_info.hpp"
 
 namespace Gambit
 {

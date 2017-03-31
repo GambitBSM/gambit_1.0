@@ -32,7 +32,6 @@
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/model_parameters.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 // Boost

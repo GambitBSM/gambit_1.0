@@ -36,12 +36,9 @@
 
 #include <cstdio>
 #include <cerrno>
-#include <cstring>
 #include <fcntl.h>
 #include <unistd.h> // I think this should work on osx as well...
 #include <string>
-#include <iostream>
-#include <sstream>
 
 #include "gambit/Utils/file_lock.hpp"
 #include "gambit/Utils/util_functions.hpp"

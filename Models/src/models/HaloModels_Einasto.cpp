@@ -18,7 +18,6 @@
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Models/models/HaloModels_Einasto.hpp"
-#include "gambit/Utils/model_parameters.hpp"
 
 #define MODEL Halo_Einasto_rho0
 #define PARENT Halo_Einasto

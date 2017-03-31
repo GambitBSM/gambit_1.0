@@ -35,27 +35,14 @@
 
 /// Gambit
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/local_info.hpp"
-#include "gambit/Utils/regex.hpp"
-//#include "gambit/Utils/util_types.hpp"
 
-/// BOOST
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-
-extern "C"
-{
-  #include "mkpath/mkpath.h"  
-}
 
 namespace Gambit
 {
   
   namespace Utils
   {
-    using namespace std; 
- 
+  
     const char* whitespaces[] = {" ", "\t", "\n", "\f", "\r"};
   
     /// Split a string into a vector of strings using a delimiter,

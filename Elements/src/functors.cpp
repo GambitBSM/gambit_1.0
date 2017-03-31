@@ -40,7 +40,6 @@
 #include "gambit/Elements/functor_definitions.hpp"
 #include "gambit/Elements/type_equivalency.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logging.hpp"

@@ -105,7 +105,6 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Logs/logger.hpp"
 

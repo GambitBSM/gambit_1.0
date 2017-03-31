@@ -26,7 +26,6 @@
 
 #include "gambit/Models/models/MSSM63atMGUT.hpp"
 #include "gambit/Elements/spectrum.hpp"
-#include "gambit/Elements/subspectrum.hpp"
 
 // Activate debug output
 //#define MSSM63atMGUT_DBUG

@@ -27,13 +27,32 @@
 #include <vector>
 #include <chrono> 
 #include <cmath>
-#include <string>
+
+#include "gambit/Utils/util_types.hpp"
+
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
+extern "C"
+{
+  #include "mkpath/mkpath.h"  
+}
+
+# if GAMBIT_CONFIG_FLAG_use_std_regex
+  #include <regex>
+  #define GAMBIT_CONFIG_FLAG_use_regex 1
+  namespace Gambit { using std::regex; using std::regex_replace; }
+#elif GAMBIT_CONFIG_FLAG_use_boost_regex
+  #include <boost/regex.hpp>
+  #define GAMBIT_CONFIG_FLAG_use_regex 1
+  namespace Gambit { using boost::regex; using boost::regex_replace; }
+#else
+  #include <boost/algorithm/string/replace.hpp>
+  #define GAMBIT_CONFIG_FLAG_use_regex 0
+#endif
 
 namespace Gambit
 {
-  /// Shorthand for a standard string
-  typedef std::string str;
-
 
   /// Redirection function to turn an lvalue into an rvalue, so that it
   /// is correctly passed by value when doing perfect forwarding with

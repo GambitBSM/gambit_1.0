@@ -25,9 +25,6 @@
 
 typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
 
-// Forward declare needed types
-namespace Gambit{ template<typename TYPE> struct triplet; }
-
 // Types that Gambit printers can output (if printer plugin is properly equipped)
 #define PRINTABLE_TYPES  \
   SCANNER_PRINTABLE_TYPES  \

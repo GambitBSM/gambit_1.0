@@ -117,101 +117,6 @@ namespace Gambit
         return myname;
       }
 
-      /// Blocking receive
-      ///  void*        buf      - memory address in which to store received message
-      ///  int          count    - number of elements in message
-      ///  MPI_Datatype datatype - datatype of each message element
-      ///  int          source   - rank of sending (receiving?) process
-      ///  int          tag      - message tag          
-      ///  MPI_status*  status   - struct containing data about the received message
-      /// Returns:
-      ///  MPI_status - struct containing data about the received message
-      void Comm::Recv(void *buf /*out*/, int count, MPI_Datatype datatype, 
-                            int source, int tag, 
-                            MPI_Status *in_status /*out*/)
-      {
-        #ifdef MPI_MSG_DEBUG
-        std::cout<<"rank "<<Get_rank()<<": Recv() called (count="<<count<<", source="<<source<<", tag="<<tag<<")"<<std::endl;
-        #endif 
-        int errflag;
-        errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, in_status == NULL ? MPI_STATUS_IGNORE : in_status);                
-        if(errflag!=0)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error performing MPI_Recv! Received error flag: "<<errflag; 
-          utils_error().raise(LOCAL_INFO, errmsg.str());
-        }
-        #ifdef MPI_MSG_DEBUG
-        std::cout<<"rank "<<Get_rank()<<": Recv() finished "<<std::endl;
-        #endif 
-      }
-
-      /// Blocking send
-      void Comm::Send(void *buf, int count, MPI_Datatype datatype, 
-                            int destination, int tag)
-      {
-         #ifdef MPI_MSG_DEBUG
-         std::cout<<"rank "<<Get_rank()<<": Send() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
-         #endif 
-         int errflag; 
-         errflag = MPI_Send(buf, count, datatype, destination, tag, boundcomm);
-         if(errflag!=0) {
-           std::ostringstream errmsg;
-           errmsg << "Error performing MPI_Send! Received error flag: "<<errflag; 
-           utils_error().raise(LOCAL_INFO, errmsg.str());
-         }
-         #ifdef MPI_MSG_DEBUG
-         std::cout<<"rank "<<Get_rank()<<": Send() finished"<<std::endl;
-         #endif 
-      }
-
-      /// Non-blocking send
-      void Comm::Isend(void *buf, int count, MPI_Datatype datatype, 
-                            int destination, int tag, 
-                            MPI_Request *request /*out*/)
-      {
-        #ifdef MPI_MSG_DEBUG
-        std::cerr<<"rank "<<Get_rank()<<": Isend() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
-        #endif 
-        int errflag; 
-         errflag = MPI_Isend(buf, count, datatype, destination, tag, boundcomm, request);
-         if(errflag!=0) {
-           std::ostringstream errmsg;
-           errmsg << "Error performing MPI_Isend! Received error flag: "<<errflag; 
-           utils_error().raise(LOCAL_INFO, errmsg.str());
-         }
-      }
-
-      // Probe for messages waiting to be delivered
-      bool Comm::Iprobe(int source, int tag, MPI_Status* in_status /*out*/)
-      {
-        //#ifdef MPI_MSG_DEBUG
-        //std::cout<<"rank "<<Get_rank()<<": Iprobe() called (source="<<source<<", tag="<<tag<<")"<<std::endl;
-        //#endif 
-         int errflag;
-         int you_have_mail; // C does not have a bool type...
-         MPI_Status def_status;
-         MPI_Status* status;
-         if(in_status!=NULL) {
-           status = in_status;
-         } else {
-           status = &def_status;
-         }
-         MPI_Iprobe(source, 1, boundcomm, &you_have_mail, status);
-         errflag = MPI_Iprobe(source, tag, boundcomm, &you_have_mail, status);
-         if(errflag!=0) {
-           std::ostringstream errmsg;
-           errmsg << "Error performing MPI_Iprobe! Received error flag: "<<errflag; 
-           utils_error().raise(LOCAL_INFO, errmsg.str());
-         }
-         #ifdef MPI_MSG_DEBUG
-         if(you_have_mail!=0) {
-               std::cerr<<"rank "<<Get_rank()<<": Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
-         }
-         #endif
-         return (you_have_mail != 0);
-      }
-
       /// Null buffer for use in master_wait_for_tag
       int null_send_buffer = 0;
       MPI_Request req_null = MPI_REQUEST_NULL;
@@ -320,26 +225,6 @@ namespace Gambit
          }
          //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
-
-      void Comm::Barrier()
-      {
-         #ifdef MPI_MSG_DEBUG
-         std::cout<<"rank "<<Get_rank()<<": Barrier() called"<<std::endl;
-         #endif 
-
-         int errflag;
-         errflag = MPI_Barrier(boundcomm);
-         if(errflag!=0) {
-            std::ostringstream errmsg;
-            errmsg << "Error performing MPI_Barrier! Received error flag: "<<errflag; 
-            utils_error().raise(LOCAL_INFO, errmsg.str());
-         }
-
-         #ifdef MPI_MSG_DEBUG
-         std::cout<<"rank "<<Get_rank()<<": Barrier() passed"<<std::endl;
-         #endif 
-      }
-
 
       int BARRIER_ENTERED = 1; // Storage for barrier entry send message. Don't change this! (can't make it const due to signature of MPI functions)
       int BARRIER_LEFT = 0;  // Storage for barrier exit send message.  "          "           "

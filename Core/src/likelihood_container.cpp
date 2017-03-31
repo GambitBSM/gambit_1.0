@@ -28,7 +28,6 @@
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/signal_helpers.hpp"
 #include "gambit/Utils/signal_handling.hpp"
-#include "gambit/Core/yaml_parser.hpp"
 
 //#define CORE_DEBUG
 

@@ -27,15 +27,12 @@
 ///  *********************************************
 
 #include "gambit/Core/depresolver.hpp"
-#include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/type_equivalency.hpp"
-#include "gambit/Printers/baseprinter.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -66,30 +63,6 @@ namespace Gambit
   namespace DRes
   {
     using namespace LogTags;
-    /// @{ Helper class members
-
-    /// A simple rule for dependency resolution (aka constraints on module and
-    /// function name).
-    Rule::Rule(const std::string& function, const std::string& module) : function(function), module(module) {};
-    Rule::Rule(const IniParser::ObservableType& t)
-    {
-      module = t.module;
-      function = t.function;
-    };
-
-    /// Information in parameter queue
-    QueueEntry::QueueEntry() {}
-    QueueEntry::QueueEntry(sspair a, DRes::VertexID b, int c, bool d)
-    {
-      first = a;
-      second = b;
-      third = c;
-      printme = d;
-    }
-
-    /// @}
-
-
     ///////////////////////
     // Auxiliary functions
     ///////////////////////

@@ -19,14 +19,12 @@
 #ifndef __SMInputs_hpp__
 #define __SMInputs_hpp__
 
+#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/numerical_constants.hpp"
-
-/// Forward declare SLHAstruct and its typedef
-namespace SLHAea { class Coll; }
-namespace Gambit { typedef SLHAea::Coll SLHAstruct; }
 
 namespace Gambit
 {
+
    /// Container class for Standard Model input information (defined as in SLHA2)
    struct SMInputs
    {
