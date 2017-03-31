@@ -17,10 +17,14 @@
 ///
 ///  *********************************************
 
+/// GAMBIT
 #include "gambit/Printers/printers/hdf5reader.hpp"
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/logger.hpp"
+
+/// BOOST
+#include <boost/preprocessor/seq/for_each_i.hpp>
 
 namespace Gambit {
   namespace Printers {

@@ -35,9 +35,11 @@
 ///  *********************************************
 
 #include "gambit/Elements/spectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/SimpleSpectra/SMSimpleSpec.hpp" // For auto-creation of simple SM low-energy SubSpectrum
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/file_lock.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 //#define SPECTRUM_DEBUG
 
@@ -74,8 +76,7 @@ namespace Gambit
    Spectrum::Spectrum() : input_Param(NULL), mass_cuts(NULL), mass_ratio_cuts(NULL), initialised(false) {}
 
    /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-   Spectrum::Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params,
-    const mc_info& mci, const mr_info& mri)
+   Spectrum::Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params, const mc_info& mci, const mr_info& mri)
      : LE_new(le.clone())
      , HE_new(he.clone())
      , LE(LE_new.get())

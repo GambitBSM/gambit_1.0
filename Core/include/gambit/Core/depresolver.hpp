@@ -31,16 +31,26 @@
 
 #include "gambit/Core/core.hpp"
 #include "gambit/Core/error_handlers.hpp"
-#include "gambit/Core/yaml_parser.hpp"
-#include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Elements/type_equivalency.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
 
 namespace Gambit
-{
+{  
+  /// Forward declare printers
+  namespace Printers { class BasePrinter; }
+
+  /// Forward declare some Util classes
+  namespace Utils { class type_equivalency; }
+
+  /// Forward declare some YAML/options objects
+  namespace IniParser { 
+     namespace Types { class Observable; }
+     typedef Types::Observable ObservableType; 
+     typedef std::vector<ObservableType> ObservablesType;
+     class IniFile; 
+  }
 
   namespace DRes
   {
@@ -72,12 +82,8 @@ namespace Gambit
     /// function name).
     struct Rule
     {
-      Rule(std::string function, std::string module) : function(function), module(module) {};
-      Rule(IniParser::ObservableType t)
-      {
-        module = t.module;
-        function = t.function;
-      };
+      Rule(const std::string& function, const std::string& module);
+      Rule(const IniParser::ObservableType& t);
       std::string function;
       std::string module;
     };
@@ -85,14 +91,8 @@ namespace Gambit
     /// Information in parameter queue
     struct QueueEntry
     {
-      QueueEntry() {}
-      QueueEntry(sspair a, DRes::VertexID b, int c, bool d)
-      {
-        first = a;
-        second = b;
-        third = c;
-        printme = d;
-      }
+      QueueEntry();
+      QueueEntry(sspair a, DRes::VertexID b, int c, bool d);
       sspair first;
       DRes::VertexID second;
       int third;

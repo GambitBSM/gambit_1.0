@@ -247,7 +247,7 @@ namespace Gambit
        // #endif
        std::ostringstream logmsg;
        logmsg << "  log_debug_messages = ";
-       if(log_debug_messages) logmsg << "true; log messages tagged as 'Debug' WILL be logged. " << endl << "WARNING: This may lead to very large log files!";
+       if(log_debug_messages) logmsg << "true; log messages tagged as 'Debug' WILL be logged. " << std::endl << "WARNING: This may lead to very large log files!";
        else
        {
           // Add "Debug" tag to the global ignore list
@@ -289,14 +289,14 @@ namespace Gambit
             {
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
-              errormsg << "If you have an entry something like this:"<< endl
-                       << "  Logger:" << endl
-                       << "    redirection:" << endl
-                       << "    [" << *stag << "] : \"blah.log\"" << endl
-                       << "in your yaml file, then you probably should remove the last line.  The LogTag" << endl
-                       << "\"" << *stag << "\" is not recognised by the logger system.  This commonly happens" << endl
-                       << "if you try to redirect log output for a module that either doesn't exist, or was" << endl
-                       << "ditched at cmake time." << endl;
+              errormsg << "If you have an entry something like this:"<< std::endl
+                       << "  Logger:" << std::endl
+                       << "    redirection:" << std::endl
+                       << "    [" << *stag << "] : \"blah.log\"" << std::endl
+                       << "in your yaml file, then you probably should remove the last line.  The LogTag" << std::endl
+                       << "\"" << *stag << "\" is not recognised by the logger system.  This commonly happens" << std::endl
+                       << "if you try to redirect log output for a module that either doesn't exist, or was" << std::endl
+                       << "ditched at cmake time." << std::endl;
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";

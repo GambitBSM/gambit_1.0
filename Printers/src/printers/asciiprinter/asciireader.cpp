@@ -16,6 +16,7 @@
 ///  \date 2016 Jan
 ///
 ///  *********************************************
+#include <cstring>
 
 #include "gambit/Printers/printers/asciireader.hpp"
 #include "gambit/Utils/util_functions.hpp"

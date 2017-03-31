@@ -21,6 +21,8 @@
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
 #include "gambit/Utils/table_formatter.hpp"
+#include "gambit/Utils/regex.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 
 namespace Gambit
 {

@@ -17,6 +17,7 @@
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>

@@ -1,6 +1,7 @@
 
 #include "gambit/Printers/printer_id_tools.hpp"
 #include "gambit/Logs/logger.hpp"
+#include <unordered_map>
 
 namespace Gambit
 {

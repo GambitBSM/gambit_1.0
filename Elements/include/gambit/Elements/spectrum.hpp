@@ -39,12 +39,15 @@
 
 #include <complex>
 
-#include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/yaml_options.hpp"
+#include "yaml-cpp/yaml.h"
+
+//#include "gambit/Utils/util_functions.hpp"
+//#include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Elements/sminputs.hpp"
-#include "gambit/Elements/subspectrum.hpp"
-#include "gambit/Elements/slhaea_helpers.hpp"
-#include "gambit/Models/partmap.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
+//#include "gambit/Elements/subspectrum.hpp"
+//#include "gambit/Elements/slhaea_helpers.hpp"
+//#include "gambit/Models/partmap.hpp"
 
 
 /// YAML overloads for mass cut and mass cut ratio constituents
@@ -105,6 +108,10 @@ namespace YAML
 
 namespace Gambit
 {
+   /// Forward declarations
+   class SubSpectrum;
+   class Options;
+   template <typename TYPE> class safe_ptr;
 
    /// "Standard Model" (low-energy) plus high-energy model container class
    class Spectrum

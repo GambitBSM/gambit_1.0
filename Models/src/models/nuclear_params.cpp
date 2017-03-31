@@ -16,6 +16,7 @@
 //  *********************************************
 
 #include "gambit/Models/model_macros.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Elements/numerical_constants.hpp"
 

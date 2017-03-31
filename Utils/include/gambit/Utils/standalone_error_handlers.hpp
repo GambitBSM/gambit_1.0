@@ -18,10 +18,13 @@
 #ifndef __standalone_error_handlers_hpp__
 #define __standalone_error_handlers_hpp__
 
-#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Utils/exceptions.hpp" // Can just forward declare
 
 namespace Gambit
 {
+  /// Forward declarations
+  class error;
+  class warning;
 
   /// Utility errors
   error& utils_error();

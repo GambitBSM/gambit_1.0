@@ -45,11 +45,12 @@
 #include <algorithm>
 #include <omp.h>
 
+#include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
-#include "gambit/Utils/model_parameters.hpp"
-#include "gambit/Logs/logger.hpp"
+// #include "gambit/Utils/util_functions.hpp"
+// #include "gambit/Utils/model_parameters.hpp"
+// #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logmaster.hpp" // Need full declaration of LogMaster class
 
 /// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
@@ -61,6 +62,12 @@
 
 namespace Gambit
 {
+  /// Shorthand for a standard string
+  typedef std::string str;
+  /// Shorthand for a pair of standard strings
+  typedef std::pair<str, str> sspair;
+  /// Shorthand for a pair of doubles
+  typedef std::pair<double, double> ddpair;
 
   /// Forward declaration of Printers::BasePrinter class for use in print functions.
   namespace Printers { class BasePrinter; }
@@ -68,6 +75,10 @@ namespace Gambit
   /// Forward declaration of Models::ModelFunctorClaw class for use in constructors.
   namespace Models { class ModelFunctorClaw; }
 
+  /// Forward declaration of Gambit namespace classes
+  class Options;
+  class ModelParameters;
+ 
   /// Type redefinition to get around icc compiler bugs.
   template <typename TYPE, typename... ARGS>
   struct variadic_ptr { typedef TYPE(*type)(ARGS..., ...); };
