@@ -37,7 +37,7 @@
 /// Macro for assigning a single allowed model to an entire backend.
 #define BE_ALLOW_MODEL(MODEL) MODULE_ALLOWED_MODEL(BackendIniBit,           \
  CAT_4(BACKENDNAME,_,SAFE_VERSION,_init), MODEL)                            \
-        
+
 /// Make the inUse pipe for a given backend functor.                        
 #define MAKE_INUSE_POINTER(NAME)                                            \
   namespace BackendIniBit                                                   \

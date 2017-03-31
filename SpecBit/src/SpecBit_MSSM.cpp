@@ -20,6 +20,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no)
+///  \date 2016 June
+///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015, 2016
@@ -425,11 +429,70 @@ namespace Gambit
     // Functions to changes the capability associated with a Spectrum object to
     // "SM_spectrum"
     //TODO: "temporarily" removed
-    //void convert_MSSM_to_SM   (Spectrum &result) {result = *Pipes::convert_MSSM_to_SM::Dep::unimproved_MSSM_spectrum;}
+    //void convert_MSSM_to_SM   (/*TAG*/ Spectrum &result) {result = *Pipes::convert_MSSM_to_SM::Dep::unimproved_MSSM_spectrum;}
 
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
+    void get_CMSSM_spectrum_SPheno (Spectrum& spectrum)
+    {
+      namespace myPipe = Pipes::get_CMSSM_spectrum_SPheno;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+
+      // Get the spectrum from the Backend
+      myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      // Get the SLHA struct from the spectrum object
+      SLHAstruct slha = spectrum.getSLHAea(1);
+
+      // Convert into a spectrum object
+      spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha,slha,mass_cut,mass_ratio_cut);
+
+    }
+
+    void get_MSSMatMGUT_spectrum_SPheno (Spectrum& spectrum)
+    {
+      namespace myPipe = Pipes::get_MSSMatMGUT_spectrum_SPheno;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+       // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+ 
+      // Get the spectrum from the Backend
+      myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      // Get the SLHA struct from the spectrum object
+      SLHAstruct slha = spectrum.getSLHAea(1);
+
+      // Convert into a spectrum object
+      spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha,slha,mass_cut,mass_ratio_cut);
+
+    }
+
+    void get_MSSMatQ_spectrum_SPheno (Spectrum& spectrum)
+    {
+      namespace myPipe = Pipes::get_MSSMatQ_spectrum_SPheno;
+      const SMInputs &sminputs = *myPipe::Dep::SMINPUTS;
+
+      // Retrieve any mass cuts
+      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+ 
+      // Get the spectrum from the Backend
+      myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
+
+      // Get the SLHA struct from the spectrum object
+      SLHAstruct slha = spectrum.getSLHAea(1);
+
+      // Convert into a spectrum object
+      spectrum = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(slha,slha,mass_cut,mass_ratio_cut);
+
+    }
 
     void most_SMlike_Higgs_MSSM(int &result)
     {

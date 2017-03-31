@@ -12,6 +12,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Aug
 ///
+///  \author Tomas Gonzalo
+///	     (t.e.gonzalo@fys.uio.no)
+///  \date 2016 Mar - June
+///
 ///  *********************************************
 
 #ifndef __SpecBit_tests_hpp__
@@ -23,6 +27,11 @@
    START_CAPABILITY
 
      #define FUNCTION MSSMspectrum_test
+     START_FUNCTION(bool)
+     DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
+     #undef FUNCTION
+
+     #define FUNCTION SPheno_MSSM_test
      START_FUNCTION(bool)
      DEPENDENCY(unimproved_MSSM_spectrum, Spectrum)
      #undef FUNCTION

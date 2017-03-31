@@ -66,14 +66,14 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 4000
+      nlive: 10
       tol: 0.5
       updInt: 1
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 7200
+      NP: 10
       convthresh: 1e-3
       verbosity: 1
 

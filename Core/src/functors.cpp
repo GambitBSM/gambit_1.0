@@ -20,7 +20,7 @@
 
 // Instantiate the module functor templates for all required types
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,MODULE_FUNCTOR_TYPES)
-INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
+//INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
 
 // Instantiate the backend functor templates for all required types 
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)
