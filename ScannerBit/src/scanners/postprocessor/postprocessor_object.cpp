@@ -76,13 +76,18 @@ namespace Gambit
         /// First compute number of points left to process
         std::size_t left_to_process = 0;
         std::size_t prev_chunk_end = 0;
+        bool first_chunk = true;
         for(ChunkSet::const_iterator it=done_chunks.begin();
              it!=done_chunks.end(); ++it)
         {
           // total_done_length += it->length();
           // Whoops, cannot just add lengths, because done_chunks can overlap. Need to add up the actual gaps
           // between them
-           long long int gap_size = it->start - prev_chunk_end;
+           long long int gap_size = it->start;  // e.g. done_chunk starts at say '5';
+           if(not first_chunk) gap_size -= (prev_chunk_end+1); // e.g. previous chunk finished at '1'; then gap_size is len(2,3,4) = 3 = 5 - 2. Unless no previous chunk, then gap_size is len(0,1,2,3,4) = 5.
+           if(rank==0) std::cout << "examining done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
+           if(rank==0) std::cout << "first? "<<first_chunk<<", prev_chunk_end = "<<prev_chunk_end<<std::endl;
+           if(rank==0) std::cout << "gap_size = " << gap_size <<std::endl;
            if(gap_size>0)
            {
               left_to_process += gap_size;
@@ -91,17 +96,23 @@ namespace Gambit
            // (they are ordered only based on the start index) 
            // so we can skip it, or rather "merge" their lengths by just updating the 
            // prev_chunk_end location if it has increased.
-           if(it->end > prev_chunk_end)
+           if(first_chunk or it->end > prev_chunk_end)
            {
+             first_chunk = false;
              prev_chunk_end = it->end;
            }
+           if(rank==0) std::cout << "left_to_process = " << left_to_process <<std::endl;
         }
         // ...and add gap from last done_chunk to the end of the dataset
-        long long int last_gap_size = dset_length - prev_chunk_end;
+        long long int last_gap_size = dset_length;
+        if(not first_chunk) last_gap_size -= (prev_chunk_end+1); // e.g. dataset ends at 9 (length 10); previous chunk finished at 6; last_gap_size = len(7,8,9) = 3 = 10 - (6+1)
+        if(rank==0) std::cout << "dset_length = " << dset_length <<std::endl;
+        if(rank==0) std::cout << "last_gap_size = " << last_gap_size <<std::endl;
         if(last_gap_size>0)
         {
            left_to_process += last_gap_size;
         }
+        if(rank==0) std::cout << "left_to_process = " << left_to_process <<std::endl;
         // Done! Sanity check.
         if(left_to_process > dset_length)
         {
@@ -119,30 +130,42 @@ namespace Gambit
         realchunk.eff_length = eff_chunk.length(); // Record real number of points that will be processed from this chunk
         //std::cout << "Rank "<<rank<<": Converting to real dataset indices..." <<std::endl;
         prev_chunk_end = 0; // Reset
+        first_chunk = true; // Reset
         bool found_start = false;
         bool found_end = false;
+        if(rank==0) std::cout << "Computing real dataset indices..." <<std::endl;
         for(ChunkSet::const_iterator it=done_chunks.begin();
              it!=done_chunks.end(); ++it)
         {
            // Need to add up the size of the gaps between chunks until we exceed the "effective" start/end positions,
            // then get the real indices by measuring back from the start of the done_chunk we are up to.
            //std::cout << "Rank "<<rank<<": Getting next done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl; 
-           long long int gap_size = it->start - prev_chunk_end;
+           long long int gap_size = it->start;  // e.g. done_chunk starts at say '5';
+           if(not first_chunk) gap_size -= (prev_chunk_end+1); // e.g. previous chunk finished at '1'; then gap_size is len(2,3,4) = 3 = 5 - 2. Unless no previous chunk, then gap_size is len(0,1,2,3,4) = 5.
+           if(rank==0) std::cout << "examining done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
+           if(rank==0) std::cout << "first? "<<first_chunk<<", prev_chunk_end = "<<prev_chunk_end<<std::endl;
+           if(rank==0) std::cout << "gap_size = " << gap_size <<std::endl;
            if(gap_size>0)
            {
               count += gap_size;
               //std::cout << "Rank "<<rank<<": count = "<<count<<" (added gap of size "<<gap_size<<"; done_chunk.start="<<it->start<<" - prev_chunk_end="<<prev_chunk_end<<")"<<std::endl;
+              if(rank==0) std::cout << "count = " << count <<std::endl;
+              if(rank==0) std::cout << "eff_chunk.start = " << eff_chunk.start <<std::endl;
               if(not found_start and count >= eff_chunk.start)
               {
-                 std::size_t overshoot = count - eff_chunk.start;
-                 realchunk.start = it->start - overshoot;
+                 std::size_t overshoot = count - eff_chunk.start; // If count is 3 and our chunk is supposed to start at the first 'not done' point (index 0), we have overshot by 3 - 0 = 3 positions.
+                 realchunk.start = it->start - overshoot; // So our start point is 5 - 3 = 2
+                 if(rank==0) std::cout << "start overshoot = " << overshoot <<std::endl;
+                 if(rank==0) std::cout << "realchunk.start = " << realchunk.start <<std::endl;
                  //std::cout << "Rank "<<rank<<": found start of chunk! realchunk.start = "<<realchunk.start<<", eff_chunk.start = "<<eff_chunk.start<<", overshoot = "<<overshoot<<std::endl;
                  found_start = true;
               }
               if(not found_end and count >= eff_chunk.end)
               {
-                 std::size_t overshoot = count - eff_chunk.end;
+                 std::size_t overshoot = count - eff_chunk.end; // Suppose our chunk should also end on the first 'not done' point (i.e. we have only one point assigned). Then we have the same calculation as above for the end.
                  realchunk.end = it->start - overshoot;
+                 if(rank==0) std::cout << "end overshoot = " << overshoot <<std::endl;
+                 if(rank==0) std::cout << "realchunk.end = " << realchunk.end <<std::endl;
                  found_end = true;
                  //std::cout << "Rank "<<rank<<": found end of chunk! realchunk.end = "<<realchunk.end<<", eff_chunk.end = "<<eff_chunk.end<<", overshoot = "<<overshoot<<std::endl;
                  break;
@@ -152,10 +175,12 @@ namespace Gambit
            // (they are ordered only based on the start index) 
            // so we can skip it, or rather "merge" their lengths by just updating the 
            // prev_chunk_end location if it has increased.
-           if(it->end > prev_chunk_end)
+           if(first_chunk or it->end > prev_chunk_end)
            {
+             first_chunk = false;
              prev_chunk_end = it->end;
            }
+
            //std::cout << "Rank "<<rank<<": set prev_chunk_end to "<<prev_chunk_end<<std::endl;
         }
         // If the chunk we need to process starts or finishes after the last done chunk,
@@ -163,7 +188,8 @@ namespace Gambit
         // dataset.
         if(not found_start or not found_end)
         {
-           long long int last_gap_size = dset_length - prev_chunk_end;
+           long long int last_gap_size = dset_length;
+           if(not first_chunk) last_gap_size -= (prev_chunk_end+1); // e.g. dataset ends at 9 (length 10); previous chunk finished at 6; last_gap_size = len(7,8,9) = 3 = 10 - (6+1)
            if(last_gap_size<0)
            {
               std::ostringstream err;
@@ -174,8 +200,10 @@ namespace Gambit
            //std::cout << "Rank "<<rank<<": count = "<<count<<" (added LAST gap of size "<<last_gap_size<<"; dset_length="<<dset_length<<" - prev_chunk_end="<<prev_chunk_end<<")"<<std::endl;
            if(not found_start)
            {
-              std::size_t overshoot = count - eff_chunk.start;
-              realchunk.start = dset_length - overshoot;
+              std::size_t overshoot = count - eff_chunk.start; // ok so from above count=3, say. Suppose eff_chunk.start=0. overshoot=3
+              realchunk.start = dset_length - overshoot; // Then we want to start at index 7 = 10 - 3
+              if(rank==0) std::cout << "final start overshoot = " << overshoot <<std::endl;
+              if(rank==0) std::cout << "realchunk.start = " << realchunk.start <<std::endl;
               found_start = true;
            }
            if(not found_end)
@@ -183,20 +211,40 @@ namespace Gambit
               std::size_t overshoot = count - eff_chunk.end;
               realchunk.end = dset_length - overshoot;
               found_end = true;
+              if(rank==0) std::cout << "final end overshoot = " << overshoot <<std::endl;
+              if(rank==0) std::cout << "realchunk.end = " << realchunk.end <<std::endl;
            }
         }
         // Basic sanity checks
-        if(realchunk.start > dset_length)
+        if(realchunk.start >= dset_length)
         {
            std::ostringstream err;
            err << "Rank "<<rank<<" chunk calculation returned nonsense! Assigned start of chunk ("<<realchunk.start<<") exceeds length of dataset ("<<dset_length<<") (end of chunk was "<<realchunk.end<<"). This is a bug in the postprocessor, please report it." <<std::endl;
            Scanner::scan_error().raise(LOCAL_INFO,err.str());
         }
-        if(realchunk.end > dset_length)
+        if(realchunk.end >= dset_length)
         {
            std::ostringstream err;
            err << "Rank "<<rank<<" chunk calculation returned nonsense! Assigned end of chunk ("<<realchunk.end<<") exceeds length of dataset ("<<dset_length<<") (start of chunk was "<<realchunk.start<<"). This is a bug in the postprocessor, please report it." <<std::endl;
            Scanner::scan_error().raise(LOCAL_INFO,err.str());
+        }
+        // Final sanity checks
+        // Make sure the new chunk of assigned points doesn't start or end on a "done" point!
+        // Comment out for speed once debugging done
+        for(ChunkSet::const_iterator it=done_chunks.begin();
+             it!=done_chunks.end(); ++it)
+        {
+           if(   it->end==realchunk.start  
+              or it->end==realchunk.end  
+              or it->start==realchunk.start  
+              or it->start==realchunk.end)
+           { 
+              std::ostringstream err;
+              err << "Rank "<<rank<<" chunk calculation returned nonsense! The assigned chunk start or end point is already listed as 'done'! This is a bug in the postprocessor, please report it. Debug output:" <<std::endl;
+              err << "Assigned chunk: ["<<realchunk.start << ", " <<realchunk.end<<"]"<<std::endl; 
+              err << "Conflicting done_chunk: ["<<it->start << ", " <<it->end<<"]"<<std::endl; 
+              Scanner::scan_error().raise(LOCAL_INFO,err.str());
+           }
         }
         return realchunk;
       }
@@ -795,6 +843,7 @@ namespace Gambit
            if(loopi>mychunk.end)
            {
               std::cout << "Rank "<<rank<<" has reached the end of its batch, stopping iteration." << std::endl;
+              loopi--; // Return counter to the last index that we actually processed.
               break;
            }
 

@@ -233,8 +233,8 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        {
           done_chunks = get_done_points(settings.root);
           // For debugging: report on the retrieved chunks
-          for(auto it=done_chunks.begin(); it!=done_chunks.end(); ++it)
-             std::cout << "Rank "<<rank<<": retrieved done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
+          //for(auto it=done_chunks.begin(); it!=done_chunks.end(); ++it)
+          //   std::cout << "Rank "<<rank<<": retrieved done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
        }
 
        bool do_redistribution = false;
@@ -351,8 +351,10 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     std::cout << "Rank "<< rank<< ": Done!" << std::endl;
 
     // Test barrier to see if everyone made it
+    #ifdef WITH_MPI
     ppComm.Barrier();
     if(rank==0) std::cout << "Passed final PP barrier" << std::endl;
+    #endif
     return 0;
   }
 }

@@ -36,8 +36,9 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 1000
+      nlive: 10000
       tol: 0.01
+      updInt: 5000
       mmodal: false
       # write native MultiNest ascii output files?
       outfile: true # yes, need them for resuming
