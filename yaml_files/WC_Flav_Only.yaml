@@ -167,7 +167,6 @@ Logger:
     [DarkBit] : "DarkBit.log"
     [PrecisionBit] : "PrecisionBit.log"
     [FlavBit] : "FlavBit.log"
-    [ColliderBit] : "ColliderBit.log"
     [SpecBit] : "SpecBit.log"
     [Dependency Resolver] : "dep_resolver.log"
 
@@ -182,4 +181,4 @@ KeyValues:
 
   default_output_path: "runs/WC/"
 
-  debug: false
+  debug: true
