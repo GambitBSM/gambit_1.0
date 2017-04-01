@@ -21,47 +21,50 @@
 #include "gambit/FlavBit/FlavBit_types.hpp"
 #include "gambit/FlavBit/flav_obs.hpp"
 
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/vector_proxy.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/triangular.hpp>
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
-
 
 namespace Gambit
 {
+
   namespace FlavBit
   {
 
     using namespace std;
     namespace ublas = boost::numeric::ublas;
 
-/* Matrix inversion routine.
-   Uses lu_factorize and lu_substitute in uBLAS to invert a matrix */
-    template<class T>
-    bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse) {
-      using namespace boost::numeric::ublas;
-      typedef permutation_matrix<std::size_t> pmatrix;
-      // create a working copy of the input
-      matrix<T> A(input);
-      // create a permutation matrix for the LU-factorization
-      pmatrix pm(A.size1());
 
-      // perform LU-factorization
-      int res = lu_factorize(A,pm);
-      if( res != 0 ) return false;
+    /// Implementation of Kstarmumu_theory_errr methods
+    /// @{
 
-      // create identity matrix of "inverse"
-      inverse.assign(ublas::identity_matrix<T>(A.size1()));
-
-      // backsubstitute to get the inverse
-      lu_substitute(A, pm, inverse);
-
-      return true;
+    /// Constructor
+    Kstarmumu_theory_errr::Kstarmumu_theory_errr()
+    {
+      size_obs=476+1;
+      names_obs= std:: vector<str>(size_obs);
+      #include "gambit/FlavBit/BKstarmumu_theory_error_names.hpp"
+      for(int i=0;i<size_obs;++i)
+      {
+        map_kstarmumu[names_obs[i]]=i;
+        covariance.push_back(std::vector<double>(size_obs));
+      }
+      #include "gambit/FlavBit/BKstarmumu_theory_error_matrix.hpp"
     }
+
+
+    /// Return theory error covariance matrix for selected observables
+    boost::numeric::ublas::matrix<double> Kstarmumu_theory_errr::get_cov_theory(std::vector<str> observables)
+    {
+     boost::numeric::ublas::matrix<double> cov_th(observables.size(), observables.size());
+     for(unsigned i=0;i<observables.size();++i)
+     {
+       for(unsigned j=0;j<observables.size();++j)
+       {
+         cov_th(i,j)=covariance[map_kstarmumu[observables[i]]][map_kstarmumu[observables[j]]];
+       }
+     }
+     return  cov_th;
+    }
+    /// @}
+
 
     /// Extraction operator for correlation
     void operator >> (const YAML::Node& node, Correlation& c)
@@ -114,13 +117,13 @@ namespace Gambit
       YAML::Node doc = YAML::Load(fin);
       number_measurements=0;
       for(unsigned i=0;i<doc.size();++i)
-	{
-	  Measurement mes_tmp;
-	  doc[i] >> mes_tmp;
-	  if(debug) print(mes_tmp);
-	  measurements.push_back(mes_tmp);
-	  number_measurements++;
-	}
+        {
+          Measurement mes_tmp;
+          doc[i] >> mes_tmp;
+          if(debug) print(mes_tmp);
+          measurements.push_back(mes_tmp);
+          number_measurements++;
+        }
       if(debug) cout<<"Number of measurements: "<<number_measurements<<endl;
       return OK;
     }
@@ -166,157 +169,105 @@ namespace Gambit
 
     void Flav_reader::create_global_corr()
     {
-      // initializing diag correlation matrix
-      //  vector < vector < double > > glob_correlation(number_measurements, vector<double>(number_measurements));
-      //glob_correlation = vector < vector < double > > (number_measurements, vector<double>(number_measurements));
+      // Initialising diagonal correlation matrix
       M_glob_correlation = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_correlation_inv = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov_inv = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
 
       for(int i =0; i<number_measurements;++i)
-	{
-	  for(int j=0;j<number_measurements;++j)
-	    {
-	      M_glob_correlation(i,j)=0.;
-	      if(i==j) M_glob_correlation(i,j)=1.;
-	    }
-	}
-      //  print_corr_matrix() ;
-      // fill with correlations from cards
+      {
+        for(int j=0;j<number_measurements;++j)
+        {
+          M_glob_correlation(i,j)=0.;
+          if(i==j) M_glob_correlation(i,j)=1.;
+        }
+      }
 
       for(int i=0; i<number_measurements; ++i)
-	{
-    #ifdef FLAVBIT_DEBUG
-  	  cout<<"Correlation size: "<< measurements[i].corr.size()<<endl;
-    #endif
-	  for ( unsigned icorr=0; icorr< measurements[i].corr.size(); ++icorr)
-	    {
+      {
         #ifdef FLAVBIT_DEBUG
-  	      cout<<"Searching for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
+          cout<<"Correlation size: "<< measurements[i].corr.size()<<endl;
         #endif
-	      int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
-	      M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
-	      //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];
-	    }
-	}
-      if(debug) print_corr_matrix();
-      bool ok=Flav_reader::check_corr_matrix();
-      if(!ok) return;
-      //if(ok) InvertMatrix(M_glob_correlation, M_glob_correlation_inv);
+        for ( unsigned icorr=0; icorr< measurements[i].corr.size(); ++icorr)
+        {
+          #ifdef FLAVBIT_DEBUG
+            cout<<"Searching for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
+          #endif
+          int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
+          M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
+          //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];
+        }
+      }
 
-      //  if(debug)  print_corr_inv_matrix();
-      // now creating the Covariance matrix
+      if (debug) print_matrix(M_glob_correlation,"Correlation Matrix:");
+
+      check_corr_matrix();
+
+      // Create the Covariance matrix
       for(int i=0; i<number_measurements;++i)
-	{
-	  for(int j=0;j<number_measurements;++j)
-	    {
-	      M_glob_cov(i,j)=M_glob_correlation(i,j)*(measurements[i].exp_error)*(measurements[j].exp_error);
+      {
+        for(int j=0;j<number_measurements;++j)
+        {
+          M_glob_cov(i,j)=M_glob_correlation(i,j)*(measurements[i].exp_error)*(measurements[j].exp_error);
+        }
+      }
+      if (debug) print_matrix(M_glob_cov,"Covariance Matrix:");
 
-	    }
-	}
-      print_cov_matrix();
-
-      // InvertMatrix(M_glob_correlation, M_glob_cov_inv);
-
-      if(debug) cout<<"Inverting: "<<endl;
-      if(debug) cout<<M_glob_cov<<endl;
-
-      InvertMatrix(M_glob_cov, M_glob_cov_inv);
-
-
-      if(debug) cout<<"Inverted"<<endl;
-      if(debug) cout<<M_glob_cov_inv<<endl;
-
-      // declare the the measurement vector
+      // Declare the the measurement vector
       M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,1);
 
       for(int i=0; i<number_measurements;++i)
-	{
-	  M_measurement(i,0)=measurements[i].exp_value;
-	}
-      if(debug) cout<<M_measurement<<endl;
-
+      {
+        M_measurement(i,0)=measurements[i].exp_value;
+      }
+      if (debug) print_matrix(M_measurement, "Measurements:");
 
       th_err= boost::numeric::ublas::matrix<double> (number_measurements,1);
       for(int i=0; i<number_measurements;++i)
-	{
-	  th_err(i,0)=measurements[i].th_error;
-	}
-
-
-      if(debug) cout<<th_err<<endl;
-
+      {
+        th_err(i,0)=measurements[i].th_error;
+      }
+      if (debug) print_matrix(th_err, "Theory errors:");
 
     }
 
     int Flav_reader::get_measurement_for_corr(string ss)
     {
       for(int i=0;i<number_measurements;++i)
-	{
-	  if(measurements[i].name == ss) return i;
-
-	}
+      {
+        if(measurements[i].name == ss) return i;
+      }
       cout<<"Error!, didn't find measuremnet: "<<ss<<endl;
       return -1;
     }
-    void Flav_reader::print_corr_matrix()
+
+    void Flav_reader::print_matrix(boost::numeric::ublas::matrix<double>& M, str name)
     {
-      if(debug) cout<<"Correlation matrix:"<<endl;
-      if(debug)  cout<<M_glob_correlation<<endl; // this is ugly
-
-
-      if(debug){
-	for(int i=0; i < number_measurements; ++i)
-	  {
-	    for(int j=0 ; j< number_measurements; ++j)
-	      {
-		cout<<M_glob_correlation(i,j)<<"\t";
-
-	      }
-	    cout<<endl;
-	  }
-      }
-    }
-
-    void Flav_reader::print_cov_matrix()
-    {
-      if(debug) cout<<"Mean Cov matrix:"<<endl;
-      if(debug) cout<<M_glob_cov<<endl; // this is ugly
-      if(debug) cout<<"Mean Cov matrix"<<endl;
-      if(debug)
+      cout<<name<<endl;
+      for(int i=0; i < number_measurements; ++i)
       {
-        for(int i=0; i < number_measurements; ++i)
-        {
-          for( int j=0 ; j< number_measurements; ++j)
-            {
-              cout<<M_glob_cov(i,j)<<"\t";
-            }
-          cout<<endl;
-        }
+        for(int j=0 ; j< number_measurements; ++j) cout<<M(i,j)<<"\t";
+        cout<<endl;
       }
-      if(debug)  cout<<"finishing printing"<<endl;
     }
 
-    bool Flav_reader::check_corr_matrix()
+    void Flav_reader::check_corr_matrix()
     {
-      bool OK= true;
       for( int i=0; i < number_measurements; ++i)
       {
         for( int j=0 ; j< number_measurements; ++j)
         {
-          if(i==j&&M_glob_correlation(i,i)!=1) { cout<<"Error, diagonal element diff. 1!!"<<endl; return false; }
-          if(M_glob_correlation(i,j) !=M_glob_correlation(j,i))
+          if (i==j&&M_glob_correlation(i,i)!=1)
+          {
+            FlavBit_error().raise(LOCAL_INFO, "Correlation matrix diagonal element differs from 1!");
+          }
+          if (M_glob_correlation(i,j) !=M_glob_correlation(j,i))
           {
             cout << "Correlation matrix " << i << "," << j << " = " << M_glob_correlation(i,j) << endl;
             cout << "Correlation matrix " << i << "," << j << " = " << M_glob_correlation(j,i) << endl;
             FlavBit_error().raise(LOCAL_INFO, "Correlation matrix not symmetric");
-            return false;
           }
         }
       }
-      return OK;
     }
 
   }

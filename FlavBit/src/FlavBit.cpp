@@ -47,11 +47,6 @@
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Utils/statistics.hpp"
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/triangular.hpp>
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/io.hpp>
-
 //#define FLAVBIT_DEBUG
 //#define FLAVBIT_DEBUG_LL
 
@@ -77,39 +72,6 @@ namespace Gambit
     #else
       false;
     #endif
-
-    // **************************************************
-    // Non-rollcalled helper functions unknown to GAMBIT
-    // **************************************************
-
-    /// Matrix inversion routine using Boost
-    template<class T>
-    bool InvertMatrix (const ublas::matrix<T>& input, ublas::matrix<T>& inverse)
-    {
-      using namespace boost::numeric::ublas;
-      typedef permutation_matrix<std::size_t> pmatrix;
-      // create a working copy of the input
-      matrix<T> A(input);
-      // create a permutation matrix for the LU-factorization
-      pmatrix pm(A.size1());
-
-      // perform LU-factorization
-      int res = lu_factorize(A,pm);
-      if ( res != 0 ) return false;
-
-      // create identity matrix of "inverse"
-      inverse.assign(ublas::identity_matrix<T>(A.size1()));
-
-      // backsubstitute to get the inverse
-      lu_substitute(A, pm, inverse);
-
-      return true;
-    }
-
-
-    // **************************************************
-    // Rollcalled functions properly hooked up to Gambit
-    // **************************************************
 
     /// Fill SuperIso model info structure
     void SI_fill(parameters &result)
@@ -1642,7 +1604,6 @@ namespace Gambit
       diff=measurement_assym.diff;
       boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
       InvertMatrix(cov, cov_inv);
-
 
       double Chi2=0;
 

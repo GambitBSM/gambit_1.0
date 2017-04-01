@@ -62,8 +62,8 @@ BE_NAMESPACE
   void check_model(const parameters *param, const str& where)
   {
     bool known_model = false;
-    known_model = known_model and (param->model == -3 and param->SM == 1); // SM or a Flavour EFT model
-    known_model = known_model and (param->model >= 0);                     // SUSY/2HDM/other BSM model that SuperIso can handle explicitly
+    known_model = known_model or (param->model == -3 and param->SM == 1); // SM or a Flavour EFT model
+    known_model = known_model or (param->model >= 0);                     // SUSY/2HDM/other BSM model that SuperIso can handle explicitly
     if (not known_model) backend_error().raise(where, "SuperIso convenience function called with incompatible model.");
   }
 
