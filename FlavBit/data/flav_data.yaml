@@ -40,9 +40,9 @@
   exp_stat_error: 0.34e-4
   exp_sys_error: 0.0
   exp_source: PDG
-  th_error: 0.2
+  th_error: 0.19
   th_error_type: M
-  th_error_source: NONE
+  th_error_source: OWN_CALC_VUB_FROM_PDG16
   correlation:
   - name: NONE
 
