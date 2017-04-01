@@ -144,12 +144,14 @@ namespace Gambit
 #ifndef EXCLUDE_DELPHES
     bool useDelphesDetector;
     HEPUtilsAnalysisContainer globalAnalysesDet;
-#endif // not defined EXCLUDE_DELPHES
+#endif
 
     bool haveUsedBuckFastATLASDetector;
     bool haveUsedBuckFastCMSDetector;
     bool haveUsedBuckFastIdentityDetector;
+#ifndef EXCLUDE_DELPHES
     bool haveUsedDelphesDetector;
+#endif
 
 
 
@@ -193,13 +195,17 @@ namespace Gambit
       useBuckFastIdentityDetector = false;
       globalAnalysesIdentity.clear();
 
+#ifndef EXCLUDE_DELPHES
       useDelphesDetector = false;
       globalAnalysesDet.clear();
+#endif
 
       haveUsedBuckFastATLASDetector = false;
       haveUsedBuckFastCMSDetector = false;
       haveUsedBuckFastIdentityDetector = false;
+#ifndef EXCLUDE_DELPHES
       haveUsedDelphesDetector = false;
+#endif
 
      
       // Retrieve run options from the YAML file (or standalone code)
@@ -1399,8 +1405,10 @@ namespace Gambit
           cout << "DEBUG: calc_LHC_LogLike: Dep::CMSAnalysisNumbers->size()      = " << Dep::CMSAnalysisNumbers->size() << endl;
         if (haveUsedBuckFastIdentityDetector)
           cout << "DEBUG: calc_LHC_LogLike: Dep::IdentityAnalysisNumbers->size() = " << Dep::IdentityAnalysisNumbers->size() << endl;
+#ifndef EXCLUDE_DELPHES
         if (haveUsedDelphesDetector)
           cout << "DEBUG: calc_LHC_LogLike: Dep::DetAnalysisNumbers->size()      = " << Dep::DetAnalysisNumbers->size() << endl;
+#endif
       #endif
 
       if (haveUsedBuckFastATLASDetector)
