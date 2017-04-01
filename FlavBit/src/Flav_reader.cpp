@@ -2,7 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  FIXME
+///  Implementation of reader class for FlavBit YAML
+///  database.
 ///
 ///  *********************************************
 ///
@@ -13,13 +14,16 @@
 ///  \date 2016 July
 ///  \date 2016 August
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2017 Mar
+///
 ///  *********************************************
 
-#include "yaml-cpp/yaml.h"
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
-#include "gambit/FlavBit/FlavBit_types.hpp"
-#include "gambit/FlavBit/flav_obs.hpp"
+#include "gambit/FlavBit/FlavBit_rollcall.hpp"
+#include "gambit/FlavBit/Flav_reader.hpp"
 
 
 namespace Gambit
@@ -29,42 +33,6 @@ namespace Gambit
   {
 
     using namespace std;
-    namespace ublas = boost::numeric::ublas;
-
-
-    /// Implementation of Kstarmumu_theory_errr methods
-    /// @{
-
-    /// Constructor
-    Kstarmumu_theory_errr::Kstarmumu_theory_errr()
-    {
-      size_obs=476+1;
-      names_obs= std:: vector<str>(size_obs);
-      #include "gambit/FlavBit/BKstarmumu_theory_error_names.hpp"
-      for(int i=0;i<size_obs;++i)
-      {
-        map_kstarmumu[names_obs[i]]=i;
-        covariance.push_back(std::vector<double>(size_obs));
-      }
-      #include "gambit/FlavBit/BKstarmumu_theory_error_matrix.hpp"
-    }
-
-
-    /// Return theory error covariance matrix for selected observables
-    boost::numeric::ublas::matrix<double> Kstarmumu_theory_errr::get_cov_theory(std::vector<str> observables)
-    {
-     boost::numeric::ublas::matrix<double> cov_th(observables.size(), observables.size());
-     for(unsigned i=0;i<observables.size();++i)
-     {
-       for(unsigned j=0;j<observables.size();++j)
-       {
-         cov_th(i,j)=covariance[map_kstarmumu[observables[i]]][map_kstarmumu[observables[j]]];
-       }
-     }
-     return  cov_th;
-    }
-    /// @}
-
 
     /// Extraction operator for correlation
     void operator >> (const YAML::Node& node, Correlation& c)
@@ -99,6 +67,7 @@ namespace Gambit
       }
     }
 
+    /// Constructor that takes the location of the database as an argument
     Flav_reader::Flav_reader(string loc)
     {
       measurements=vector< Measurement >(0);
@@ -107,11 +76,11 @@ namespace Gambit
       use_S=true;
       use_P=false;
       number_measurements=0;
-   }
+    }
 
-    int Flav_reader::read_yaml(string name)
+    /// Read the entire database into memory
+    void Flav_reader::read_yaml(string name)
     {
-      int OK=1;
       string path=measurement_location+"/"+name;
       std::ifstream fin(path.c_str());
       YAML::Node doc = YAML::Load(fin);
@@ -124,10 +93,10 @@ namespace Gambit
           measurements.push_back(mes_tmp);
           number_measurements++;
         }
-      if(debug) cout<<"Number of measurements: "<<number_measurements<<endl;
-      return OK;
+      if (debug) cout<<"Number of measurements: "<<number_measurements<<endl;
     }
 
+    /// Read a single measurement from the database into memory
     void Flav_reader::read_yaml_measurement(string name, string measurement_name)
     {
       string path=measurement_location+"/"+name;
@@ -145,12 +114,11 @@ namespace Gambit
 
         measurements.push_back(mes_tmp);
         number_measurements++;
-        if (debug) cout << "Increasing " << measurement_name << " " << mes_tmp.name << " " << mes_tmp.exp_value << endl;
+        if (debug) cout << "Read in " << measurement_name << " " << mes_tmp.name << " " << mes_tmp.exp_value << endl;
       }
     }
 
-
-
+    /// Print a measurement previously read in from the database
     void Flav_reader::print(Measurement mes)
     {
       cout<<"################### Mesurement"<<endl;
@@ -167,21 +135,11 @@ namespace Gambit
       cout<<"########## END"<<endl;
     }
 
-    void Flav_reader::create_global_corr()
+    /// Compute the covariance matrix and populate the measurement and theory error vectors
+    void Flav_reader::initialise_matrices()
     {
-      // Initialising diagonal correlation matrix
-      M_glob_correlation = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-      M_glob_cov = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
-
-      for(int i =0; i<number_measurements;++i)
-      {
-        for(int j=0;j<number_measurements;++j)
-        {
-          M_glob_correlation(i,j)=0.;
-          if(i==j) M_glob_correlation(i,j)=1.;
-        }
-      }
-
+      // Create the correlation matrix
+      M_cor_cov = boost::numeric::ublas::identity_matrix<double>(number_measurements);
       for(int i=0; i<number_measurements; ++i)
       {
         #ifdef FLAVBIT_DEBUG
@@ -193,43 +151,43 @@ namespace Gambit
             cout<<"Searching for correlation: "<< measurements[i].corr[icorr].corr_name <<endl;
           #endif
           int i_corr_index=get_measurement_for_corr(measurements[i].corr[icorr].corr_name  );
-          M_glob_correlation(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
-          //M_glob_correlation(i_corr_index,i)=glob_correlation[i_corr_index][i];
+          M_cor_cov(i_corr_index,i)=measurements[i].corr[icorr].corr_val;
         }
       }
+      if (debug) print_matrix(M_cor_cov,"Correlation Matrix:");
 
-      if (debug) print_matrix(M_glob_correlation,"Correlation Matrix:");
+      // Make sure the correlation matrix is symmetric and has 1s on the diagonal
+      check_corr_matrix(M_cor_cov);
 
-      check_corr_matrix();
-
-      // Create the Covariance matrix
+      // Convert the correlation matrix to a covariance matrix
       for(int i=0; i<number_measurements;++i)
       {
         for(int j=0;j<number_measurements;++j)
         {
-          M_glob_cov(i,j)=M_glob_correlation(i,j)*(measurements[i].exp_error)*(measurements[j].exp_error);
+          M_cor_cov(i,j)=M_cor_cov(i,j)*(measurements[i].exp_error)*(measurements[j].exp_error);
         }
       }
-      if (debug) print_matrix(M_glob_cov,"Covariance Matrix:");
+      if (debug) print_matrix(M_cor_cov,"Covariance Matrix:");
 
-      // Declare the the measurement vector
-      M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,1);
-
+      // Construct the the measurement vector
+      M_measurements= boost::numeric::ublas::matrix<double> (number_measurements,1);
       for(int i=0; i<number_measurements;++i)
       {
-        M_measurement(i,0)=measurements[i].exp_value;
+        M_measurements(i,0)=measurements[i].exp_value;
       }
-      if (debug) print_matrix(M_measurement, "Measurements:");
+      if (debug) print_matrix(M_measurements, "Measurements:");
 
-      th_err= boost::numeric::ublas::matrix<double> (number_measurements,1);
+      // Construct the theory error vector
+      M_th_err= boost::numeric::ublas::matrix<double> (number_measurements,1);
       for(int i=0; i<number_measurements;++i)
       {
-        th_err(i,0)=measurements[i].th_error;
+        M_th_err(i,0)=measurements[i].th_error;
       }
-      if (debug) print_matrix(th_err, "Theory errors:");
+      if (debug) print_matrix(M_th_err, "Theory errors:");
 
     }
 
+    /// Find the second measurement that corresponds to a given correlation
     int Flav_reader::get_measurement_for_corr(string ss)
     {
       for(int i=0;i<number_measurements;++i)
@@ -240,6 +198,7 @@ namespace Gambit
       return -1;
     }
 
+    /// Print a boost ublas matrix
     void Flav_reader::print_matrix(boost::numeric::ublas::matrix<double>& M, str name)
     {
       cout<<name<<endl;
@@ -250,20 +209,21 @@ namespace Gambit
       }
     }
 
-    void Flav_reader::check_corr_matrix()
+    /// Check that a correlation matrix has 1s on the diagonal and is symmetric
+    void Flav_reader::check_corr_matrix(boost::numeric::ublas::matrix<double>& M)
     {
       for( int i=0; i < number_measurements; ++i)
       {
         for( int j=0 ; j< number_measurements; ++j)
         {
-          if (i==j&&M_glob_correlation(i,i)!=1)
+          if (i==j && M(i,i)!=1)
           {
             FlavBit_error().raise(LOCAL_INFO, "Correlation matrix diagonal element differs from 1!");
           }
-          if (M_glob_correlation(i,j) !=M_glob_correlation(j,i))
+          if (M(i,j) != M(j,i))
           {
-            cout << "Correlation matrix " << i << "," << j << " = " << M_glob_correlation(i,j) << endl;
-            cout << "Correlation matrix " << i << "," << j << " = " << M_glob_correlation(j,i) << endl;
+            cout << "Correlation matrix " << i << "," << j << " = " << M(i,j) << endl;
+            cout << "Correlation matrix " << i << "," << j << " = " << M(j,i) << endl;
             FlavBit_error().raise(LOCAL_INFO, "Correlation matrix not symmetric");
           }
         }

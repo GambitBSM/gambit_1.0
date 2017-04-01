@@ -42,10 +42,12 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #include "gambit/FlavBit/FlavBit_types.hpp"
+#include "gambit/FlavBit/Flav_reader.hpp"
+#include "gambit/FlavBit/Kstarmumu_theory_err.hpp"
+#include "gambit/FlavBit/flav_utils.hpp"
 #include "gambit/Elements/spectrum.hpp"
-#include "gambit/FlavBit/flav_obs.hpp"
-#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Utils/statistics.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 //#define FLAVBIT_DEBUG
 //#define FLAVBIT_DEBUG_LL
@@ -1470,7 +1472,7 @@ namespace Gambit
 
 
     /// Measurements for electroweak penguin decays
-    void b2sll_measurements(Flav_measurement_assym &measurement_assym)
+    void b2sll_measurements(predictions_measurements_covariances &pmc)
     {
       using namespace Pipes::b2sll_measurements;
 
@@ -1483,10 +1485,10 @@ namespace Gambit
       // Read and calculate things based on the observed data only the first time through, as none of it depends on the model parameters.
       if (first)
       {
-        measurement_assym.LL_name="b2sll_likelihood";
+        pmc.LL_name="b2sll_likelihood";
 
-        Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-        red.debug_mode(flav_debug);
+        Flav_reader fread(GAMBIT_DIR  "/FlavBit/data");
+        fread.debug_mode(flav_debug);
 
         const vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
         const vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
@@ -1501,82 +1503,82 @@ namespace Gambit
 
         for (unsigned i=0;i<observables.size();++i)
         {
-          red.read_yaml_measurement("flav_data.yaml", observables[i]);
+          fread.read_yaml_measurement("flav_data.yaml", observables[i]);
         }
 
-        red.create_global_corr();
-        measurement_assym.cov_exp = red.get_cov();
-        measurement_assym.value_exp = red.get_exp_value();
-        measurement_assym.cov_th = Kstarmumu_theory_errr().get_cov_theory(observables);
-        n_experiments = measurement_assym.cov_th.size1();
-        measurement_assym.value_th.resize(n_experiments,1);
-        measurement_assym.dim=n_experiments;
+        fread.initialise_matrices();
+        pmc.cov_exp = fread.get_exp_cov();
+        pmc.value_exp = fread.get_exp_value();
+        pmc.cov_th = Kstarmumu_theory_err().get_th_cov(observables);
+        n_experiments = pmc.cov_th.size1();
+        pmc.value_th.resize(n_experiments,1);
+        pmc.dim=n_experiments;
 
         // We assert that the experiments and the observables are the same size
-        assert(measurement_assym.value_exp.size1() == observables.size());
+        assert(pmc.value_exp.size1() == observables.size());
 
         // Init out.
         first = false;
       }
 
-      measurement_assym.value_th(0,0)=Dep::BRBKstarmumu_11_25->FL;
-      measurement_assym.value_th(1,0)=Dep::BRBKstarmumu_11_25->AFB;
-      measurement_assym.value_th(2,0)=Dep::BRBKstarmumu_11_25->S3;
-      measurement_assym.value_th(3,0)=Dep::BRBKstarmumu_11_25->S4;
-      measurement_assym.value_th(4,0)=Dep::BRBKstarmumu_11_25->S5;
-      measurement_assym.value_th(5,0)=Dep::BRBKstarmumu_11_25->S7;
-      measurement_assym.value_th(6,0)=Dep::BRBKstarmumu_11_25->S8;
-      measurement_assym.value_th(7,0)=Dep::BRBKstarmumu_11_25->S9;
+      pmc.value_th(0,0)=Dep::BRBKstarmumu_11_25->FL;
+      pmc.value_th(1,0)=Dep::BRBKstarmumu_11_25->AFB;
+      pmc.value_th(2,0)=Dep::BRBKstarmumu_11_25->S3;
+      pmc.value_th(3,0)=Dep::BRBKstarmumu_11_25->S4;
+      pmc.value_th(4,0)=Dep::BRBKstarmumu_11_25->S5;
+      pmc.value_th(5,0)=Dep::BRBKstarmumu_11_25->S7;
+      pmc.value_th(6,0)=Dep::BRBKstarmumu_11_25->S8;
+      pmc.value_th(7,0)=Dep::BRBKstarmumu_11_25->S9;
 
-      measurement_assym.value_th(8,0)=Dep::BRBKstarmumu_25_40->FL;
-      measurement_assym.value_th(9,0)=Dep::BRBKstarmumu_25_40->AFB;
-      measurement_assym.value_th(10,0)=Dep::BRBKstarmumu_25_40->S3;
-      measurement_assym.value_th(11,0)=Dep::BRBKstarmumu_25_40->S4;
-      measurement_assym.value_th(12,0)=Dep::BRBKstarmumu_25_40->S5;
-      measurement_assym.value_th(13,0)=Dep::BRBKstarmumu_25_40->S7;
-      measurement_assym.value_th(14,0)=Dep::BRBKstarmumu_25_40->S8;
-      measurement_assym.value_th(15,0)=Dep::BRBKstarmumu_25_40->S9;
+      pmc.value_th(8,0)=Dep::BRBKstarmumu_25_40->FL;
+      pmc.value_th(9,0)=Dep::BRBKstarmumu_25_40->AFB;
+      pmc.value_th(10,0)=Dep::BRBKstarmumu_25_40->S3;
+      pmc.value_th(11,0)=Dep::BRBKstarmumu_25_40->S4;
+      pmc.value_th(12,0)=Dep::BRBKstarmumu_25_40->S5;
+      pmc.value_th(13,0)=Dep::BRBKstarmumu_25_40->S7;
+      pmc.value_th(14,0)=Dep::BRBKstarmumu_25_40->S8;
+      pmc.value_th(15,0)=Dep::BRBKstarmumu_25_40->S9;
 
-      measurement_assym.value_th(16,0)=Dep::BRBKstarmumu_40_60->FL;
-      measurement_assym.value_th(17,0)=Dep::BRBKstarmumu_40_60->AFB;
-      measurement_assym.value_th(18,0)=Dep::BRBKstarmumu_40_60->S3;
-      measurement_assym.value_th(19,0)=Dep::BRBKstarmumu_40_60->S4;
-      measurement_assym.value_th(20,0)=Dep::BRBKstarmumu_40_60->S5;
-      measurement_assym.value_th(21,0)=Dep::BRBKstarmumu_40_60->S7;
-      measurement_assym.value_th(22,0)=Dep::BRBKstarmumu_40_60->S8;
-      measurement_assym.value_th(23,0)=Dep::BRBKstarmumu_40_60->S9;
+      pmc.value_th(16,0)=Dep::BRBKstarmumu_40_60->FL;
+      pmc.value_th(17,0)=Dep::BRBKstarmumu_40_60->AFB;
+      pmc.value_th(18,0)=Dep::BRBKstarmumu_40_60->S3;
+      pmc.value_th(19,0)=Dep::BRBKstarmumu_40_60->S4;
+      pmc.value_th(20,0)=Dep::BRBKstarmumu_40_60->S5;
+      pmc.value_th(21,0)=Dep::BRBKstarmumu_40_60->S7;
+      pmc.value_th(22,0)=Dep::BRBKstarmumu_40_60->S8;
+      pmc.value_th(23,0)=Dep::BRBKstarmumu_40_60->S9;
 
-      measurement_assym.value_th(24,0)=Dep::BRBKstarmumu_60_80->FL;
-      measurement_assym.value_th(25,0)=Dep::BRBKstarmumu_60_80->AFB;
-      measurement_assym.value_th(26,0)=Dep::BRBKstarmumu_60_80->S3;
-      measurement_assym.value_th(27,0)=Dep::BRBKstarmumu_60_80->S4;
-      measurement_assym.value_th(28,0)=Dep::BRBKstarmumu_60_80->S5;
-      measurement_assym.value_th(29,0)=Dep::BRBKstarmumu_60_80->S7;
-      measurement_assym.value_th(30,0)=Dep::BRBKstarmumu_60_80->S8;
-      measurement_assym.value_th(31,0)=Dep::BRBKstarmumu_60_80->S9;
+      pmc.value_th(24,0)=Dep::BRBKstarmumu_60_80->FL;
+      pmc.value_th(25,0)=Dep::BRBKstarmumu_60_80->AFB;
+      pmc.value_th(26,0)=Dep::BRBKstarmumu_60_80->S3;
+      pmc.value_th(27,0)=Dep::BRBKstarmumu_60_80->S4;
+      pmc.value_th(28,0)=Dep::BRBKstarmumu_60_80->S5;
+      pmc.value_th(29,0)=Dep::BRBKstarmumu_60_80->S7;
+      pmc.value_th(30,0)=Dep::BRBKstarmumu_60_80->S8;
+      pmc.value_th(31,0)=Dep::BRBKstarmumu_60_80->S9;
 
-      measurement_assym.value_th(32,0)=Dep::BRBKstarmumu_15_17->FL;
-      measurement_assym.value_th(33,0)=Dep::BRBKstarmumu_15_17->AFB;
-      measurement_assym.value_th(34,0)=Dep::BRBKstarmumu_15_17->S3;
-      measurement_assym.value_th(35,0)=Dep::BRBKstarmumu_15_17->S4;
-      measurement_assym.value_th(36,0)=Dep::BRBKstarmumu_15_17->S5;
-      measurement_assym.value_th(37,0)=Dep::BRBKstarmumu_15_17->S7;
-      measurement_assym.value_th(38,0)=Dep::BRBKstarmumu_15_17->S8;
-      measurement_assym.value_th(39,0)=Dep::BRBKstarmumu_15_17->S9;
+      pmc.value_th(32,0)=Dep::BRBKstarmumu_15_17->FL;
+      pmc.value_th(33,0)=Dep::BRBKstarmumu_15_17->AFB;
+      pmc.value_th(34,0)=Dep::BRBKstarmumu_15_17->S3;
+      pmc.value_th(35,0)=Dep::BRBKstarmumu_15_17->S4;
+      pmc.value_th(36,0)=Dep::BRBKstarmumu_15_17->S5;
+      pmc.value_th(37,0)=Dep::BRBKstarmumu_15_17->S7;
+      pmc.value_th(38,0)=Dep::BRBKstarmumu_15_17->S8;
+      pmc.value_th(39,0)=Dep::BRBKstarmumu_15_17->S9;
 
-      measurement_assym.value_th(40,0)=Dep::BRBKstarmumu_17_19->FL;
-      measurement_assym.value_th(41,0)=Dep::BRBKstarmumu_17_19->AFB;
-      measurement_assym.value_th(42,0)=Dep::BRBKstarmumu_17_19->S3;
-      measurement_assym.value_th(43,0)=Dep::BRBKstarmumu_17_19->S4;
-      measurement_assym.value_th(44,0)=Dep::BRBKstarmumu_17_19->S5;
-      measurement_assym.value_th(45,0)=Dep::BRBKstarmumu_17_19->S7;
-      measurement_assym.value_th(46,0)=Dep::BRBKstarmumu_17_19->S8;
-      measurement_assym.value_th(47,0)=Dep::BRBKstarmumu_17_19->S9;
+      pmc.value_th(40,0)=Dep::BRBKstarmumu_17_19->FL;
+      pmc.value_th(41,0)=Dep::BRBKstarmumu_17_19->AFB;
+      pmc.value_th(42,0)=Dep::BRBKstarmumu_17_19->S3;
+      pmc.value_th(43,0)=Dep::BRBKstarmumu_17_19->S4;
+      pmc.value_th(44,0)=Dep::BRBKstarmumu_17_19->S5;
+      pmc.value_th(45,0)=Dep::BRBKstarmumu_17_19->S7;
+      pmc.value_th(46,0)=Dep::BRBKstarmumu_17_19->S8;
+      pmc.value_th(47,0)=Dep::BRBKstarmumu_17_19->S9;
 
-      measurement_assym.diff.clear();
+      pmc.diff.clear();
       for (int i=0;i<n_experiments;++i)
       {
-        measurement_assym.diff.push_back(measurement_assym.value_exp(i,0)-measurement_assym.value_th(i,0));
+        pmc.diff.push_back(pmc.value_exp(i,0)-pmc.value_th(i,0));
       }
 
       if (flav_debug) cout<<"Finished b2sll_measurements function"<<endl;
@@ -1591,25 +1593,25 @@ namespace Gambit
       if (flav_debug) cout<<"Starting b2sll_likelihood"<<endl;
 
       // Get experimental measurements
-      Flav_measurement_assym measurement_assym=*Dep::b2sll_M;
+      predictions_measurements_covariances pmc=*Dep::b2sll_M;
 
       // Get experimental covariance
-      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+      boost::numeric::ublas::matrix<double> cov=pmc.cov_exp;
 
       // adding theory and experimenta covariance
-      cov+=measurement_assym.cov_th;
+      cov+=pmc.cov_th;
 
       //calculating a diff
       vector<double> diff;
-      diff=measurement_assym.diff;
-      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+      diff=pmc.diff;
+      boost::numeric::ublas::matrix<double> cov_inv(pmc.dim, pmc.dim);
       InvertMatrix(cov, cov_inv);
 
       double Chi2=0;
 
-      for (int i=0; i < measurement_assym.dim; ++i)
+      for (int i=0; i < pmc.dim; ++i)
       {
-        for (int j=0; j<measurement_assym.dim; ++j)
+        for (int j=0; j<pmc.dim; ++j)
         {
           Chi2+= diff[i] * cov_inv(i,j)*diff[j] ;
         }
@@ -1634,14 +1636,14 @@ namespace Gambit
 
       if (first)
       {
-        Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-        red.debug_mode(flav_debug);
+        Flav_reader fread(GAMBIT_DIR  "/FlavBit/data");
+        fread.debug_mode(flav_debug);
         if (flav_debug) cout<<"Initialised Flav reader in Delta_Ms_likelihood"<<endl;
-        red.read_yaml_measurement("flav_data.yaml", "DeltaMs");
-        red.create_global_corr(); // here we have a single measurement ;) so let's be sneaky:
-        exp_meas = red.get_exp_value()(0,0);
-        exp_DeltaMs_err = sqrt(red.get_cov()(0,0));
-        th_err=red.get_th_err()(0,0);
+        fread.read_yaml_measurement("flav_data.yaml", "DeltaMs");
+        fread.initialise_matrices(); // here we have a single measurement ;) so let's be sneaky:
+        exp_meas = fread.get_exp_value()(0,0);
+        exp_DeltaMs_err = sqrt(fread.get_exp_cov()(0,0));
+        th_err=fread.get_th_err()(0,0);
         first = false;
       }
 
@@ -1672,14 +1674,14 @@ namespace Gambit
       // Read and calculate things based on the observed data only the first time through, as none of it depends on the model parameters.
       if (first)
       {
-        Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-        red.debug_mode(flav_debug);
+        Flav_reader fread(GAMBIT_DIR  "/FlavBit/data");
+        fread.debug_mode(flav_debug);
         if (flav_debug) cout<<"Initialised Flav reader in b2sgamma_measurements"<<endl;
-        red.read_yaml_measurement("flav_data.yaml", "BR_b2sgamma");
-        red.create_global_corr(); // here we have a single measurement ;) so let's be sneaky:
-        exp_meas = red.get_exp_value()(0,0);
-        exp_b2sgamma_err = sqrt(red.get_cov()(0,0));
-        th_err=red.get_th_err()(0,0);
+        fread.read_yaml_measurement("flav_data.yaml", "BR_b2sgamma");
+        fread.initialise_matrices(); // here we have a single measurement ;) so let's be sneaky:
+        exp_meas = fread.get_exp_value()(0,0);
+        exp_b2sgamma_err = sqrt(fread.get_exp_cov()(0,0));
+        th_err=fread.get_th_err()(0,0);
         first = false;
       }
 
@@ -1698,7 +1700,7 @@ namespace Gambit
 
 
     /// Measurements for rare purely leptonic B decays
-    void b2ll_measurements(Flav_measurement_assym &measurement_assym)
+    void b2ll_measurements(predictions_measurements_covariances &pmc)
     {
       using namespace Pipes::b2ll_measurements;
 
@@ -1710,51 +1712,50 @@ namespace Gambit
       // Read and calculate things based on the observed data only the first time through, as none of it depends on the model parameters.
       if (first)
       {
-        measurement_assym.LL_name="b2ll_likelihood";
+        pmc.LL_name="b2ll_likelihood";
 
-        Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-        red.debug_mode(flav_debug);
+        Flav_reader fread(GAMBIT_DIR  "/FlavBit/data");
+        fread.debug_mode(flav_debug);
 
         if (flav_debug) cout<<"Initiated Flav reader in b2ll_measurements"<<endl;
-        red.read_yaml_measurement("flav_data.yaml", "BR_Bs2mumu");
-        red.read_yaml_measurement("flav_data.yaml", "BR_B02mumu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_Bs2mumu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_B02mumu");
         if (flav_debug) cout<<"Finished reading b->mumu data"<<endl;
 
-        red.create_global_corr();
+        fread.initialise_matrices();
 
-        // SuperIso doesn't provide the errors, so we need to take them from paper
-        fractional_theory_bs2mumu_error = red.get_th_err()(0,0);
-        fractional_theory_b2mumu_error = red.get_th_err()(1,0);
+        fractional_theory_bs2mumu_error = fread.get_th_err()(0,0);
+        fractional_theory_b2mumu_error = fread.get_th_err()(1,0);
 
-        measurement_assym.value_exp=red.get_exp_value();
-        measurement_assym.cov_exp=red.get_cov();
+        pmc.value_exp=fread.get_exp_value();
+        pmc.cov_exp=fread.get_exp_cov();
 
-        measurement_assym.value_th.resize(2,1);
-        measurement_assym.cov_th.resize(2,2);
+        pmc.value_th.resize(2,1);
+        pmc.cov_th.resize(2,2);
 
-        measurement_assym.dim=2;
+        pmc.dim=2;
 
         // Init over and out.
         first = false;
       }
 
       // Get theory prediction
-      measurement_assym.value_th(0,0)=*Dep::Bsmumu_untag;
-      measurement_assym.value_th(1,0)=*Dep::Bmumu;
+      pmc.value_th(0,0)=*Dep::Bsmumu_untag;
+      pmc.value_th(1,0)=*Dep::Bmumu;
 
       // Compute error on theory prediction and populate the covariance matrix
       double theory_bs2mumu_error=*Dep::Bsmumu_untag*fractional_theory_bs2mumu_error;
       double theory_b2mumu_error=*Dep::Bmumu*fractional_theory_b2mumu_error;
-      measurement_assym.cov_th(0,0)=theory_bs2mumu_error*theory_bs2mumu_error;
-      measurement_assym.cov_th(0,1)=0.;
-      measurement_assym.cov_th(1,0)=0.;
-      measurement_assym.cov_th(1,1)=theory_b2mumu_error*theory_b2mumu_error;
+      pmc.cov_th(0,0)=theory_bs2mumu_error*theory_bs2mumu_error;
+      pmc.cov_th(0,1)=0.;
+      pmc.cov_th(1,0)=0.;
+      pmc.cov_th(1,1)=theory_b2mumu_error*theory_b2mumu_error;
 
       // Save the differences between theory and experiment
-      measurement_assym.diff.clear();
+      pmc.diff.clear();
       for (int i=0;i<2;++i)
       {
-        measurement_assym.diff.push_back(measurement_assym.value_exp(i,0)-measurement_assym.value_th(i,0));
+        pmc.diff.push_back(pmc.value_exp(i,0)-pmc.value_th(i,0));
       }
 
       if (flav_debug) cout<<"Finished b2ll_measurements"<<endl;
@@ -1769,26 +1770,26 @@ namespace Gambit
 
       if (flav_debug) cout<<"Starting b2ll_likelihood"<<endl;
 
-      Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
+      predictions_measurements_covariances pmc = *Dep::b2ll_M;
 
-      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+      boost::numeric::ublas::matrix<double> cov=pmc.cov_exp;
 
       // adding theory and experimental covariance
-      cov+=measurement_assym.cov_th;
+      cov+=pmc.cov_th;
 
       //calculating a diff
       vector<double> diff;
-      diff=measurement_assym.diff;
+      diff=pmc.diff;
 
-      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_inv(pmc.dim, pmc.dim);
       InvertMatrix(cov, cov_inv);
 
       // calculating the chi2
       double Chi2=0;
 
-      for (int i=0; i < measurement_assym.dim; ++i)
+      for (int i=0; i < pmc.dim; ++i)
       {
-        for (int j=0; j<measurement_assym.dim; ++j)
+        for (int j=0; j<pmc.dim; ++j)
         {
           Chi2+= diff[i] * cov_inv(i,j)*diff[j];
         }
@@ -1803,7 +1804,7 @@ namespace Gambit
 
 
     /// Measurements for tree-level leptonic and semileptonic B decays
-    void SL_measurements(Flav_measurement_assym &measurement_assym)
+    void SL_measurements(predictions_measurements_covariances &pmc)
     {
       using namespace Pipes::SL_measurements;
 
@@ -1816,41 +1817,40 @@ namespace Gambit
       // Read and calculate things based on the observed data only the first time through, as none of it depends on the model parameters.
       if (first)
       {
-        measurement_assym.LL_name="SL_likelihood";
+        pmc.LL_name="SL_likelihood";
 
         // Read in experimental measuremens
-        Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
-        red.debug_mode(flav_debug);
+        Flav_reader fread(GAMBIT_DIR  "/FlavBit/data");
+        fread.debug_mode(flav_debug);
         if (flav_debug) cout<<"Initialised Flav reader in SL_measurements"<<endl;
 
         // B-> tau nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_Btaunu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_Btaunu");
         // B-> D mu nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_BDmunu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_BDmunu");
         // B-> D* mu nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_BDstarmunu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_BDstarmunu");
         // RD
-        red.read_yaml_measurement("flav_data.yaml", "RD");
+        fread.read_yaml_measurement("flav_data.yaml", "RD");
         // RDstar
-        red.read_yaml_measurement("flav_data.yaml", "RDstar");
+        fread.read_yaml_measurement("flav_data.yaml", "RDstar");
         // Ds-> tau nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_Dstaunu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_Dstaunu");
         // Ds -> mu nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_Dsmunu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_Dsmunu");
         // D -> mu nu
-        red.read_yaml_measurement("flav_data.yaml", "BR_Dmunu");
+        fread.read_yaml_measurement("flav_data.yaml", "BR_Dmunu");
 
-        red.create_global_corr();
+        fread.initialise_matrices();
+        pmc.cov_exp=fread.get_exp_cov();
+        pmc.value_exp=fread.get_exp_value();
 
-        measurement_assym.value_exp=red.get_exp_value();
-        measurement_assym.cov_exp=red.get_cov();
-
-        measurement_assym.value_th.resize(n_experiments,1);
+        pmc.value_th.resize(n_experiments,1);
         // Set all entries in the covariance matrix explicitly to zero, as we will only write the diagonal ones later.
-        measurement_assym.cov_th = boost::numeric::ublas::zero_matrix<double>(n_experiments,n_experiments);
-        for (int i = 0; i < n_experiments; ++i) th_err[i] = red.get_th_err()(i,0);
+        pmc.cov_th = boost::numeric::ublas::zero_matrix<double>(n_experiments,n_experiments);
+        for (int i = 0; i < n_experiments; ++i) th_err[i] = fread.get_th_err()(i,0);
 
-        measurement_assym.dim=n_experiments;
+        pmc.dim=n_experiments;
 
         // Init over.
         first = false;
@@ -1877,14 +1877,14 @@ namespace Gambit
 
       for (int i = 0; i < n_experiments; ++i)
       {
-        measurement_assym.value_th(i,0) = theory[i];
-        measurement_assym.cov_th(i,i) = th_err[i]*th_err[i]*theory[i]*theory[i];
+        pmc.value_th(i,0) = theory[i];
+        pmc.cov_th(i,i) = th_err[i]*th_err[i]*theory[i]*theory[i];
       }
 
-      measurement_assym.diff.clear();
+      pmc.diff.clear();
       for (int i=0;i<n_experiments;++i)
       {
-        measurement_assym.diff.push_back(measurement_assym.value_exp(i,0)-measurement_assym.value_th(i,0));
+        pmc.diff.push_back(pmc.value_exp(i,0)-pmc.value_th(i,0));
       }
 
       if (flav_debug) cout<<"Finished SL_measurements"<<endl;
@@ -1899,24 +1899,24 @@ namespace Gambit
 
       if (flav_debug) cout<<"Starting SL_likelihood"<<endl;
 
-      Flav_measurement_assym measurement_assym = *Dep::SL_M;
+      predictions_measurements_covariances pmc = *Dep::SL_M;
 
-      boost::numeric::ublas::matrix<double> cov=measurement_assym.cov_exp;
+      boost::numeric::ublas::matrix<double> cov=pmc.cov_exp;
 
       // adding theory and experimental covariance
-      cov+=measurement_assym.cov_th;
+      cov+=pmc.cov_th;
 
       //calculating a diff
       vector<double> diff;
-      diff=measurement_assym.diff;
+      diff=pmc.diff;
 
-      boost::numeric::ublas::matrix<double> cov_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_inv(pmc.dim, pmc.dim);
       InvertMatrix(cov, cov_inv);
 
       double Chi2=0;
-      for (int i=0; i < measurement_assym.dim; ++i)
+      for (int i=0; i < pmc.dim; ++i)
       {
-        for (int j=0; j<measurement_assym.dim; ++j)
+        for (int j=0; j<pmc.dim; ++j)
         {
           Chi2+= diff[i] * cov_inv(i,j)*diff[j];
         }

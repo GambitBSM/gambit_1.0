@@ -901,7 +901,7 @@ START_MODULE
   #define CAPABILITY b2sll_M
   START_CAPABILITY
     #define FUNCTION b2sll_measurements
-    START_FUNCTION(FlavBit::Flav_measurement_assym)
+    START_FUNCTION(FlavBit::predictions_measurements_covariances)
     DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
     DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
     DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
@@ -916,7 +916,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION b2sll_likelihood
     START_FUNCTION(double)
-    DEPENDENCY(b2sll_M, FlavBit::Flav_measurement_assym)
+    DEPENDENCY(b2sll_M, FlavBit::predictions_measurements_covariances)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -924,7 +924,7 @@ START_MODULE
   #define CAPABILITY b2ll_M
   START_CAPABILITY
     #define FUNCTION b2ll_measurements
-    START_FUNCTION(FlavBit::Flav_measurement_assym)
+    START_FUNCTION(FlavBit::predictions_measurements_covariances)
     DEPENDENCY(Bsmumu_untag, double)
     DEPENDENCY(Bmumu, double )
    #undef FUNCTION
@@ -935,7 +935,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION b2ll_likelihood
     START_FUNCTION(double)
-    DEPENDENCY(b2ll_M, FlavBit::Flav_measurement_assym)
+    DEPENDENCY(b2ll_M, FlavBit::predictions_measurements_covariances)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -943,7 +943,7 @@ START_MODULE
   #define CAPABILITY SL_M
   START_CAPABILITY
     #define FUNCTION SL_measurements
-    START_FUNCTION(FlavBit::Flav_measurement_assym)
+    START_FUNCTION(FlavBit::predictions_measurements_covariances)
     DEPENDENCY(RD, double)
     DEPENDENCY(RDstar, double)
     DEPENDENCY(BDmunu, double)
@@ -960,7 +960,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SL_likelihood
     START_FUNCTION(double)
-    DEPENDENCY(SL_M, FlavBit::Flav_measurement_assym)
+    DEPENDENCY(SL_M, FlavBit::predictions_measurements_covariances)
     #undef FUNCTION
   #undef CAPABILITY
 

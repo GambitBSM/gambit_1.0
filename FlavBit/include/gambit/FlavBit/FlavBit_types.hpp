@@ -2,14 +2,14 @@
 //   *********************************************
 ///  \file
 ///
-///  Type definition header for module DarkBit.
+///  Type definition header for module FlavBit.
 ///
 ///  Compile-time registration of type definitions
 ///  required for the rest of the code to
-///  communicate with DarkBit.
+///  communicate with FlavBit.
 ///
 ///  Add to this if you want to define a new type
-///  for the functions in DarkBit to return, but
+///  for the functions in FlavBit to return, but
 ///  you don't expect that type to be needed by
 ///  any other modules.
 ///
@@ -18,8 +18,8 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Marcin Chrzaszcz
+///          (mchrzasz@cern.ch)
 ///  \date 2015 July
-///
 ///
 ///  *********************************************
 
@@ -42,14 +42,14 @@ namespace Gambit
 
     namespace ublas = boost::numeric::ublas;
 
-    /// FIXME Marcin add documentation!!!
+    /// Simple structure for holding a correlation value and name of the correlated observable
     struct Correlation
     {
       double corr_val;
       std::string corr_name;
     };
 
-    /// FIXME Marcin add documentation!!!
+    /// Representation of a single entry in the FlavBit YAML database
     struct Measurement
     {
       bool is_limit;
@@ -65,8 +65,9 @@ namespace Gambit
       std::vector<Correlation> corr;
     };
 
-    /// FIXME Marcin add documentation!!!
-    struct Flav_measurement_assym
+    /// Structure for holding predicted and observed values of multiple observables,
+    /// and experimental and theoretical covariance matrices for their uncertainties.
+    struct predictions_measurements_covariances
     {
       std::string LL_name;
       boost::numeric::ublas::matrix<double> value_exp;
