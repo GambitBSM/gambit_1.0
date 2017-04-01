@@ -119,21 +119,7 @@ namespace Gambit
 
       if (ModelInUse("WC"))
       {
-
-        result.SM=1;  // needed according to Nazila
-        result.Re_DeltaC7=*Param["Re_DeltaC7"];
-        result.Re_DeltaC9=*Param["Re_DeltaC9"];
-        result.Re_DeltaC10=*Param["Re_DeltaC10"];
-
-        result.Im_DeltaC7=*Param["Im_DeltaC7"];
-        result.Im_DeltaC9=*Param["Im_DeltaC9"];
-        result.Im_DeltaC10=*Param["Im_DeltaC10"];
-
-        result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
-        result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
-
-        result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
-        result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
+        BEreq::Init_param(&result);
 
         // now SM inputs
         // Access the pipes for this function to get model and parameter information, and dependencies
@@ -276,6 +262,25 @@ namespace Gambit
         result.mtmt=mtmt;
 
         BEreq::slha_adjust(&result);
+
+        // Tell SuperIso to do its Wilson coefficient calculations for the SM.
+        // We will adjust them with our BSM deviations in backend convenience
+        // functions before we send them to SuperIso's observable calculation functions.
+        result.SM=1;
+
+        // So far our model only deals with 5 operators: O_7, O_9, O_10, Q_1 and Q_2.
+        // SuperIso can actually only handle real O_7, O_9 and O_10 too, so the imaginary
+        // parts of those operators get ignored in subsequent calculations.
+        result.Re_DeltaC7=*Param["Re_DeltaC7"];
+        result.Im_DeltaC7=*Param["Im_DeltaC7"];
+        result.Re_DeltaC9=*Param["Re_DeltaC9"];
+        result.Im_DeltaC9=*Param["Im_DeltaC9"];
+        result.Re_DeltaC10=*Param["Re_DeltaC10"];
+        result.Im_DeltaC10=*Param["Im_DeltaC10"];
+        result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
+        result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
+        result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
+        result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
 
         if (flav_debug) cout<<"Finished SI_fill"<<endl;
 
@@ -634,7 +639,7 @@ namespace Gambit
       using namespace Pipes::SI_bsgamma;
       if (flav_debug) cout<<"Starting SI_bsgamma"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double E_cut=1.6;
       result=BEreq::bsgamma_CONV(&param, byVal(E_cut));
 
@@ -649,7 +654,7 @@ namespace Gambit
       using namespace Pipes::SI_Bsmumu_untag;
       if (flav_debug) cout<<"Starting SI_Bsmumu_untag"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       int flav=2;
       result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
 
@@ -664,7 +669,7 @@ namespace Gambit
       using namespace Pipes::SI_Bsee_untag;
       if (flav_debug) cout<<"Starting SI_Bsee_untag"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       int flav=1;
       result=BEreq::Bsll_untag_CONV(&param, byVal(flav));
 
@@ -679,7 +684,7 @@ namespace Gambit
       using namespace Pipes::SI_Bmumu;
       if (flav_debug) cout<<"Starting SI_Bmumu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       int flav=2;
       result=BEreq::Bll_CONV(&param, byVal(flav));
 
@@ -693,7 +698,7 @@ namespace Gambit
       using namespace Pipes::SI_Btaunu;
       if (flav_debug) cout<<"Starting SI_Btaunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::Btaunu(&param);
 
       if (flav_debug) printf("BR(B->tau nu)=%.3e\n",result);
@@ -707,7 +712,7 @@ namespace Gambit
       using namespace Pipes::SI_RD;
       if (flav_debug) cout<<"Starting SI_RD"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::BDtaunu_BDenu(&param);
 
       if (flav_debug) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
@@ -718,9 +723,9 @@ namespace Gambit
     void SI_RDstar(double &result)
     {
       using namespace Pipes::SI_RDstar;
-
       if (flav_debug) cout<<"Starting SI_RDstart"<<endl;
-      struct parameters param = *Dep::SuperIso_modelinfo;
+
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::BDstartaunu_BDstarenu(&param);
 
       if (flav_debug) printf("BR(B->D* tau nu)/BR(B->D* e nu)=%.3e\n",result);
@@ -734,7 +739,7 @@ namespace Gambit
       using namespace Pipes::SI_Kmunu_pimunu;
       if (flav_debug) cout<<"Starting SI_Kmunu_pimunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::Kmunu_pimunu(&param);
 
       if (flav_debug) printf("BR(K->mu nu)/BR(pi->mu nu)=%.3e\n",result);
@@ -746,12 +751,13 @@ namespace Gambit
       using namespace Pipes::SI_Rmu23;
       if (flav_debug) cout<<"Starting SI_Rmu23"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::Rmu23(&param);
 
       if (flav_debug) printf("Rmu23=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_Rmu23"<<endl;
     }
+
 
     /// Br B->D* tau nu
     void SI_Dstaunu(double &result)
@@ -759,26 +765,27 @@ namespace Gambit
       using namespace Pipes::SI_Dstaunu;
       if (flav_debug) cout<<"Starting SI_Dstaunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::Dstaunu(&param);
 
       if (flav_debug) printf("BR(Ds->tau nu)=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_Dstaunu"<<endl;
     }
 
+
     /// Br B->Ds mu nu
     void SI_Dsmunu(double &result)
     {
       using namespace Pipes::SI_Dsmunu;
-
       if (flav_debug) cout<<"Starting SI_Dsmunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::Dsmunu(&param);
 
       if (flav_debug) printf("BR(Ds->mu nu)=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_Dsmunu"<<endl;
     }
+
 
     /// Br B -> D mu nu
     void SI_Dmunu(double &result)
@@ -786,7 +793,7 @@ namespace Gambit
       using namespace Pipes::SI_Dmunu;
       if (flav_debug) cout<<"Starting SI_Dmunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result = BEreq::Dmunu(&param);
 
       if (flav_debug) printf("BR(D->mu nu)=%.3e\n",result);
@@ -798,24 +805,18 @@ namespace Gambit
     void SI_BDtaunu(double &result)
     {
       using namespace Pipes::SI_BDtaunu;
-
       if (flav_debug) cout<<"Starting SI_BDtaunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      if (param.model < 0) FlavBit_error().raise(LOCAL_INFO, "Unsupported model.");
 
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        double q2_min_tau_D  = 3.16; // 1.776**2
-        double q2_max_tau_D  = 11.6;   // (5.28-1.869)**2
-        int gen_tau_D        = 3;
-        int charge_tau_D     = 0;// D* is the charged version
-        double obs_tau_D[3];
-        result=BEreq::BRBDlnu(byVal(gen_tau_D), byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), byVal(obs_tau_D), &param);
-      }
+      double q2_min_tau_D  = 3.16; // 1.776**2
+      double q2_max_tau_D  = 11.6;   // (5.28-1.869)**2
+      int gen_tau_D        = 3;
+      int charge_tau_D     = 0;// D* is the charged version
+      double obs_tau_D[3];
+
+      result=BEreq::BRBDlnu(byVal(gen_tau_D), byVal( charge_tau_D), byVal(q2_min_tau_D), byVal(q2_max_tau_D), byVal(obs_tau_D), &param);
 
       if (flav_debug) printf("BR(B-> D tau nu )=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BDtaunu"<<endl;
@@ -826,24 +827,18 @@ namespace Gambit
     void SI_BDmunu(double &result)
     {
       using namespace Pipes::SI_BDmunu;
-
       if (flav_debug) cout<<"Starting SI_BDmunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      if (param.model < 0) FlavBit_error().raise(LOCAL_INFO, "Unsupported model.");
 
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        double q2_min_mu_D=  0.012; // 0.105*0.105
-        double q2_max_mu_D=  11.6;   // (5.28-1.869)**2
-        int gen_mu_D        =2;
-        int charge_mu_D     =0;// D* is the charged version
-        double obs_mu_D[3];
-        result= BEreq::BRBDlnu(byVal(gen_mu_D), byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), byVal(obs_mu_D), &param);
-      }
+      double q2_min_mu_D=  0.012; // 0.105*0.105
+      double q2_max_mu_D=  11.6;   // (5.28-1.869)**2
+      int gen_mu_D        =2;
+      int charge_mu_D     =0;// D* is the charged version
+      double obs_mu_D[3];
+
+      result= BEreq::BRBDlnu(byVal(gen_mu_D), byVal( charge_mu_D), byVal(q2_min_mu_D), byVal(q2_max_mu_D), byVal(obs_mu_D), &param);
 
       if (flav_debug) printf("BR(B->D mu nu)=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BDmunu"<<endl;
@@ -853,24 +848,18 @@ namespace Gambit
     void SI_BDstartaunu(double &result)
     {
       using namespace Pipes::SI_BDstartaunu;
-
       if (flav_debug) cout<<"Starting SI_BDstartaunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      if (param.model < 0) FlavBit_error().raise(LOCAL_INFO, "Unsupported model.");
 
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        double q2_min_tau_Dstar = 3.16; // 1.776**2
-        double q2_max_tau_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
-        int gen_tau_Dstar        =3;
-        int charge_tau_Dstar     =1;// D* is the charged version
-        double obs_tau_Dstar[3];
-        result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar),  byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), byVal(obs_tau_Dstar), &param);
-      }
+      double q2_min_tau_Dstar = 3.16; // 1.776**2
+      double q2_max_tau_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
+      int gen_tau_Dstar        =3;
+      int charge_tau_Dstar     =1;// D* is the charged version
+      double obs_tau_Dstar[3];
+
+      result= BEreq::BRBDstarlnu(byVal(gen_tau_Dstar), byVal( charge_tau_Dstar), byVal(q2_min_tau_Dstar), byVal(q2_max_tau_Dstar), byVal(obs_tau_Dstar), &param);
 
       if (flav_debug) printf("BR(B->Dstar tau nu)=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BDstartaunu"<<endl;
@@ -880,196 +869,122 @@ namespace Gambit
     void SI_BDstarmunu(double &result)
     {
       using namespace Pipes::SI_BDstarmunu;
-
       if (flav_debug) cout<<"Starting SI_BDstarmunu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      if (param.model < 0) FlavBit_error().raise(LOCAL_INFO, "Unsupported model.");
 
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        double q2_min_mu_Dstar = 0.012; // 0.105*0.105
-        double q2_max_mu_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
-        int gen_mu_Dstar        =2;
-        int charge_mu_Dstar     =1;// D* is the charged version
-        double obs_mu_Dstar[3];
-        result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar),  byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), byVal(obs_mu_Dstar), &param);
-      }
+      double q2_min_mu_Dstar = 0.012; // 0.105*0.105
+      double q2_max_mu_Dstar = 10.67;   //(5.279-2.01027)*(5.279-2.01027);
+      int gen_mu_Dstar        =2;
+      int charge_mu_Dstar     =1;// D* is the charged version
+      double obs_mu_Dstar[3];
+
+      result=BEreq::BRBDstarlnu(byVal(gen_mu_Dstar), byVal( charge_mu_Dstar), byVal(q2_min_mu_Dstar), byVal(q2_max_mu_Dstar), byVal(obs_mu_Dstar), &param);
 
       if (flav_debug) printf("BR(B->Dstar mu nu)=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BDstarmunu"<<endl;
     }
 
 
-
     void SI_delta0(double &result)
     {
       using namespace Pipes::SI_delta0;
-
       if (flav_debug) cout<<"Starting SI_delta0"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-
-        result=BEreq::delta0_CONV(&param);
-
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::delta0_CONV(&param);
 
       if (flav_debug) printf("Delta0(B->K* gamma)=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_delta0"<<endl;
     }
 
+
     void SI_BRBXsmumu_lowq2(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_lowq2;
-
       if (flav_debug) cout<<"Starting SI_BRBXsmumu_lowq2"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::BRBXsmumu_lowq2_CONV(&param);
-
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::BRBXsmumu_lowq2_CONV(&param);
 
       if (flav_debug) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
     }
 
+
     void SI_BRBXsmumu_highq2(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_highq2;
-
       if (flav_debug) cout<<"Starting SI_BRBXsmumu_highq2"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::BRBXsmumu_highq2_CONV(&param);
-
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::BRBXsmumu_highq2_CONV(&param);
 
       if (flav_debug) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
     }
+
+
     void SI_A_BXsmumu_lowq2(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_lowq2;
-
       if (flav_debug) cout<<"Starting SI_A_BXsmumu_lowq2"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::A_BXsmumu_lowq2_CONV(&param);
 
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::A_BXsmumu_lowq2_CONV(&param);
-      }
       if (flav_debug) printf("AFB(B->Xs mu mu)_lowq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_A_BXsmumu_lowq2"<<endl;
     }
 
+
     void SI_A_BXsmumu_highq2(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_highq2;
-
       if (flav_debug) cout<<"Starting SI_A_BXsmumu_highq2"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::A_BXsmumu_highq2_CONV(&param);
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::A_BXsmumu_highq2_CONV(&param);
 
       if (flav_debug) printf("AFB(B->Xs mu mu)_highq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_A_BXsmumu_highq2"<<endl;
     }
 
+
     void SI_A_BXsmumu_zero(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_zero;
-
       if (flav_debug) cout<<"Starting SI_A_BXsmumu_zero"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::A_BXsmumu_zero_CONV(&param);
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::A_BXsmumu_zero_CONV(&param);
 
       if (flav_debug) printf("AFB(B->Xs mu mu)_zero=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_A_BXsmumu_zero"<<endl;
     }
 
+
     void SI_BRBXstautau_highq2(double &result)
     {
       using namespace Pipes::SI_BRBXstautau_highq2;
-
       if (flav_debug) cout<<"Starting SI_BRBXstautau_highq2"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::BRBXstautau_highq2_CONV(&param);
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::BRBXstautau_highq2_CONV(&param);
 
       if (flav_debug) printf("BR(B->Xs tau tau)_highq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_BRBXstautau_highq2"<<endl;
     }
 
+
     void SI_A_BXstautau_highq2(double &result)
     {
       using namespace Pipes::SI_A_BXstautau_highq2;
-
       if (flav_debug) cout<<"Starting SI_A_BXstautau_highq2"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-      {
-        result = 0.;
-      }
-      else
-      {
-        result=BEreq::A_BXstautau_highq2_CONV(&param);
-      }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::A_BXstautau_highq2_CONV(&param);
 
       if (flav_debug) printf("AFB(B->Xs tau tau)_highq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_A_BXstautau_highq2"<<endl;
@@ -1077,509 +992,438 @@ namespace Gambit
 
 
     /// B-> K* mu mu observables in 1.1-2.5 GeV
+    /// @{
     void SI_BRBKstarmumu_11_25( Flav_KstarMuMu_obs &result)
     {
-
       using namespace Pipes::SI_BRBKstarmumu_11_25;
-
       if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double q2min=1.1;
       double q2max=2.5;
-      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max));
       if (flav_debug) cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
-
     }
-
-
     void SI_BRBKstarmumu_11_25_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_BR;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 BR WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.BR;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 BR"<<endl;
+      result = Dep::BRBKstarmumu_11_25->BR;
     }
-
     void SI_BRBKstarmumu_11_25_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_FL;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 FL WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.FL;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 FL"<<endl;
+      result = Dep::BRBKstarmumu_11_25->FL;
     }
     void SI_BRBKstarmumu_11_25_S3( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_S3;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S3 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.S3;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S3"<<endl;
+      result = Dep::BRBKstarmumu_11_25->S3;
     }
     void SI_BRBKstarmumu_11_25_S4( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_S4;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S4 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.S4;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S4"<<endl;
+      result = Dep::BRBKstarmumu_11_25->S4;
     }
     void SI_BRBKstarmumu_11_25_S5( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_S5;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S5 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.S5;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S5"<<endl;
+      result = Dep::BRBKstarmumu_11_25->S5;
     }
     void SI_BRBKstarmumu_11_25_AFB( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_AFB;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 AFB WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.AFB;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 AFB"<<endl;
+      result = Dep::BRBKstarmumu_11_25->AFB;
     }
     void SI_BRBKstarmumu_11_25_S7( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_S7;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S7 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.S7;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S7"<<endl;
+      result = Dep::BRBKstarmumu_11_25->S7;
     }
     void SI_BRBKstarmumu_11_25_S8( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_S8;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S8 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.S8;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S8"<<endl;
+      result = Dep::BRBKstarmumu_11_25->S8;
     }
     void SI_BRBKstarmumu_11_25_S9( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_11_25_S9;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S9 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_11_25;
-      result=res.S9;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_11_25 S9"<<endl;
+      result = Dep::BRBKstarmumu_11_25->S9;
     }
+    /// @}
 
 
     /// B-> K* mu mu observables in 2.5-4.0 GeV
+    /// @{
     void SI_BRBKstarmumu_25_40( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40;
-
       if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double q2min=2.5;
       double q2max=4.0;
-      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if (flav_debug) cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
-
     void SI_BRBKstarmumu_25_40_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_BR;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 BR WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.BR;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 BR"<<endl;
+      result = Dep::BRBKstarmumu_25_40->BR;
     }
     void SI_BRBKstarmumu_25_40_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_FL;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 FL WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.FL;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 FL"<<endl;
+      result = Dep::BRBKstarmumu_25_40->FL;
     }
     void SI_BRBKstarmumu_25_40_S3( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_S3;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S3 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.S3;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S3"<<endl;
+      result = Dep::BRBKstarmumu_25_40->S3;
     }
     void SI_BRBKstarmumu_25_40_S4( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_S4;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S4 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.S4;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S4"<<endl;
+      result = Dep::BRBKstarmumu_25_40->S4;
     }
     void SI_BRBKstarmumu_25_40_S5( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_S5;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S5 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.S5;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S5"<<endl;
+      result = Dep::BRBKstarmumu_25_40->S5;
     }
     void SI_BRBKstarmumu_25_40_AFB( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_AFB;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 AFB WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.AFB;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 AFB"<<endl;
+      result = Dep::BRBKstarmumu_25_40->AFB;
     }
     void SI_BRBKstarmumu_25_40_S7( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_S7;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S7 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.S7;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S7"<<endl;
+      result = Dep::BRBKstarmumu_25_40->S7;
     }
     void SI_BRBKstarmumu_25_40_S8( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_S8;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S8 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.S8;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S8"<<endl;
+      result = Dep::BRBKstarmumu_25_40->S8;
     }
     void SI_BRBKstarmumu_25_40_S9( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_25_40_S9;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S9 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_25_40;
-      result=res.S9;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40 S9"<<endl;
+      result = Dep::BRBKstarmumu_25_40->S9;
     }
+    /// @}
 
 
     /// B-> K* mu mu observables in 4.0-6.0 GeV
+    /// @{
     void SI_BRBKstarmumu_40_60( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60;
-
       if (flav_debug) cout<<"Starting SI_BRBKstarmumu_25_40"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double q2min=4.0;
       double q2max=6.0;
+
       result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
-
       if (flav_debug) cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
-
     }
-
     void SI_BRBKstarmumu_40_60_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_BR;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 BR WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.BR;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 BR"<<endl;
+      result = Dep::BRBKstarmumu_40_60->BR;
     }
     void SI_BRBKstarmumu_40_60_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_FL;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 FL WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.FL;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 FL"<<endl;
+      result = Dep::BRBKstarmumu_40_60->FL;
     }
     void SI_BRBKstarmumu_40_60_S3( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_S3;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S3 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.S3;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S3"<<endl;
+      result = Dep::BRBKstarmumu_40_60->S3;
     }
     void SI_BRBKstarmumu_40_60_S4( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_S4;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S4 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.S4;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S4"<<endl;
+      result = Dep::BRBKstarmumu_40_60->S4;
     }
     void SI_BRBKstarmumu_40_60_S5( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_S5;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S5 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.S5;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S5"<<endl;
+      result = Dep::BRBKstarmumu_40_60->S5;
     }
     void SI_BRBKstarmumu_40_60_AFB( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_AFB;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 AFB WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.AFB;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 AFB"<<endl;
+      result = Dep::BRBKstarmumu_40_60->AFB;
     }
     void SI_BRBKstarmumu_40_60_S7( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_S7;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S7 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.S7;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S7"<<endl;
+      result = Dep::BRBKstarmumu_40_60->S7;
     }
     void SI_BRBKstarmumu_40_60_S8( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_S8;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S8 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.S8;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S8"<<endl;
+      result = Dep::BRBKstarmumu_40_60->S8;
     }
     void SI_BRBKstarmumu_40_60_S9( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60_S9;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S9 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_40_60;
-      result=res.S9;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_40_60 S9"<<endl;
+      result = Dep::BRBKstarmumu_40_60->S9;
     }
+    /// @}
 
 
     /// B-> K* mu mu observables in 6.0-8.0 GeV
+    /// @{
     void SI_BRBKstarmumu_60_80( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80;
-
       if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double q2min=6.0;
       double q2max=8.0;
+
       result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if (flav_debug) cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
     }
     void SI_BRBKstarmumu_60_80_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_BR;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 BR WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.BR;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 BR"<<endl;
+      result = Dep::BRBKstarmumu_60_80->BR;
     }
     void SI_BRBKstarmumu_60_80_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_FL;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 FL WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.FL;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 FL"<<endl;
+      result = Dep::BRBKstarmumu_60_80->FL;
     }
     void SI_BRBKstarmumu_60_80_S3( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_S3;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S3 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.S3;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S3"<<endl;
+      result = Dep::BRBKstarmumu_60_80->S3;
     }
     void SI_BRBKstarmumu_60_80_S4( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_S4;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S4 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.S4;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S4"<<endl;
+      result = Dep::BRBKstarmumu_60_80->S4;
     }
     void SI_BRBKstarmumu_60_80_S5( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_S5;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S5 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.S5;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S5"<<endl;
+      result = Dep::BRBKstarmumu_60_80->S5;
     }
     void SI_BRBKstarmumu_60_80_AFB( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_AFB;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 AFB WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.AFB;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 AFB"<<endl;
+      result = Dep::BRBKstarmumu_60_80->AFB;
     }
     void SI_BRBKstarmumu_60_80_S7( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_S7;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S7 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.S7;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S7"<<endl;
+      result = Dep::BRBKstarmumu_60_80->S7;
     }
     void SI_BRBKstarmumu_60_80_S8( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_S8;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S8 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.S8;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S8"<<endl;
+      result = Dep::BRBKstarmumu_60_80->S8;
     }
     void SI_BRBKstarmumu_60_80_S9( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80_S9;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S9 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_60_80;
-      result=res.S9;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_60_80 S9"<<endl;
+      result = Dep::BRBKstarmumu_60_80->S9;
     }
+    /// @}
 
 
     /// B-> K* mu mu observables in 15.0-17.0 GeV
+    /// @{
     void SI_BRBKstarmumu_15_17( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17;
-
       if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 "<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double q2min=15.0;
       double q2max=17.0;
+
       result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
-
       if (flav_debug) cout<<"Finished SI_BRBKstarmumu_15_17 "<<endl;
-
     }
     void SI_BRBKstarmumu_15_17_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_BR;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 BR WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.BR;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 BR"<<endl;
+      result = Dep::BRBKstarmumu_15_17->BR;
     }
     void SI_BRBKstarmumu_15_17_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_FL;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 FL WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.FL;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 FL"<<endl;
+      result = Dep::BRBKstarmumu_15_17->FL;
     }
     void SI_BRBKstarmumu_15_17_S3( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_S3;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S3 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.S3;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S3"<<endl;
+      result = Dep::BRBKstarmumu_15_17->S3;
     }
     void SI_BRBKstarmumu_15_17_S4( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_S4;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S4 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.S4;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S4"<<endl;
+      result = Dep::BRBKstarmumu_15_17->S4;
     }
     void SI_BRBKstarmumu_15_17_S5( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_S5;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S5 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.S5;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S5"<<endl;
+      result = Dep::BRBKstarmumu_15_17->S5;
     }
     void SI_BRBKstarmumu_15_17_AFB( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_AFB;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 AFB WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.AFB;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 AFB"<<endl;
+      result = Dep::BRBKstarmumu_15_17->AFB;
     }
     void SI_BRBKstarmumu_15_17_S7( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_S7;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S7 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.S7;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S7"<<endl;
+      result = Dep::BRBKstarmumu_15_17->S7;
     }
     void SI_BRBKstarmumu_15_17_S8( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_S8;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S8 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.S8;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S8"<<endl;
+      result = Dep::BRBKstarmumu_15_17->S8;
     }
     void SI_BRBKstarmumu_15_17_S9( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_15_17_S9;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S9 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_15_17;
-      result=res.S9;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_15_17 S9"<<endl;
+      result = Dep::BRBKstarmumu_15_17->S9;
     }
+    /// @}
 
     /// B-> K* mu mu observables in 17.0-19.0 GeV
+    /// @{
     void SI_BRBKstarmumu_17_19( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19;
-
       if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 "<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
+      parameters const& param = *Dep::SuperIso_modelinfo;
       double q2min=17.0;
       double q2max=19.0;
-      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
+      result=BEreq::BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if (flav_debug) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
     }
     void SI_BRBKstarmumu_17_19_BR( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_BR;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 BR WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.BR;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 BR"<<endl;
+      result = Dep::BRBKstarmumu_17_19->BR;
     }
     void SI_BRBKstarmumu_17_19_FL( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_FL;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 FL WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.FL;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 FL"<<endl;
+      result = Dep::BRBKstarmumu_17_19->FL;
     }
     void SI_BRBKstarmumu_17_19_S3( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_S3;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S3 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.S3;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S3"<<endl;
+      result = Dep::BRBKstarmumu_17_19->S3;
     }
     void SI_BRBKstarmumu_17_19_S4( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_S4;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S4 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.S4;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S4"<<endl;
+      result = Dep::BRBKstarmumu_17_19->S4;
     }
     void SI_BRBKstarmumu_17_19_S5( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_S5;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S5 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.S5;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S5"<<endl;
+      result = Dep::BRBKstarmumu_17_19->S5;
     }
     void SI_BRBKstarmumu_17_19_AFB( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_AFB;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 AFB WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.AFB;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 AFB"<<endl;
+      result = Dep::BRBKstarmumu_17_19->AFB;
     }
     void SI_BRBKstarmumu_17_19_S7( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_S7;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S7 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.S7;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S7"<<endl;
+      result = Dep::BRBKstarmumu_17_19->S7;
     }
     void SI_BRBKstarmumu_17_19_S8( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_S8;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S8 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.S8;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S8"<<endl;
+      result = Dep::BRBKstarmumu_17_19->S8;
     }
     void SI_BRBKstarmumu_17_19_S9( double &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_17_19_S9;
-      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S9 WC"<<endl;
-      Flav_KstarMuMu_obs res=*Dep::BRBKstarmumu_17_19;
-      result=res.S9;
+      if (flav_debug) cout<<"Starting SI_BRBKstarmumu_17_19 S9"<<endl;
+      result = Dep::BRBKstarmumu_17_19->S9;
     }
+    /// @}
 
 
     /// isospin asymmetry of B-> K* mu mu
     void SI_AI_BKstarmumu(double &result)
     {
       using namespace Pipes::SI_AI_BKstarmumu;
-
       if (flav_debug) cout<<"Starting SI_AI_BKstarmumu"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
-
-      if (param.model < 0)
-        {
-          result = 0.;
-        }
-      else
-        {
-          result=BEreq::SI_AI_BKstarmumu_CONV(&param);
-        }
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result=BEreq::SI_AI_BKstarmumu_CONV(&param);
 
       if (flav_debug) printf("A_I(B->K* mu mu)_lowq2=%.3e\n",result);
       if (flav_debug) cout<<"Finished SI_AI_BKstarmumu"<<endl;
@@ -1591,7 +1435,7 @@ namespace Gambit
 
       if (flav_debug) cout<<"Starting SI_AI_BKstarmumu_zero"<<endl;
 
-      struct parameters param = *Dep::SuperIso_modelinfo;
+      parameters const& param = *Dep::SuperIso_modelinfo;
       result=BEreq::SI_AI_BKstarmumu_zero_CONV(&param);
 
       if (flav_debug) printf("A_I(B->K* mu mu)_zero=%.3e\n",result);

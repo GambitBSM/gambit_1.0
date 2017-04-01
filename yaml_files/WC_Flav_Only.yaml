@@ -5,15 +5,14 @@ Parameters:
     StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
 
     WC:
-      Re_DeltaC7: 0
+      Re_DeltaC7:
+        range: [-1, 1]
       Im_DeltaC7: 0
       Re_DeltaC9:
          range: [-4, 4]
-         prior_type: flat
       Im_DeltaC9:  0
       Re_DeltaC10:
          range: [-4, 4]
-         prior_type: flat
       Im_DeltaC10:  0
       Re_DeltaCQ1:  0
       Im_DeltaCQ1:  0
