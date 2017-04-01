@@ -51,9 +51,8 @@ namespace Gambit
   namespace ColliderBit
   {
 
-    /// @brief Container for log likelihoods from multiple Analyses and SRs
-    /// @todo If we want to be able to handle correlations between analyses, we need some way to know which analysis number are at which outer-vector indices
-    typedef std::vector<std::vector<SignalRegionData>> ColliderLogLikes;
+    /// @brief Container for data from multiple analyses and SRs
+    typedef std::vector<std::vector<SignalRegionData>> AnalysisNumbers;
 
     // typedefs specifically for timing (see ColliderBit_macros.hpp)
     typedef std::chrono::milliseconds ms;

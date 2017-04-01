@@ -32,17 +32,15 @@
 #define IF_X_SPECIALIZEX(X)                                                \
   if (specName == #X) { _specialInit = X::init; return; }
 
-/// Convenience macro for getting mandatory runoptions
-#define GET_COLLIDER_RUNOPTION(OPTION_NAME, OPTION_TYPE)                   \
-  do { try {                                                               \
-    OPTION_NAME = runOptions->getValue<OPTION_TYPE>(#OPTION_NAME);         \
-  } catch (...) {                                                          \
-    std::string errMsg = "Specify '";                                      \
-    errMsg += #OPTION_NAME;                                                \
-    errMsg += "' of type '";                                               \
-    errMsg += #OPTION_TYPE;                                                \
-    errMsg += "' in yaml file.";                                           \
-    ColliderBit_error().raise(LOCAL_INFO, errMsg);                         \
-  } } while (0)
+/// Raise (local) exception if two vectors are not of equal length 
+#define CHECK_EQUAL_VECTOR_LENGTH(VEC1, VEC2)                              \
+if (VEC1.size() != VEC2.size())                                            \
+{                                                                          \
+  std::stringstream errmsg;                                                \
+  errmsg << "The number of elements in option '" << #VEC1 << "'" << endl   \
+         << "must match the number of elements in option '" << #VEC2       \
+         << "'." << endl;                                                  \
+  ColliderBit_error().raise(LOCAL_INFO, errmsg.str());                     \
+}                                                                          \
 
 #endif /* defined __ColliderBit_macros_hpp__ */

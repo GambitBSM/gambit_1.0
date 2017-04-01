@@ -224,7 +224,7 @@ set(lib "libpythia8")
 set(dl "http://home.thep.lu.se/~torbjorn/pythia8/pythia8212.tgz")
 set(md5 "0886d1b2827d8f0cd2ae69b925045f40")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 
 # - Add additional compiler-specific optimisation flags and suppress some warnings from -Wextra.
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
@@ -257,70 +257,38 @@ ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
+  PATCH_COMMAND patch -p1 < ${patch}
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}" lib/${lib}.so
   INSTALL_COMMAND ""
-)
-ExternalProject_Add_Step(${name}_${ver} apply_hacks
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/Pythia.cc ${dir}/src/Pythia.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ParticleData.cc ${dir}/src/ParticleData.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ProcessLevel.cc ${dir}/src/ProcessLevel.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/SusyLesHouches.cc ${dir}/src/SusyLesHouches.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ResonanceDecays.cc ${dir}/src/ResonanceDecays.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/Pythia.h ${dir}/include/Pythia8/Pythia.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ParticleData.h ${dir}/include/Pythia8/ParticleData.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/SusyLesHouches.h ${dir}/include/Pythia8/SusyLesHouches.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/Settings.h ${dir}/include/Pythia8/Settings.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/PartonDistributions.h ${dir}/include/Pythia8/PartonDistributions.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/PartonDistributions.cc ${dir}/src/PartonDistributions.cc
-  DEPENDEES download
-  DEPENDERS patch
 )
 BOSS_backend(${name} ${ver})
 add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 set_as_default_version("backend" ${name} ${ver})
 
+
 # Pythia external model (EM)
 set(model "EM")
 set(ver "8.212.${model}")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
+set(ext_model_dir "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/ExternalModel")
+
 ExternalProject_Add(${name}_${ver}
   DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
   SOURCE_DIR ${dir}
   BUILD_IN_SOURCE 1
+  PATCH_COMMAND patch -p1 < ${patch}
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}" lib/${lib}.so
   INSTALL_COMMAND ""
 )
-ExternalProject_Add_Step(${name}_${ver} apply_hacks
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/Pythia.cc ${dir}/src/Pythia.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ParticleData.cc ${dir}/src/ParticleData.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ProcessLevel.cc ${dir}/src/ProcessLevel.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/SusyLesHouches.cc ${dir}/src/SusyLesHouches.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ResonanceDecays.cc ${dir}/src/ResonanceDecays.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/Pythia.h ${dir}/include/Pythia8/Pythia.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ParticleData.h ${dir}/include/Pythia8/ParticleData.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/SusyLesHouches.h ${dir}/include/Pythia8/SusyLesHouches.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/Settings.h ${dir}/include/Pythia8/Settings.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/PartonDistributions.h ${dir}/include/Pythia8/PartonDistributions.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/PartonDistributions.cc ${dir}/src/PartonDistributions.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/HelAmps_GambitDemo_UFO.h ${dir}/include/HelAmps_GambitDemo_UFO.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Parameters_GambitDemo_UFO.h ${dir}/include/Parameters_GambitDemo_UFO.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_ccx_uvuvx.h ${dir}/include/Sigma_GambitDemo_UFO_ccx_uvuvx.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_ddx_uvuvx.h ${dir}/include/Sigma_GambitDemo_UFO_ddx_uvuvx.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_gg_uvuvx.h ${dir}/include/Sigma_GambitDemo_UFO_gg_uvuvx.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_ssx_uvuvx.h ${dir}/include/Sigma_GambitDemo_UFO_ssx_uvuvx.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_uux_uvuvx.h ${dir}/include/Sigma_GambitDemo_UFO_uux_uvuvx.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/HelAmps_GambitDemo_UFO.cc ${dir}/src/HelAmps_GambitDemo_UFO.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Parameters_GambitDemo_UFO.cc ${dir}/src/Parameters_GambitDemo_UFO.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_ccx_uvuvx.cc ${dir}/src/Sigma_GambitDemo_UFO_ccx_uvuvx.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_ddx_uvuvx.cc ${dir}/src/Sigma_GambitDemo_UFO_ddx_uvuvx.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_gg_uvuvx.cc ${dir}/src/Sigma_GambitDemo_UFO_gg_uvuvx.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_ssx_uvuvx.cc ${dir}/src/Sigma_GambitDemo_UFO_ssx_uvuvx.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Sigma_GambitDemo_UFO_uux_uvuvx.cc ${dir}/src/Sigma_GambitDemo_UFO_uux_uvuvx.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/ProcessContainer.cc ${dir}/src/ProcessContainer.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/Index.xml  ${dir}/share/Pythia8/xmldoc/Index.xml
-  COMMAND ${CMAKE_COMMAND} -E copy ${patch}/ExternalModel/UserModel.xml ${dir}/share/Pythia8/xmldoc/UserModel.xml
+ExternalProject_Add_Step(${name}_${ver} add_external_Pythia_model
+  COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_dir}/ProcessContainer.cc ${dir}/src/
+  COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_dir}/Index.xml  ${dir}/share/Pythia8/xmldoc/
+  COMMAND ${CMAKE_COMMAND} -E copy ${ext_model_dir}/UserModel.xml ${dir}/share/Pythia8/xmldoc/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${ext_model_dir}/src ${dir}/src/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${ext_model_dir}/include ${dir}/include/
   DEPENDEES download
   DEPENDERS patch
 )
