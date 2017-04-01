@@ -1,12 +1,11 @@
 Parameters:
 
   #SM nuisance parameters.
-    StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
+    #StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
+    StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
 
     WC:
-      Re_DeltaC7:
-         range: [-1, 1]
-         prior_type: flat
+      Re_DeltaC7: 0
       Im_DeltaC7: 0
       Re_DeltaC9:
          range: [-4, 4]
@@ -55,7 +54,7 @@ Scanner:
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 3
+      grid_pts: 9
 
 ObsLikes:
 
@@ -183,4 +182,4 @@ KeyValues:
 
   default_output_path: "runs/WC/"
 
-  debug: true
+  debug: false
