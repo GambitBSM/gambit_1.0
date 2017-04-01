@@ -15,8 +15,8 @@ exec("import configs." + active_cfg.module_name + " as cfg")
 # ~~~~~ BOSS global variables and containers ~~~~~
 
 boss_dir = os.path.dirname(os.path.abspath(__file__))+'/..'
-boss_reset_dir = 'BOSS_reset_info'
 boss_temp_dir = 'BOSS_temp'
+# boss_reset_dir = 'BOSS_reset_info'
 
 debug_mode = False
 

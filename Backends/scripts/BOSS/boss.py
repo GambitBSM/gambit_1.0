@@ -160,6 +160,9 @@ def main():
     import modules.infomsg as infomsg
 
 
+    # Construct file name for the BOSS reset file to be created
+    reset_info_file_name = 'reset_info.' + gb.gambit_backend_name_full + '.boss'
+
     # Print banner
     msg = '''
 
@@ -233,6 +236,21 @@ def main():
         print
 
         filehandling.resetSourceCode(options.reset_info_file_name)
+
+        sys.exit()
+
+
+    #   
+    # Check if backend source tree has already been BOSSed. (Look for the backend_undefs.hpp header file.) 
+    # 
+    check_file = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'backend_undefs.hpp') 
+    if os.path.isfile(check_file):
+        print
+        print utils.modifyText('The backend source tree seems to already have been BOSSed.','yellow')
+        print
+        print '  If you want to reBOSS the source tree you must first revert it to the original state with the command:'
+        print '  python boss.py -r ' + reset_info_file_name
+        print
 
         sys.exit()
 
@@ -732,11 +750,10 @@ def main():
 
     manipulated_files, new_files, new_dirs = filehandling.copyFilesToSourceTree(verbose=True)
 
-    # Create the reset dir if it does not exist
-    filehandling.createOutputDirectories(selected_dirs=['reset'])
+    # # Create the reset dir if it does not exist
+    # filehandling.createOutputDirectories(selected_dirs=['reset'])
 
     # Save source_target_tuples to be able to undo the changes at a later time
-    reset_info_file_name = gb.boss_reset_dir+'/reset_info.' + gb.gambit_backend_name_full + '.boss'
     with open(reset_info_file_name, 'w') as f:
         pickle.dump([manipulated_files, new_files, new_dirs], f)
 

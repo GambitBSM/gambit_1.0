@@ -49,15 +49,15 @@ def createOutputDirectories(selected_dirs=['all']):
                 else:
                     raise
 
-    if ('reset' in selected_dirs) or ('all' in selected_dirs):
-        if gb.boss_reset_dir != '':
-            try:
-                os.makedirs(gb.boss_reset_dir)
-            except OSError, e:
-                if e.errno == 17:
-                    pass
-                else:
-                    raise
+    # if ('reset' in selected_dirs) or ('all' in selected_dirs):
+    #     if gb.boss_reset_dir != '':
+    #         try:
+    #             os.makedirs(gb.boss_reset_dir)
+    #         except OSError, e:
+    #             if e.errno == 17:
+    #                 pass
+    #             else:
+    #                 raise
 
     if ('backend_types_basedir' in selected_dirs) or ('all' in selected_dirs):
         if gb.backend_types_basedir != '':
