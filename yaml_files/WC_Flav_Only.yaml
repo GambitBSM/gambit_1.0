@@ -57,6 +57,16 @@ Scanner:
 
 ObsLikes:
 
+  # Likelihoods
+  - purpose:    LogLike
+    capability: b2ll_LL
+
+  - purpose:    LogLike
+    capability: b2sll_LL
+
+  - purpose:    LogLike
+    capability: b2sgamma_LL
+
   #Observables
   - purpose:      Observable
     capability:   bsgamma
@@ -64,6 +74,7 @@ ObsLikes:
     capability:   Bsmumu_untag
   - purpose:      Observable
     capability:   Bmumu
+
   - purpose:      Observable
     capability:   BRBKstarmumu_11_25_FL
   - purpose:      Observable
@@ -131,16 +142,6 @@ ObsLikes:
     capability:   BRBKstarmumu_60_80_S8
   - purpose:      Observable
     capability:   BRBKstarmumu_60_80_S9
-
-  # Likelihoods
-  - purpose:    LogLike
-    capability: b2ll_LL
-
-  - purpose:    LogLike
-    capability: b2sll_LL
-
-  - purpose:    LogLike
-    capability: b2sgamma_LL
 
 Rules:
 

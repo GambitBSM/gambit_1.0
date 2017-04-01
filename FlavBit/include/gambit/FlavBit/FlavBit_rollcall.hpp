@@ -25,6 +25,7 @@
 ///  \author Pat Scott
 ///  \date 2015 May
 ///  \date 2016 Aug
+///  \date 2017 March
 ///
 ///  \author Marcin Chrzaszcz
 ///  \date 2015 May
@@ -42,15 +43,15 @@
 #define MODULE FlavBit
 START_MODULE
 
-  // Initialization capability (fill the SuperIso structure)
+  // Initialisation capability (fill the SuperIso structure)
   #define CAPABILITY SuperIso_modelinfo
   START_CAPABILITY
     #define FUNCTION SI_fill
     START_FUNCTION(parameters)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, WC)
-    BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
-    BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
-    BACKEND_REQ(mt_mt, (libsuperiso),double, (struct parameters*))
+    BACKEND_REQ(Init_param, (libsuperiso), void, (parameters*))
+    BACKEND_REQ(slha_adjust, (libsuperiso), void, (parameters*))
+    BACKEND_REQ(mt_mt, (libsuperiso),double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, Spectrum, MSSM63atQ, MSSM63atMGUT)
     MODEL_CONDITIONAL_DEPENDENCY(SMINPUTS, SMInputs, WC)
@@ -64,7 +65,7 @@ START_MODULE
     #define FUNCTION SI_bsgamma
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(bsgamma_CONV, (libsuperiso), double,(struct parameters*, double))
+    BACKEND_REQ(bsgamma_CONV, (libsuperiso), double,(const parameters*, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
 
@@ -82,7 +83,7 @@ START_MODULE
     #define FUNCTION SI_Bsmumu_untag
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (const parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
 
@@ -99,17 +100,18 @@ START_MODULE
     #define FUNCTION SI_Bsee_untag
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_REQ(Bsll_untag_CONV, (libsuperiso),  double, (const parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
   // Observable: BR(B -> mu+ mu-)
   #define CAPABILITY Bmumu
   START_CAPABILITY
     #define FUNCTION SI_Bmumu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Bll_CONV, (libsuperiso),  double, (struct parameters*, int))
+    BACKEND_REQ(Bll_CONV, (libsuperiso),  double, (const parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -120,7 +122,7 @@ START_MODULE
     #define FUNCTION SI_Btaunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Btaunu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(Btaunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -131,7 +133,7 @@ START_MODULE
     #define FUNCTION SI_RD
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BDtaunu_BDenu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(BDtaunu_BDenu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -142,18 +144,18 @@ START_MODULE
     #define FUNCTION SI_RDstar
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BDstartaunu_BDstarenu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(BDstartaunu_BDstarenu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(K->mu nu)/BR(pi->mu nu)
-  #define CAPABILITY Kmunu_pimunu
+  #define CAPABILITY Rmu
   START_CAPABILITY
-    #define FUNCTION SI_Kmunu_pimunu
+    #define FUNCTION SI_Rmu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Kmunu_pimunu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(Kmunu_pimunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -164,7 +166,7 @@ START_MODULE
     #define FUNCTION SI_Rmu23
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Rmu23, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(Rmu23, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -175,7 +177,7 @@ START_MODULE
     #define FUNCTION SI_Dstaunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Dstaunu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(Dstaunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -186,7 +188,7 @@ START_MODULE
     #define FUNCTION SI_Dsmunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Dsmunu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(Dsmunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -197,7 +199,7 @@ START_MODULE
     #define FUNCTION SI_Dmunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(Dmunu, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(Dmunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
    #undef FUNCTION
   #undef CAPABILITY
@@ -208,7 +210,7 @@ START_MODULE
      #define FUNCTION SI_BDtaunu
      START_FUNCTION(double)
      DEPENDENCY(SuperIso_modelinfo, parameters)
-     BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
+     BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*, const parameters*))
      BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -219,7 +221,7 @@ START_MODULE
     #define FUNCTION SI_BDmunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
+    BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*, const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -230,7 +232,7 @@ START_MODULE
     #define FUNCTION SI_BDstartaunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBDstarlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
+    BACKEND_REQ(BRBDstarlnu, (libsuperiso), double, (int, int, double,  double, double*, const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -241,7 +243,7 @@ START_MODULE
     #define FUNCTION SI_BDstarmunu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBDstarlnu, (libsuperiso), double, (int, int, double,  double, double*,  struct parameters*))
+    BACKEND_REQ(BRBDstarlnu, (libsuperiso), double, (int, int, double,  double, double*, const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -252,7 +254,7 @@ START_MODULE
     #define FUNCTION SI_delta0
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(delta0_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(delta0_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -263,7 +265,7 @@ START_MODULE
     #define FUNCTION SI_BRBXsmumu_lowq2
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBXsmumu_lowq2_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(BRBXsmumu_lowq2_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -274,7 +276,7 @@ START_MODULE
     #define FUNCTION SI_BRBXsmumu_highq2
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBXsmumu_highq2_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(BRBXsmumu_highq2_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -285,7 +287,7 @@ START_MODULE
     #define FUNCTION SI_A_BXsmumu_lowq2
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(A_BXsmumu_lowq2_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(A_BXsmumu_lowq2_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -296,7 +298,7 @@ START_MODULE
     #define FUNCTION SI_A_BXsmumu_highq2
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(A_BXsmumu_highq2_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(A_BXsmumu_highq2_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -307,7 +309,7 @@ START_MODULE
     #define FUNCTION SI_A_BXsmumu_zero
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(A_BXsmumu_zero_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(A_BXsmumu_zero_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -318,7 +320,7 @@ START_MODULE
     #define FUNCTION SI_BRBXstautau_highq2
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBXstautau_highq2_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(BRBXstautau_highq2_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -329,19 +331,18 @@ START_MODULE
     #define FUNCTION SI_A_BXstautau_highq2
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(A_BXstautau_highq2_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(A_BXstautau_highq2_CONV, (libsuperiso),  double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
 
-
-  // Observable: BR(B -> K* mu mu)_lowq2
+  // Observables: BR(B -> K* mu mu) in q^2 bin from 1.1 GeV^2 to 2.5 GeV^2
   #define CAPABILITY BRBKstarmumu_11_25
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_11_25
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(const parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -418,14 +419,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
-  // Observable: BR(B -> K* mu mu)
+  // Observables: BR(B -> K* mu mu) in q^2 bin from 2.5 GeV^2 to 4 GeV^2
   #define CAPABILITY BRBKstarmumu_25_40
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_25_40
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(const parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -502,13 +502,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Observable: BR(B -> K* mu mu)
+  // Observables: BR(B -> K* mu mu) in q^2 bin from 4 GeV^2 to 6 GeV^2
   #define CAPABILITY BRBKstarmumu_40_60
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_40_60
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(const parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -585,14 +585,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
-  // Observable: BR(B -> K* mu mu)
+  // Observables: BR(B -> K* mu mu) in q^2 bin from 6 GeV^2 to 8 GeV^2
   #define CAPABILITY BRBKstarmumu_60_80
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_60_80
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(const parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -669,13 +668,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Observable: BR(B -> K* mu mu)
+  // Observables: BR(B -> K* mu mu) in q^2 bin from 15 GeV^2 to 17 GeV^2
   #define CAPABILITY BRBKstarmumu_15_17
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_15_17
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(const parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -752,14 +751,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
-  // Observable: BR(B -> K* mu mu)
+  // Observables: BR(B -> K* mu mu) in q^2 bin from 17 GeV^2 to 19 GeV^2
   #define CAPABILITY BRBKstarmumu_17_19
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu_17_19
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(const parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -842,7 +840,7 @@ START_MODULE
     #define FUNCTION SI_AI_BKstarmumu
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_AI_BKstarmumu_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(SI_AI_BKstarmumu_CONV, (libsuperiso),  double, (const parameters*))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -852,7 +850,7 @@ START_MODULE
     #define FUNCTION SI_AI_BKstarmumu_zero
     START_FUNCTION(double)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(SI_AI_BKstarmumu_zero_CONV, (libsuperiso),  double, (struct parameters*))
+    BACKEND_REQ(SI_AI_BKstarmumu_zero_CONV, (libsuperiso),  double, (const parameters*))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -881,6 +879,7 @@ START_MODULE
   //  Likelihoods
   //###############################################
 
+  // B meson mass aysmmetry likelihood
   #define CAPABILITY deltaMB_LL
   START_CAPABILITY
     #define FUNCTION deltaMB_likelihood
@@ -889,6 +888,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // b -> s gamma likelihood
   #define CAPABILITY b2sgamma_LL
   START_CAPABILITY
     #define FUNCTION b2sgamma_likelihood
@@ -897,6 +897,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Electroweak penguin measurements
   #define CAPABILITY b2sll_M
   START_CAPABILITY
     #define FUNCTION b2sll_measurements
@@ -910,6 +911,7 @@ START_MODULE
    #undef FUNCTION
   #undef CAPABILITY
 
+  // Electroweak penguin likelihood
   #define CAPABILITY b2sll_LL
   START_CAPABILITY
     #define FUNCTION b2sll_likelihood
@@ -918,14 +920,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY b2ll_LL
-  START_CAPABILITY
-    #define FUNCTION b2ll_likelihood
-    START_FUNCTION(double)
-    DEPENDENCY(b2ll_M, FlavBit::Flav_measurement_assym)
-    #undef FUNCTION
-  #undef CAPABILITY
-
+  // Rare fully leptonic B decay measurements
   #define CAPABILITY b2ll_M
   START_CAPABILITY
     #define FUNCTION b2ll_measurements
@@ -935,24 +930,32 @@ START_MODULE
    #undef FUNCTION
   #undef CAPABILITY
 
+  // Rare fully leptonic B decay likelihood
+  #define CAPABILITY b2ll_LL
+  START_CAPABILITY
+    #define FUNCTION b2ll_likelihood
+    START_FUNCTION(double)
+    DEPENDENCY(b2ll_M, FlavBit::Flav_measurement_assym)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Tree-level leptonic and semi-leptonic B & D decay measurements
   #define CAPABILITY SL_M
   START_CAPABILITY
     #define FUNCTION SL_measurements
     START_FUNCTION(FlavBit::Flav_measurement_assym)
-    DEPENDENCY(Btaunu, double )
-    DEPENDENCY(Kmunu_pimunu, double )
-    DEPENDENCY(Dstaunu, double )
-    DEPENDENCY(Dsmunu, double )
-    DEPENDENCY(Dmunu, double )
-    DEPENDENCY(BDtaunu, double)
-    DEPENDENCY(BDmunu, double)
-    DEPENDENCY(BDstartaunu, double)
-    DEPENDENCY(BDstarmunu, double)
     DEPENDENCY(RD, double)
     DEPENDENCY(RDstar, double)
+    DEPENDENCY(BDmunu, double)
+    DEPENDENCY(BDstarmunu, double)
+    DEPENDENCY(Btaunu, double)
+    DEPENDENCY(Dstaunu, double)
+    DEPENDENCY(Dsmunu, double)
+    DEPENDENCY(Dmunu, double)
    #undef FUNCTION
   #undef CAPABILITY
 
+  // Tree-level leptonic and semi-leptonic B & D decay likelihoods
   #define CAPABILITY SL_LL
   START_CAPABILITY
     #define FUNCTION SL_likelihood

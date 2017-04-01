@@ -23,7 +23,9 @@
 
 LOAD_LIBRARY
 
-// Can't do anything non-MSSM with SuperIso yet, besides Willson coefficinets
+// Can't do anything non-MSSM with SuperIso yet, besides Willson coefficients.
+// If you want to expand this to work in the 2HDM, it should all just work out of the box if you set the
+// parameters object up correctly in FlavBit and specify the model(s) as allowed here.
 BE_ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, WC)
 
 BE_FUNCTION(Init_param, void, (parameters*), "Init_param", "Init_param")
@@ -35,7 +37,7 @@ BE_FUNCTION(C_calculator_base2, void, (double*, double*, double, double*, double
 BE_FUNCTION(Cprime_calculator, void, (int, double*, std::complex<double>*, double, double, const parameters*), "Cprime_calculator", "Cprime_calculator")
 BE_FUNCTION(CQ_calculator, void, (int, std::complex<double>*, std::complex<double>*, double, double, const parameters*), "CQ_calculator", "CQ_calculator")
 
-BE_FUNCTION(alphas_running, double, ( double, double,  double, const parameters*), "alphas_running", "alphas_running")
+BE_FUNCTION(alphas_running, double, (double, double,  double, const parameters*), "alphas_running", "alphas_running")
 
 BE_FUNCTION(bsgamma, double, (double*, double*, double*, double*, double, double, const parameters*), "bsgamma", "bsgamma")
 BE_FUNCTION(bsgamma_Ecut, double, (double*, double*, double*, double*, double, double, double, const parameters*), "bsgamma_Ecut", "bsgamma_Ecut")
@@ -74,32 +76,19 @@ BE_FUNCTION(BRBDstarlnu, double, (int, int, double,  double, double*, const para
 BE_FUNCTION(mt_mt, double , (const parameters*), "mt_mt", "mt_mt")
 
 // Convenience functions:
-
-// MSSM
-BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (const parameters*, double, double), "BRBKstarmumu_CONV", (MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(bsgamma_CONV, double, (const parameters*, double), "bsgamma_CONV", (MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(Bsll_untag_CONV, double, (const parameters*, int), "Bsll_untag_CONV", (MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(Bll_CONV, double, (const parameters*, int), "Bll_CONV", (MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(BRBXsmumu_lowq2_CONV, double, (const parameters*), "BRBXsmumu_lowq2_CONV",(MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(BRBXsmumu_highq2_CONV, double, (const parameters*), "BRBXsmumu_highq2_CONV",(MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(A_BXsmumu_lowq2_CONV, double, (const parameters*), "A_BXsmumu_lowq2_CONV",(MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(A_BXsmumu_highq2_CONV, double, (const parameters*), "A_BXsmumu_highq2_CONV",(MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(A_BXsmumu_zero_CONV, double, (const parameters*), "A_BXsmumu_zero_CONV",(MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(BRBXstautau_highq2_CONV, double, (const parameters*), "BRBXstautau_highq2_CONV", (MSSM63atQ, MSSM63atMGUT))
-BE_CONV_FUNCTION(A_BXstautau_highq2_CONV, double, (const parameters*), "A_BXstautau_highq2_CONV", (MSSM63atQ, MSSM63atMGUT))
-
-// WC
-BE_CONV_FUNCTION(BRBKstarmumu_CONV_WC, Flav_KstarMuMu_obs, (const parameters*, double, double), "BRBKstarmumu_CONV", (WC))
-BE_CONV_FUNCTION(bsgamma_CONV_WC, double, (const parameters*, double), "bsgamma_CONV", (WC))
-BE_CONV_FUNCTION(Bsll_untag_CONV_WC, double, (const parameters*, int), "Bsll_untag_CONV", (WC))
-BE_CONV_FUNCTION(Bll_CONV_WC, double, (const parameters*, int), "Bll_CONV", (WC))
-BE_CONV_FUNCTION(BRBXsmumu_lowq2_CONV_WC, double, (const parameters*), "BRBXsmumu_lowq2_CONV",(WC))
-BE_CONV_FUNCTION(BRBXsmumu_highq2_CONV_WC, double, (const parameters*), "BRBXsmumu_highq2_CONV",(WC))
-BE_CONV_FUNCTION(A_BXsmumu_lowq2_CONV_WC, double, (const parameters*), "A_BXsmumu_lowq2_CONV",(WC))
-BE_CONV_FUNCTION(A_BXsmumu_highq2_CONV_WC, double, (const parameters*), "A_BXsmumu_highq2_CONV",(WC))
-BE_CONV_FUNCTION(A_BXsmumu_zero_CONV_WC, double, (const parameters*), "A_BXsmumu_zero_CONV",(WC))
-BE_CONV_FUNCTION(BRBXstautau_highq2_CONV_WC, double, (const parameters*), "BRBXstautau_highq2_CONV", (WC))
-BE_CONV_FUNCTION(A_BXstautau_highq2_CONV_WC, double, (const parameters*), "A_BXstautau_highq2_CONV", (WC))
+BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (const parameters*, double, double), "BRBKstarmumu_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(bsgamma_CONV, double, (const parameters*, double), "bsgamma_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(Bsll_untag_CONV, double, (const parameters*, int), "Bsll_untag_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(Bll_CONV, double, (const parameters*, int), "Bll_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(BRBXsmumu_lowq2_CONV, double, (const parameters*), "BRBXsmumu_lowq2_CONV",(MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(BRBXsmumu_highq2_CONV, double, (const parameters*), "BRBXsmumu_highq2_CONV",(MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(A_BXsmumu_lowq2_CONV, double, (const parameters*), "A_BXsmumu_lowq2_CONV",(MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(A_BXsmumu_highq2_CONV, double, (const parameters*), "A_BXsmumu_highq2_CONV",(MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(A_BXsmumu_zero_CONV, double, (const parameters*), "A_BXsmumu_zero_CONV",(MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(BRBXstautau_highq2_CONV, double, (const parameters*), "BRBXstautau_highq2_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(A_BXstautau_highq2_CONV, double, (const parameters*), "A_BXstautau_highq2_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(SI_AI_BKstarmumu_CONV, double, (const parameters*), "SI_AI_BKstarmumu_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(SI_AI_BKstarmumu_zero_CONV, double, (const parameters*), "SI_AI_BKstarmumu_zero_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

@@ -30,6 +30,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May, June
 ///  \date 2016 Aug
+///  \date 2017 March
 ///
 ///  *********************************************
 
@@ -78,7 +79,7 @@ namespace Gambit
     #endif
 
     // **************************************************
-    /// Non-rollcalled helper functions unknown to GAMBIT
+    // Non-rollcalled helper functions unknown to GAMBIT
     // **************************************************
 
     /// Matrix inversion routine using Boost
@@ -107,11 +108,11 @@ namespace Gambit
 
 
     // **************************************************
-    /// Rollcalled functions properly hooked up to Gambit
+    // Rollcalled functions properly hooked up to Gambit
     // **************************************************
 
     /// Fill SuperIso model info structure
-    void SI_fill(struct parameters &result)
+    void SI_fill(parameters &result)
     {
       namespace myPipe = Pipes::SI_fill;
       using namespace myPipe;
@@ -349,7 +350,7 @@ namespace Gambit
         if (spectrum["UPMNSIN"][6].is_data_line()) result.PMNS_alpha2=SLHAea::to<double>(spectrum["UPMNSIN"][6][1]);
       }
 
-      if (!spectrum["MINPAR"].empty() && !(ModelInUse("WC")) )
+      if (!spectrum["MINPAR"].empty())
       {
         switch(result.model)
         {
@@ -377,9 +378,6 @@ namespace Gambit
             if (spectrum["MINPAR"][3].is_data_line()) result.tan_beta=SLHAea::to<double>(spectrum["MINPAR"][3][1]);
             if (spectrum["MINPAR"][4].is_data_line()) result.sign_mu=SLHAea::to<double>(spectrum["MINPAR"][4][1]);
           }
-          case 4:
-            //           result.CQpb=....
-
           default:
           {
             if (spectrum["MINPAR"][3].is_data_line()) result.tan_beta=SLHAea::to<double>(spectrum["MINPAR"][3][1]);
@@ -528,10 +526,10 @@ namespace Gambit
       }
 
       if (!spectrum["NMHMIX"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-             if (spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
+       if (spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
 
       if (!spectrum["NMAMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-             if (spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
+       if (spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
 
       if (!spectrum["MSOFT"].empty())
       {
@@ -633,7 +631,7 @@ namespace Gambit
     }
 
 
-    /// Br in b-> s gamma decays
+    /// Br b-> s gamma decays
     void SI_bsgamma(double &result)
     {
       using namespace Pipes::SI_bsgamma;
@@ -648,7 +646,7 @@ namespace Gambit
     }
 
 
-    /// Br in Bs->mumu decays for the untaged case
+    /// Br Bs->mumu decays for the untagged case (CP-averaged)
     void SI_Bsmumu_untag(double &result)
     {
       using namespace Pipes::SI_Bsmumu_untag;
@@ -663,7 +661,7 @@ namespace Gambit
     }
 
 
-    /// Br in Bs->ee decays for the untaged case
+    /// Br Bs->ee decays for the untagged case (CP-averaged)
     void SI_Bsee_untag(double &result)
     {
       using namespace Pipes::SI_Bsee_untag;
@@ -678,7 +676,7 @@ namespace Gambit
     }
 
 
-    /// Br in B0->mumu decays
+    /// Br B0->mumu decays
     void SI_Bmumu(double &result)
     {
       using namespace Pipes::SI_Bmumu;
@@ -692,7 +690,8 @@ namespace Gambit
       if (flav_debug) cout<<"Finished SI_Bmumu"<<endl;
     }
 
-    /// Br in B->tau nu_tau decays
+
+    /// Br B->tau nu_tau decays
     void SI_Btaunu(double &result)
     {
       using namespace Pipes::SI_Btaunu;
@@ -706,60 +705,7 @@ namespace Gambit
     }
 
 
-    ///  B-> D tau nu_tau / B-> D e nu_e decays
-    void SI_RD(double &result)
-    {
-      using namespace Pipes::SI_RD;
-      if (flav_debug) cout<<"Starting SI_RD"<<endl;
-
-      parameters const& param = *Dep::SuperIso_modelinfo;
-      result = BEreq::BDtaunu_BDenu(&param);
-
-      if (flav_debug) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
-      if (flav_debug) cout<<"Finished SI_RD"<<endl;
-    }
-
-    ///  B->D tau nu_tau / B-> D e nu_e decays
-    void SI_RDstar(double &result)
-    {
-      using namespace Pipes::SI_RDstar;
-      if (flav_debug) cout<<"Starting SI_RDstart"<<endl;
-
-      parameters const& param = *Dep::SuperIso_modelinfo;
-      result = BEreq::BDstartaunu_BDstarenu(&param);
-
-      if (flav_debug) printf("BR(B->D* tau nu)/BR(B->D* e nu)=%.3e\n",result);
-      if (flav_debug) cout<<"Finished SI_RD*"<<endl;
-    }
-
-
-    /// B->K mu nu / B-> pi mu nu
-    void SI_Kmunu_pimunu(double &result)
-    {
-      using namespace Pipes::SI_Kmunu_pimunu;
-      if (flav_debug) cout<<"Starting SI_Kmunu_pimunu"<<endl;
-
-      parameters const& param = *Dep::SuperIso_modelinfo;
-      result = BEreq::Kmunu_pimunu(&param);
-
-      if (flav_debug) printf("BR(K->mu nu)/BR(pi->mu nu)=%.3e\n",result);
-      if (flav_debug) cout<<"Finished SI_Kmunu_pimunu"<<endl;
-    }
-
-    void SI_Rmu23(double &result)
-    {
-      using namespace Pipes::SI_Rmu23;
-      if (flav_debug) cout<<"Starting SI_Rmu23"<<endl;
-
-      parameters const& param = *Dep::SuperIso_modelinfo;
-      result = BEreq::Rmu23(&param);
-
-      if (flav_debug) printf("Rmu23=%.3e\n",result);
-      if (flav_debug) cout<<"Finished SI_Rmu23"<<endl;
-    }
-
-
-    /// Br B->D* tau nu
+    /// Br B->D_s tau nu
     void SI_Dstaunu(double &result)
     {
       using namespace Pipes::SI_Dstaunu;
@@ -773,7 +719,7 @@ namespace Gambit
     }
 
 
-    /// Br B->Ds mu nu
+    /// Br B->D_s mu nu
     void SI_Dsmunu(double &result)
     {
       using namespace Pipes::SI_Dsmunu;
@@ -787,7 +733,7 @@ namespace Gambit
     }
 
 
-    /// Br B -> D mu nu
+    /// Br D -> mu nu
     void SI_Dmunu(double &result)
     {
       using namespace Pipes::SI_Dmunu;
@@ -823,7 +769,7 @@ namespace Gambit
     }
 
 
-    /// Br B -> D tau nu
+    /// Br B -> D mu nu
     void SI_BDmunu(double &result)
     {
       using namespace Pipes::SI_BDmunu;
@@ -845,6 +791,7 @@ namespace Gambit
     }
 
 
+    /// Br B -> D* tau nu
     void SI_BDstartaunu(double &result)
     {
       using namespace Pipes::SI_BDstartaunu;
@@ -866,6 +813,7 @@ namespace Gambit
     }
 
 
+    /// Br B -> D* mu nu
     void SI_BDstarmunu(double &result)
     {
       using namespace Pipes::SI_BDstarmunu;
@@ -887,6 +835,63 @@ namespace Gambit
     }
 
 
+    ///  B-> D tau nu / B-> D e nu decays
+    void SI_RD(double &result)
+    {
+      using namespace Pipes::SI_RD;
+      if (flav_debug) cout<<"Starting SI_RD"<<endl;
+
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result = BEreq::BDtaunu_BDenu(&param);
+
+      if (flav_debug) printf("BR(B->D tau nu)/BR(B->D e nu)=%.3e\n",result);
+      if (flav_debug) cout<<"Finished SI_RD"<<endl;
+    }
+
+
+    ///  B->D* tau nu / B-> D* e nu decays
+    void SI_RDstar(double &result)
+    {
+      using namespace Pipes::SI_RDstar;
+      if (flav_debug) cout<<"Starting SI_RDstart"<<endl;
+
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result = BEreq::BDstartaunu_BDstarenu(&param);
+
+      if (flav_debug) printf("BR(B->D* tau nu)/BR(B->D* e nu)=%.3e\n",result);
+      if (flav_debug) cout<<"Finished SI_RD*"<<endl;
+    }
+
+
+    /// B->K mu nu / B-> pi mu nu
+    void SI_Rmu(double &result)
+    {
+      using namespace Pipes::SI_Rmu;
+      if (flav_debug) cout<<"Starting SI_Rmu"<<endl;
+
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result = BEreq::Kmunu_pimunu(&param);
+
+      if (flav_debug) printf("R_mu=BR(K->mu nu)/BR(pi->mu nu)=%.3e\n",result);
+      if (flav_debug) cout<<"Finished SI_Rmu"<<endl;
+    }
+
+
+    /// 2-to-3-body decay ratio for semileptonic K and pi decays
+    void SI_Rmu23(double &result)
+    {
+      using namespace Pipes::SI_Rmu23;
+      if (flav_debug) cout<<"Starting SI_Rmu23"<<endl;
+
+      parameters const& param = *Dep::SuperIso_modelinfo;
+      result = BEreq::Rmu23(&param);
+
+      if (flav_debug) printf("Rmu23=%.3e\n",result);
+      if (flav_debug) cout<<"Finished SI_Rmu23"<<endl;
+    }
+
+
+    /// Delta_0 (CP-averaged isospin asymmetry of B -> K* gamma)
     void SI_delta0(double &result)
     {
       using namespace Pipes::SI_delta0;
@@ -900,6 +905,7 @@ namespace Gambit
     }
 
 
+    /// Inclusive branching fraction B -> X_s mu mu at low q^2
     void SI_BRBXsmumu_lowq2(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_lowq2;
@@ -913,6 +919,7 @@ namespace Gambit
     }
 
 
+    /// Inclusive branching fraction B -> X_s mu mu at high q^2
     void SI_BRBXsmumu_highq2(double &result)
     {
       using namespace Pipes::SI_BRBXsmumu_highq2;
@@ -926,6 +933,7 @@ namespace Gambit
     }
 
 
+    /// Forward-backward asymmetry of B -> X_s mu mu at low q^2
     void SI_A_BXsmumu_lowq2(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_lowq2;
@@ -939,6 +947,7 @@ namespace Gambit
     }
 
 
+    /// Forward-backward asymmetry of B -> X_s mu mu at high q^2
     void SI_A_BXsmumu_highq2(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_highq2;
@@ -952,6 +961,7 @@ namespace Gambit
     }
 
 
+    /// Zero crossing of the forward-backward asymmetry of B -> X_s mu mu
     void SI_A_BXsmumu_zero(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_zero;
@@ -965,6 +975,7 @@ namespace Gambit
     }
 
 
+    /// Inclusive branching fraction B -> X_s tau tau at high q^2
     void SI_BRBXstautau_highq2(double &result)
     {
       using namespace Pipes::SI_BRBXstautau_highq2;
@@ -978,6 +989,7 @@ namespace Gambit
     }
 
 
+    /// Forward-backward asymmetry of B -> X_s tau tau at high q^2
     void SI_A_BXstautau_highq2(double &result)
     {
       using namespace Pipes::SI_A_BXstautau_highq2;
@@ -1345,6 +1357,7 @@ namespace Gambit
     }
     /// @}
 
+
     /// B-> K* mu mu observables in 17.0-19.0 GeV
     /// @{
     void SI_BRBKstarmumu_17_19( Flav_KstarMuMu_obs &result)
@@ -1416,7 +1429,7 @@ namespace Gambit
     /// @}
 
 
-    /// isospin asymmetry of B-> K* mu mu
+    /// Isospin asymmetry of B-> K* mu mu
     void SI_AI_BKstarmumu(double &result)
     {
       using namespace Pipes::SI_AI_BKstarmumu;
@@ -1429,6 +1442,8 @@ namespace Gambit
       if (flav_debug) cout<<"Finished SI_AI_BKstarmumu"<<endl;
     }
 
+
+    /// Zero crossing of isospin asymmetry of B-> K* mu mu
     void SI_AI_BKstarmumu_zero(double &result)
     {
       using namespace Pipes::SI_AI_BKstarmumu_zero;
@@ -1442,6 +1457,8 @@ namespace Gambit
       if (flav_debug) cout<<"Finished SI_AI_BKstarmumu_zero"<<endl;
     }
 
+
+    /// Flavour observables from FeynHiggs: B_s mass asymmetry, Br B_s -> mu mu, Br B -> X_s gamma
     void FH_FlavourObs(fh_FlavourObs &result)
     {
       using namespace Pipes::FH_FlavourObs;
@@ -1472,6 +1489,7 @@ namespace Gambit
       if (flav_debug) cout<<"Finished FH_FlavourObs"<<endl;
     }
 
+
     ///These functions extract observables from a FeynHiggs flavour result
     ///@{
     void FH_bsgamma(double &result)
@@ -1489,7 +1507,7 @@ namespace Gambit
     ///@}
 
 
-    /// Measurements for b->sll
+    /// Measurements for electroweak penguin decays
     void b2sll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2sll_measurements;
@@ -1603,7 +1621,7 @@ namespace Gambit
     }
 
 
-    /// Likelihood for b->sll
+    /// Likelihood for electroweak penguin decays
     void b2sll_likelihood(double &result)
     {
       using namespace Pipes::b2sll_likelihood;
@@ -1718,7 +1736,7 @@ namespace Gambit
     }
 
 
-    /// Measurements for b->mumu
+    /// Measurements for rare purely leptonic B decays
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2ll_measurements;
@@ -1783,7 +1801,7 @@ namespace Gambit
     }
 
 
-    /// Likelihood for b->mumu
+    /// Likelihood for rare purely leptonic B decays
     void b2ll_likelihood(double &result)
     {
       using namespace Pipes::b2ll_likelihood;
@@ -1846,10 +1864,6 @@ namespace Gambit
 
         // B-> tau nu
         red.read_yaml_measurement("flav_data.yaml", "BR_Btaunu");
-        // B-> D tau nu
-        //red.read_yaml_measurement("flav_data.yaml", "BR_BDtaunu");
-        // B-> D* tau nu
-        //red.read_yaml_measurement("flav_data.yaml", "BR_BDstartaunu");
         // B-> D mu nu
         red.read_yaml_measurement("flav_data.yaml", "BR_BDmunu");
         // B-> D* mu nu
@@ -1885,10 +1899,6 @@ namespace Gambit
       double theory[8];
       // B-> tau nu SI
       theory[0] = *Dep::Btaunu;
-      // B-> D tau nu
-      //theory[1] = *Dep::BDtaunu;
-      // B-> D* tau nu
-      //theory[2] = *Dep::BDstartaunu;
       // B-> D mu nu
       theory[1] = *Dep::BDmunu;
       // B-> D* mu nu
@@ -1919,6 +1929,7 @@ namespace Gambit
       if (flav_debug) cout<<"Finished SL_measurements"<<endl;
 
     }
+
 
     /// Likelihood for tree-level leptonic and semileptonic B decays
     void SL_likelihood(double &result)

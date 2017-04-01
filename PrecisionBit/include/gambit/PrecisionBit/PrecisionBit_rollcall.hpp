@@ -176,7 +176,7 @@ START_MODULE
     #define FUNCTION SI_muon_gm2
     START_FUNCTION(triplet<double>)
     DEPENDENCY(SuperIso_modelinfo, parameters)
-    BACKEND_REQ(muon_gm2, (libsuperiso), double, (struct parameters*))
+    BACKEND_REQ(muon_gm2, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
 
