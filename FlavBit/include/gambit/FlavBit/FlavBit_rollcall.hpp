@@ -34,9 +34,9 @@
 ///
 ///  *********************************************
 
-
 #ifndef __FlavBit_rollcall_hpp__
 #define __FlavBit_rollcall_hpp__
+
 #include "gambit/FlavBit/FlavBit_types.hpp"
 
 
