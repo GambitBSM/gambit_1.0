@@ -13,6 +13,10 @@
 ///          (ben.farmer@gmail.com)
 ///    \date 2015 Aug
 ///
+///  \author Tomas Gonzalo
+///          (t.e.gonzalo@fys.uio.no_)
+///     \date 2016 Apr, May, June
+///  
 ///  *********************************************
 
 #include <string>
@@ -51,6 +55,17 @@ namespace Gambit
        return;
     }
 
+    // Testing function for SPheno
+    void SPheno_MSSM_test(bool &result)
+    {
+      namespace myPipe = Pipes::SPheno_MSSM_test;
+      const Spectrum& fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
+
+      std::cout << fullspectrum.getSLHAea(2) << std::endl;
+
+      result = 0;
+    }
+    
     /// Verify consistency of the contents of a Spectrum object of capability MSSMspectrum.
     /// (derived from old 'exampleRead' function)
     void MSSMspectrum_test (bool &result)

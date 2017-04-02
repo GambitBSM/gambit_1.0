@@ -1,6 +1,7 @@
 # GAMBIT Initialization file (in YAML)
 #
 # Martin White <martin.white@adelaide.edu.au>
+# Anders Kvellestad <anders.kvellestad@nordita.org>
 # March 2017
 #
 
@@ -9,18 +10,15 @@
 ###################################
 
 Parameters:
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  # Note that this is set up to look like a CMSSM scan
-  # It does not in fact use the CMSSM parameters
-  # This is simply an easy way to satisfy dependencies
-  
-  CMSSM:
-    M0: 70
-    M12: 350
-    A0: 0
-    TanBeta: 10
-    SignMu: 1
+  # GAMBIT won't run without a proper GAMBIT model. Here we just provide a dummy 
+  # model (TestModel1D) that satisfies GAMBIT requirements in a minimal way.
+  # The model is not used by Pythia or ColliderBit in any way. 
+  TestModel1D:
+    x: 
+      prior_type: flat
+      range: [0, 1]      
+
 
 ##############################
 # Printer setup
@@ -28,17 +26,21 @@ Parameters:
 
 Printer:
 
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
-  printer: ascii
+  # These lines tell GAMBIT to use the hdf5 printer.
+  # Switch to the ascii printer by commenting out and
+  # using the ascii lines below.
+  printer: hdf5
 
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
   options:
-    # name of output file
-    output_file: "gambit_output.txt"
+    output_file: "External.hdf5"
+    group: "/External"
+    delete_file_on_restart: true
+
+  # printer: ascii
+
+  # options:
+  #   output_file: "gambit_output.txt"
+
 
 ##############################
 # Scanner setup
@@ -46,6 +48,9 @@ Printer:
 
 Scanner:
 
+  # Use the random scanner to run a single point. 
+  # Note that the sampled TestModel1D parameter is not used for anything, 
+  # all that happens is that Pythia is run with the SLHA file provided below
   use_scanner: random
 
   scanners:
@@ -58,85 +63,38 @@ Scanner:
       files:
         output_file: "weights ..."
 
+
 ###############################
 # Observables of interest
 ###############################
 
 ObsLikes:
 
-  # Test LHC combined likelihood
+  # The LHC combined likelihood
   - purpose:    Likelihood
     capability: LHC_Combined_LogLike
 
+  # This dummy observable ensures a dependency on the model TestModel1D,
+  # which is just used to satisify GAMBIT's expectations for a proper GAMBIT model.
   - purpose:    Observable
-    capability: MSSM_spectrum
-    type:       map_str_dbl
+    capability: DummyColliderObservable
+    type:       double
      
-  - purpose:    Observable
-    capability: SLHA1_violation
+
 #########################
 # Rule entries
 #########################
 
 Rules:
 
-  #ColliderBit options (note, these ones are mandatory at this moment)
-
-  # Satisfy decay rate dependencies, but the information is never used
-  - capability: decay_rates
-    function: all_decays
-
-  # Satisfy spectrum dependencies, but the information is never used
-  - capability: unimproved_MSSM_spectrum
-    function: get_CMSSM_spectrum
-    options:
-      # Set to match benchmark point specified in
-      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
-      max_iterations:        0
-      calculate_sm_masses:   false
-      pole_mass_loop_order:  2
-      ewsb_loop_order:       2
-      beta_loop_order:       2
-      threshold_corrections_loop_order: 1
-      use_higgs_2loop_at_as: true
-      use_higgs_2loop_ab_as: true
-      use_higgs_2loop_at_at: true
-      use_higgs_2loop_atau_atau: true
-      invalid_point_fatal: false
-
-  # Satisfy MSSM spectrum dependencies, but information is never used
-  - capability: MSSM_spectrum
-    type: Spectrum
-    function: make_MSSM_precision_spectrum_none
-
-  # Satisfy Higgs rate dependencies, but information is never used
-  - capability: Reference_SM_Higgs_decay_rates
-    function: Ref_SM_Higgs_decays_table
-  - capability: Reference_SM_other_Higgs_decay_rates
-    function: Ref_SM_other_Higgs_decays_table
-  - capability: Reference_SM_A0_decay_rates
-    function: Ref_SM_A0_decays_table
-  - capability: Higgs_decay_rates
-    function: MSSM_h0_1_decays
-  - capability: h0_2_decay_rates
-    function: h0_2_decays
-  - capability: A0_decay_rates
-    function: A0_decays
-  - capability: H_plus_decay_rates
-    function: H_plus_decays
-  - capability: t_decay_rates
-    function: t_decays
-
- # Satisfy Higgs dependencies, but information is never used
-  - capability: Higgs_Couplings
-    function: MSSM_higgs_couplings_pwid
+ # ColliderBit options (note, these ones are mandatory at this moment)
 
  # Specify the ATLAS simulation parameters
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
+      useBuckFastATLASDetector: true
       partonOnly: false
       antiktR: 0.4
 
@@ -145,6 +103,7 @@ Rules:
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
+      useBuckFastCMSDetector: true
       partonOnly: false
       antiktR: 0.5
 
@@ -152,8 +111,7 @@ Rules:
     function: getATLASAnalysisContainer
     options:  
       #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
-      useATLAS: true
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb", "ATLAS_0LEPStop_20invfb",
                            "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                            "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
                            "ATLAS_3LEPEW_20invfb"]
@@ -162,42 +120,38 @@ Rules:
     function: getCMSAnalysisContainer
     options:  
       #useCMS defaults to true anyways. Set it to false to ignore all these analyses
-      useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
 
   - capability:  ColliderOperator
     function: operateLHCLoop
-    backends:
-    - {backend: Pythia,  version: 8.212.EM}
     options:
       nEvents: 5000
       pythiaNames: ["Pythia_external"]
-      #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
-
-  - capability: HardScatteringEvent
-    backends:
-    - {backend: Pythia,  version: 8.212.EM}
+      silenceLoop: false
 
   - capability:  HardScatteringSim
     function:  getPythiaFileReader
-    backends:
-    - {backend: Pythia,  version: 8.212.EM}
     options:
-      ### Pythia_doc_path defaults to the xmldoc directory of the default Pythia
-      ###   backend. So, this must only be set if the user chooses a different Pythia.
+      # Point GAMBIT to the version of Pythia that has the external model example included.
+      # (Remember to update Backends/include/gambit/Backends/default_bossed_versions.hpp accordingly!)
+      # Specify the Pythia options (and tell Pythia to run the new model).
+      # Specify the SLHA file that Pythia will use to run the model.
       Pythia_doc_path: "Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"
       Pythia_external: ["UserModel:all = on",
-		        "PartonLevel:MPI = off",
+		                    "PartonLevel:MPI = off",
                         "PartonLevel:ISR = on",
                         "PartonLevel:FSR = off",
-                        "HadronLevel:all = off"]
+                        "HadronLevel:all = off",
+                        "Beams:eCM = 8000",
+                        ]
       SLHA_filenames:
-        - ColliderBit/data/param_card_GambitDemo_UFO_test.dat
+        - ColliderBit/data/ExternalModel_point.slha
 
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
+
 
 #########################
 # Logging setup
@@ -224,13 +178,14 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/gambit_Collider"
+  default_output_path: "runs/gambit_External"
 
   dependency_resolution:
     prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
+    debug: true
 
   #By default, errors are fatal and warnings non-fatal
   exceptions:
@@ -238,4 +193,4 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
 
-  default_output_path: "runs/ColliderBit_test/"
+
