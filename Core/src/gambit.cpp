@@ -155,11 +155,14 @@ int main(int argc, char* argv[])
         // Set cleanup function to call during premature shutdown
         signaldata().set_cleanup(&do_cleanup);
 
+        // For extra speed with fast likelihood evaluations, disable the logs while the scans runs
+        bool disable_logs_during_scan = iniFile.getValueOrDef<bool>(false, "disable_logs_during_scan");
+        if(disable_logs_during_scan) logger().disable();
         //Do the scan!
         logger() << core << "Starting scan." << EOM;
         if (rank == 0) std::cerr << "Starting scan." << std::endl;
         scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
-
+        logger().enable(); // Turn logs back on (in case they were disabled for speed)
         // Check why we have exited the scanner; scan may have been terminated early by a signal. 
         // We assume here that because the scanner has exited that it has already down whatever 
         // cleanup it requires, including finalising the printers, i.e. the 'do_cleanup()' function will NOT run.
