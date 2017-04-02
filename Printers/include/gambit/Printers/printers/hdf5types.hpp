@@ -33,5 +33,6 @@
   (ModelParameters)         \
   (triplet<double>)         \
   (DM_nucleon_couplings)    \
+  (Flav_KstarMuMu_obs)      \
 
 #endif

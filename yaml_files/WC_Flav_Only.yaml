@@ -68,80 +68,32 @@ ObsLikes:
     capability: b2sgamma_LL
 
   #Observables
-  - purpose:      Observable
-    capability:   bsgamma
-  - purpose:      Observable
-    capability:   Bsmumu_untag
-  - purpose:      Observable
-    capability:   Bmumu
+  - purpose:    Observable
+    capability: bsgamma
 
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_FL
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_S3
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_S4
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_AFB
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_S5
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_S7
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_S8
-  - purpose:      Observable
-    capability:   BRBKstarmumu_11_25_S9
+  - purpose:    Observable
+    capability: Bsmumu_untag
 
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_FL
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_S3
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_S4
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_AFB
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_S5
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_S7
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_S8
-  - purpose:      Observable
-    capability:   BRBKstarmumu_25_40_S9
+  - purpose:    Observable
+    capability: Bmumu
 
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_FL
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_S3
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_S4
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_AFB
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_S5
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_S7
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_S8
-  - purpose:      Observable
-    capability:   BRBKstarmumu_40_60_S9
+  - purpose:    Observable
+    capability: BRBKstarmumu_11_25
 
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_FL
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_S3
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_S4
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_AFB
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_S5
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_S7
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_S8
-  - purpose:      Observable
-    capability:   BRBKstarmumu_60_80_S9
+  - purpose:    Observable
+    capability: BRBKstarmumu_25_40
+
+  - purpose:    Observable
+    capability: BRBKstarmumu_40_60
+
+  - purpose:    Observable
+    capability: BRBKstarmumu_60_80
+
+  - purpose:    Observable
+    capability: BRBKstarmumu_15_17
+
+  - purpose:    Observable
+    capability: BRBKstarmumu_17_19
 
 Rules:
 
