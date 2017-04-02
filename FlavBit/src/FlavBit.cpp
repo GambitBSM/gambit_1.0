@@ -78,185 +78,25 @@ namespace Gambit
     /// Fill SuperIso model info structure
     void SI_fill(parameters &result)
     {
-      namespace myPipe = Pipes::SI_fill;
-      using namespace myPipe;
+      using namespace Pipes::SI_fill;
       using namespace std;
 
+      SLHAstruct spectrum;
+      // Obtain SLHAea object from spectrum
       if (ModelInUse("WC"))
       {
-        BEreq::Init_param(&result);
-
-        // now SM inputs
-        // Access the pipes for this function to get model and parameter information, and dependencies
-
-        // Get SLHA2 SMINPUTS values
-        const SMInputs& spectrum = *(Dep::SMINPUTS);
-
-        result.mass_W=spectrum.mW;
-
-        result.inv_alpha_em=spectrum.alphainv;
-        result.Gfermi=spectrum.GF;
-        result.alphas_MZ=spectrum.alphaS;
-        result.mass_Z=spectrum.mZ;
-        result.mass_b=spectrum.mBmB;
-        result.mass_top_pole=spectrum.mT;
-        result.mass_tau=spectrum.mTau;
-        result.mass_nutau2=spectrum.mNu3;
-        result.mass_e=spectrum.mE;
-        result.mass_nue=spectrum.mNu1;
-        result.mass_mu=spectrum.mMu;
-        result.mass_numu2=spectrum.mNu2;
-        result.mass_d=spectrum.mD;
-        result.mass_u=spectrum.mU;
-        result.mass_s=spectrum.mS;
-        result.mass_c=spectrum.mCmC;
-        result.mass_b_1S=2.348147*2.;  // In principle this should come from the spectrum object, but it can't do masses in the 1S scheme atm...
-
-        result.CKM_lambda=spectrum.CKM.lambda;
-        result.CKM_A=spectrum.CKM.A;
-        result.CKM_rhobar=spectrum.CKM.rhobar;
-        result.CKM_etabar=spectrum.CKM.etabar;
-
-        result.Vtb=Spectrum::Wolf2V_tb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-        result.Vcb=Spectrum::Wolf2V_cb(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-        result.Vub=Spectrum::Wolf2V_ub(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-
-        result.Vts=Spectrum::Wolf2V_ts(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-        result.Vcs=Spectrum::Wolf2V_cs(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-        result.Vus=Spectrum::Wolf2V_us(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-
-        result.Vtd=Spectrum::Wolf2V_td(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-        result.Vcd=Spectrum::Wolf2V_cd(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-        result.Vud=Spectrum::Wolf2V_ud(result.CKM_lambda, result.CKM_A, result.CKM_rhobar, result.CKM_etabar);
-
-        // FIXME these all need to come from/be included in Elements/include/gambit/Elements/numerical_constants.hpp
-        result.m_Bs=5.366770;
-        result.m_B=5.27926;
-        result.m_Bd=5.27958;
-        result.mass_b_pole=4.791059;
-        result.life_pi=2.6033e-8;
-        result.life_K=1.2380e-8;
-        result.life_B=1.638e-12;
-        result.life_Bs=1.512e-12;
-        result.life_Bd=1.519e-12;
-        result.life_D=1.040e-12;
-        result.life_Ds=5.e-13;
-        result.f_B=0.1905;
-        result.f_Bs=0.2277;
-        result.f_Ds=0.2486;
-        result.f_D=0.2135;
-        result.f_K=0.156;
-        result.fK_fpi=1.193;
-        result.f_Kstar_par=0.216;
-        result.f_Kstar_perp=0.163;
-        result.f_phi_par=0.235;
-        result.f_phi_perp=0.191;
-        result.m_pi=0.13957;
-        result.m_K=0.493677;
-        result.m_K0=0.497614;
-        result.m_Kstar=0.89166;
-        result.m_Kstar0=0.89581;
-        result.m_D0=1.86484;
-        result.m_D=1.86961;
-        result.m_Dstar=2.01027;
-        result.m_Dstar0=2.00697;
-        result.m_Ds=1.9683;
-        result.m_phi=1.019461;
-        result.a1perp=0.04;
-        result.a2perp=0.10;
-        result.a1par=0.06;
-        result.a2par=0.16;
-        result.a1K=0.06;
-        result.a2K=0.25;
-        result.a1phi_perp=0.;
-        result.a1phi_par=0.;
-        result.a2phi_perp=0.14;
-        result.a2phi_par=0.23;
-        result.zeta3A=0.032;
-        result.zeta3V=0.013;
-        result.wA10=-2.1;
-        result.deltatp=0.16;
-        result.deltatm=-0.16;
-        result.deltatp_phi=0.33;
-        result.deltatm_phi=0.;
-        result.lambda_Bp=0.46;
-        result.lambda_Bsp=0.46;
-        result.rho1=0.06;
-        result.lambda2=0.12;
-        result.fullFF=1;
-
-        // FIXME these need to come from the spectrum object!!!  They are already set - why are they overwritten here?
-        result.CKM_lambda=0.22537;
-        result.CKM_A=0.814;
-        result.CKM_rhobar=0.117;
-        result.CKM_etabar=0.353;
-
-        // FIXME these needs to come from the spectrum object! They are already set - why are they overwritten here?
-        result.mass_u = 2.3e-3;
-        result.mass_d = 4.8e-3;
-        result.mass_s = 0.095;
-        result.mass_c = 1.275;
-        result.mass_b = 4.18;
-        result.mass_top_pole = 173.34;
-
-        // FIXME these need to come from the spectrum object!!!
-        result.mass_e = 0.511e-3;
-        result.mass_mu= 0.105658;
-        result.mass_tau_pole=1.77682;
-        result.mass_tau=result.mass_tau_pole;
-
-        // FIXME these need to come from the spectrum object!!!  They are already set - why are they overwritten here?
-        result.mass_Z=91.1876;
-        result.alphas_MZ=0.1185;
-        result.mass_W=80.385;
-
-        // FIXME this needs to come from the spectrum object (the model-conditional dep needs to be on SM_spectrum, not SMINPUTS)!!!
-        result.mass_h0=125.;
-
-        // FIXME these need to come from the spectrum object!!!
-        result.gp=result.gp_Q=3.57458e-1;
-        result.g2=result.g2_Q=6.51908e-1;
-        result.inv_alpha_em=1.27916e2;
-        result.Gfermi=1.16637000e-5;
-
-        // FIXME these need to come from the decay table (need to add a dep on the decay table or on the W and Z widths individually)!!!
-        result.width_Z=2.4952;
-        result.width_W=2.085;
-
-        double mtmt=BEreq::mt_mt(&result);
-        result.mtmt=mtmt;
-
-        BEreq::slha_adjust(&result);
-
-        // Tell SuperIso to do its Wilson coefficient calculations for the SM.
-        // We will adjust them with our BSM deviations in backend convenience
-        // functions before we send them to SuperIso's observable calculation functions.
-        result.SM=1;
-
-        // So far our model only deals with 5 operators: O_7, O_9, O_10, Q_1 and Q_2.
-        // SuperIso can actually only handle real O_7, O_9 and O_10 too, so the imaginary
-        // parts of those operators get ignored in subsequent calculations.
-        result.Re_DeltaC7=*Param["Re_DeltaC7"];
-        result.Im_DeltaC7=*Param["Im_DeltaC7"];
-        result.Re_DeltaC9=*Param["Re_DeltaC9"];
-        result.Im_DeltaC9=*Param["Im_DeltaC9"];
-        result.Re_DeltaC10=*Param["Re_DeltaC10"];
-        result.Im_DeltaC10=*Param["Im_DeltaC10"];
-        result.Re_DeltaCQ1=*Param["Re_DeltaCQ1"];
-        result.Im_DeltaCQ1=*Param["Im_DeltaCQ1"];
-        result.Re_DeltaCQ2=*Param["Re_DeltaCQ2"];
-        result.Im_DeltaCQ2=*Param["Im_DeltaCQ2"];
-
-        if (flav_debug) cout<<"Finished SI_fill"<<endl;
-
-        return;
+        spectrum = Dep::SM_spectrum->getSLHAea(2);
       }
-
-      // Obtain SLHAea object from spectrum
-      SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea(2);
-
-      // Add the MODSEL block if it is not provided by the spectrum object.
-      SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
+      else if (ModelInUse("MSSM63atMGUT") or ModelInUse("MSSM63atQ"))
+      {
+        spectrum = Dep::MSSM_spectrum->getSLHAea(2);
+        // Add the MODSEL block if it is not provided by the spectrum object.
+        SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
+      }
+      else
+      {
+        FlavBit_error().raise(LOCAL_INFO, "Unrecognised model.");
+      }
 
       BEreq::Init_param(&result);
 
@@ -405,7 +245,7 @@ namespace Gambit
         if (spectrum["MASS"][12].is_data_line()) result.mass_nue=SLHAea::to<double>(spectrum["MASS"][12][1]);
         if (spectrum["MASS"][13].is_data_line()) result.mass_mu=SLHAea::to<double>(spectrum["MASS"][13][1]);
         if (spectrum["MASS"][14].is_data_line()) result.mass_num=SLHAea::to<double>(spectrum["MASS"][14][1]);
-        if (spectrum["MASS"][15].is_data_line()) result.mass_tau=SLHAea::to<double>(spectrum["MASS"][15][1]);
+        if (spectrum["MASS"][15].is_data_line()) result.mass_tau=result.mass_tau_pole=SLHAea::to<double>(spectrum["MASS"][15][1]);
         if (spectrum["MASS"][16].is_data_line()) result.mass_nut=SLHAea::to<double>(spectrum["MASS"][16][1]);
         if (spectrum["MASS"][21].is_data_line()) result.mass_gluon=SLHAea::to<double>(spectrum["MASS"][21][1]);
         if (spectrum["MASS"][22].is_data_line()) result.mass_photon=SLHAea::to<double>(spectrum["MASS"][22][1]);
@@ -453,144 +293,195 @@ namespace Gambit
         if (spectrum["MASS"][2000016].is_data_line()) result.mass_nutr=SLHAea::to<double>(spectrum["MASS"][2000016][1]);
       }
 
-      if (!spectrum["ALPHA"].empty()) if (spectrum["ALPHA"].back().is_data_line()) result.alpha=SLHAea::to<double>(spectrum["ALPHA"].back().at(0));
-
-      if (!spectrum["STOPMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-       if (spectrum["STOPMIX"][max(ie,je)].is_data_line()) result.stop_mix[ie][je]=SLHAea::to<double>(spectrum["STOPMIX"].at(ie,je)[2]);
-      if (!spectrum["SBOTMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-       if (spectrum["SBOTMIX"][max(ie,je)].is_data_line()) result.sbot_mix[ie][je]=SLHAea::to<double>(spectrum["SBOTMIX"].at(ie,je)[2]);
-      if (!spectrum["STAUMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-       if (spectrum["STAUMIX"][max(ie,je)].is_data_line()) result.stau_mix[ie][je]=SLHAea::to<double>(spectrum["STAUMIX"].at(ie,je)[2]);
-      if (!spectrum["NMIX"].empty()) for (ie=1;ie<=4;ie++) for (je=1;je<=4;je++)
-       if (spectrum["NMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMIX"].at(ie,je)[2]);
-      if (!spectrum["NMNMIX"].empty()) for (ie=1;ie<=5;ie++) for (je=1;je<=5;je++)
-       if (spectrum["NMNMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMNMIX"].at(ie,je)[2]);
-      if (!spectrum["UMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-       if (spectrum["UMIX"][max(ie,je)].is_data_line()) result.charg_Umix[ie][je]=SLHAea::to<double>(spectrum["UMIX"].at(ie,je)[2]);
-      if (!spectrum["VMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-       if (spectrum["VMIX"][max(ie,je)].is_data_line()) result.charg_Vmix[ie][je]=SLHAea::to<double>(spectrum["VMIX"].at(ie,je)[2]);
-
-      if (!spectrum["GAUGE"].empty())
+      // The following blocks will only appear for SUSY models so let's not waste time checking them if we're not scanning one of those.
+      if (ModelInUse("MSSM63atMGUT") or ModelInUse("MSSM63atQ"))
       {
-        if (spectrum["GAUGE"][1].is_data_line()) result.gp_Q=SLHAea::to<double>(spectrum["GAUGE"][1][1]);
-        if (spectrum["GAUGE"][2].is_data_line()) result.g2_Q=SLHAea::to<double>(spectrum["GAUGE"][2][1]);
-        if (spectrum["GAUGE"][3].is_data_line()) result.g3_Q=SLHAea::to<double>(spectrum["GAUGE"][3][1]);
+        // The scale doesn't come through in MODSEL with all spectrum generators
+        result.Q = Dep::MSSM_spectrum->get_HE().GetScale();
+
+        if (!spectrum["ALPHA"].empty()) if (spectrum["ALPHA"].back().is_data_line()) result.alpha=SLHAea::to<double>(spectrum["ALPHA"].back().at(0));
+
+        if (!spectrum["STOPMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
+         if (spectrum["STOPMIX"][max(ie,je)].is_data_line()) result.stop_mix[ie][je]=SLHAea::to<double>(spectrum["STOPMIX"].at(ie,je)[2]);
+        if (!spectrum["SBOTMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
+         if (spectrum["SBOTMIX"][max(ie,je)].is_data_line()) result.sbot_mix[ie][je]=SLHAea::to<double>(spectrum["SBOTMIX"].at(ie,je)[2]);
+        if (!spectrum["STAUMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
+         if (spectrum["STAUMIX"][max(ie,je)].is_data_line()) result.stau_mix[ie][je]=SLHAea::to<double>(spectrum["STAUMIX"].at(ie,je)[2]);
+        if (!spectrum["NMIX"].empty()) for (ie=1;ie<=4;ie++) for (je=1;je<=4;je++)
+         if (spectrum["NMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMIX"].at(ie,je)[2]);
+        if (!spectrum["NMNMIX"].empty()) for (ie=1;ie<=5;ie++) for (je=1;je<=5;je++)
+         if (spectrum["NMNMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMNMIX"].at(ie,je)[2]);
+        if (!spectrum["UMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
+         if (spectrum["UMIX"][max(ie,je)].is_data_line()) result.charg_Umix[ie][je]=SLHAea::to<double>(spectrum["UMIX"].at(ie,je)[2]);
+        if (!spectrum["VMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
+         if (spectrum["VMIX"][max(ie,je)].is_data_line()) result.charg_Vmix[ie][je]=SLHAea::to<double>(spectrum["VMIX"].at(ie,je)[2]);
+
+        if (!spectrum["GAUGE"].empty())
+        {
+          if (spectrum["GAUGE"][1].is_data_line()) result.gp_Q=SLHAea::to<double>(spectrum["GAUGE"][1][1]);
+          if (spectrum["GAUGE"][2].is_data_line()) result.g2_Q=SLHAea::to<double>(spectrum["GAUGE"][2][1]);
+          if (spectrum["GAUGE"][3].is_data_line()) result.g3_Q=SLHAea::to<double>(spectrum["GAUGE"][3][1]);
+        }
+
+        if (!spectrum["YU"].empty()) for (ie=1;ie<=3;ie++) if (spectrum["YU"][ie].is_data_line()) result.yut[ie]=SLHAea::to<double>(spectrum["YU"].at(ie,ie)[2]);
+        if (!spectrum["YD"].empty()) for (ie=1;ie<=3;ie++) if (spectrum["YD"][ie].is_data_line()) result.yub[ie]=SLHAea::to<double>(spectrum["YD"].at(ie,ie)[2]);
+        if (!spectrum["YE"].empty()) for (ie=1;ie<=3;ie++) if (spectrum["YE"][ie].is_data_line()) result.yutau[ie]=SLHAea::to<double>(spectrum["YE"].at(ie,ie)[2]);
+
+        if (!spectrum["HMIX"].empty())
+        {
+          if (spectrum["HMIX"][1].is_data_line()) result.mu_Q=SLHAea::to<double>(spectrum["HMIX"][1][1]);
+          if (spectrum["HMIX"][2].is_data_line()) result.tanb_GUT=SLHAea::to<double>(spectrum["HMIX"][2][1]);
+          if (spectrum["HMIX"][3].is_data_line()) result.Higgs_VEV=SLHAea::to<double>(spectrum["HMIX"][3][1]);
+          if (spectrum["HMIX"][4].is_data_line()) result.mA2_Q=SLHAea::to<double>(spectrum["HMIX"][4][1]);
+        }
+
+        if (!spectrum["NMHMIX"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
+
+        if (!spectrum["NMAMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
+         if (spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
+
+        if (!spectrum["MSOFT"].empty())
+        {
+          if (!spectrum["MSOFT"].front().empty()) result.MSOFT_Q=SLHAea::to<double>(spectrum["MSOFT"].front().at(3));
+          if (spectrum["MSOFT"][1].is_data_line()) result.M1_Q=SLHAea::to<double>(spectrum["MSOFT"][1][1]);
+          if (spectrum["MSOFT"][2].is_data_line()) result.M2_Q=SLHAea::to<double>(spectrum["MSOFT"][2][1]);
+          if (spectrum["MSOFT"][3].is_data_line()) result.M3_Q=SLHAea::to<double>(spectrum["MSOFT"][3][1]);
+          if (spectrum["MSOFT"][21].is_data_line()) result.M2H1_Q=SLHAea::to<double>(spectrum["MSOFT"][21][1]);
+          if (spectrum["MSOFT"][22].is_data_line()) result.M2H2_Q=SLHAea::to<double>(spectrum["MSOFT"][22][1]);
+          if (spectrum["MSOFT"][31].is_data_line()) result.MeL_Q=SLHAea::to<double>(spectrum["MSOFT"][31][1]);
+          if (spectrum["MSOFT"][32].is_data_line()) result.MmuL_Q=SLHAea::to<double>(spectrum["MSOFT"][32][1]);
+          if (spectrum["MSOFT"][33].is_data_line()) result.MtauL_Q=SLHAea::to<double>(spectrum["MSOFT"][33][1]);
+          if (spectrum["MSOFT"][34].is_data_line()) result.MeR_Q=SLHAea::to<double>(spectrum["MSOFT"][34][1]);
+          if (spectrum["MSOFT"][35].is_data_line()) result.MmuR_Q=SLHAea::to<double>(spectrum["MSOFT"][35][1]);
+          if (spectrum["MSOFT"][36].is_data_line()) result.MtauR_Q=SLHAea::to<double>(spectrum["MSOFT"][36][1]);
+          if (spectrum["MSOFT"][41].is_data_line()) result.MqL1_Q=SLHAea::to<double>(spectrum["MSOFT"][41][1]);
+          if (spectrum["MSOFT"][42].is_data_line()) result.MqL2_Q=SLHAea::to<double>(spectrum["MSOFT"][42][1]);
+          if (spectrum["MSOFT"][43].is_data_line()) result.MqL3_Q=SLHAea::to<double>(spectrum["MSOFT"][43][1]);
+          if (spectrum["MSOFT"][44].is_data_line()) result.MuR_Q=SLHAea::to<double>(spectrum["MSOFT"][44][1]);
+          if (spectrum["MSOFT"][45].is_data_line()) result.McR_Q=SLHAea::to<double>(spectrum["MSOFT"][45][1]);
+          if (spectrum["MSOFT"][46].is_data_line()) result.MtR_Q=SLHAea::to<double>(spectrum["MSOFT"][46][1]);
+          if (spectrum["MSOFT"][47].is_data_line()) result.MdR_Q=SLHAea::to<double>(spectrum["MSOFT"][47][1]);
+          if (spectrum["MSOFT"][48].is_data_line()) result.MsR_Q=SLHAea::to<double>(spectrum["MSOFT"][48][1]);
+          if (spectrum["MSOFT"][49].is_data_line()) result.MbR_Q=SLHAea::to<double>(spectrum["MSOFT"][49][1]);
+        }
+
+        if (!spectrum["AU"].empty())
+        {
+          if (spectrum["AU"][1].is_data_line()) result.A_u=SLHAea::to<double>(spectrum["AU"].at(1,1)[2]);
+          if (spectrum["AU"][2].is_data_line()) result.A_c=SLHAea::to<double>(spectrum["AU"].at(2,2)[2]);
+          if (spectrum["AU"][3].is_data_line()) result.A_t=SLHAea::to<double>(spectrum["AU"].at(3,3)[2]);
+        }
+
+        if (!spectrum["AD"].empty())
+        {
+          if (spectrum["AD"][1].is_data_line()) result.A_d=SLHAea::to<double>(spectrum["AD"].at(1,1)[2]);
+          if (spectrum["AD"][2].is_data_line()) result.A_s=SLHAea::to<double>(spectrum["AD"].at(2,2)[2]);
+          if (spectrum["AD"][3].is_data_line()) result.A_b=SLHAea::to<double>(spectrum["AD"].at(3,3)[2]);
+        }
+
+        if (!spectrum["AE"].empty())
+        {
+          if (spectrum["AE"][1].is_data_line()) result.A_e=SLHAea::to<double>(spectrum["AE"].at(1,1)[2]);
+          if (spectrum["AE"][2].is_data_line()) result.A_mu=SLHAea::to<double>(spectrum["AE"].at(2,2)[2]);
+          if (spectrum["AE"][3].is_data_line()) result.A_tau=SLHAea::to<double>(spectrum["AE"].at(3,3)[2]);
+        }
+
+        if (!spectrum["NMSSMRUN"].empty())
+        {
+          if (spectrum["NMSSMRUN"][1].is_data_line()) result.lambdaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][1][1]);
+          if (spectrum["NMSSMRUN"][2].is_data_line()) result.kappaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][2][1]);
+          if (spectrum["NMSSMRUN"][3].is_data_line()) result.AlambdaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][3][1]);
+          if (spectrum["NMSSMRUN"][4].is_data_line()) result.AkappaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][4][1]);
+          if (spectrum["NMSSMRUN"][5].is_data_line()) result.lambdaSNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][5][1]);
+          if (spectrum["NMSSMRUN"][6].is_data_line()) result.xiFNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][6][1]);
+          if (spectrum["NMSSMRUN"][7].is_data_line()) result.xiSNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][7][1]);
+          if (spectrum["NMSSMRUN"][8].is_data_line()) result.mupNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][8][1]);
+          if (spectrum["NMSSMRUN"][9].is_data_line()) result.mSp2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][9][1]);
+          if (spectrum["NMSSMRUN"][10].is_data_line()) result.mS2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][10][1]);
+        }
+
+        if (!spectrum["USQMIX"].empty()) for (ie=1;ie<=6;ie++) for (je=1;je<=6;je++)
+         if (spectrum["USQMIX"][max(ie,je)].is_data_line()) result.sU_mix[ie][je]=SLHAea::to<double>(spectrum["USQMIX"].at(ie,je)[2]);
+        if (!spectrum["DSQMIX"].empty()) for (ie=1;ie<=6;ie++) for (je=1;je<=6;je++)
+         if (spectrum["DSQMIX"][max(ie,je)].is_data_line()) result.sD_mix[ie][je]=SLHAea::to<double>(spectrum["DSQMIX"].at(ie,je)[2]);
+        if (!spectrum["SELMIX"].empty()) for (ie=1;ie<=6;ie++) for (je=1;je<=6;je++)
+         if (spectrum["SELMIX"][max(ie,je)].is_data_line()) result.sE_mix[ie][je]=SLHAea::to<double>(spectrum["SELMIX"].at(ie,je)[2]);
+        if (!spectrum["SNUMIX"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["SNUMIX"][max(ie,je)].is_data_line()) result.sNU_mix[ie][je]=SLHAea::to<double>(spectrum["SNUMIX"].at(ie,je)[2]);
+
+        if (!spectrum["MSQ2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["MSQ2"][max(ie,je)].is_data_line()) result.sCKM_msq2[ie][je]=SLHAea::to<double>(spectrum["MSQ2"].at(ie,je)[2]);
+        if (!spectrum["MSL2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["MSL2"][max(ie,je)].is_data_line()) result.sCKM_msl2[ie][je]=SLHAea::to<double>(spectrum["MSL2"].at(ie,je)[2]);
+        if (!spectrum["MSD2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["MSD2"][max(ie,je)].is_data_line()) result.sCKM_msd2[ie][je]=SLHAea::to<double>(spectrum["MSD2"].at(ie,je)[2]);
+        if (!spectrum["MSU2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["MSU2"][max(ie,je)].is_data_line()) result.sCKM_msu2[ie][je]=SLHAea::to<double>(spectrum["MSU2"].at(ie,je)[2]);
+        if (!spectrum["MSE2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["MSE2"][max(ie,je)].is_data_line()) result.sCKM_mse2[ie][je]=SLHAea::to<double>(spectrum["MSE2"].at(ie,je)[2]);
+
+        if (!spectrum["IMVCKM"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
+        if (!spectrum["IMVCKM"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
+
+        if (!spectrum["UPMNS"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["UPMNS"][max(ie,je)].is_data_line()) result.PMNS_U[ie][je]=SLHAea::to<double>(spectrum["UPMNS"].at(ie,je)[2]);
+
+        if (!spectrum["TU"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["TU"][max(ie,je)].is_data_line()) result.TU[ie][je]=SLHAea::to<double>(spectrum["TU"].at(ie,je)[2]);
+        if (!spectrum["TD"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["TD"][max(ie,je)].is_data_line()) result.TD[ie][je]=SLHAea::to<double>(spectrum["TD"].at(ie,je)[2]);
+        if (!spectrum["TE"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
+         if (spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
       }
 
-      if (!spectrum["YU"].empty()) for (ie=1;ie<=3;ie++) if (spectrum["YU"][ie].is_data_line()) result.yut[ie]=SLHAea::to<double>(spectrum["YU"].at(ie,ie)[2]);
-      if (!spectrum["YD"].empty()) for (ie=1;ie<=3;ie++) if (spectrum["YD"][ie].is_data_line()) result.yub[ie]=SLHAea::to<double>(spectrum["YD"].at(ie,ie)[2]);
-      if (!spectrum["YE"].empty()) for (ie=1;ie<=3;ie++) if (spectrum["YE"][ie].is_data_line()) result.yutau[ie]=SLHAea::to<double>(spectrum["YE"].at(ie,ie)[2]);
-
-      if (!spectrum["HMIX"].empty())
+      else if (ModelInUse("WC"))
       {
-        if (spectrum["HMIX"][1].is_data_line()) result.mu_Q=SLHAea::to<double>(spectrum["HMIX"][1][1]);
-        if (spectrum["HMIX"][2].is_data_line()) result.tanb_GUT=SLHAea::to<double>(spectrum["HMIX"][2][1]);
-        if (spectrum["HMIX"][3].is_data_line()) result.Higgs_VEV=SLHAea::to<double>(spectrum["HMIX"][3][1]);
-        if (spectrum["HMIX"][4].is_data_line()) result.mA2_Q=SLHAea::to<double>(spectrum["HMIX"][4][1]);
+        // The Higgs mass doesn't come through in the SLHAea object, as that's only for SLHA2 SM inputs.
+        result.mass_h0 = Dep::SM_spectrum->get(Par::Pole_Mass, "h0_1");
+        // Set the scale.
+        result.Q = result.mass_Z;
       }
-
-      if (!spectrum["NMHMIX"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
-
-      if (!spectrum["NMAMIX"].empty()) for (ie=1;ie<=2;ie++) for (je=1;je<=2;je++)
-       if (spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
-
-      if (!spectrum["MSOFT"].empty())
-      {
-        if (!spectrum["MSOFT"].front().empty()) result.MSOFT_Q=SLHAea::to<double>(spectrum["MSOFT"].front().at(3));
-        if (spectrum["MSOFT"][1].is_data_line()) result.M1_Q=SLHAea::to<double>(spectrum["MSOFT"][1][1]);
-        if (spectrum["MSOFT"][2].is_data_line()) result.M2_Q=SLHAea::to<double>(spectrum["MSOFT"][2][1]);
-        if (spectrum["MSOFT"][3].is_data_line()) result.M3_Q=SLHAea::to<double>(spectrum["MSOFT"][3][1]);
-        if (spectrum["MSOFT"][21].is_data_line()) result.M2H1_Q=SLHAea::to<double>(spectrum["MSOFT"][21][1]);
-        if (spectrum["MSOFT"][22].is_data_line()) result.M2H2_Q=SLHAea::to<double>(spectrum["MSOFT"][22][1]);
-        if (spectrum["MSOFT"][31].is_data_line()) result.MeL_Q=SLHAea::to<double>(spectrum["MSOFT"][31][1]);
-        if (spectrum["MSOFT"][32].is_data_line()) result.MmuL_Q=SLHAea::to<double>(spectrum["MSOFT"][32][1]);
-        if (spectrum["MSOFT"][33].is_data_line()) result.MtauL_Q=SLHAea::to<double>(spectrum["MSOFT"][33][1]);
-        if (spectrum["MSOFT"][34].is_data_line()) result.MeR_Q=SLHAea::to<double>(spectrum["MSOFT"][34][1]);
-        if (spectrum["MSOFT"][35].is_data_line()) result.MmuR_Q=SLHAea::to<double>(spectrum["MSOFT"][35][1]);
-        if (spectrum["MSOFT"][36].is_data_line()) result.MtauR_Q=SLHAea::to<double>(spectrum["MSOFT"][36][1]);
-        if (spectrum["MSOFT"][41].is_data_line()) result.MqL1_Q=SLHAea::to<double>(spectrum["MSOFT"][41][1]);
-        if (spectrum["MSOFT"][42].is_data_line()) result.MqL2_Q=SLHAea::to<double>(spectrum["MSOFT"][42][1]);
-        if (spectrum["MSOFT"][43].is_data_line()) result.MqL3_Q=SLHAea::to<double>(spectrum["MSOFT"][43][1]);
-        if (spectrum["MSOFT"][44].is_data_line()) result.MuR_Q=SLHAea::to<double>(spectrum["MSOFT"][44][1]);
-        if (spectrum["MSOFT"][45].is_data_line()) result.McR_Q=SLHAea::to<double>(spectrum["MSOFT"][45][1]);
-        if (spectrum["MSOFT"][46].is_data_line()) result.MtR_Q=SLHAea::to<double>(spectrum["MSOFT"][46][1]);
-        if (spectrum["MSOFT"][47].is_data_line()) result.MdR_Q=SLHAea::to<double>(spectrum["MSOFT"][47][1]);
-        if (spectrum["MSOFT"][48].is_data_line()) result.MsR_Q=SLHAea::to<double>(spectrum["MSOFT"][48][1]);
-        if (spectrum["MSOFT"][49].is_data_line()) result.MbR_Q=SLHAea::to<double>(spectrum["MSOFT"][49][1]);
-      }
-
-      if (!spectrum["AU"].empty())
-      {
-        if (spectrum["AU"][1].is_data_line()) result.A_u=SLHAea::to<double>(spectrum["AU"].at(1,1)[2]);
-        if (spectrum["AU"][2].is_data_line()) result.A_c=SLHAea::to<double>(spectrum["AU"].at(2,2)[2]);
-        if (spectrum["AU"][3].is_data_line()) result.A_t=SLHAea::to<double>(spectrum["AU"].at(3,3)[2]);
-      }
-
-      if (!spectrum["AD"].empty())
-      {
-        if (spectrum["AD"][1].is_data_line()) result.A_d=SLHAea::to<double>(spectrum["AD"].at(1,1)[2]);
-        if (spectrum["AD"][2].is_data_line()) result.A_s=SLHAea::to<double>(spectrum["AD"].at(2,2)[2]);
-        if (spectrum["AD"][3].is_data_line()) result.A_b=SLHAea::to<double>(spectrum["AD"].at(3,3)[2]);
-      }
-
-      if (!spectrum["AE"].empty())
-      {
-        if (spectrum["AE"][1].is_data_line()) result.A_e=SLHAea::to<double>(spectrum["AE"].at(1,1)[2]);
-        if (spectrum["AE"][2].is_data_line()) result.A_mu=SLHAea::to<double>(spectrum["AE"].at(2,2)[2]);
-        if (spectrum["AE"][3].is_data_line()) result.A_tau=SLHAea::to<double>(spectrum["AE"].at(3,3)[2]);
-      }
-
-      if (!spectrum["NMSSMRUN"].empty())
-      {
-        if (spectrum["NMSSMRUN"][1].is_data_line()) result.lambdaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][1][1]);
-        if (spectrum["NMSSMRUN"][2].is_data_line()) result.kappaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][2][1]);
-        if (spectrum["NMSSMRUN"][3].is_data_line()) result.AlambdaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][3][1]);
-        if (spectrum["NMSSMRUN"][4].is_data_line()) result.AkappaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][4][1]);
-        if (spectrum["NMSSMRUN"][5].is_data_line()) result.lambdaSNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][5][1]);
-        if (spectrum["NMSSMRUN"][6].is_data_line()) result.xiFNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][6][1]);
-        if (spectrum["NMSSMRUN"][7].is_data_line()) result.xiSNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][7][1]);
-        if (spectrum["NMSSMRUN"][8].is_data_line()) result.mupNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][8][1]);
-        if (spectrum["NMSSMRUN"][9].is_data_line()) result.mSp2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][9][1]);
-        if (spectrum["NMSSMRUN"][10].is_data_line()) result.mS2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][10][1]);
-      }
-
-      if (!spectrum["USQMIX"].empty()) for (ie=1;ie<=6;ie++) for (je=1;je<=6;je++)
-       if (spectrum["USQMIX"][max(ie,je)].is_data_line()) result.sU_mix[ie][je]=SLHAea::to<double>(spectrum["USQMIX"].at(ie,je)[2]);
-      if (!spectrum["DSQMIX"].empty()) for (ie=1;ie<=6;ie++) for (je=1;je<=6;je++)
-       if (spectrum["DSQMIX"][max(ie,je)].is_data_line()) result.sD_mix[ie][je]=SLHAea::to<double>(spectrum["DSQMIX"].at(ie,je)[2]);
-      if (!spectrum["SELMIX"].empty()) for (ie=1;ie<=6;ie++) for (je=1;je<=6;je++)
-       if (spectrum["SELMIX"][max(ie,je)].is_data_line()) result.sE_mix[ie][je]=SLHAea::to<double>(spectrum["SELMIX"].at(ie,je)[2]);
-      if (!spectrum["SNUMIX"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["SNUMIX"][max(ie,je)].is_data_line()) result.sNU_mix[ie][je]=SLHAea::to<double>(spectrum["SNUMIX"].at(ie,je)[2]);
-
-      if (!spectrum["MSQ2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["MSQ2"][max(ie,je)].is_data_line()) result.sCKM_msq2[ie][je]=SLHAea::to<double>(spectrum["MSQ2"].at(ie,je)[2]);
-      if (!spectrum["MSL2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["MSL2"][max(ie,je)].is_data_line()) result.sCKM_msl2[ie][je]=SLHAea::to<double>(spectrum["MSL2"].at(ie,je)[2]);
-      if (!spectrum["MSD2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["MSD2"][max(ie,je)].is_data_line()) result.sCKM_msd2[ie][je]=SLHAea::to<double>(spectrum["MSD2"].at(ie,je)[2]);
-      if (!spectrum["MSU2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["MSU2"][max(ie,je)].is_data_line()) result.sCKM_msu2[ie][je]=SLHAea::to<double>(spectrum["MSU2"].at(ie,je)[2]);
-      if (!spectrum["MSE2"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["MSE2"][max(ie,je)].is_data_line()) result.sCKM_mse2[ie][je]=SLHAea::to<double>(spectrum["MSE2"].at(ie,je)[2]);
-
-      if (!spectrum["IMVCKM"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
-      if (!spectrum["IMVCKM"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
-
-      if (!spectrum["UPMNS"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["UPMNS"][max(ie,je)].is_data_line()) result.PMNS_U[ie][je]=SLHAea::to<double>(spectrum["UPMNS"].at(ie,je)[2]);
-
-      if (!spectrum["TU"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["TU"][max(ie,je)].is_data_line()) result.TU[ie][je]=SLHAea::to<double>(spectrum["TU"].at(ie,je)[2]);
-      if (!spectrum["TD"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["TD"][max(ie,je)].is_data_line()) result.TD[ie][je]=SLHAea::to<double>(spectrum["TD"].at(ie,je)[2]);
-      if (!spectrum["TE"].empty()) for (ie=1;ie<=3;ie++) for (je=1;je<=3;je++)
-       if (spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
 
       BEreq::slha_adjust(&result);
+
+      // Set the Z and W widths
+      result.width_Z = Dep::Z_decay_rates->width_in_GeV;
+      result.width_W = Dep::W_plus_decay_rates->width_in_GeV;
+
+      // Override the SuperIso b pole mass with the SpecBit value, and recompute the 1S b mass.
+      if (!spectrum["MASS"].empty() and spectrum["MASS"][5].is_data_line())
+      {
+        result.mass_b_pole = SLHAea::to<double>(spectrum["MASS"][5][1]);
+        result.mass_b_1S = BEreq::mb_1S(&result);
+      }
+
+      if (ModelInUse("WC"))
+      {
+
+        // Tell SuperIso to do its Wilson coefficient calculations for the SM.
+        // We will adjust them with our BSM deviations in backend convenience
+        // functions before we send them to SuperIso's observable calculation functions.
+        result.SM = 1;
+
+        // So far our model only deals with 5 operators: O_7, O_9, O_10, Q_1 and Q_2.
+        // SuperIso can actually only handle real O_7, O_9 and O_10 too, so the imaginary
+        // parts of those operators get ignored in subsequent calculations.
+        result.Re_DeltaC7  = *Param["Re_DeltaC7"];
+        result.Im_DeltaC7  = *Param["Im_DeltaC7"];
+        result.Re_DeltaC9  = *Param["Re_DeltaC9"];
+        result.Im_DeltaC9  = *Param["Im_DeltaC9"];
+        result.Re_DeltaC10 = *Param["Re_DeltaC10"];
+        result.Im_DeltaC10 = *Param["Im_DeltaC10"];
+        result.Re_DeltaCQ1 = *Param["Re_DeltaCQ1"];
+        result.Im_DeltaCQ1 = *Param["Im_DeltaCQ1"];
+        result.Re_DeltaCQ2 = *Param["Re_DeltaCQ2"];
+        result.Im_DeltaCQ2 = *Param["Im_DeltaCQ2"];
+
+      }
+
       if (flav_debug) cout<<"Finished SI_fill"<<endl;
     }
 

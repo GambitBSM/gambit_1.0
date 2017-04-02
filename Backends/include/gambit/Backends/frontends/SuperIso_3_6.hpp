@@ -69,11 +69,10 @@ BE_FUNCTION(BRBKll, double, (int, int, double, double, double*, double*, double*
 BE_FUNCTION(BRBsphill, double, (int, int, double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, const parameters*, double), "BRBsphill", "BRBsphill")
 BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, const parameters*, double), "AI_BKstarmumu", "AI_BKstarmumu")
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, const parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
-
 BE_FUNCTION(Bll, double, (int, double*, double*, double*, std::complex<double>*, std::complex<double>*, const parameters*, double), "Bdll", "Bll")
 BE_FUNCTION(BRBDlnu, double, (int, int, double,  double, double*, const parameters*), "BRBDlnu", "BRBDlnu")
 BE_FUNCTION(BRBDstarlnu, double, (int, int, double,  double, double*, const parameters*), "BRBDstarlnu", "BRBDstarlnu")
-BE_FUNCTION(mt_mt, double , (const parameters*), "mt_mt", "mt_mt")
+BE_FUNCTION(mb_1S, double , (const parameters*), "mb_1S", "mb_1S")
 
 // Convenience functions:
 BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (const parameters*, double, double), "BRBKstarmumu_CONV", (MSSM63atQ, MSSM63atMGUT, WC))

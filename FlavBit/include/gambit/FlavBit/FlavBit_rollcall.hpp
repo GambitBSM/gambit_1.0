@@ -51,10 +51,12 @@ START_MODULE
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, WC)
     BACKEND_REQ(Init_param, (libsuperiso), void, (parameters*))
     BACKEND_REQ(slha_adjust, (libsuperiso), void, (parameters*))
-    BACKEND_REQ(mt_mt, (libsuperiso),double, (const parameters*))
+    BACKEND_REQ(mb_1S, (libsuperiso),double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+    DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
+    DEPENDENCY(Z_decay_rates, DecayTable::Entry)
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, Spectrum, MSSM63atQ, MSSM63atMGUT)
-    MODEL_CONDITIONAL_DEPENDENCY(SMINPUTS, SMInputs, WC)
+    MODEL_CONDITIONAL_DEPENDENCY(SM_spectrum, Spectrum, WC)
     #undef FUNCTION
   #undef CAPABILITY
 

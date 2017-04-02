@@ -1,23 +1,52 @@
 Parameters:
 
-  #SM nuisance parameters.
-    #StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
-    StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
+  StandardModel_SLHA2:
+    alphaS:
+      range: [0.1167, 0.1203]   # alpha_s(mZ)^MSbar
+    mBmB:
+      range: [4.09, 4.27]       # mb(mb)^MSbar
+    alphainv  :  1.27940010E+02 # alpha^{-1}(mZ)^MSbar
+    mT        :  1.73340000E+02 # mtop(pole)
+    GF        :  1.16637870E-05 # G_Fermi
+    mZ        :  9.11876000E+01 # mZ(pole)
+    mTau      :  1.77682000E+00 # mtau(pole)
+    mNu3      :               0 # mnu3(pole)
+    mD        :  4.80000000E-03 # md(2 GeV)^MSbar
+    mU        :  2.30000000E-03 # mu(2 GeV)^MSbar
+    mS        :  9.50000000E-02 # ms(2 GeV)^MSbar
+    mCmC      :  1.27500000E+00 # mc(mc)^MSbar
+    mE        :  5.10998928E-04 # melectron(pole)
+    mMu       :  1.05658372E-01 # mmuon(pole)
+    mNu1      :               0 # mnu1(pole)
+    mNu2      :               0 # mnu2(pole)
+    CKM_lambda:  0.22537        # Wolfenstein \lambda
+    CKM_A     :  0.814          # Wolfenstein A
+    CKM_rhobar:  0.117          # Wolfenstein \bar\rho
+    CKM_etabar:  0.353          # Wolfenstein \bar\eta
+    theta12   :  0.58376        # solar angle
+    theta23   :  0.76958        # atmospheric mixing angle
+    theta13   :  0.15495        # reactor angle
+    delta13   :  0              # Dirac CP-violating phase
+    alpha1    :  0              # first Majorana CP-violating phase
+    alpha2    :  0              # second CP-violating Majorana phase
 
-    WC:
-      Re_DeltaC7:
-        range: [-1, 1]
-      Im_DeltaC7: 0
-      Re_DeltaC9:
-         range: [-4, 4]
-      Im_DeltaC9:  0
-      Re_DeltaC10:
-         range: [-4, 4]
-      Im_DeltaC10:  0
-      Re_DeltaCQ1:  0
-      Im_DeltaCQ1:  0
-      Re_DeltaCQ2:  0
-      Im_DeltaCQ2:  0
+  StandardModel_Higgs:
+    mH: 125.09
+
+  WC:
+    Re_DeltaC7:
+      range: [-0.1, 0.1]
+    Im_DeltaC7: 0
+    Re_DeltaC9:
+       range: [-3, 1]
+    Im_DeltaC9:  0
+    Re_DeltaC10:
+       range: [-3, 3]
+    Im_DeltaC10:  0
+    Re_DeltaCQ1:  0
+    Im_DeltaCQ1:  0
+    Re_DeltaCQ2:  0
+    Im_DeltaCQ2:  0
 
 Priors:
 
@@ -33,27 +62,25 @@ Printer:
 
 Scanner:
 
-  use_scanner: square_grid
+  use_scanner: multinest
 
   scanners:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 15000
-      tol: 0.5
-      updInt: 1
+      nlive: 10000
+      tol: 0.1
 
     de:
       plugin: Diver
       like: LogLike
-      NP: 7200
-      convthresh: 1e-3
-      verbosity: 1
+      NP: 19200
+      convthresh: 1e-5
 
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 9
+      grid_pts: 20
 
 ObsLikes:
 
@@ -97,10 +124,6 @@ ObsLikes:
 
 Rules:
 
-  # Tell all functions that are able to dump SLHA files to do so.
-  #- options:
-  #    drop_SLHA_file: true
-
   # Use SuperIso instead of FeynHiggs for b->sgamma
   - capability: bsgamma
     function: SI_bsgamma
@@ -109,18 +132,12 @@ Rules:
   - capability: Bsmumu_untag
     function: SI_Bsmumu_untag
 
-
 Logger:
 
   redirection:
-    [Debug] : "debug.log"
+    [Debug]   : "debug.log"
     [Default] : "default.log"
-    [DecayBit] : "DecayBit.log"
-    [DarkBit] : "DarkBit.log"
-    [PrecisionBit] : "PrecisionBit.log"
     [FlavBit] : "FlavBit.log"
-    [SpecBit] : "SpecBit.log"
-    [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
 
@@ -133,4 +150,4 @@ KeyValues:
 
   default_output_path: "runs/WC/"
 
-  debug: true
+  debug: false
