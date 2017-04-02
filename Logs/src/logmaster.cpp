@@ -362,6 +362,12 @@ namespace Gambit
        silenced = true;
     }
 
+    // Turn logs back on
+    void LogMaster::enable()
+    {
+       silenced = false;
+    }
+
     // Function to check if all log messages are silenced
     bool LogMaster::disabled()
     {

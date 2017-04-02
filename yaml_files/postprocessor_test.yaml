@@ -11,13 +11,13 @@
 #
  
 #======== Input parameter declarations =======
-Parameters: 
-  # Prior type is "none" because postprocessor 'scanner' will read in old points
-  NormalDist:
-    mu:
-      prior_type: none
-    sigma:
-      prior_type: none
+#Parameters: 
+#  # Prior type is "none" because postprocessor 'scanner' will read in old points
+#  NormalDist:
+#    mu:
+#      prior_type: none
+#    sigma:
+#      prior_type: none
 
 #======== Prior setup ========
 #Priors:
@@ -52,8 +52,9 @@ Scanner:
       plugin: postprocessor
 
       # 'purpose' name assigned to log-likelihood for this 'scan'
-      like: LogLike3
-
+      #like: LogLike3
+      like: None
+ 
       # label given to result of likelihood reweighting. Can overwrite old name, if 'permit_discard_old_likes' is 'true'.
       reweighted_like: reweighted_LogLike2
 
@@ -83,8 +84,8 @@ Scanner:
       # since the reader will be unable to find the match "is_valid_is_valid" dataset ;)
       # Format is {"oldname1":"newname1", "oldname2":"newname2", ...}
       rename:  {"#normaldist_loglike @ExampleBit_A::lnL_gaussian": "old_normaldist_loglike",
-                "Runtime(ms) totalloop": "old_totalloop_runtime",
                 "LogLike" : "LogLike_old"}
+                #"Runtime(ms) totalloop": "old_totalloop_runtime",
       # error example; clashes with 'LogLike' target;  "pointID": "LogLike2"}
 
       # Cut options
@@ -98,8 +99,8 @@ Scanner:
       # That is, the cuts are e.g. 'less than or equal to'.
       # If a valid entry cannot be retrieved for one of these variables for a point, that point will
       # not be postprocessed. I.e. cuts are "failed" by default.
-      cut_less_than:    {"#NormalDist_parameters @NormalDist::primary_parameters::mu": 23}
-      cut_greater_than: {"#NormalDist_parameters @NormalDist::primary_parameters::mu": 20}
+      cut_less_than:    {"#NormalDist_parameters @NormalDist::primary_parameters::mu": 22}
+      cut_greater_than: {"#NormalDist_parameters @NormalDist::primary_parameters::mu": 21.8}
       discard_points_outside_cuts: true
 
       # Postprocess points as if we are in an MPI process with rank=RANK and size=SIZE (set via environment variable)
@@ -121,6 +122,8 @@ Scanner:
         #group: "/" 
         file: "runs/largetest_diver+hdf5/samples/results.hdf5"
         group: "/gambit_data" 
+        #file: "runs/largetest_multinest+hdf5/samples/results.hdf5"
+        #group: "/gambit_data3" 
         
 
 #  objectives:
@@ -130,11 +133,11 @@ Scanner:
  
                    
 #======== Observables of interest ========
-ObsLikes:
-  - purpose:      LogLike3
-    capability:   normaldist_loglike
-    module:       ExampleBit_A
-    type:         double
+#ObsLikes:
+#  - purpose:      LogLike3
+#    capability:   normaldist_loglike
+#    module:       ExampleBit_A
+#    type:         double
 
 #======== Rule entries ========
 Rules:

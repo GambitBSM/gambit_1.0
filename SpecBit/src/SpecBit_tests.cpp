@@ -35,6 +35,8 @@
 
 #include "gambit/Utils/stream_overloads.hpp"
 
+// MAtrix macros were super slow to compile, have now removed them.
+
 namespace Gambit
 {
 
@@ -431,16 +433,16 @@ namespace Gambit
 
          // The names here could perhaps be improved. They are not so immediately obvious to me.
 
-         GET_MIX_MATRIX("~chi-","UMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("~chi+","VMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("A0","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("~d","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("~e-","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("h0","SCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("~chi0","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
-         GET_MIX_MATRIX("H+","CHARGEMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("~u","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("~nu","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
+         // GET_MIX_MATRIX("~chi-","UMIX",(1,2),(1,2)) cout<<endl;
+         // GET_MIX_MATRIX("~chi+","VMIX",(1,2),(1,2)) cout<<endl;
+         // GET_MIX_MATRIX("A0","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
+         // GET_MIX_MATRIX("~d","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         // GET_MIX_MATRIX("~e-","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         // GET_MIX_MATRIX("h0","SCALARMIX",(1,2),(1,2)) cout<<endl;
+         // GET_MIX_MATRIX("~chi0","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
+         // GET_MIX_MATRIX("H+","CHARGEMIX",(1,2),(1,2)) cout<<endl;
+         // GET_MIX_MATRIX("~u","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         // GET_MIX_MATRIX("~nu","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
 
          cout<<endl;
          cout << "Next up: running parameters" << endl;
@@ -492,9 +494,9 @@ namespace Gambit
 
          #define GET_MATRIX(NAME,BLOCK,__IND1,__IND2) BOOST_PP_SEQ_FOR_EACH_PRODUCT(GET_MATRIX_EL, ((NAME))((BLOCK))(BOOST_PP_TUPLE_TO_SEQ(__IND1))(BOOST_PP_TUPLE_TO_SEQ(__IND2)))
 
-         GET_MATRIX("Yu","YU",(1,2,3),(1,2,3)) cout << endl;
-         GET_MATRIX("Yd","YD",(1,2,3),(1,2,3)) cout << endl;
-         GET_MATRIX("Ye","YE",(1,2,3),(1,2,3)) cout << endl;
+         // GET_MATRIX("Yu","YU",(1,2,3),(1,2,3)) cout << endl;
+         // GET_MATRIX("Yd","YD",(1,2,3),(1,2,3)) cout << endl;
+         // GET_MATRIX("Ye","YE",(1,2,3),(1,2,3)) cout << endl;
 
          // Mass dimension 1 parameters
 
@@ -548,13 +550,13 @@ namespace Gambit
 
          // Seem to be the trilinears, and TYu and au etc. seem to be equal. Ask Peter...
 
-         GET_M1_MATRIX("TYu","TU",(1,2,3),(1,2,3)) cout << endl;
-         GET_M1_MATRIX("TYd","TD",(1,2,3),(1,2,3)) cout << endl;
-         GET_M1_MATRIX("TYe","TE",(1,2,3),(1,2,3)) cout << endl;
-         cout << endl;
-         GET_M1_MATRIX("au","TU",(1,2,3),(1,2,3)) cout << endl;
-         GET_M1_MATRIX("ad","TD",(1,2,3),(1,2,3)) cout << endl;
-         GET_M1_MATRIX("ae","TE",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M1_MATRIX("TYu","TU",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M1_MATRIX("TYd","TD",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M1_MATRIX("TYe","TE",(1,2,3),(1,2,3)) cout << endl;
+         // cout << endl;
+         // GET_M1_MATRIX("au","TU",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M1_MATRIX("ad","TD",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M1_MATRIX("ae","TE",(1,2,3),(1,2,3)) cout << endl;
 
          // Mass dimension 2 parameters
 
@@ -597,11 +599,11 @@ namespace Gambit
 
          cout << endl << "Mass matrices:" << endl << endl;
 
-         GET_M2_MATRIX("mq2","MSQ2",(1,2,3),(1,2,3)) cout << endl;
-         GET_M2_MATRIX("mu2","MSU2",(1,2,3),(1,2,3)) cout << endl;
-         GET_M2_MATRIX("md2","MSD2",(1,2,3),(1,2,3)) cout << endl;
-         GET_M2_MATRIX("me2","MSE2",(1,2,3),(1,2,3)) cout << endl;
-         GET_M2_MATRIX("ml2","MSL2",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M2_MATRIX("mq2","MSQ2",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M2_MATRIX("mu2","MSU2",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M2_MATRIX("md2","MSD2",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M2_MATRIX("me2","MSE2",(1,2,3),(1,2,3)) cout << endl;
+         // GET_M2_MATRIX("ml2","MSL2",(1,2,3),(1,2,3)) cout << endl;
 
          cout << endl;
 

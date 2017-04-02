@@ -79,6 +79,8 @@ namespace Gambit
         void disable();
         // Function to check if all log messages are silenced
         bool disabled();
+        // Turn logs back on
+        void enable();
 
         /// Print the backlogs to the default log file
         void emit_backlog(bool verbose);

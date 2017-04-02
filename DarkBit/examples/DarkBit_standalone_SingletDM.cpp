@@ -34,8 +34,10 @@ QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkB
 
 namespace Gambit
 {
+
   namespace DarkBit
   {
+
     // Dummy functor for returning empty cascadeMC result spectra
     void CMC_dummy(DarkBit::stringFunkMap& result)
     {
@@ -44,8 +46,9 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(Spectrum& outSpec){
-      std::string inputFileName = "input.slha";
+    void createSpectrum(Spectrum& outSpec)
+    {
+      std::string inputFileName = "DarkBit/data/example.slha1";
 
       Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
@@ -61,7 +64,7 @@ namespace Gambit
     // FIXME: Include invisible Higgs contribution
     void createDecays(DecayTable& outDecays)
     {
-      std::string inputFileName = "input.slha";
+      std::string inputFileName = "DarkBit/data/example.slha1";
       outDecays = DecayTable(inputFileName);
     }
   }
@@ -77,9 +80,9 @@ int main()
               << "Start DarkBit standalone example" << std::endl;
     std::cout << "--------------------------------" << std::endl;
     std::cout << std::endl;
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    std::cout << "This program reads and needs a file 'input.slha', or crashes otherwise." << std::endl;
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    std::cout << "This program reads and needs a file 'DarkBit/data/example.slha1' or dies!" << std::endl;
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     std::cout << std::endl;
 
 

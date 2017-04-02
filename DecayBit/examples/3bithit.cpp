@@ -37,7 +37,7 @@ using namespace PrecisionBit::Functown;
 using std::cout;
 using std::endl;
 
-const std::string filename_in = "3bithit.in";
+const std::string filename_in = "DecayBit/data/3bithit.in";
 const std::string filename_out[2] = {"3bithit.out.slha1", "3bithit.out.slha2"};
 
 int main()
