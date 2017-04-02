@@ -256,6 +256,13 @@ Rules:
   #- options:
   #    drop_SLHA_file: true
 
+  # These options set various tolerances in the spectrum generation
+  - options:
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
+      #gauge_mixing_tolerance_invalidates_point_only: false
+      #family_mixing_tolerance_invalidates_point_only: false
+
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
     function: GM2C_SUSY
@@ -435,41 +442,38 @@ Rules:
     type: "ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
     options:
-      partonOnly: false
-      antiktR: 0.4
+      partonOnly: [false]
+      antiktR: [0.4]
+      useDetector: [true]
 
   - capability: SimpleSmearingSim
     type: "ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
     options:
-      partonOnly: false
-      antiktR: 0.5
+      partonOnly: [false]
+      antiktR: [0.5]
+      useDetector: [true]
 
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
-                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
-                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                           "ATLAS_3LEPEW_20invfb"]
+      analyses: [ ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                   "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                   "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                   "ATLAS_3LEPEW_20invfb"] ]
 
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:
-      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
-                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+      analyses: [ ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                   "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"] ]
 
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: 20000
+      nEvents: [20000]
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
-
-  - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
-      #gauge_mixing_tolerance_invalidates_point_only: false
-      #family_mixing_tolerance_invalidates_point_only: false
+      silenceLoop: true
 
   - capability:  HardScatteringSim
     function:  getPythia
@@ -485,6 +489,8 @@ Rules:
                              "SUSY:all = on",
                              "TauDecays:mode = 0",
                              "TimeShower:pTmin = 20"]
+      xsec_vetos: [0.048]  # 0.048 fb correspond to ~1 expected event at L = 20.7 fb^-1.
+
 
   - capability: LHC_Combined_LogLike
     backends:
