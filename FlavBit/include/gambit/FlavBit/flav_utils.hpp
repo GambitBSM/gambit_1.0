@@ -48,7 +48,7 @@ namespace Gambit
       if ( res != 0 ) return false;
 
       // create identity matrix of "inverse"
-      inverse.assign(ublas::identity_matrix<T>(A.size1()));
+      inverse.assign(identity_matrix<T>(A.size1()));
 
       // backsubstitute to get the inverse
       lu_substitute(A, pm, inverse);
