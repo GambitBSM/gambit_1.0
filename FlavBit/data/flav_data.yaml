@@ -52,7 +52,7 @@
   exp_stat_error: 0.12e-2
   exp_sys_error: 0.
   exp_source: PDG16
-  th_error: 0.06
+  th_error: 0.11
   th_error_type: M
   th_error_source: NONE
   correlation:
