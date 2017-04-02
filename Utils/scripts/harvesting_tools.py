@@ -230,6 +230,8 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
                      "QUICK_FUNCTION":5,
                      "DEPENDENCY":2,
                      "MODEL_CONDITIONAL_DEPENDENCY":2,
+                     "INTERPRET_AS_PARENT_DEPENDENCY":2,
+                     "INTERPRET_AS_X_DEPENDENCY":2,
                      "START_CONDITIONAL_DEPENDENCY":1,
                      "BE_INI_DEPENDENCY":2,
                      "BE_INI_CONDITIONAL_DEPENDENCY":2}

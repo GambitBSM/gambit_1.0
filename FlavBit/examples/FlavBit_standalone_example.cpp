@@ -226,8 +226,8 @@ int main(int argc, char** argv)
     SI_BDtaunu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBDlnu);
     SI_RD.resolveDependency(&SI_fill);
     SI_RD.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BDtaunu_BDenu);
-    SI_Kmunu_pimunu.resolveDependency(&SI_fill);
-    SI_Kmunu_pimunu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Kmunu_pimunu);
+    SI_RDstar.resolveDependency(&SI_fill);
+    SI_RDstar.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BDstartaunu_BDstarenu);
     SI_Dstaunu.resolveDependency(&SI_fill);
     SI_Dstaunu.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Dstaunu);
     SI_Dsmunu.resolveDependency(&SI_fill);
@@ -334,7 +334,7 @@ int main(int argc, char** argv)
       SI_Btaunu.reset_and_calculate();
       SI_BDtaunu.reset_and_calculate();
       SI_RD.reset_and_calculate();
-      SI_Kmunu_pimunu.reset_and_calculate();
+      SI_RDstar.reset_and_calculate();
       SI_Dstaunu.reset_and_calculate();
       SI_Dsmunu.reset_and_calculate();
       SI_Dmunu.reset_and_calculate();
