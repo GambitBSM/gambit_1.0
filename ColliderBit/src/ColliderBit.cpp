@@ -601,11 +601,16 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
-        // Read options
+        // Read useDetector option
         std::vector<bool> default_useDetector(pythiaNames.size(), false);  // Delphes is switched off by default
         useDetector = runOptions->getValueOrDef<std::vector<bool> >(default_useDetector, "useDetector");
         CHECK_EQUAL_VECTOR_LENGTH(useDetector,pythiaNames)
 
+        // Return if all elements in useDetector are false
+        if (std::find(useDetector.begin(), useDetector.end(), true) == useDetector.end())
+          return;
+
+        // Read delphesConfigFiles option
         delphesConfigFiles = runOptions->getValue<std::vector<str> >("delphesConfigFiles");
         CHECK_EQUAL_VECTOR_LENGTH(delphesConfigFiles,pythiaNames)
 
