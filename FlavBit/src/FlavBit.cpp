@@ -860,23 +860,23 @@ namespace Gambit
 
     /// B-> K* mu mu observables in different q^2 bins
     /// @{
-    #define DEFINE_BRBKSTARMUMU(Q2MIN, Q2MAX, Q2MIN_TAG, Q2MAX_TAG)                         \
-    void CAT_4(SI_BRBKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG)(Flav_KstarMuMu_obs &result)          \
+    #define DEFINE_BKSTARMUMU(Q2MIN, Q2MAX, Q2MIN_TAG, Q2MAX_TAG)                         \
+    void CAT_4(SI_BKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG)(Flav_KstarMuMu_obs &result)          \
     {                                                                                       \
-      using namespace Pipes::CAT_4(SI_BRBKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG);                 \
-      if (flav_debug) cout<<"Starting CAT_4(SI_BRBKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG)"<<endl; \
+      using namespace Pipes::CAT_4(SI_BKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG);                 \
+      if (flav_debug) cout<<"Starting CAT_4(SI_BKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG)"<<endl; \
       parameters const& param = *Dep::SuperIso_modelinfo;                                   \
-      result=BEreq::BRBKstarmumu_CONV(&param, Q2MIN, Q2MAX);                                \
-      if (flav_debug) cout<<"Finished CAT_4(SI_BRBKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG)"<<endl; \
+      result=BEreq::BKstarmumu_CONV(&param, Q2MIN, Q2MAX);                                \
+      if (flav_debug) cout<<"Finished CAT_4(SI_BKstarmumu_,Q2MIN_TAG,_,Q2MAX_TAG)"<<endl; \
     }
-    DEFINE_BRBKSTARMUMU(1.1, 2.5, 11, 25)
-    DEFINE_BRBKSTARMUMU(2.5, 4.0, 25, 40)
-    DEFINE_BRBKSTARMUMU(4.0, 6.0, 40, 60)
-    DEFINE_BRBKSTARMUMU(6.0, 8.0, 60, 80)
-    DEFINE_BRBKSTARMUMU(15., 17., 15, 17)
-    DEFINE_BRBKSTARMUMU(17., 19., 17, 19)
+    DEFINE_BKSTARMUMU(1.1, 2.5, 11, 25)
+    DEFINE_BKSTARMUMU(2.5, 4.0, 25, 40)
+    DEFINE_BKSTARMUMU(4.0, 6.0, 40, 60)
+    DEFINE_BKSTARMUMU(6.0, 8.0, 60, 80)
+    DEFINE_BKSTARMUMU(15., 17., 15, 17)
+    DEFINE_BKSTARMUMU(17., 19., 17, 19)
     /// @}
-    #undef DEFINE_BRBKSTARMUMU
+    #undef DEFINE_BKSTARMUMU
 
 
     /// Isospin asymmetry of B-> K* mu mu
@@ -1007,59 +1007,59 @@ namespace Gambit
         first = false;
       }
 
-      pmc.value_th(0,0)=Dep::BRBKstarmumu_11_25->FL;
-      pmc.value_th(1,0)=Dep::BRBKstarmumu_11_25->AFB;
-      pmc.value_th(2,0)=Dep::BRBKstarmumu_11_25->S3;
-      pmc.value_th(3,0)=Dep::BRBKstarmumu_11_25->S4;
-      pmc.value_th(4,0)=Dep::BRBKstarmumu_11_25->S5;
-      pmc.value_th(5,0)=Dep::BRBKstarmumu_11_25->S7;
-      pmc.value_th(6,0)=Dep::BRBKstarmumu_11_25->S8;
-      pmc.value_th(7,0)=Dep::BRBKstarmumu_11_25->S9;
+      pmc.value_th(0,0)=Dep::BKstarmumu_11_25->FL;
+      pmc.value_th(1,0)=Dep::BKstarmumu_11_25->AFB;
+      pmc.value_th(2,0)=Dep::BKstarmumu_11_25->S3;
+      pmc.value_th(3,0)=Dep::BKstarmumu_11_25->S4;
+      pmc.value_th(4,0)=Dep::BKstarmumu_11_25->S5;
+      pmc.value_th(5,0)=Dep::BKstarmumu_11_25->S7;
+      pmc.value_th(6,0)=Dep::BKstarmumu_11_25->S8;
+      pmc.value_th(7,0)=Dep::BKstarmumu_11_25->S9;
 
-      pmc.value_th(8,0)=Dep::BRBKstarmumu_25_40->FL;
-      pmc.value_th(9,0)=Dep::BRBKstarmumu_25_40->AFB;
-      pmc.value_th(10,0)=Dep::BRBKstarmumu_25_40->S3;
-      pmc.value_th(11,0)=Dep::BRBKstarmumu_25_40->S4;
-      pmc.value_th(12,0)=Dep::BRBKstarmumu_25_40->S5;
-      pmc.value_th(13,0)=Dep::BRBKstarmumu_25_40->S7;
-      pmc.value_th(14,0)=Dep::BRBKstarmumu_25_40->S8;
-      pmc.value_th(15,0)=Dep::BRBKstarmumu_25_40->S9;
+      pmc.value_th(8,0)=Dep::BKstarmumu_25_40->FL;
+      pmc.value_th(9,0)=Dep::BKstarmumu_25_40->AFB;
+      pmc.value_th(10,0)=Dep::BKstarmumu_25_40->S3;
+      pmc.value_th(11,0)=Dep::BKstarmumu_25_40->S4;
+      pmc.value_th(12,0)=Dep::BKstarmumu_25_40->S5;
+      pmc.value_th(13,0)=Dep::BKstarmumu_25_40->S7;
+      pmc.value_th(14,0)=Dep::BKstarmumu_25_40->S8;
+      pmc.value_th(15,0)=Dep::BKstarmumu_25_40->S9;
 
-      pmc.value_th(16,0)=Dep::BRBKstarmumu_40_60->FL;
-      pmc.value_th(17,0)=Dep::BRBKstarmumu_40_60->AFB;
-      pmc.value_th(18,0)=Dep::BRBKstarmumu_40_60->S3;
-      pmc.value_th(19,0)=Dep::BRBKstarmumu_40_60->S4;
-      pmc.value_th(20,0)=Dep::BRBKstarmumu_40_60->S5;
-      pmc.value_th(21,0)=Dep::BRBKstarmumu_40_60->S7;
-      pmc.value_th(22,0)=Dep::BRBKstarmumu_40_60->S8;
-      pmc.value_th(23,0)=Dep::BRBKstarmumu_40_60->S9;
+      pmc.value_th(16,0)=Dep::BKstarmumu_40_60->FL;
+      pmc.value_th(17,0)=Dep::BKstarmumu_40_60->AFB;
+      pmc.value_th(18,0)=Dep::BKstarmumu_40_60->S3;
+      pmc.value_th(19,0)=Dep::BKstarmumu_40_60->S4;
+      pmc.value_th(20,0)=Dep::BKstarmumu_40_60->S5;
+      pmc.value_th(21,0)=Dep::BKstarmumu_40_60->S7;
+      pmc.value_th(22,0)=Dep::BKstarmumu_40_60->S8;
+      pmc.value_th(23,0)=Dep::BKstarmumu_40_60->S9;
 
-      pmc.value_th(24,0)=Dep::BRBKstarmumu_60_80->FL;
-      pmc.value_th(25,0)=Dep::BRBKstarmumu_60_80->AFB;
-      pmc.value_th(26,0)=Dep::BRBKstarmumu_60_80->S3;
-      pmc.value_th(27,0)=Dep::BRBKstarmumu_60_80->S4;
-      pmc.value_th(28,0)=Dep::BRBKstarmumu_60_80->S5;
-      pmc.value_th(29,0)=Dep::BRBKstarmumu_60_80->S7;
-      pmc.value_th(30,0)=Dep::BRBKstarmumu_60_80->S8;
-      pmc.value_th(31,0)=Dep::BRBKstarmumu_60_80->S9;
+      pmc.value_th(24,0)=Dep::BKstarmumu_60_80->FL;
+      pmc.value_th(25,0)=Dep::BKstarmumu_60_80->AFB;
+      pmc.value_th(26,0)=Dep::BKstarmumu_60_80->S3;
+      pmc.value_th(27,0)=Dep::BKstarmumu_60_80->S4;
+      pmc.value_th(28,0)=Dep::BKstarmumu_60_80->S5;
+      pmc.value_th(29,0)=Dep::BKstarmumu_60_80->S7;
+      pmc.value_th(30,0)=Dep::BKstarmumu_60_80->S8;
+      pmc.value_th(31,0)=Dep::BKstarmumu_60_80->S9;
 
-      pmc.value_th(32,0)=Dep::BRBKstarmumu_15_17->FL;
-      pmc.value_th(33,0)=Dep::BRBKstarmumu_15_17->AFB;
-      pmc.value_th(34,0)=Dep::BRBKstarmumu_15_17->S3;
-      pmc.value_th(35,0)=Dep::BRBKstarmumu_15_17->S4;
-      pmc.value_th(36,0)=Dep::BRBKstarmumu_15_17->S5;
-      pmc.value_th(37,0)=Dep::BRBKstarmumu_15_17->S7;
-      pmc.value_th(38,0)=Dep::BRBKstarmumu_15_17->S8;
-      pmc.value_th(39,0)=Dep::BRBKstarmumu_15_17->S9;
+      pmc.value_th(32,0)=Dep::BKstarmumu_15_17->FL;
+      pmc.value_th(33,0)=Dep::BKstarmumu_15_17->AFB;
+      pmc.value_th(34,0)=Dep::BKstarmumu_15_17->S3;
+      pmc.value_th(35,0)=Dep::BKstarmumu_15_17->S4;
+      pmc.value_th(36,0)=Dep::BKstarmumu_15_17->S5;
+      pmc.value_th(37,0)=Dep::BKstarmumu_15_17->S7;
+      pmc.value_th(38,0)=Dep::BKstarmumu_15_17->S8;
+      pmc.value_th(39,0)=Dep::BKstarmumu_15_17->S9;
 
-      pmc.value_th(40,0)=Dep::BRBKstarmumu_17_19->FL;
-      pmc.value_th(41,0)=Dep::BRBKstarmumu_17_19->AFB;
-      pmc.value_th(42,0)=Dep::BRBKstarmumu_17_19->S3;
-      pmc.value_th(43,0)=Dep::BRBKstarmumu_17_19->S4;
-      pmc.value_th(44,0)=Dep::BRBKstarmumu_17_19->S5;
-      pmc.value_th(45,0)=Dep::BRBKstarmumu_17_19->S7;
-      pmc.value_th(46,0)=Dep::BRBKstarmumu_17_19->S8;
-      pmc.value_th(47,0)=Dep::BRBKstarmumu_17_19->S9;
+      pmc.value_th(40,0)=Dep::BKstarmumu_17_19->FL;
+      pmc.value_th(41,0)=Dep::BKstarmumu_17_19->AFB;
+      pmc.value_th(42,0)=Dep::BKstarmumu_17_19->S3;
+      pmc.value_th(43,0)=Dep::BKstarmumu_17_19->S4;
+      pmc.value_th(44,0)=Dep::BKstarmumu_17_19->S5;
+      pmc.value_th(45,0)=Dep::BKstarmumu_17_19->S7;
+      pmc.value_th(46,0)=Dep::BKstarmumu_17_19->S8;
+      pmc.value_th(47,0)=Dep::BKstarmumu_17_19->S9;
 
       pmc.diff.clear();
       for (int i=0;i<n_experiments;++i)

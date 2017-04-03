@@ -343,52 +343,52 @@ START_MODULE
     START_FUNCTION(Flav_KstarMuMu_obs)                                                                     \
     DEPENDENCY(SuperIso_modelinfo, parameters)                                                             \
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )                                                       \
-    BACKEND_REQ(BRBKstarmumu_CONV, (libsuperiso), Flav_KstarMuMu_obs, (const parameters*, double, double))
+    BACKEND_REQ(BKstarmumu_CONV, (libsuperiso), Flav_KstarMuMu_obs, (const parameters*, double, double))
 
   // Observable: BR(B -> K* mu mu) in q^2 bin from 1.1 GeV^2 to 2.5 GeV^2
-  #define CAPABILITY BRBKstarmumu_11_25
+  #define CAPABILITY BKstarmumu_11_25
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu_11_25
+    #define FUNCTION SI_BKstarmumu_11_25
     KSTARMUMU_BINS
     #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu) in q^2 bin from 2.5 GeV^2 to 4 GeV^2
-  #define CAPABILITY BRBKstarmumu_25_40
+  #define CAPABILITY BKstarmumu_25_40
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu_25_40
+    #define FUNCTION SI_BKstarmumu_25_40
     KSTARMUMU_BINS
     #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu) in q^2 bin from 4 GeV^2 to 6 GeV^2
-  #define CAPABILITY BRBKstarmumu_40_60
+  #define CAPABILITY BKstarmumu_40_60
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu_40_60
+    #define FUNCTION SI_BKstarmumu_40_60
     KSTARMUMU_BINS
     #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu) in q^2 bin from 6 GeV^2 to 8 GeV^2
-  #define CAPABILITY BRBKstarmumu_60_80
+  #define CAPABILITY BKstarmumu_60_80
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu_60_80
+    #define FUNCTION SI_BKstarmumu_60_80
     KSTARMUMU_BINS
     #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu) in q^2 bin from 15 GeV^2 to 17 GeV^2
-  #define CAPABILITY BRBKstarmumu_15_17
+  #define CAPABILITY BKstarmumu_15_17
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu_15_17
+    #define FUNCTION SI_BKstarmumu_15_17
     KSTARMUMU_BINS
     #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu) in q^2 bin from 17 GeV^2 to 19 GeV^2
-  #define CAPABILITY BRBKstarmumu_17_19
+  #define CAPABILITY BKstarmumu_17_19
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu_17_19
+    #define FUNCTION SI_BKstarmumu_17_19
     KSTARMUMU_BINS
     #undef FUNCTION
   #undef CAPABILITY
@@ -461,12 +461,12 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION b2sll_measurements
     START_FUNCTION(FlavBit::predictions_measurements_covariances)
-    DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-    DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-    DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-    DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-    DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
-    DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
+    DEPENDENCY(BKstarmumu_11_25, Flav_KstarMuMu_obs)
+    DEPENDENCY(BKstarmumu_25_40, Flav_KstarMuMu_obs)
+    DEPENDENCY(BKstarmumu_40_60, Flav_KstarMuMu_obs)
+    DEPENDENCY(BKstarmumu_60_80, Flav_KstarMuMu_obs)
+    DEPENDENCY(BKstarmumu_15_17, Flav_KstarMuMu_obs)
+    DEPENDENCY(BKstarmumu_17_19, Flav_KstarMuMu_obs)
    #undef FUNCTION
   #undef CAPABILITY
 

@@ -75,7 +75,7 @@ BE_FUNCTION(BRBDstarlnu, double, (int, int, double,  double, double*, const para
 BE_FUNCTION(mb_1S, double , (const parameters*), "mb_1S", "mb_1S")
 
 // Convenience functions:
-BE_CONV_FUNCTION(BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (const parameters*, double, double), "BRBKstarmumu_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
+BE_CONV_FUNCTION(BKstarmumu_CONV, Flav_KstarMuMu_obs, (const parameters*, double, double), "BKstarmumu_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
 BE_CONV_FUNCTION(bsgamma_CONV, double, (const parameters*, double), "bsgamma_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
 BE_CONV_FUNCTION(Bsll_untag_CONV, double, (const parameters*, int), "Bsll_untag_CONV", (MSSM63atQ, MSSM63atMGUT, WC))
 BE_CONV_FUNCTION(Bll_CONV, double, (const parameters*, int), "Bll_CONV", (MSSM63atQ, MSSM63atMGUT, WC))

@@ -68,7 +68,7 @@ BE_NAMESPACE
   }
 
   /// B0 -> K*0 mu mu observables
-  Flav_KstarMuMu_obs BRBKstarmumu_CONV(const parameters *param, double Q2_min, double Q2_max)
+  Flav_KstarMuMu_obs BKstarmumu_CONV(const parameters *param, double Q2_min, double Q2_max)
   {
     check_model(param, LOCAL_INFO);
     assert(std::abs(Q2_max-Q2_min)>0.01); // it's not safe to have such small bins => probably you are doing something wrong
@@ -89,9 +89,9 @@ BE_NAMESPACE
     Cprime_calculator(2,byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
     modify_WC(param, C0b, CQ0b);
 
-    BRBKstarll(2,0,byVal(Q2_min), byVal(Q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
+    results.BR = BRBKstarll(2,0,byVal(Q2_min), byVal(Q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
 
-    // Fill the results
+    // Fill the other results
     results.FL=obs[2];
     results.AFB=obs[1];
     results.S3=obs[25];

@@ -35,22 +35,36 @@ std::string infile("FlavBit/data/example.slha");
 
 QUICK_FUNCTION(FlavBit, unimproved_MSSM_spectrum, NEW_CAPABILITY, createSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT))
 QUICK_FUNCTION(FlavBit, MSSM_spectrum, NEW_CAPABILITY, relabelSpectrum, Spectrum, (MSSM30atQ,MSSM30atMGUT), (unimproved_MSSM_spectrum, Spectrum))
+QUICK_FUNCTION(FlavBit, Z_decay_rates, NEW_CAPABILITY, GammaZ, DecayTable::Entry)
+QUICK_FUNCTION(FlavBit, W_plus_decay_rates, NEW_CAPABILITY, GammaW, DecayTable::Entry)
 
 namespace Gambit
 {
   namespace FlavBit
   {
 
-    // Make an unimproved GAMBIT spectrum object from an SLHA file
+    /// Make an unimproved GAMBIT spectrum object from an SLHA file
     void createSpectrum(Spectrum& outSpec)
     {
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(infile, Spectrum::mc_info(), Spectrum::mr_info());
     }
 
-    // Relabel it as a complete spectrum
+    /// Relabel it as a complete spectrum
     void relabelSpectrum(Spectrum& outSpec)
     {
       outSpec = *Pipes::relabelSpectrum::Dep::unimproved_MSSM_spectrum;
+    }
+
+    /// W decays -- only need the total width for SuperIso
+    void GammaW(DecayTable::Entry& result)
+    {
+      result.width_in_GeV = 2.085;
+    }
+
+    /// Z decays -- only need the total width for SuperIso
+    void GammaZ(DecayTable::Entry& result)
+    {
+      result.width_in_GeV = 2.4952;
     }
 
   }
@@ -123,46 +137,51 @@ int main(int argc, char** argv)
     //    - b2sll_M
     b2sll_likelihood.resolveDependency(&b2sll_measurements);
 
-    //SI_fill depends on:
+    //SI_fill needs on:
     //   - BEreq Init_param
     //   - BEreq slha_adjust
-    //   - BEopt SuperIso, 3.4
-    //   - MSSM_spectrum
+    //   - BEreq mb_1S
+    //   - MSSM_spectrum (or SM_spectrum)
+    //   - W_plus_decay_rates
+    //   - Z_decay_rates
     SI_fill.resolveDependency(&relabelSpectrum);
+    SI_fill.resolveDependency(&GammaZ);
+    SI_fill.resolveDependency(&GammaW);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::Init_param);
     SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::slha_adjust);
+    SI_fill.resolveBackendReq(&Backends::SuperIso_3_6::Functown::mb_1S);
 
     // b2sll_measurements depends on:
-    //   - BRBKstarmumu_11_25
-    //   - BRBKstarmumu_25_40
-    //   - BRBKstarmumu_40_60
-    //   - BRBKstarmumu_60_80
-    //   - BRBKstarmumu_15_17
-    //   - BRBKstarmumu_17_19
-    b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_11_25);
-    b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_25_40);
-    b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_40_60);
-    b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_60_80);
-    b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_15_17);
-    b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_17_19);
+    //   - BKstarmumu_11_25
+    //   - BKstarmumu_25_40
+    //   - BKstarmumu_40_60
+    //   - BKstarmumu_60_80
+    //   - BKstarmumu_15_17
+    //   - BKstarmumu_17_19
+    b2sll_measurements.resolveDependency(&SI_BKstarmumu_11_25);
+    b2sll_measurements.resolveDependency(&SI_BKstarmumu_25_40);
+    b2sll_measurements.resolveDependency(&SI_BKstarmumu_40_60);
+    b2sll_measurements.resolveDependency(&SI_BKstarmumu_60_80);
+    b2sll_measurements.resolveDependency(&SI_BKstarmumu_15_17);
+    b2sll_measurements.resolveDependency(&SI_BKstarmumu_17_19);
 
     // Now resolve dependencies of the BKstar mu mu measurements
     // Each depends on:
     // - SI_fill
     // Each has a BE requirement on:
-    // - BRBKstarmumu_CONV (from SuperIso)
-    SI_BRBKstarmumu_11_25.resolveDependency(&SI_fill);
-    SI_BRBKstarmumu_11_25.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBKstarmumu_CONV);
-    SI_BRBKstarmumu_25_40.resolveDependency(&SI_fill);
-    SI_BRBKstarmumu_25_40.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBKstarmumu_CONV);
-    SI_BRBKstarmumu_40_60.resolveDependency(&SI_fill);
-    SI_BRBKstarmumu_40_60.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBKstarmumu_CONV);
-    SI_BRBKstarmumu_60_80.resolveDependency(&SI_fill);
-    SI_BRBKstarmumu_60_80.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBKstarmumu_CONV);
-    SI_BRBKstarmumu_15_17.resolveDependency(&SI_fill);
-    SI_BRBKstarmumu_15_17.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBKstarmumu_CONV);
-    SI_BRBKstarmumu_17_19.resolveDependency(&SI_fill);
-    SI_BRBKstarmumu_17_19.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BRBKstarmumu_CONV);
+    // - BKstarmumu_CONV (from SuperIso)
+    SI_BKstarmumu_11_25.resolveDependency(&SI_fill);
+    SI_BKstarmumu_11_25.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BKstarmumu_CONV);
+    SI_BKstarmumu_25_40.resolveDependency(&SI_fill);
+    SI_BKstarmumu_25_40.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BKstarmumu_CONV);
+    SI_BKstarmumu_40_60.resolveDependency(&SI_fill);
+    SI_BKstarmumu_40_60.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BKstarmumu_CONV);
+    SI_BKstarmumu_60_80.resolveDependency(&SI_fill);
+    SI_BKstarmumu_60_80.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BKstarmumu_CONV);
+    SI_BKstarmumu_15_17.resolveDependency(&SI_fill);
+    SI_BKstarmumu_15_17.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BKstarmumu_CONV);
+    SI_BKstarmumu_17_19.resolveDependency(&SI_fill);
+    SI_BKstarmumu_17_19.resolveBackendReq(&Backends::SuperIso_3_6::Functown::BKstarmumu_CONV);
 
     // Now do the b2ll likelihood
     b2ll_likelihood.resolveDependency(&b2ll_measurements);
@@ -267,91 +286,87 @@ int main(int argc, char** argv)
     std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::b2sll_M.origin() << "::";
     std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::b2sll_M.name() << std::endl;
 
-    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_11_25 filled by:" << endl;
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_11_25.origin() << "::";
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_11_25.name() << std::endl;
-    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_25_40 filled by:" << endl;
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_25_40.origin() << "::";
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_25_40.name() << std::endl;
-    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_40_60 filled by:" << endl;
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_40_60.origin() << "::";
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_40_60.name() << std::endl;
-    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_60_80 filled by:" << endl;
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_60_80.origin() << "::";
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_60_80.name() << std::endl;
-    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_15_17 filled by:" << endl;
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_15_17.origin() << "::";
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_15_17.name() << std::endl;
-    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_17_19 filled by:" << endl;
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_17_19.origin() << "::";
-    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_17_19.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BKstarmumu_11_25 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_11_25.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_11_25.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BKstarmumu_25_40 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_25_40.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_25_40.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BKstarmumu_40_60 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_40_60.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_40_60.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BKstarmumu_60_80 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_60_80.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_60_80.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BKstarmumu_15_17 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_15_17.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_15_17.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BKstarmumu_17_19 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_17_19.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BKstarmumu_17_19.name() << std::endl;
 
-    // Start running here
-    {
+    // Now we start the actual calculations (which we would loop over if doing a scan).
+    double loglike;
+    std::cout << std::endl;
 
-      double loglike;
-      std::cout << std::endl;
+    // Initialise the spectra
+    createSpectrum.reset_and_calculate();
+    relabelSpectrum.reset_and_calculate();
 
-      // Initialise the spectra
-      createSpectrum.reset_and_calculate();
-      relabelSpectrum.reset_and_calculate();
+    // Initialise the backends
+    SuperIso_3_6_init.reset_and_calculate();
+    FeynHiggs_2_11_3_init.reset_and_calculate();
 
-      // Initialise the backends
-      SuperIso_3_6_init.reset_and_calculate();
-      FeynHiggs_2_11_3_init.reset_and_calculate();
+    // Now call the module functions in an appropriate order
+    SI_fill.reset_and_calculate();
 
-      // Now call the module functions in an appropriate order
-      SI_fill.reset_and_calculate();
+    // Calculate the B meson mass asymmetry likelihood
+    FH_FlavourObs.reset_and_calculate();
+    FH_DeltaMs.reset_and_calculate();
+    deltaMB_likelihood.reset_and_calculate();
+    loglike = deltaMB_likelihood(0);
+    std::cout << std::endl << "B meson mass asymmetry log-likelihood: " << loglike << std::endl;
 
-      // Calculate the B meson mass asymmetry likelihood
-      FH_FlavourObs.reset_and_calculate();
-      FH_DeltaMs.reset_and_calculate();
-      deltaMB_likelihood.reset_and_calculate();
-      loglike = deltaMB_likelihood(0);
-      std::cout << "B meson mass asymmetry log-likelihood: " << loglike << std::endl;
+    // Calculate the B -> ll likelihood
+    SI_Bsmumu_untag.reset_and_calculate();
+    SI_Bmumu.reset_and_calculate();
+    b2ll_measurements.reset_and_calculate();
+    b2ll_likelihood.reset_and_calculate();
+    loglike = b2ll_likelihood(0);
+    std::cout << "Fully leptonic B decays (B->ll) joint log-likelihood: " << loglike << std::endl;
 
-      // Calculate the B -> ll likelihood
-      SI_Bsmumu_untag.reset_and_calculate();
-      SI_Bmumu.reset_and_calculate();
-      b2ll_measurements.reset_and_calculate();
-      b2ll_likelihood.reset_and_calculate();
-      loglike = b2ll_likelihood(0);
-      std::cout << "Fully leptonic B decays (B->ll) joint log-likelihood: " << loglike << std::endl;
+    // Calculate the B -> Xs ll likelihood
+    SI_BKstarmumu_11_25.reset_and_calculate();
+    SI_BKstarmumu_25_40.reset_and_calculate();
+    SI_BKstarmumu_40_60.reset_and_calculate();
+    SI_BKstarmumu_60_80.reset_and_calculate();
+    SI_BKstarmumu_15_17.reset_and_calculate();
+    SI_BKstarmumu_17_19.reset_and_calculate();
+    b2sll_measurements.reset_and_calculate();
+    b2sll_likelihood.reset_and_calculate();
+    loglike = b2sll_likelihood(0);
+    std::cout << "Leptonic penguin B decays (B->X_s ll) joint log-likelihood: " << loglike << std::endl;
 
-      // Calculate the B -> Xs ll likelihood
-      SI_BRBKstarmumu_11_25.reset_and_calculate();
-      SI_BRBKstarmumu_25_40.reset_and_calculate();
-      SI_BRBKstarmumu_40_60.reset_and_calculate();
-      SI_BRBKstarmumu_60_80.reset_and_calculate();
-      SI_BRBKstarmumu_15_17.reset_and_calculate();
-      SI_BRBKstarmumu_17_19.reset_and_calculate();
-      b2sll_measurements.reset_and_calculate();
-      b2sll_likelihood.reset_and_calculate();
-      loglike = b2sll_likelihood(0);
-      std::cout << "Leptonic penguin B decays (B->X_s ll) joint log-likelihood: " << loglike << std::endl;
+    // Calculate the semi-leptonic (SL) likelihood
+    SI_Btaunu.reset_and_calculate();
+    SI_BDtaunu.reset_and_calculate();
+    SI_RD.reset_and_calculate();
+    SI_RDstar.reset_and_calculate();
+    SI_Dstaunu.reset_and_calculate();
+    SI_Dsmunu.reset_and_calculate();
+    SI_Dmunu.reset_and_calculate();
+    SL_measurements.reset_and_calculate();
+    SL_likelihood.reset_and_calculate();
+    loglike = SL_likelihood(0);
+    std::cout << "Semi-leptonic B decays (B->D l nu) joint log-likelihood: " << loglike << std::endl;
 
-      // Calculate the semi-leptonic (SL) likelihood
-      SI_Btaunu.reset_and_calculate();
-      SI_BDtaunu.reset_and_calculate();
-      SI_RD.reset_and_calculate();
-      SI_RDstar.reset_and_calculate();
-      SI_Dstaunu.reset_and_calculate();
-      SI_Dsmunu.reset_and_calculate();
-      SI_Dmunu.reset_and_calculate();
-      SL_measurements.reset_and_calculate();
-      SL_likelihood.reset_and_calculate();
-      loglike = SL_likelihood(0);
-      std::cout << "Semi-leptonic B decays (B->D l nu) joint log-likelihood: " << loglike << std::endl;
+    // Calculate the B -> X_s gamma likelihood
+    SI_bsgamma.reset_and_calculate();
+    b2sgamma_likelihood.reset_and_calculate();
+    loglike = b2sgamma_likelihood(0);
+    std::cout << "B->X_s gamma log-likelihood: " << loglike << std::endl;
 
-      // Calculate the B -> X_s gamma likelihood
-      SI_bsgamma.reset_and_calculate();
-      b2sgamma_likelihood.reset_and_calculate();
-      loglike = b2sgamma_likelihood(0);
-      std::cout << "B->X_s gamma log-likelihood: " << loglike << std::endl;
-
-      std::cout << endl;
-
-    }
+    std::cout << endl;
 
   }
 
