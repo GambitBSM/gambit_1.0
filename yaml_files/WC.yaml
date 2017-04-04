@@ -57,7 +57,7 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "WC_FlavOnly.hdf5"
+    output_file: "WC.hdf5"
     group: "/WC"
 
 Scanner:
@@ -68,7 +68,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 10000
+      nlive: 20000
       tol: 0.1
 
     de:
@@ -105,22 +105,22 @@ ObsLikes:
     capability: Bmumu
 
   - purpose:    Observable
-    capability: BRBKstarmumu_11_25
+    capability: BKstarmumu_11_25
 
   - purpose:    Observable
-    capability: BRBKstarmumu_25_40
+    capability: BKstarmumu_25_40
 
   - purpose:    Observable
-    capability: BRBKstarmumu_40_60
+    capability: BKstarmumu_40_60
 
   - purpose:    Observable
-    capability: BRBKstarmumu_60_80
+    capability: BKstarmumu_60_80
 
   - purpose:    Observable
-    capability: BRBKstarmumu_15_17
+    capability: BKstarmumu_15_17
 
   - purpose:    Observable
-    capability: BRBKstarmumu_17_19
+    capability: BKstarmumu_17_19
 
 Rules:
 
@@ -148,6 +148,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e5
     model_invalid_for_lnlike_below_alt: -1e5
 
-  default_output_path: "runs/WC/"
+  default_output_path: "runs/WC"
 
   debug: false
