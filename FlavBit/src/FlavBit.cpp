@@ -1374,9 +1374,9 @@ namespace Gambit
         pmc.cov_th(i,i) = th_err[i]*th_err[i]*theory[i]*theory[i];
       }
       // Add in the correlations between B-> D mu nu and RD
-      pmc.cov_th(1,3) = pmc.cov_th(3,1) = -0.55*theory[1]*theory[3];
+      pmc.cov_th(1,3) = pmc.cov_th(3,1) = -0.55*th_err[1]*theory[1]*th_err[3]*theory[3];
       // Add in the correlations between B-> D* mu nu and RD*
-      pmc.cov_th(2,4) = pmc.cov_th(4,2) = -0.62*theory[2]*theory[4];
+      pmc.cov_th(2,4) = pmc.cov_th(4,2) = -0.62*th_err[2]*theory[2]*th_err[4]*theory[4];
 
       pmc.diff.clear();
       for (int i=0;i<n_experiments;++i)
