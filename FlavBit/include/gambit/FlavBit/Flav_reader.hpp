@@ -59,7 +59,7 @@ namespace Gambit
 
         boost::numeric::ublas::matrix<double> M_measurements;
         boost::numeric::ublas::matrix<double> M_cor_cov;
-        boost::numeric::ublas::matrix<double> M_th_err;
+        boost::numeric::ublas::matrix< std::pair<double, bool> > M_th_err;
 
       public:
 
@@ -80,6 +80,9 @@ namespace Gambit
         /// Print a boost ublas matrix
         void print_matrix(boost::numeric::ublas::matrix<double>&, str);
 
+        /// Print a boost ublas matrix with a pair type
+        void print_matrix(boost::numeric::ublas::matrix< std::pair<double, bool> >&, str);
+
         /// Set debug mode for reader
         void debug_mode(bool k) {debug = k;}
 
@@ -90,7 +93,7 @@ namespace Gambit
         boost::numeric::ublas::matrix<double> get_exp_value() {return M_measurements;};
 
         /// Return the (uncorrelated) theory errors
-        boost::numeric::ublas::matrix<double> get_th_err() {return M_th_err;};
+        boost::numeric::ublas::matrix< std::pair<double,bool> > get_th_err() {return M_th_err;};
 
     };
 

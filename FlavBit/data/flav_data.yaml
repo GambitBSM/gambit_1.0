@@ -36,10 +36,10 @@
 
 - name: BR_Btaunu
   islimit: false
-  exp_value: 1.64e-4
-  exp_stat_error: 0.34e-4
+  exp_value: 1.09e-4
+  exp_stat_error: 0.24e-4
   exp_sys_error: 0.0
-  exp_source: PDG
+  exp_source: PDG16
   th_error: 0.19
   th_error_type: M
   th_error_source: OWN_CALC_with_VUB_FROM_PDG16
@@ -72,8 +72,8 @@
 
 - name: BR_Dstaunu
   islimit: false
-  exp_value: 3.625e-2
-  exp_stat_error: 0.32e-2
+  exp_value: 5.5e-2
+  exp_stat_error: 0.24e-2
   exp_sys_error: 0.0
   exp_source: PDG16
   th_error: 0.02
@@ -84,10 +84,10 @@
 
 - name: BR_Dsmunu
   islimit: false
-  exp_value: 55.6e-2
-  exp_stat_error: 2.5e-2
+  exp_value: 5.56e-3
+  exp_stat_error: 0.25e-3
   exp_sys_error: 0.0
-  exp_source: PDG
+  exp_source: PDG16
   th_error: 0.02
   th_error_type: M
   th_error_source: 0902.2393
@@ -96,10 +96,10 @@
 
 - name: BR_Dmunu
   islimit: false
-  exp_value: 3.82e-4
-  exp_stat_error: 0.33e-4
+  exp_value: 3.74e-4
+  exp_stat_error: 0.17e-4
   exp_sys_error: 0.0
-  exp_source: PDG
+  exp_source: PDG16
   th_error: 0.03
   th_error_type: M
   th_error_source: 0902.2393

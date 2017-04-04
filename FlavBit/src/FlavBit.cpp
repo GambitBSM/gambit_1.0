@@ -1122,7 +1122,7 @@ namespace Gambit
     void deltaMB_likelihood(double &result)
     {
       using namespace Pipes::deltaMB_likelihood;
-      static bool first = true;
+      static bool th_err_absolute, first = true;
       static double exp_meas, exp_DeltaMs_err, th_err;
 
       if (flav_debug) cout << "Starting Delta_Ms_likelihood"<<endl;
@@ -1136,15 +1136,16 @@ namespace Gambit
         fread.initialise_matrices(); // here we have a single measurement ;) so let's be sneaky:
         exp_meas = fread.get_exp_value()(0,0);
         exp_DeltaMs_err = sqrt(fread.get_exp_cov()(0,0));
-        th_err=fread.get_th_err()(0,0);
+        th_err = fread.get_th_err()(0,0).first;
+        th_err_absolute = fread.get_th_err()(0,0).second;
         first = false;
       }
 
       if (flav_debug) cout << "Experiment: " << exp_meas << " " << exp_DeltaMs_err << " " << th_err << endl;
 
       // Now we do the stuff that actually depends on the parameters
-      double theory_prediction= *Dep::DeltaMs;
-      double theory_DeltaMs_err=th_err*std::abs(theory_prediction);
+      double theory_prediction = *Dep::DeltaMs;
+      double theory_DeltaMs_err = th_err * (th_err_absolute ? 1.0 : std::abs(theory_prediction));
       if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<" +/- "<<theory_DeltaMs_err<<endl;
 
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
@@ -1159,7 +1160,7 @@ namespace Gambit
     {
       using namespace Pipes::b2sgamma_likelihood;
 
-      static bool first = true;
+      static bool th_err_absolute, first = true;
       static double exp_meas, exp_b2sgamma_err, th_err;
 
       if (flav_debug) cout << "Starting b2sgamma_measurements"<<endl;
@@ -1174,15 +1175,16 @@ namespace Gambit
         fread.initialise_matrices(); // here we have a single measurement ;) so let's be sneaky:
         exp_meas = fread.get_exp_value()(0,0);
         exp_b2sgamma_err = sqrt(fread.get_exp_cov()(0,0));
-        th_err=fread.get_th_err()(0,0);
+        th_err = fread.get_th_err()(0,0).first;
+        th_err_absolute = fread.get_th_err()(0,0).second;
         first = false;
       }
 
       if (flav_debug) cout << "Experiment: " << exp_meas << " " << exp_b2sgamma_err << " " << th_err << endl;
 
       // Now we do the stuff that actually depends on the parameters
-      double theory_prediction= *Dep::bsgamma;
-      double theory_b2sgamma_err=th_err*std::abs(theory_prediction);
+      double theory_prediction = *Dep::bsgamma;
+      double theory_b2sgamma_err = th_err * (th_err_absolute ? 1.0 : std::abs(theory_prediction));
       if (flav_debug) cout<<"Theory prediction: "<<theory_prediction<<" +/- "<<theory_b2sgamma_err<<endl;
 
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
@@ -1197,8 +1199,8 @@ namespace Gambit
     {
       using namespace Pipes::b2ll_measurements;
 
-      static bool first = true;
-      static double fractional_theory_bs2mumu_error, fractional_theory_b2mumu_error;
+      static bool bs2mumu_err_absolute, b2mumu_err_absolute, first = true;
+      static double theory_bs2mumu_err, theory_b2mumu_err;
 
       if (flav_debug) cout<<"Starting b2ll_measurements"<<endl;
 
@@ -1217,8 +1219,10 @@ namespace Gambit
 
         fread.initialise_matrices();
 
-        fractional_theory_bs2mumu_error = fread.get_th_err()(0,0);
-        fractional_theory_b2mumu_error = fread.get_th_err()(1,0);
+        theory_bs2mumu_err = fread.get_th_err()(0,0).first;
+        theory_b2mumu_err = fread.get_th_err()(1,0).first;
+        bs2mumu_err_absolute = fread.get_th_err()(0,0).second;
+        b2mumu_err_absolute = fread.get_th_err()(1,0).second;
 
         pmc.value_exp=fread.get_exp_value();
         pmc.cov_exp=fread.get_exp_cov();
@@ -1237,8 +1241,8 @@ namespace Gambit
       pmc.value_th(1,0)=*Dep::Bmumu;
 
       // Compute error on theory prediction and populate the covariance matrix
-      double theory_bs2mumu_error=*Dep::Bsmumu_untag*fractional_theory_bs2mumu_error;
-      double theory_b2mumu_error=*Dep::Bmumu*fractional_theory_b2mumu_error;
+      double theory_bs2mumu_error = theory_bs2mumu_err * (bs2mumu_err_absolute ? 1.0 : *Dep::Bsmumu_untag);
+      double theory_b2mumu_error = theory_b2mumu_err * (b2mumu_err_absolute ? 1.0 : *Dep::Bmumu);
       pmc.cov_th(0,0)=theory_bs2mumu_error*theory_bs2mumu_error;
       pmc.cov_th(0,1)=0.;
       pmc.cov_th(1,0)=0.;
@@ -1301,8 +1305,8 @@ namespace Gambit
     {
       using namespace Pipes::SL_measurements;
 
-      static bool first = true;
       const int n_experiments=8;
+      static bool th_err_absolute[n_experiments], first = true;
       static double th_err[n_experiments];
 
       if (flav_debug) cout<<"Starting SL_measurements"<<endl;
@@ -1341,7 +1345,11 @@ namespace Gambit
         pmc.value_th.resize(n_experiments,1);
         // Set all entries in the covariance matrix explicitly to zero, as we will only write the diagonal ones later.
         pmc.cov_th = boost::numeric::ublas::zero_matrix<double>(n_experiments,n_experiments);
-        for (int i = 0; i < n_experiments; ++i) th_err[i] = fread.get_th_err()(i,0);
+        for (int i = 0; i < n_experiments; ++i)
+        {
+          th_err[i] = fread.get_th_err()(i,0).first;
+          th_err_absolute[i] = fread.get_th_err()(i,0).second;
+        }
 
         pmc.dim=n_experiments;
 
@@ -1371,12 +1379,12 @@ namespace Gambit
       for (int i = 0; i < n_experiments; ++i)
       {
         pmc.value_th(i,0) = theory[i];
-        pmc.cov_th(i,i) = th_err[i]*th_err[i]*theory[i]*theory[i];
+        pmc.cov_th(i,i) = th_err[i]*th_err[i] * (th_err_absolute[i] ? 1.0 : theory[i]*theory[i]);
       }
       // Add in the correlations between B-> D mu nu and RD
-      pmc.cov_th(1,3) = pmc.cov_th(3,1) = -0.55*th_err[1]*theory[1]*th_err[3]*theory[3];
+      pmc.cov_th(1,3) = pmc.cov_th(3,1) = -0.55 * th_err[1]*th_err[3] * (th_err_absolute[1] ? 1.0 : theory[1]) * (th_err_absolute[3] ? 1.0 : theory[3]);
       // Add in the correlations between B-> D* mu nu and RD*
-      pmc.cov_th(2,4) = pmc.cov_th(4,2) = -0.62*th_err[2]*theory[2]*th_err[4]*theory[4];
+      pmc.cov_th(2,4) = pmc.cov_th(4,2) = -0.62 * th_err[2]*th_err[4] * (th_err_absolute[2] ? 1.0 : theory[2]) * (th_err_absolute[4] ? 1.0 : theory[4]);
 
       pmc.diff.clear();
       for (int i=0;i<n_experiments;++i)
@@ -1416,7 +1424,6 @@ namespace Gambit
         for (int j=0; j<pmc.dim; ++j)
         {
           Chi2+= diff[i] * cov_inv(i,j)*diff[j];
-          cout << i << " " << Chi2 << endl;
         }
       }
 

@@ -178,10 +178,14 @@ namespace Gambit
       if (debug) print_matrix(M_measurements, "Measurements:");
 
       // Construct the theory error vector
-      M_th_err= boost::numeric::ublas::matrix<double> (number_measurements,1);
+      M_th_err = boost::numeric::ublas::matrix< std::pair<double,bool> > (number_measurements,1);
       for(int i=0; i<number_measurements;++i)
       {
-        M_th_err(i,0)=measurements[i].th_error;
+        M_th_err(i,0).first = measurements[i].th_error;
+        str err_type = measurements[i].th_error_type;
+        if (err_type == "A") M_th_err(i,0).second = true;
+        else if (err_type == "M") M_th_err(i,0).second = false;
+        else FlavBit_error().raise(LOCAL_INFO, "Unrecognised theory error type in database: "+err_type);
       }
       if (debug) print_matrix(M_th_err, "Theory errors:");
 
@@ -205,6 +209,17 @@ namespace Gambit
       for(int i=0; i < number_measurements; ++i)
       {
         for(int j=0 ; j< number_measurements; ++j) cout<<M(i,j)<<"\t";
+        cout<<endl;
+      }
+    }
+
+    /// Print a boost ublas matrix with a pair type
+    void Flav_reader::print_matrix(boost::numeric::ublas::matrix< std::pair<double, bool> >& M, str name)
+    {
+      cout<<name<<endl;
+      for(int i=0; i < number_measurements; ++i)
+      {
+        for(int j=0 ; j< number_measurements; ++j) cout<<M(i,j).first<<":"<<M(i,j).second<<"\t";
         cout<<endl;
       }
     }
