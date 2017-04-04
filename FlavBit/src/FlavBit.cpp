@@ -451,10 +451,17 @@ namespace Gambit
       result.width_Z = Dep::Z_decay_rates->width_in_GeV;
       result.width_W = Dep::W_plus_decay_rates->width_in_GeV;
 
-      // Override the SuperIso b pole mass with the SpecBit value, and recompute the 1S b mass.
-      if (!spectrum["MASS"].empty() and spectrum["MASS"][5].is_data_line())
+      // If requested, override the SuperIso b pole mass with the SpecBit value and recompute the 1S b mass.
+      if (runOptions->getValueOrDef<bool>(false, "take_b_pole_mass_from_spectrum"))
       {
-        result.mass_b_pole = SLHAea::to<double>(spectrum["MASS"][5][1]);
+        if (ModelInUse("MSSM63atMGUT") or ModelInUse("MSSM63atQ"))
+        {
+          result.mass_h0 = Dep::MSSM_spectrum->get(Par::Pole_Mass, "h0_1");
+        }
+        else if (ModelInUse("WC"))
+        {
+          result.mass_h0 = Dep::SM_spectrum->get(Par::Pole_Mass, "h0_1");
+        }
         result.mass_b_1S = BEreq::mb_1S(&result);
       }
 
@@ -1366,6 +1373,10 @@ namespace Gambit
         pmc.value_th(i,0) = theory[i];
         pmc.cov_th(i,i) = th_err[i]*th_err[i]*theory[i]*theory[i];
       }
+      // Add in the correlations between B-> D mu nu and RD
+      pmc.cov_th(1,3) = pmc.cov_th(3,1) = -0.55*theory[1]*theory[3];
+      // Add in the correlations between B-> D* mu nu and RD*
+      pmc.cov_th(2,4) = pmc.cov_th(4,2) = -0.62*theory[2]*theory[4];
 
       pmc.diff.clear();
       for (int i=0;i<n_experiments;++i)
@@ -1405,6 +1416,7 @@ namespace Gambit
         for (int j=0; j<pmc.dim; ++j)
         {
           Chi2+= diff[i] * cov_inv(i,j)*diff[j];
+          cout << i << " " << Chi2 << endl;
         }
       }
 
