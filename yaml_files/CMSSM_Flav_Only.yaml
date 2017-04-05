@@ -3,6 +3,7 @@ Parameters:
   #SM parameters.
   StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
 
+  #SUSY parameters.
   CMSSM:
     M0:
       range: [50, 1e4]
@@ -33,9 +34,10 @@ Printer:
 
 Scanner:
 
-  use_scanner: multinest
+  use_scanner: de
 
   scanners:
+
     multinest:
       plugin: MultiNest
       like:  LogLike
@@ -49,6 +51,7 @@ Scanner:
       NP: 19200
       convthresh: 1e-5
       verbosity: 1
+      lambdajDE: false
 
 ObsLikes:
 
@@ -148,6 +151,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e5
     model_invalid_for_lnlike_below_alt: -1e5
 
-  default_output_path: "runs/CMSSM/"
+  default_output_path: "runs/CMSSM_Flav_Only/"
 
   debug: true
