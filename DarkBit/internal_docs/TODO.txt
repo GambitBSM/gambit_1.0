@@ -5,28 +5,25 @@ NEW TODO list
 DarkBit
 =======
 
-Before internal paper review:
-- Update v-related discussion in DDCalc parts of paper [FK]
-- Finalize/delete/shorten discussion about max-gap method [FK/PS]
-
-After internal paper review started:
-- Add SuperCDMS bounds to SI validation plot and LUX 2015 proton bounds to SD plots. [JC]
-- Add discussion of Table 24 disagreements (related to <sigma v>_eff plots) [JC/?]
+Things to fix in paper before referee report comes back:
+- Increase size of text on plots in paper (spoke plots, others?) s[JC/?]
 - Figure 3 “exemplary” -> “example” [?]
-- Figure out why SIMPLE and Xenon100 likelihoods do not agree with official limits? [JC/FK]
-- Clean up standalones [JC/?]
-- Update/finalize LUX 2016 likelihoods [FK]
 - Double-check that all options are mentioned properly in darkbit paper [CW, JE, JC]
-- Make gambit_DarkBit_example.yaml file complete and useful (in the spirit of
-  class' explanatory.ini) [all]
+
+Before release:
+- Clean up standalones [JC/?]
+- Move internal DarkBit docs into gambit_internal [JC]
+- Fix SLHA1 reading issues (with ModelBit people) [JC]
+- Update/finalize LUX 2016 likelihoods (LUX 2016 likelihood still has name LUX_2016_prelim) [FK]
 - Make sure that content of future automatic paper reference system is complete
   (in particular for DarkSUYS) [TB]
-- Figure out whether cascade routines run properly when doing MSSM7 scans, but
+- Make gambit_DarkBit_example.yaml file complete and useful (in the spirit of
+  class' explanatory.ini) [all]
+- Figure out why cascade routines run properly when doing MSSM7 scans, but
   have instabilities when running SingletDM (which are hidden by the fall-back
   routines) [JC]
 - Check parallelized oh2 DS routines again after scans are working [CW/TB]
 - Check accuracy of fallback gsl_integration [CW]
-- <sigma v>_eff plots [JC]
 - Skype with Joakim
   - STATUS? Figure out h+ higgswidth problems with DS SLHA initialization
     (CMSSM_dsSLHA_problem.yaml) (related to SLHA reader of DS) [JE/TB/CW]
@@ -34,25 +31,19 @@ After internal paper review started:
   - Go through diskless init problems via skype with Joakim (see file)
 - Generate rest Z0 spectrum with pythia [JE] and include in SimYieldTable [JC]
 - Add RD_oh2_general to MSSM and SingletDM standalones, remove Sloppy.cpp and
-  associated functions (and update numbers and tables in paper) [JC]
+  associated functions (and check numbers in benchmark tables) [JC]
 - J-factor calculation in gamLike, using the new halo model scheme [CW/SW]
     --> For HESS and CTA, check that the implementation is consistent with the text
         in the DarkBit paper, in particular with the possible choices for the "version" option!       
-- Prepare post-processing of CMSSM results with alternative DarkBit
-  configurations [CW/JC/SW]
 - Concepts/cosmetics
   - Check whether DD calculations require decay information from ProcessCatalog [CW]
 - Start adding descriptions to the capability database [CW, JE, JC]
 - Add getValue docs for SimpleLikelihoods.cpp, SunNeutrinos.cpp, MSSM.cpp, SingletDM.cpp, ... [JE, JC]
-— Fix consistency issues in MicrOmegas Singlet CalcHEP files [JC] [Added by JC]
-- Set SM values in MicrOmegas Singlet using GAMBIT values [JC] [Added by JC]
-- Check that all SM values are being set by MicrOmegas SLHA reader [JC] [Added by JC]
-- Properly compile MicrOmegas shared libraries (remove dependence on main.c) [JC] [Added by JC]
+— Fix consistency issues in MicrOmegas Singlet CalcHEP files (replace present CalcHEP files with ones from James) [JC]
+- Set SM values in MicrOmegas Singlet using GAMBIT values [JC] 
+- Properly compile MicrOmegas shared libraries (remove dependence on main.c) [JC]
 - Include proper isnan check in RD_eff_annrate_SUSY [?]
-
-Before release:
 - Clean up header and src files from old mess [CW]
-- Make sure that gambit_DarkBit_examples.yaml makes sense and is properly explained [CW]
 
 Later/maybe/not-first-release:
 - Write DS patch for raising invalid points (or whatever) when RD
@@ -61,7 +52,6 @@ Later/maybe/not-first-release:
 - Rewrite RD_spectrum_SUSY in a DS independent way [?]
   (and change RD_annrate_DSprep_func accordingly)
 - MicrOmegas MSSM diskless initialization [JC] [Added by JC]
-- Set up MicrOmegas MSSM to use GAMBIT decay rates (don’t use internal calculations) [JC] [Added by JC]
 — Upgrade MicrOmegas to most recent version [JC] [Added by JC]
 - In GamYields, we should use rescaling for kinematically close but virtually
   open annihilation channels
@@ -85,6 +75,12 @@ Later/maybe/not-first-release:
 - Implement gamma-ray line limits (HESS-II, Fermi)
 
 Done:
+- Check that MicrOmegas MSSM uses SM values from SLHA (it just sets alpha_s, m_b, m_t, and m_tau, but we only scan over alpha_s) [JC]
+- Set up MicrOmegas MSSM to use GAMBIT decay rates (don’t use internal calculations) [JC]
+- Add discussion of Table 24 disagreements [JC/?] (Somewhat addressed)
+- Add SuperCDMS bounds to SI validation plot and LUX 2015 proton bounds to SD plots. [JC]
+- Update v-related discussion in DDCalc parts of paper [FK]
+- Finalize/delete/shorten discussion about max-gap method [FK/PS]
 - Redo spoke plots: [JC]
   —to reflect new relic density likelihood
   —add +/- to spoke plots to show how parameters are changing.
@@ -176,6 +172,11 @@ Done:
   - Make sure that halo model is used consistently between nuLike, gamLike and
     DDCalc
 
+Not Done:
+- <sigma v>_eff plots (These were not made, but multiple sources of disagreement between the two backends were checked)  [JC]
+- Figure out why SIMPLE and Xenon100 likelihoods do not agree with official limits? (We mentioned the discrepancy in the paper, but never really explained it. The issue was just at low mass). [JC/FK]
+- Prepare post-processing of CMSSM results with alternative DarkBit
+  configurations [CW/JC/SW]
 
 Core
 ====
