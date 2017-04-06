@@ -68,6 +68,17 @@ BE_INI_FUNCTION
      int error;
      char cdmName[10];
 
+     int VZdecayOpt, VWdecayOpt; // 0=no 3 body final states
+                                 // 1=3 body final states in annihlations
+                                 // 2=3 body final states in co-annihilations
+     VZdecayOpt = runOptions->getValueOrDef<int>(1, "VZdecay");
+     VWdecayOpt = runOptions->getValueOrDef<int>(1, "VWdecay");
+     *VZdecay = VZdecayOpt;
+     *VWdecay = VWdecayOpt;
+
+     logger() << LogTags::debug << "Initializing MicrOmegas SingletDM with ";
+     logger() << "VWdecay: " << VWdecay << " VZdecay: " << VZdecay << EOM;
+
      // Currently only works correctly in unitary gauge
      *ForceUG=1;
 
