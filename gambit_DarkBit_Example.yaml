@@ -202,7 +202,9 @@ Rules:
   # values from the GAMBIT decay table (internal_decays=false).
   - function: MicrOmegas_MSSM_3_6_9_2_init
     options:
-       internal_decays: false
+       internal_decays: true
+       VZdecay: 1 # 0 - no 3 body final states, 1 - virtual Z in annihilations, 2 - virtual Z in coannihilations
+       VWdecay: 1 # 0 - no 3 body final states, 1 - virtual W in annihilations, 2 - virtual W in coannihilations
 
   # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
   # Consult the DarkBit manual for the required options in each case
@@ -218,8 +220,6 @@ Rules:
     options:
       fast: 1  # 0: standard (default), 1: fast
       Beps: 1e-5  #  1e-5: standard, 1: switches coann off
-      VZdecay: 1 # 0 - no 3 body final states, 1 - virtual Z in annihilations, 2 - virtual Z in coannihilations
-      VWdecay: 1 # 0 - no 3 body final states, 1 - virtual W in annihilations, 2 - virtual W in coannihilations
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
