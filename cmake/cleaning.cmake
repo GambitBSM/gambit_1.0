@@ -60,7 +60,6 @@ foreach(bit ${ALL_GAMBIT_BITS})
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
 endforeach()
 
-
 #Arrange for removal of other scanner-related generated files upon "make clean".
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   set(clean_files ${clean_files} "${PROJECT_BINARY_DIR}/linkedout.cmake")
