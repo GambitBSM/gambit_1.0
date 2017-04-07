@@ -41,7 +41,6 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/module_macros_incore.hpp
                  include/gambit/Elements/module_macros_inmodule.hpp
                  include/gambit/Elements/mssm_slhahelp.hpp
-                 include/gambit/Elements/numerical_constants.hpp
                  include/gambit/Elements/safety_bucket.hpp
                  include/gambit/Elements/shared_types.hpp
                  include/gambit/Elements/slhaea_helpers.hpp
@@ -51,6 +50,7 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/spectrum_factories.hpp
                  include/gambit/Elements/spec.hpp
                  include/gambit/Elements/spec_head.hpp
+                 include/gambit/Elements/standalone_module.hpp
                  include/gambit/Elements/subspectrum.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/type_equivalency.hpp

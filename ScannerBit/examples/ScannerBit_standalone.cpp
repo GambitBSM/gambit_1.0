@@ -20,14 +20,14 @@
 #include <cstdlib>
 #include <csignal>
 #ifdef WITH_MPI
-#include <mpi.h>
+  #include <mpi.h>
 #endif
 
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logmaster.hpp"
 #include "gambit/Printers/printermanager.hpp"
-#include "gambit/ScannerBit/scannerbit.hpp"
 #include "gambit/Utils/yaml_parser_base.hpp"
+#include "gambit/ScannerBit/scannerbit.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -82,11 +82,20 @@ int main(int argc, char **argv)
     signal(SIGTERM, sighandler);
     signal(SIGINT, sighandler);
 
-#ifdef WITH_MPI
-    GMPI::Init();
-#endif
+    #ifdef WITH_MPI
+      GMPI::Init();
+    #endif
+
     try
     {
+
+        #ifdef WITH_MPI
+          /// Create an MPI communicator group for ScannerBit to use
+          GMPI::Comm scanComm;
+          scanComm.dup(MPI_COMM_WORLD,"scanComm");
+          Plugins::plugin_info.initMPIdata(&scanComm);
+        #endif
+
         if (argc == 1)
         {
             bail();

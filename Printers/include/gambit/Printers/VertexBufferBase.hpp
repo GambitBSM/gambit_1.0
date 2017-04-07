@@ -11,22 +11,22 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 May
 ///
 ///  *********************************************
- 
+
 #ifndef __VertexBufferBase_hpp__
 #define __VertexBufferBase_hpp__
 
 #include <sstream>
 #include <iostream>
-#include "gambit/Core/error_handlers.hpp"
-   
+#include "gambit/Utils/standalone_error_handlers.hpp"
+
 namespace Gambit {
-  
+
   namespace Printers {
 
       /// VertexBuffer abstract interface base class
@@ -41,18 +41,18 @@ namespace Gambit {
             int vertexID;
             uint index; // discriminator in case of multiple output streams from one vertex
 
-            // buffer index to which "append" is targeted. 
+            // buffer index to which "append" is targeted.
             unsigned int head_position = 0;
 
             /// flag to trigger synchronised buffer writing
             bool synchronised;
- 
+
             /// flag to disable any writing (turns this into a null buffer)
             bool silenced;
 
             /// flag to indicate that GAMBIT is attempting to resume a run, so we need to
             /// hook into existing output streams rather than create new ones
-            bool resume; 
+            bool resume;
 
             /// flag to indicate whether full buffers should be written to disk,
             /// or whether they should be send to the master node via MPI.
@@ -61,7 +61,7 @@ namespace Gambit {
 
             /// flag to indicate the buffer access mode (i.e. read/write)
             char access;
-   
+
          protected:
             /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
             bool sync_buffer_full = false;
@@ -80,9 +80,9 @@ namespace Gambit {
               #ifdef HDF5_DEBUG
               std::cout<<"Default constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
               #endif
-            }   
+            }
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode, const char a) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode, const char a)
               : label(l)
               , vertexID(vID)
               , index(i)
@@ -97,7 +97,7 @@ namespace Gambit {
               #endif
             }
 
-            virtual ~VertexBufferBase() 
+            virtual ~VertexBufferBase()
             {
                #ifdef HDF5_DEBUG
                std::cout<<"Destructing buffer name='"<<label<<"'"<<std::endl;
@@ -128,11 +128,11 @@ namespace Gambit {
                {
                   std::ostringstream errmsg;
                   errmsg << "Error! Attempted to use forbidden function in buffer "<<this->get_label()<<". This function is flagged as usable only if MPImode=true, however currently it is the case that MPImode=false.";
-                  printer_error().raise(local_info, errmsg.str());           
+                  printer_error().raise(local_info, errmsg.str());
                }
             }
- 
-            // Get the current head position in the output dataset  
+
+            // Get the current head position in the output dataset
             virtual unsigned long dset_head_pos() = 0;
 
             // Print to std::cout a report on the sync status of this buffer
@@ -148,13 +148,13 @@ namespace Gambit {
 
             // Finalise writing to underlying output. Do not do any more writing after this!
             virtual void finalise() = 0;
-   
+
             // For debugging purposes only
             virtual std::size_t postponed_RA_queue_length() = 0;
             virtual uint get_RA_queue_length() = 0;
 
-            // // Perform write to disk of sync buffer 
-            // virtual void write_to_disk() = 0;            
+            // // Perform write to disk of sync buffer
+            // virtual void write_to_disk() = 0;
 
             // // Perform write to disk of random-access buffer
             // virtual void RA_write_to_disk() = 0;
@@ -164,7 +164,7 @@ namespace Gambit {
             virtual void reset(bool force=false) = 0;
 
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
-            virtual void skip_append() = 0;           
+            virtual void skip_append() = 0;
 
             /// Skip several/many positions
             /// NOTE! This is meant for initialising new buffers to the correct
@@ -185,11 +185,11 @@ namespace Gambit {
             // // Retrieve sync buffer data from an MPI message from a known process rank
             // // Should only be triggered if a valid message is known to exist to be retrieved!
             // virtual void get_sync_mpi_message(uint,int) = 0;
-  
+
             // // Retrieve RA buffer data from an MPI message from a known process rank
             // // Should only be triggered if a valid message is known to exist to be retrieved!
             // virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>&) = 0;
- 
+
             // // Update MPI tags with valid values
             // virtual void update_myTags(uint) = 0;
             // #endif
@@ -201,9 +201,9 @@ namespace Gambit {
             void set_donepoint(bool flag) {donethispoint=flag;}
 
             // Move buffer write head to next position
-            void move_head_to_next_slot() 
-            { 
-               head_position++; 
+            void move_head_to_next_slot()
+            {
+               head_position++;
                //std::cout<<"Advanced head of buffer "<<get_label()<<" to pos. "<<head_position<<std::endl;
             }
 
@@ -221,7 +221,7 @@ namespace Gambit {
                for(long i=0; i<needed_steps; i++)
                {
                   skip_append();
-                  if(sync_buffer_is_full()) flush(); 
+                  if(sync_buffer_is_full()) flush();
                }
             }
 
@@ -232,7 +232,7 @@ namespace Gambit {
             void error_if_done()
             {
                if(donethispoint)
-               { 
+               {
                   std::ostringstream errmsg;
                   errmsg << "Error! VertexBuffer set to 'done'! Append may have been attempted without moving the buffer write head forward (.";
                   printer_error().raise(LOCAL_INFO, errmsg.str());

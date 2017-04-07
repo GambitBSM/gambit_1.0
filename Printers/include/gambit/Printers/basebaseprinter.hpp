@@ -2,10 +2,10 @@
 //   *********************************************
 ///  \file
 ///
-///  This is a minimal (pure virtual) precursor 
-///  to the printer base class, for use only in 
-///  ScannerBit. This helps to minimize the parts 
-///  of the printers which are essential for 
+///  This is a minimal (pure virtual) precursor
+///  to the printer base class, for use only in
+///  ScannerBit. This helps to minimize the parts
+///  of the printers which are essential for
 ///  ScannerBit to run.
 ///
 ///  Now includes base 'reader' class as well,
@@ -14,7 +14,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Feb
@@ -45,7 +45,7 @@ namespace Gambit
   typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
 
 
-  namespace Printers 
+  namespace Printers
   {
     // Convenienece typedefs for printers
     typedef unsigned int      uint;
@@ -57,14 +57,14 @@ namespace Gambit
     /// ID is just a unique integer for each printable type
     template<class T>
     std::size_t getTypeID(void)
-    { 
+    {
        std::ostringstream err;
-       err << "getTypeID failed! No typeID known for requested type! (with compiler name: "<<typeid(T).name()<<")";   
+       err << "getTypeID failed! No typeID known for requested type! (with compiler name: "<<typeid(T).name()<<")";
        printer_error().raise(LOCAL_INFO,err.str());
-       return 0; 
+       return 0;
     }
 
-    class BaseBasePrinter  
+    class BaseBasePrinter
     {
       private:
         int rank;
@@ -86,7 +86,7 @@ namespace Gambit
         /// Retrieve/Set print list for this printer
         /// Required by e.g. postprocessor.
         std::set<std::string> getPrintList() {return print_list;}
-        void                  setPrintList(std::set<std::string>& in) {print_list = in;}        
+        void                  setPrintList(std::set<std::string>& in) {print_list = in;}
         void                  addToPrintList(std::string& in) {print_list.insert(in);}
 
         /// Signal printer that scan is finished, and final output needs to be performed
@@ -124,7 +124,7 @@ namespace Gambit
         /// Flag to check if print functions are enabled or disabled
         bool printer_enabled;
 
-        /// Default _print function. Throws an error if no matching 
+        /// Default _print function. Throws an error if no matching
         /// virtual function for the type of the attempted print is
         /// found.
         template<typename T>
@@ -132,8 +132,8 @@ namespace Gambit
                     const int vertexID, const uint,
                     const ulong)
         {
-          std::ostringstream err;                               
-                                                                
+          std::ostringstream err;
+
           err << "Attempted to print a functor whose return type "
               << "is not registered as being printable. "
               << "If you really want to print this functor, you must "
@@ -141,11 +141,11 @@ namespace Gambit
               << "in \"gambit/Elements/printable_types.hpp\". You will then have "
               << "to define a print function for it in whatever printer "
               << "you are using (see documentation for GAMBIT printers)."
-              << "\n  Available info for this print attempt..."                
-              << "\n   Label      : " << label                  
-              << "\n   vertexID   : " << vertexID               
-              << "\n   Type       : " << STRINGIFY(T);       
-          printer_error().raise(LOCAL_INFO,err.str());         
+              << "\n  Available info for this print attempt..."
+              << "\n   Label      : " << label
+              << "\n   vertexID   : " << vertexID
+              << "\n   Type       : " << STRINGIFY(T);
+          printer_error().raise(LOCAL_INFO,err.str());
         }
 
         /// Same for overloaded function
@@ -188,13 +188,13 @@ namespace Gambit
 
         // Add the base virtual functions for registered printable and
         // retrievable types, to be overloaded in each printer.
-        ADD_VIRTUAL_PRINTS(SCANNER_PRINTABLE_TYPES) 
+        ADD_VIRTUAL_PRINTS(SCANNER_PRINTABLE_TYPES)
 
     };
 
         /// @{ Printer READ interface
         ///    For reading data back *into* Gambit from a printer output file.
-        ///    This is mainly designed for performing "reweighting" of scans, 
+        ///    This is mainly designed for performing "reweighting" of scans,
         ///    e.g. loading up previously scanned points in order to recompute
         ///    some new observables or likelihoods.
         ///
@@ -215,13 +215,13 @@ namespace Gambit
 
         ///    So, need:
         ///      1. some way to iterate through printer output
-        ///      2. a generic function that can read in a particular entry, 
+        ///      2. a generic function that can read in a particular entry,
         ///         knowing e.g. the following:
         ///       Column 6: #NormalDist_parameters @NormalDist::primary_parameters::mu
         ///         and can put it back into some Gambit object, e.g.
-        ///       Parameters: 
+        ///       Parameters:
         ///         NormalDist:
-        ///           mu: 
+        ///           mu:
         ///           sigma:
         ///
         ///       I guess this latter part is scannerbits responsibility, i.e.
@@ -250,7 +250,7 @@ namespace Gambit
         /// that the type is not retrievable.
         ///
         /// Note; this is not quite enough because the entries in the printer output need
-        /// not be one-to-one with the printed object, e.g. vectors currently go into 
+        /// not be one-to-one with the printed object, e.g. vectors currently go into
         /// a series of indexed output slots. Hard for e.g. scanner plugins to know the
         /// label that they need to ask for...
         ///
@@ -292,7 +292,7 @@ namespace Gambit
            /// Uses same label for input and output
            return retrieve_and_print(label, label, printer);
         }
-    
+
         /// As above, but allows for different input/output labels
         bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer)
         {
@@ -306,33 +306,33 @@ namespace Gambit
         /// mainly for the 'retrieve_and_print' function.
         /// Needs to be implemented in each complete derived Reader class
         virtual std::size_t get_type(const std::string& label) = 0;
- 
-        /// Get list of output labels that can be retrieved by this printer. 
+
+        /// Get list of output labels that can be retrieved by this printer.
         /// Needs to be implemented in each complete derived Reader class
         virtual std::set<std::string> get_all_labels() = 0;
-  
+
       protected:
         /// Default _retrieve function. Throws an error if no virtual
         /// function matching the type of the attempted retrieval is
-        /// found.        
+        /// found.
         template<typename T>
-        bool _retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool _retrieve(T&, const std::string& label, const uint, const ulong)
         {
-          std::ostringstream err;                               
-                                                                
+          std::ostringstream err;
+
           err << "Attempted to retrieve a print result as an unregistered type!"
               << "If you really want to retrieve a result as this type, you must "
               << "add the type to the RETRIEVABLE_TYPES sequence "
               << "in \"gambit/Elements/printable_types.hpp\". You will then have "
               << "to define a retrieve function for it in whatever printer "
               << "you are using (see documentation for GAMBIT printers)."
-              << "\n  Available info for this retrieve attempt..."                
-              << "\n   Label      : " << label                  
-              << "\n   Type       : " << STRINGIFY(T);       
-          printer_error().raise(LOCAL_INFO,err.str());         
+              << "\n  Available info for this retrieve attempt..."
+              << "\n   Label      : " << label
+              << "\n   Type       : " << STRINGIFY(T);
+          printer_error().raise(LOCAL_INFO,err.str());
           return false;
         }
-      
+
         // Virtual retrieval methods for base printer classes
         #define VRETRIEVE(r,data,elem)            \
         virtual bool _retrieve(elem& /*output*/,  \
@@ -357,9 +357,9 @@ namespace Gambit
 
         // Add the base virtual functions for registered printable and
         // retrievable types, to be overloaded in each printer.
-        ADD_VIRTUAL_RETRIEVALS(SCANNER_RETRIEVABLE_TYPES) 
+        ADD_VIRTUAL_RETRIEVALS(SCANNER_RETRIEVABLE_TYPES)
     };
- 
+
   } //end namespace Printers
 } // end namespace Gambit
 

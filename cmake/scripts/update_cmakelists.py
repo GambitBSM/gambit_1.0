@@ -61,8 +61,8 @@ def main(argv):
     except getopt.GetoptError:
         print 'Usage: update_cmakelists.py [flags]'
         print ' flags:'
-        print '  -v                                      : More verbose output'  
-        print '  -x module1,backendA,printer2,modelX,... : Exclude module1, backendA, printer2, modelX, etc.' 
+        print '  -v                                      : More verbose output'
+        print '  -x module1,backendA,printer2,modelX,... : Exclude module1, backendA, printer2, modelX, etc.'
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-v','--verbose'):
@@ -77,10 +77,9 @@ def main(argv):
     # Find all the modules.
     modules = module_census(verbose,".",exclude_modules)
 
-    # Always add the Backends and Models dirs explicitly
-    modules += ["Backends","Models"]
-    # Add the Printers dir only if present
-    if os.path.isdir("Printers"): modules += ["Printers"]
+    # Add the Backends, Models and Printers dirs only if present
+    for x in ["Backends", "Models", "Printers"]:
+      if os.path.isdir(x): modules += [x]
 
     # Loop over the found modules.
     for mod in modules:

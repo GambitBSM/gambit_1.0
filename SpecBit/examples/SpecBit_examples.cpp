@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Example retrieval of data from Spectrum 
+///  Example retrieval of data from Spectrum
 ///  object.
 ///
 ///  *********************************************
@@ -12,14 +12,14 @@
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
 ///    \date 2014 Dec
-///  
+///
 ///  *********************************************
 
 #include <string>
 #include <sstream>
 #include <cmath>
 
-#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/Elements/spectrum.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 
@@ -56,7 +56,7 @@ namespace Gambit
 
       // Retreive pointer to Spectrum object, delivered by dependency resolver
       // Module function asks for Spectrum* with capability MSSM_spectrum.
-      // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*) 
+      // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*)
       namespace myPipe = Pipes::exampleRead;
       /*TAG*/ Spectrum fullspectrum = *myPipe::Dep::MSSM_spectrum;
       const SubSpectrum* spec = fullspectrum->get_HE(); // MSSMSpec SubSpectrum object
@@ -68,7 +68,7 @@ namespace Gambit
       // This copies the data out. Could possible change it to pass out a
       // reference instead, or have another function to do that.
       SLHAea::Coll slhaea = fullspectrum->getSLHAea();
-      // for testing, write this to file      
+      // for testing, write this to file
       std::ofstream out1;
       out1.open("SpecBit/exampleRead_test.slha");
       out1 << slhaea;
@@ -80,7 +80,7 @@ namespace Gambit
 
       // SLHAea objects behave mostly like maps, but with special kinds of keys. For
       // "at" and "operator[]", it does automatic conversion, but for "find" it does
-      // not, so we have to manually do it.   
+      // not, so we have to manually do it.
       SLHAea::Block spinfo = slhaea.at("SPINFO");
       //std::vector<std::string> k3(1, "3");
       std::vector<std::string> k4(1, "4");
@@ -91,7 +91,7 @@ namespace Gambit
       {
          std::cout << "Good spectrum found! Inspecting contents..." << std::endl;
          std::cout << std::endl << slhaea << std::endl;
-         
+
          // Write to file so we can check it
          std::string filename(myPipe::runOptions->getValue<std::string>("output_slha_filename"));
          spec->getSLHA(filename);
@@ -101,7 +101,7 @@ namespace Gambit
          // ---------------------------------------------------------
 
          //#define ECHO(COMMAND) cout << "  " << STRINGIFY(COMMAND) << " = " << COMMAND << endl;
-         //Replacing with a version that deals with SLHAea access errors            
+         //Replacing with a version that deals with SLHAea access errors
          #define ECHO(COMMAND)                                \
          {                                                    \
              try {                                            \
@@ -110,9 +110,9 @@ namespace Gambit
              catch (const std::exception& e)                  \
              { add_error(report,e,STRINGIFY(COMMAND)); }      \
          }
-         
+
          /* ----------Test particle database access ---------------- */
-         #define PDB Models::ParticleDB()        
+         #define PDB Models::ParticleDB()
 
          // First check out what is actually in the database
          PDB.check_contents();
@@ -127,45 +127,45 @@ namespace Gambit
          ECHO( PDB.long_name(std::make_pair(1000022,0))  ) // Input PDG code + context integer, retrieve long name
          ECHO( PDB.long_name(1000022,0)                  ) // Input PDG code + context integer, retrieve long name
          ECHO( PDB.short_name_pair("~chi0_1")            ) // Input long name, retrieve short name + index
-         ECHO( PDB.short_name_pair(std::make_pair(1000022,0)) ) // Input PDG code plus context integer, retrieve short name + index 
-         ECHO( PDB.short_name_pair(1000022,0)            ) // Input PDG code plus context integer, retrieve short name + index 
- 
+         ECHO( PDB.short_name_pair(std::make_pair(1000022,0)) ) // Input PDG code plus context integer, retrieve short name + index
+         ECHO( PDB.short_name_pair(1000022,0)            ) // Input PDG code plus context integer, retrieve short name + index
+
          cout<<endl;
          cout<<"Demo retrieval of antiparticle names/codes using particle names/codes"<<endl;
          cout<<"-----------------------------------------------------------------"<<endl;
          // Check existence in various ways
-         ECHO( PDB.has_antiparticle("~chi0_1")                 ) 
-         ECHO( PDB.has_antiparticle("~chi0",1)                 ) 
-         ECHO( PDB.has_antiparticle(std::make_pair("~chi0",1)) ) 
-         ECHO( PDB.has_antiparticle(1000022,0)                 ) 
-         ECHO( PDB.has_antiparticle(std::make_pair(1000022,0)) ) 
+         ECHO( PDB.has_antiparticle("~chi0_1")                 )
+         ECHO( PDB.has_antiparticle("~chi0",1)                 )
+         ECHO( PDB.has_antiparticle(std::make_pair("~chi0",1)) )
+         ECHO( PDB.has_antiparticle(1000022,0)                 )
+         ECHO( PDB.has_antiparticle(std::make_pair(1000022,0)) )
          ECHO( PDB.get_antiparticle("~chi0_1")                 ) // Input long name, retrieve antiparticle long name
          ECHO( PDB.get_antiparticle("~chi0",1)                 ) // Input short name + index, retrieve antiparticle short name + index
          ECHO( PDB.get_antiparticle(std::make_pair("~chi0",1)) ) // Input short name + index, retrieve antiparticle short name + index
          ECHO( PDB.get_antiparticle(1000022,0)                 ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
          ECHO( PDB.get_antiparticle(std::make_pair(1000022,0)) ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
-         ECHO( PDB.has_antiparticle("~chi+_1")                 ) 
-         ECHO( PDB.has_antiparticle("~chi+",1)                 ) 
-         ECHO( PDB.has_antiparticle(std::make_pair("~chi+",1)) ) 
-         ECHO( PDB.has_antiparticle(1000024,0)                 ) 
-         ECHO( PDB.has_antiparticle(std::make_pair(1000024,0)) ) 
+         ECHO( PDB.has_antiparticle("~chi+_1")                 )
+         ECHO( PDB.has_antiparticle("~chi+",1)                 )
+         ECHO( PDB.has_antiparticle(std::make_pair("~chi+",1)) )
+         ECHO( PDB.has_antiparticle(1000024,0)                 )
+         ECHO( PDB.has_antiparticle(std::make_pair(1000024,0)) )
          ECHO( PDB.get_antiparticle("~chi+_1")                 ) // Input long name, retrieve antiparticle long name
          ECHO( PDB.get_antiparticle("~chi+",1)                 ) // Input short name + index, retrieve antiparticle short name + index
          ECHO( PDB.get_antiparticle(std::make_pair("~chi+",1)) ) // Input short name + index, retrieve antiparticle short name + index
          ECHO( PDB.get_antiparticle(1000024,0)                 ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
          ECHO( PDB.get_antiparticle(std::make_pair(1000024,0)) ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
-         ECHO( PDB.has_antiparticle("u_1")                 ) 
-         ECHO( PDB.has_antiparticle("u",1)                 ) 
-         ECHO( PDB.has_antiparticle(std::make_pair("u",1)) ) 
-         ECHO( PDB.has_antiparticle(2,0)                   ) 
-         ECHO( PDB.has_antiparticle(std::make_pair(2,0))   ) 
+         ECHO( PDB.has_antiparticle("u_1")                 )
+         ECHO( PDB.has_antiparticle("u",1)                 )
+         ECHO( PDB.has_antiparticle(std::make_pair("u",1)) )
+         ECHO( PDB.has_antiparticle(2,0)                   )
+         ECHO( PDB.has_antiparticle(std::make_pair(2,0))   )
          ECHO( PDB.get_antiparticle("u_1")                 ) // Input long name, retrieve antiparticle long name
          ECHO( PDB.get_antiparticle("u",1)                 ) // Input short name + index, retrieve antiparticle short name + index
          ECHO( PDB.get_antiparticle(std::make_pair("u",1)) ) // Input short name + index, retrieve antiparticle short name + index
          ECHO( PDB.get_antiparticle(2,0)                   ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
          ECHO( PDB.get_antiparticle(std::make_pair(2,0))   ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
-     
-     
+
+
          cout<<endl;
          cout<<"Demo retrieval when no short name exists"<<endl;
          cout<<"-----------------------------------------------------------------"<<endl;
@@ -180,14 +180,14 @@ namespace Gambit
          //ECHO( PDB.short_name_pair(37)                   ) // Error!
          cout<<endl;
          /* ----------------- Pole masses --------------------------- */
-     
+
          cout<<"Begin demo retrievals from Spectrum and SubSpectrum objects"<<endl;
          cout<<"-----------------------------------------------------------------"<<endl;
          cout<<endl;
          cout<<"First, general methods for accessing different sorts of information."<<endl;
          cout<<endl;
          // At the moment it is only pole masses which have getters overloaded to use
-         // the particle database information. It is only the MASS block in the 
+         // the particle database information. It is only the MASS block in the
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
          cout<<"Lightest neutral Higgs boson pole mass:"<<endl;
@@ -209,7 +209,7 @@ namespace Gambit
          cout<<"Retrieval of Spectrum object contents, with"<<endl;
          cout<<"correspondence to SLHAea object entries"<<endl;
          cout<<"-----------------------------------------------------------------"<<endl;
-    
+
          // MZ was a bad first example; it is empty unless you switch on the SM pole mass
          // calculator for flexiblesusy. We do not yet pass any input value of MZ though
          // Similar issues with other gauge boson masses. So don't use these yet or
@@ -326,40 +326,40 @@ namespace Gambit
          // The PDG code - string name correspondences are defined in 'Models/src/particle_database.cpp'
 
          struct get_polemass_functor
-         {                 
+         {
            // Single mass
-           void operator()(const std::string& longname) 
-           {                                            
-             std::ostringstream echo1, echo2, echo3;                                           
-             echo1 <<     "  fullspectrum->get_Pole_Mass("<<longname<<") = ";       
-             double value1 = fullspectrum->get_Pole_Mass(longname);                 
-             echo2 <<     "  spec->get_Pole_Mass("<<longname<<") = ";       
-             double value2 = spec->get_Pole_Mass(longname);                 
+           void operator()(const std::string& longname)
+           {
+             std::ostringstream echo1, echo2, echo3;
+             echo1 <<     "  fullspectrum->get_Pole_Mass("<<longname<<") = ";
+             double value1 = fullspectrum->get_Pole_Mass(longname);
+             echo2 <<     "  spec->get_Pole_Mass("<<longname<<") = ";
+             double value2 = spec->get_Pole_Mass(longname);
              echo3 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(longname).first<<").at(1) = ";
              str value3 = slhaea.at("MASS").at( PDB.pdg_pair(longname).first ).at(1);
-             cout << echo1.str() << value1 << endl;                              
-             cout << echo2.str() << value2 << endl;                              
-             cout << echo3.str() << value3 << endl;                              
-             cout<<endl;                                                         
+             cout << echo1.str() << value1 << endl;
+             cout << echo2.str() << value2 << endl;
+             cout << echo3.str() << value3 << endl;
+             cout<<endl;
            }
            // Range of indexes masses
-           void operator()(const std::string& longname, int from, int to) 
-           {                                            
-             for(int i=from; i<=to; ++i)           
+           void operator()(const std::string& longname, int from, int to)
+           {
+             for(int i=from; i<=to; ++i)
              {
-               std::ostringstream echo1;                                           
-               std::ostringstream echo2;                                           
+               std::ostringstream echo1;
+               std::ostringstream echo2;
                echo1 <<     "  spec->get_Pole_Mass("<<longname<<","<<i<<") = ";
-               double value1 = spec->get_Pole_Mass(longname,i);                
+               double value1 = spec->get_Pole_Mass(longname,i);
                echo2 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(longname,i).first<<").at(1) = ";
                str value2 = slhaea.at("MASS").at( PDB.pdg_pair(longname,i).first ).at(1);
-               cout << echo1.str() << value1 << endl;                              
-               cout << echo2.str() << value2 << endl;                              
-               cout<<endl;                                                        
+               cout << echo1.str() << value1 << endl;
+               cout << echo2.str() << value2 << endl;
+               cout<<endl;
              }
            }
 
-           get_polemass_functor(std::ostringstream& report, /*TAG*/ Spectrum fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
+           get_polemass_functor(std::ostringstream& report, /*TAG*/ Spectrum fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain)
              : report(report)
              , fullspectrum(fullin)
              , spec(specin)
@@ -371,20 +371,20 @@ namespace Gambit
              /*TAG*/ Spectrum fullspectrum;
              const SubSpectrum* spec;
              SLHAea::Coll slhaea;
-         }; 
+         };
 
          get_polemass_functor get_polemass(report,fullspectrum,spec,slhaea);
 
          cout<<endl<<"Gaugino pole masses:"<<endl<<endl;
          get_polemass("~g");
          get_polemass("~chi+",1,2);
-         get_polemass("~chi0",1,4); 
+         get_polemass("~chi0",1,4);
          cout<<endl<<"Squark pole masses:"<<endl<<endl;
-         get_polemass("~d",1,6); 
-         get_polemass("~u",1,6); 
+         get_polemass("~d",1,6);
+         get_polemass("~u",1,6);
          cout<<endl<<"Slepton pole masses:"<<endl<<endl;
-         get_polemass("~e-",1,6); 
-         get_polemass("~nu",1,3); 
+         get_polemass("~e-",1,6);
+         get_polemass("~nu",1,3);
 
          cout << endl << "Mixing matrices:" << endl << endl;
 
@@ -433,12 +433,12 @@ namespace Gambit
          cout << "These are all given in the DRbar scheme, at least when running FlexibleSUSY or SoftSUSY. ";
          cout << "There may be some switching or converting once other spectrum generator are added." << endl;
          cout<<endl;
-         cout << "Spectrum object running parameters are currently defined at scale Q=" 
+         cout << "Spectrum object running parameters are currently defined at scale Q="
               << spec->GetScale() << " [GeV]" << endl << endl;
-         cout<<endl; 
-         cout << "-- Dimensionless parameters --" <<endl;          
+         cout<<endl;
+         cout << "-- Dimensionless parameters --" <<endl;
          cout << endl << "Gauge couplings:" << endl << endl;
-         ECHO(  spec->get_dimensionless_parameter("g1")  )  // U_Y(1) gauge coupling in SU(5) normalisation  
+         ECHO(  spec->get_dimensionless_parameter("g1")  )  // U_Y(1) gauge coupling in SU(5) normalisation
          ECHO(  slhaea.at("GAUGE").at(1).at(1)  ) // This is in the Standard Model normalisation as per SLHA conventions
          cout << "Note: " << spec->get_dimensionless_parameter("g1") << " * sqrt(3/5) = "
                           << spec->get_dimensionless_parameter("g1")*sqrt(3./5.) << endl;
@@ -449,7 +449,7 @@ namespace Gambit
          ECHO(  spec->get_dimensionless_parameter("g3")  )  // SU(3) gauge coupling
          ECHO(  slhaea.at("GAUGE").at(3).at(1)  )
          cout<<endl;
- 
+
          cout << endl << "Yukawa matrices:" << endl << endl;
 
          // Note, currently we are not using a matrix object or any such thing, so you have to
@@ -478,12 +478,12 @@ namespace Gambit
 
          #define GET_MATRIX(NAME,BLOCK,__IND1,__IND2) BOOST_PP_SEQ_FOR_EACH_PRODUCT(GET_MATRIX_EL, ((NAME))((BLOCK))(BOOST_PP_TUPLE_TO_SEQ(__IND1))(BOOST_PP_TUPLE_TO_SEQ(__IND2)))
 
-         GET_MATRIX("Yu","YU",(1,2,3),(1,2,3)) cout << endl; 
-         GET_MATRIX("Yd","YD",(1,2,3),(1,2,3)) cout << endl; 
-         GET_MATRIX("Ye","YE",(1,2,3),(1,2,3)) cout << endl; 
+         GET_MATRIX("Yu","YU",(1,2,3),(1,2,3)) cout << endl;
+         GET_MATRIX("Yd","YD",(1,2,3),(1,2,3)) cout << endl;
+         GET_MATRIX("Ye","YE",(1,2,3),(1,2,3)) cout << endl;
 
          // Mass dimension 1 parameters
-         
+
          cout<<endl;
          cout<<"MSSM mass dimension 1 running parameters"<<endl;
          cout<<endl;
@@ -534,14 +534,14 @@ namespace Gambit
 
          // Seem to be the trilinears, and TYu and au etc. seem to be equal. Ask Peter...
 
-         GET_M1_MATRIX("TYu","TU",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M1_MATRIX("TYd","TD",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M1_MATRIX("TYe","TE",(1,2,3),(1,2,3)) cout << endl; 
-         cout << endl; 
-         GET_M1_MATRIX("au","TU",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M1_MATRIX("ad","TD",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M1_MATRIX("ae","TE",(1,2,3),(1,2,3)) cout << endl; 
- 
+         GET_M1_MATRIX("TYu","TU",(1,2,3),(1,2,3)) cout << endl;
+         GET_M1_MATRIX("TYd","TD",(1,2,3),(1,2,3)) cout << endl;
+         GET_M1_MATRIX("TYe","TE",(1,2,3),(1,2,3)) cout << endl;
+         cout << endl;
+         GET_M1_MATRIX("au","TU",(1,2,3),(1,2,3)) cout << endl;
+         GET_M1_MATRIX("ad","TD",(1,2,3),(1,2,3)) cout << endl;
+         GET_M1_MATRIX("ae","TE",(1,2,3),(1,2,3)) cout << endl;
+
          // Mass dimension 2 parameters
 
          cout<<endl;
@@ -558,7 +558,7 @@ namespace Gambit
          cout<<endl;
 
          // Matrices
-           
+
          #define GET_M2_MATRIX_EL(r, PRODUCT)                                    \
          {                                                                       \
             str label = BOOST_PP_SEQ_ELEM(0, PRODUCT);                           \
@@ -583,16 +583,16 @@ namespace Gambit
 
          cout << endl << "Mass matrices:" << endl << endl;
 
-         GET_M2_MATRIX("mq2","MSQ2",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M2_MATRIX("mu2","MSU2",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M2_MATRIX("md2","MSD2",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M2_MATRIX("me2","MSE2",(1,2,3),(1,2,3)) cout << endl; 
-         GET_M2_MATRIX("ml2","MSL2",(1,2,3),(1,2,3)) cout << endl; 
+         GET_M2_MATRIX("mq2","MSQ2",(1,2,3),(1,2,3)) cout << endl;
+         GET_M2_MATRIX("mu2","MSU2",(1,2,3),(1,2,3)) cout << endl;
+         GET_M2_MATRIX("md2","MSD2",(1,2,3),(1,2,3)) cout << endl;
+         GET_M2_MATRIX("me2","MSE2",(1,2,3),(1,2,3)) cout << endl;
+         GET_M2_MATRIX("ml2","MSL2",(1,2,3),(1,2,3)) cout << endl;
 
-         cout << endl; 
+         cout << endl;
 
          /// NEW! Tests of override setters
-  
+
          cout << "Testing set_override functions" << endl;
 
          cout << "Original M1:" << spec->get_mass_parameter("M1") << endl;
@@ -615,7 +615,7 @@ namespace Gambit
          spec->set_override_mass_parameter(-1234,"new_entry",false); // correct: safety check turned off
          cout << "has 'new_entry'? " << spec->has_mass_parameter("new_entry") << endl;
          cout << "new_entry = " << spec->get_mass_parameter("new_entry") << endl;
-         cout << endl; 
+         cout << endl;
 
 
          // Things left to add to demo:
@@ -626,7 +626,7 @@ namespace Gambit
 
          cout << "Test report:" << std::endl << report.str();
 
-         SpecBit_warning().raise(LOCAL_INFO,"\n *** Stopped on purpose to examine spectrum contents ***");  
+         SpecBit_warning().raise(LOCAL_INFO,"\n *** Stopped on purpose to examine spectrum contents ***");
          result = 0;
       }
       //else if(spinfo.find(k3) != spinfo.end())
@@ -641,11 +641,11 @@ namespace Gambit
       }
       else
       {
-         SpecBit_error().raise(LOCAL_INFO,"Bug in exampleRead 'if' logic");  
+         SpecBit_error().raise(LOCAL_INFO,"Bug in exampleRead 'if' logic");
       }
    }
 
-  }      
+  }
 }
 
 

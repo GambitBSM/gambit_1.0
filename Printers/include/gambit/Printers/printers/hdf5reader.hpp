@@ -24,6 +24,8 @@
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
 #include "gambit/Utils/cats.hpp"
 
+#include <boost/preprocessor/seq/for_each_i.hpp>
+
 #ifndef __hdf5_reader_hpp__
 #define __hdf5_reader_hpp__
 
@@ -110,7 +112,10 @@ namespace Gambit
         /// Retrieve functions
         using BaseReader::_retrieve; // Tell compiler we are using some of the base class overloads of this on purpose.
         #define DECLARE_RETRIEVE(r,data,i,elem) bool _retrieve(elem&, const std::string&, const uint, const ulong);
-        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_RETRIEVE, , HDF5TYPES)
+        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_RETRIEVE, , HDF5_TYPES)
+        #ifndef SCANNER_STANDALONE
+          BOOST_PP_SEQ_FOR_EACH_I(DECLARE_RETRIEVE, , HDF5_MODULE_BACKEND_TYPES)
+        #endif
         #undef DECLARE_RETRIEVE
 
       private:

@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Sequence of all types printable by the ASCII
+///  Sequence of all types printable by the HDF5
 ///  printer.
 ///
 ///  *********************************************
@@ -18,7 +18,7 @@
 #ifndef __HDF5TYPES__
 #define __HDF5TYPES__
 
-#define HDF5TYPES           \
+#define HDF5_TYPES          \
   (int)                     \
   (uint)                    \
   (long)                    \
@@ -32,6 +32,8 @@
   (map_str_dbl)             \
   (ModelParameters)         \
   (triplet<double>)         \
+
+#define HDF5_MODULE_BACKEND_TYPES \
   (DM_nucleon_couplings)    \
   (Flav_KstarMuMu_obs)      \
 

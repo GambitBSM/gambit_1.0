@@ -23,7 +23,7 @@
 
 #include <stdexcept>
 
-#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Elements/standalone_module.hpp"
 #include "gambit/Utils/file_lock.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"

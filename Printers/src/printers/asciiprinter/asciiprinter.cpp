@@ -30,7 +30,7 @@
 
 // Gambit
 #include "gambit/Printers/printers/asciiprinter.hpp"
-#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
 

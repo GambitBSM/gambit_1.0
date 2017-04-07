@@ -23,9 +23,6 @@
 ///  *********************************************
 
 #include "gambit/Printers/printers/asciiprinter.hpp"
-//#include "gambit/Core/error_handlers.hpp"
-//#include "gambit/Utils/stream_overloads.hpp"
-//#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit
 {
@@ -103,13 +100,11 @@ namespace Gambit
       addtobuffer(vdvalue,names,IDcode,thread,pointID);
     }
 
-    #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
-      void asciiPrinter::_print(ModelParameters const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
-      {
-        std::map<std::string, double> parameter_map = value.getValues();
-        _print(parameter_map, label, vID, mpirank, pointID);
-      }
-    #endif
+    void asciiPrinter::_print(ModelParameters const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    {
+      std::map<std::string, double> parameter_map = value.getValues();
+      _print(parameter_map, label, vID, mpirank, pointID);
+    }
 
     void asciiPrinter::_print(triplet<double> const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
@@ -120,32 +115,36 @@ namespace Gambit
       _print(m, label, vID, mpirank, pointID);
     }
 
-    void asciiPrinter::_print(DM_nucleon_couplings const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
-    {
-      std::map<std::string, double> m;
-      m["Gp_SI"] = value.gps;
-      m["Gn_SI"] = value.gns;
-      m["Gp_SD"] = value.gpa;
-      m["Gn_SD"] = value.gna;
-      _print(m, label, vID, mpirank, pointID);
-    }
+    #ifndef SCANNER_STANDALONE // All the types inside ASCII_MODULE_BACKEND_TYPES need to go inside this def guard.
 
-    void asciiPrinter::_print(Flav_KstarMuMu_obs const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
-    {
-      std::map<std::string, double> m;
-      std::ostringstream bins;
-      bins << value.q2_min << "_" << value.q2_max;
-      m["BR_"+bins.str()] = value.BR;
-      m["AFB_"+bins.str()] = value.AFB;
-      m["FL_"+bins.str()] = value.FL;
-      m["S3_"+bins.str()] = value.S3;
-      m["S4_"+bins.str()] = value.S4;
-      m["S5_"+bins.str()] = value.S5;
-      m["S7_"+bins.str()] = value.S7;
-      m["S8_"+bins.str()] = value.S8;
-      m["S9_"+bins.str()] = value.S9;
-      _print(m, label, vID, mpirank, pointID);
-    }
+      void asciiPrinter::_print(DM_nucleon_couplings const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+      {
+        std::map<std::string, double> m;
+        m["Gp_SI"] = value.gps;
+        m["Gn_SI"] = value.gns;
+        m["Gp_SD"] = value.gpa;
+        m["Gn_SD"] = value.gna;
+        _print(m, label, vID, mpirank, pointID);
+      }
+
+      void asciiPrinter::_print(Flav_KstarMuMu_obs const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+      {
+        std::map<std::string, double> m;
+        std::ostringstream bins;
+        bins << value.q2_min << "_" << value.q2_max;
+        m["BR_"+bins.str()] = value.BR;
+        m["AFB_"+bins.str()] = value.AFB;
+        m["FL_"+bins.str()] = value.FL;
+        m["S3_"+bins.str()] = value.S3;
+        m["S4_"+bins.str()] = value.S4;
+        m["S5_"+bins.str()] = value.S5;
+        m["S7_"+bins.str()] = value.S7;
+        m["S8_"+bins.str()] = value.S8;
+        m["S9_"+bins.str()] = value.S9;
+        _print(m, label, vID, mpirank, pointID);
+      }
+
+    #endif
 
     /// @}
 

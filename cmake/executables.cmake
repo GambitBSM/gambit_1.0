@@ -64,7 +64,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
                                 $<TARGET_OBJECTS:Printers>
                                 ${GAMBIT_BASIC_COMMON_OBJECTS}
   )
-  set_target_properties(ScannerBit_standalone PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/ScannerBit/bin")
   if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/")
     if (NOT EXCLUDE_FLEXIBLESUSY)
       add_dependencies(ScannerBit_standalone flexiblesusy)
@@ -74,7 +73,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
     endif()
   else()
     # Make sure the printers compile OK if the rest of GAMBIT is missing
-    add_definitions(-DSTANDALONE=1)
+    target_compile_definitions(Printers PRIVATE SCANNER_STANDALONE)
   endif()
   add_dependencies(standalones ScannerBit_standalone)
 endif()

@@ -14,7 +14,7 @@
 ///  *********************************************
 
 // Always required in any standalone module main file
-#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Elements/standalone_module.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"

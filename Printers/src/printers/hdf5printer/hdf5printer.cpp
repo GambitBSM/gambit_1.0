@@ -102,7 +102,7 @@
 #include "gambit/Printers/printer_id_tools.hpp"
 
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/signal_handling.hpp"

@@ -20,9 +20,12 @@
 
 #include "gambit/ScannerBit/printable_types.hpp"
 
-#define ASCIITYPES SCANNER_PRINTABLE_TYPES  \
+#define ASCII_TYPES                         \
+  SCANNER_PRINTABLE_TYPES                   \
   (std::string)                             \
   (triplet<double>)                         \
+
+#define ASCII_MODULE_BACKEND_TYPES          \
   (DM_nucleon_couplings)                    \
   (Flav_KstarMuMu_obs)                      \
 

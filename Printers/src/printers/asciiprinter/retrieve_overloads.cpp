@@ -253,10 +253,15 @@ namespace Gambit
     { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
     bool asciiReader::_retrieve(triplet<double>& /*out*/,const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
     { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
-    bool asciiReader::_retrieve(DM_nucleon_couplings& /*out*/, const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
-    bool asciiReader::_retrieve(Flav_KstarMuMu_obs& /*out*/, const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
-    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
+
+    #ifndef SCANNER_STANDALONE // All the types inside ASCII_MODULE_BACKEND_TYPES need to go inside this def guard.
+
+      bool asciiReader::_retrieve(DM_nucleon_couplings& /*out*/, const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+      { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
+      bool asciiReader::_retrieve(Flav_KstarMuMu_obs& /*out*/, const std::string& /*label*/, const uint /*rank*/, const ulong /*pointID*/)
+      { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); return false; }
+
+    #endif
 
     /// @}
 

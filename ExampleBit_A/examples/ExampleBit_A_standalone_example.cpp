@@ -18,7 +18,7 @@
 ///  *********************************************
 
 // Always required in any standalone module main file
-#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Elements/standalone_module.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
 
 // Only needed here

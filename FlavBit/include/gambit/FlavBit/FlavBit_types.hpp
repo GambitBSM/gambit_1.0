@@ -29,8 +29,6 @@
 #include <string>
 #include <vector>
 
-#include "gambit/FlavBit/FlavBit_types.hpp"
-
 #include <boost/numeric/ublas/matrix.hpp>
 
 

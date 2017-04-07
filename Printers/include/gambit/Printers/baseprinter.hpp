@@ -34,7 +34,7 @@
 #include "gambit/Utils/model_parameters.hpp"
 
 // Printable types
-#ifndef STANDALONE
+#ifndef SCANNER_STANDALONE
    // If we are in a main gambit executable, we need to know all the GAMBIT printable types
    #include "gambit/Elements/printable_types.hpp"
 #else
@@ -58,7 +58,7 @@ namespace Gambit
 {
   namespace Printers
   {
-    
+
     // Helper function for parsing ModelParameters label strings.
     bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out, std::string& rest);
 

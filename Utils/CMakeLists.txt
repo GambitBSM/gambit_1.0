@@ -49,12 +49,12 @@ set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/factory_registry.hpp
                  include/gambit/Utils/local_info.hpp
                  include/gambit/Utils/model_parameters.hpp
+                 include/gambit/Utils/numerical_constants.hpp
                  include/gambit/Utils/safebool.hpp
                  include/gambit/Utils/screen_print_utils.hpp
                  include/gambit/Utils/signal_handling.hpp
                  include/gambit/Utils/signal_helpers.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp
-                 include/gambit/Utils/standalone_module.hpp
                  include/gambit/Utils/standalone_utils.hpp
                  include/gambit/Utils/static_members.hpp
                  include/gambit/Utils/statistics.hpp

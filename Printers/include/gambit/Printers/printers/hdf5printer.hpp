@@ -43,6 +43,10 @@
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
 
+// BOOST_PP
+#include <boost/preprocessor/seq/for_each_i.hpp>
+
+
 //#define DEBUG_MODE
 //#define HDEBUG_MODE // "High output" debug mode (info with every single print command)
 
@@ -156,7 +160,10 @@ namespace Gambit
         ///@{ Print functions
         using BasePrinter::_print; // Tell compiler we are using some of the base class overloads of this on purpose.
         #define DECLARE_PRINT(r,data,i,elem) void _print(elem const&, const std::string&, const int, const uint, const ulong);
-        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_PRINT, , HDF5TYPES)
+        BOOST_PP_SEQ_FOR_EACH_I(DECLARE_PRINT, , HDF5_TYPES)
+        #ifndef SCANNER_STANDALONE
+          BOOST_PP_SEQ_FOR_EACH_I(DECLARE_PRINT, , HDF5_MODULE_BACKEND_TYPES)
+        #endif
         #undef DECLARE_PRINT
         ///@}
 

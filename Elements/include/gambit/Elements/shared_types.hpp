@@ -42,8 +42,8 @@
 
 #include "gambit/Utils/util_types.hpp"                 // General utility types useful to have around
 #include "gambit/Utils/model_parameters.hpp"           // Definitions required to understand model parameter objects
+#include "gambit/Utils/numerical_constants.hpp"        // Centralised constants header
 
-#include "gambit/Elements/numerical_constants.hpp"     // Centralised constants header
 #include "gambit/Elements/sminputs.hpp"                // Struct carrying SMINPUTS block (SLHA2)
 #include "gambit/Elements/spectrum.hpp"                // Carries BSM plus Standard Model spectrum info
 #include "gambit/Elements/decay_table.hpp"             // Decay table class (carries particle decay info)

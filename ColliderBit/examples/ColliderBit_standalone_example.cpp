@@ -16,15 +16,15 @@
 ///  *********************************************
 
 
-// 
-// Note: 
+//
+// Note:
 // For this example we use the GAMBIT backend Pythia 8.212.EM, which is connected to GAMBIT
 // vis BOSS. For this to work, make sure that this version of Pythia is specificed in
 // Backends/include/gambit/Backends/default_bossed_versions.hpp (use: #define Default_Pythia 8_212_EM).
 //
 
 // Always required for the standalone main file
-#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Elements/standalone_module.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
 using namespace ColliderBit::Accessors;     // Helper functions that provide some info about the module (here: ColliderBit)
@@ -42,11 +42,11 @@ typedef vector<vector<string> > vvstr;
 
 
 
-// 
-// ---------------------- 
-//      Main program    
+//
 // ----------------------
-// 
+//      Main program
+// ----------------------
+//
 int main(int argc, char* argv[])
 {
 
@@ -67,14 +67,14 @@ int main(int argc, char* argv[])
 
 
     // Check the number of command line arguments
-    if (argc < 2) 
+    if (argc < 2)
     {
       // Tell the user how to run the program and exit
       cerr << "Usage: " << argv[0] << " <input SLHA file>" << endl << endl;
       return 1;
     }
 
-    // Read input file name 
+    // Read input file name
     const string inputFileName = argv[1];
 
 
@@ -93,11 +93,11 @@ int main(int argc, char* argv[])
     // -----------------------------------
     //    Part 1:  Dependecy resolution
     // -----------------------------------
-    // 
+    //
     // We now set up the module functions that we wish use.
     // Dependencies and backend requirements of module functions are resolved by hand.
     // WARNING: DO NOT EDIT UNLESS YOU ARE AN EXPERT.
-    // 
+    //
 
     // Set up the LHC likelihood calculations
     calc_LHC_LogLike.resolveDependency(&runATLASAnalyses);
@@ -147,26 +147,26 @@ int main(int argc, char* argv[])
     runCMSAnalyses.resolveLoopManager(&operateLHCLoop);
     runIdentityAnalyses.resolveLoopManager(&operateLHCLoop);
 
-    vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, 
-                                                                  &getBuckFastATLAS, 
-                                                                  &getBuckFastCMS, 
-                                                                  &getBuckFastIdentity, 
-                                                                  &getATLASAnalysisContainer, 
-                                                                  &getCMSAnalysisContainer, 
-                                                                  &getIdentityAnalysisContainer, 
-                                                                  &generatePythia8Event, 
-                                                                  &smearEventATLAS, 
-                                                                  &smearEventCMS, 
-                                                                  &copyEvent, 
-                                                                  &runATLASAnalyses, 
+    vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader,
+                                                                  &getBuckFastATLAS,
+                                                                  &getBuckFastCMS,
+                                                                  &getBuckFastIdentity,
+                                                                  &getATLASAnalysisContainer,
+                                                                  &getCMSAnalysisContainer,
+                                                                  &getIdentityAnalysisContainer,
+                                                                  &generatePythia8Event,
+                                                                  &smearEventATLAS,
+                                                                  &smearEventCMS,
+                                                                  &copyEvent,
+                                                                  &runATLASAnalyses,
                                                                   &runCMSAnalyses,
                                                                   &runIdentityAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
 
 
-    // 
+    //
     // Examples of how to output info about the dependecy resolution:
-    // 
+    //
 
     // - Double-check which backend requirements have been filled with what
     // cout << endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << endl;
@@ -193,16 +193,16 @@ int main(int argc, char* argv[])
     // ----------------------------
     //    Part 2:  Configuration
     // ----------------------------
-    // 
+    //
     // Below we set the options for the various ColliderBit module functions.
     // This is where we configure our Pythia backends, choose detector simulation
-    // and specify which LHC analyses to inlcude. See the ColiderBit manual for 
+    // and specify which LHC analyses to inlcude. See the ColiderBit manual for
     // available options.
-    // 
+    //
 
-    // 
+    //
     // Settings for the LHC event loop (ColliderBit function 'operateLHCLoop')
-    // 
+    //
 
     // Pass the collider names to the module function responsible for the event loop
     operateLHCLoop.setOption<vstr>("pythiaNames", vstr {"Pythia_EM_8Tev", "Pythia_EM_13TeV"});
@@ -210,27 +210,27 @@ int main(int argc, char* argv[])
     // Set number of LHC events
     operateLHCLoop.setOption<vint>("nEvents",vint {20000, 20000});
 
-    // Should stdout be silenced during the event loop? 
+    // Should stdout be silenced during the event loop?
     operateLHCLoop.setOption<bool>("silenceLoop",false);
 
 
-    // 
+    //
     // Set up the collider(s), i.e. the different configurations of Pythia:
-    // 
-    // For this example we will set up two colliders, "Pythia_EM_8Tev" and "Pythia_EM_13TeV". 
-    // As these are not pre-configured in ColliderBit/src/colliders/SpecializablePythia.cpp,  
+    //
+    // For this example we will set up two colliders, "Pythia_EM_8Tev" and "Pythia_EM_13TeV".
+    // As these are not pre-configured in ColliderBit/src/colliders/SpecializablePythia.cpp,
     // we should specify all required settings below.
-    // 
-    // (The file SpecializablePythia.cpp defines some partly configured colliders, e.g "Pythia_SUSY_LHC_8TeV" and 
-    // "Pythia_SUSY_LHC_13TeV, and others can be added if needed.)   
-    // 
+    //
+    // (The file SpecializablePythia.cpp defines some partly configured colliders, e.g "Pythia_SUSY_LHC_8TeV" and
+    // "Pythia_SUSY_LHC_13TeV, and others can be added if needed.)
+    //
 
     // NOTE: If you want to set a fixed seed for Pythia through "Random:seed = ...",
-    //       this must currently be done directly in the module function getPythiaFileReader 
+    //       this must currently be done directly in the module function getPythiaFileReader
     //       in ColliderBit/src/CollderBit.cpp, in a similar manner to what is done there now.
     //       This is to avoid potential problems with OpenMP threads getting identical seeds.
     //
-    //       Also, Pythia options specified directly in getPythiaFileReader in ColliderBit.cpp 
+    //       Also, Pythia options specified directly in getPythiaFileReader in ColliderBit.cpp
     //       can override options given here.
 
     getPythiaFileReader.setOption<vstr>("Pythia_EM_8Tev", vstr
@@ -259,27 +259,27 @@ int main(int argc, char* argv[])
     // Set the correct XML path for Pythia
     getPythiaFileReader.setOption<string>("Pythia_doc_path","Backends/installed/pythia/8.212.EM/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
 
-    // Specify the SLHA input file. 
+    // Specify the SLHA input file.
     // For this example we take the command line argument stored in 'inputFileName'.
     getPythiaFileReader.setOption<vstr>("SLHA_filenames", vstr {inputFileName});
 
 
 
-    // 
+    //
     // Specify which analyses to run and which detectors to use.
-    // 
-    // Note: Adding more detectors and analysis containers 
-    //       (e.g. for Delphes) will require additions to the 
+    //
+    // Note: Adding more detectors and analysis containers
+    //       (e.g. for Delphes) will require additions to the
     //       manual dependecy resolution at the top.
-    // 
+    //
 
     // -- ATLAS analyses:
     getBuckFastATLAS.setOption<vbool>("useDetector",vbool {true, true});
     getBuckFastATLAS.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
     getBuckFastATLAS.setOption<vbool>("partonOnly",vbool {false, false});
 
-    getATLASAnalysisContainer.setOption<vvstr>("analyses", vvstr 
-        { {"ATLAS_0LEP_20invfb"}, 
+    getATLASAnalysisContainer.setOption<vvstr>("analyses", vvstr
+        { {"ATLAS_0LEP_20invfb"},
           {"ATLAS_13TeV_0LEP_13invfb"} });
 
 
@@ -288,8 +288,8 @@ int main(int argc, char* argv[])
     getBuckFastCMS.setOption<vdouble>("antiktR",vdouble {0.5, 0.5});
     getBuckFastCMS.setOption<vbool>("partonOnly",vbool {false, false});
 
-    getCMSAnalysisContainer.setOption<vvstr>("analyses", vvstr 
-        { {"CMS_MONOJET_20invfb"}, 
+    getCMSAnalysisContainer.setOption<vvstr>("analyses", vvstr
+        { {"CMS_MONOJET_20invfb"},
           {} });
 
 
@@ -298,20 +298,20 @@ int main(int argc, char* argv[])
     // getBuckFastIdentity.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
     // getBuckFastIdentity.setOption<vbool>("partonOnly",vbool {false, false});
 
-    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr { 
-    //     { {"ATLAS_0LEP_20invfb", "CMS_MONOJET_20invfb"}, 
+    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr {
+    //     { {"ATLAS_0LEP_20invfb", "CMS_MONOJET_20invfb"},
     //       {"ATLAS_13TeV_0LEP_13invfb"} });
 
 
 
-    // ----------------------- 
-    //    Part 3: Execution 
     // -----------------------
-    // 
-    // Here we call the ColliderBit module functions 
-    // that run the LHC event loop and calculate the 
+    //    Part 3: Execution
+    // -----------------------
+    //
+    // Here we call the ColliderBit module functions
+    // that run the LHC event loop and calculate the
     // log-likelihood.
-    // 
+    //
 
     // Call the initialisation functions for all backends that are in use.
     nulike_1_0_3_init.reset_and_calculate();
@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
     cout << scientific << "LHC log likelihood is " << loglike << endl;
     cout << endl;
 
-    // To print to the logs instead, use 
+    // To print to the logs instead, use
     // logger() << "LHC log likelihood is " << loglike << EOM
 
     // To output additional info such as the number of signal events
