@@ -19,6 +19,7 @@
 #include "gambit/ScannerBit/scanners/postprocessor/postprocessor.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
 #include "gambit/Utils/model_parameters.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 using Gambit::Printers::PPIDpair;
 
@@ -256,26 +257,58 @@ namespace Gambit
        
         // First read collated chunk data from past resumes, and the number of processes used in the last run
         std::string inprev = filebase+"_prev.dat";
-        std::ifstream finprev(inprev);
-        unsigned int prev_size;
-        finprev >> prev_size; 
-        Chunk nextchunk;
-        while( finprev >> nextchunk.start >> nextchunk.end )
+
+        // Check if it exists (it will not exist on the first resume)
+        if(Utils::file_exists(inprev))
         {
-          done_chunks.insert(nextchunk);
+           std::ifstream finprev(inprev);
+           if(finprev)
+           {
+              unsigned int prev_size;
+              finprev >> prev_size; 
+              Chunk nextchunk;
+              while( finprev >> nextchunk.start >> nextchunk.end )
+              {
+                done_chunks.insert(nextchunk);
+              }
+
+              // Now read each of the chunk files left by each process during previous run
+              for(unsigned int i=0; i<prev_size; ++i)
+              {
+                std::ostringstream inname;
+                inname << filebase << "_" << i << ".dat";
+                std::string in = inname.str();
+                if(Utils::file_exists(in))
+                {
+                  std::ifstream fin(in);
+                  if(fin)
+                  {
+                    fin >> nextchunk.start >> nextchunk.end;
+                    done_chunks.insert(nextchunk);  
+                  }
+                  else
+                  {
+                    std::ostringstream err;
+                    err << "Tried to read postprocessor resume data from "<<in<<" but encountered a read error of some kind (the file seems to exist but appears to be unreadable";
+                    Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                  }
+                }
+                else
+                {
+                  std::ostringstream err;
+                  err << "Tried to read postprocessor resume data from "<<in<<" but the file does not exist or is unreadable. We require this file because according to "<<inprev<<" there were "<<prev_size<<" processes in use during the last run, and we require the resume data from all of them";
+                  Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                }
+              }
+           }
+           else
+           {
+              std::ostringstream err;
+              err << "Tried to read postprocessor resume data from "<<inprev<<" but encountered a read error of some kind (the file seems to exist but appears to be unreadable";
+              Scanner::scan_error().raise(LOCAL_INFO,err.str());
+           }
         }
-      
-        // Now read each of the chunk files left by each process during previous run
-        for(unsigned int i=0; i<prev_size; ++i)
-        {
-          std::ostringstream inname;
-          inname << filebase << "_" << i << ".dat";
-          std::string in = inname.str();
-          std::ifstream fin(in);
-          fin >> nextchunk.start >> nextchunk.end;
-          done_chunks.insert(nextchunk);  
-        }
-      
+        // Else there is no resume data, assume that this is a new run started without the --restart flag.      
         return merge_chunks(done_chunks); // Simplify the chunks and return them
       }
  
@@ -283,49 +316,53 @@ namespace Gambit
       ChunkSet merge_chunks(const ChunkSet& input_chunks)
       {
         ChunkSet merged_chunks;
-        Chunk new_chunk;
-        std::size_t prev_chunk_end = 0;
-        new_chunk.start = input_chunks.begin()->start; // Start of first chunk
-        for(ChunkSet::const_iterator it=input_chunks.begin();
-             it!=input_chunks.end(); ++it)
+        if(input_chunks.size()>0)
         {
-           if(prev_chunk_end!=0 and it->start > prev_chunk_end)
+           Chunk new_chunk;
+           std::size_t prev_chunk_end = 0;
+           new_chunk.start = input_chunks.begin()->start; // Start of first chunk
+           for(ChunkSet::const_iterator it=input_chunks.begin();
+                it!=input_chunks.end(); ++it)
            {
-              // Gap detected; close the existing chunk and start a new one.
-              new_chunk.end = prev_chunk_end;
-              merged_chunks.insert(new_chunk);
-              new_chunk.start = it->start;
-           }
+              if(prev_chunk_end!=0 and it->start > prev_chunk_end)
+              {
+                 // Gap detected; close the existing chunk and start a new one.
+                 new_chunk.end = prev_chunk_end;
+                 merged_chunks.insert(new_chunk);
+                 new_chunk.start = it->start;
+              }
 
-           if(it->end > prev_chunk_end)
+              if(it->end > prev_chunk_end)
+              {
+                prev_chunk_end = it->end;
+              }
+           }
+           // No more chunks, close the last open chunk
+           new_chunk.end = prev_chunk_end;
+           merged_chunks.insert(new_chunk);
+           // Sanity check; Starts and ends of merged chunks should match some start/end in the input chunks
+           for(ChunkSet::const_iterator it=merged_chunks.begin();
+                it!=merged_chunks.end(); ++it)
            {
-             prev_chunk_end = it->end;
+              bool found_start = false;
+              bool found_end = false;
+              for(ChunkSet::const_iterator jt=input_chunks.begin();
+                   jt!=input_chunks.end(); ++jt)
+              {
+                if(it->start==jt->start) found_start = true;
+                if(it->end==jt->end) found_end = true;
+              }
+              if(not found_start or not found_end)
+              {
+                 std::ostringstream err;
+                 err << "Error, merged 'done_chunks' are not consistent with the originally input done_chunks! This indicates a bug in the merge_chunks routine of the postprocessor, please report it. Debug output:" << endl;
+                 err << "Problem merged chunk was ["<<it->start<<","<<it->end<<"]"<<endl;
+                 Scanner::scan_error().raise(LOCAL_INFO,err.str());
+              }
+              // else fine, move to next merged chunk
            }
         }
-        // No more chunks, close the last open chunk
-        new_chunk.end = prev_chunk_end;
-        merged_chunks.insert(new_chunk);
-        // Sanity check; Starts and ends of merged chunks should match some start/end in the input chunks
-        for(ChunkSet::const_iterator it=merged_chunks.begin();
-             it!=merged_chunks.end(); ++it)
-        {
-           bool found_start = false;
-           bool found_end = false;
-           for(ChunkSet::const_iterator jt=input_chunks.begin();
-                jt!=input_chunks.end(); ++jt)
-           {
-             if(it->start==jt->start) found_start = true;
-             if(it->end==jt->end) found_end = true;
-           }
-           if(not found_start or not found_end)
-           {
-              std::ostringstream err;
-              err << "Error, merged 'done_chunks' are not consistent with the originally input done_chunks! This indicates a bug in the merge_chunks routine of the postprocessor, please report it. Debug output:" << endl;
-              err << "Problem merged chunk was ["<<it->start<<","<<it->end<<"]"<<endl;
-              Scanner::scan_error().raise(LOCAL_INFO,err.str());
-           }
-           // else fine, move to next merged chunk
-        }
+        // else there are no input chunks, just return an empty ChunkSet
         return merged_chunks;
       }
      
@@ -356,6 +393,14 @@ namespace Gambit
           {
             foutprev << it->start << " " << it->end << std::endl;
           }
+          // check that the write succeeded
+          foutprev.close();
+          if (!foutprev) 
+          {
+              std::ostringstream err;
+              err << "Unknown IO error while writing resume data file '"<<outprev<<"'!"; 
+              Scanner::scan_error().raise(LOCAL_INFO,err.str());
+          }
         }
         // Now output what we have done (could overlap with old chunks, but that doesn't really matter)
         std::ostringstream outname;
@@ -374,6 +419,22 @@ namespace Gambit
         // else was deleted no problem, write new file
         std::ofstream fout(out); 
         fout << mydone.start << " " << mydone.end << std::endl;
+        // let's just make sure the files had no errors while closing because they are important.
+        fout.close();
+        if (!fout) 
+        {
+            std::ostringstream err;
+            err << "Unknown IO error while writing resume data file '"<<out<<"'!"; 
+            Scanner::scan_error().raise(LOCAL_INFO,err.str());
+        }
+        // Gah, data could apparantly still be buffered by the OS and not yet written to disk
+        // Apparantly on POSIX fsync can be used to ensure this happens, but I am not
+        // sure if the following works. This answer on StackOverflow seems to say it doesn't?
+        // http://stackoverflow.com/questions/676787/how-to-do-fsync-on-an-ofstream
+        //int fd = open(filename, O_APPEND);
+        //fsync(fd);
+        //close(fd);
+        // I may need to convert all these operations to old-school C operations
       }
 
       // Gather a bunch of ints from all processes (COLLECTIVE OPERATION)
