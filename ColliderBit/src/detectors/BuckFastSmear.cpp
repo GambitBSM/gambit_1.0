@@ -168,7 +168,7 @@ namespace Gambit {
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
-          result.add_particle(gp); // Will be automatically categorised
+          if (not result.add_particle(gp)) throw("Particle ID: ");
         }
 
         // All particles other than invisibles and muons are jet constituents

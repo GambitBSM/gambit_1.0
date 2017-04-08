@@ -68,7 +68,8 @@ namespace HEPUtils {
     /// Constructor from a list of Particles
     Event(const std::vector<Particle*>& ps) {
       clear();
-      add_particles(ps);
+      std::vector<bool> owned(add_particles(ps));
+      if (std::find(begin(owned), end(owned), false) != end(owned)) throw std::invalid_argument("HEPUtils::Event refused ownership of one or more particles.");
     }
 
     /// Destructor (cleans up all passed Particles and calculated Jets)
@@ -96,7 +97,7 @@ namespace HEPUtils {
     void cloneTo(Event& e) const {
       const std::vector<Particle*> ps = particles();
       for (size_t i = 0; i < ps.size(); ++i) {
-        e.add_particle(new Particle(*ps[i]));
+        if (not e.add_particle(new Particle(*ps[i]))) throw std::runtime_error("HEPUtils::Event::cloneTo failed because particle was not accepted.");
       }
       const std::vector<Jet*> js = jets();
       for (size_t i = 0; i < js.size(); ++i) {
@@ -127,26 +128,29 @@ namespace HEPUtils {
 
     /// Add a particle to the event
     ///
-    /// Supplied particle should be new'd, and Event will take ownership.
+    /// Supplied particle should be new'd, and Event will take ownership iff function returns true.
     ///
     /// @todo "Lock" at some point so that jet finding etc. only get done once
-    void add_particle(Particle* p) {
+    bool add_particle(Particle* p) {
       if (p->is_prompt()) {
-        if (p->pid() == 22) _photons.push_back(p);
-        if (p->abspid() == 11) _electrons.push_back(p);
-        if (p->abspid() == 13) _muons.push_back(p);
-        if (p->abspid() == 15) _taus.push_back(p);
+        if (p->pid() == 22) {_photons.push_back(p); return true;}
+        if (p->abspid() == 11) {_electrons.push_back(p); return true;}
+        if (p->abspid() == 13) {_muons.push_back(p); return true;}
+        if (p->abspid() == 15) {_taus.push_back(p); return true;}
         if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
-            p->pid() == 1000022 || in_range(p->pid(), 50, 60)) _invisibles.push_back(p);
+            p->pid() == 1000022 || in_range(p->pid(), 50, 60)) {_invisibles.push_back(p); return true;}
       }
+      return false;
     }
 
 
     /// Add a collection of final state particles to the event
     ///
-    /// Supplied particles should be new'd, and Event will take ownership.
-    void add_particles(const std::vector<Particle*>& ps) {
-      for (size_t i = 0; i < ps.size(); ++i) add_particle(ps[i]);
+    /// Supplied particles should be new'd and function will return true for all particles it takes ownership of.
+    std::vector<bool> add_particles(const std::vector<Particle*>& ps) {
+      std::vector<bool> result;
+      for (size_t i = 0; i < ps.size(); ++i) result.push_back(add_particle(ps[i]));
+      return result;
     }
 
 
