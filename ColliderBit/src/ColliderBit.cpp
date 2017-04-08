@@ -2,8 +2,7 @@
 ///  *********************************************
 ///  \file
 ///
-///  Functions of ColliderBit_eventLoop. Based
-///  heavily on the ExampleBit_A Functions
+///  Functions of ColliderBit_eventLoop.
 ///
 ///  *********************************************
 ///

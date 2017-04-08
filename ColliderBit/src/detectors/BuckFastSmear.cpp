@@ -1,3 +1,23 @@
+///   GAMBIT: Global and Modular BSM Inference Tool
+///  *********************************************
+///  \file
+///
+///  BuckFast smearing functions.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Andy Buckley
+///  \author Abram Krislock
+///  \author Anders Kvellestad
+///  \author Pat Scott
+///  \author Martin White
+///
+///  *********************************************
+
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/detectors/BuckFastSmear.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/CMSEfficiencies.hpp"
