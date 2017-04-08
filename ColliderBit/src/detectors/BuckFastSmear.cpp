@@ -168,7 +168,7 @@ namespace Gambit {
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
-          if (not result.add_particle(gp)) throw("Particle ID: ");
+          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
         }
 
         // All particles other than invisibles and muons are jet constituents
@@ -216,7 +216,7 @@ namespace Gambit {
         if (isTau) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
           gp->set_prompt();
-          result.add_particle(gp);
+          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
         }
 
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC));
@@ -298,7 +298,7 @@ namespace Gambit {
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
-          result.add_particle(gp); // Will be automatically categorised
+          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
         }
 
         // Everything other than invisibles and muons, including taus & partons are jet constituents
@@ -339,7 +339,7 @@ namespace Gambit {
         if(isTau){
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
           gp->set_prompt();
-          result.add_particle(gp);
+          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
         }
       }
 
