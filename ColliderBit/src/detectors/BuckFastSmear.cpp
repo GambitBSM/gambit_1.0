@@ -173,6 +173,11 @@ namespace Gambit {
         // Only consider final state particles
         if (!p.isFinal()) continue;
 
+        // Check there's no partons!!
+        if (p.id() == 21 || abs(p.id()) <= 6)
+          ColliderBit_error().raise(LOCAL_INFO, "Found final-state parton in particle-level event converter: "
+                                    "reconfigure your generator to include hadronization, or Gambit to use the partonic event converter");
+
         // Add particle outside ATLAS/CMS acceptance to MET
         /// @todo Move out-of-acceptance MET contribution to BuckFast
         if (std::abs(p.eta()) > 5.0) {
@@ -188,7 +193,7 @@ namespace Gambit {
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
-          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
+          result.add_particle(gp);
         }
 
         // All particles other than invisibles and muons are jet constituents
@@ -236,7 +241,7 @@ namespace Gambit {
         if (isTau) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
           gp->set_prompt();
-          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
+          result.add_particle(gp);
         }
 
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC));
@@ -300,7 +305,7 @@ namespace Gambit {
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
-        // We only use "final" particles, i.e. those with no children. So Py8 must have hadronization disabled
+        // We only use "final" partons, i.e. those with no children. So Py8 must have hadronization disabled
         if (!p.isFinal()) continue;
 
         // Only consider partons within ATLAS/CMS acceptance
@@ -318,7 +323,7 @@ namespace Gambit {
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
-          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
+          result.add_particle(gp);
         }
 
         // Everything other than invisibles and muons, including taus & partons are jet constituents
@@ -356,10 +361,10 @@ namespace Gambit {
           }
         }
         // Add to the event (use jet momentum for tau)
-        if(isTau){
+        if (isTau) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
           gp->set_prompt();
-          if (not result.add_particle(gp)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
+          result.add_particle(gp);
         }
       }
 

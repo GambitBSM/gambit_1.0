@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -68,8 +68,7 @@ namespace HEPUtils {
     /// Constructor from a list of Particles
     Event(const std::vector<Particle*>& ps) {
       clear();
-      std::vector<bool> owned(add_particles(ps));
-      if (std::find(begin(owned), end(owned), false) != end(owned)) throw std::invalid_argument("HEPUtils::Event refused ownership of one or more particles.");
+      add_particles(ps);
     }
 
     /// Destructor (cleans up all passed Particles and calculated Jets)
@@ -97,7 +96,7 @@ namespace HEPUtils {
     void cloneTo(Event& e) const {
       const std::vector<Particle*> ps = particles();
       for (size_t i = 0; i < ps.size(); ++i) {
-        if (not e.add_particle(new Particle(*ps[i]))) throw std::runtime_error("HEPUtils::Event::cloneTo failed because particle was not accepted.");
+        e.add_particle(new Particle(*ps[i]));
       }
       const std::vector<Jet*> js = jets();
       for (size_t i = 0; i < js.size(); ++i) {
@@ -128,29 +127,38 @@ namespace HEPUtils {
 
     /// Add a particle to the event
     ///
-    /// Supplied particle should be new'd, and Event will take ownership iff function returns true.
+    /// Supplied particle should be new'd, and Event will take ownership.
+    ///
+    /// @warning The event takes ownership of all supplied Particles -- even
+    /// those it chooses not to add to its collections, which will be
+    /// immediately deleted. Accordingly, the pointer passed by user code
+    /// must be considered potentially invalid from the moment this function is called.
     ///
     /// @todo "Lock" at some point so that jet finding etc. only get done once
-    bool add_particle(Particle* p) {
-      if (p->is_prompt()) {
-        if (p->pid() == 22) {_photons.push_back(p); return true;}
-        if (p->abspid() == 11) {_electrons.push_back(p); return true;}
-        if (p->abspid() == 13) {_muons.push_back(p); return true;}
-        if (p->abspid() == 15) {_taus.push_back(p); return true;}
-        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
-            p->pid() == 1000022 || in_range(p->pid(), 50, 60)) {_invisibles.push_back(p); return true;}
-      }
-      return false;
+    void add_particle(Particle* p) {
+      if (!p->is_prompt())
+        delete p;
+      else if (p->pid() == 22)
+        _photons.push_back(p);
+      else if (p->abspid() == 11)
+        _electrons.push_back(p);
+      else if (p->abspid() == 13)
+        _muons.push_back(p);
+      else if (p->abspid() == 15)
+        _taus.push_back(p);
+      else if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
+               p->pid() == 1000022 || in_range(p->pid(), 50, 60))
+        _invisibles.push_back(p);
+      else
+        delete p;
     }
 
 
     /// Add a collection of final state particles to the event
     ///
-    /// Supplied particles should be new'd and function will return true for all particles it takes ownership of.
-    std::vector<bool> add_particles(const std::vector<Particle*>& ps) {
-      std::vector<bool> result;
-      for (size_t i = 0; i < ps.size(); ++i) result.push_back(add_particle(ps[i]));
-      return result;
+    /// Supplied particles should be new'd, and Event will take ownership.
+    void add_particles(const std::vector<Particle*>& ps) {
+      for (size_t i = 0; i < ps.size(); ++i) add_particle(ps[i]);
     }
 
 
