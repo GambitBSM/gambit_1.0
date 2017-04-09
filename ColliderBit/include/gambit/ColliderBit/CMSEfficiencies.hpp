@@ -66,15 +66,16 @@ namespace Gambit {
         if(muons.empty()) return;
         auto keptMuonsEnd = std::remove_if(muons.begin(), muons.end(),
                                            [](const HEPUtils::Particle* p) {
-                                             if (p->abseta() > 2.4 || p->pT() < 10)
-                                               return true;
-                                             const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-                                             return (HEPUtils::rand01() > eff);
-                                           } );
-        /// @todo Fix to use remove-erase
-        // vectors erase most efficiently from the end...
-        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
-        while (keptMuonsEnd != muons.end()) muons.pop_back();
+                                             bool rm(p->abseta() > 2.4 || p->pT() < 10);
+                                             if (!rm)
+                                             {
+                                               const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
+                                               rm = (HEPUtils::rand01() > eff);
+                                             } 
+                                             if (rm) delete p;
+                                             return rm;
+                                           } );       
+        muons.erase(keptMuonsEnd, muons.end());
       }
 
 
