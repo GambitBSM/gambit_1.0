@@ -107,9 +107,11 @@ namespace Gambit
       if (!_pythiaBase)
       {
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
-        // Use all settings to instantiate and initialize PythiaBase
-        for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
       }
+      // Pass all settings to _pythiaBase
+      for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
+
+      // Create new _pythiaInstance from _pythiaBase
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
@@ -131,9 +133,11 @@ namespace Gambit
       if (!_pythiaBase)
       {
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
-        // Use all settings to instantiate and initialize PythiaBase
-        for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
       }
+      // Pass all settings to _pythiaBase
+      for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
+
+      // Create new _pythiaInstance from _pythiaBase
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 

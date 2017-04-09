@@ -112,18 +112,18 @@ namespace Gambit
 
     /// Module-wide variables
 
-    // TODO: Get rid of some of these variables by restructuring the code a bit
+    // TODO: Get rid of some of these variables by restructuring the code a bit 
 
     /// Special iteration labels for the loop controlled by operateLHCLoop
-    enum specialIterations { BASE_INIT = -1,
-                             COLLIDER_INIT = -2,
-                             START_SUBPROCESS = -3,
-                             END_SUBPROCESS = -4,
-                             COLLIDER_FINALIZE = -5,
+    enum specialIterations { BASE_INIT = -1, 
+                             COLLIDER_INIT = -2, 
+                             START_SUBPROCESS = -3, 
+                             END_SUBPROCESS = -4, 
+                             COLLIDER_FINALIZE = -5, 
                              BASE_FINALIZE = -6};
 
     /// Pythia stuff
-    std::vector<str> pythiaNames, pythiaCommonOptions;
+    std::vector<str> pythiaNames;
     std::vector<str>::const_iterator iterPythiaNames;
     unsigned int indexPythiaNames;
     bool eventsGenerated;
@@ -154,7 +154,7 @@ namespace Gambit
 
 
 
-
+    
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -168,14 +168,13 @@ namespace Gambit
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
 
       #ifdef COLLIDERBIT_DEBUG
-        cout << "DEBUG: New point!" << endl;
+        cout << "DEBUG: New point!" << endl; 
       #endif
 
-      //
+      // 
       // Clear global containers and variables
-      //
+      // 
       pythiaNames.clear();
-      pythiaCommonOptions.clear();
       iterPythiaNames = pythiaNames.cbegin();
       indexPythiaNames = 0;
 
@@ -206,7 +205,7 @@ namespace Gambit
       haveUsedDelphesDetector = false;
 #endif
 
-
+     
       // Retrieve run options from the YAML file (or standalone code)
       pythiaNames = runOptions->getValue<std::vector<str> >("pythiaNames");
       nEvents = runOptions->getValue<std::vector<int> >("nEvents");
@@ -241,7 +240,7 @@ namespace Gambit
         seedBase = int(Random::draw() * 899990000);
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: Current collider: " << *iterPythiaNames << " with index " << indexPythiaNames << endl;
+          cout << "DEBUG: Current collider: " << *iterPythiaNames << " with index " << indexPythiaNames << endl; 
         #endif
 
         piped_invalid_point.check();
@@ -293,6 +292,7 @@ namespace Gambit
       static str pythia_doc_path;
       static str default_doc_path;
       static bool pythia_doc_path_needs_setting = true;
+      static std::vector<str> pythiaCommonOptions;
       static SLHAstruct slha;
       static SLHAstruct spectrum;
       static std::vector<double> xsec_vetos;
@@ -345,6 +345,13 @@ namespace Gambit
         pythiaCommonOptions.clear();
         if (runOptions->hasKey(*iterPythiaNames))
           pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
+
+        // Although we capture all couts, still we tell Pythia to be quiet....
+        pythiaCommonOptions.push_back("Print:quiet = on");
+        // .... except for showProcesses, which we need for the xsec veto.
+        pythiaCommonOptions.push_back("Init:showProcesses = on");
+        pythiaCommonOptions.push_back("SLHA:verbose = 0");
+        pythiaCommonOptions.push_back("SLHA:file = slhaea");
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -360,16 +367,11 @@ namespace Gambit
         // Thus, the actual Pythia initialization is
         // *after* COLLIDER_INIT, within omp parallel.
 
-        //result = SpecializablePythia();
         result.clear();
 
+        // Get the Pythia options that are common across all OMP threads ('pythiaCommonOptions')
+        // and then add the thread-specific seed
         std::vector<str> pythiaOptions = pythiaCommonOptions;
-        // Although we capture all couts, still we tell Pythia to be quiet....
-        pythiaOptions.push_back("Print:quiet = on");
-        // .... except for showProcesses, which we need for the xsec veto.
-        pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("SLHA:verbose = 0");
-        pythiaOptions.push_back("SLHA:file = slhaea");
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         #ifdef COLLIDERBIT_DEBUG
@@ -428,7 +430,7 @@ namespace Gambit
         #endif
 
         // - Wrap up loop if veto applies
-        if (totalxsec * 1e12 < totalxsec_fb_veto)
+        if (totalxsec * 1e12 < totalxsec_fb_veto) 
         {
           #ifdef COLLIDERBIT_DEBUG
             cout << "DEBUG: Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
@@ -447,6 +449,7 @@ namespace Gambit
       static std::vector<str> filenames;
       static str default_doc_path;
       static str pythia_doc_path;
+      static std::vector<str> pythiaCommonOptions;
       static bool pythia_doc_path_needs_setting = true;
       static unsigned int fileCounter = 0;
       static std::vector<double> xsec_vetos;
@@ -489,6 +492,13 @@ namespace Gambit
         pythiaCommonOptions.clear();
         if (runOptions->hasKey(*iterPythiaNames))
           pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
+
+        // Although we capture all couts, still we tell Pythia to be quiet....
+        pythiaCommonOptions.push_back("Print:quiet = on");
+        // .... except for showProcesses, which we need for the xsec veto.
+        pythiaCommonOptions.push_back("Init:showProcesses = on");
+        pythiaCommonOptions.push_back("SLHA:verbose = 0");
+        pythiaCommonOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
       }
 
 
@@ -505,18 +515,13 @@ namespace Gambit
         // Thus, the actual Pythia initialization is
         // *after* COLLIDER_INIT, within omp parallel.
 
-        //result = SpecializablePythia();
         result.clear();
 
         if (omp_get_thread_num() == 0) logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
 
+        // Get the Pythia options that are common across all OMP threads ('pythiaCommonOptions')
+        // and then add the thread-specific seed
         std::vector<str> pythiaOptions = pythiaCommonOptions;
-        // Although we capture all couts, still we tell Pythia to be quiet....
-        pythiaOptions.push_back("Print:quiet = on");
-        // .... except for showProcesses, which we need for the xsec veto.
-        pythiaOptions.push_back("Init:showProcesses = on");
-        pythiaOptions.push_back("SLHA:verbose = 0");
-        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         #ifdef COLLIDERBIT_DEBUG
@@ -575,7 +580,7 @@ namespace Gambit
         #endif
 
         // - Wrap up loop if veto applies
-        if (totalxsec * 1e12 < totalxsec_fb_veto)
+        if (totalxsec * 1e12 < totalxsec_fb_veto) 
         {
           #ifdef COLLIDERBIT_DEBUG
             cout << "DEBUG: Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
@@ -613,7 +618,7 @@ namespace Gambit
         delphesConfigFiles = runOptions->getValue<std::vector<str> >("delphesConfigFiles");
         CHECK_EQUAL_VECTOR_LENGTH(delphesConfigFiles,pythiaNames)
 
-        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1.
+        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
         if(omp_get_max_threads()>1 and std::find(useDetector.begin(), useDetector.end(), true) != useDetector.end())
         {
           str errmsg = "Delphes is not threadsafe and cannot be used with OMP_NUM_THREADS>1.\n";
@@ -643,9 +648,9 @@ namespace Gambit
     }
 
 #endif // not defined EXCLUDE_DELPHES
+    
 
-
-
+  
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
@@ -778,7 +783,7 @@ namespace Gambit
 
     /// *** Initialization for analyses ***
 
-
+    
 #ifndef EXCLUDE_DELPHES
     void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getDetAnalysisContainer;
@@ -795,15 +800,15 @@ namespace Gambit
 
         if (!useDelphesDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on
+        // Check that there are some analyses to run if the detector is switched on 
         if (analyses[indexPythiaNames].empty() and useDelphesDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getDelphes' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n";
-          errmsg    += "(in option 'analyses' for function 'getDetAnalysisContainer') is empty.\n";
-          errmsg    += "Please correct your settings.\n";
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getDetAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -874,15 +879,15 @@ namespace Gambit
 
         if (!useBuckFastATLASDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on
+        // Check that there are some analyses to run if the detector is switched on 
         if (analyses[indexPythiaNames].empty() and useBuckFastATLASDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getBuckFastATLAS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n";
-          errmsg    += "(in option 'analyses' for function 'getATLASAnalysisContainer') is empty.\n";
-          errmsg    += "Please correct your settings.\n";
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getATLASAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -952,15 +957,15 @@ namespace Gambit
 
         if (!useBuckFastCMSDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on
+        // Check that there are some analyses to run if the detector is switched on 
         if (analyses[indexPythiaNames].empty() and useBuckFastCMSDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getBuckFastCMS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n";
-          errmsg    += "(in option 'analyses' for function 'getCMSAnalysisContainer') is empty.\n";
-          errmsg    += "Please correct your settings.\n";
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getCMSAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -1030,15 +1035,15 @@ namespace Gambit
 
         if (!useBuckFastIdentityDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on
+        // Check that there are some analyses to run if the detector is switched on 
         if (analyses[indexPythiaNames].empty() and useBuckFastIdentityDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getBuckFastIdentity' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n";
-          errmsg    += "(in option 'analyses' for function 'getIdentityAnalysisContainer') is empty.\n";
-          errmsg    += "Please correct your settings.\n";
+          errmsg    += "', but the corresponding list of analyses\n"; 
+          errmsg    += "(in option 'analyses' for function 'getIdentityAnalysisContainer') is empty.\n"; 
+          errmsg    += "Please correct your settings.\n"; 
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -1141,7 +1146,7 @@ namespace Gambit
       }
     }
 #endif // not defined EXCLUDE_DELPHES
-
+    
 
       void smearEventATLAS(HEPUtils::Event& result) {
       using namespace Pipes::smearEventATLAS;
@@ -1222,7 +1227,7 @@ namespace Gambit
     {
       using namespace Pipes::runDetAnalyses;
 
-      if (*Loop::iteration == BASE_INIT)
+      if (*Loop::iteration == BASE_INIT) 
       {
         result.clear();
         return;
@@ -1268,7 +1273,7 @@ namespace Gambit
     {
       using namespace Pipes::runATLASAnalyses;
 
-      if (*Loop::iteration == BASE_INIT)
+      if (*Loop::iteration == BASE_INIT) 
       {
         result.clear();
         return;
@@ -1313,7 +1318,7 @@ namespace Gambit
     {
       using namespace Pipes::runCMSAnalyses;
 
-      if (*Loop::iteration == BASE_INIT)
+      if (*Loop::iteration == BASE_INIT) 
       {
         result.clear();
         return;
@@ -1357,7 +1362,7 @@ namespace Gambit
     {
       using namespace Pipes::runIdentityAnalyses;
 
-      if (*Loop::iteration == BASE_INIT)
+      if (*Loop::iteration == BASE_INIT) 
       {
         result.clear();
         return;
@@ -3944,9 +3949,9 @@ namespace Gambit
 
 
 
-    // Dummy observable that creates a dependency on TestModel1D, which is used to satisfy the normal
-    // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to run
-    // ColliderBit on a single point with a custom Pythia version, using Pythia's SLHA interface.
+    // Dummy observable that creates a dependency on TestModel1D, which is used to satisfy the normal 
+    // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to run 
+    // ColliderBit on a single point with a custom Pythia version, using Pythia's SLHA interface. 
     void getDummyColliderObservable(double& result)
     {
       result = 0.0;
