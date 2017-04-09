@@ -163,7 +163,7 @@ namespace Gambit {
         const TLorentzVector &momentum = candidate->Momentum;
         recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), MCUtils::PID::PHOTON);
         recoParticle->set_prompt(true);
-        if not (event.add_particle(recoParticle)) delete recoParticle;
+        if (not result.add_particle(recoParticle)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -176,7 +176,7 @@ namespace Gambit {
         recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
                                               -HEPUtils::sign(candidate->Charge) * MCUtils::PID::ELECTRON);
         recoParticle->set_prompt(true);
-        if not (event.add_particle(recoParticle)) delete recoParticle;
+        if (not result.add_particle(recoParticle)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -189,7 +189,7 @@ namespace Gambit {
         recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
                                               -HEPUtils::sign(candidate->Charge) * MCUtils::PID::MUON);
         recoParticle->set_prompt(true);
-        if not (event.add_particle(recoParticle)) delete recoParticle;
+        if (not result.add_particle(recoParticle)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -203,7 +203,7 @@ namespace Gambit {
           recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
                                                 -HEPUtils::sign(candidate->Charge) * MCUtils::PID::TAU);
           recoParticle->set_prompt(true);
-          if not (event.add_particle(recoParticle)) delete recoParticle;
+          if (not result.add_particle(recoParticle)) ColliderBit_error().raise(LOCAL_INFO, "Failed to add particle to HEPUtils::Event");
           //continue;
         }
         else {
