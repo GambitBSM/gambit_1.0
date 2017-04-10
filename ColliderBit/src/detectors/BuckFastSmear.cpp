@@ -175,7 +175,7 @@ namespace Gambit {
 
         // Check there's no partons!!
         if (p.id() == 21 || abs(p.id()) <= 6) {
-          ostringstream sid; sid << p.id();
+          std::ostringstream sid; sid << p.id();
           ColliderBit_error().raise(LOCAL_INFO, "Found final-state parton " + sid.str() + " in particle-level event converter: "
                                     "reconfigure your generator to include hadronization, or Gambit to use the partonic event converter");
         }
