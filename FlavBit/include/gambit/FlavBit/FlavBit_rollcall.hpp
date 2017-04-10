@@ -115,7 +115,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Bll_CONV, (libsuperiso),  double, (const parameters*, int))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B -> tau nu)
@@ -126,7 +126,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Btaunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B->D tau nu)/BR(B->D e nu)
@@ -137,7 +137,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(BDtaunu_BDenu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B->D tau nu)/BR(B->D e nu)
@@ -148,7 +148,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(BDstartaunu_BDstarenu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(K->mu nu)/BR(pi->mu nu)
@@ -159,7 +159,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Kmunu_pimunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: Rmu23
@@ -170,7 +170,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Rmu23, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(Ds->tau nu)
@@ -181,7 +181,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Dstaunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(Ds->mu nu)
@@ -192,7 +192,7 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Dsmunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(D->mu nu)
@@ -203,17 +203,17 @@ START_MODULE
     DEPENDENCY(SuperIso_modelinfo, parameters)
     BACKEND_REQ(Dmunu, (libsuperiso), double, (const parameters*))
     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Observable: BR(B->D tau nu)
-   #define CAPABILITY BDtaunu
-   START_CAPABILITY
-     #define FUNCTION SI_BDtaunu
-     START_FUNCTION(double)
-     DEPENDENCY(SuperIso_modelinfo, parameters)
-     BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*, const parameters*))
-     BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
+  #define CAPABILITY BDtaunu
+  START_CAPABILITY
+    #define FUNCTION SI_BDtaunu
+    START_FUNCTION(double)
+    DEPENDENCY(SuperIso_modelinfo, parameters)
+    BACKEND_REQ(BRBDlnu, (libsuperiso), double, (int, int, double,  double, double*, const parameters*))
+    BACKEND_OPTION( (SuperIso, 3.6), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -467,7 +467,7 @@ START_MODULE
     DEPENDENCY(BKstarmumu_60_80, Flav_KstarMuMu_obs)
     DEPENDENCY(BKstarmumu_15_17, Flav_KstarMuMu_obs)
     DEPENDENCY(BKstarmumu_17_19, Flav_KstarMuMu_obs)
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Electroweak penguin likelihood
@@ -486,7 +486,7 @@ START_MODULE
     START_FUNCTION(FlavBit::predictions_measurements_covariances)
     DEPENDENCY(Bsmumu_untag, double)
     DEPENDENCY(Bmumu, double )
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Rare fully leptonic B decay likelihood
@@ -511,7 +511,7 @@ START_MODULE
     DEPENDENCY(Dstaunu, double)
     DEPENDENCY(Dsmunu, double)
     DEPENDENCY(Dmunu, double)
-   #undef FUNCTION
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Tree-level leptonic and semi-leptonic B & D decay likelihoods
