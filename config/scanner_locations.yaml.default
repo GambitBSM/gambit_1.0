@@ -4,22 +4,22 @@
 # scanner libraries before writing makefiles
 # that link to them.
 #
-# Paths can be given as full absolute paths, or 
-# relative to the main GAMBIT directory.  Paths 
-# starting with a backslash will be interpreted as 
+# Paths can be given as full absolute paths, or
+# relative to the main GAMBIT directory.  Paths
+# starting with a backslash will be interpreted as
 # absolute, those beginning with a period will
 # be interpreted as relative to the GAMBIT dir.
 
 
-MultiNest: 
-  3.10: 
+multinest:
+  3.10:
     - lib: ./ScannerBit/installed/multinest/3.10/libnest3.so
 
-Diver:
+diver:
   1.0.0:
     - lib: ./ScannerBit/installed/diver/1.0.0/lib/libdiver.so
 
-GreAT:
+great:
   1.0.0:
     - lib: ./build/great_1.0.0-prefix/src/great_1.0.0-build/lib/libgreat.so
     - headers: ./ScannerBit/installed/great/1.0.0/Manager/include

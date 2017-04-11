@@ -116,7 +116,7 @@ if (NOT ROOT_FOUND OR ROOT_VERSION VERSION_GREATER 6)
   # Excluding Delphes and GreAT from GAMBIT
   if (NOT ROOT_FOUND)
     message("${BoldRed}   No ROOT installation found. Excluding Delphes and GreAT from GAMBIT configuration. ${ColourReset}")
-    set (itch "${itch}" "Delphes" "GreAT")
+    set (itch "${itch}" "Delphes" "great")
   else()
     message("${BoldRed}   Unsupported ROOT version found: ${ROOT_VERSION}. Delphes needs ROOT 5. Excluding Delphes from GAMBIT configuration. ${ColourReset}")
     set (itch "${itch}" "Delphes")
