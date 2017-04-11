@@ -111,8 +111,28 @@ namespace Gambit {
         /// Event generation for any Pythia interface to Gambit.
         void nextEvent(EventType& event) const
         {
+          // _Anders
+          // // Try to make and populate an event
+          // if (!_pythiaInstance->next()) throw EventFailureError();
+          // event = _pythiaInstance->event;
+
           // Try to make and populate an event
-          if (!_pythiaInstance->next()) throw EventFailureError();
+          bool valid_event = false;
+          valid_event = _pythiaInstance->next();
+          if (valid_event) 
+          { 
+            cout << "DEBUG: Thread: " << omp_get_thread_num() << "  Pythia::next() returned TRUE!" << endl << std::flush;
+          }
+          else
+          {
+            cout << "DEBUG: Thread: " << omp_get_thread_num() << "  Pythia::next() returned FALSE!" << endl << std::flush;
+          }
+          // if (!_pythiaInstance->next())
+          if (not valid_event)
+          {
+            cout << "DEBUG: Thread: " << omp_get_thread_num() << "  Pythia::next() returned false! Will throw EventFailureError..." << endl << std::flush;
+            throw EventFailureError();
+          }
           event = _pythiaInstance->event;
         }
         /// Report the cross section (in pb) at the end of the subprocess.

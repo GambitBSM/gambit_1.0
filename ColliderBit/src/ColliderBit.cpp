@@ -127,6 +127,7 @@ namespace Gambit
     std::vector<str>::const_iterator iterPythiaNames;
     unsigned int indexPythiaNames;
     bool eventsGenerated;
+    bool tooManyFailedEvents;
     std::vector<int> nEvents;
     int seedBase;
 
@@ -183,6 +184,8 @@ namespace Gambit
       seedBase = 0;
       // - Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
+      // - Set tooManyFailedEvents to true if too many events fail.
+      tooManyFailedEvents = false;
 
       useBuckFastATLASDetector = false;
       globalAnalysesATLAS.clear();
@@ -347,7 +350,9 @@ namespace Gambit
           pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
 
         // Although we capture all couts, still we tell Pythia to be quiet....
-        pythiaCommonOptions.push_back("Print:quiet = on");
+        // _Anders
+        // pythiaCommonOptions.push_back("Print:quiet = on");
+        pythiaCommonOptions.push_back("Print:quiet = off");
         // .... except for showProcesses, which we need for the xsec veto.
         pythiaCommonOptions.push_back("Init:showProcesses = on");
         pythiaCommonOptions.push_back("SLHA:verbose = 0");
@@ -839,7 +844,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
@@ -918,7 +923,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
@@ -996,7 +1001,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
@@ -1074,7 +1079,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
@@ -1113,6 +1118,7 @@ namespace Gambit
       }
       catch (SpecializablePythia::EventFailureError &e)
       {
+        cout << "DEBUG: Thread: " << omp_get_thread_num() << "  Caught EventFailureError in generatePythia8Event! Will pipe an invalid point request." << endl << std::flush;
         piped_invalid_point.request("Bad point: Pythia can't generate events");
         Loop::wrapup();
         return;
@@ -1154,19 +1160,39 @@ namespace Gambit
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      try {
+      try 
+      {
         (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
-      } catch (std::domain_error& e) {
-#pragma omp critical (event_warning)
+      } 
+      // _Anders
+      // catch (std::domain_error& e) 
+      // {
+        // #pragma omp critical (event_warning)
+        // {
+        //   std::cerr<<"\n== ColliderBit Warning ==";
+        //   std::cerr<<"\n   Event problem: "<<e.what();
+        //   std::cerr<<"\n   See ColliderBit log for event details.";
+        //   std::stringstream ss;
+        //   Dep::HardScatteringEvent->list(ss, 1);
+        //   logger() << ss.str() << EOM;
+        // }
+        // throw e;
+      // }
+      catch (std::runtime_error& e)
+      {
+        cout << "DEBUG: Thread: " << omp_get_thread_num() << "   Failed event converion: " << e.what() << endl << std::flush; 
+        #pragma omp critical (event_conversion_error)
         {
-          std::cerr<<"\n== ColliderBit Warning ==";
-          std::cerr<<"\n   Event problem: "<<e.what();
-          std::cerr<<"\n   See ColliderBit log for event details.";
+          tooManyFailedEvents = true;
+          // Print event record:
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << ss.str() << EOM;
+          cout << endl;
+          cout << ss.str() << endl;
+          cout << endl;
         }
-        throw e;
+        Loop::wrapup();
+        return;  // is this really needed?
       }
     }
 
@@ -1235,7 +1261,7 @@ namespace Gambit
 
       if (!useDelphesDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesDet.scale();
@@ -1251,7 +1277,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
@@ -1281,7 +1307,7 @@ namespace Gambit
 
       if (!useBuckFastATLASDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesATLAS.scale();
@@ -1297,7 +1323,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
@@ -1326,7 +1352,7 @@ namespace Gambit
 
       if (!useBuckFastCMSDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesCMS.scale();
@@ -1341,7 +1367,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
@@ -1370,7 +1396,7 @@ namespace Gambit
 
       if (!useBuckFastIdentityDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesIdentity.scale();
@@ -1385,7 +1411,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
