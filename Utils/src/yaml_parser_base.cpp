@@ -55,7 +55,7 @@ namespace Gambit
             // sits, unless it has a forward slash at the beginning (in which case we
             // will interpret it as an absolute path)
             std::string file_location = Utils::dir_name(filename); // "outer" file location
-            if(new_filename.at(0)=="/") // POSIX
+            if(new_filename.at(0)=='/') // POSIX
             {
                // Use the absolute path as given
                import = YAML::LoadFile(new_filename);        
@@ -63,7 +63,7 @@ namespace Gambit
             else
             {
                // Append the path of the outer file
-               new_filename = file_location+"/"+new_filename
+               new_filename = file_location+"/"+new_filename;
                import = YAML::LoadFile(new_filename);        
             }
           }
@@ -84,7 +84,7 @@ namespace Gambit
       {
         for (unsigned int i = 0; i<node.size(); ++i)
         {
-          counter += importRound(node[i]);
+          counter += importRound(node[i],filename);
         }
         return counter;
       }
@@ -92,7 +92,7 @@ namespace Gambit
       {
         for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
         {
-          counter += importRound(it->second);  // Only values are processed
+          counter += importRound(it->second,filename);  // Only values are processed
         }
         return counter;
       }
