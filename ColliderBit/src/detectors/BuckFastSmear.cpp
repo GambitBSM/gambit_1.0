@@ -174,9 +174,16 @@ namespace Gambit {
         if (!p.isFinal()) continue;
 
         // Check there's no partons!!
-        if (p.id() == 21 || abs(p.id()) <= 6)
-          ColliderBit_error().raise(LOCAL_INFO, "Found final-state parton in particle-level event converter: "
-                                    "reconfigure your generator to include hadronization, or Gambit to use the partonic event converter");
+        if (p.id() == 21 || abs(p.id()) <= 6) {
+          std::ostringstream sid;
+          bool gotmother = false;
+          if (p.mother1() != 0) { gotmother = true; sid << pevt[p.mother1()].id() << " "; }
+          if (p.mother2() != 0) { gotmother = true; sid << pevt[p.mother2()].id() << " "; }
+          if (gotmother) sid << " -> ";
+          sid << p.id();
+          ColliderBit_error().forced_throw(LOCAL_INFO, "Found final-state parton " + sid.str() + " in particle-level event converter: "
+                                   "reconfigure your generator to include hadronization, or Gambit to use the partonic event converter.");
+        }
 
         // Add particle outside ATLAS/CMS acceptance to MET
         /// @todo Move out-of-acceptance MET contribution to BuckFast
