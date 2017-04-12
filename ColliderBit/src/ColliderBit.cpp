@@ -1139,12 +1139,22 @@ namespace Gambit
       {
         Dep::HardScatteringSim->nextEvent(result);
       }
-      catch (SpecializablePythia::EventFailureError &e)
+      // catch (Gambit::exception& e)
+      catch (SpecializablePythia::EventFailureError& e)
       {
         #ifdef COLLIDERBIT_DEBUG
-          std::cerr << debug_prefix() << "Caught EventFailureError in generatePythia8Event. Will pipe an invalid point request." << endl;
+          std::cerr << debug_prefix() << "EventFailureError thrown during event generation in generatePythia8Event. Check the ColliderBit log for event details." << endl; 
+          // std::cerr << debug_prefix() << "Gambit::exception thrown during event generation in generatePythia8Event. Check the ColliderBit log for details." << endl; 
         #endif
-        piped_invalid_point.request("Bad point: Pythia can't generate events");
+        #pragma omp critical (pythia_event_failure)
+        {
+          // Set global flag
+          tooManyFailedEvents = true;
+          // Store Pythia event record in the logs
+          std::stringstream ss;
+          result.list(ss, 1);
+          logger() << "Pythia record for event that failed in generatePythia8Event:\n" << ss.str() << EOM;
+        }
         Loop::wrapup();
         return;
       }
