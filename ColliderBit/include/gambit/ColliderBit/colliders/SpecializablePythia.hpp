@@ -6,6 +6,8 @@
 ///  The SpecializablePythia class.
 
 #include <ostream>
+// #include "gambit/Elements/gambit_module_headers.hpp"
+// #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/colliders/BaseCollider.hpp"
 #include "SLHAea/slhaea.h"
 
@@ -112,9 +114,14 @@ namespace Gambit {
         void nextEvent(EventType& event) const
         {
           // Try to make and populate an event
-          if (!_pythiaInstance->next()) throw EventFailureError();
+          bool accepted_event = _pythiaInstance->next();
           event = _pythiaInstance->event;
+          if (!accepted_event)
+          {
+            throw EventFailureError();
+          }
         }
+
         /// Report the cross section (in pb) at the end of the subprocess.
         double xsec_pb() const { return _pythiaInstance->info.sigmaGen() * 1e9; }
         /// Report the cross section uncertainty (in pb) at the end of the subprocess.
