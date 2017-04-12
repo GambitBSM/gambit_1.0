@@ -93,8 +93,7 @@ namespace Gambit {
 
         _impl->modularDelphes->InitTask();
       } catch(runtime_error &e) {
-        cerr << "** ERROR: " << e.what() << endl;
-        exit(EXIT_FAILURE);
+        ColliderBit_error().forced_throw(LOCAL_INFO, e.what());
       }
     }
 
@@ -222,8 +221,7 @@ namespace Gambit {
         _impl->modularDelphes->ProcessTask();
         convertOutput(eventOut);
       } catch(runtime_error &e) {
-        cerr << "** ERROR: " << e.what() << endl;
-        exit(EXIT_FAILURE);
+        ColliderBit_error().forced_throw(LOCAL_INFO, e.what());
       }
     }
 
