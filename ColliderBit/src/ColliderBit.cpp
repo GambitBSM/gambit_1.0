@@ -1139,12 +1139,10 @@ namespace Gambit
       {
         Dep::HardScatteringSim->nextEvent(result);
       }
-      // catch (Gambit::exception& e)
       catch (SpecializablePythia::EventFailureError& e)
       {
         #ifdef COLLIDERBIT_DEBUG
           std::cerr << debug_prefix() << "EventFailureError thrown during event generation in generatePythia8Event. Check the ColliderBit log for event details." << endl; 
-          // std::cerr << debug_prefix() << "Gambit::exception thrown during event generation in generatePythia8Event. Check the ColliderBit log for details." << endl; 
         #endif
         #pragma omp critical (pythia_event_failure)
         {
@@ -1153,7 +1151,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           result.list(ss, 1);
-          logger() << "Pythia record for event that failed in generatePythia8Event:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Event error caught in generatePythia8Event. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
@@ -1188,7 +1186,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << "Pythia record for event that failed in reconstructDelphesEvent:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Event error caught in reconstructDelphesEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
 
           Loop::wrapup();
           return;
@@ -1221,7 +1219,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << "Pythia record for event that failed in smearEventATLAS:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Event error caught in smearEventATLAS. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
@@ -1252,7 +1250,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << "Pythia record for event that failed in smearEventCMS:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Event error caught in smearEventCMS. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
@@ -1283,7 +1281,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << "Pythia record for event that failed in copyEvent:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Event error caught in copyEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
