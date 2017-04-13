@@ -67,7 +67,8 @@ namespace Gambit {
 
 
     void DelphesVanilla::init(const vector<string>& settings) {
-      try {
+      try 
+      {
         // Create the implementation object, for PIMPL abstraction
         _impl = new DelphesVanillaImpl();
 
@@ -92,8 +93,10 @@ namespace Gambit {
         _impl->pdg = TDatabasePDG::Instance();
 
         _impl->modularDelphes->InitTask();
-      } catch(runtime_error &e) {
-        ColliderBit_error().forced_throw(LOCAL_INFO, e.what());
+      }
+      catch(runtime_error &e)
+      {
+        throw InitializationError();
       }
     }
 
@@ -215,13 +218,16 @@ namespace Gambit {
 
 
     void DelphesVanilla::processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut) const {
-      try {
+      try 
+      {
         _impl->modularDelphes->Clear();
         convertInput(eventIn);
         _impl->modularDelphes->ProcessTask();
         convertOutput(eventOut);
-      } catch(runtime_error &e) {
-        ColliderBit_error().forced_throw(LOCAL_INFO, e.what());
+      } 
+      catch(runtime_error &e) 
+      {
+        throw ProcessEventError();
       }
     }
 

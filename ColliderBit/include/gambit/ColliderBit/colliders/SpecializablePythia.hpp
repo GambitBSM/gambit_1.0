@@ -42,7 +42,7 @@ namespace Gambit {
           }
         };
         /// An exception for when Pythia fails to generate events.
-        class EventFailureError : public std::exception
+        class EventGenerationError : public std::exception
         {
           virtual const char* what() const throw()
           {
@@ -118,7 +118,7 @@ namespace Gambit {
           event = _pythiaInstance->event;
           if (!accepted_event)
           {
-            throw EventFailureError();
+            throw EventGenerationError();
           }
         }
 
