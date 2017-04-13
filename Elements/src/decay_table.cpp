@@ -163,7 +163,7 @@ namespace Gambit
     SLHAstruct slha;
     std::map<str, std::set<str> > calculator_map;
     str calculators = "GAMBIT, using: ";
-    str versions = gambit_version + ": ";
+    str versions = gambit_version() + ": ";
 
     // Add the decay info
     for (auto particle = particles.begin(); particle != particles.end(); ++particle)

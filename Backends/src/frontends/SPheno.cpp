@@ -35,10 +35,10 @@ BE_NAMESPACE
     *deltaM = pow(10,-3);
     *CalcTBD = false;
     *ratioWoM = 0;
-   
+
 
     Initialize_MSSM(*GenerationMixing, *id_gl, *id_ph, *id_Z, *id_W, *id_nu, *id_l, *id_d, *id_u, *id_grav);
-   
+
     // Variables needed to get masses of sparticles
     Farray_Freal8_1_2 mChiPm;
     Farray_Freal8_1_2 mChiPm2;
@@ -59,7 +59,7 @@ BE_NAMESPACE
     Farray_Freal8_1_3 mSneut;
     Farray_Freal8_1_3 mSneut2;
     Freal8 mGlu;
- 
+
     CalculateSpectrum(*n_run, *delta_mass, *WriteOut, *kont, *tanb, *vevSM, mChiPm, *U, *V, mChi0, *N, mS0, mS02, *RS0, mP0, mP02, *RP0, mSpm, mSpm2, *RSpm, mSdown, mSdown2, *RSdown, mSup, mSup2, *RSup, mSlepton, mSlepton2, *RSlepton, mSneut, mSneut2, *RSneut, mGlu, *PhaseGlu, *gauge, *uL_L, *uL_R, *uD_L, *uD_R, *uU_L, *uU_R, *Y_l, *Y_d, *Y_u, *Mi, *A_l, *A_d, *A_u, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *mu, *B, *m_GUT);
 
 
@@ -102,7 +102,7 @@ BE_NAMESPACE
 
       spectrum = Spectrum_Out(Param);
 
-      
+
       *BRBtosgamma = 0.0;
       *BtoSNuNu = 0.0;
       *BrBToSLL = 0.0;
@@ -134,13 +134,13 @@ BE_NAMESPACE
       *BR_Z_e_tau = 0.0;
       *BR_Z_mu_tau = 0.0;
       *rho_parameter = 0.0;
-       
+
       // TODO: Low energy constraints, uncomment if needed
       //Low_Energy_Constraints_MSSM(*Q_in, *gauge, *Y_l, *Y_d, *Y_u, *A_l, *A_d, *A_u, *Mi, *mu, *M2_E, *M2_L, *M2_D, *M2_Q, *M2_U, *M2_H, *B, *tanb_Q, mP02, mS02, mSpm2, *CKM, *kont, *GenerationMixing, *rho_parameter, *DeltaMBd, *BRBtosgamma, *Bs_ll, *Bd_ll, *BrBToSLL, *BtoSNuNu, *BR_Bu_TauNu, *R_Bu_TauNu, *epsK, *DeltaMK2, *K0toPi0NuNu, *KptoPipNuNu, *a_e, *a_mu, *a_tau, *d_e, *d_mu, *d_tau, *BrMutoEGamma, *BrTautoEGamma, *BrTautoMuGamma, *BrMu3e, *BrTau3e, *BrTau3Mu, *BR_Z_e_mu, *BR_Z_e_tau, *BR_Z_mu_tau);
       // reorder state identification if necessary
       // TODO: Swap Order
 
-      // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0) 
+      // Calculation of the branching ratios and widths provided L_BR is set .TRUE. (default) and that the routine Sugra has finished correctly (kont.eq.0)
       // TODO: Branching ratios, uncomment if needed
       /*
       if(*L_BR and !*kont)
@@ -188,7 +188,7 @@ BE_NAMESPACE
                 (*SigSup)(i,j,k) = SSup(j,k);
                 (*SigSdown)(i,j,k) = SSdown(j,k);
                 (*SigSle)(i,j,k) = SSle(j,k);
-                if(j<=4 and k<=4) 
+                if(j<=4 and k<=4)
                   (*SigChi0)(i,j,k) = SChi0(j,k);
                 if(j<=3 and k<=3)
                   (*SigSn)(i,j,k) = SSn(j,k);
@@ -199,23 +199,23 @@ BE_NAMESPACE
               }
               if(j<=2)
               {
-                (*SigS0)(i,j) = SS0(j); 
+                (*SigS0)(i,j) = SS0(j);
                 (*SigSP)(i,j,1) = SSP(j);
               }
             }
             (*SigHp)(i,1,1) = SHp;
           }
-        } 
+        }
       }
       */
-      
+
     }
-   
+
     if(*kont != 0)
       ErrorHandling(*kont);
 
-    return *kont;   
- 
+    return *kont;
+
   }
 
   Spectrum Spectrum_Out(const std::map<str, safe_ptr<double> >& input_Param)
@@ -228,7 +228,7 @@ BE_NAMESPACE
     // Spectrum generator information
     SLHAea_add_block(slha, "SPINFO");
     SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+str(STRINGIFY(BACKENDNAME)));
-    SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+str(STRINGIFY(VERSION))+" ("+str(STRINGIFY(BACKENDNAME))+")");
+    SLHAea_add(slha, "SPINFO", 2, gambit_version()+" (GAMBIT); "+str(STRINGIFY(VERSION))+" ("+str(STRINGIFY(BACKENDNAME))+")");
 
     // General information
     SLHAea_add_block(slha, "SPhenoINFO");
@@ -238,7 +238,7 @@ BE_NAMESPACE
       SLHAea_add(slha, "SPhenoINFO", 1, 1, "# using 1-loop RGES");
     if(*YukScen)
       SLHAea_add(slha, "SPhenoINFO", 2, 1, "# using running masses for boundary conditions at mZ");
-    else 
+    else
       SLHAea_add(slha, "SPhenoINFO", 2, 2, "# using pole masses for boundary conditions at mZ");
 
     // model information
@@ -251,7 +251,7 @@ BE_NAMESPACE
 
       SLHAea_add_block(slha, "MINPAR");
       if(input_Param.find("M0") != input_Param.end())
-        slha["MINPAR"][""] << 1 << *input_Param.at("M0") << "# m0"; 
+        slha["MINPAR"][""] << 1 << *input_Param.at("M0") << "# m0";
       if(input_Param.find("M12") != input_Param.end())
         slha["MINPAR"][""] << 2 << *input_Param.at("M12") << "# m12";
       slha["MINPAR"][""] << 3 << *input_Param.at("TanBeta") << "# tanb at m_Z";
@@ -314,7 +314,7 @@ BE_NAMESPACE
         slha["EXTPAR"][""] << 49 << sqrt(*input_Param.at("md2_33")) << "# M_(D,33)";
 
     }
-        
+
     // parameters + masses for SPheno.spc
     SLHAea_add_block(slha, "SMINPUTS");
     slha["SMINPUTS"][""] << 1 << 1.0 / Alpha_MSbar(*mZ, *mW) << "# alpha_em^-1(MZ)^MSbar";
@@ -370,10 +370,10 @@ BE_NAMESPACE
     SLHAea_add_block(slha, "Yu", *m_GUT);
     SLHAea_add_block(slha, "Yd", *m_GUT);
     SLHAea_add_block(slha, "Ye", *m_GUT);
-   
+
     for(int i=1; i<=3; i++)
       for(int j=1; j<=3; j++)
-      { 
+      {
         slha["Yu"][""] << i << j << (*Y_u_0)(i,j).re << "# Y_u(" << i << "," << j << ")(M_GUT)^DRbar";
         slha["Yd"][""] << i << j << (*Y_d_0)(i,j).re << "# Y_d(" << i << "," << j << "(M_GUT)^DRbar";
         slha["Ye"][""] << i << j << (*Y_l_0)(i,j).re << "# Y_e(" << i << "," << j << "(M_GUT)^DRbar";
@@ -386,7 +386,7 @@ BE_NAMESPACE
 
     SLHAea_add_block(slha, "Yu", Q);
     SLHAea_add_block(slha, "Yd", Q);
-    SLHAea_add_block(slha, "Ye", Q);   
+    SLHAea_add_block(slha, "Ye", Q);
 
     for(int i=1; i<=3; i++)
       for(int j=1; j<=3; j++)
@@ -402,7 +402,7 @@ BE_NAMESPACE
     SLHAea_add_block(slha, "IMAd", Q);
     SLHAea_add_block(slha, "Ae", Q);
     SLHAea_add_block(slha, "IMAe", Q);
-        
+
     for(int i=1; i<=3; i++)
       for(int j=1; j<=3; j++)
       {
@@ -429,7 +429,7 @@ BE_NAMESPACE
     slha["MSOFT"][""] << 3 << (*Mi)(3).re << "# M_3";
     slha["MSOFT"][""] << 21 << (*M2_H)(1) << "# M^2_(H,d)";
     slha["MSOFT"][""] << 22 << (*M2_H)(2) << "# M^2_(H,u)";
- 
+
     slha["MSOFT"][""] << 31 << sqrt((*M2_L)(1,1).re) << "# M_(L,11)";
     slha["MSOFT"][""] << 32 << sqrt((*M2_L)(2,2).re) << "# M_(L,22)";
     slha["MSOFT"][""] << 33 << sqrt((*M2_L)(3,3).re) << "# M_(L,33)";
@@ -530,7 +530,7 @@ BE_NAMESPACE
       {
         slha["MASS"][""] << 1000011 << (*Slepton)(1).m << "# ~e_L-";
         slha["MASS"][""] << 2000011 << (*Slepton)(2).m << "# ~e_R-";
-      } 
+      }
       else
       {
         slha["MASS"][""] << 1000011 << (*Slepton)(2).m << "# ~e_L-";
@@ -611,8 +611,8 @@ BE_NAMESPACE
       {
         slha["SCALARMIX"][""] << i << j << (*RS0)(i,j) << "# ZH(" << i << "," << j << ")";
         slha["PSEUDOSCALARMIX"][""] << i << j << (*RP0)(i,j) << "# ZA(" << i << "," << j << ")";
-        slha["CHARGEMIX"][""] << i << j << (*RSpm)(i,j).re << "# ZP(" << i << "," << j << ")"; 
-      } 
+        slha["CHARGEMIX"][""] << i << j << (*RSpm)(i,j).re << "# ZP(" << i << "," << j << ")";
+      }
 
     if(*GenerationMixing)
     {
@@ -655,7 +655,7 @@ BE_NAMESPACE
             slha["IMSBOTMIX"][""] << i << j << (*RSlepton)(i+4,j+4).im << "# Im(R_sta)(" << i << "," << j << ")";
           }
         }
-    }   
+    }
 
     SLHAea_add_block(slha, "NMIX");
     for(int i=1; i<=4; i++)
@@ -680,7 +680,7 @@ BE_NAMESPACE
           slha["IMUMIX"][""] << i << j << (*U)(i,j).im << "# Im(U)(" << i << j << ")";
         }
       }
-          
+
 
     SLHAea_add_block(slha, "VMIX");
     for(int i=1; i<=2; i++)
@@ -715,8 +715,8 @@ BE_NAMESPACE
   // Function to read data from the Gambit inputs and fill SPheno internal variables
   void ReadingData(const SMInputs &sminputs, const std::map<str, safe_ptr<double> > &Param)
   {
-      
-    InitializeStandardModel(sminputs); 
+
+    InitializeStandardModel(sminputs);
     InitializeLoopFunctions();
 
     //*ErrorLevel = -1;
@@ -732,7 +732,7 @@ BE_NAMESPACE
 
     // take highest precision, will be change at a later stage (already taken from SPHENOINPUT
     *TwoLoopRGE = true;
-    
+
     // these variables are only used in GMSB and will be set correctly below
     *F_GMSB = 1E12;
     *m32 = 1E10;
@@ -741,7 +741,7 @@ BE_NAMESPACE
 
     // Block SMINPUTS
     // Already in InitializeStandardModel
-   
+
     // Block MINPAR
     if(*HighScaleModel == "mSUGRA")
     {
@@ -773,7 +773,7 @@ BE_NAMESPACE
       if(Param.find("A0") != Param.end())
       {
         for(int i=1; i<=3; i++)
-          (*AoY_d_0)(i,i) = *Param.at("A0"); 
+          (*AoY_d_0)(i,i) = *Param.at("A0");
         *AoY_l_0 = *AoY_d_0;
         *AoY_u_0 = *AoY_d_0;
         *AoY_nu_0 = *AoY_d_0;
@@ -851,7 +851,7 @@ BE_NAMESPACE
       // in GAMBIT tanb is always at mZ
       //*tanb_Q = *Param.at("TanBeta");
       *tanb_in_at_Q = false;
-       
+
       for(int i=1; i<=3; i++)
         for(int j=1; j<=3; j++)
         {
@@ -865,7 +865,7 @@ BE_NAMESPACE
           }
           // A_d, Block TDIN
           parname.str(std::string());
-          parname << "Ad_" << i << j; 
+          parname << "Ad_" << i << j;
           if(Param.find(parname.str()) != Param.end())
           {
             (*Ad_0_sckm)(i,j).re = *Param.at(parname.str());
@@ -879,7 +879,7 @@ BE_NAMESPACE
             (*Al_0_pmns)(i,j).re = *Param.at(parname.str());
             (*Al_pmns)(j,i).re = *Param.at(parname.str());
           }
-        } 
+        }
 
       // A_t
       if(Param.find("Au_33") != Param.end())
@@ -902,7 +902,7 @@ BE_NAMESPACE
         *Atau_save = (*AoY_l)(3,3);
         *AoY_l_0 = *AoY_l;
       }
-       
+
       // M^2_Hd
       if(Param.find("mHd2") != Param.end())
       {
@@ -911,7 +911,7 @@ BE_NAMESPACE
       }
       // M^2_Hu
       if(Param.find("mHu2") != Param.end())
-      { 
+      {
         (*M2_H)(2) = *Param.at("mHu2");
         (*M2_H_0)(2) = *Param.at("mHu2");
       }
@@ -974,14 +974,14 @@ BE_NAMESPACE
     // TODO: R-parity breaking
 
     // Block SPHENOINPUT
-    // Already in BE_INI_FUNCTION 
+    // Already in BE_INI_FUNCTION
 
     // Block SPINFO, nothing to do here
 
     // No other blocks are relevant at this stage
 
     // now some checks and additional settings
-    if(phase_mu->re == 0 and (mu->abs() > 0)) 
+    if(phase_mu->re == 0 and (mu->abs() > 0))
     {
       *phase_mu = *mu;
       phase_mu->re /= mu->abs();
@@ -1004,11 +1004,11 @@ BE_NAMESPACE
     *gamW2 = pow(*gamW, 2);
     *gmW = *gamW * *mW;
     *gmW2 = pow(*gmW, 2);
-    
+
     // the running fermion masses at m_Z need to be recalculated
     *Alpha_mZ = Alpha_MSbar(*mZ, *mW);
     CalculateRunningMasses(*mf_l, *mf_d, *mf_u, *Q_light_quarks, *Alpha_mZ, *AlphaS_mZ, *mZ, *mf_l_mZ, *mf_d_mZ, *mf_u_mZ, *kont);
-    
+
     // TODO: SUGRA_NuR and SEESAW
 
     // TODO: External_spectrum
@@ -1031,7 +1031,7 @@ BE_NAMESPACE
       Atau_save->re = 0;
       Atau_save->im = 0;
     }
- 
+
   }
 
   void InitializeStandardModel(const SMInputs &sminputs)
@@ -1045,22 +1045,22 @@ BE_NAMESPACE
 
     // Z-boson
     *mZ = sminputs.mZ;    	// mass
-    *gamZ = 2.4952;		// width, values henceforth from StandardModel.f90 
+    *gamZ = 2.4952;		// width, values henceforth from StandardModel.f90
     (*BrZqq)(1) = 0.156;	// branching ratio in d \bar{d}
     (*BrZqq)(2) = 0.156;	// branching ratio in s \bar{s}
     (*BrZqq)(3) = 0.151;	// branching ratio in b \bar{b}
     (*BrZqq)(4) = 0.116;	// branching ratio in u \bar{u}
-    (*BrZqq)(5) = 0.12;		// branching ratio in c \bar{c} 
+    (*BrZqq)(5) = 0.12;		// branching ratio in c \bar{c}
     (*BrZll)(1) = 0.0336;	// branching ratio in e+ e-
     (*BrZll)(2) = 0.0336;	// branching ratio in mu+ mu-
     (*BrZll)(3) = 0.0338;	// branching ratio in tau+ tau-
     *BrZinv = 0.2;		// invisible branching ratio
-    
+
     *mZ2 = *mZ * *mZ;
     *gamZ2 = *gamZ * *gamZ;
     *gmZ = *gamZ * *mZ;
     *gmZ2 = *gmZ * *gmZ;
-    
+
     // W-boson
     *mW = 80.385;
     *gamW = 2.085;
@@ -1073,12 +1073,12 @@ BE_NAMESPACE
     *gamW2 = pow(*gamW, 2);
     *gmW = *gamW * *mW;
     *gmW2 = pow(*gmW, 2);
-    
+
     // lepton masses: e, muon, tau
     (*mf_l)(1) = sminputs.mE;
     (*mf_l)(2) = sminputs.mMu;
     (*mf_l)(3) = sminputs.mTau;
-  
+
     // default for neutrino masses
     (*mf_nu)(1) = 0.0;
     (*mf_nu)(2) = 0.0;
@@ -1088,7 +1088,7 @@ BE_NAMESPACE
     (*Q_light_quarks) = 2;
 
     // up-quark masses: u, c, t
-    (*mf_u)(1) = sminputs.mU;     
+    (*mf_u)(1) = sminputs.mU;
     (*mf_u)(2) = sminputs.mCmC;
     (*mf_u)(3) = sminputs.mT;
 
@@ -1108,7 +1108,7 @@ BE_NAMESPACE
     *Alpha_mZ = 1.0/sminputs.alphainv;
     *Alpha_mZ_MS = *Alpha_mZ; // from SMINPUTS
     *MZ_input = true;
-    *AlphaS_mZ = sminputs.alphaS; 
+    *AlphaS_mZ = sminputs.alphaS;
     *G_F = sminputs.GF;
 
     // for ISR correction in e+e- annihilation
@@ -1119,7 +1119,7 @@ BE_NAMESPACE
     *A_wolf = sminputs.CKM.A;
     *rho_wolf = sminputs.CKM.rhobar;
     *eta_wolf = sminputs.CKM.etabar;
-      
+
     float s12 = sminputs.CKM.lambda;
     float s23 = pow(s12,2) * sminputs.CKM.A;
     float s13 = s23 * sminputs.CKM.lambda * sqrt(pow(sminputs.CKM.etabar,2) + pow(sminputs.CKM.rhobar,2));
@@ -1144,17 +1144,17 @@ BE_NAMESPACE
 
     CalculateRunningMasses(*mf_l, *mf_d, *mf_u, *Q_light_quarks, *Alpha_mZ, *AlphaS_mZ, *mZ, *mf_l_mZ, *mf_d_mZ, *mf_u_mZ, *kont);
 
-  }  
+  }
 
   // Function that handles errors
   void ErrorHandling(const int &kont)
   {
 
-    str message;   
+    str message;
 
     switch(kont)
     {
-      case -1: message = "Problem in OdeInt, stepsize smaller than minimum."; break ; 
+      case -1: message = "Problem in OdeInt, stepsize smaller than minimum."; break ;
       case -2: message =  "Problem in OdeInt, max val > 10^36."; break ;
       case -3: message = "Proglem in OdeInt, too many steps."; break ;
       case -4: message = "Proglem in OdeIntB, boundary condition not fulfilled."; break ;
@@ -1287,14 +1287,14 @@ BE_NAMESPACE
     }
 
     message = "Unspecified error";
-    
+
     logger() << message << EOM;
     invalid_point().raise(message);
 
    return ;
 
   }
- 
+
 }
 END_BE_NAMESPACE
 
@@ -1302,8 +1302,8 @@ END_BE_NAMESPACE
 BE_INI_FUNCTION
 {
 
-    // Dump all internal output 
-    *ErrCan = 0; 
+    // Dump all internal output
+    *ErrCan = 0;
 
     Set_All_Parameters_0();
 
@@ -1398,7 +1398,7 @@ BE_INI_FUNCTION
 
     // 22, CMS energy
     // TODO: Perhaps there is the option of setting more than one Ecms
-    // TODO: Cross sections, not covered yet 
+    // TODO: Cross sections, not covered yet
     //static  int p_max = 100;
     //static Finteger p_act = 0;
     //p_act ++;
@@ -1438,11 +1438,11 @@ BE_INI_FUNCTION
     //*Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
     //if(SigMin > 0.0)
     //  SetWriteMinSig(SigMin);
-    
+
     // 31, setting a fixed GUT scale
     Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
     if(GUTScale > 0.0)
-       SetGUTScale(GUTScale); 
+       SetGUTScale(GUTScale);
 
     // 32, requires strict unification
     Flogical StrictUnification = runOptions->getValueOrDef<Flogical>(false, "StrictUnification");
@@ -1464,7 +1464,7 @@ BE_INI_FUNCTION
     // GAMBIT: not covered
     //Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
     //if(YukawaScheme > 0)
-    //  SetYukawaScheme(YukawaScheme);   
+    //  SetYukawaScheme(YukawaScheme);
 
     // 38, set looplevel of RGEs
     *TwoLoopRGE = runOptions->getValueOrDef<Flogical>(true, "TwoLoopRGE");
@@ -1499,7 +1499,7 @@ BE_INI_FUNCTION
     *Add_RParity = false;
 
     // 91, fit RP parameters such that neutrino data are ok
-    // TODO: RParity, not covered yet    
+    // TODO: RParity, not covered yet
     //*L_Fit_RP_Parameters = runOptions->getValueOrDef<Flogical>(false, "L_Fit_RP_Parameters");
     *L_Fit_RP_Parameters = false;
 
@@ -1519,11 +1519,11 @@ BE_INI_FUNCTION
     // 99, MADGraph output style, some additional information
     // GAMBIT: always false, no file output, private variable, cannot import
     // *MADGraph_style = false;
- 
+
     // 100, use bsstep instead of rkqs
     Flogical bsstep = runOptions->getValueOrDef<Flogical>(false, "Use_bsstep_instead_of_rkqs");
     if(bsstep)
-      Set_Use_bsstep_instead_of_rkqs(bsstep);    
+      Set_Use_bsstep_instead_of_rkqs(bsstep);
 
     // 101, use rzextr instead of pzextr
     Flogical rzextr = runOptions->getValueOrDef<Flogical>(false, "Use_rzextr_instead_of_pzextr");
