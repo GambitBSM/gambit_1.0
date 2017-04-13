@@ -14,22 +14,23 @@ namespace Gambit {
 
 
     /// A class for Delphes detector simulations within ColliderBit.
-    class DelphesVanilla : public BaseDetector<Pythia8::Event, HEPUtils::Event> {
-    protected:
+    class DelphesVanilla : public BaseDetector<Pythia8::Event, HEPUtils::Event> 
+    {
+      protected:
 
-      DelphesVanillaImpl* _impl; ///< Member variable abstraction via a forward-declared type.
+        DelphesVanillaImpl* _impl; ///< Member variable abstraction via a forward-declared type.
 
-    public:
+      public:
 
-      /// @name Construction, destruction, and recycling
-      //@{
-      DelphesVanilla() : _impl(nullptr) { }
+        /// @name Construction, destruction, and recycling
+        //@{
+        DelphesVanilla() : _impl(nullptr) { }
 
-      ~DelphesVanilla() { clear(); }
+        ~DelphesVanilla() { clear(); }
 
-      /// Reset this instance
-      void clear();
-      //@}
+        /// Reset this instance
+        void clear();
+        //@}
 
       /// @name Initialization functions
       //@{
@@ -48,6 +49,29 @@ namespace Gambit {
         /// @brief Process the event with the detector simulation.
         void processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut) const;
       //@}
+
+
+      /// @name Custom exceptions:
+      ///@{
+      public:
+        /// An exception for when Delphes fails to initialize.
+        class InitializationError : public std::exception
+        {
+          virtual const char* what() const throw()
+          {
+            return "Failed to initialize Delphes.";
+          }
+        };
+        /// An exception for when Delphes fails to process events.
+        class ProcessEventError : public std::exception
+        {
+          virtual const char* what() const throw()
+          {
+            return "Failed to process event with Delphes.";
+          }
+        };
+      ///@}
+
 
     };
 

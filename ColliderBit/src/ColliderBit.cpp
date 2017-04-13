@@ -415,6 +415,9 @@ namespace Gambit
           }
           catch (SpecializablePythia::InitializationError &e)
           {
+            #ifdef COLLIDERBIT_DEBUG
+              std::cerr << debug_prefix() << "SpecializablePythia::InitializationError caught in getPythia. Will discard this point." << endl;
+            #endif
             piped_invalid_point.request("Bad point: Pythia can't initialize");
             Loop::wrapup();
             return;
@@ -668,9 +671,18 @@ namespace Gambit
         // Setup new Delphes for the current collider
         std::vector<str> delphesOptions;
         delphesOptions.push_back(delphesConfigFiles[indexPythiaNames]);
-        result.init(delphesOptions);
 
-        return;
+        try
+        {
+          result.init(delphesOptions);
+        }
+        catch (DelphesVanilla::InitializationError& e)
+        {
+          #ifdef COLLIDERBIT_DEBUG
+            std::cerr << debug_prefix() << "DelphesVanilla::InitializationError caught in getDelphes. Will raise ColliderBit_error." << endl;
+          #endif
+          ColliderBit_error().raise(LOCAL_INFO, "getDelphes failed to initialize Delphes.");
+        }
       }
     }
 
@@ -1139,10 +1151,10 @@ namespace Gambit
       {
         Dep::HardScatteringSim->nextEvent(result);
       }
-      catch (SpecializablePythia::EventFailureError& e)
+      catch (SpecializablePythia::EventGenerationError& e)
       {
         #ifdef COLLIDERBIT_DEBUG
-          std::cerr << debug_prefix() << "EventFailureError thrown during event generation in generatePythia8Event. Check the ColliderBit log for event details." << endl;
+          std::cerr << debug_prefix() << "SpecializablePythia::EventGenerationError caught in generatePythia8Event. Check the ColliderBit log for event details." << endl;
         #endif
         #pragma omp critical (pythia_event_failure)
         {
@@ -1151,7 +1163,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           result.list(ss, 1);
-          logger() << LogTags::debug << "Event error caught in generatePythia8Event. Pythia record for event that failed:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "SpecializablePythia::EventGenerationError error caught in generatePythia8Event. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
@@ -1175,10 +1187,10 @@ namespace Gambit
           {
             (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
           }
-          catch (Gambit::exception& e)
+          catch (DelphesVanilla::ProcessEventError& e)
           {
             #ifdef COLLIDERBIT_DEBUG
-              std::cerr << debug_prefix() << "Gambit::exception thrown during event conversion in reconstructDelphesEvent. Check the ColliderBit log for details." << endl;
+              std::cerr << debug_prefix() << "DelphesVanilla::ProcessEventError caught in reconstructDelphesEvent." << endl;
             #endif
 
             // Set global flag
@@ -1186,7 +1198,7 @@ namespace Gambit
             // Store Pythia event record in the logs
             std::stringstream ss;
             Dep::HardScatteringEvent->list(ss, 1);
-            logger() << LogTags::debug << "Event error caught in reconstructDelphesEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
+            logger() << LogTags::debug << "DelphesVanilla::ProcessEventError caught in reconstructDelphesEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
 
             Loop::wrapup();
           }
@@ -1209,7 +1221,7 @@ namespace Gambit
       catch (Gambit::exception& e)
       {
         #ifdef COLLIDERBIT_DEBUG
-          std::cerr << debug_prefix() << "Gambit::exception thrown during event conversion in smearEventATLAS. Check the ColliderBit log for details." << endl;
+          std::cerr << debug_prefix() << "Gambit::exception caught during event conversion in smearEventATLAS. Check the ColliderBit log for details." << endl;
         #endif
         #pragma omp critical (event_conversion_error)
         {
@@ -1218,7 +1230,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << LogTags::debug << "Event error caught in smearEventATLAS. Pythia record for event that failed:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Gambit::exception error caught in smearEventATLAS. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
@@ -1240,7 +1252,7 @@ namespace Gambit
       catch (Gambit::exception& e)
       {
         #ifdef COLLIDERBIT_DEBUG
-          std::cerr << debug_prefix() << "Gambit::exception thrown during event conversion in smearEventCMS. Check the ColliderBit log for details." << endl;
+          std::cerr << debug_prefix() << "Gambit::exception caught during event conversion in smearEventCMS. Check the ColliderBit log for details." << endl;
         #endif
         #pragma omp critical (event_conversion_error)
         {
@@ -1249,7 +1261,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << LogTags::debug << "Event error caught in smearEventCMS. Pythia record for event that failed:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Gambit::exception error caught in smearEventCMS. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
@@ -1271,7 +1283,7 @@ namespace Gambit
       catch (Gambit::exception& e)
       {
         #ifdef COLLIDERBIT_DEBUG
-          std::cerr << debug_prefix() << "Gambit::exception thrown during event conversion in copyEvent. Check the ColliderBit log for details." << endl;
+          std::cerr << debug_prefix() << "Gambit::exception caught during event conversion in copyEvent. Check the ColliderBit log for details." << endl;
         #endif
         #pragma omp critical (event_conversion_error)
         {
@@ -1280,7 +1292,7 @@ namespace Gambit
           // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << LogTags::debug << "Event error caught in copyEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
+          logger() << LogTags::debug << "Gambit::exception error caught in copyEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
         Loop::wrapup();
         return;
