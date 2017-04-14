@@ -24,11 +24,11 @@
 
 - name: BR_b2sgamma
   islimit: false
-  exp_value: 322.e-6
-  exp_stat_error: 15.e-6
+  exp_value: 327.e-6
+  exp_stat_error: 14.e-6
   exp_sys_error: 0.e-6
   exp_source: 1702.04571
-  th_error: 0.0714
+  th_error: 0.07
   th_error_type: M
   th_error_source: 1503.01791
   correlation:
