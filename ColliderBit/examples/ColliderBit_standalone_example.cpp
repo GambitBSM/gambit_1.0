@@ -208,7 +208,7 @@ int main(int argc, char* argv[])
     operateLHCLoop.setOption<vstr>("pythiaNames", vstr {"Pythia_EM_8Tev", "Pythia_EM_13TeV"});
 
     // Set number of LHC events
-    operateLHCLoop.setOption<vint>("nEvents",vint {20000, 20000});
+    operateLHCLoop.setOption<vint>("nEvents",vint {5000, 5000});
 
     // Should stdout be silenced during the event loop?
     operateLHCLoop.setOption<bool>("silenceLoop",false);
@@ -238,10 +238,9 @@ int main(int argc, char* argv[])
          "Beams:eCM = 8000",
          "PartonLevel:MPI = off",
          "PartonLevel:ISR = on",
-         "PartonLevel:FSR = off",
-         "HadronLevel:all = off",
+         "PartonLevel:FSR = on",
+         "HadronLevel:all = on",
          "TauDecays:mode = 0",
-         "Main:timesAllowErrors = 1000",
          "Random:setSeed = on"} );
 
     getPythiaFileReader.setOption<vstr>("Pythia_EM_13TeV", vstr
@@ -249,10 +248,9 @@ int main(int argc, char* argv[])
          "Beams:eCM = 13000",
          "PartonLevel:MPI = off",
          "PartonLevel:ISR = on",
-         "PartonLevel:FSR = off",
-         "HadronLevel:all = off",
+         "PartonLevel:FSR = on",
+         "HadronLevel:all = on",
          "TauDecays:mode = 0",
-         "Main:timesAllowErrors = 1000",
          "Random:setSeed = on"} );
 
 
