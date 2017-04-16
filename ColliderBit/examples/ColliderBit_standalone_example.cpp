@@ -241,7 +241,6 @@ int main(int argc, char* argv[])
          "PartonLevel:FSR = off",
          "HadronLevel:all = off",
          "TauDecays:mode = 0",
-         "Main:timesAllowErrors = 1000",
          "Random:setSeed = on"} );
 
     getPythiaFileReader.setOption<vstr>("Pythia_EM_13TeV", vstr
@@ -252,7 +251,6 @@ int main(int argc, char* argv[])
          "PartonLevel:FSR = off",
          "HadronLevel:all = off",
          "TauDecays:mode = 0",
-         "Main:timesAllowErrors = 1000",
          "Random:setSeed = on"} );
 
 
@@ -276,7 +274,7 @@ int main(int argc, char* argv[])
     // -- ATLAS analyses:
     getBuckFastATLAS.setOption<vbool>("useDetector",vbool {true, true});
     getBuckFastATLAS.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
-    getBuckFastATLAS.setOption<vbool>("partonOnly",vbool {false, false});
+    getBuckFastATLAS.setOption<vbool>("partonOnly",vbool {true, true});
 
     getATLASAnalysisContainer.setOption<vvstr>("analyses", vvstr
         { {"ATLAS_0LEP_20invfb"},
@@ -284,9 +282,9 @@ int main(int argc, char* argv[])
 
 
     // -- CMS analyses:
-    getBuckFastCMS.setOption<vbool>("useDetector",vbool {true, false});
+    getBuckFastCMS.setOption<vbool>("useDetector",vbool {false, false});
     getBuckFastCMS.setOption<vdouble>("antiktR",vdouble {0.5, 0.5});
-    getBuckFastCMS.setOption<vbool>("partonOnly",vbool {false, false});
+    getBuckFastCMS.setOption<vbool>("partonOnly",vbool {true, true});
 
     getCMSAnalysisContainer.setOption<vvstr>("analyses", vvstr
         { {"CMS_MONOJET_20invfb"},
@@ -294,13 +292,11 @@ int main(int argc, char* argv[])
 
 
     // // -- Identity analyses (no detector sim):
-    // getBuckFastIdentity.setOption<vbool>("useDetector",vbool {true, true});
+    // getBuckFastIdentity.setOption<vbool>("useDetector",vbool {false, false});
     // getBuckFastIdentity.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
     // getBuckFastIdentity.setOption<vbool>("partonOnly",vbool {false, false});
 
-    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr {
-    //     { {"ATLAS_0LEP_20invfb", "CMS_MONOJET_20invfb"},
-    //       {"ATLAS_13TeV_0LEP_13invfb"} });
+    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr { {}, {} });
 
 
 

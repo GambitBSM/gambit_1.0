@@ -45,7 +45,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-// #define COLLIDERBIT_DEBUG
+#define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -63,7 +63,7 @@ namespace Gambit
       str debug_prefix()
       {
         std::stringstream ss;
-        ss << "DEBUG: OMP Thread " << omp_get_thread_num() << ":  ";
+        ss << "DEBUG: OMP thread " << omp_get_thread_num() << ":  ";
         return ss.str();
       }
     #endif
@@ -715,21 +715,25 @@ namespace Gambit
         return;
       }
 
-
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        result.clear();
-
-        // Get settings for the current collider
+        // Get useDetector setting for the current collider
         useBuckFastATLASDetector = useDetector[indexPythiaNames];
-        if (!useBuckFastATLASDetector) return;
-        else haveUsedBuckFastATLASDetector = true;
+        if (useBuckFastATLASDetector)
+          haveUsedBuckFastATLASDetector = true;
 
-        // Setup new BuckFast for the current collider:
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS and useBuckFastATLASDetector)
+      {
+        // Each thread gets its own BuckFastSmearATLAS.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
 
         return;
       }
+
     }
 
 
@@ -761,18 +765,23 @@ namespace Gambit
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        result.clear();
-
         // Get useDetector setting for the current collider
         useBuckFastCMSDetector = useDetector[indexPythiaNames];
-        if (!useBuckFastCMSDetector) return;
-        else haveUsedBuckFastCMSDetector = true;
+        if (useBuckFastCMSDetector)
+          haveUsedBuckFastCMSDetector = true;
 
-        // Setup new BuckFast for the current collider:
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS and useBuckFastCMSDetector)
+      {
+        // Each thread gets its own BuckFastSmearCMS.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
 
         return;
       }
+
     }
 
 
@@ -804,14 +813,18 @@ namespace Gambit
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        result.clear();
-
         // Get useDetector setting for the current collider
         useBuckFastIdentityDetector = useDetector[indexPythiaNames];
-        if (!useBuckFastIdentityDetector) return;
-        else haveUsedBuckFastIdentityDetector = true;
+        if (useBuckFastIdentityDetector)
+          haveUsedBuckFastIdentityDetector = true;
 
-        // Setup new BuckFast for the current collider:
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS and useBuckFastIdentityDetector)
+      {
+        // Each thread gets its own BuckFastSmearIdentity.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
 
         return;
