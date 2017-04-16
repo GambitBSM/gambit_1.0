@@ -208,7 +208,7 @@ int main(int argc, char* argv[])
     operateLHCLoop.setOption<vstr>("pythiaNames", vstr {"Pythia_EM_8Tev", "Pythia_EM_13TeV"});
 
     // Set number of LHC events
-    operateLHCLoop.setOption<vint>("nEvents",vint {5000, 5000});
+    operateLHCLoop.setOption<vint>("nEvents",vint {20000, 20000});
 
     // Should stdout be silenced during the event loop?
     operateLHCLoop.setOption<bool>("silenceLoop",false);
@@ -238,8 +238,8 @@ int main(int argc, char* argv[])
          "Beams:eCM = 8000",
          "PartonLevel:MPI = off",
          "PartonLevel:ISR = on",
-         "PartonLevel:FSR = on",
-         "HadronLevel:all = on",
+         "PartonLevel:FSR = off",
+         "HadronLevel:all = off",
          "TauDecays:mode = 0",
          "Random:setSeed = on"} );
 
@@ -248,8 +248,8 @@ int main(int argc, char* argv[])
          "Beams:eCM = 13000",
          "PartonLevel:MPI = off",
          "PartonLevel:ISR = on",
-         "PartonLevel:FSR = on",
-         "HadronLevel:all = on",
+         "PartonLevel:FSR = off",
+         "HadronLevel:all = off",
          "TauDecays:mode = 0",
          "Random:setSeed = on"} );
 
@@ -274,7 +274,7 @@ int main(int argc, char* argv[])
     // -- ATLAS analyses:
     getBuckFastATLAS.setOption<vbool>("useDetector",vbool {true, true});
     getBuckFastATLAS.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
-    getBuckFastATLAS.setOption<vbool>("partonOnly",vbool {false, false});
+    getBuckFastATLAS.setOption<vbool>("partonOnly",vbool {true, true});
 
     getATLASAnalysisContainer.setOption<vvstr>("analyses", vvstr
         { {"ATLAS_0LEP_20invfb"},
@@ -282,9 +282,9 @@ int main(int argc, char* argv[])
 
 
     // -- CMS analyses:
-    getBuckFastCMS.setOption<vbool>("useDetector",vbool {true, false});
+    getBuckFastCMS.setOption<vbool>("useDetector",vbool {false, false});
     getBuckFastCMS.setOption<vdouble>("antiktR",vdouble {0.5, 0.5});
-    getBuckFastCMS.setOption<vbool>("partonOnly",vbool {false, false});
+    getBuckFastCMS.setOption<vbool>("partonOnly",vbool {true, true});
 
     getCMSAnalysisContainer.setOption<vvstr>("analyses", vvstr
         { {"CMS_MONOJET_20invfb"},
@@ -292,13 +292,11 @@ int main(int argc, char* argv[])
 
 
     // // -- Identity analyses (no detector sim):
-    // getBuckFastIdentity.setOption<vbool>("useDetector",vbool {true, true});
+    // getBuckFastIdentity.setOption<vbool>("useDetector",vbool {false, false});
     // getBuckFastIdentity.setOption<vdouble>("antiktR",vdouble {0.4, 0.4});
     // getBuckFastIdentity.setOption<vbool>("partonOnly",vbool {false, false});
 
-    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr {
-    //     { {"ATLAS_0LEP_20invfb", "CMS_MONOJET_20invfb"},
-    //       {"ATLAS_13TeV_0LEP_13invfb"} });
+    // getIdentityAnalysisContainer.setOption<vvstr>("analyses", vvstr { {}, {} });
 
 
 
