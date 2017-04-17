@@ -6,7 +6,7 @@ DarkBit
 =======
 
 Things to fix in paper before referee report comes back:
-- Increase size of text on plots in paper (spoke plots, others?) s[JC/?]
+- Increase size of text on plots in paper (spoke plots, others?) [JC/?]
 - Figure 3 “exemplary” -> “example” [?]
 - Double-check that all options are mentioned properly in darkbit paper [CW, JE, JC]
 
