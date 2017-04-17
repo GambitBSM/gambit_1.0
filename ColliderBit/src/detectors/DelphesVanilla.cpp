@@ -34,14 +34,12 @@ namespace Gambit {
         pdg(nullptr) {}
 
       ~DelphesVanillaImpl() {
-        delete confReader; confReader=nullptr;
-        /// @todo Hmm... I wonder whether or not Delphes cleans up its own memory?
-        delete factory; factory=nullptr;
-        delete allParticleOutputArray; allParticleOutputArray=nullptr;
-        delete stableParticleOutputArray; stableParticleOutputArray=nullptr;
-        delete partonOutputArray; partonOutputArray=nullptr;
-        delete pdg; pdg=nullptr;
-        delete modularDelphes; modularDelphes = nullptr;
+        if(confReader)
+          delete confReader;
+        if(modularDelphes) {
+          modularDelphes->Clear();
+          delete modularDelphes;
+        }
       }
 
       ////////////////////
@@ -69,7 +67,8 @@ namespace Gambit {
 
 
     void DelphesVanilla::init(const vector<string>& settings) {
-      try {
+      try 
+      {
         // Create the implementation object, for PIMPL abstraction
         _impl = new DelphesVanillaImpl();
 
@@ -94,15 +93,17 @@ namespace Gambit {
         _impl->pdg = TDatabasePDG::Instance();
 
         _impl->modularDelphes->InitTask();
-      } catch(runtime_error &e) {
-        cerr << "** ERROR: " << e.what() << endl;
-        exit(EXIT_FAILURE);
+      }
+      catch(runtime_error &e)
+      {
+        throw InitializationError();
       }
     }
 
 
     void DelphesVanilla::clear() {
-      delete _impl;
+      if(_impl)
+        delete _impl;
       _impl = nullptr;
     }
 
@@ -217,14 +218,16 @@ namespace Gambit {
 
 
     void DelphesVanilla::processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut) const {
-      try {
+      try 
+      {
         _impl->modularDelphes->Clear();
         convertInput(eventIn);
         _impl->modularDelphes->ProcessTask();
         convertOutput(eventOut);
-      } catch(runtime_error &e) {
-        cerr << "** ERROR: " << e.what() << endl;
-        exit(EXIT_FAILURE);
+      } 
+      catch(runtime_error &e) 
+      {
+        throw ProcessEventError();
       }
     }
 

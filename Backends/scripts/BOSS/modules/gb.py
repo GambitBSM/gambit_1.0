@@ -14,7 +14,9 @@ exec("import configs." + active_cfg.module_name + " as cfg")
 
 # ~~~~~ BOSS global variables and containers ~~~~~
 
-boss_temp_dir = 'temp'
+boss_dir = os.path.dirname(os.path.abspath(__file__))+'/..'
+boss_temp_dir = 'BOSS_temp'
+# boss_reset_dir = 'BOSS_reset_info'
 
 debug_mode = False
 
@@ -35,7 +37,7 @@ typedef_dict            = OrderedDict()
 loaded_classes_in_xml   = OrderedDict()
 func_dict               = OrderedDict()
 new_header_files        = OrderedDict()
-accepted_types          = [] 
+accepted_types          = []
 std_headers_used        = []
 original_file_paths     = OrderedDict()
 std_include_paths       = []
@@ -58,13 +60,13 @@ gambit_backend_safeversion  = cfg.gambit_backend_version.replace('.','_')
 gambit_backend_name_full    = cfg.gambit_backend_name + '_' + gambit_backend_safeversion
 
 backend_types_basedir = 'backend_types'
-backend_types_dir_complete = os.path.join(cfg.extra_output_dir, backend_types_basedir, gambit_backend_name_full) 
+backend_types_dir_complete = os.path.join(cfg.extra_output_dir, backend_types_basedir, gambit_backend_name_full)
 
 for_gambit_basedir = 'for_gambit'
-for_gambit_backend_types_dir_complete = os.path.join(cfg.extra_output_dir, for_gambit_basedir, backend_types_basedir, gambit_backend_name_full) 
+for_gambit_backend_types_dir_complete = os.path.join(cfg.extra_output_dir, for_gambit_basedir, backend_types_basedir, gambit_backend_name_full)
 
 frontend_base_dir = 'frontends'
-frontend_dir_complete = os.path.join(cfg.extra_output_dir, frontend_base_dir) 
+frontend_dir_complete = os.path.join(cfg.extra_output_dir, frontend_base_dir)
 
 gambit_backend_incl_dir = 'gambit/Backends/'
 gambit_utils_incl_dir   = 'gambit/Utils/'
@@ -113,7 +115,7 @@ operator_names = {
           "/"   : "slash",
           "%"   : "percent",
           "&"   : "ampersand",
-          "++"  : "plus_plus", 
+          "++"  : "plus_plus",
           "--"  : "minus_minus",
           "+="  : "plus_equal",
           "-="  : "minus_equal",

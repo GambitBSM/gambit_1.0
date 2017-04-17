@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Aug
@@ -24,12 +24,12 @@
 
 #include "gambit/Utils/statistics.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Elements/numerical_constants.hpp"
+#include "gambit/Utils/numerical_constants.hpp"
 #include "gambit/Utils/local_info.hpp"
 
 namespace Gambit
 {
-  
+
   namespace Stats
   {
 
@@ -163,7 +163,7 @@ namespace Gambit
       if (reltheoryerr < 0) utils_error().raise(LOCAL_INFO, "Theory uncertainty cannot be negative.");
       if (relobserr <= 0) utils_error().raise(LOCAL_INFO, "Observational uncertainty must be non-zero and positive.");
 
-      // Don't allow observed or predicted values of less than or equal to 0 
+      // Don't allow observed or predicted values of less than or equal to 0
       if (obs <= 1e2*std::numeric_limits<double>::min()) return std::numeric_limits<double>::lowest();
       if (theory <= 1e2*std::numeric_limits<double>::min()) return std::numeric_limits<double>::lowest();
 

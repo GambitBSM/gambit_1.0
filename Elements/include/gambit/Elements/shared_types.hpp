@@ -42,8 +42,8 @@
 
 #include "gambit/Utils/util_types.hpp"                 // General utility types useful to have around
 #include "gambit/Utils/model_parameters.hpp"           // Definitions required to understand model parameter objects
+#include "gambit/Utils/numerical_constants.hpp"        // Centralised constants header
 
-#include "gambit/Elements/numerical_constants.hpp"     // Centralised constants header
 #include "gambit/Elements/sminputs.hpp"                // Struct carrying SMINPUTS block (SLHA2)
 #include "gambit/Elements/spectrum.hpp"                // Carries BSM plus Standard Model spectrum info
 #include "gambit/Elements/decay_table.hpp"             // Decay table class (carries particle decay info)
@@ -62,9 +62,6 @@ namespace Gambit
   /// Pointer to a function that takes an integer by reference and returns a double.
   /// Just used for example purposes in ExampleBit_A and ExampleBit_B.
   typedef double(*fptr)(int&);
-
-  /// string-to-double map
-  typedef std::map<std::string,double> map_str_dbl;
 
   /// A double in, double out function pointer
   typedef double(*fptr_dd)(double&);

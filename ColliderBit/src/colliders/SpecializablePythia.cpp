@@ -35,7 +35,6 @@ namespace Gambit
 
       void init(SpecializablePythia* specializeMe) {
         specializeMe->addToSettings("Beams:eCM = 8000");
-        specializeMe->addToSettings("Main:numberOfEvents = 20000");
         specializeMe->addToSettings("Main:timesAllowErrors = 1000");
         specializeMe->addToSettings("SUSY:all = on");
         specializeMe->addToSettings("Random:setSeed = on");
@@ -56,6 +55,24 @@ namespace Gambit
         specializeMe->addToSettings("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
       }
     }
+
+    /// @brief Contains a SpecializablePythia init function for a basic SUSY @ 8TeV LHC scenario.
+    /// @note Additional Pythia settings may still be applied externally via yaml file input.
+    namespace Pythia_SUSY_LHC_13TeV
+    {
+
+      void init(SpecializablePythia* specializeMe) {
+        specializeMe->addToSettings("Beams:eCM = 13000");
+        specializeMe->addToSettings("Main:timesAllowErrors = 1000");
+        specializeMe->addToSettings("SUSY:all = on");
+        specializeMe->addToSettings("Random:setSeed = on");
+      }
+
+    }
+
+
+
+
 
     SpecializablePythia::~SpecializablePythia()
     {
@@ -90,20 +107,13 @@ namespace Gambit
       if (!_pythiaBase)
       {
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
-        // Use all settings to instantiate and initialize PythiaBase
-        for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
       }
+      // Pass all settings to _pythiaBase
+      for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
+
+      // Create new _pythiaInstance from _pythiaBase
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
-
-//User makes the matrix elements here
-// MJW: need to reintroduce once Anders fixes bossed Pythia
-/*_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_uvuvx());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_evevx());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p2());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p2p2());
-_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
 
       // Send along the SLHAea::Coll pointer, if it exists
       if (slhaea) _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
@@ -123,9 +133,11 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
       if (!_pythiaBase)
       {
         _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
-        // Use all settings to instantiate and initialize PythiaBase
-        for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
       }
+      // Pass all settings to _pythiaBase
+      for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
+
+      // Create new _pythiaInstance from _pythiaBase
       if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
@@ -142,6 +154,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
       IF_X_SPECIALIZEX(Pythia_external)
       IF_X_SPECIALIZEX(Pythia_SUSY_LHC_8TeV)
       IF_X_SPECIALIZEX(Pythia_glusq_LHC_8TeV)
+      IF_X_SPECIALIZEX(Pythia_SUSY_LHC_13TeV)
       // default to a Pythia instance configured entirely by external (yaml) settings:
       _specialInit = Pythia_external::init;
       std::cout<<"\n\n\n"

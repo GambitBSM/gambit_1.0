@@ -84,7 +84,7 @@ namespace Gambit
         mh = 1.6e4;
       }
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
       result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
       result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
@@ -227,7 +227,7 @@ namespace Gambit
     void W_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 2.085;
       result.positive_error = 4.2e-02;
       result.negative_error = 4.2e-02;
@@ -241,7 +241,7 @@ namespace Gambit
     void Z_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 2.4952;
       result.positive_error = 2.3e-03;
       result.negative_error = 2.3e-03;
@@ -255,7 +255,7 @@ namespace Gambit
     void t_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 2.00;
       result.positive_error = 4.7e-01;
       result.negative_error = 4.3e-01;
@@ -266,7 +266,7 @@ namespace Gambit
     void mu_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 2.9959847e-19;
       result.positive_error = 3.0e-25;
       result.negative_error = 3.0e-25;
@@ -277,7 +277,7 @@ namespace Gambit
     void tau_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 2.267E-12;
       result.positive_error = 4.0e-15;
       result.negative_error = 4.0e-15;
@@ -295,7 +295,7 @@ namespace Gambit
     void pi_0_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 7.73e-09;
       result.positive_error = 1.7e-10;
       result.negative_error = 1.7e-10;
@@ -309,7 +309,7 @@ namespace Gambit
     void pi_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 2.5284e-17;
       result.positive_error = 5.0e-21;
       result.negative_error = 5.0e-21;
@@ -321,7 +321,7 @@ namespace Gambit
     void eta_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 1.31e-06;
       result.positive_error = 5.0e-08;
       result.negative_error = 5.0e-08;
@@ -332,7 +332,7 @@ namespace Gambit
     void rho_0_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 1.491e-01;
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
@@ -343,7 +343,7 @@ namespace Gambit
     void rho_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 1.491e-01;
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
@@ -354,7 +354,7 @@ namespace Gambit
     void omega_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version;
+      result.calculator_version = gambit_version();
       result.width_in_GeV = 8.49e-03;
       result.positive_error = 8.0e-05;
       result.negative_error = 8.0e-05;

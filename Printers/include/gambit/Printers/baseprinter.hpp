@@ -33,22 +33,18 @@
 #include "gambit/Utils/factory_registry.hpp"
 #include "gambit/Utils/model_parameters.hpp"
 
-// Boost
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/punctuation/comma_if.hpp>
-
 // Printable types
-#ifndef STANDALONE
+#ifndef SCANNER_STANDALONE
    // If we are in a main gambit executable, we need to know all the GAMBIT printable types
    #include "gambit/Elements/printable_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   //#include "gambit/ScannerBit/printable_types.hpp"
+   #include "gambit/ScannerBit/printable_types.hpp"
 
    // Already dealt with in basebaseprinter? Can possibly do this to deal with
    // lack of new types, rest will be inherited anyway.
-   #define PRINTABLE_TYPES (double)
-   #define RETRIEVABLE_TYPES (double)
+   #define PRINTABLE_TYPES SCANNER_PRINTABLE_TYPES
+   #define RETRIEVABLE_TYPES SCANNER_RETRIEVABLE_TYPES
 #endif
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
@@ -62,6 +58,13 @@ namespace Gambit
 {
   namespace Printers
   {
+
+    // Helper function for parsing ModelParameters label strings.
+    bool parse_label_for_ModelParameters(const std::string& fulllabel, const std::string& modelname, std::string& out, std::string& rest);
+
+    /// For debugging; print to stdout all the typeIDs for all types.
+    void printAllTypeIDs(void);
+
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Printer class declarations                          %
@@ -136,6 +139,16 @@ namespace Gambit
           if(printer_enabled) _print(in, label, vertexID, rank, pointID);
         }
 
+        // Overload which automatically determines a unique ID code
+        // based on the label.
+        template<typename T>
+        void print(T const& in, const std::string& label,
+                   const uint rank,
+                   const ulong pointID)
+        {
+          if(printer_enabled) _print(in, label, rank, pointID);
+        }
+
       protected:
         using BaseBasePrinter::_print; //unhide the default function in the base class
 
@@ -158,10 +171,13 @@ namespace Gambit
 
         // retrieve function dispatch
         template<typename T>
-        void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
+        bool retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
-          _retrieve(out, label, rank, pointID);
+          return _retrieve(out, label, rank, pointID);
         }
+
+        /// Retrieve and directly print data to new output
+        bool retrieve_and_print(const std::string& in_label, const std::string& out_label, BaseBasePrinter& printer, const uint rank, const ulong pointID);
 
       protected:
         using BaseBaseReader::_retrieve; //unhide the default function in the base class

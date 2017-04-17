@@ -2,18 +2,18 @@
 //   *********************************************
 ///  \file
 ///
-///  Example of how to use the macros in 
+///  Example of how to use the macros in
 ///  'backend_macros.hpp' to set up a frontend for
 ///  a specific library.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Anders Kvellestad
 ///  \date 2013 Mar, Apr
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr
 ///  \date 2014 May
@@ -28,11 +28,11 @@
 LOAD_LIBRARY
 
 // Set models that this backend can be used with.  If absent, all models are allowed.
-BE_ALLOW_MODELS(CMSSM)
+BE_ALLOW_MODELS(CMSSM,SingletDMZ3,WC)
 
 // Functions
 BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
-BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction", (CMSSM, UED))
+BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction", (CMSSM,WC))
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv","LibFirst_returnResult_capability")
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
@@ -42,7 +42,7 @@ BE_FUNCTION(arrayarg_2D, double, (double(*)[10]), "_Z11arrayarg_2DPA10_d", "exam
 BE_FUNCTION(arrayarg_3D, double, (double(*)[10][10]), "_Z11arrayarg_3DPA10_A10_d", "example_be_array_3D")
 
 // Variables
-BE_VARIABLE(SomeInt, int, "someInt", "SomeInt", (CMSSM, UED))
+BE_VARIABLE(SomeInt, int, "someInt", "SomeInt", (CMSSM))
 BE_VARIABLE(SomeDouble, double, "someDouble", "SomeDouble")
 BE_VARIABLE(SomeArray, dblarr, "someArray", "SomeArray")
 BE_VARIABLE(SomeVector, std::vector<double>, "someVector", "test_vector")
@@ -51,7 +51,7 @@ BE_VARIABLE(SomeVector, std::vector<double>, "someVector", "test_vector")
 BE_INI_DEPENDENCY(nevents, int)
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM, UED))
+BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM,SingletDM))
 BE_CONV_FUNCTION(variadicConvenience, double, (int, etc), "varex2")
 
 // Initialisation function (definition)
@@ -73,7 +73,7 @@ BE_INI_FUNCTION
     logger() << "Initialised someDouble to " << *SomeDouble << EOM;
   }
   logger() << "M0 in libfirst v1.1 initialisation function: " << *Param["M0"] << EOM;
-  awesomenessByAnders(*Dep::nevents); 
+  awesomenessByAnders(*Dep::nevents);
 }
 END_BE_INI_FUNCTION
 

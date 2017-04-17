@@ -89,6 +89,12 @@ namespace Gambit
     /// Copy a str to a character array, stripping the null termination character.
     void strcpy2f(char*, int, str);
 
+    /// Checks whether `str' ends with `suffix'
+    bool endsWith(const std::string& str, const std::string& suffix); 
+
+    /// Checks whether `str' begins with `prefix'
+    bool startsWith(const std::string& str, const std::string& prefix); 
+
     /// Get pointers to beginning and end of array. 
     // Useful for initialising vectors with arrays, e.g.
     //   int vv[] = { 12,43 };
@@ -129,6 +135,9 @@ namespace Gambit
      /// Ensure that a path exists (and then return the path, for chaining purposes)
     const str& ensure_path_exists(const str&);
 
+    /// Check if a file exists
+    bool file_exists(const std::string& filename);
+
     /// Return a vector of strings listing the contents of a directory (POSIX)
     std::vector<str> ls_dir(const str& dir);
 
@@ -140,6 +149,7 @@ namespace Gambit
 
     /// Delete all files in a directory (does not act recursively)
     int remove_all_files_in(const str& dirname, bool error_if_absent = true);
+
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 
@@ -169,6 +179,10 @@ namespace Gambit
 
     /// Local GAMBIT definition of isinf.  Could be redefined at a later point, depending on compiler support. 
     using std::isinf;
+
+    /// Check if a string represents an integer
+    /// From: http://stackoverflow.com/a/2845275/1447953
+    bool isInteger(const std::string&);
 
   }
 

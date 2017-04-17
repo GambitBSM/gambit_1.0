@@ -47,10 +47,13 @@ namespace Gambit {
           static const std::size_t empty_rdims[1]; // just to satisfy base class constructor, not used.
           static const std::size_t DSETRANK=1; 
 
+          std::vector<T> read_buffer; // Buffer to store a chunk of the linked dataset (during read operations)
+          std::size_t    read_buffer_start; // Index of start of read buffer
+
         public: 
           /// Constructors
           DataSetInterfaceScalar(); 
-          DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume); 
+          DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume, const char access); 
  
           /// Select a hyperslab chunk in the hosted dataset
           std::pair<hid_t,hid_t> select_chunk(std::size_t offset, std::size_t length) const;
@@ -70,6 +73,9 @@ namespace Gambit {
          // Extracts the ith chunk of length CHUNKLENGTH from the dataset
          std::vector<T> get_chunk(std::size_t i, std::size_t length) const;
 
+         // Extract entry at given index from dataset
+         T get_entry(std::size_t index);
+
          /// @}
 
       };
@@ -87,8 +93,8 @@ namespace Gambit {
       {}
 
       template<class T, std::size_t CL>
-      DataSetInterfaceScalar<T,CL>::DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume) 
-        : DataSetInterfaceBase<T,0,CL>(location_id, name, empty_rdims, resume)
+      DataSetInterfaceScalar<T,CL>::DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume, const char access) 
+        : DataSetInterfaceBase<T,0,CL>(location_id, name, empty_rdims, resume, access)
       {}
 
       template<class T, std::size_t CHUNKLENGTH>
@@ -379,7 +385,7 @@ namespace Gambit {
          // Buffer to receive data
          void* buffer = &chunkdata[0]; // pointer to contiguous memory within the buffer vector
 
-         // Write the data to the hyperslab.
+         // Get the data from the hyperslab.
          herr_t err_read = H5Dread(this->get_dset_id(), this->hdftype_id, memspace_id, dspace_id, H5P_DEFAULT, buffer);
 
          if(err_read<0)
@@ -395,6 +401,40 @@ namespace Gambit {
          H5Sclose(memspace_id);
 
          return chunkdata;
+     }
+
+     /// Extract a single entry from a linked dataset
+     template<class T, std::size_t CHUNKLENGTH>
+     T DataSetInterfaceScalar<T,CHUNKLENGTH>::get_entry(std::size_t index)
+     {
+        // Figure out relevant chunk start index and position of desired entry in the chunk.
+        std::size_t chunk_start = (index / CHUNKLENGTH) * CHUNKLENGTH;
+        std::size_t chunk_relative_index = index % CHUNKLENGTH;
+
+        #ifdef HDF5_DEBUG
+        std::cout << "index      :" << index << std::endl;
+        std::cout << "chunk_start:" << chunk_start << std::endl;
+        std::cout << "chunk_rel  :" << chunk_relative_index << std::endl;
+        #endif
+
+        // Figure out whether entry is already in the read buffer
+        if(read_buffer.size()==0 or read_buffer_start!=chunk_start)
+        {
+           // Nope, don't have it, read in the appropriate chunk
+           #ifdef HDF5_DEBUG
+           std::cout << "extracting new chunk starting from "<<chunk_start<< std::endl;
+           #endif
+           // Make sure we don't try to read past the end of the dataset
+           std::size_t length = CHUNKLENGTH; 
+           if(chunk_start+length > this->dset_length())
+           {
+              length = this->dset_length() - chunk_start;
+           }
+           read_buffer = get_chunk(chunk_start, length);
+           read_buffer_start = chunk_start;
+        }
+
+        return read_buffer.at(chunk_relative_index);
      }
 
      ///   @}

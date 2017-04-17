@@ -16,7 +16,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Elements/standalone_module.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
@@ -34,8 +34,10 @@ QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkB
 
 namespace Gambit
 {
+
   namespace DarkBit
   {
+
     // Dummy functor for returning empty cascadeMC result spectra
     void CMC_dummy(DarkBit::stringFunkMap& result)
     {
@@ -44,8 +46,9 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(Spectrum& outSpec){
-      std::string inputFileName = "input.slha";
+    void createSpectrum(Spectrum& outSpec)
+    {
+      std::string inputFileName = "DarkBit/data/example.slha1";
 
       Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
@@ -61,7 +64,7 @@ namespace Gambit
     // FIXME: Include invisible Higgs contribution
     void createDecays(DecayTable& outDecays)
     {
-      std::string inputFileName = "input.slha";
+      std::string inputFileName = "DarkBit/data/example.slha1";
       outDecays = DecayTable(inputFileName);
     }
   }
@@ -77,9 +80,9 @@ int main()
               << "Start DarkBit standalone example" << std::endl;
     std::cout << "--------------------------------" << std::endl;
     std::cout << std::endl;
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    std::cout << "This program reads and needs a file 'input.slha', or crashes otherwise." << std::endl;
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    std::cout << "This program reads and needs a file 'DarkBit/data/example.slha1' or dies!" << std::endl;
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     std::cout << std::endl;
 
 
@@ -180,7 +183,7 @@ int main()
     // Initialize DarkSUSY Local Halo Model
 
     DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&ExtractLocalMaxwellianHalo);
-    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
+    DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_one);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
@@ -222,7 +225,7 @@ int main()
 
     // Assume for direct and indirect detection likelihoods that dark matter
     // density is always the measured one (despite relic density results)
-    RD_fraction_fixed.reset_and_calculate();
+    RD_fraction_one.reset_and_calculate();
 
     // Set generic WIMP mass object
     mwimp_generic.resolveDependency(&TH_ProcessCatalog_SingletDM);
@@ -270,7 +273,7 @@ int main()
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
 
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
-    DDCalc_1_0_0_init.resolveDependency(&RD_fraction_fixed);
+    DDCalc_1_0_0_init.resolveDependency(&RD_fraction_one);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_SingletDM);
     DDCalc_1_0_0_init.reset_and_calculate();
@@ -320,9 +323,6 @@ int main()
 
     // Set up MC loop manager for cascade MC
     cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
-    cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
-    cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
-    cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_SingletDM);
     std::vector<functor*> nested_functions = initVector<functor*>(
         &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
     cascadeMC_LoopManager.setNestedList(nested_functions);
@@ -371,7 +371,7 @@ int main()
 
     // Calculate Fermi LAT dwarf likelihood
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
-    lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_fixed);
+    lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
     lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
     lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
 

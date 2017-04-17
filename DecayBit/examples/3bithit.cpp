@@ -23,7 +23,7 @@
 
 #include <stdexcept>
 
-#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/Elements/standalone_module.hpp"
 #include "gambit/Utils/file_lock.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
@@ -37,7 +37,7 @@ using namespace PrecisionBit::Functown;
 using std::cout;
 using std::endl;
 
-const std::string filename_in = "3bithit.in";
+const std::string filename_in = "DecayBit/data/3bithit.in";
 const std::string filename_out[2] = {"3bithit.out.slha1", "3bithit.out.slha2"};
 
 int main()

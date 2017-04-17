@@ -67,10 +67,14 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 # Arrange make backends command (will be filled in from backends.cmake)
-add_custom_target(backends)
+if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
+  add_custom_target(backends)
+endif()
 
 # Arrange make scanners command (will be filled in from scanners.cmake)
-add_custom_target(scanners)
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  add_custom_target(scanners)
+endif()
 
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
@@ -102,13 +106,27 @@ macro(add_extra_targets type package ver dir dl target)
     DEPENDERS patch configure build)
 endmacro()
 
+# Function to check whether or not a given scanner or backend has been ditched
+function(check_ditch_status name version)
+  foreach(ditch_command ${itch})
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "print \"${name}_${version}\".startswith(\"${ditch_command}\")"
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    RESULT_VARIABLE result
+                    OUTPUT_VARIABLE output)
+    if (output STREQUAL "True\n")
+      set(ditched_${name}_${version} TRUE PARENT_SCOPE)
+      message("${BoldCyan} X Excluding ${name} ${version} from GAMBIT configuration.${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
 # Function to set up a new target with a generic name of a backend/scanner and associate it with the default version
 function(set_as_default_version type name default)
   add_custom_target(${name})
   add_dependencies(${name} ${name}_${default})
   add_custom_target(clean-${name})
   add_dependencies(clean-${name} clean-${name}_${default})
-  if (${type} STREQUAL "backend model")
+  if (type STREQUAL "backend model")
     set(type "backend")
   else()
     add_custom_target(nuke-${name})
@@ -117,8 +135,12 @@ function(set_as_default_version type name default)
   add_dependencies(${type}s ${name})
 endfunction()
 
-include(cmake/scanners.cmake)
-include(cmake/backends.cmake)
+if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
+  include(cmake/backends.cmake)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  include(cmake/scanners.cmake)
+endif()
 
 # Print outcomes of BOSSing efforts
 if(NOT needs_BOSSing STREQUAL "")

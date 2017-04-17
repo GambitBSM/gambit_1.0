@@ -152,7 +152,7 @@ namespace Gambit
           case 10:
           {
             // Display version number and shutdown.
-            if (GET_RANK == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
+            if (GET_RANK == 0) cout << "\nThis is GAMBIT v" + gambit_version() << endl;
             logger().disable();
             throw SilentShutdownException();
           }

@@ -90,7 +90,10 @@ namespace Gambit
     public:
 
       /// Constructor
-      functor (str, str, str, str, Models::ModelFunctorClaw&);
+      functor(str, str, str, str, Models::ModelFunctorClaw&);
+
+      //// Destructor
+      virtual ~functor() {}
 
       /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate();
@@ -185,6 +188,10 @@ namespace Gambit
 
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
+      /// Getter for revealing the name of the wrapped function's assigned loop manager
+      virtual str loopManagerName();
+      /// Getter for revealing the module of the wrapped function's assigned loop manager
+      virtual str loopManagerOrigin();
 
       /// Tell the functor that the loop it manages should break now.
       virtual void breakLoop();
@@ -234,11 +241,13 @@ namespace Gambit
       /// Indicate to the functor which backends are actually loaded and working
       virtual void notifyOfBackends(std::map<str, std::set<str> >);
 
-      /// Printer function
-      virtual void print(Printers::BasePrinter* printer, const int pointID, int thread_num);
+      #ifndef NO_PRINTERS
+        /// Printer function
+        virtual void print(Printers::BasePrinter* printer, const int pointID, int thread_num);
 
-      /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer, const int pointID);
+        /// Printer function (no-thread-index short-circuit)
+        virtual void print(Printers::BasePrinter* printer, const int pointID);
+      #endif
 
       /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
       virtual invalid_point_exception* retrieve_invalid_point_exception();
@@ -367,7 +376,7 @@ namespace Gambit
       module_functor_common(str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Destructor
-      ~module_functor_common();
+      virtual ~module_functor_common();
 
       /// Getter for averaged runtime
       double getRuntimeAverage();
@@ -693,7 +702,7 @@ namespace Gambit
       module_functor(void(*)(TYPE &), str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Destructor
-      ~module_functor();
+      virtual ~module_functor();
 
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool flag);
@@ -710,11 +719,13 @@ namespace Gambit
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr();
 
-      /// Printer function
-      virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
+      #ifndef NO_PRINTERS
+        /// Printer function
+        virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
 
-      /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer, const int pointID);
+        /// Printer function (no-thread-index short-circuit)
+        virtual void print(Printers::BasePrinter* printer, const int pointID);
+      #endif
 
 
     protected:
@@ -744,14 +755,19 @@ namespace Gambit
       /// Constructor
       module_functor(void (*)(), str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      virtual ~module_functor() {}
+
       /// Calculate method
       void calculate();
 
-      /// Blank print method
-      virtual void print(Printers::BasePrinter*, const int, int);
+      #ifndef NO_PRINTERS
+        /// Blank print method
+        virtual void print(Printers::BasePrinter*, const int, int);
 
-      /// Blank print method
-      virtual void print(Printers::BasePrinter*, const int);
+        /// Blank print method
+        virtual void print(Printers::BasePrinter*, const int);
+      #endif
 
     protected:
 
@@ -793,6 +809,9 @@ namespace Gambit
       /// Constructor
       backend_functor_common (funcPtrType, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      virtual ~backend_functor_common() {}
+
       /// Update the internal function pointer wrapped by the functor
       void updatePointer(funcPtrType);
 
@@ -821,6 +840,9 @@ namespace Gambit
       /// Constructor
       backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      virtual ~backend_functor() {}
+
       /// Operation (execute function and return value)
       TYPE operator()(ARGS&&... args);
 
@@ -837,6 +859,9 @@ namespace Gambit
       /// Constructor
       backend_functor (void (*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      virtual ~backend_functor() {}
+
       /// Operation (execute function)
       void operator()(ARGS&&... args);
 
@@ -852,6 +877,9 @@ namespace Gambit
 
       /// Constructor
       backend_functor(typename variadic_ptr<TYPE,ARGS...>::type, str, str, str, str, str, str, Models::ModelFunctorClaw&);
+
+      /// Destructor
+      virtual ~backend_functor() {}
 
       /// Operation (execute function and return value)
       template <typename... VARARGS>
@@ -877,6 +905,9 @@ namespace Gambit
       /// Constructor
       backend_functor(typename variadic_ptr<void,ARGS...>::type, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      virtual ~backend_functor() {}
+
       /// Operation (execute function)
       template <typename... VARARGS>
       void operator()(VARARGS&&... varargs)
@@ -901,6 +932,9 @@ namespace Gambit
       /// Constructor
       model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      virtual ~model_functor() {}
+
       /// Function for adding a new parameter to the map inside the ModelParameters object
       void addParameter(str parname);
 
@@ -921,6 +955,9 @@ namespace Gambit
 
       /// Constructor
       primary_model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
+
+      /// Destructor
+      virtual ~primary_model_functor() {}
 
       /// Functor contents raw pointer "get" function
       /// Returns a raw pointer to myValue, so that the contents may be

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -129,16 +129,28 @@ namespace HEPUtils {
     ///
     /// Supplied particle should be new'd, and Event will take ownership.
     ///
+    /// @warning The event takes ownership of all supplied Particles -- even
+    /// those it chooses not to add to its collections, which will be
+    /// immediately deleted. Accordingly, the pointer passed by user code
+    /// must be considered potentially invalid from the moment this function is called.
+    ///
     /// @todo "Lock" at some point so that jet finding etc. only get done once
     void add_particle(Particle* p) {
-      if (p->is_prompt()) {
-        if (p->pid() == 22) _photons.push_back(p);
-        if (p->abspid() == 11) _electrons.push_back(p);
-        if (p->abspid() == 13) _muons.push_back(p);
-        if (p->abspid() == 15) _taus.push_back(p);
-        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
-            p->pid() == 1000022 || in_range(p->pid(), 50, 60)) _invisibles.push_back(p);
-      }
+      if (!p->is_prompt())
+        delete p;
+      else if (p->pid() == 22)
+        _photons.push_back(p);
+      else if (p->abspid() == 11)
+        _electrons.push_back(p);
+      else if (p->abspid() == 13)
+        _muons.push_back(p);
+      else if (p->abspid() == 15)
+        _taus.push_back(p);
+      else if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
+               p->pid() == 1000022 || in_range(p->pid(), 50, 60))
+        _invisibles.push_back(p);
+      else
+        delete p;
     }
 
 

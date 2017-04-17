@@ -2,13 +2,13 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM7atQ translation function definitions. 
+///  MSSM7atQ translation function definitions.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott  
+///
+///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Sep
 ///
@@ -16,10 +16,9 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
-#include "gambit/Logs/logger.hpp"
-#include "gambit/Elements/numerical_constants.hpp"
-
 #include "gambit/Models/models/MSSM7atQ.hpp"
+#include "gambit/Logs/logger.hpp"
+#include "gambit/Utils/numerical_constants.hpp"
 #include "gambit/Elements/sminputs.hpp"
 
 // Activate debug output
@@ -50,5 +49,5 @@
        std::cout << "MSSM9atQ parameters:" << targetP << std::endl;
      #endif
   }
-  
+
 #undef MODEL

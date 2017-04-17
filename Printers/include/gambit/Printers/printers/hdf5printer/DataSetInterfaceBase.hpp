@@ -64,6 +64,9 @@ namespace Gambit {
          // flag to specify whether we should try to access an existing dataset or create a new one
          bool resume;
 
+         // flag to record access mode for the dataset
+         char access;
+
         protected:
          // Derived classes need full access to these
 
@@ -106,6 +109,7 @@ namespace Gambit {
          const hsize_t* get_slicedims() const      { return slicedims; }
          ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
          ulong dset_length() const            { return dims[0]; }
+         char access_mode() const            { return access; }
  
          // To point "next write" cursor back at the beginning of a dataset, for overwriting everything
          void reset_nextemptyslab() { dsetnextemptyslab = 0; }
@@ -116,7 +120,7 @@ namespace Gambit {
 
          /// Constructors
          DataSetInterfaceBase(); 
-         DataSetInterfaceBase(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK], const bool resume);
+         DataSetInterfaceBase(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK], const bool resume, const char access);
          virtual ~DataSetInterfaceBase(); 
 
          /// Create a (chunked) dataset 
@@ -147,16 +151,18 @@ namespace Gambit {
         , myname()
         , record_dims()
         , resume(false)
+        , access('r')
 	, dset_id(-1)
         , dsetnextemptyslab(0)
       {}
 
       template<class T, std::size_t RR, std::size_t CL>
-      DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK], const bool r)
+      DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK], const bool r, const char a)
         : mylocation_id(location_id)
         , myname(name)
         , record_dims() /* doh have to copy array element by element */
         , resume(r)
+        , access(a)
         , dset_id(-1) 
         , dsetnextemptyslab(0)
       {
@@ -225,10 +231,10 @@ namespace Gambit {
          maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
          chunkdims[0] = CHUNKLENGTH;
          slicedims[0] = 1; // Dimensions of a single record in the data space
-         for(std::size_t i=0; i<RECORDRANK; i++)
+         std::size_t loopsize = RECORDRANK; // Just tricking the compiler so it doesn't complain in the RECORDRANK=0 case.
+         for(std::size_t i=0; i<loopsize; i++)
          {
             // Set other dimensions to match record size    
-            // Note: loop will not run for RANK=0 case
             dims[i+1]      = rdims[i];             
             maxdims[i+1]   = rdims[i];             
             chunkdims[i+1] = rdims[i];             
@@ -343,10 +349,10 @@ namespace Gambit {
          maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
          chunkdims[0] = CHUNKLENGTH;
          slicedims[0] = 1; // Dimensions of a single record in the data space
-         for(std::size_t i=0; i<RECORDRANK; i++)
+         std::size_t loopsize = RECORDRANK; // Just tricking the compiler so it doesn't complain in the RECORDRANK=0 case.
+         for(std::size_t i=0; i<loopsize; i++)
          {
             // Set other dimensions to match record size    
-            // Note: loop will not run for RANK=0 case
             dims[i+1]      = rdims[i];             
             maxdims[i+1]   = rdims[i];             
             chunkdims[i+1] = rdims[i];             

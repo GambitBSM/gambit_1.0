@@ -4,7 +4,7 @@
 ///
 ///  Functions of module SpecBit
 ///
-///  These functions link ModelParameters to 
+///  These functions link ModelParameters to
 ///  Spectrum objects in various ways.
 ///
 ///  *********************************************
@@ -14,10 +14,10 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
+///
 ///  *********************************************
 
-#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/external_examples.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
@@ -39,7 +39,7 @@ namespace Gambit
 
     /// Quick macro to simplify the check of Pipe::Models
     #define QUERYMODELS(MODEL) std::find(Pipe::Models->begin(), Pipe::Models->end(), MODEL) != Pipe::Models->end()
-    
+
     /// Create a spectrum object for testing purposes
     void make_test_spectrum(SubSpectrum* &result)
     {
@@ -54,11 +54,11 @@ namespace Gambit
       // Create SubSpectrum object to wrap flexiblesusy object
       static MSSMSpec<MI> mssm(FS_model);
 
-      // I think these objects should only get created once since they are static...      
+      // I think these objects should only get created once since they are static...
       // ...and they should be destructed automatically when the program ends.
 
       setup(mssm.model_interface.model); //fill with some parameters
-      mssm.model_interface.model.calculate_DRbar_parameters(); //calculated DRbar masses 
+      mssm.model_interface.model.calculate_DRbar_parameters(); //calculated DRbar masses
       mssm.model_interface.model.calculate_pole_masses();//now calculate pole masses
 
       // Check contents
@@ -74,9 +74,9 @@ namespace Gambit
        //So now we have a mssm1 model object filled, as it will be
        //stored in Gambit after the spectrum generator has run
        // mssm.mass2_par_mapping(); //call mapping - this needs to be changed.
-    
+
        mssm_manipulate(mssm);  //function can manipulate knowing the model
- 
+
       // Store result for gambit to use
       result = &mssm;
     }
@@ -89,11 +89,11 @@ namespace Gambit
        std::cout << "Running specbit_test_func1" << std::endl;
        std::cout << "Retrieving Spectrum*" << std::endl;
        /*TAG*/ Spectrum spec = *Dep::MSSM_spectrum;
- 
+
        std::cout << "Running spec_manipulate" << std::endl;
        // Clone the UV Spectum object so we can access a non-const version
-       std::unique_ptr<SubSpectrum> spec2 = spec->get_UV()->clone(); 
- 
+       std::unique_ptr<SubSpectrum> spec2 = spec->get_UV()->clone();
+
        spec_manipulate(*spec2); //function can manipulate without knowing model.
     }
 
@@ -117,31 +117,31 @@ namespace Gambit
 
       // Test run functions
       std::cout << "SubSpectrum via MSSMSpec" << std::endl;
-      std::cout << "mssm.GetScale() =" 
+      std::cout << "mssm.GetScale() ="
           << mssm.GetScale() << std::endl;
-      std::cout << "mHd2 = "  
+      std::cout << "mHd2 = "
           << mssm.get_mass2_parameter("mHd2") << std::endl;
-      std::cout << "mHu2 = "  
+      std::cout << "mHu2 = "
           << mssm.get_mass2_parameter("mHu2") << std::endl;
 
       // Do it again using a SubSpectrum base pointer
       SubSpectrum* spec = &mssm;
       std::cout << "SubSpectrum via SubSpectrum*" << std::endl;
-      std::cout << "spec->GetScale() =" 
+      std::cout << "spec->GetScale() ="
           << spec->GetScale() << std::endl;
-      std::cout << "mHd2 = "  
+      std::cout << "mHd2 = "
           << spec->get_mass2_parameter("mHd2") << std::endl;
-      std::cout << "mHu2 = "  
+      std::cout << "mHu2 = "
           << spec->get_mass2_parameter("mHu2") << std::endl;
 
       // Fill the model and do it again
       std::cout << "SubSpectrum via SubSpectrum* (filled)" << std::endl;
       setup(mssm.model_interface.model);
-      std::cout << "spec->GetScale() =" 
+      std::cout << "spec->GetScale() ="
           << spec->GetScale() << std::endl;
-      std::cout << "mHd2 = "  
+      std::cout << "mHd2 = "
           << spec->get_mass2_parameter("mHd2") << std::endl;
-      std::cout << "mHu2 = "  
+      std::cout << "mHu2 = "
           << spec->get_mass2_parameter("mHu2") << std::endl;
 
     }
@@ -151,11 +151,11 @@ namespace Gambit
     {
       // Requests a SubSpectrum object of capability SM_spectrum; test what we can retrieve from this
       using namespace Pipes::specbit_test_func3;
-      const SubSpectrum* spec = *Dep::SM_subspectrum; //Test retrieve pointer to Spectrum object 
+      const SubSpectrum* spec = *Dep::SM_subspectrum; //Test retrieve pointer to Spectrum object
 
-      std::unique_ptr<SubSpectrum> spec2 = spec->clone(); 
+      std::unique_ptr<SubSpectrum> spec2 = spec->clone();
 
-      SM_checks(*spec2); // Run some tests on standard model parameters 
+      SM_checks(*spec2); // Run some tests on standard model parameters
       logger() << EOM;
       result = 0;
     }
@@ -165,11 +165,11 @@ namespace Gambit
     {
       using namespace Pipes::specbit_test_Spectrum;
       /*TAG*/ Spectrum matched_spectra = *Dep::MSSM_spectrum;
-      const SubSpectrum* sm = *Dep::SM_subspectrum; 
-      bool noRGE = runOptions->getValueOrDef<bool>(0,"noRGE"); // don't test running on skeleton Spectrum wrappers 
+      const SubSpectrum* sm = *Dep::SM_subspectrum;
+      bool noRGE = runOptions->getValueOrDef<bool>(0,"noRGE"); // don't test running on skeleton Spectrum wrappers
       logger() << "Running specbit_test_Spectrum with noRGE="<<noRGE<<std::endl;
       logger() << EOM;
-      Spectrum_test(matched_spectra,sm,noRGE); // Run consistency tests on Spectrum contents vs SMInputs 
+      Spectrum_test(matched_spectra,sm,noRGE); // Run consistency tests on Spectrum contents vs SMInputs
       logger() << EOM;
       result = 0;
     }
@@ -180,7 +180,7 @@ namespace Gambit
       using namespace Pipes::specbit_test_show_SMInputs;
       const SMInputs sminputs = *Dep::SMINPUTS;
       logger() << "Contents of SMInputs struct:" << std::endl;
-      logger() << "alphainv: " << sminputs.alphainv << std::endl; 
+      logger() << "alphainv: " << sminputs.alphainv << std::endl;
       logger() << "GF      : " << sminputs.GF       << std::endl;
       logger() << "alphaS  : " << sminputs.alphaS   << std::endl;
       logger() << "mZ      : " << sminputs.mZ       << std::endl;
@@ -206,15 +206,15 @@ namespace Gambit
       using namespace Pipes::test_Singlet_spectrum;
       /*TAG*/ Spectrum spec = *Dep::SingletDM_spectrum;
       logger() << "Parameters from SingletDM_spectrum:" << std::endl;
-      logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0_1") << std::endl; 
-      logger() << "Higgs VEV        : " << spec->get_UV()->get_mass_parameter("v0") << std::endl; 
-      logger() << "Singlet pole mass: " << spec->get_Pole_Mass("S") << std::endl; 
+      logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0_1") << std::endl;
+      logger() << "Higgs VEV        : " << spec->get_UV()->get_mass_parameter("v0") << std::endl;
+      logger() << "Singlet pole mass: " << spec->get_Pole_Mass("S") << std::endl;
       logger() << EOM;
 
       logger() << "Parameters directly from ModelParameters functors:" << std::endl;
-      logger() << "Higgs pole mass  : " << *Param.at("mH") << std::endl; 
-      logger() << "Higgs VEV        : " << *Param.at("vev") << std::endl; 
-      logger() << "Singlet pole mass: " << *Param.at("mass") << std::endl; 
+      logger() << "Higgs pole mass  : " << *Param.at("mH") << std::endl;
+      logger() << "Higgs VEV        : " << *Param.at("vev") << std::endl;
+      logger() << "Singlet pole mass: " << *Param.at("mass") << std::endl;
       logger() << EOM;
 
       result = 0;

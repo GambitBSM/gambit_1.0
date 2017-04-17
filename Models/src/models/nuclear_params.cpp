@@ -16,10 +16,9 @@
 //  *********************************************
 
 #include "gambit/Models/model_macros.hpp"
-#include "gambit/Logs/logger.hpp"
-#include "gambit/Elements/numerical_constants.hpp"
-
 #include "gambit/Models/models/nuclear_params.hpp"
+#include "gambit/Logs/logger.hpp"
+#include "gambit/Utils/numerical_constants.hpp"
 #include "gambit/Elements/sminputs.hpp"
 
 #define MODEL nuclear_params_sigma0_sigmal

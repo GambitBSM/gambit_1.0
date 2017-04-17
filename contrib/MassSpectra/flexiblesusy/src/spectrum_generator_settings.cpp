@@ -89,6 +89,7 @@ void Spectrum_generator_settings::reset()
    values[calculate_observables]            = 0;
    values[force_positive_masses]            = 0;
    values[pole_mass_scale]                  = 0;
+   values[force_output]                     = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const

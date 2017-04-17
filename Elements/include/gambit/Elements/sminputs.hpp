@@ -20,7 +20,7 @@
 #define __SMInputs_hpp__
 
 #include "gambit/Elements/slhaea_helpers.hpp"
-#include "gambit/Elements/numerical_constants.hpp"
+#include "gambit/Utils/numerical_constants.hpp"
 
 namespace Gambit
 {

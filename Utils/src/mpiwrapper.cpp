@@ -567,23 +567,24 @@ namespace Gambit
       }
 
       /// @{ Helpers for registration of compound datatypes
+      // DEPRECATED! No longer sending compound datatypes via MPI. Leaving this here in case we need to do it in the future.
+      //
+      // /// Get vector storing functions to be run when MPI initialises.
+      // std::vector<MpiIniFunc>& get_mpi_ini_functions()
+      // {
+      //    static std::vector<MpiIniFunc> mpi_ini_functions;
+      //    return mpi_ini_functions;
+      // }
 
-      /// Get vector storing functions to be run when MPI initialises.
-      std::vector<MpiIniFunc>& get_mpi_ini_functions()
-      {
-         static std::vector<MpiIniFunc> mpi_ini_functions;
-         return mpi_ini_functions;
-      }
-
-      /// Constructor for AddMpiInitFunc
-      ///
-      /// AddMpiInitFunc will add functions to the map when it is constructed. Works
-      /// on the same idea as the "ini_code" struct, except it doesn't
-      /// cause the functions to be run, just "queues them up" so to speak.
-      AddMpiIniFunc::AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)())
-      {
-         get_mpi_ini_functions().push_back(MpiIniFunc(local_info,name,func));
-      }
+      // /// Constructor for AddMpiInitFunc
+      // ///
+      // /// AddMpiInitFunc will add functions to the map when it is constructed. Works
+      // /// on the same idea as the "ini_code" struct, except it doesn't
+      // /// cause the functions to be run, just "queues them up" so to speak.
+      // AddMpiIniFunc::AddMpiIniFunc(const std::string& local_info, const std::string& name, void(*func)())
+      // {
+      //    get_mpi_ini_functions().push_back(MpiIniFunc(local_info,name,func));
+      // }
 
       /// @}
 
@@ -596,7 +597,8 @@ namespace Gambit
 
         // Run any functions needed to queue up MPI datatype definition functions
         // (still a little hacky, but works)
-        Printers::queue_mpidefs();
+        // DEPRECATED! No longer adding any new MPI datatypes, for now anyway
+        // Printers::queue_mpidefs();
 
         // Do basic interrogation
         #ifdef MPI_DEBUG_OUTPUT
@@ -644,27 +646,28 @@ namespace Gambit
         #ifdef MPI_DEBUG_OUTPUT
         std::cerr << "  Process pool size : " << COMM_WORLD.Get_size() << std::endl;
         std::cerr << "  I am process number " << COMM_WORLD.Get_rank() << std::endl;
+        #endif
 
         // Run externally defined initialisation functions
-        std::cerr << "  Running MPI initialisation functions..." << std::endl;
-        #endif
-        for (std::vector<MpiIniFunc>::iterator it=get_mpi_ini_functions().begin();
-              it != get_mpi_ini_functions().end(); it++)
-        {
-         #ifdef MPI_DEBUG_OUTPUT
-         std::cerr << "    - Running function '"<<it->myname()<<"'" << std::endl;
-         #endif
-          try
-          {
-             it->runme(); // Run function.
-          }
-          catch (const std::exception& e)
-          {
-             std::cerr << "Gambit has failed to initialise MPI due to fatal exception: " << e.what() << std::endl;
-             std::cerr << "raised from an mpi_ini_function (with label="<<it->myname()<<") declared at: " << it->mylocation() << std::endl;
-             throw(e);
-          }
-        }
+        // DEPRECATED! No longer adding new MPI datatypes, at least for now
+        // std::cerr << "  Running MPI initialisation functions..." << std::endl;
+        // for (std::vector<MpiIniFunc>::iterator it=get_mpi_ini_functions().begin();
+        //       it != get_mpi_ini_functions().end(); it++)
+        // {
+        //  #ifdef MPI_DEBUG_OUTPUT
+        //  std::cerr << "    - Running function '"<<it->myname()<<"'" << std::endl;
+        //  #endif
+        //   try
+        //   {
+        //      it->runme(); // Run function.
+        //   }
+        //   catch (const std::exception& e)
+        //   {
+        //      std::cerr << "Gambit has failed to initialise MPI due to fatal exception: " << e.what() << std::endl;
+        //      std::cerr << "raised from an mpi_ini_function (with label="<<it->myname()<<") declared at: " << it->mylocation() << std::endl;
+        //      throw(e);
+        //   }
+        // }
         #ifdef MPI_DEBUG_OUTPUT
         std::cerr << "  MPI initialisation complete." << std::endl;
         #endif

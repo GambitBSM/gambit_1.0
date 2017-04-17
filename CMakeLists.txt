@@ -221,16 +221,22 @@ endif()
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
 
-# Set the version number (later to come directly from git tag)
-set(GAMBIT_VERSION_MAJOR 1)
-set(GAMBIT_VERSION_MINOR 0)
-set(GAMBIT_VERSION_REVISION 0)
+# Look for the tarball version file; if it is missing, set the version number directly from git tag
+if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/tarball_info.cmake")
+  include(cmake/tarball_info.cmake)
+else()
+  get_version_from_git(GAMBIT_VERSION_MAJOR GAMBIT_VERSION_MINOR GAMBIT_VERSION_REVISION
+                       GAMBIT_VERSION_PATCH GAMBIT_VERSION_FULL)
+endif()
 
 # Add doxygen build as an external project
 add_custom_target(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
 
 # Work out which modules to include in the compile
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
+
+# Set up targets to make standalone tarballs of the different modules
+add_standalone_tarballs("${GAMBIT_BITS}" "${GAMBIT_VERSION_FULL}")
 
 # Include contributed packages
 include(cmake/contrib.cmake)
@@ -283,12 +289,26 @@ list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//inclu
 list(APPEND MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml")
 set(MODULE_HARVESTER_FILES ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES})
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
-add_gambit_custom(model_harvest   models_harvested   MODEL_HARVESTER   MODEL_HARVESTER_FILES)
-add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES)
-add_gambit_custom(module_harvest  modules_harvested  MODULE_HARVESTER  MODULE_HARVESTER_FILES)
-add_gambit_custom(printer_harvest printers_harvested PRINTER_HARVESTER PRINTER_HARVESTER_FILES)
-add_dependencies(module_harvest backend_harvest)
-add_dependencies(printer_harvest module_harvest)
+if(EXISTS "${PROJECT_SOURCE_DIR}/Models/")
+ add_gambit_custom(model_harvest models_harvested MODEL_HARVESTER MODEL_HARVESTER_FILES)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
+  add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/Printers/")
+  add_gambit_custom(printer_harvest printers_harvested PRINTER_HARVESTER PRINTER_HARVESTER_FILES)
+else()
+  add_definitions(-DNO_PRINTERS)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/")
+  add_gambit_custom(module_harvest modules_harvested MODULE_HARVESTER  MODULE_HARVESTER_FILES)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
+  add_dependencies(module_harvest backend_harvest)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/Printers/")
+  add_dependencies(printer_harvest module_harvest)
+endif()
 
 # Generate the CMakeLists.txt files for GAMBIT modules, Backends, Models and Printers)
 message("${Yellow}-- Updating GAMBIT module, model, backend, and printer CMake files.${ColourReset}")
@@ -323,5 +343,7 @@ endforeach()
 # Add the executables
 include(cmake/executables.cmake)
 
-# Finish setting the link commands and rpath variables
-include(${PROJECT_BINARY_DIR}/linkedout.cmake)
+# Finish setting the link commands and rpath variables for ScannerBit
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  include(${PROJECT_BINARY_DIR}/linkedout.cmake)
+endif()

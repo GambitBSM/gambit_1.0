@@ -9,7 +9,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2014 May
@@ -23,24 +23,24 @@
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/basebaseprinter.hpp"
 #include "gambit/Printers/printermanager.hpp"
-#include "gambit/Printers/printer_rollcall.hpp" // Also registers all the available printers
+#include "gambit/Printers/printer_rollcall.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 // Switch for debugging output (manual at the moment)
 //#define DEBUG_MODE
 
-#ifdef DEBUG_MODE 
+#ifdef DEBUG_MODE
   #define DBUG(x) x
-#else 
+#else
   #define DBUG(x)
 #endif
 
 namespace Gambit
 {
-  namespace Printers 
+  namespace Printers
   {
 
-    /// Manager class for creating printer objects  
+    /// Manager class for creating printer objects
     PrinterManager::PrinterManager(const Options& printerNode, bool resume_mode)
       : BasePrinterManager(resume_mode)
       , tag(printerNode.getValue<std::string>("printer"))
@@ -83,10 +83,10 @@ namespace Gambit
       typedef std::map<std::string, BaseReader*>::iterator it2_type;
       for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
          delete it->second; // Delete the printer to which this pointer points.
-      } 
+      }
       for(it2_type it = readers.begin(); it != readers.end(); it++) {
          delete it->second; // Delete the reader to which this pointer points.
-      } 
+      }
       delete printerptr; // Delete primary printer
     }
 
@@ -145,7 +145,7 @@ namespace Gambit
         // (for a more minimal interface for use in ScannerBit)
         typedef std::map<std::string, BasePrinter*>::iterator it_type;
         it_type it = auxprinters.find(streamname);
-        if( it == auxprinters.end() ) 
+        if( it == auxprinters.end() )
         {
           std::ostringstream errmsg;
           errmsg << "Error! PrinterManager failed to retrieve the requested auxilliary print stream with name '"<<streamname<<"'! The stream may not have been created in the first place. Please check that the scanner plugin you are using correctly creates a printer stream with this name.";
@@ -163,7 +163,7 @@ namespace Gambit
       // (for a more minimal interface for use in ScannerBit)
       typedef std::map<std::string, BaseReader*>::iterator it_type;
       it_type it = readers.find(readername);
-      if( it == readers.end() ) 
+      if( it == readers.end() )
       {
         std::ostringstream errmsg;
         errmsg << "Error! PrinterManager failed to retrieve the requested reader stream with name '"<<readername<<"'! The reader may not have been created in the first place. Please check that the scanner plugin you are using correctly creates a reader stream with this name.";
@@ -178,10 +178,10 @@ namespace Gambit
       typedef std::map<std::string, BasePrinter*>::iterator it_type;
       for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
          it->second->finalise(abnormal);
-      } 
+      }
       printerptr->finalise(abnormal);
     }
- 
+
   }
 }
 

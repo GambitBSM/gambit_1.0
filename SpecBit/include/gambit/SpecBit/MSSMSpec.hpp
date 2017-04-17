@@ -95,7 +95,7 @@ namespace Gambit
         // SPINFO block
         SLHAea_add_block(slha, "SPINFO");
         SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+backend_name);
-        SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+backend_version+" ("+backend_name+")");
+        SLHAea_add(slha, "SPINFO", 2, gambit_version()+" (GAMBIT); "+backend_version+" ("+backend_name+")");
 
         // MINPAR block
         SLHAea_add_block(slha, "MINPAR");

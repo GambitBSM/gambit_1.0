@@ -101,13 +101,10 @@ add_gambit_library(fjcore OPTION OBJECT
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fjcore.hh)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
 
-
-#set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
-#include_directories("${fjcore_INCLUDE_DIR}")
-#add_gambit_library(fjcore OPTION OBJECT
-#                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc
-#                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
-#set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
+# We need to include some stuff from the eigen3 library.  Just ship it until we can get rid of
+# FlexibleSUSY (and arrange to retrieve it ourselves if/when getting gm2calc).
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
+include_directories("${EIGEN3_DIR}")
 
 #contrib/MassSpectra; include only if SpecBit is in use
 set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
@@ -134,15 +131,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   message("${BoldYellow}-- Determined FlexibleSUSY compiler library dependencies: ${flexiblesusy_extralibs}${ColourReset}")
   set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} ${flexiblesusy_extralibs}")
 
-  # We need to include some stuff from the eigen3 library.  Just ship it until we can get rid of FlexibleSUSY.
-  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-  include_directories("${EIGEN3_DIR}")
-
   # Silence the deprecated-declarations warnings comming from Eigen3
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(FS_CXX_FLAGS "${FS_CXX_FLAGS} -Wno-deprecated-declarations")
-  endif()
-
+  set_compiler_warning("no-deprecated-declarations" FS_CXX_FLAGS)
 
   # FlexibleSUSY configure options
   set(FS_OPTIONS ${FS_OPTIONS}
@@ -160,10 +150,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
      )
 
   # Set the models (spectrum generators) existing in flexiblesusy (could autogen this, but that would build some things we don't need)
-
-
   set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SingletDMZ3 SingletDM)
-
 
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.
   string (REPLACE ";" "," BUILT_FS_MODELS_COMMAS "${BUILT_FS_MODELS}")
@@ -179,6 +166,9 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
     message("${BoldRed}-- Configuring FlexibleSUSY failed.  Here's what I tried to do:\n${config_command}\n${output}${ColourReset}" )
     message(FATAL_ERROR "Configuring FlexibleSUSY failed." )
   endif()
+  set(rmstring "${CMAKE_BINARY_DIR}/flexiblesusy-prefix/src/flexiblesusy-stamp/flexiblesusy")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${rmstring}-configure)
+
   message("${Yellow}-- Configuring FlexibleSUSY - done.${ColourReset}")
 
   # Add FlexibleSUSY as an external project
@@ -186,7 +176,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
     SOURCE_DIR ${FS_DIR}
     BUILD_IN_SOURCE 1
     BUILD_COMMAND $(MAKE) alllib
-    CONFIGURE_COMMAND ""
+    CONFIGURE_COMMAND ${config_command}
     INSTALL_COMMAND ""
   )
 
@@ -216,9 +206,13 @@ else()
   set (EXCLUDE_FLEXIBLESUSY TRUE)
 
 endif()
+
 # Add clean info
-add_external_clean(flexiblesusy ${FS_DIR} null clean)
-add_custom_target(distclean-flexiblesusy COMMAND cd ${FS_DIR} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} distclean &&
-                                                 ${CMAKE_COMMAND} -E cmake_echo_color --red --bold "To get flexiblesusy to rebuild now, you must call make configure-flexiblesusy or rerun cmake.") || true)
+add_custom_target(clean-flexiblesusy COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
+                                     COMMAND [ -e ${FS_DIR} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} clean) || true)
+add_custom_target(distclean-flexiblesusy COMMAND cd ${FS_DIR} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} distclean) || true)
+add_custom_target(nuke-flexiblesusy)
 add_dependencies(distclean-flexiblesusy clean-flexiblesusy)
+add_dependencies(nuke-flexiblesusy distclean-flexiblesusy)
 add_dependencies(distclean distclean-flexiblesusy)
+add_dependencies(nuke-all nuke-flexiblesusy)
