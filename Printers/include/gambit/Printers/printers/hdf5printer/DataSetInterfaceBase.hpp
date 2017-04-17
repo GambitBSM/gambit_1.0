@@ -107,8 +107,8 @@ namespace Gambit {
          const hsize_t* get_maxdsetdims() const    { return maxdims; }
          const hsize_t* get_chunkdims() const      { return chunkdims; }
          const hsize_t* get_slicedims() const      { return slicedims; }
-         ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
-         ulong dset_length() const            { return dims[0]; }
+         unsigned long get_nextemptyslab() const     { return dsetnextemptyslab; }
+         unsigned long dset_length() const            { return dims[0]; }
          char access_mode() const            { return access; }
  
          // To point "next write" cursor back at the beginning of a dataset, for overwriting everything
