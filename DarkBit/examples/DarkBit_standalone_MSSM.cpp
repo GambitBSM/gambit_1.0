@@ -148,7 +148,8 @@ int main(int argc, char* argv[])
 
     int slha_version = 2;
     try { createSpectrum(0).getSLHAea(2); }
-    catch(Gambit::exception& e) { slha_version = 1; }
+    catch(Gambit::exception& e) { slha_version = 1;
+    cout << "SLHA 1 reading does not work correctly! Do not believe results!" << endl;}
 
     // Check that the decay table contains ~chi0_2 (if it doesn't,
     // we do not use information from the SLHA decay block)
@@ -174,7 +175,11 @@ int main(int argc, char* argv[])
     if (slha_version == 1)
     {
       MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createSpectrum);
+      MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createDecays);
       MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("MSSM30atQ");
+      // Use decay table if it is present:
+      if (decays) MicrOmegas_MSSM_3_6_9_2_init.setOption<bool>("internal_decays", false);
+      else MicrOmegas_MSSM_3_6_9_2_init.setOption<bool>("internal_decays", true);
       MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
     }
 
@@ -192,6 +197,8 @@ int main(int argc, char* argv[])
       DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsprep);
       if (decays && slha_version == 2) DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", false);
       else DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
+      DarkSUSY_PointInit_MSSM.setOption<int>("VZdecay", 0);
+      DarkSUSY_PointInit_MSSM.setOption<int>("VWdecay", 0);
       DarkSUSY_PointInit_MSSM.reset_and_calculate();
     }
 
@@ -215,7 +222,13 @@ int main(int argc, char* argv[])
     if (slha_version == 1)
     {
       RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::darkOmega);
+      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VZdecay);
+      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VWdecay);
+      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::cleanDecayTable);
       RD_oh2_MicrOmegas.setOption<int>("fast", 1);  // 0: accurate; 1: fast
+      // For the below VXdecay = 0 - no 3 body final states via virtual X
+      //                         1 - annihilations to 3 body final states via virtual X
+      //                         2 - (co)annihilations to 3 body final states via virtual X
       RD_oh2_MicrOmegas.reset_and_calculate();
       // Calculate WMAP likelihoods, based on MicrOmegas result
       lnL_oh2_Simple.resolveDependency(&RD_oh2_MicrOmegas);
@@ -330,7 +343,7 @@ int main(int argc, char* argv[])
       sigma_SI_p_simple.reset_and_calculate();
       sigma_SI_p_MO = sigma_SI_p_simple(0);
     }
-    else
+//    else
     {
       sigma_SI_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
       sigma_SI_p_simple.reset_and_calculate();
@@ -347,7 +360,7 @@ int main(int argc, char* argv[])
       sigma_SD_p_simple.reset_and_calculate();
       sigma_SD_p_MO = sigma_SD_p_simple(0);
     }
-    else
+//    else
     {
       sigma_SD_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
       sigma_SD_p_simple.reset_and_calculate();
@@ -554,6 +567,18 @@ int main(int argc, char* argv[])
       oh2 = RD_oh2_DarkSUSY(0);
       cout << "Relic density from DarkSUSY: " << oh2 << endl;
     }
+
+    // Print annihilation cross section for DS and MO:
+    cout << " sigma_SI_p [cm^2]: " << std::endl;
+    if (slha_version == 1)
+      cout << "    MO: " << sigma_SI_p_MO << std::endl;
+//    else
+      cout << "    DS: " << sigma_SI_p_DS << std::endl;
+    cout << " sigma_SD_p [cm^2]: " << std::endl;
+    if (slha_version == 1)
+      cout << "    MO: " << sigma_SD_p_MO << std::endl;
+//    else
+      cout << "    DS: " << sigma_SD_p_DS << std::endl;
 
     // ---- Dump output into file ----
 
