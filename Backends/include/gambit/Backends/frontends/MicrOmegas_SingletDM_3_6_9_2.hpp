@@ -9,7 +9,7 @@
 ///  Authors (add name and date if you modify):
 ///
 /// \author Jonathan Cornell
-/// \date May 2015
+/// \date May 2015, April 2017
 ///
 ///  *********************************************
 
@@ -19,7 +19,9 @@
 
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(SingletDM)
+BE_ALLOW_MODELS(SingletDM, Halo_gNFW, Halo_gNFW_rho0, Halo_gNFW_rhos, Halo_Einasto, Halo_Einasto_rho0, Halo_Einasto_rhos)
+// FIXME the presence of the various halo models is just a workaround to allow initializing MO without SingletDM
+// model)
 
 BE_FUNCTION(assignVal, int, (char*,double),"assignVal","assignVal")
 BE_FUNCTION(vSigma, double, (double, double, int), "vSigma","vSigma")
@@ -39,61 +41,10 @@ BE_VARIABLE(ForceUG, int, "ForceUG", "ForceUG")
 BE_VARIABLE(VZdecay, int, "VZdecay", "VZdecay")
 BE_VARIABLE(VWdecay, int, "VWdecay", "VWdecay")
 
-namespace Gambit
-{
-  namespace Backends
-  {
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
-    {
-      double dNdE(double Ecm, double E, int inP, int outN)
-      {
-        // outN 0-5: gamma, e+, p-, nu_e, nu_mu, nu_tau
-        // inP:  0 - 6: glu, d, u, s, c, b, t
-        //       7 - 9: e, m, l
-        //       10 - 15: Z, ZT, ZL, W, WT, WL
-        double tab[250];  // NZ = 250
-        readSpectra();
-        mInterp(Ecm/2, inP, outN, tab);
-        return zInterp(log(E/Ecm*2), tab);
-      }
-
-    } /* end namespace BACKENDNAME_SAFE_VERSION */
-  } /* end namespace Backends */
-} /* end namespace Gambit */
-
 BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 
-BE_INI_FUNCTION
-{
-     int error;
-     char cdmName[10];
-
-     int VZdecayOpt, VWdecayOpt; // 0=no 3 body final states
-                                 // 1=3 body final states in annihlations
-                                 // 2=3 body final states in co-annihilations
-     VZdecayOpt = runOptions->getValueOrDef<int>(1, "VZdecay");
-     VWdecayOpt = runOptions->getValueOrDef<int>(1, "VWdecay");
-     *VZdecay = VZdecayOpt;
-     *VWdecay = VWdecayOpt;
-
-     logger() << LogTags::debug << "Initializing MicrOmegas SingletDM with ";
-     logger() << "VWdecay: " << VWdecay << " VZdecay: " << VZdecay << EOM;
-
-     // Currently only works correctly in unitary gauge
-     *ForceUG=1;
-
-     error = assignVal((char*)"MS", *Param["mS"]);
-     if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "Unable to set DM mass in"
-             "MicrOmegas. MicrOmegas error code: " + std::to_string(error));
-     error = assignVal((char*)"lambda", *Param["lambda_hS"]);
-     if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "Unable to set lambda in"
-             "MicrOmegas. MicrOmegas error code: " + std::to_string(error));
-     error = sortOddParticles(byVal(cdmName));
-     if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "MicrOmegas function "
-             "sortOddParticles returned error code: " + std::to_string(error));
-
-}
-END_BE_INI_FUNCTION
+BE_INI_DEPENDENCY(SMINPUTS, SMInputs)
+BE_INI_DEPENDENCY(SingletDM_spectrum, Spectrum)
 
 #include "gambit/Backends/backend_undefs.hpp"
 
