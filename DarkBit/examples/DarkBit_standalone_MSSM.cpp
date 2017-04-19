@@ -243,9 +243,57 @@ int main(int argc, char* argv[])
       RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
       RD_oh2_DarkSUSY.reset_and_calculate();
       // FIXME: Use "general" version instead
+
       // Calculate WMAP likelihoods, based on DarkSUSY result
       lnL_oh2_Simple.resolveDependency(&RD_oh2_DarkSUSY);
       lnL_oh2_Simple.reset_and_calculate();
+    }
+
+    // Relic density calculation with GAMBIT routines:
+    {
+      RD_spectrum_SUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mspctm);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::widths);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::intdof);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::pacodes);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DSparticle_code);
+      // Below true if charginos and neutralinos are included in coannihilations:
+      RD_spectrum_SUSY.setOption<bool>("CoannCharginosNeutralinos", true);
+      // Below true if sfermions are included in coannihilations:
+      RD_spectrum_SUSY.setOption<bool>("CoannSfermions", true);
+      // Maximum sparticle mass to be icluded in coannihilations, in units of DM mass:
+      RD_spectrum_SUSY.setOption<double>("CoannMaxMass", 1.6);
+      RD_spectrum_SUSY.reset_and_calculate();
+
+      RD_spectrum_ordered_func.resolveDependency(&RD_spectrum_SUSY);
+      RD_spectrum_ordered_func.reset_and_calculate();
+
+      RD_annrate_DSprep_func.resolveDependency(&RD_spectrum_SUSY);
+      RD_annrate_DSprep_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdmgev);
+      RD_annrate_DSprep_func.reset_and_calculate();
+
+      RD_eff_annrate_SUSY.resolveDependency(&RD_annrate_DSprep_func);
+      RD_eff_annrate_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsanwx);
+      RD_eff_annrate_SUSY.reset_and_calculate();
+
+      RD_oh2_general.resolveDependency(&RD_spectrum_ordered_func);
+      RD_oh2_general.resolveDependency(&RD_eff_annrate_SUSY);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdthlim);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdtab);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdeqn);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdwintp);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DSparticle_code);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::widths);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdmgev);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpth);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpars);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdswitch);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdlun);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpadd);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rddof);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rderrors);
+      RD_oh2_general.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+      RD_oh2_general.reset_and_calculate();
     }
 
 
