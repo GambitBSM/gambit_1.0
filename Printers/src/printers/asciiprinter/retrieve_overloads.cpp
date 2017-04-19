@@ -140,8 +140,8 @@ namespace Gambit
     bool asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
     {
       bool is_valid = true;
-      //std::cout<<"Attempting to retrieve ModelParameters for model '"<<modelname<<"'"<<std::endl;
-      /// Work out all the output labels which correspond to the input modelname
+
+      /// Work out all the output labels that correspond to the input modelname
       bool found_at_least_one(false);
       for(std::map<std::string,uint>::const_iterator
           it = column_map.begin();
