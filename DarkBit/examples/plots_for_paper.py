@@ -6,10 +6,12 @@ from numpy import *
 import matplotlib.pyplot as plt
 from scipy.integrate import trapz
 from scipy.interpolate import griddata
+plt.rc('text', usetex=True)
+
 
 def plotSpectraCascade():
     plt.clf()
-    plt.figure(figsize=(5, 4))
+    plt.figure(figsize=(4, 3))
     for filename, label in [ 
             ['dNdE_FCMC_10.dat',   ''],
 #                r'$\chi\chi\to\phi_1\phi_2$; $\phi_1\to\gamma\gamma$; '+
@@ -31,10 +33,10 @@ def plotSpectraCascade():
 #        else:
 #            factor = 1.
         plt.loglog(x, factor*y*x*x+1e-50, label=label)
-    plt.text(1.3, 2e-2, r'$\chi\chi\to\phi_1\phi_2$; $\phi_1\to\gamma\gamma$; '+ r'$\phi_2\to\bar b b$')
+    plt.text(1.3, 2e-3, r'$\chi\chi\to\phi_1\phi_2$; $\phi_1\to\gamma\gamma$; '+ r'$\phi_2\to\bar b b$')
     plt.ylim([1e-3, 1e3])
     plt.xlim([1e0, 2e2])
-    plt.xlabel(r"$E\, [\rmGeV]$")
+    plt.xlabel(r"$E\, [\rm GeV]$")
     plt.ylabel(r"$E^2 dN/dE$ $[\rm GeV]$")
     plt.tight_layout(pad=0.3)
     plt.legend(loc=2, frameon=False, fontsize=11, ncol=3)
@@ -42,13 +44,13 @@ def plotSpectraCascade():
 
 def plotSpectraValidation():
     plt.clf()
-    plt.figure(figsize=(5, 4))
+    plt.figure(figsize=(4, 3))
     for filename, label in [ 
             ['dNdE0_DS.dat', r'$\chi\chi\to \bar b b\rm\, (DS)$'],
             ['dNdE0_MO.dat', r'$\chi\chi\to \bar b b\rm\, (MO) \times\, 2$'],
             ['dNdE1.dat', r'$\chi\chi\to Z^0\!\gamma$'],
             ['dNdE2.dat', r'$\chi\chi\to \gamma\gamma$'],
-            ['dNdE_VIB.dat', r'$\rm exemplary\, neutralino\, coannihilation$'],
+            ['dNdE_VIB.dat', r'$\rm neutralino\, coannihilation$'],
 #            ['dNdE3.dat', 'phi phi->gggg'],
 #            ['dNdE4.dat', '2 x phi1 -> 4 x phi2 -> 8 x g'],
 #            ['dNdE5.dat', r'$\chi\chi\to\gamma\nu\nu$'],
@@ -69,7 +71,7 @@ def plotSpectraValidation():
         plt.loglog(x, factor*y*x*x+1e-50, label=label)
     plt.ylim([1e-3, 1e4])
     plt.xlim([1e0, 3e2])
-    plt.xlabel(r"$E\, [\rmGeV]$")
+    plt.xlabel(r"$E\, [\rm GeV]$")
     plt.ylabel(r"$E^2 dN/dE$ $[\rm GeV]$")
     plt.tight_layout(pad=0.3)
     plt.legend(loc=3, frameon=False, fontsize=11)
