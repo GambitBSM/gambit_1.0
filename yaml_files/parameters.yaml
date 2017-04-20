@@ -3,7 +3,7 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-#StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+#StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
 
 CMSSM:
   A0:

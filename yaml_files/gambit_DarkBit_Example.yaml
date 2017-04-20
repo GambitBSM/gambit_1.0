@@ -1,7 +1,7 @@
 Parameters:
 
   #SM nuisance parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
 
   #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
@@ -194,9 +194,7 @@ Rules:
 
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
-    function: RD_fraction_from_oh2
-    options:
-      mode: leq_one
+    function: RD_fraction_leq_one
 
   # Choose whether MicrOmegas calculates decays widths for the MSSM internally using CalcHEP (internal_decays=true) or uses 
   # values from the GAMBIT decay table (internal_decays=false).

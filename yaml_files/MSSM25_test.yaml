@@ -1,6 +1,6 @@
 Parameters:
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml # for fixed point
+  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
+  #MSSM25atQ: !import yaml_files/LesHouches.in.MSSM_1.yaml # for fixed point
   MSSM25atQ:
     Qin: 1.9422e+16
     SignMu: 1

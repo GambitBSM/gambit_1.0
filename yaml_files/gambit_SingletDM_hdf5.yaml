@@ -5,7 +5,7 @@
 ###################################
 
 Parameters:
-    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+    StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
       mH:
@@ -223,8 +223,6 @@ Rules:
         # Supply (optional) path to likelihood data.  Otherwise relative path
         # is used.
         # datapath: /home/weniger/Work/Projects/GAMBIT/gambit/extras/gamLike/data/
-  - capability: RD_fraction
-    function: RD_fraction_from_oh2
   - capability: lnL_FermiLATdwarfs
     #dependencies:
     #    - capability: GA_AnnYield
@@ -282,9 +280,7 @@ Rules:
        #oh2_err: 0.07
 
   - capability: RD_fraction
-    function: RD_fraction_from_oh2
-    options:
-      mode: leq_one
+    function: RD_fraction_leq_one
 
 
   # Direct detection -------------------

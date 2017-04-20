@@ -2,7 +2,7 @@
 
 Parameters:
 
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
 
   CMSSM:
     M0:

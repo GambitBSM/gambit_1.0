@@ -17,7 +17,7 @@
 ###################################
 
 Parameters: 
-    StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
+    StandardModel_SLHA2: #!import yaml_files/StandardModel_SLHA2_defaults.yaml
       mT:
          range: [173.15,173.15]
          prior_type: flat
@@ -183,7 +183,7 @@ ObsLikes:
 
     - capability: RD_fraction
       purpose: Observable
-      fuction: RD_fraction_from_oh2
+      fuction: RD_fraction_rescaled
 
 
 
