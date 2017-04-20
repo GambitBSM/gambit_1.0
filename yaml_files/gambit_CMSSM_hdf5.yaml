@@ -5,9 +5,9 @@
 ###################################
 
 Parameters:
-    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-    nuclear_params_fnq: !import NuclearParams_fnq_defaults.yaml
-    #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+    StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
+    nuclear_params_fnq: !import yaml_files/NuclearParams_fnq_defaults.yaml
+    #MSSM25atQ: !import yaml_files/LesHouches.in.MSSM_1.yaml
     CMSSM:
       M0:
         range: [100, 1000]
@@ -116,9 +116,7 @@ Rules:
 
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
-    function: RD_fraction_from_oh2
-    options:
-      mode: leq_one
+    function: RD_fraction_leq_one
       
   - function: get_mass_es_pseudonyms
     options:

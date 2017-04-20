@@ -1,5 +1,5 @@
 Parameters:
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
 
 Priors:
     # none: all parameters fixed or have simple priors

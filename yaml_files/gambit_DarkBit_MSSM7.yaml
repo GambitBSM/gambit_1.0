@@ -1,8 +1,8 @@
 Parameters:
 
   #SM nuisance parameters fixed for now.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  nuclear_params_fnq: !import NuclearParams_fnq_defaults.yaml
+  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
+  nuclear_params_fnq: !import yaml_files/NuclearParams_fnq_defaults.yaml
 
   #Nuclear matrix parameters fixed for now.
   #  nuclear_params_sigmas_sigmal:

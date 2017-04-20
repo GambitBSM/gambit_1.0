@@ -286,9 +286,7 @@ Rules:
 
   # Relic density ----------------------
   - capability: RD_fraction
-    function: RD_fraction_from_oh2
-    options:
-      mode: leq_one
+    function: RD_fraction_leq_one
 
   - capability: RD_oh2
     function: RD_oh2_general   # general routines (DS backend)
