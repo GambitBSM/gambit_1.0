@@ -1,4 +1,4 @@
-drawing_order: [chargino_coannihilation, A0-H0_funnel, sbottom_coannihilation, stop_coannihilation, stau_coannihilation, Z-h0_funnel]
+drawing_order: [chargino_coannihilation, A0-H0_funnel, stau_coannihilation, stop_coannihilation, sbottom_coannihilation, Z-h0_funnel]
 
 #focus_point:
 #  extra_1D_plots: "112 11 105"
