@@ -40,10 +40,10 @@ namespace Gambit
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(
             TH_ProcessCatalog* const catalog,
-            const std::map<std::string, daFunk::Funk> & arg_f_vs_mass,
+            double gammaH,
             double vev,
             double alpha_strong)
-        : v0 (vev),
+        : Gamma_mh(gammaH), v0 (vev),
           alpha_s (alpha_strong)
         {
           mh   = catalog->getParticleProperty("h0_1").mass;
@@ -53,9 +53,6 @@ namespace Gambit
           mt   = catalog->getParticleProperty("u_3").mass;
           mZ0  = catalog->getParticleProperty("Z0").mass;
           mW   = catalog->getParticleProperty("W+").mass;
-          f_vs_mass = arg_f_vs_mass;
-          Gamma = f_vs_mass["Gamma"]->bind("mass");
-          Gamma_mh = Gamma->eval(mh);
         };
         ~SingletDM() {}
 
@@ -182,9 +179,6 @@ namespace Gambit
         }
 
       private:
-        std::map<std::string, daFunk::Funk> f_vs_mass;
-        daFunk::BoundFunk Gamma;
-
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt, mZ0, mW;
     };
 
@@ -218,35 +212,12 @@ namespace Gambit
     } // function DD_couplings_SingletDM
 
 
-    std::map<std::string, daFunk::Funk> get_f_vs_mass(std::string filename)
-    {
-      // Higgs branching ratios and total width Gamma [GeV], as function of
-      // mass [GeV] (80 - 1000 GeV)
-      ASCIItableReader table(filename);
-      const static std::vector<str> colnames = initVector<std::string>("mass",
-       "bb", "bb+", "bb-", "tautau", "tautau+", "tautau-", "mumu", "mumu+", "mumu-",
-       "ss", "ss+", "ss-", "cc", "cc+", "cc-", "tt", "tt+", "tt-", "gg", "gg+", "gg-",
-       "gammagamma", "gammagamma+", "gammagamma-", "Zgamma", "Zgamma+", "Zgamma-",
-       "WW", "WW+", "WW-", "ZZ", "ZZ+", "ZZ-", "Gamma", "Gamma+", "Gamma-");
-      table.setcolnames(colnames);
-      std::map<std::string, daFunk::Funk> f_vs_mass;
-      for (auto it = colnames.begin(); it != colnames.end(); it++)
-      {
-        f_vs_mass[*it] = daFunk::interp("mass", table["mass"], table[*it]);
-      }
-      return f_vs_mass;
-    }
-
     /// Set up process catalog for Singlet DM.
     void TH_ProcessCatalog_SingletDM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
       using std::vector;
       using std::string;
-
-      // Initialize Higgs decay tables (static, hence only once)
-      static std::map<string, daFunk::Funk> f_vs_mass =
-        get_f_vs_mass(GAMBIT_DIR "/Elements/data/Higgs_decay_1307.1347.dat");
 
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
@@ -349,11 +320,14 @@ namespace Gambit
 
       // Import relevant decays (only Higgs and subsequent decays)
       using DarkBit_utils::ImportDecays;
+      // Notes: Virtual Higgs decays into offshell W+W- final states are not
+      // imported.  All other channels are correspondingly rescaled.  Decay
+      // into SS final states is accounted for, leading to zero photons.
       ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching,
           daFunk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3"));
 
       // Instantiate new SingletDM object
-      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass, v, alpha_s);
+      auto singletDM = boost::make_shared<SingletDM>(&catalog, gammaH, v, alpha_s);
 
       // Populate annihilation channel list and add thresholds to threshold
       // list.
