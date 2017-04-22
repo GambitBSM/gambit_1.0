@@ -123,13 +123,13 @@ namespace Gambit
       // | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
       // | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
 
-      spectrum_generator.set_precision_goal                  (runOptions.getValueOrDef<double>(1.0e-4,"precision_goal"))
-      spectrum_generator.set_max_iterations                  (runOptions.getValueOrDef<double>(0,     "max_iterations"))
-      spectrum_generator.set_calculate_sm_masses             (runOptions.getValueOrDef<bool>  (false, "calculate_sm_masses"))
-      spectrum_generator.set_pole_mass_loop_order            (runOptions.getValueOrDef<int>   (2,     "pole_mass_loop_order"))
-      spectrum_generator.set_ewsb_loop_order                 (runOptions.getValueOrDef<int>   (2,     "ewsb_loop_order"))
-      spectrum_generator.set_beta_loop_order                 (runOptions.getValueOrDef<int>   (2,     "beta_loop_order"))
-      spectrum_generator.set_threshold_corrections_loop_order(runOptions.getValueOrDef<int>   (2,     "threshold_corrections_loop_order"))
+      spectrum_generator.set_precision_goal                  (runOptions.getValueOrDef<double>(1.0e-4,"precision_goal"));
+      spectrum_generator.set_max_iterations                  (runOptions.getValueOrDef<double>(0,     "max_iterations"));
+      spectrum_generator.set_calculate_sm_masses             (runOptions.getValueOrDef<bool>  (false, "calculate_sm_masses"));
+      spectrum_generator.set_pole_mass_loop_order            (runOptions.getValueOrDef<int>   (2,     "pole_mass_loop_order"));
+      spectrum_generator.set_ewsb_loop_order                 (runOptions.getValueOrDef<int>   (2,     "ewsb_loop_order"));
+      spectrum_generator.set_beta_loop_order                 (runOptions.getValueOrDef<int>   (2,     "beta_loop_order"));
+      spectrum_generator.set_threshold_corrections_loop_order(runOptions.getValueOrDef<int>   (2,     "threshold_corrections_loop_order"));
 
       // Higgs loop corrections are a little different... sort them out now
       Two_loop_corrections two_loop_settings;
@@ -441,7 +441,7 @@ namespace Gambit
        // Retrieve any mass cuts
       static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
       static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
- 
+
       // Get the spectrum from the Backend
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
@@ -461,7 +461,7 @@ namespace Gambit
       // Retrieve any mass cuts
       static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
       static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
- 
+
       // Get the spectrum from the Backend
       myPipe::BEreq::SPheno_MSSMspectrum(spectrum, sminputs, myPipe::Param);
 
