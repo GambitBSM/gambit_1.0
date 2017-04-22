@@ -28,7 +28,7 @@
 /// Interface to ScannerBit
 /// =================================================
 
-scanner_plugin(Diver, version(1, 0, 0))
+scanner_plugin(diver, version(1, 0, 0))
 {
 
   // Access Diver stuff and standard Gambit things

@@ -49,15 +49,7 @@ namespace Gambit
 
   const int gambit_version_int =  10000*gambit_version_major + 100*gambit_version_minor + gambit_version_revision;
 
-  inline str get_gambit_version()
-  {
-    std::ostringstream ss;
-    ss << gambit_version_major << "." << gambit_version_minor << "." << gambit_version_revision;
-    if (!gambit_version_patch.empty()) ss << "-" << gambit_version_patch;
-    return ss.str();
-  }
-
-  const str gambit_version = get_gambit_version();
+  str& gambit_version();
 
 }
 

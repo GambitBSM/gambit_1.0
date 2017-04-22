@@ -58,6 +58,16 @@ namespace Gambit
     /// Non-rollcalled functions and module-wide variables
     /// **************************************************
 
+
+    #ifdef COLLIDERBIT_DEBUG
+      str debug_prefix()
+      {
+        std::stringstream ss;
+        ss << "DEBUG: OMP thread " << omp_get_thread_num() << ":  ";
+        return ss.str();
+      }
+    #endif
+
     /// LEP limit likelihood function
     double limitLike(double x, double x95, double sigma)
     {
@@ -112,14 +122,14 @@ namespace Gambit
 
     /// Module-wide variables
 
-    // TODO: Get rid of some of these variables by restructuring the code a bit 
+    // TODO: Get rid of some of these variables by restructuring the code a bit
 
     /// Special iteration labels for the loop controlled by operateLHCLoop
-    enum specialIterations { BASE_INIT = -1, 
-                             COLLIDER_INIT = -2, 
-                             START_SUBPROCESS = -3, 
-                             END_SUBPROCESS = -4, 
-                             COLLIDER_FINALIZE = -5, 
+    enum specialIterations { BASE_INIT = -1,
+                             COLLIDER_INIT = -2,
+                             START_SUBPROCESS = -3,
+                             END_SUBPROCESS = -4,
+                             COLLIDER_FINALIZE = -5,
                              BASE_FINALIZE = -6};
 
     /// Pythia stuff
@@ -127,6 +137,7 @@ namespace Gambit
     std::vector<str>::const_iterator iterPythiaNames;
     unsigned int indexPythiaNames;
     bool eventsGenerated;
+    bool tooManyFailedEvents;
     std::vector<int> nEvents;
     int seedBase;
 
@@ -154,7 +165,7 @@ namespace Gambit
 
 
 
-    
+
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -168,12 +179,12 @@ namespace Gambit
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
 
       #ifdef COLLIDERBIT_DEBUG
-        cout << "DEBUG: New point!" << endl; 
+        std::cerr << debug_prefix() << "New point!" << endl;
       #endif
 
-      // 
+      //
       // Clear global containers and variables
-      // 
+      //
       pythiaNames.clear();
       iterPythiaNames = pythiaNames.cbegin();
       indexPythiaNames = 0;
@@ -183,6 +194,8 @@ namespace Gambit
       seedBase = 0;
       // - Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
+      // - Set tooManyFailedEvents to true if too many events fail.
+      tooManyFailedEvents = false;
 
       useBuckFastATLASDetector = false;
       globalAnalysesATLAS.clear();
@@ -205,7 +218,7 @@ namespace Gambit
       haveUsedDelphesDetector = false;
 #endif
 
-     
+
       // Retrieve run options from the YAML file (or standalone code)
       pythiaNames = runOptions->getValue<std::vector<str> >("pythiaNames");
       nEvents = runOptions->getValue<std::vector<int> >("nEvents");
@@ -240,7 +253,7 @@ namespace Gambit
         seedBase = int(Random::draw() * 899990000);
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: Current collider: " << *iterPythiaNames << " with index " << indexPythiaNames << endl; 
+          std::cerr << debug_prefix() << "Current collider: " << *iterPythiaNames << " with index " << indexPythiaNames << endl;
         #endif
 
         piped_invalid_point.check();
@@ -340,17 +353,24 @@ namespace Gambit
 
       else if (*Loop::iteration == COLLIDER_INIT)
       {
-        // Get pythia options
-        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        // Collect Pythia options that are common across all OMP threads
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iterPythiaNames))
-          pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
 
-        // Although we capture all couts, still we tell Pythia to be quiet....
+        // By default we tell Pythia to be quiet. (Can be overridden from yaml settings)
         pythiaCommonOptions.push_back("Print:quiet = on");
-        // .... except for showProcesses, which we need for the xsec veto.
-        pythiaCommonOptions.push_back("Init:showProcesses = on");
         pythiaCommonOptions.push_back("SLHA:verbose = 0");
+
+        // Get options from yaml file. If the SpecializablePythia specialization is hard-coded, okay with no options.
+        if (runOptions->hasKey(*iterPythiaNames))
+        {
+          std::vector<str> addPythiaOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
+          pythiaCommonOptions.insert(pythiaCommonOptions.end(), addPythiaOptions.begin(), addPythiaOptions.end());
+        }
+
+        // We need showProcesses for the xsec veto.
+        pythiaCommonOptions.push_back("Init:showProcesses = on");
+
+        // We need "SLHA:file = slhaea" for the SLHAea interface.
         pythiaCommonOptions.push_back("SLHA:file = slhaea");
       }
 
@@ -375,7 +395,7 @@ namespace Gambit
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: getPythia: My Pythia seed is: " << std::to_string(seedBase + omp_get_thread_num()) << endl;
+          std::cerr << debug_prefix() << "getPythia: My Pythia seed is: " << std::to_string(seedBase + omp_get_thread_num()) << endl;
         #endif
 
         result.resetSpecialization(*iterPythiaNames);
@@ -395,6 +415,9 @@ namespace Gambit
           }
           catch (SpecializablePythia::InitializationError &e)
           {
+            #ifdef COLLIDERBIT_DEBUG
+              std::cerr << debug_prefix() << "SpecializablePythia::InitializationError caught in getPythia. Will discard this point." << endl;
+            #endif
             piped_invalid_point.request("Bad point: Pythia can't initialize");
             Loop::wrapup();
             return;
@@ -426,14 +449,14 @@ namespace Gambit
         }
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
+          std::cerr << debug_prefix() << "totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
         #endif
 
         // - Wrap up loop if veto applies
-        if (totalxsec * 1e12 < totalxsec_fb_veto) 
+        if (totalxsec * 1e12 < totalxsec_fb_veto)
         {
           #ifdef COLLIDERBIT_DEBUG
-            cout << "DEBUG: Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
+            std::cerr << debug_prefix() << "Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
           #endif
           Loop::wrapup();
         }
@@ -487,17 +510,24 @@ namespace Gambit
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        // Get pythia options
-        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        // Collect Pythia options that are common across all OMP threads
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iterPythiaNames))
-          pythiaCommonOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
 
-        // Although we capture all couts, still we tell Pythia to be quiet....
+        // By default we tell Pythia to be quiet. (Can be overridden from yaml settings)
         pythiaCommonOptions.push_back("Print:quiet = on");
-        // .... except for showProcesses, which we need for the xsec veto.
-        pythiaCommonOptions.push_back("Init:showProcesses = on");
         pythiaCommonOptions.push_back("SLHA:verbose = 0");
+
+        // Get options from yaml file. If the SpecializablePythia specialization is hard-coded, okay with no options.
+        if (runOptions->hasKey(*iterPythiaNames))
+        {
+          std::vector<str> addPythiaOptions = runOptions->getValue<std::vector<str>>(*iterPythiaNames);
+          pythiaCommonOptions.insert(pythiaCommonOptions.end(), addPythiaOptions.begin(), addPythiaOptions.end());
+        }
+
+        // We need showProcesses for the xsec veto.
+        pythiaCommonOptions.push_back("Init:showProcesses = on");
+
+        // We need to control "SLHA:file" for the SLHA interface.
         pythiaCommonOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
       }
 
@@ -525,7 +555,7 @@ namespace Gambit
         pythiaOptions.push_back("Random:seed = " + std::to_string(seedBase + omp_get_thread_num()));
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: getPythiaFileReader: My Pythia seed is: " << std::to_string(seedBase + omp_get_thread_num()) << endl;
+          std::cerr << debug_prefix() << "getPythiaFileReader: My Pythia seed is: " << std::to_string(seedBase + omp_get_thread_num()) << endl;
         #endif
 
         result.resetSpecialization(*iterPythiaNames);
@@ -576,14 +606,14 @@ namespace Gambit
         }
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
+          std::cerr << debug_prefix() << "totalxsec [fb] = " << totalxsec * 1e12 << ", veto limit [fb] = " << totalxsec_fb_veto << endl;
         #endif
 
         // - Wrap up loop if veto applies
-        if (totalxsec * 1e12 < totalxsec_fb_veto) 
+        if (totalxsec * 1e12 < totalxsec_fb_veto)
         {
           #ifdef COLLIDERBIT_DEBUG
-            cout << "DEBUG: Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
+            std::cerr << debug_prefix() << "Cross-section veto applies. Will now call Loop::wrapup() to skip event generation for this collider." << endl;
           #endif
           Loop::wrapup();
         }
@@ -618,7 +648,7 @@ namespace Gambit
         delphesConfigFiles = runOptions->getValue<std::vector<str> >("delphesConfigFiles");
         CHECK_EQUAL_VECTOR_LENGTH(delphesConfigFiles,pythiaNames)
 
-        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1. 
+        // Delphes is not threadsafe (depends on ROOT). Raise error if OMP_NUM_THREADS=1.
         if(omp_get_max_threads()>1 and std::find(useDetector.begin(), useDetector.end(), true) != useDetector.end())
         {
           str errmsg = "Delphes is not threadsafe and cannot be used with OMP_NUM_THREADS>1.\n";
@@ -641,16 +671,25 @@ namespace Gambit
         // Setup new Delphes for the current collider
         std::vector<str> delphesOptions;
         delphesOptions.push_back(delphesConfigFiles[indexPythiaNames]);
-        result.init(delphesOptions);
 
-        return;
+        try
+        {
+          result.init(delphesOptions);
+        }
+        catch (DelphesVanilla::InitializationError& e)
+        {
+          #ifdef COLLIDERBIT_DEBUG
+            std::cerr << debug_prefix() << "DelphesVanilla::InitializationError caught in getDelphes. Will raise ColliderBit_error." << endl;
+          #endif
+          ColliderBit_error().raise(LOCAL_INFO, "getDelphes failed to initialize Delphes.");
+        }
       }
     }
 
 #endif // not defined EXCLUDE_DELPHES
-    
 
-  
+
+
     void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
       using namespace Pipes::getBuckFastATLAS;
@@ -676,21 +715,25 @@ namespace Gambit
         return;
       }
 
-
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        result.clear();
-
-        // Get settings for the current collider
+        // Get useDetector setting for the current collider
         useBuckFastATLASDetector = useDetector[indexPythiaNames];
-        if (!useBuckFastATLASDetector) return;
-        else haveUsedBuckFastATLASDetector = true;
+        if (useBuckFastATLASDetector)
+          haveUsedBuckFastATLASDetector = true;
 
-        // Setup new BuckFast for the current collider:
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS and useBuckFastATLASDetector)
+      {
+        // Each thread gets its own BuckFastSmearATLAS.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
 
         return;
       }
+
     }
 
 
@@ -722,18 +765,23 @@ namespace Gambit
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        result.clear();
-
         // Get useDetector setting for the current collider
         useBuckFastCMSDetector = useDetector[indexPythiaNames];
-        if (!useBuckFastCMSDetector) return;
-        else haveUsedBuckFastCMSDetector = true;
+        if (useBuckFastCMSDetector)
+          haveUsedBuckFastCMSDetector = true;
 
-        // Setup new BuckFast for the current collider:
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS and useBuckFastCMSDetector)
+      {
+        // Each thread gets its own BuckFastSmearCMS.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
 
         return;
       }
+
     }
 
 
@@ -765,14 +813,18 @@ namespace Gambit
 
       if (*Loop::iteration == COLLIDER_INIT)
       {
-        result.clear();
-
         // Get useDetector setting for the current collider
         useBuckFastIdentityDetector = useDetector[indexPythiaNames];
-        if (!useBuckFastIdentityDetector) return;
-        else haveUsedBuckFastIdentityDetector = true;
+        if (useBuckFastIdentityDetector)
+          haveUsedBuckFastIdentityDetector = true;
 
-        // Setup new BuckFast for the current collider:
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS and useBuckFastIdentityDetector)
+      {
+        // Each thread gets its own BuckFastSmearIdentity.
+        // Thus, their initialization is *after* COLLIDER_INIT, within omp parallel.
         result.init(partonOnly[indexPythiaNames], antiktR[indexPythiaNames]);
 
         return;
@@ -783,7 +835,7 @@ namespace Gambit
 
     /// *** Initialization for analyses ***
 
-    
+
 #ifndef EXCLUDE_DELPHES
     void getDetAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getDetAnalysisContainer;
@@ -800,15 +852,15 @@ namespace Gambit
 
         if (!useDelphesDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on 
+        // Check that there are some analyses to run if the detector is switched on
         if (analyses[indexPythiaNames].empty() and useDelphesDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getDelphes' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n"; 
-          errmsg    += "(in option 'analyses' for function 'getDetAnalysisContainer') is empty.\n"; 
-          errmsg    += "Please correct your settings.\n"; 
+          errmsg    += "', but the corresponding list of analyses\n";
+          errmsg    += "(in option 'analyses' for function 'getDetAnalysisContainer') is empty.\n";
+          errmsg    += "Please correct your settings.\n";
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -831,7 +883,7 @@ namespace Gambit
           {
             for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
-              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+              std::cerr << debug_prefix() << "The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
           }
         #endif
@@ -839,14 +891,14 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+          std::cerr << debug_prefix() << "xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
         #endif
 
         // Combine results from the threads together
@@ -879,15 +931,15 @@ namespace Gambit
 
         if (!useBuckFastATLASDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on 
+        // Check that there are some analyses to run if the detector is switched on
         if (analyses[indexPythiaNames].empty() and useBuckFastATLASDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getBuckFastATLAS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n"; 
-          errmsg    += "(in option 'analyses' for function 'getATLASAnalysisContainer') is empty.\n"; 
-          errmsg    += "Please correct your settings.\n"; 
+          errmsg    += "', but the corresponding list of analyses\n";
+          errmsg    += "(in option 'analyses' for function 'getATLASAnalysisContainer') is empty.\n";
+          errmsg    += "Please correct your settings.\n";
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -910,7 +962,7 @@ namespace Gambit
           {
             for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
-              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+              std::cerr << debug_prefix() << "The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
           }
         #endif
@@ -918,14 +970,14 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+          std::cerr << debug_prefix() << "xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
         #endif
 
         // Combine results from the threads together
@@ -957,15 +1009,15 @@ namespace Gambit
 
         if (!useBuckFastCMSDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on 
+        // Check that there are some analyses to run if the detector is switched on
         if (analyses[indexPythiaNames].empty() and useBuckFastCMSDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getBuckFastCMS' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n"; 
-          errmsg    += "(in option 'analyses' for function 'getCMSAnalysisContainer') is empty.\n"; 
-          errmsg    += "Please correct your settings.\n"; 
+          errmsg    += "', but the corresponding list of analyses\n";
+          errmsg    += "(in option 'analyses' for function 'getCMSAnalysisContainer') is empty.\n";
+          errmsg    += "Please correct your settings.\n";
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -988,7 +1040,7 @@ namespace Gambit
           {
             for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
-              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+              std::cerr << debug_prefix() << "The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
           }
         #endif
@@ -996,14 +1048,14 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+          std::cerr << debug_prefix() << "xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
         #endif
 
         // Combine results from the threads together
@@ -1035,15 +1087,15 @@ namespace Gambit
 
         if (!useBuckFastIdentityDetector) return;
 
-        // Check that there are some analyses to run if the detector is switched on 
+        // Check that there are some analyses to run if the detector is switched on
         if (analyses[indexPythiaNames].empty() and useBuckFastIdentityDetector)
         {
           str errmsg = "The option 'useDetector' for function 'getBuckFastIdentity' is set to true\n";
           errmsg    += "for the collider '";
           errmsg    += *iterPythiaNames;
-          errmsg    += "', but the corresponding list of analyses\n"; 
-          errmsg    += "(in option 'analyses' for function 'getIdentityAnalysisContainer') is empty.\n"; 
-          errmsg    += "Please correct your settings.\n"; 
+          errmsg    += "', but the corresponding list of analyses\n";
+          errmsg    += "(in option 'analyses' for function 'getIdentityAnalysisContainer') is empty.\n";
+          errmsg    += "Please correct your settings.\n";
           ColliderBit_error().raise(LOCAL_INFO, errmsg);
         }
 
@@ -1066,7 +1118,7 @@ namespace Gambit
           {
             for (auto it = analyses[indexPythiaNames].begin(); it != analyses[indexPythiaNames].end(); ++it)
             {
-              cout << "DEBUG: The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
+              std::cerr << debug_prefix() << "The run with " << *iterPythiaNames << " will include the analysis " << *it << endl;
             }
           }
         #endif
@@ -1074,14 +1126,14 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated && !tooManyFailedEvents)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
+          std::cerr << debug_prefix() << "xs_fb = " << xs_fb << " +/- " << xserr_fb << endl;
         #endif
 
         // Combine results from the threads together
@@ -1103,6 +1155,7 @@ namespace Gambit
     void generatePythia8Event(Pythia8::Event& result)
     {
       using namespace Pipes::generatePythia8Event;
+
       if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
@@ -1111,90 +1164,128 @@ namespace Gambit
       {
         Dep::HardScatteringSim->nextEvent(result);
       }
-      catch (SpecializablePythia::EventFailureError &e)
+      catch (SpecializablePythia::EventGenerationError& e)
       {
-        piped_invalid_point.request("Bad point: Pythia can't generate events");
+        #ifdef COLLIDERBIT_DEBUG
+          std::cerr << debug_prefix() << "SpecializablePythia::EventGenerationError caught in generatePythia8Event. Check the ColliderBit log for event details." << endl;
+        #endif
+        #pragma omp critical (pythia_event_failure)
+        {
+          // Set global flag
+          tooManyFailedEvents = true;
+          // Store Pythia event record in the logs
+          std::stringstream ss;
+          result.list(ss, 1);
+          logger() << LogTags::debug << "SpecializablePythia::EventGenerationError error caught in generatePythia8Event. Pythia record for event that failed:\n" << ss.str() << EOM;
+        }
         Loop::wrapup();
         return;
       }
-
     }
 
 
 
     /// *** Standard Event Format Functions ***
 
-  #ifndef EXCLUDE_DELPHES
-    void reconstructDelphesEvent(HEPUtils::Event& result) {
-      using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration <= BASE_INIT or !useDelphesDetector) return;
-      result.clear();
-
-#pragma omp critical (Delphes)
+    #ifndef EXCLUDE_DELPHES
+      void reconstructDelphesEvent(HEPUtils::Event& result)
       {
-        try {
-          (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
-        } catch (std::domain_error& e) {
-          std::cerr<<"\n== ColliderBit Warning ==";
-          std::cerr<<"\n   Event problem: "<<e.what();
-          std::cerr<<"\n   See ColliderBit log for event details.";
-          std::stringstream ss;
-          Dep::HardScatteringEvent->list(ss, 1);
-          logger() << ss.str() << EOM;
-          throw e;
+        using namespace Pipes::reconstructDelphesEvent;
+        if (*Loop::iteration <= BASE_INIT or !useDelphesDetector) return;
+        result.clear();
+
+        #pragma omp critical (Delphes)
+        {
+          try
+          {
+            (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
+          }
+          catch (DelphesVanilla::ProcessEventError& e)
+          {
+            #ifdef COLLIDERBIT_DEBUG
+              std::cerr << debug_prefix() << "DelphesVanilla::ProcessEventError caught in reconstructDelphesEvent." << endl;
+            #endif
+
+            // Set global flag
+            tooManyFailedEvents = true;
+            // Store Pythia event record in the logs
+            std::stringstream ss;
+            Dep::HardScatteringEvent->list(ss, 1);
+            logger() << LogTags::debug << "DelphesVanilla::ProcessEventError caught in reconstructDelphesEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
+
+            Loop::wrapup();
+          }
         }
       }
-    }
-#endif // not defined EXCLUDE_DELPHES
-    
+    #endif // not defined EXCLUDE_DELPHES
 
-      void smearEventATLAS(HEPUtils::Event& result) {
+
+    void smearEventATLAS(HEPUtils::Event& result)
+    {
       using namespace Pipes::smearEventATLAS;
       if (*Loop::iteration <= BASE_INIT or !useBuckFastATLASDetector) return;
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      try {
+      try
+      {
         (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
-      } catch (std::domain_error& e) {
-#pragma omp critical (event_warning)
+      }
+      catch (Gambit::exception& e)
+      {
+        #ifdef COLLIDERBIT_DEBUG
+          std::cerr << debug_prefix() << "Gambit::exception caught during event conversion in smearEventATLAS. Check the ColliderBit log for details." << endl;
+        #endif
+        #pragma omp critical (event_conversion_error)
         {
-          std::cerr<<"\n== ColliderBit Warning ==";
-          std::cerr<<"\n   Event problem: "<<e.what();
-          std::cerr<<"\n   See ColliderBit log for event details.";
+          // Set global flag
+          tooManyFailedEvents = true;
+          // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << ss.str() << EOM;
+          logger() << LogTags::debug << "Gambit::exception error caught in smearEventATLAS. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
-        throw e;
+        Loop::wrapup();
+        return;
       }
     }
 
-    void smearEventCMS(HEPUtils::Event& result) {
+
+    void smearEventCMS(HEPUtils::Event& result)
+    {
       using namespace Pipes::smearEventCMS;
       if (*Loop::iteration <= BASE_INIT or !useBuckFastCMSDetector) return;
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
-      try {
+      try
+      {
         (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
-      } catch (std::domain_error& e) {
-#pragma omp critical (event_warning)
+      }
+      catch (Gambit::exception& e)
+      {
+        #ifdef COLLIDERBIT_DEBUG
+          std::cerr << debug_prefix() << "Gambit::exception caught during event conversion in smearEventCMS. Check the ColliderBit log for details." << endl;
+        #endif
+        #pragma omp critical (event_conversion_error)
         {
-          std::cerr<<"\n== ColliderBit Warning ==";
-          std::cerr<<"\n   Event problem: "<<e.what();
-          std::cerr<<"\n   See ColliderBit log for event details.";
+          // Set global flag
+          tooManyFailedEvents = true;
+          // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << ss.str() << EOM;
+          logger() << LogTags::debug << "Gambit::exception error caught in smearEventCMS. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
-        throw e;
+        Loop::wrapup();
+        return;
       }
     }
 
-    void copyEvent(HEPUtils::Event& result) {
+
+    void copyEvent(HEPUtils::Event& result)
+    {
       using namespace Pipes::copyEvent;
-      if (*Loop::iteration <= BASE_INIT) return;
+      if (*Loop::iteration <= BASE_INIT or !useBuckFastIdentityDetector) return;
       result.clear();
 
       // Get the next event from Pythia8 and convert to HEPUtils::Event
@@ -1202,18 +1293,22 @@ namespace Gambit
       {
         (*Dep::SimpleSmearingSim).processEvent(*Dep::HardScatteringEvent, result);
       }
-      catch (std::domain_error& e)
+      catch (Gambit::exception& e)
       {
-        #pragma omp critical (event_warning)
+        #ifdef COLLIDERBIT_DEBUG
+          std::cerr << debug_prefix() << "Gambit::exception caught during event conversion in copyEvent. Check the ColliderBit log for details." << endl;
+        #endif
+        #pragma omp critical (event_conversion_error)
         {
-          std::cerr<<"\n== ColliderBit Warning ==";
-          std::cerr<<"\n   Event problem: "<<e.what();
-          std::cerr<<"\n   See ColliderBit log for event details.";
+          // Set global flag
+          tooManyFailedEvents = true;
+          // Store Pythia event record in the logs
           std::stringstream ss;
           Dep::HardScatteringEvent->list(ss, 1);
-          logger() << ss.str() << EOM;
+          logger() << LogTags::debug << "Gambit::exception error caught in copyEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
         }
-        throw e;
+        Loop::wrapup();
+        return;
       }
     }
 
@@ -1227,7 +1322,7 @@ namespace Gambit
     {
       using namespace Pipes::runDetAnalyses;
 
-      if (*Loop::iteration == BASE_INIT) 
+      if (*Loop::iteration == BASE_INIT)
       {
         result.clear();
         return;
@@ -1235,7 +1330,7 @@ namespace Gambit
 
       if (!useDelphesDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesDet.scale();
@@ -1243,7 +1338,7 @@ namespace Gambit
         {
 
           #ifdef COLLIDERBIT_DEBUG
-            cout << "DEBUG: runDetAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+            std::cerr << debug_prefix() << "runDetAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
           #endif
 
           result.push_back((*anaPtr)->get_results());
@@ -1251,11 +1346,11 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: runDetAnalyses: 'result' contains " << result.size() << " results." << endl;
+          std::cerr << debug_prefix() << "runDetAnalyses: 'result' contains " << result.size() << " results." << endl;
         #endif
         return;
       }
@@ -1273,7 +1368,7 @@ namespace Gambit
     {
       using namespace Pipes::runATLASAnalyses;
 
-      if (*Loop::iteration == BASE_INIT) 
+      if (*Loop::iteration == BASE_INIT)
       {
         result.clear();
         return;
@@ -1281,7 +1376,7 @@ namespace Gambit
 
       if (!useBuckFastATLASDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesATLAS.scale();
@@ -1289,7 +1384,7 @@ namespace Gambit
         {
 
           #ifdef COLLIDERBIT_DEBUG
-            cout << "DEBUG: runATLASAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+            std::cerr << debug_prefix() << "runATLASAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
           #endif
 
           result.push_back((*anaPtr)->get_results());
@@ -1297,11 +1392,11 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: runATLASAnalyses: 'result' contains " << result.size() << " results." << endl;
+          std::cerr << debug_prefix() << "runATLASAnalyses: 'result' contains " << result.size() << " results." << endl;
         #endif
         return;
       }
@@ -1318,7 +1413,7 @@ namespace Gambit
     {
       using namespace Pipes::runCMSAnalyses;
 
-      if (*Loop::iteration == BASE_INIT) 
+      if (*Loop::iteration == BASE_INIT)
       {
         result.clear();
         return;
@@ -1326,14 +1421,14 @@ namespace Gambit
 
       if (!useBuckFastCMSDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesCMS.scale();
         for (auto anaPtr = globalAnalysesCMS.analyses.begin(); anaPtr != globalAnalysesCMS.analyses.end(); ++anaPtr)
         {
           #ifdef COLLIDERBIT_DEBUG
-            cout << "DEBUG: runCMSAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+            std::cerr << debug_prefix() << "runCMSAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
           #endif
 
           result.push_back((*anaPtr)->get_results());
@@ -1341,11 +1436,11 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: runCMSAnalyses: 'result' contains " << result.size() << " results." << endl;
+          std::cerr << debug_prefix() << "runCMSAnalyses: 'result' contains " << result.size() << " results." << endl;
         #endif
         return;
       }
@@ -1362,7 +1457,7 @@ namespace Gambit
     {
       using namespace Pipes::runIdentityAnalyses;
 
-      if (*Loop::iteration == BASE_INIT) 
+      if (*Loop::iteration == BASE_INIT)
       {
         result.clear();
         return;
@@ -1370,14 +1465,14 @@ namespace Gambit
 
       if (!useBuckFastIdentityDetector) return;
 
-      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == COLLIDER_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // The final iteration for this collider: collect results
         globalAnalysesIdentity.scale();
         for (auto anaPtr = globalAnalysesIdentity.analyses.begin(); anaPtr != globalAnalysesIdentity.analyses.end(); ++anaPtr)
         {
           #ifdef COLLIDERBIT_DEBUG
-            cout << "DEBUG: runIdentityAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
+            std::cerr << debug_prefix() << "runIdentityAnalyses: Collecting result from " << (*anaPtr)->get_results().begin()->analysis_name << endl;
           #endif
 
           result.push_back((*anaPtr)->get_results());
@@ -1385,11 +1480,11 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated)
+      if (*Loop::iteration == BASE_FINALIZE && eventsGenerated && !tooManyFailedEvents)
       {
         // Final iteration. Just return.
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: runIdentityAnalyses: 'result' contains " << result.size() << " results." << endl;
+          std::cerr << debug_prefix() << "runIdentityAnalyses: 'result' contains " << result.size() << " results." << endl;
         #endif
         return;
       }
@@ -1406,18 +1501,39 @@ namespace Gambit
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
 
+      // If no events have been generated (xsec veto), return delta log-likelihood = 0
+      if (!eventsGenerated)
+      {
+        #ifdef COLLIDERBIT_DEBUG
+          std::cerr << debug_prefix() << "calc_LHC_LogLike: No events generated. Will return a delta log-likelihood of 0." << endl;
+        #endif
+        result = 0.0;
+        return;
+      }
+
+      // If too many events have failed, do the conservative thing and return delta log-likelihood = 0
+      if (tooManyFailedEvents)
+      {
+        #ifdef COLLIDERBIT_DEBUG
+          std::cerr << debug_prefix() << "calc_LHC_LogLike: Too many failed events. Will be conservative and return a delta log-likelihood of 0." << endl;
+        #endif
+        result = 0.0;
+        return;
+      }
+
+
       AnalysisNumbers analysisResults;
       #ifdef COLLIDERBIT_DEBUG
         if (haveUsedBuckFastATLASDetector)
-          cout << "DEBUG: calc_LHC_LogLike: Dep::ATLASAnalysisNumbers->size()    = " << Dep::ATLASAnalysisNumbers->size() << endl;
+          std::cerr << debug_prefix() << "calc_LHC_LogLike: Dep::ATLASAnalysisNumbers->size()    = " << Dep::ATLASAnalysisNumbers->size() << endl;
         if (haveUsedBuckFastCMSDetector)
-          cout << "DEBUG: calc_LHC_LogLike: Dep::CMSAnalysisNumbers->size()      = " << Dep::CMSAnalysisNumbers->size() << endl;
+          std::cerr << debug_prefix() << "calc_LHC_LogLike: Dep::CMSAnalysisNumbers->size()      = " << Dep::CMSAnalysisNumbers->size() << endl;
         if (haveUsedBuckFastIdentityDetector)
-          cout << "DEBUG: calc_LHC_LogLike: Dep::IdentityAnalysisNumbers->size() = " << Dep::IdentityAnalysisNumbers->size() << endl;
-#ifndef EXCLUDE_DELPHES
-        if (haveUsedDelphesDetector)
-          cout << "DEBUG: calc_LHC_LogLike: Dep::DetAnalysisNumbers->size()      = " << Dep::DetAnalysisNumbers->size() << endl;
-#endif
+          std::cerr << debug_prefix() << "calc_LHC_LogLike: Dep::IdentityAnalysisNumbers->size() = " << Dep::IdentityAnalysisNumbers->size() << endl;
+        #ifndef EXCLUDE_DELPHES
+          if (haveUsedDelphesDetector)
+           std::cerr << debug_prefix() << "calc_LHC_LogLike: Dep::DetAnalysisNumbers->size()      = " << Dep::DetAnalysisNumbers->size() << endl;
+        #endif
       #endif
 
       if (haveUsedBuckFastATLASDetector)
@@ -1426,17 +1542,17 @@ namespace Gambit
         analysisResults.insert(analysisResults.end(), Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
       if (haveUsedBuckFastIdentityDetector)
         analysisResults.insert(analysisResults.end(), Dep::IdentityAnalysisNumbers->begin(), Dep::IdentityAnalysisNumbers->end());
-#ifndef EXCLUDE_DELPHES
-      if (haveUsedDelphesDetector)
-        analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
-#endif
+      #ifndef EXCLUDE_DELPHES
+        if (haveUsedDelphesDetector)
+         analysisResults.insert(analysisResults.end(), Dep::DetAnalysisNumbers->begin(), Dep::DetAnalysisNumbers->end());
+      #endif
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis)
       {
 
         #ifdef COLLIDERBIT_DEBUG
-          cout << "DEBUG: calc_LHC_LogLike: Analysis " << analysis << " has " << analysisResults[analysis].size() << " signal regions." << endl;
+          std::cerr << debug_prefix() << "calc_LHC_LogLike: Analysis " << analysis << " has " << analysisResults[analysis].size() << " signal regions." << endl;
         #endif
 
         // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
@@ -1490,14 +1606,14 @@ namespace Gambit
           // For debuggig: print some useful numbers to the log.
           #ifdef COLLIDERBIT_DEBUG
             cout << endl;
-            cout <<  "DEBUG: " << "COLLIDER_RESULT: " << srData.analysis_name << ", SR: " << srData.sr_label << endl;
-            cout <<  "DEBUG: " << "  LLikes: b_ex      sb_ex     b_obs     sb_obs    (sb_obs-b_obs)" << endl;
-            cout <<  "DEBUG: " << "          " << llb_exp << "  " << llsb_exp << "  "
+            cout <<  debug_prefix() << "COLLIDER_RESULT: " << srData.analysis_name << ", SR: " << srData.sr_label << endl;
+            cout <<  debug_prefix() << "  LLikes: b_ex      sb_ex     b_obs     sb_obs    (sb_obs-b_obs)" << endl;
+            cout <<  debug_prefix() << "          " << llb_exp << "  " << llsb_exp << "  "
                      << llb_obs << "  " << llsb_obs << "  " << llsb_obs-llb_obs << endl;
-            cout <<  "DEBUG: " << "  NEvents, not scaled to luminosity: " << srData.n_signal << endl;
-            cout <<  "DEBUG: " << "  NEvents, scaled  to luminosity:    " << srData.n_signal_at_lumi << endl;
-            cout <<  "DEBUG: " << "  NEvents: b [rel err]      sb [rel err]" << endl;
-            cout <<  "DEBUG: " << "           " << n_predicted_uncertain_b << " [" << uncertainty_b << "]   "
+            cout <<  debug_prefix() << "  NEvents, not scaled to luminosity: " << srData.n_signal << endl;
+            cout <<  debug_prefix() << "  NEvents, scaled  to luminosity:    " << srData.n_signal_at_lumi << endl;
+            cout <<  debug_prefix() << "  NEvents: b [rel err]      sb [rel err]" << endl;
+            cout <<  debug_prefix() << "           " << n_predicted_uncertain_b << " [" << uncertainty_b << "]   "
                      << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << endl;
           #endif
 
@@ -1509,13 +1625,13 @@ namespace Gambit
 
         #ifdef COLLIDERBIT_DEBUG
           std::cout.precision(5);
-          cout << "DEBUG: calc_LHC_LogLike: Analysis #" << analysis << " contributes with a -LogL = " << bestexp_dll_obs << endl;
+          cout << "DEBUG: OMP Thread " << omp_get_thread_num() << ":  calc_LHC_LogLike: Analysis #" << analysis << " contributes with a -LogL = " << bestexp_dll_obs << endl;
         #endif
 
       } // end ana loop
 
       #ifdef COLLIDERBIT_DEBUG
-        cout << "DEBUG: COLLIDERBIT LIKELIHOOD: " << -total_dll_obs << endl;;
+        cout << "DEBUG: OMP Thread " << omp_get_thread_num() << ":  COLLIDERBIT LIKELIHOOD: " << -total_dll_obs << endl;
       #endif
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
       result = -total_dll_obs;
@@ -3949,9 +4065,9 @@ namespace Gambit
 
 
 
-    // Dummy observable that creates a dependency on TestModel1D, which is used to satisfy the normal 
-    // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to run 
-    // ColliderBit on a single point with a custom Pythia version, using Pythia's SLHA interface. 
+    // Dummy observable that creates a dependency on TestModel1D, which is used to satisfy the normal
+    // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to run
+    // ColliderBit on a single point with a custom Pythia version, using Pythia's SLHA interface.
     void getDummyColliderObservable(double& result)
     {
       result = 0.0;

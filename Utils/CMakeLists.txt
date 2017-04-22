@@ -36,6 +36,7 @@ set(source_files src/ascii_table_reader.cpp
                  src/table_formatter.cpp
                  src/threadsafe_rng.cpp
                  src/util_functions.cpp
+                 src/version.cpp
                  src/yaml_parser_base.cpp
 )
 

@@ -53,7 +53,7 @@ Scanner:
 
   scanners:
     multinest:
-      plugin: MultiNest
+      plugin: multinest
       like:  LogLike
       nlive: 4000
       tol: 0.5
@@ -374,7 +374,7 @@ Logger:
     [DarkBit] : "DarkBit.log"
     [PrecisionBit] : "PrecisionBit.log"
     [FlavBit] : "FlavBit.log"
-    [ColliderBit] : "ColliderrBit.log"
+    [ColliderBit] : "ColliderBit.log"
     [SpecBit] : "SpecBit.log"
     [Dependency Resolver] : "dep_resolver.log"
 

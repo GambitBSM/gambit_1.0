@@ -44,7 +44,7 @@ namespace Gambit
 /// Interface to ScannerBit
 /// =================================================
 
-scanner_plugin(GreAT, version(1, 0, 0))
+scanner_plugin(great, version(1, 0, 0))
 {
   // Access GreAT and standard Gambit things
   using namespace Gambit;
@@ -84,14 +84,14 @@ scanner_plugin(GreAT, version(1, 0, 0))
     data.min_logLike       = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
 
     // Set up output and MultiRun log filenames
-    std::ostringstream ss1, ss2, ss3; 
+    std::ostringstream ss1, ss2, ss3;
     ss1 << outpath << "MCMC_" << MPIrank << ".root";
     ss2 << outpath << "MultiRun.txt";
     ss3 << outpath << "MultiRun.txt.lock";
     std::string outputfilename = ss1.str();
     std::string multifilename = ss2.str();
     std::string lockfilename = ss3.str();
-    
+
     if (resume_mode and MPIrank == 0)
     {
       // Clear GreAT lock file
@@ -190,7 +190,7 @@ scanner_plugin(GreAT, version(1, 0, 0))
       // Finish.
       std::cout << "\033[1;31mGreAT finished successfully!\033[0m" << std::endl;
     }
-    
+
     return 0;
   }
 }
@@ -212,7 +212,7 @@ namespace Gambit
           outside = true;
         }
       }
-      
+
       if (outside)
       {
         // at least one dimension is outside the unit cube so return -1e100 for LogLike
