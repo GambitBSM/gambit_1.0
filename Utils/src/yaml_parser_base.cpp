@@ -34,7 +34,7 @@ namespace Gambit
   {
 
     /// Recursive import
-    int importRound(YAML::Node node)
+    int importRound(YAML::Node node, const std::string& filename)
     {
       int counter = 0;
       if (node.IsScalar())
@@ -47,17 +47,31 @@ namespace Gambit
             int rank = 0;
           #endif
           YAML::Node import;
-          std::string filename = node.as<std::string>();
-          if (rank == 0) std::cout << "Importing: " << filename << std::endl;
+          std::string new_filename = node.as<std::string>();
+          if (rank == 0) std::cout << "Importing: " << new_filename << std::endl;
           try
           {
-            import = YAML::LoadFile(filename);
+            // We want to do the import relative to the path in which the YAML file
+            // sits, unless it has a forward slash at the beginning (in which case we
+            // will interpret it as an absolute path)
+            std::string file_location = Utils::dir_name(filename); // "outer" file location
+            if(new_filename.at(0)=='/') // POSIX
+            {
+               // Use the absolute path as given
+               import = YAML::LoadFile(new_filename);        
+            }
+            else
+            {
+               // Append the path of the outer file
+               new_filename = file_location+"/"+new_filename;
+               import = YAML::LoadFile(new_filename);        
+            }
           }
           catch (YAML::Exception &e)
           {
             std::ostringstream msg;
-            msg << "Error reading Inifile \""<<filename<<"\" recursively! ";
-            msg << "Please check that file exist!" << endl;
+            msg << "Error importing \""<<new_filename<<"\"! ";
+            msg << "Please check that file exists! Error occurred during parsing of YAML file '"<<filename<<"'" << endl;
             msg << "(yaml-cpp error: "<<e.what()<<" )";
             inifile_error().raise(LOCAL_INFO,msg.str());
           }
@@ -70,7 +84,7 @@ namespace Gambit
       {
         for (unsigned int i = 0; i<node.size(); ++i)
         {
-          counter += importRound(node[i]);
+          counter += importRound(node[i],filename);
         }
         return counter;
       }
@@ -78,20 +92,20 @@ namespace Gambit
       {
         for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
         {
-          counter += importRound(it->second);  // Only values are processed
+          counter += importRound(it->second,filename);  // Only values are processed
         }
         return counter;
       }
       return 0;
     }
 
-    void recursiveImport(YAML::Node node)
+    void recursiveImport(const YAML::Node& node, const std::string& filename)
     {
       int import_counter = 0;
       int last_import_counter = 0;
       for ( int i = 0; i < 10; ++i)
       {
-        last_import_counter = importRound(node);
+        last_import_counter = importRound(node,filename);
         import_counter += last_import_counter;
       }
       if (last_import_counter > 0)
@@ -139,7 +153,7 @@ namespace Gambit
 
     void Parser::basicParse(YAML::Node root, std::string filename)
     {
-      recursiveImport(root);
+      recursiveImport(root,filename);
       parametersNode = root["Parameters"];
       priorsNode = root["Priors"];
       printerNode = root["Printer"];
