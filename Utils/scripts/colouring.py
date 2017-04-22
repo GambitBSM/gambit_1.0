@@ -207,6 +207,7 @@ def combine(region_file, pip_file):
     contour_commands = []
     min_contours = []
     region_names = []
+    regional_script = None
 
     # Iterate over all the regions mentioned in the drawing order
     for name in drawing_order:
@@ -243,6 +244,9 @@ def combine(region_file, pip_file):
         min_contour = min(min_contour, float(re.search('--draw-contour\s(.*?)\s', contour_command_list[i]).group(1)))
       contour_commands.append(contour_command_list)
       min_contours.append(min_contour)
+
+    # If this script is not present for any of the regions, go on to the next one.
+    if (regional_script is None): continue
 
     # Extract the axis styles from the last regional script
     axis_styles = re.findall('\s\s--axis-style\s*[^y]*\n', regional_script)
