@@ -61,7 +61,8 @@ namespace Gambit
     }
 
     // Create decay object from SLHA file input.slha
-    // FIXME: Include invisible Higgs contribution
+    // FIXME: Get the actual Higgs width for this point from 3bithit.
+    // (Also Update MicrOmegas SingletDM default Higgs width in vars.mdl)
     void createDecays(DecayTable& outDecays)
     {
       std::string inputFileName = "DarkBit/data/example.slha1";
@@ -161,7 +162,8 @@ int main()
     // Initialize MicrOmegas backend (specific for SingletDM)
     //MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
     MicrOmegas_SingletDM_3_6_9_2_init.notifyOfModel("SingletDM");
-    MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+    MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
+    MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createDecays);
     MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
@@ -189,25 +191,6 @@ int main()
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
     DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
-
-
-    // ---- Relic density ----
-
-    // Relic density calculation with MicrOmegas
-    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::darkOmega);
-    RD_oh2_MicrOmegas.reset_and_calculate();
-
-  //  // Relic density calculation with DarkSUSY (the sloppy version)
-  //  RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
-  //  RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  //  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
-  //  RD_oh2_DarkSUSY.reset_and_calculate();
-  //  // FIXME: Use "general" version instead
-
-    // Calculate WMAP likelihoods, based on MicrOmegas result
-    lnL_oh2_Simple.resolveDependency(&RD_oh2_MicrOmegas);
-    lnL_oh2_Simple.reset_and_calculate();
-
 
     // ---- Set up basic internal structures for direct & indirect detection ----
 
@@ -237,6 +220,15 @@ int main()
     sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
     sigmav_late_universe.reset_and_calculate();
 
+    // ---- Relic density ----
+
+    // Relic density calculation with MicrOmegas
+    RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::darkOmega);
+    RD_oh2_MicrOmegas.reset_and_calculate();
+
+    // Calculate WMAP likelihoods, based on MicrOmegas result
+    lnL_oh2_Simple.resolveDependency(&RD_oh2_MicrOmegas);
+    lnL_oh2_Simple.reset_and_calculate();
 
     // ---- Direct detection -----
 
@@ -429,10 +421,8 @@ int main()
     // Retrieve and print MicrOmegas result
     double oh2 = RD_oh2_MicrOmegas(0);
     logger() << "Relic density from MicrOmegas: " << oh2 << LogTags::info << EOM;
+    cout << "Relic density from MicrOmegas: " << oh2 << endl;
 
-    // Retrieve and print DarkSUSY result
-    oh2 = RD_oh2_DarkSUSY(0);
-    logger() << "Relic density from DarkSUSY: " << oh2 << LogTags::info << EOM;
 
     std::cout << "Done!" << std::endl;
 
