@@ -142,32 +142,70 @@ BE_INI_FUNCTION
      if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set sin(theta_W) in"
              " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
 
-     // Set widths
-     const DecayTable* tbl = &(*Dep::decay_rates);
+     // Set widths. Higgs width is needed from the decay table, otherwise error is
+     // thrown. If widths of the other SM particle are not present, the MicrOmegas
+     // default values are used.
 
-     error = assignVal((char*)"wh", tbl->at("h0_1").width_in_GeV);
+     const DecayTable* tbl = &(*Dep::decay_rates);
+     double width;
+     bool present = true;
+
+     try {width = tbl->at("h0_1").width_in_GeV;}
+     catch (std::exception& e) {backend_error().raise(LOCAL_INFO, "Higgs width missing from"
+             "decay table.");}
+     error = assignVal((char*)"wh", width);
      if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set Higgs width in"
              " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
 
-     error = assignVal((char*)"wZ", tbl->at("Z0").width_in_GeV);
-     if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set Z width in"
-             " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     present = true;
+     try {width = tbl->at("Z0").width_in_GeV;}
+     catch (std::exception& e) {present = false;}
+     if (present)
+     {
+         error = assignVal((char*)"wZ", width);
+         if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set Z width in"
+                 " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     }
 
-     error = assignVal((char*)"wW", tbl->at("W+").width_in_GeV);
-     if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set W width in"
-             " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     present = true;
+     try {width = tbl->at("W+").width_in_GeV;}
+     catch (std::exception& e) {present = false;}
+     if (present)
+     {
+         error = assignVal((char*)"wW", width);
+         if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set W width in"
+                 " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     }
 
-     error = assignVal((char*)"wm", tbl->at("mu-").width_in_GeV);
-     if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set muon width in"
-             " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     present = true;
+     try {width = tbl->at("mu-").width_in_GeV;}
+     catch (std::exception& e) {present = false;}
+     if (present)
+     {
+         error = assignVal((char*)"wm", width);
+         if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set muon width in"
+                 " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     }
 
-     error = assignVal((char*)"wl", tbl->at("tau-").width_in_GeV);
-     if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set tau width in"
-             " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     present = true;
+     try {width = tbl->at("tau-").width_in_GeV;}
+     catch (std::exception& e) {present = false;}
+     if (present)
+     {
+         error = assignVal((char*)"wl", width);
+         if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set tau width in"
+                 " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     }
 
-     error = assignVal((char*)"wt", tbl->at("t").width_in_GeV);
-     if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set top width in"
-             " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     present = true;
+     try {width = tbl->at("t").width_in_GeV;}
+     catch (std::exception& e) {present = false;}
+     if (present)
+     {
+         error = assignVal((char*)"wt", width);
+         if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set top width in"
+                 " MicrOmegas. MicrOmegas error code: " + std::to_string(error));
+     }
 
      // Initialise micrOMEGAs mass spectrum
      error = sortOddParticles(byVal(cdmName));
