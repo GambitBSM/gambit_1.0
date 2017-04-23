@@ -226,6 +226,37 @@ int main()
     RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::darkOmega);
     RD_oh2_MicrOmegas.reset_and_calculate();
 
+    // Relic density calculation with GAMBIT (DarkSUSY Boltzmann solver)
+    RD_spectrum_from_ProcessCatalog.resolveDependency(&TH_ProcessCatalog_SingletDM);
+    RD_spectrum_from_ProcessCatalog.resolveDependency(&DarkMatter_ID_SingletDM);
+    RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+
+    RD_eff_annrate_from_ProcessCatalog.resolveDependency(&TH_ProcessCatalog_SingletDM);
+    RD_eff_annrate_from_ProcessCatalog.resolveDependency(&DarkMatter_ID_SingletDM);
+    RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+
+    RD_spectrum_ordered_func.resolveDependency(&RD_spectrum_from_ProcessCatalog);
+    RD_spectrum_ordered_func.reset_and_calculate();
+
+    RD_oh2_general.resolveDependency(&RD_spectrum_ordered_func);
+    RD_oh2_general.resolveDependency(&RD_eff_annrate_from_ProcessCatalog);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdthlim);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdtab);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdeqn);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdwintp);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DSparticle_code);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::widths);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdmgev);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpth);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpars);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdswitch);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdlun);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpadd);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rddof);
+    RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rderrors);
+    RD_oh2_general.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+    RD_oh2_general.reset_and_calculate();
+
     // Calculate WMAP likelihoods, based on MicrOmegas result
     lnL_oh2_Simple.resolveDependency(&RD_oh2_MicrOmegas);
     lnL_oh2_Simple.reset_and_calculate();
@@ -423,6 +454,10 @@ int main()
     logger() << "Relic density from MicrOmegas: " << oh2 << LogTags::info << EOM;
     cout << "Relic density from MicrOmegas: " << oh2 << endl;
 
+    // Retrieve and print GAMBIT result
+    oh2 = RD_oh2_general(0);
+    logger() << "Relic density from GAMBIT (DarkSUSY Boltzmann solver): " << oh2 << LogTags::info << EOM;
+    cout << "Relic density from GAMBIT (DarkSUSY Boltzmann solver): " << oh2 << endl;
 
     std::cout << "Done!" << std::endl;
 
