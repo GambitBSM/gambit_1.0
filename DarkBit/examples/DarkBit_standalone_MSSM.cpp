@@ -294,6 +294,10 @@ int main(int argc, char* argv[])
       RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rderrors);
       RD_oh2_general.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
       RD_oh2_general.reset_and_calculate();
+
+      // Calculate WMAP likelihoods, based on GAMBIT result
+      lnL_oh2_Simple.resolveDependency(&RD_oh2_general);
+      lnL_oh2_Simple.reset_and_calculate();
     }
 
 
@@ -611,6 +615,8 @@ int main(int argc, char* argv[])
     {
       oh2 = RD_oh2_DarkSUSY(0);
       cout << "Relic density from DarkSUSY: " << oh2 << endl;
+      oh2 = RD_oh2_general(0);
+      cout << "Relic density from GAMBIT routines: " << oh2 << endl;
     }
 
     // Print annihilation cross section for DS and MO:
