@@ -66,13 +66,13 @@ Scanner:
 
   scanners:
     multinest:
-      plugin: MultiNest
+      plugin: multinest
       like:  LogLike
       nlive: 20000
       tol: 0.1
 
     de:
-      plugin: Diver
+      plugin: diver
       like: LogLike
       NP: 19200
       convthresh: 1e-5

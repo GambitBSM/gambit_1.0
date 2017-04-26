@@ -76,8 +76,8 @@ endif()
 set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
-set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}beta.tgz")  # Note "beta" suffix!
-set(md5 "84771f32a9dfa3957b2c842064adb82f")
+set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")  # Note "beta" suffix!
+set(md5 "df864ceeccb72467bfbe572a8da9711d")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 check_ditch_status(${name} ${ver})
 if(NOT ditched_${name}_${ver})

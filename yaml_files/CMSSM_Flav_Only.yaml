@@ -1,7 +1,7 @@
 Parameters:
 
   #SM parameters.
-  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
 
   #SUSY parameters.
   CMSSM:
@@ -39,14 +39,14 @@ Scanner:
   scanners:
 
     multinest:
-      plugin: MultiNest
+      plugin: multinest
       like:  LogLike
       nlive: 5000
       tol: 0.1
       updInt: 1
 
     de:
-      plugin: Diver
+      plugin: diver
       like: LogLike
       NP: 19200
       convthresh: 1e-5
