@@ -71,12 +71,24 @@ namespace Gambit
 
 int main(int argc, char* argv[])
 {
+  std::cout << std::endl;
+  std::cout << "Welcome to the DarkBit MSSM standalone program!" << std::endl;
+  std::cout << std::endl;
+  std::cout << "********************************************************************************" << std::endl;
+  std::cout << "Usage: DarkBit_standalone_MSSM SLHA_file (spectrum) (data) (dump)" << std::endl;
+  std::cout << std::endl;
+  std::cout << "SLHA_file: SLHA file used to intialise the program (required)" << std::endl;
+  std::cout << "spectrum: name of output file for gamma-ray spectrum (default: dNdE.dat)" << std::endl;
+  std::cout << "data: name of output file for observables and likelihoods (default: data.yaml)" << std::endl;
+  std::cout << "dump: name of unit test output file (default: dump.yaml)" << std::endl;
+  std::cout << "********************************************************************************" << std::endl;
+  std::cout << std::endl;
 
   try
   {
     if (argc == 1)
     {
-      std::cout << "Please provide name of slha file at command line." << std::endl;
+      std::cout << "Please provide name of SLHA file at command line." << std::endl;
       exit(1);
     }
     std::string filename = argv[1];
@@ -197,6 +209,9 @@ int main(int argc, char* argv[])
       DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsprep);
       if (decays && slha_version == 2) DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", false);
       else DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
+      // For the below VXdecay = 0 - no 3 body final states via virtual X
+      //                         1 - annihilations to 3 body final states via virtual X
+      //                         2 - (co)annihilations to 3 body final states via virtual X
       DarkSUSY_PointInit_MSSM.setOption<int>("VZdecay", 0);
       DarkSUSY_PointInit_MSSM.setOption<int>("VWdecay", 0);
       DarkSUSY_PointInit_MSSM.reset_and_calculate();
@@ -222,13 +237,10 @@ int main(int argc, char* argv[])
     if (slha_version == 1)
     {
       RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::darkOmega);
-      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VZdecay);
-      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VWdecay);
-      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::cleanDecayTable);
+//      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VZdecay);
+//      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VWdecay);
+//      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::cleanDecayTable);
       RD_oh2_MicrOmegas.setOption<int>("fast", 1);  // 0: accurate; 1: fast
-      // For the below VXdecay = 0 - no 3 body final states via virtual X
-      //                         1 - annihilations to 3 body final states via virtual X
-      //                         2 - (co)annihilations to 3 body final states via virtual X
       RD_oh2_MicrOmegas.reset_and_calculate();
       // Calculate WMAP likelihoods, based on MicrOmegas result
       lnL_oh2_Simple.resolveDependency(&RD_oh2_MicrOmegas);
