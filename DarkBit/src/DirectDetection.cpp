@@ -253,7 +253,7 @@ namespace Gambit {
     DD_EX(SuperCDMS_2014)       // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
     DD_EX(DARWIN_Ar)
     DD_EX(DARWIN_Xe)
-    DD_EX(LUX_2016_prelim)
+    DD_EX(LUX_2016)
     DD_EX(PandaX_2016)
     DD_EX(LUX_2015)
     DD_EX(PICO_2L)

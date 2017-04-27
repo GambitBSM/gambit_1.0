@@ -169,7 +169,7 @@ ObsLikes:
     - capability: LUX_2015_LogLikelihood
       purpose:    LogLike
 
-    - capability: LUX_2016_prelim_LogLikelihood
+    - capability: LUX_2016_LogLikelihood
       purpose:    LogLike
 
     - capability: PandaX_2016_LogLikelihood

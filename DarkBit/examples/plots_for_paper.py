@@ -140,7 +140,7 @@ def plotLUX():
     # SI scattering
 
     lux2013 = loadtxt("./LUX_2013_table.dat")
-    lux2016 = loadtxt("./LUX_2016_prelim_table.dat")
+    lux2016 = loadtxt("./LUX_2016_table.dat")
     pandaX = loadtxt("./PandaX_2016_table.dat")
     xenon100 = loadtxt("./XENON100_2012_table.dat")
     
