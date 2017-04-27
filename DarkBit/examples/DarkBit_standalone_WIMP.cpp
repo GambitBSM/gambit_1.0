@@ -417,8 +417,8 @@ int main(int argc, char* argv[])
     // ---- Calculate direct detection constraints ----
 
     // Calculate direct detection rates for LUX 2016, PandaX 2016, LUX 2013, XENON100 2012, SIMPLE and PICO
-    LUX_2016_prelim_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
-    LUX_2016_prelim_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    LUX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    LUX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     PandaX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PandaX_2016_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     LUX_2013_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
@@ -435,9 +435,9 @@ int main(int argc, char* argv[])
     PICO_2L_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
 
     // Calculate direct detection likelihood for LUX 2016, PandaX 2016, LUX 2013, XENON100 2012, SIMPLE and PICO
-    LUX_2016_prelim_GetLogLikelihood.resolveDependency(&LUX_2016_prelim_Calc);
-    LUX_2016_prelim_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
-    LUX_2016_prelim_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    LUX_2016_GetLogLikelihood.resolveDependency(&LUX_2016_Calc);
+    LUX_2016_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    LUX_2016_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
     PandaX_2016_GetLogLikelihood.resolveDependency(&PandaX_2016_Calc);
     PandaX_2016_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PandaX_2016_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
@@ -642,13 +642,13 @@ int main(int argc, char* argv[])
           DDCalc_1_0_0_init.reset_and_calculate();
 
           DDCalc_1_0_0_init.reset_and_calculate();
-          LUX_2016_prelim_Calc.reset_and_calculate();
-          LUX_2016_prelim_GetLogLikelihood.reset_and_calculate();
+          LUX_2016_Calc.reset_and_calculate();
+          LUX_2016_GetLogLikelihood.reset_and_calculate();
           LUX_2013_Calc.reset_and_calculate();
           LUX_2013_GetLogLikelihood.reset_and_calculate();
           PandaX_2016_Calc.reset_and_calculate();
           PandaX_2016_GetLogLikelihood.reset_and_calculate();
-          lnL1 = LUX_2016_prelim_GetLogLikelihood(0);
+          lnL1 = LUX_2016_GetLogLikelihood(0);
           lnL2 = PandaX_2016_GetLogLikelihood(0);
           lnL3 = LUX_2013_GetLogLikelihood(0);
 
@@ -677,7 +677,7 @@ int main(int argc, char* argv[])
       }
 
       //dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
-      dump_array_to_file("LUX_2016_prelim_table.dat", lnL_array1, m_list, s_list);
+      dump_array_to_file("LUX_2016_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
       dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);

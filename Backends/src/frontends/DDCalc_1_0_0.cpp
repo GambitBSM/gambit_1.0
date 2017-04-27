@@ -79,7 +79,7 @@ BE_INI_FUNCTION
       ex_map["LUX_2013"] = LUX_2013_Init(false);
       ex_map["SuperCDMS_2014"] = SuperCDMS_2014_Init(false);
       ex_map["SIMPLE_2014"] = SIMPLE_2014_Init(false);
-      ex_map["LUX_2016_prelim"] = LUX_2016_prelim_Init(false);
+      ex_map["LUX_2016"] = LUX_2016_Init(false);
       ex_map["PandaX_2016"] = PandaX_2016_Init(false);
       ex_map["LUX_2015"] = LUX_2015_Init(false);
       ex_map["PICO_2L"] = PICO_2L_Init(false);
