@@ -333,16 +333,4 @@ namespace Gambit
 
 }
 
-/// Instantiate a module functor template for a specific type
-#define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)             \
-namespace Gambit { template class module_functor<TYPE>; }
-
-/// Instantiate a backend functor template for a specific type
-#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)       \
-namespace Gambit                                                  \
-{                                                                 \
-  template class backend_functor_common<STRIP_PARENS(TYPE_PACK)>; \
-  template class backend_functor<STRIP_PARENS(TYPE_PACK)>;        \
-}
-
 #endif /* defined(__functor_definitions_hpp__) */

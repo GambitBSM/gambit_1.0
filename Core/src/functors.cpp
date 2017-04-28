@@ -15,12 +15,5 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/functor_definitions.hpp"
-#include "gambit/Elements/all_functor_types.hpp"
-
-// Instantiate the module functor templates for all required types
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,MODULE_FUNCTOR_TYPES)
-//INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
-
-// Instantiate the backend functor templates for all required types 
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)
+#include "gambit/Elements/module_functor_types.hpp"
+#include "gambit/Backends/backend_functor_types.hpp"
