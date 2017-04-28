@@ -7,9 +7,9 @@
 #  Module and functor type harvesting script
 #  Generates:
 #   Backends/include/backend_functor_types.hpp,
-#   Core/src/functors.cpp
 #   Core/include/module_rollcall.hpp
 #   Elements/module_types_rollcall.hpp
+#   Elements/module_functor_types.hpp
 #
 #  This script identifies then reads through
 #  all the module rollcall and frontend headers,
@@ -238,6 +238,7 @@ def main(argv):
 #define __backend_functor_types_hpp__             \n\
                                                   \n\
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
+#include \"gambit/Elements/functor_definitions.hpp\"\n\
                                                   \n\
                                                   \n\
 namespace Gambit                                  \n\
@@ -281,27 +282,30 @@ namespace Gambit                                  \n\
 ///                                               \n\
 ///  *********************************************\n\
                                                   \n\
+#ifndef __module_functor_types_hpp__              \n\
+#define __moduel_functor_types_hpp__              \n\
+                                                  \n\
+#include \"gambit/Elements/types_rollcall.hpp\"   \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
-#include \"gambit/Backends/backend_functor_types.hpp\"\n\
                                                   \n\
                                                   \n\
 namespace Gambit                                  \n\
-{                                                 \n"
+{                                                 "
     for t in types:
-      towrite += '  template class module_functor<{0}>;\n'.format(t)
+        towrite += '  template class module_functor<{0}>;\n'.format(t)
     towrite+="}\n"
 
     # Don't touch any existing file unless it is actually different from what we will create
-    source = "./Core/src/functors.cpp"
-    candidate = "./scratch/functors.cpp.candidate"
+    source = "./Elements/include/gambit/Elements/module_functor_types.cpp"
+    candidate = "./scratch/module_functor_types.cpp.candidate"
     with open(candidate,"w") as f: f.write(towrite)
     update_only_if_different(source, candidate)
 
     if verbose:
-        print "\nGenerated module_rollcall.hpp in Core."
-        print "Generated functors.cpp in Core."
-        print "Generated module_types_rollcall.hpp in Elemnts."
-        print "Generated backend_functor_types.hpp in Backends."
+        print "\nGenerated Core/module_rollcall.hpp."
+        print "Generated Elements/module_types_rollcall.hpp."
+        print "Generated Elements/module_functor_types.hpp."
+        print "Generated Backends/backend_functor_types.hpp."
 
     # Pickle the types for later usage by standalone_facilitator.py
     with open('./scratch/harvested_types.pickle', 'wb') as handle:

@@ -50,13 +50,13 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Ba
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Backends/backend_functor_types.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_functor_types.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit/test_function_rollcall.hpp")
 
 # Arrange for the removal of generated source files with "make clean"
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/src/functors.cpp")
 foreach(bit ${ALL_GAMBIT_BITS})
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
 endforeach()

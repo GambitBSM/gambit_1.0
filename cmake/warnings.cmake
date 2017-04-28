@@ -27,8 +27,6 @@ macro(set_compiler_warning warning current_flags)
   CHECK_CXX_COMPILER_FLAG("-W${warning}" CXX_SUPPORTS_${warning})
   if (CXX_SUPPORTS_${warning})
     set(${current_flags} "${${current_flags}} -W${warning}")
-  else()
-    message("${Red}-W${warning} not recognised by compiler${ColourReset}"
   endif()
 endmacro()
 
