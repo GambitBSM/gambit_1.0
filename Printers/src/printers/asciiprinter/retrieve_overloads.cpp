@@ -22,6 +22,7 @@
 ///  *********************************************
 
 #include "gambit/Printers/printers/asciireader.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
 
 namespace Gambit
 {
@@ -159,8 +160,8 @@ namespace Gambit
                err << "Error! ASCIIReader could not retrieve ModelParameters matching the model name '"<<modelname
                    <<"' in the ascii file '"<<dataFile_name<<"' (while calling 'retrieve'). Candidate parameters WERE "
                    <<"found, however their dataset labels indicate the presence of an inconsistency or ambiguity in "
-                   <<"the output. For example, we just tried to retrive a model parameter from the dataset:\n"
-                   <<"[" << kv.first << "->" << kv.second << "]"
+                   <<"the output. For example, we just tried to retrive a model parameter from the dataset:\n" << kv
+                   // <<"[" << kv.first << "->" << kv.second << "]"
                    <<"\nand successfully found the parameter "<<param_name<<", however the root of the label, that is,\n"
                    <<label_root<<"\ndoes not match the root expected based upon previous parameter retrievals for this model, which was\n  "
                    <<out.getOutputName()<<"\nThis may indicate that multiple sets of model parameters are present in the "
