@@ -293,7 +293,7 @@ namespace Gambit                                  \n\
 {                                                 "
     for t in types:
         towrite += '  template class module_functor<{0}>;\n'.format(t)
-    towrite+="}\n"
+    towrite+="}\n\n#endif // defined __module_functor_types_hpp__\n"
 
     # Don't touch any existing file unless it is actually different from what we will create
     source = "./Elements/include/gambit/Elements/module_functor_types.hpp"
