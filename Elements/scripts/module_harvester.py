@@ -296,8 +296,8 @@ namespace Gambit                                  \n\
     towrite+="}\n"
 
     # Don't touch any existing file unless it is actually different from what we will create
-    source = "./Elements/include/gambit/Elements/module_functor_types.cpp"
-    candidate = "./scratch/module_functor_types.cpp.candidate"
+    source = "./Elements/include/gambit/Elements/module_functor_types.hpp"
+    candidate = "./scratch/module_functor_types.hpp.candidate"
     with open(candidate,"w") as f: f.write(towrite)
     update_only_if_different(source, candidate)
 
