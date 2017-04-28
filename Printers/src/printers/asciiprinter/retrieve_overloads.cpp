@@ -45,7 +45,7 @@ namespace Gambit
       advance_to_point(PPIDpair(pointID,rank));
 
       /// Check which column is supposed to correspond with 'label'
-      uint target_col;
+      uint target_col = 0;
       std::map<std::string,uint>::const_iterator it = column_map.find(label);
       if(it != column_map.end())
       {

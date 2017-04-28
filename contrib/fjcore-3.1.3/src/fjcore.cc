@@ -1757,8 +1757,8 @@ Strategy ClusterSequence::_best_strategy() const {
       }
     }
   }
-  bool code_should_never_reach_here = false;
-  assert(code_should_never_reach_here);
+  //code should never reach here;
+  assert(false);
   return N2MHTLazy9;
 }
 void ClusterSequence::transfer_from_sequence(const ClusterSequence & from_seq,
@@ -2129,7 +2129,7 @@ void ClusterSequence::_add_step_to_history (
   element.max_dij_so_far = max(dij,_history[_history.size()-1].max_dij_so_far);
   _history.push_back(element);
   int local_step = _history.size()-1;
-  assert(local_step == step_number);
+  if (local_step != step_number) assert(false);
   assert(parent1 >= 0);
   if (_history[parent1].child != Invalid){
     throw InternalError("trying to recomine an object that has previsously been recombined");

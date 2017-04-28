@@ -59,7 +59,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
   /// The main postprocessing driver object
   PPDriver driver;
- 
+
   /// Options for PPDriver;
   PPOptions settings;
 
@@ -69,10 +69,10 @@ scanner_plugin(postprocessor, version(1, 0, 0))
      int x;
      if(const char* env_p = std::getenv(name.c_str()))
      {
-       std::stringstream env_s(env_p); 
-       env_s >> x;  
-       if (!env_s) 
-       {      
+       std::stringstream env_s(env_p);
+       env_s >> x;
+       if (!env_s)
+       {
           std::ostringstream err;
           err << "Tried to retrieve value of environment variable "<<name<<" as an integer, but conversion failed! String retrieved was '"<<env_s.str()<<"'";
           scan_error().raise(LOCAL_INFO,err.str());
@@ -86,16 +86,16 @@ scanner_plugin(postprocessor, version(1, 0, 0))
      }
      return x;
   }
- 
+
   /// The constructor to run when the plugin is loaded.
   plugin_constructor
   {
     int s_numtasks;
     int s_rank;
-    
+
     // Get MPI data. No communication is needed, we just need to know how to
     // split up the workload. Just a straight division among all processes is
-    // used, nothing fancy.    
+    // used, nothing fancy.
 #ifdef WITH_MPI
     MPI_Comm_size(MPI_COMM_WORLD, &s_numtasks); // MPI requires unsigned ints here, so we'll just convert afterwards
     MPI_Comm_rank(MPI_COMM_WORLD, &s_rank);
@@ -112,7 +112,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     // Scanners:
     //  scanners:
     //    scannername:
-    //      reader 
+    //      reader
     Gambit::Options reader_options = get_inifile_node("reader");
 
     // Initialise reader object
@@ -130,15 +130,15 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     settings.subtract_from_logl = get_inifile_value<std::vector<std::string>>("subtract_from_like", std::vector<std::string>());
     settings.reweighted_loglike_name = get_inifile_value<std::string>("reweighted_like");
 
-    settings.renaming_scheme = get_inifile_value<std::map<std::string,std::string>>("rename", 
+    settings.renaming_scheme = get_inifile_value<std::map<std::string,std::string>>("rename",
                           std::map<std::string,std::string>());
 
-    settings.cut_less_than = get_inifile_value<std::map<std::string,double>>("cut_less_than", 
+    settings.cut_less_than = get_inifile_value<std::map<std::string,double>>("cut_less_than",
                           std::map<std::string,double>());
 
-    settings.cut_greater_than = get_inifile_value<std::map<std::string,double>>("cut_greater_than", 
+    settings.cut_greater_than = get_inifile_value<std::map<std::string,double>>("cut_greater_than",
                           std::map<std::string,double>());
-   
+
     settings.discard_points_outside_cuts = get_inifile_value<bool>("discard_points_outside_cuts", false);
 
     // Use virtual rank system?
@@ -206,7 +206,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
     settings.all_params.insert("MPIrank"); // These should be re-printed the same as they were anyway
     settings.all_params.insert("pointID");
     settings.all_params.insert(settings.logl_purpose_name); // If there is a name clash and the run was not aborted, we are to discard the old data under this name.
-    settings.all_params.insert(settings.reweighted_loglike_name); //   "  " 
+    settings.all_params.insert(settings.reweighted_loglike_name); //   "  "
     #ifdef WITH_MPI
     settings.comm = &ppComm;
     #endif
@@ -263,7 +263,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
           #endif
        }
        else if(exit_code==1)
-       { 
+       {
           // Saw quit flag, time to stop
           quit_flag_seen = true;
           continue_processing = false;
@@ -288,13 +288,13 @@ scanner_plugin(postprocessor, version(1, 0, 0))
           err << "Postprocessing on "<<rank<<" terminated with an unrecognised return code ("<<exit_code<<"). This indicates a bug in the postprocessor, please report it.";
           scan_error().raise(LOCAL_INFO,err.str());
        }
- 
+
        // Redistribute points, stop if someone has seen the quit flag, or stop if there are no points left to process
        if(do_redistribution)
        {
           #ifdef WITH_MPI
           /// @{ Gather all 'I_am_finished' flags to see if everyone is done
-          int my_finished = I_am_finished; // convert to int
+          int my_finished = (I_am_finished ? 1 : 0); // convert to int in a way that prevents unused-variable warnings
           std::vector<int> all_finished = allgather_int(my_finished, ppComm);
           bool everyone_finished = true;
           int tmp_rank = 0;
@@ -308,7 +308,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              tmp_rank++;
           }
           /// @}
-          
+
           // All processes should now be synchronised; receive all the redistribution requests
           std::cout << "Rank "<<rank<<": Clearing redistribution request messages" << std::endl;
           driver.clear_redistribution_requests();
@@ -316,11 +316,11 @@ scanner_plugin(postprocessor, version(1, 0, 0))
           if(not everyone_finished)
           {
              /// @{ Gather all quit flags, to see if we need to stop (COLLECTIVE OPERATION)
-             int my_quit = quit_flag_seen; // convert to int
+             int my_quit = (quit_flag_seen ? 1 : 0); // convert to int in a way that prevents unused-variable warnings
              std::vector<int> all_quit_flags = allgather_int(my_quit, ppComm);
              for(auto it=all_quit_flags.begin(); it!=all_quit_flags.end(); ++it)
              {
-                if(*it==1) 
+                if(*it==1)
                 {
                    continue_processing = false; // If anyone has seen the quit flag, we must stop.
                 }
@@ -336,7 +336,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
              else
              {
                 if(rank==0) std::cout << "Quit flag seen by one or more worker processes; stopping postprocessor." << std::endl;
-             } 
+             }
           }
           else
           {
