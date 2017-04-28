@@ -240,7 +240,6 @@ def main(argv):
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
                                                   \n\
-                                                  \n\
 namespace Gambit                                  \n\
 {                                                 "
     for tp in type_packs:
@@ -288,9 +287,8 @@ namespace Gambit                                  \n\
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
                                                   \n\
-                                                  \n\
 namespace Gambit                                  \n\
-{                                                 "
+{                                                 \n"
     for t in types:
         towrite += '  template class module_functor<{0}>;\n'.format(t)
     towrite+="}\n\n#endif // defined __module_functor_types_hpp__\n"

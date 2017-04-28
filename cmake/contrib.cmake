@@ -133,8 +133,9 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
 
   # Silence the deprecated-declarations warnings comming from Eigen3
   set_compiler_warning("no-deprecated-declarations" FS_CXX_FLAGS)
-  # Silence the unused parameter warnings comming from FlexibleSUSY
+  # Silence the unused parameter and variable warnings comming from FlexibleSUSY
   set_compiler_warning("no-unused-parameter" FS_CXX_FLAGS)
+  set_compiler_warning("no-unused-variable" FS_CXX_FLAGS)
 
   # FlexibleSUSY configure options
   set(FS_OPTIONS ${FS_OPTIONS}
