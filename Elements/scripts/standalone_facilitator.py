@@ -14,7 +14,7 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Pat Scott 
+#  \author Pat Scott
 #          (p.scott@imperial.ac.uk)
 #    \date 2016 Aug
 #
@@ -36,8 +36,8 @@ def main(argv):
     except getopt.GetoptError:
         print 'Usage: standalone_facilitator.py [flags]'
         print ' flags:'
-        print '        -v                     : More verbose output'  
-        print '        -m module1,module2,... : Link against module1, module2, etc.' 
+        print '        -v                     : More verbose output'
+        print '        -m module1,module2,... : Link against module1, module2, etc.'
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -48,7 +48,7 @@ def main(argv):
         modules.update(modules_list)
 
     # Retrieve the pickled module types.
-    try:      
+    try:
         with open('./scratch/harvested_types.pickle', 'rb') as handle:
             returned_types = pickle.load(handle)
     except:
@@ -60,7 +60,7 @@ def main(argv):
     all_types = set([])
     for x in modules:
         if x in returned_types:
-            all_types.update(returned_types[x])   
+            all_types.update(returned_types[x])
 
     # Generate a c++ source file containing all the explicit functor template specialisations needed by the standalone program.
     towrite = "\
@@ -90,12 +90,12 @@ def main(argv):
                                                   \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
-#include \"gambit/Elements/all_functor_types.hpp\"\n\
+#include \"gambit/Backends/backend_functor_types.hpp\"\n\
                                                   \n\
 namespace Gambit                                  \n\
 {                                                 \n\
   // Non-module types                             \n\
-  template class module_functor<void>;            \n" 
+  template class module_functor<void>;            \n"
     for t in returned_types["non_module"]:
         towrite += "  template class module_functor<"+t+">;\n"
     if all_types:
@@ -104,11 +104,7 @@ namespace Gambit                                  \n\
     else:
         towrite += "  // No module-specific types required.\n"
     towrite += "}\n\n\
-// Instantiate the backend functor templates for all required types \n\
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)\n\
-\n\
-// Define the functor helper functions for this standalone compilation unit\n\
-// Define standalone version of functor signal helpers (that do nothing)\n\
+// Define standalone versions of functor signal helpers (that do nothing)\n\
 namespace Gambit                                                      \n\
 {                                                                     \n\
   namespace FunctorHelp                                               \n\
@@ -127,7 +123,7 @@ namespace Gambit                                                      \n\
     update_only_if_different(filename, candidate)
 
     if verbose:
-        print "Generated "+filename+"." 
+        print "Generated "+filename+"."
 
 
 # Handle command line arguments (verbosity)
