@@ -108,7 +108,7 @@ namespace Gambit
                /// TODO: Currently assumes all blocks at same scale. Should at least check if this
                /// is true in constructor.
                const SLHAea::Coll& data(slhawrap.getSLHAea(slhawrap.slha_version()));
-               double scale;
+               double scale = 0.0;
                try
                {
                  scale = SLHAea::to<double>(data.at("GAUGE").find_block_def()->at(3));

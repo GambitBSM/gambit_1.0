@@ -138,7 +138,7 @@ namespace Gambit
       /// One index
       double SLHAeaModel::getdata(const std::string& block, int index) const
       {
-         double output;
+         double output = 0.0;
          try
          {
            output = to<double>(data.at(block).at(index).at(1));
@@ -156,7 +156,7 @@ namespace Gambit
       /// Two indices
       double SLHAeaModel::getdata(const std::string& block, int i, int j) const
       {
-         double output;
+         double output = 0.0;
          try
          {
            output = to<double>(data.at(block).at(i,j).at(2));

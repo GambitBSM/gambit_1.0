@@ -198,15 +198,14 @@ namespace Gambit {
          std::istringstream iss(current_line);
          unsigned int i=0;
          std::string garbage; // can't use double, some entries might be 'none'
-         uint  MPIrank;
-         ulong pointID;
+         uint  MPIrank = 0;
+         ulong pointID = 0;
          double tmp; // Seem to need to convert to double first due to exponential notation
          bool got_MPIrank(false);
          bool got_pointID(false);
-         //std::cout<<current_line<<std::endl;
+
          while(i<=col_rank or i<=col_ptID)
          {
-           //std::cout<<"column i="<<i<<", col_rank="<<col_rank<<", col_ptID="<<col_ptID<<std::endl;
            if     (i==col_rank){ iss >> tmp; MPIrank=(uint)(tmp+0.5); got_MPIrank=true; }
            else if(i==col_ptID){ iss >> tmp; pointID=(ulong)(tmp+0.5); got_pointID=true; }
            else { iss >> garbage; }
@@ -218,18 +217,21 @@ namespace Gambit {
            }
            i++;
          }
+
          if(not got_MPIrank)
          {
              std::ostringstream err;
              err << "Error! asciiReader failed to extract the MPIrank from line '"<<current_row+1<<"' of the wrapped output file '"<<dataFile_name<<"'!";
              printer_error().raise(LOCAL_INFO,err.str());
          }
+
          if(not got_pointID)
          {
              std::ostringstream err;
              err << "Error! asciiReader failed to extract the pointID from line '"<<current_row+1<<"' of the wrapped output file '"<<dataFile_name<<"'!";
              printer_error().raise(LOCAL_INFO,err.str());
          }
+
          // Set new position data
          current_point = PPIDpair(pointID,MPIrank);
          current_row++;
