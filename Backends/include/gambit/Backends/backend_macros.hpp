@@ -77,7 +77,7 @@ BE_NAMESPACE                                                                \
 {                                                                           \
   namespace                                                                 \
   {                                                                         \
-    const int VARIABLE_IS_NOT_USED CAT(MODEL,_OK) =                         \
+    const int UNUSED_OK CAT(MODEL,_OK) =                                    \
      vectorstr_push_back(allowed_models,STRINGIFY(MODEL));                  \
   }                                                                         \
 }                                                                           \

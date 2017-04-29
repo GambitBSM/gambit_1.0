@@ -804,7 +804,6 @@ namespace Gambit
          typename MSSMSpec<MI>::SetterMaps map_collection;
          typedef typename MI::Model Model;
 
-         typedef typename MTset::FInfo1 FInfo1;
          typedef typename MTset::FInfo2 FInfo2;
 
          typedef typename MTset::FInfo1M FInfo1M;
