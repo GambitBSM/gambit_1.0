@@ -22,6 +22,7 @@
 ///  *********************************************
 
 #include "gambit/Printers/printers/asciireader.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
 
 namespace Gambit
 {
@@ -44,7 +45,7 @@ namespace Gambit
       advance_to_point(PPIDpair(pointID,rank));
 
       /// Check which column is supposed to correspond with 'label'
-      uint target_col;
+      uint target_col = 0;
       std::map<std::string,uint>::const_iterator it = column_map.find(label);
       if(it != column_map.end())
       {
@@ -143,13 +144,11 @@ namespace Gambit
 
       /// Work out all the output labels that correspond to the input modelname
       bool found_at_least_one(false);
-      for(std::map<std::string,uint>::const_iterator
-          it = column_map.begin();
-          it!= column_map.end(); ++it)
+      for(const std::pair<std::string,uint>& kv : column_map)
       {
         std::string param_name; // *output* of parsing function, parameter name
         std::string label_root; // *output* of parsing function, label minus parameter name
-        if(parse_label_for_ModelParameters(it->first, modelname, param_name, label_root))
+        if(parse_label_for_ModelParameters(kv.first, modelname, param_name, label_root))
         {
           // Add the found parameter name to the ModelParameters object
           out._definePar(param_name);
@@ -161,7 +160,8 @@ namespace Gambit
                err << "Error! ASCIIReader could not retrieve ModelParameters matching the model name '"<<modelname
                    <<"' in the ascii file '"<<dataFile_name<<"' (while calling 'retrieve'). Candidate parameters WERE "
                    <<"found, however their dataset labels indicate the presence of an inconsistency or ambiguity in "
-                   <<"the output. For example, we just tried to retrive a model parameter from the dataset:\n"<<*it
+                   <<"the output. For example, we just tried to retrive a model parameter from the dataset:\n" << kv
+                   // <<"[" << kv.first << "->" << kv.second << "]"
                    <<"\nand successfully found the parameter "<<param_name<<", however the root of the label, that is,\n"
                    <<label_root<<"\ndoes not match the root expected based upon previous parameter retrievals for this model, which was\n  "
                    <<out.getOutputName()<<"\nThis may indicate that multiple sets of model parameters are present in the "
@@ -178,7 +178,7 @@ namespace Gambit
           // Get the corresponding value out of the data file
           double value; // *output* of retrieve function
           bool tmp_is_valid;
-          tmp_is_valid = _retrieve(value, it->first, rank, pointID);
+          tmp_is_valid = _retrieve(value, kv.first, rank, pointID);
           found_at_least_one = true;
           if(tmp_is_valid)
           {

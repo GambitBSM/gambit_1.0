@@ -462,7 +462,7 @@ namespace Gambit
   /// This is an N+1-dimensional char array, where N is the number of dimensions specified by the user (1/2 * the number of array index limits).
   /// The special () operator is intended to be used instead of the operators of the Farray base class, and takes 1 argument less than the Farray class operators
   /// (the array index for the letters in the strings should not be passed).
-  /// This operator returns references to Fstring objects that can be assigned to and read from.
+  /// This operator returns pointers to Fstring objects that can be assigned to and read from.
   /// Syntax: FstringArray<[string length], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
   /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!
   template <int len, int... lims>
@@ -470,7 +470,7 @@ namespace Gambit
   {
     public:
       template <typename ... Args>
-      typename enable_if_all_member<typename Farray<char,1,len, lims... >::allowed_types, Fstring<len>&, Args...>::type::type
+      typename enable_if_all_member<typename Farray<char,1,len, lims... >::allowed_types, Fstring<len>*, Args...>::type::type
       operator () (Args ... a)
       {
         static_assert(2*sizeof...(a)==sizeof...(lims), "FstringArray error: Invalid number of arguments passed to () operator");
@@ -490,7 +490,7 @@ namespace Gambit
           for (int j=0; j<i; j++) idx_i *= (limits[2*j+1]-limits[2*j]+1);
           idx += idx_i;
         }
-        return *reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims... >::array[idx]);
+        return reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims... >::array[idx]);
       }
   };
 

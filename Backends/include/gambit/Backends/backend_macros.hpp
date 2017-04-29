@@ -4,14 +4,14 @@
 ///
 ///  General macros for loading a shared library
 ///  and constructing pointers to the variables and
-///  functions within the library. 
+///  functions within the library.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Anders Kvellestad
-///          (anders.kvellestad@fys.uio.no) 
+///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Mar, Apr, Nov
 ///
 ///  \author Christoph Weniger
@@ -24,7 +24,7 @@
 ///  \date 2014 Jan, Mar, May
 ///  \date 2015 Feb
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Jan, Mar
 ///  \date 2015 Jan, Feb
@@ -33,16 +33,6 @@
 
 #ifndef __BACKEND_MACROS_HPP__
 #define __BACKEND_MACROS_HPP__
-
-/// Suppress unused variable warnings in GCC (and do nothing for other compilers)
-#ifndef VARIABLE_IS_NOT_USED
-#ifdef __GNUC__
-#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
-#else
-#define VARIABLE_IS_NOT_USED
-#endif
-#endif
-
 
 #include <iostream>
 #include <string>
@@ -94,13 +84,13 @@ BE_NAMESPACE                                                                \
 END_BE_NAMESPACE                                                            \
 CORE_ALLOWED_MODEL(BackendIniBit,CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),   \
  MODEL)                                                                     \
-        
+
 /// Set all the allowed models for a given backend functor.
 #define SET_ALLOWED_MODELS(NAME, MODELS)                                    \
 int CAT(allowed_models_set_,NAME) =                                         \
  set_allowed_models(Functown::NAME, allowed_models, STRINGIFY(MODELS));
 
-/// Make the inUse pipe for a given backend functor.                        
+/// Make the inUse pipe for a given backend functor.
 #define MAKE_INUSE_POINTER(NAME)                                            \
   namespace BackendIniBit                                                   \
   {                                                                         \
@@ -169,20 +159,20 @@ namespace Gambit                                                            \
     }                                                                       \
   }                                                                         \
 }                                                                           \
-    
+
 
 /// Register this backend with the Core if not running in standalone mode.
 #ifndef STANDALONE
   #define REGISTER_BACKEND(BE, VER, SAFEVER)                                \
    int CAT_4(BE,_,SAFEVER,_rego) =                                          \
-    register_backend(STRINGIFY(BE), STRINGIFY(VER));                        
-#else 
-  #define REGISTER_BACKEND(BE, VER, SAFEVER) DUMMYARG(BE, VER, SAFEVER)   
+    register_backend(STRINGIFY(BE), STRINGIFY(VER));
+#else
+  #define REGISTER_BACKEND(BE, VER, SAFEVER) DUMMYARG(BE, VER, SAFEVER)
 #endif
 
 /// Load factory functions for classes provided by this backend
 #define LOAD_ALL_FACTORIES                                                                      \
- BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data))                            
+ BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data))
 
 /// Load all factory functions for a given type.
 #define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                                    \
@@ -298,7 +288,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                     
 }                                                                                               \
 
 
-// Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag 
+// Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag
 #ifdef STANDALONE
   #define BE_VARIABLE_I(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)           \
           BE_VARIABLE_I_MAIN(NAME, TYPE, SYMBOLNAME, CAPABILITY, MODELS)
@@ -370,23 +360,23 @@ namespace Gambit                                                              \
 /// \name Wrapping macros for backend-defined functions
 ///
 /// BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, [(MODELS)]) is the
-/// macro used for constructing pointers to library functions and 
+/// macro used for constructing pointers to library functions and
 /// wrapping function pointers in backend functors.
 ///
 /// The sixth argument (MODELS) is optional, and contains a list of models that you want this function to be able
-/// to be used with.  
+/// to be used with.
 /// @{
-  
+
 #define BE_FUNCTION_5(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)                             \
   BE_FUNCTION_I(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, ())
 
 #define BE_FUNCTION_6(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS)                     \
-  BE_FUNCTION_I(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS)                             
+  BE_FUNCTION_I(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS)
 
 #define BE_FUNCTION(...) VARARG(BE_FUNCTION, __VA_ARGS__)
 
 
-// Determine whether to make registration calls to the Core or not in BE_FUNCTION_IMPL2, depending on STANDALONE flag 
+// Determine whether to make registration calls to the Core or not in BE_FUNCTION_IMPL2, depending on STANDALONE flag
 #ifdef STANDALONE
   #define BE_FUNCTION_I(NAME, TYPE, ARGLIST, SYMBOLNAME, CAPABILITY, MODELS)                    \
           BE_FUNCTION_I_MAIN(NAME, TYPE, ARGLIST, SYMBOLNAME, CAPABILITY, MODELS)
@@ -440,7 +430,7 @@ namespace Gambit                                                                
   /* Create the safe pointer to the 'in use' flag of the functor. */                            \
   MAKE_INUSE_POINTER(NAME)                                                                      \
                                                                                                 \
-} /* end namespace Gambit*/                                                
+} /* end namespace Gambit*/
 
 
 /// Supplemenentary backend function macro
@@ -457,7 +447,7 @@ namespace Gambit                                                                
 }                                                                                               \
 
 
-// Determine whether to make registration calls to the Core or not in BE_CONV_FUNCTION, depending on STANDALONE flag 
+// Determine whether to make registration calls to the Core or not in BE_CONV_FUNCTION, depending on STANDALONE flag
 #ifdef STANDALONE
   #define BE_CONV_FUNCTION_FULL(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)                       \
           BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)
@@ -469,7 +459,7 @@ namespace Gambit                                                                
 
 
 /// \name Main wrapping macro for convenience functions
-/// BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY, [(MODELS)]) is the macro used 
+/// BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY, [(MODELS)]) is the macro used
 /// for wrapping convenience functions in backend functors.
 #define BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)                         \
 namespace Gambit                                                                                \

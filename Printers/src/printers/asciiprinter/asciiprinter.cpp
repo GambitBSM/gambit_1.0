@@ -180,17 +180,6 @@ namespace Gambit
     void asciiPrinter::initialise(const std::vector<int>& /*printmevec*/)
     {
       // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
-      // //std::cout << "Initialising asciiprinter..." << std::endl;
-      // // Loop through buffer and initialise all the elements
-      // for (int i=0; i<bufferlength; i++)
-      // {
-      //   for (std::vector<int>::const_iterator it = printmevec.begin();
-      //   it != printmevec.end(); it++)
-      //   {
-      //     // Add element to line of buffer (uses default (empty) constructor)
-      //     buffer[i][*it];
-      //   }
-      // }
     }
 
     /// Do final buffer dumps
@@ -216,36 +205,6 @@ namespace Gambit
       // Used to just erase the records, but preserve vertex IDs. Not sure this is necessary, so for now just
       // emptying the map.
       buffer.clear();
-
-      // Obsolete; redo this
-      // for (int i=0; i<bufferlength; i++)
-      // {
-      //   for (LineBuf::iterator
-      //     it = buffer[i].begin(); it != buffer[i].end(); it++)
-      //   {
-      //     // We want to preserve the vertex ID's and just erase the vector part (second) of the map
-      //     (it->second).clear();
-      //   }
-      // }
-    }
-
-    // Tell printer to start a new line of the ascii output file
-    void asciiPrinter::endline()
-    {
-      // Obsolete; no longer a virtual function either I think.
-      // std::cout<<"In acsiiPrinter: starting new printer line!"<<std::endl;
-
-      // // Move buffer location index to the next line
-      // buf_loc += 1;
-      //
-      // // Check if we have filled the buffer
-      // if (buf_loc >= bufferlength)
-      // {
-      //  // Write to file and reset buffer
-      //   dump_buffer();
-      //   erase_buffer();
-      //   buf_loc = 0;
-      // }
     }
 
     // getters for internal variables
@@ -282,9 +241,13 @@ namespace Gambit
         if(buffer.find(prevbkey)==buffer.end())
         {
            std::ostringstream err;
-           err << "Tried to move asciiPrinter buffer to new point '"<<ppid<<"', however the *previous* point '"<<lastPointID<<"' could not be found in the buffer (we need to set it as 'finished'). This probably means that the old point was never actually entered into the buffer, which must mean there is a bug in the asciiPrinter. Please report this.\n Debug data:\
-     functor label: "<< functor_labels << "\n\
-     slot (rank,pointID): "<< rank <<", "<<pointID<<std::endl;
+           err << "Tried to move asciiPrinter buffer to new point '" << ppid << "', however the *previous* point '" << endl
+               << lastPointID << "' could not be found in the buffer (we need to set it as 'finished'). This " << endl
+               << "probably means that the old point was never actually entered into the buffer, which must " << endl
+               << "mean there is a bug in the asciiPrinter. Please report this."  << endl
+               << "Debug data:" << endl
+               << "     functor label: "<< functor_labels << endl
+               << "     slot (rank,pointID): "<< rank <<", "<< pointID << endl;
            printer_error().raise(LOCAL_INFO, err.str());
         }
 
@@ -298,20 +261,19 @@ namespace Gambit
         }
       }
 
-      //AP_DBUG( std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl; )
-      //AP_DBUG( std::cout << "... at slot <rank=" << rank << ", pointID=" << pointID << ">" << std::endl;; )
-
       if( buffer.find(bkey)!=buffer.end() and buffer.at(bkey).readyToPrint==true )
       {
          std::ostringstream err;
-         err << "Error! Attempted to write to \"old\" model point \
-buffer! Bug in asciiprinter.cpp somewhere. Buffer records are initialised with \
-readyToPrint=false, and should not be written to again after this flag is set to \
-true. The records are destroyed upon writing their contents to disk, and there \
-is a unique record for every rank/pointID pair.\n\
-Debug info:\n\
-   functor label: "<< functor_labels << "\n\
-   slot (rank,pointID): "<< rank <<", "<<pointID<<std::endl;
+         err << "Error! Attempted to write to \"old\" model point " << endl
+             << "buffer! Bug in asciiprinter.cpp somewhere. Buffer " << endl
+             << "records are initialised with readyToPrint=false, and " << endl
+             << "should not be written to again after this flag is set " << endl
+             << "to true. The records are destroyed upon writing their " << endl
+             << "contents to disk, and there is a unique record for " << endl
+             << "every rank/pointID pair." << endl
+             << "Debug info:" << endl
+             << "   functor label: "<< functor_labels << endl
+             << "   slot (rank,pointID): "<< rank <<", "<< pointID << endl;
          printer_error().raise(LOCAL_INFO, err.str());
       }
 
@@ -394,7 +356,9 @@ Debug info:\n\
 
         if(new_vIDs.size()!=0)
         {
-          errmsg << "   The following vertexIDs are new since the last buffer dump (i.e. they did not try to print themselves during filling of any previous buffer):" <<std::endl;
+          errmsg << "   The following vertexIDs are new since the last buffer dump " << endl
+                 << "   (i.e. they did not try to print themselves during filling " << endl
+                 << "   of any previous buffer):" << endl;
           for(std::vector<int>::iterator it = new_vIDs.begin(); it!=new_vIDs.end(); ++it)
           {
             errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
@@ -403,7 +367,8 @@ Debug info:\n\
 
         if(increased_lengths.size()!=0)
         {
-          errmsg << "   The following vertexIDs tried to print longer data vectors than were seen during filling of the first (and any other) previous buffer:" <<std::endl;
+          errmsg << "   The following vertexIDs tried to print longer data vectors " << endl
+                 << "   than were seen during filling of the first (and any other) previous buffer:" <<std::endl;
           for(std::vector<int>::iterator it = increased_lengths.begin(); it!=increased_lengths.end(); ++it)
           {
             errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
@@ -436,7 +401,6 @@ Debug info:\n\
           }
         }
         AP_DBUG( std::cout << "lfpvfc 3.1" << std::endl; )
-        //info_fstream.flush();
         info_fstream.close();
         info_file_written=true;
       }
@@ -447,7 +411,6 @@ Debug info:\n\
       for (Buffer::iterator
         bufentry = buffer.begin(); bufentry != buffer.end(); /* Will increment in loop */ )
       {
-        //std::pair<int, int> bkey = bufentry->first;
         Record& record = bufentry->second;
         AP_DBUG( std::cout << "asciiPrinter: Examining record with key <rank="<<bufentry->first.first<<", pointID="<<bufentry->first.second<<">"<< std::endl; )
         if(force or record.readyToPrint)
@@ -459,37 +422,28 @@ Debug info:\n\
             // it->first  - int VertexID
             // it->second - int length
 
-            std::vector<double>* results; // Pointer to results vector
-            int reslength; // actual length of the current results vector
+            std::vector<double> empty;             // Empty vector
+            std::vector<double>* results = &empty; // Pointer to results vector
 
             LineBuf::iterator itdata = record.data.find(it->first);
-            if( itdata == record.data.end())
+            if( itdata != record.data.end())
             {
-               // std::stringstream errss;
-               // errss << "Error! No data for vertex ID \"" << it->first
-               //       << "\" found in record <rank=" << bkey.first
-               //       << ", pointID=" << bkey.second << ">";
-               // printer_error().raise(LOCAL_INFO, errss.str());
-
-               // Not an error. This can happen if evaluation of a point is abandoned midway for whatever reason
-               // Register results as zero length
-               AP_DBUG( std::cout << "asciiPrinter: No data for vertex ID \"" << it->first
-                     << "\" found in record <rank=" << bkey.first
-                     << ", pointID=" << bkey.second << ">, printer will output 'null'" << std::endl; )
-               reslength = 0;
+              results = &(itdata->second);
             }
             else
             {
-               results = &(itdata->second);
-               reslength = results->size(); // actual length of the current results vector
+              // Not an error. This can happen if evaluation of a point is abandoned midway for some reason.
+              AP_DBUG( std::cout << "asciiPrinter: No data for vertex ID \"" << it->first.
+                                 << "\" found in record <rank=" << bkey.first
+                                 << ", pointID=" << bkey.second << ">, printer will output 'null'" << std::endl; )
             }
-            int length     = it->second;     // slots reserved in output file for these results
+            uint length = it->second;      // slots reserved in output file for these results
 
             // Print to the fstream!
             int colwidth = precision + 8;  // Just kind of guessing here; tweak as needed
-            for (int j=0;j<length;j++)
+            for (uint j=0;j<length;j++)
             {
-              if(j>=reslength)
+              if(j>=results->size())
               {
                 // Finished parsing results vector; fill remaining empty slots with 'none'
                 my_fstream<<std::setw(colwidth)<<"none";
@@ -497,10 +451,9 @@ Debug info:\n\
               else
               {
                 // print an entry from the results vector
-                my_fstream<<std::setw(colwidth+5)<<std::scientific<<(*results)[j]; //<<"\t";
+                my_fstream<<std::setw(colwidth+5)<<std::scientific<<(*results)[j];
               }
             }
-            // Result printed
           }
           // Delete the record from the buffer and move to next one
           // Post-increment:  Increment the iterator first, THEN delete old one.

@@ -171,7 +171,7 @@ namespace Gambit
             " NormalDist! This may indicate a bug in the scanner plugin you are using.");
           }
           if(sigma==0.)
-          { 
+          {
              // likelihood is nan if sigma=0, so the point is invalid.
              invalid_point().raise("NormalDist::sigma = 0; likelihood is NaN, point invalid.");
           }
@@ -230,7 +230,7 @@ namespace Gambit
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done and it<nEvents and not piped_errors.inquire()) 
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire())
         { Loop::executeIteration(it++); }
       }
       // Raise any piped exceptions that occurred in the loop functors
@@ -266,12 +266,12 @@ namespace Gambit
       //{
       //  cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       //}
- 
+
       // Test MPI shutdown on random failure
       // if(result<0.0001*5.0) // shut down with 0.01% probability
       // {
       //   // Don't raise errors like this when inside a looped region:
-      //   //   ExampleBit_A_error().raise(LOCAL_INFO,"Error triggered for testing purposes.");  
+      //   //   ExampleBit_A_error().raise(LOCAL_INFO,"Error triggered for testing purposes.");
       //   // Must raise them like this instead:
       //   piped_errors.request(LOCAL_INFO, "Error triggered for testing purposes.");
       // }
@@ -391,23 +391,23 @@ namespace Gambit
       cout << "Playing around with commmonBlock2:" << endl;
 
       cout << "Reading charb(3) with and without trailing spaces. Result:" << endl;
-      std::string trail   = commonBlock2->charb(3).str();
-      std::string noTrail = commonBlock2->charb(3).trimmed_str();
+      std::string trail   = commonBlock2->charb(3)->str();
+      std::string noTrail = commonBlock2->charb(3)->trimmed_str();
       cout << trail   << "<-- string ends here" << endl;
       cout << noTrail << "<-- string ends here" << endl << endl;
 
       cout << "Reading the elements of charc from c++:" << endl;
-      cout << "(1,-1):" << commonBlock2->charc(1,-1).trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0).trimmed_str() << endl;
-      cout << "(2,-1):" << commonBlock2->charc(2,-1).trimmed_str() << "  (2,0):" << commonBlock2->charc(2,0).trimmed_str() << endl << endl;
+      cout << "(1,-1):" << commonBlock2->charc(1,-1)->trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0)->trimmed_str() << endl;
+      cout << "(2,-1):" << commonBlock2->charc(2,-1)->trimmed_str() << "  (2,0):" << commonBlock2->charc(2,0)->trimmed_str() << endl << endl;
 
       cout << "Setting charc(2,0) = chara." << endl;
-      commonBlock2->charc(2,0)=commonBlock2->chara;
+      *commonBlock2->charc(2,0)=commonBlock2->chara;
       cout << "Setting charc(1,-1) = \"WIN!567\", which will be truncated." << endl;
-      commonBlock2->charc(1,-1) = "WIN!567";
+      *commonBlock2->charc(1,-1) = "WIN!567";
       cout << "Setting charb(1) = \"ha!\"." << endl;
-      commonBlock2->charb(1) = "ha!";
+      *commonBlock2->charb(1) = "ha!";
       cout << "Setting charb(2) = chara." << endl;
-      commonBlock2->charb(2) = commonBlock2->chara;
+      *commonBlock2->charb(2) = commonBlock2->chara;
 
       cout << "Calling printStuff..." << endl;
       BEreq::libFarrayTest_printStuff();
@@ -518,7 +518,7 @@ namespace Gambit
 
     /// Flat test likelihood for checking prior distributions
     void flat_likelihood(double &result){ result = 1; }
- 
+
     /// @}
   }
 

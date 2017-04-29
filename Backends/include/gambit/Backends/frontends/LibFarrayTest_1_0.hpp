@@ -34,7 +34,7 @@ BE_FUNCTION(fptrRoutine, void, (Farray< Fdouble,1,3>&, Finteger&, Fdouble(*)(Far
 BE_FUNCTION(doubleFuncArray, Fdouble, (Farray< Fdouble,1,3>&), "doublefuncarray_", "libFarrayTest_doubleFuncArray")
 
 // The doubleFuncArray2 function is identical to doubleFuncArray.
-// This is an alternative way to declare and use the function (see ExampleBit A). 
+// This is an alternative way to declare and use the function (see ExampleBit A).
 // This version should only be used in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
 // (But you should know what you are doing!)
 BE_FUNCTION(doubleFuncArray2, Fdouble, (Fdouble*), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2")
@@ -52,12 +52,9 @@ namespace Gambit
 
       /* Convenience functions go here */
 
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
-  } /* end namespace Backends */                                                
-} /* end namespace Gambit */                                                   
-
-
-//BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
+    } /* end namespace BACKENDNAME_SAFE_VERSION */
+  } /* end namespace Backends */
+} /* end namespace Gambit */
 
 BE_INI_FUNCTION{}
 END_BE_INI_FUNCTION

@@ -9,13 +9,13 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Jul
-/// 
+///
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Sept
@@ -27,7 +27,7 @@
 ///
 ///  \author Felix Kahlhoefer
 ///          (felix.kahlhoefer@desy.de)
-///  \date 2016 August 
+///  \date 2016 August
 ///
 ///  \author Sebastian Wild
 ///          (felix.kahlhoefer@desy.de)
@@ -79,7 +79,7 @@ BE_INI_FUNCTION
       ex_map["LUX_2013"] = LUX_2013_Init(false);
       ex_map["SuperCDMS_2014"] = SuperCDMS_2014_Init(false);
       ex_map["SIMPLE_2014"] = SIMPLE_2014_Init(false);
-      ex_map["LUX_2016_prelim"] = LUX_2016_prelim_Init(false);
+      ex_map["LUX_2016"] = LUX_2016_Init(false);
       ex_map["PandaX_2016"] = PandaX_2016_Init(false);
       ex_map["LUX_2015"] = LUX_2015_Init(false);
       ex_map["PICO_2L"] = PICO_2L_Init(false);
@@ -88,7 +88,7 @@ BE_INI_FUNCTION
       //ex_map["DARWIN_Ar"] = DARWIN_Ar_Init(false);
       //ex_map["DARWIN_Xe"] = DARWIN_Xe_Init(false);
     }
-    
+
     // Save safe pointers to local halo parameters.
     LocalHaloParameters_ptr = Dep::LocalHalo.safe_pointer();
   }
@@ -133,9 +133,9 @@ BE_INI_FUNCTION
         logger() << "    vesc [km/s]         = " << vesc << EOM;
       #endif
     }
-  
+
 }
-END_BE_INI_FUNCTION                                                
+END_BE_INI_FUNCTION
 
 // Convenience functions
 BE_NAMESPACE
@@ -143,7 +143,7 @@ BE_NAMESPACE
   // Convenience function for returning detector index given an analysis name.
   int DDCalc_Experiment(const str& ex)
   {
-    int result;
+    int result = -1;
     try { result = ex_map.at(ex); }
     catch(std::out_of_range) { backend_error().raise(LOCAL_INFO, "Unknown experiment requested from DDCalc."); }
     return result;

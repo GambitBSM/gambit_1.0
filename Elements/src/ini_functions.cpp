@@ -174,7 +174,7 @@ namespace Gambit
           // Loop over all the models explicitly allowed here, and make sure they fit with at least one of those declared at the backend level.
           for (std::vector<str>::const_iterator it = models.begin(); it != models.end(); ++it)
           {
-            bool found_match;
+            bool found_match = false;
             for (std::vector<str>::const_iterator jt = allowed_at_be_level.begin(); jt != allowed_at_be_level.end(); ++jt)
             {
               found_match = Models::ModelDB().upstream_of(*jt,*it);
