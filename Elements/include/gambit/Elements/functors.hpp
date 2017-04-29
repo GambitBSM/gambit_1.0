@@ -885,7 +885,6 @@ namespace Gambit
       template <typename... VARARGS>
       TYPE operator()(VARARGS&&... varargs)
       {
-        if (this == NULL) functor::failBigTime("operator()");
         logger().entering_backend(this->myLogTag);
         TYPE tmp = this->myFunction(std::forward<VARARGS>(varargs)...);
         logger().leaving_backend();
@@ -912,7 +911,6 @@ namespace Gambit
       template <typename... VARARGS>
       void operator()(VARARGS&&... varargs)
       {
-        if (this == NULL) functor::functor::failBigTime("operator()");
         logger().entering_backend(this->myLogTag);
         this->myFunction(std::forward<VARARGS>(varargs)...);
         logger().leaving_backend();
