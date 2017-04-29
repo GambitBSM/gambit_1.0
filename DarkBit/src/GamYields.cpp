@@ -429,6 +429,7 @@ namespace Gambit {
         using DarkBit_utils::str_flav_to_mass;
 
         double mDM_min, mDM_max;
+        /// Option allow_yield_extrapolation<bool>: Spectra extrapolated for masses beyond Pythia results (default false)
         bool allow_yield_extrapolation = runOptions->getValueOrDef(false, "allow_yield_extrapolation");
 	if ( allow_yield_extrapolation ) 
         {

@@ -124,6 +124,7 @@ namespace Gambit
       else if (ModelInUse("MSSM63atQ") || ModelInUse("CMSSM"))
       {
         SLHAstruct mySLHA;
+        /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
         bool dsSLHAread = runOptions->getValueOrDef<bool>(false, "use_dsSLHAread");
         int slha_version = 2;
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
@@ -136,7 +137,6 @@ namespace Gambit
         }
 
         // Use an actual SLHA2 file.  DarkSUSY is on its own wrt (s)particle widths this way.
-        /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
         if (dsSLHAread || slha_version == 1)
         {
           if (!dsSLHAread) {DarkBit_error().raise(LOCAL_INFO,
@@ -541,7 +541,8 @@ namespace Gambit
       // Set of imported decays - avoids double imports
       std::set<string> importedDecays;
 
-      // FIXME: Add getValue documentation
+      // Option minBranching <double>: Minimum branching fraction of included
+      // processes (default 0.)
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 

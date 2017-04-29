@@ -382,12 +382,19 @@ namespace Gambit
       {
         case MC_INIT:
           // Initialization
-          /// Option cMC_numSpecSamples<int>: (default 10)
+          /// Option cMC_numSpecSamples<int>: number of samples to draw from tabulated
+          /// spectra (default 10)
           cMC_numSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_numSpecSamples");
+          /// Option cMC_endCheckFrequency: number of events to wait between successive
+          /// checks of the convergence criteria (default 25)
           cMC_endCheckFrequency  =
             runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
+          /// Option cMC_gammaBGPower: power-law slope to assume for astrophysical
+          /// background (default -2.5)
           cMC_gammaBGPower       =
             runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
+          /// Option cMC_gammaRelError: max allowed relative error in bin with highest
+          /// expected signal-to-background (default 0.20)
           cMC_gammaRelError      =
             runOptions->getValueOrDef<double>(0.20,   "cMC_gammaRelError");
 
