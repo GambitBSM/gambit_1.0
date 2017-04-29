@@ -50,9 +50,6 @@ namespace Gambit
         {
             inline std::string print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
             {
-                typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
-                typedef std::map<std::string, plugin_map> plugin_mapmap;
-
                 table_formatter table(plugins->first + " PLUGINS", "VERSION", "STATUS");
                 table.capitalize_title();
                 table.padding(1);

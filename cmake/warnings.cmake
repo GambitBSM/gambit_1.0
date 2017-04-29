@@ -38,10 +38,10 @@ endif()
 
 set_compiler_warning("all" CMAKE_CXX_FLAGS)
 set_compiler_warning("extra" CMAKE_CXX_FLAGS)
-#set_compiler_warning("no-unknown-pragmas" CMAKE_CXX_FLAGS)
-set_compiler_warning("no-misleading-indentation" CMAKE_CXX_FLAGS)
-set_compiler_warning("no-ignored-attributes" CMAKE_CXX_FLAGS)
-#set_compiler_warning("no-literal-suffix" CMAKE_CXX_FLAGS)
+set_compiler_warning("no-ignored-attributes" CMAKE_CXX_FLAGS) #Needed for Eigen 3.2.8
+set_compiler_warning("no-misleading-indentation" CMAKE_CXX_FLAGS) #Needed because this warning is ridiculous
+#set_compiler_warning("no-unknown-pragmas" CMAKE_CXX_FLAGS) # Not needed for gcc
+#set_compiler_warning("no-literal-suffix" CMAKE_CXX_FLAGS) # Not needed for gcc
 
 # Suppress additional warnings when using clang and ccache
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
