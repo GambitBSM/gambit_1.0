@@ -6,16 +6,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
-///  \author Peter Athron  
+///
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
@@ -63,17 +63,17 @@ namespace Gambit
          , backend_version(be_version)
          , model_interface(mi)
       {}
-     
+
       template <class MI>
       SingletDMZ3Spec<MI>::SingletDMZ3Spec()
       {}
-  
+
       template <class MI>
       SingletDMZ3Spec<MI>::~SingletDMZ3Spec()
       {}
-     
-     
-     
+
+
+
       template <class MI>
       void SingletDMZ3Spec<MI>::RunToScaleOverride(double scale)
       {
@@ -89,7 +89,7 @@ namespace Gambit
       {
         model_interface.model.set_scale(scale);
       }
-      
+
       template <class MI>
       std::string SingletDMZ3Spec<MI>::AccessError(std::string state) const
       {
@@ -97,21 +97,21 @@ namespace Gambit
         errormsg = "Error accessing "+ state + " element is out of bounds";
         return errormsg;
       }
-     
-     
 
-    
+
+
+
       template <class Model>
       double get_sinthW2_MSbar2(const Model& model)
       {
-       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
-                      (0.6 * Utils::sqr(model.get_g1()) + 
+       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 /
+                      (0.6 * Utils::sqr(model.get_g1()) +
                       Utils::sqr(model.get_g2()));
        return sthW2;
       }
-      
 
-     
+
+
       template <class Model>
       void set_Mhh_pole_slha(Model& model,double mass)
       {
@@ -125,21 +125,21 @@ namespace Gambit
         model.get_physical_slha().Mss = mass;
       }
 //
-//      
+//
 //
 //      template <class Model>
 //      void set_neutral_goldstone_pole_slha(Model& model, double mass)
 //      {
 //        model.get_physical_slha().MAh = mass;
 //      }
-//     
+//
 //           template <class Model>
 //      void set_MAh_pole_slha(Model& model, double mass)
 //      {
 //        model.get_physical_slha().MAh = mass;
 //      }
-//     
-//     
+//
+//
 //
 //     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
 //     template <class Model>
@@ -154,13 +154,13 @@ namespace Gambit
 //        model.get_physical_slha().MVWp = mass;
 //     }
 //
-//     
+//
 //     template <class Model>
 //     void set_MGluon(Model& model, double mass)
 //     {
 //        model.get_physical().MVG = mass;
 //     }
-//     
+//
 //     template <class Model>
 //     void set_MPhoton(Model& model, double mass)
 //     {
@@ -173,7 +173,7 @@ namespace Gambit
 //      {
 //        return model.get_MAh_pole_slha();
 //      }
-//     
+//
 //      template <class Model>
 //      double get_Mss_pole_slha(const Model& model)
 //      {
@@ -203,7 +203,7 @@ namespace Gambit
 
          static const int i012345v[] = {0,1,2,3,4,5};
          static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-        
+
 
         {
             typename MTget::fmap0 tmp_map;
@@ -211,7 +211,7 @@ namespace Gambit
             tmp_map["mu2"] = &Model::get_muH;
             map_collection[Par::mass2].map0 = tmp_map;
          }
-        
+
 
 
          //dimensionless - mass dimension 0 parameters
@@ -239,7 +239,7 @@ namespace Gambit
          // Functions utilising the "extraM" function signature
          // (Zero index, model object as argument)
 
-   
+
          // Functions utilising the two-index "plain-vanilla" function signature
          // (Two-index member functions of model object)
          {
@@ -251,16 +251,14 @@ namespace Gambit
 
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
- 
+
          // Functions utilising the one-index "plain-vanilla" function signature
          // (One-index member functions of model object)
          {
             typename MTget::fmap1 tmp_map;
 
-            ////    tmp_map["S"] = FInfo1( &Model::get_Mss, i012345 );
-           ////     tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
-            //Here we may access the goldstone boson
-            // and higgs. maybe too dangerous to keep?
+            //tmp_map["S"] = FInfo1( &Model::get_Mss, i012345 );
+            //tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
 
             //Here we may access the goldstone boson
             //and higgs. maybe too dangerous to keep?
@@ -274,11 +272,11 @@ namespace Gambit
 
             map_collection[Par::mass_eigenstate].map1 = tmp_map;
          }
-        
-        
-         {  
+
+
+         {
             typename MTget::fmap0 tmp_map;
-                   
+
             // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
             // reinstating the Z and W getters as otherwise there is no
             // point in having the setters!
@@ -288,23 +286,23 @@ namespace Gambit
 
 
             map_collection[Par::Pole_Mass].map0 = tmp_map;
-         } 
+         }
 
          // Functions utilising the "extraM" function signature
          // (Zero index, model object as argument)
 //         {
 //            typename MTget::fmap0_extraM tmp_map;
-//        
+//
 //            // Using wrapper functions defined above
 //            tmp_map["A0"] = &get_MAh_pole_slha<Model>;
 //
-//      
+//
 //            map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
 //         }
 
          // Functions utilising the one-index "plain-vanilla" function signature
          // (One-index member functions of model object)
-         {  
+         {
             typename MTget::fmap0 tmp_map;
 
             tmp_map["S"] =  &Model::get_Mss_pole_slha;
@@ -315,7 +313,7 @@ namespace Gambit
          }
 
 
-        
+
           {
             typename MTget::fmap0_extraM tmp_map;
             tmp_map["sinW2"] = &get_sinthW2_MSbar2<Model>;
@@ -325,7 +323,7 @@ namespace Gambit
 
 
          return map_collection;
-      } 
+      }
 
       // Filler function for setter function pointer maps extractable from "runningpars" container
       template <class MI>
@@ -334,7 +332,6 @@ namespace Gambit
          typename SingletDMZ3Spec<MI>::SetterMaps map_collection;
          typedef typename MI::Model Model;
 
-         typedef typename MTset::FInfo1 FInfo1;
          typedef typename MTset::FInfo2 FInfo2;
 
          // Can't use c++11 initialise lists, se have to initialise the index sets like this.
@@ -349,7 +346,7 @@ namespace Gambit
 
          static const int i012345v[] = {0,1,2,3,4,5};
          static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-         
+
          /// @{ mass2 - mass dimension 2 parameters
          //
          // Functions utilising the "plain-vanilla" function signature
@@ -362,7 +359,7 @@ namespace Gambit
 
             map_collection[Par::mass2].map0 = tmp_map;
          }
- 
+
          //
          // Functions utilising the "plain-vanilla" function signature
          // (Zero index member functions of model object)
@@ -400,37 +397,37 @@ namespace Gambit
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
 
-//        {  
+//        {
 //          typename MTset::fmap0_extraM tmp_map;
 //          tmp_map["A0"] = &set_MAh_pole_slha<Model>;
 //          tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
-//   
+//
 //          /// the getters for these were removed but Pat last meeting
 //          /// we agreed to add setters here unless I misunderstood.
 //          /// need to discuss this
 //          tmp_map["W+"] = &set_MW_pole_slha<Model>;
 //          tmp_map["W-"] = &set_MW_pole_slha<Model>;
 //          tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
-//       
+//
 //          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
 //        }
 
-//        {  
+//        {
 //          typename MTset::fmap0_extraM tmp_map;
 //
 //          tmp_map["h0"] = &Model::set_Mhh_pole_slha;// &set_Mhh_pole_slha<Model>;
 //          tmp_map["s0"] = &Model::set_Mss_pole_slha;//&set_Mss_pole_slha<Model>;
-//          
+//
 //          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
 //        }
 
 
          return map_collection;
-      } 
+      }
 
       /// @}
-  
-   } // end SpecBit namespace 
+
+   } // end SpecBit namespace
 } // end Gambit namespace
 
 #endif
