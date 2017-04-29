@@ -1045,69 +1045,77 @@ namespace Gambit
               getLogLike()->setPtID(pointID);
 
 
-              // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
+              // We feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit
+              // interprets the map values as post-transformation and not apply a prior to those, and ensures that the
+              // length of the cube plus number of transformed parameters adds up to the total number of parameter.
               double new_logL = getLogLike()(outputMap); // Here we supply *only* the map; no parameters to transform.
 
               // Add old likelihood components as requested in the inifile
-              double combined_logL = new_logL;
-              bool is_valid = false;
-              for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
+              if (not add_to_logl.empty() or not subtract_from_logl.empty())
               {
-                  std::string old_logl = *it;
-                  if(std::find(data_labels.begin(), data_labels.end(), old_logl)
-                      == data_labels.end())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested to 'add_to_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-                  if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested 'add_to_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
 
-                  double old_logl_value;
-                  is_valid = getReader().retrieve(old_logl_value, old_logl);
-                  if(is_valid)
-                  {
-                     // Combine with the new logL component
-                     combined_logL += old_logl_value;
-                  }
-                  // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+                double combined_logL = new_logL;
+                bool is_valid(true);
+
+                for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
+                {
+                    std::string old_logl = *it;
+                    if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+                        == data_labels.end())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested to 'add_to_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+                    if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested 'add_to_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+
+                    double old_logl_value;
+                    is_valid = is_valid and getReader().retrieve(old_logl_value, old_logl);
+                    if(is_valid)
+                    {
+                       // Combine with the new logL component
+                       combined_logL += old_logl_value;
+                    }
+                    // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+                }
+
+                // Now do the same thing for the components we want to subtract.
+                for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
+                {
+                    std::string old_logl = *it;
+                    if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+                        == data_labels.end())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested to 'subtract_from_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+                    if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested 'subtract_from_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+
+                    double old_logl_value;
+                    is_valid = is_valid and getReader().retrieve(old_logl_value, old_logl);
+                    if(is_valid)
+                    {
+                       // Combine with the new logL component, subtracting this time
+                       combined_logL -= old_logl_value;
+                    }
+                    // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+                }
+
+                // Output the new reweighted likelihood (if all components were valid)
+                if(is_valid) getPrinter().print(combined_logL, reweighted_loglike_name, MPIrank, pointID);
+
               }
-
-              // Now do the same thing for the components we want to subtract.
-              for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
-              {
-                  std::string old_logl = *it;
-                  if(std::find(data_labels.begin(), data_labels.end(), old_logl)
-                      == data_labels.end())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested to 'subtract_from_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-                  if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested 'subtract_from_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-
-                  double old_logl_value;
-                  is_valid = getReader().retrieve(old_logl_value, old_logl);
-                  if(is_valid)
-                  {
-                     // Combine with the new logL component, subtracting this time
-                     combined_logL -= old_logl_value;
-                  }
-                  // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
-              }
-
-              // Output the new reweighted likelihood (if all components were valid)
-              if(is_valid) getPrinter().print(combined_logL, reweighted_loglike_name, MPIrank, pointID);
 
               ///  In the future would be nice if observables could be reconstructed from the
               ///  output file, but that is a big job, need to automatically create functors

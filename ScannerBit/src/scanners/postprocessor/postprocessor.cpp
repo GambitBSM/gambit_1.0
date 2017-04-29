@@ -225,10 +225,14 @@ scanner_plugin(postprocessor, version(1, 0, 0))
 
     //MAIN LOOP HERE
     bool continue_processing = true;
-    bool quit_flag_seen = false;
+    #ifdef WITH_MPI
+      bool quit_flag_seen = false;
+    #endif
     while(continue_processing)
     {
-       bool I_am_finished = false;
+       #ifdef WITH_MPI
+         bool I_am_finished = false;
+       #endif
        if (resume) // If resuming (or redistributing), get the required resume data
        {
           done_chunks = get_done_points(settings.root);
@@ -247,7 +251,9 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        std::cout << "Rank "<<rank<<": exited loop with code "<<exit_code<<std::endl;
        if(exit_code==0)
        {
-          I_am_finished = true;
+          #ifdef WITH_MPI
+            I_am_finished = true;
+          #ifdef WITH_MPI
           std::cout << "Rank "<<rank<<" has finished processing its batch; requesting work from other processes." << std::endl;
           // We are finished, but there might still be lots of points to process
           // that are assigned to other cpus in this job. We will request that
@@ -255,17 +261,19 @@ scanner_plugin(postprocessor, version(1, 0, 0))
           // But first, we check if anyone else has already requested this stop!
           // In that case there is no need to send another stop message.
           #ifdef WITH_MPI
-          if(not driver.check_for_redistribution_request())
-          {
-             driver.send_redistribution_request();
-          }
-          do_redistribution = true;
+            if(not driver.check_for_redistribution_request())
+            {
+               driver.send_redistribution_request();
+            }
+            do_redistribution = true;
           #endif
        }
        else if(exit_code==1)
        {
           // Saw quit flag, time to stop
-          quit_flag_seen = true;
+          #ifdef WITH_MPI
+            quit_flag_seen = true;
+          #endif
           continue_processing = false;
           do_redistribution = true; // Need to unlock processes that may be waiting for point redistribution
        }
@@ -293,57 +301,57 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        if(do_redistribution)
        {
           #ifdef WITH_MPI
-          /// @{ Gather all 'I_am_finished' flags to see if everyone is done
-          int my_finished = (I_am_finished ? 1 : 0); // convert to int in a way that prevents unused-variable warnings
-          std::vector<int> all_finished = allgather_int(my_finished, ppComm);
-          bool everyone_finished = true;
-          int tmp_rank = 0;
-          for(auto it=all_finished.begin(); it!=all_finished.end(); ++it)
-          {
-             if(*it!=1)
-             {
-                //std::cout << "Rank "<<rank<<": rank "<<tmp_rank<<" is not finished ("<<*it<<")"<<std::endl;
-                everyone_finished = false; // If anyone has not finished, we proceed with redistribution.
-             }
-             tmp_rank++;
-          }
-          /// @}
+            /// @{ Gather all 'I_am_finished' flags to see if everyone is done
+            int my_finished = (I_am_finished ? 1 : 0); // convert to int in a way that prevents unused-variable warnings
+            std::vector<int> all_finished = allgather_int(my_finished, ppComm);
+            bool everyone_finished = true;
+            int tmp_rank = 0;
+            for(auto it=all_finished.begin(); it!=all_finished.end(); ++it)
+            {
+               if(*it!=1)
+               {
+                  //std::cout << "Rank "<<rank<<": rank "<<tmp_rank<<" is not finished ("<<*it<<")"<<std::endl;
+                  everyone_finished = false; // If anyone has not finished, we proceed with redistribution.
+               }
+               tmp_rank++;
+            }
+            /// @}
 
-          // All processes should now be synchronised; receive all the redistribution requests
-          std::cout << "Rank "<<rank<<": Clearing redistribution request messages" << std::endl;
-          driver.clear_redistribution_requests();
+            // All processes should now be synchronised; receive all the redistribution requests
+            std::cout << "Rank "<<rank<<": Clearing redistribution request messages" << std::endl;
+            driver.clear_redistribution_requests();
 
-          if(not everyone_finished)
-          {
-             /// @{ Gather all quit flags, to see if we need to stop (COLLECTIVE OPERATION)
-             int my_quit = (quit_flag_seen ? 1 : 0); // convert to int in a way that prevents unused-variable warnings
-             std::vector<int> all_quit_flags = allgather_int(my_quit, ppComm);
-             for(auto it=all_quit_flags.begin(); it!=all_quit_flags.end(); ++it)
-             {
-                if(*it==1)
-                {
-                   continue_processing = false; // If anyone has seen the quit flag, we must stop.
-                }
-             }
-             /// @}
-             if(continue_processing)
-             {
-                /// Not quitting; do the redistribution.
-                //if(rank==0) std::cout << "Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
-                std::cout << "Rank "<<rank<<": Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
-                resume = true; // Perform next loop as if we are resuming the scan.
-             }
-             else
-             {
-                if(rank==0) std::cout << "Quit flag seen by one or more worker processes; stopping postprocessor." << std::endl;
-             }
-          }
-          else
-          {
-             // Everyone is finished! We can stop
-             continue_processing = false;
-             if(rank==0) std::cout << "All processes report that they are finished with their postprocessing batches. No work left to do, so we will stop." << std::endl;
-          }
+            if(not everyone_finished)
+            {
+               /// @{ Gather all quit flags, to see if we need to stop (COLLECTIVE OPERATION)
+               int my_quit = (quit_flag_seen ? 1 : 0); // convert to int in a way that prevents unused-variable warnings
+               std::vector<int> all_quit_flags = allgather_int(my_quit, ppComm);
+               for(auto it=all_quit_flags.begin(); it!=all_quit_flags.end(); ++it)
+               {
+                  if(*it==1)
+                  {
+                     continue_processing = false; // If anyone has seen the quit flag, we must stop.
+                  }
+               }
+               /// @}
+               if(continue_processing)
+               {
+                  /// Not quitting; do the redistribution.
+                  //if(rank==0) std::cout << "Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
+                  std::cout << "Rank "<<rank<<": Some processes have finished their work, but others are still going. Redistributing remaining workload amongst all available cpus" << std::endl;
+                  resume = true; // Perform next loop as if we are resuming the scan.
+               }
+               else
+               {
+                  if(rank==0) std::cout << "Quit flag seen by one or more worker processes; stopping postprocessor." << std::endl;
+               }
+            }
+            else
+            {
+               // Everyone is finished! We can stop
+               continue_processing = false;
+               if(rank==0) std::cout << "All processes report that they are finished with their postprocessing batches. No work left to do, so we will stop." << std::endl;
+            }
           #endif
        }
     }
