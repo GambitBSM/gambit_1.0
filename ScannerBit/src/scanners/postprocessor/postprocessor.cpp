@@ -253,7 +253,7 @@ scanner_plugin(postprocessor, version(1, 0, 0))
        {
           #ifdef WITH_MPI
             I_am_finished = true;
-          #ifdef WITH_MPI
+          #endif
           std::cout << "Rank "<<rank<<" has finished processing its batch; requesting work from other processes." << std::endl;
           // We are finished, but there might still be lots of points to process
           // that are assigned to other cpus in this job. We will request that
