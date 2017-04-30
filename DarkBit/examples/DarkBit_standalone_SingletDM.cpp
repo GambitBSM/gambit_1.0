@@ -61,8 +61,8 @@ namespace Gambit
     }
 
     // Create decay object from SLHA file input.slha
-    // FIXME: Get the actual Higgs width for this point from 3bithit.
-    // (Also Update MicrOmegas SingletDM default Higgs width in vars.mdl)
+    // FIXME: Get the actual Higgs width for this point from 3bithit
+    // (or just use SM value).
     void createDecays(DecayTable& outDecays)
     {
       std::string inputFileName = "DarkBit/data/example.slha1";
@@ -264,15 +264,14 @@ int main()
     // ---- Direct detection -----
 
     // Calculate DD couplings with Micromegas
-    /*
+
     DD_couplings_MicrOmegas.notifyOfModel("SingletDM");
     DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
     DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::nucleonAmplitudes);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::FeScLoop);
-    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::mocommon_);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::nucleonAmplitudes);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::FeScLoop);
+    DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_SingletDM_3_6_9_2::Functown::mocommon_);
     DD_couplings_MicrOmegas.reset_and_calculate();
-    */
 
     DD_couplings_SingletDM.notifyOfModel("nuclear_params_fnq");
     DD_couplings_SingletDM.notifyOfModel("SingletDM");
@@ -280,15 +279,6 @@ int main()
     DD_couplings_SingletDM.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
     DD_couplings_SingletDM.resolveDependency(&createSpectrum);
     DD_couplings_SingletDM.reset_and_calculate();
-
-  //  // Calculate DD couplings with DarkSUSY
-  //  DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
-  //  DD_couplings_DarkSUSY.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
-  //  DD_couplings_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
-  //  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsddgpgn);
-  //  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mspctm);
-  //  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::ddcom);
-  //  DD_couplings_DarkSUSY.reset_and_calculate();
 
     // Initialize DDCalc backend
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
@@ -313,6 +303,14 @@ int main()
     LUX_2013_GetLogLikelihood.reset_and_calculate();
 
     // Set generic scattering cross-section for later use
+    sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+    sigma_SI_p_simple.resolveDependency(&mwimp_generic);
+    sigma_SI_p_simple.reset_and_calculate();
+
+    //FIXME: This does not agree with standalone MicrOmegas!!!!!!
+    cout << "sigma_SI,p with MicrOmegas " << sigma_SI_p_simple(0) << endl;
+
+    // Set generic scattering cross-section for later use
     sigma_SI_p_simple.resolveDependency(&DD_couplings_SingletDM);
     sigma_SI_p_simple.resolveDependency(&mwimp_generic);
     sigma_SI_p_simple.reset_and_calculate();
@@ -321,6 +319,9 @@ int main()
     sigma_SD_p_simple.resolveDependency(&DD_couplings_SingletDM);
     sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
+
+    cout << "sigma_SI,p with GAMBIT " << sigma_SI_p_simple(0) << endl;
+
 
 
     // ---- Gamma-ray yields ----

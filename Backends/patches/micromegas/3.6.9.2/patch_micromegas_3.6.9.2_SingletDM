@@ -200,20 +200,20 @@ diff -rupN ./SingletDM/work/models/vars1.mdl ../../../installed/micromegas/3.6.9
 +Mm    |0.1057       |muon mass                                                                  
 +Ml    |1.777        |tau-lepton mass                                                     
 +Q     |100          | QCD scale for calculation of quark masses 
-+McMc  |1.2          | Mc(Mc)  MS-BAR                                          
-+MbMb  |4.23         | Mb(Mb)  MS-BAR                                          
-+Mtp   |175          |t-quark pole mass                                                  
++McMc  |1.27         | Mc(Mc)  MS-BAR                                          
++MbMb  |4.18         | Mb(Mb)  MS-BAR                                          
++Mtp   |173.21       |t-quark pole mass                                                  
 +MZ    |91.1884      |Z-boson mass                                                        
 +Mh    |125.09       |higgs mass                                                                 
-+wt    |1.59         |t-quark width        (tree level 1->2x)                                    
++wt    |1.41         |t-quark width        (tree level 1->2x)                                    
 +wZ    |2.49444      |Z-boson width        (tree level 1->2x)                                    
 +wW    |2.08895      |W-boson width        (tree level 1->2x)
-+wh    |1.0          |higgs width
++wh    |0.00407      |higgs width
 +wl    |2.27E-12     |tau-lepton width
 +wm    |3.01E-19     |muon width
-+Mu    |0.01         |mass of u-quark
-+Md    |0.01         |mass of d-quark
-+Ms    |0.2          |mass of s-quark
++Mu    |0.0022       |mass of u-quark
++Md    |0.0047       |mass of d-quark
++Ms    |0.096        |mass of s-quark
 +MS    |150.0        |S mass
 +lambda|0.01         |hS coupling
 +================================================================================================
