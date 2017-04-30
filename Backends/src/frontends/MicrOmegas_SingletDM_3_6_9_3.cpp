@@ -58,8 +58,8 @@ BE_INI_FUNCTION
      logger() << LogTags::debug << "Initializing MicrOmegas SingletDM with ";
      logger() << "VWdecay: " << VWdecay << " VZdecay: " << VZdecay << EOM;
 
-     // Currently only works correctly in unitary gauge
-     *ForceUG=1;
+     // Uncomment below to force MicrOmegas to do calculations in unitary gauge
+     // *ForceUG=1;
 
      double mS = spec.get(Par::Pole_Mass,"S");
      double mH = spec.get(Par::Pole_Mass,"h0_1");
