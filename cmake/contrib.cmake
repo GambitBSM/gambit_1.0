@@ -101,11 +101,6 @@ add_gambit_library(fjcore OPTION OBJECT
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fjcore.hh)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
 
-# We need to include some stuff from the eigen3 library.  Just ship it until we can get rid of
-# FlexibleSUSY (and arrange to retrieve it ourselves if/when getting gm2calc).
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-include_directories("${EIGEN3_DIR}")
-
 #contrib/MassSpectra; include only if SpecBit is in use
 set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
 if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
@@ -133,6 +128,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
 
   # Silence the deprecated-declarations warnings comming from Eigen3
   set_compiler_warning("no-deprecated-declarations" FS_CXX_FLAGS)
+
   # Silence the unused parameter and variable warnings comming from FlexibleSUSY
   set_compiler_warning("no-unused-parameter" FS_CXX_FLAGS)
   set_compiler_warning("no-unused-variable" FS_CXX_FLAGS)
@@ -144,7 +140,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
        --with-ldflags=${OpenMP_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
        --with-fflags=${FS_Fortran_FLAGS}
-       --with-eigen-incdir=${EIGEN3_DIR}
+       --with-eigen-incdir=${EIGEN3_INCLUDE_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
        --with-lapack-libs=${LAPACK_LINKLIBS}
