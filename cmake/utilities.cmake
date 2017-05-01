@@ -520,6 +520,9 @@ macro(BOSS_backend name backend_version)
     if (NOT ${GSL_INCLUDE_DIR} STREQUAL "")
       set(BOSS_includes "${BOSS_includes} -I ${GSL_INCLUDE_DIR}")
     endif()
+    if (NOT ${EIGEN3_INCLUDE_DIR} STREQUAL "")
+      set(BOSS_includes "${BOSS_includes} -I ${EIGEN3_INCLUDE_DIR}")
+    endif()
     ExternalProject_Add_Step(${name}_${ver} BOSS
       # Run BOSS
       COMMAND python ${BOSS_dir}/boss.py ${BOSS_includes} ${name}_${backend_version_safe}
