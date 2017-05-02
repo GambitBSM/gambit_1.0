@@ -220,6 +220,34 @@ namespace Gambit
 
 int main(int argc, char* argv[])
 {
+    std::cout << std::endl;
+    std::cout << "Welcome to the DarkBit Generic WIMP standalone program!" << std::endl;
+    std::cout << std::endl;
+    std::cout << "************************************************************************************" << std::endl;
+    std::cout << "This standalone program calculates a range of observables and likelihoods for a " << std::endl;
+    std::cout << "generic WIMP model defined by the WIMP mass and an annihilation (or scattering) " << std::endl;
+    std::cout << "cross section. The model also contains three scalar particles which decay:" << std::endl;
+    std::cout << "phi -> gamma gamma    phi_1 -> tau+ tau-  phi_2 -> b bbar" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Usage: DarkBit_standalone_WIMP mode" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Mode Options: " << std::endl;
+    std::cout << "  0: Outputs spectrum of gamma rays from WIMP annihilation to b bbar (dNdE0.dat)" << std::endl;
+    std::cout << "  1: Outputs spectrum of gamma rays from WIMP annihilation to gamma Z_0 (dNdE1.dat)" << std::endl;
+    std::cout << "  2: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma (dNdE2.dat)" << std::endl;
+    std::cout << "  3: Outputs spectrum of gamma rays from WIMP annihilation to tau+ tau- (dNdE3.dat)" << std::endl;
+    std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to e+ e- (dNdE4.dat)" << std::endl;
+    std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma Z_0" << std::endl;
+    std::cout << "      (dNdE5.dat)" << std::endl;
+    std::cout << "  6: Outputs tables of Fermi-LAT dwarf spheroidal likelihoods and the relic density" << std::endl;
+    std::cout << "      in <sigma v> / m_WIMP parameter space." << std::endl;
+    std::cout << "  7: Outputs tables of direct detection likelihoods in <sigma v> / m_WIMP parameter" << std::endl;
+    std::cout << "      space." << std::endl;
+    std::cout << "  >=10: Outputs spectrum of gamma rays from WIMP annihilation to phi phi_2. The" << std::endl;
+    std::cout << "       mode value is m_phi while m_phi_2=100 GeV (dNdE_FCMC_(mode).dat)" << std::endl;
+    std::cout << "************************************************************************************" << std::endl;
+    std::cout << std::endl;
+
   try
   {
     if (argc==1)
@@ -380,7 +408,6 @@ int main(int argc, char* argv[])
     dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
 
     // Calculate Fermi LAT dwarf likelihood
-    // FIXME: Check whether Fermi lat limits can be reproduced
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
     lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
@@ -477,11 +504,11 @@ int main(int argc, char* argv[])
       std::cout << "Producing test spectra." << std::endl;
       double mass = 100.;
       double sv = 3e-26;
-      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
-      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.,0.));
-      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.,0.));
-      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.,0.));
-      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0.));
+      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
+      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0.));
+      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0., 0.));
+      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
+      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0.));
       if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1.));
     }
 
