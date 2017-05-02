@@ -162,7 +162,7 @@ namespace Gambit
             catalog.getParticleProperty(p2[i]).mass;
           if ( mWIMP*2 > mtot_final * 0 && brList[i]!= 0.) //FIXME: Jonathan: Why is the zero here?
           {
-            std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
+            // std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
             daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i]; //FIXME: Jonathan:
             TH_Channel new_channel(
                 daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
@@ -526,7 +526,7 @@ int main(int argc, char* argv[])
     if (mode==6)
     {
       // Systematic parameter maps annihilation
-      std::cout << "Producing test maps." << std::endl;
+      std::cout << "Producing gamma ray test maps." << std::endl;
       int mBins = 60;
       int svBins = 40;
       double oh2, lnL;
@@ -539,6 +539,7 @@ int main(int argc, char* argv[])
 
       sv_list = daFunk::logspace(-28.0, -22.0, svBins);
 
+      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood tables for annihilation to b bbar." << std::endl;
       m_list = daFunk::logspace(log10(5.), 4., mBins-10);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -560,16 +561,16 @@ int main(int argc, char* argv[])
           cascadeMC_LoopManager.reset_and_calculate();
           cascadeMC_gammaSpectra.reset_and_calculate();
           GA_AnnYield_General.reset_and_calculate();
-          //dump_GammaSpectrum.reset_and_calculate();
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
           lnL = lnL_FermiLATdwarfs_gamLike(0);
-          std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+          //std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
           lnL_b_array[i][j] = lnL;
         }
       }
 
       dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
 
+      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood tables for annihilation to tau+ tau-." << std::endl;
       m_list = daFunk::logspace(log10(1.9), 4., mBins-10);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -577,7 +578,7 @@ int main(int argc, char* argv[])
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
@@ -591,16 +592,16 @@ int main(int argc, char* argv[])
           cascadeMC_LoopManager.reset_and_calculate();
           cascadeMC_gammaSpectra.reset_and_calculate();
           GA_AnnYield_General.reset_and_calculate();
-          //dump_GammaSpectrum.reset_and_calculate();
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
           lnL = lnL_FermiLATdwarfs_gamLike(0);
-          std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+          //std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
           lnL_tau_array[i][j] = lnL;
         }
       }
 
       dump_array_to_file("Fermi_tau_table.dat", lnL_tau_array, m_list, sv_list);
 
+      std::cout << "Calculating table of Omega h^2 values." << std::endl;
       m_list = daFunk::logspace(-1.0, 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -608,7 +609,7 @@ int main(int argc, char* argv[])
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
@@ -629,7 +630,7 @@ int main(int argc, char* argv[])
     if (mode==7)
     {
       // Systematic parameter maps scattering
-      std::cout << "Producing test maps." << std::endl;
+      std::cout << "Producing direct detection test maps." << std::endl;
       double lnL1, lnL2, lnL3, lnL4, lnL5;
       double g, reduced_mass;
       //int mBins = 300;
@@ -648,6 +649,7 @@ int main(int argc, char* argv[])
       s_list = daFunk::logspace(-46., -39., sBins);
       // Calculate array of sigma_SI and lnL values for LUX 2016 and 2013, Xenon100,
       // and PandaX, assuming gps=gns
+      std::cout << "Calculating tables of SI likelihoods." << std::endl;
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -709,11 +711,11 @@ int main(int argc, char* argv[])
           SuperCDMS_2014_GetLogLikelihood.reset_and_calculate();
           lnL5 = SuperCDMS_2014_GetLogLikelihood(0);
 
-          std::cout << "LUX2016 SI lnL = " << lnL1 << std::endl;
-          std::cout << "PandaX lnL = " << lnL2 << std::endl;
-          std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
-          std::cout << "XENON100_2012 lnL = " << lnL4 << std::endl;
-          std::cout << "SuperCDMS_2014 lnL = " << lnL5 << std::endl;
+          //std::cout << "LUX2016 SI lnL = " << lnL1 << std::endl;
+          //std::cout << "PandaX lnL = " << lnL2 << std::endl;
+          //std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
+          //std::cout << "XENON100_2012 lnL = " << lnL4 << std::endl;
+          //std::cout << "SuperCDMS_2014 lnL = " << lnL5 << std::endl;
 
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
@@ -723,7 +725,6 @@ int main(int argc, char* argv[])
         }
       }
 
-      //dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
       dump_array_to_file("LUX_2016_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("LUX_2013_SI_table.dat", lnL_array3, m_list, s_list);
@@ -733,6 +734,7 @@ int main(int argc, char* argv[])
       s_list = daFunk::logspace(-41., -35., sBins);
       // Calculate array of sigma_SD,p and lnL values for PICO-60, LUX 2013,
       // SIMPLE 2014, and PandaX assuming gna=0
+      std::cout << "Calculating tables of SD likelihoods." << std::endl;
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -804,11 +806,11 @@ int main(int argc, char* argv[])
           lnL_array4[i][j] = lnL4;
           lnL_array5[i][j] = lnL5;
 
-          std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
-          std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
-          std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
-          std::cout << "LUX_2013 SD,p lnL = " << lnL4 << std::endl;
-          std::cout << "PandaX_2016_SD,p lnL = " << lnL5 << std::endl;
+          //std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
+          //std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
+          //std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
+          //std::cout << "LUX_2013 SD,p lnL = " << lnL4 << std::endl;
+          //std::cout << "PandaX_2016_SD,p lnL = " << lnL5 << std::endl;
         }
       }
 
