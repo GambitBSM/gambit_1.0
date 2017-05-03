@@ -1,5 +1,5 @@
-# StandardModel_SLHA2 parameters in MSSM postprocessing.
-# import this file into a Parameters node named:
+# StandardModel_SLHA2 parameters in postprocessing form.
+# Import this file into a Parameters node named
 # StandardModel_SLHA2:
 
 # SLHA1
@@ -53,11 +53,11 @@ theta12 :
 theta23 :
   prior_type: none
 theta13 :
-  prior_type: none               
+  prior_type: none
 delta13 :
   prior_type: none
 alpha1  :
   prior_type: none
 alpha2  :
   prior_type: none
- 
+
