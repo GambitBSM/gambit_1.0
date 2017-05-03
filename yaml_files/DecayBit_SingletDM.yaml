@@ -4,12 +4,9 @@
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
 
-###################################
-# Input parameter declarations
-###################################
-
 Parameters:
 
+  #SM parameters.
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
   StandardModel_Higgs:
@@ -24,19 +21,23 @@ Parameters:
       range: [0.005, 0.5]
       prior_type: log
 
+
 Priors:
-    # set in parameters section
+
+  # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
 
 Scanner:
 
-  use_scanner: toy_mcmc
+  use_scanner: random
 
   scanners:
-    toy_mcmc:
-      plugin: toy_mcmc
-      point_number: 200
-      output_file:  output
-      like:  Likelihood
+
+    random:
+      plugin: random
+      point_number: 10
+      like:  LogLike
+
 
 ObsLikes:
 
@@ -44,6 +45,8 @@ ObsLikes:
   - purpose:      Test
     capability:   decay_rates
     type:         DecayTable
+    printme: false
+
 
 Rules:
 
@@ -53,29 +56,15 @@ Rules:
   - capability: SingletDM_spectrum
     function: get_SingletDM_spectrum
 
+    - capability: muon_gm2_SM
+      function: gm2_SM_ee
 
-
-##############################
-# Printer setup
-##############################
 
 Printer:
 
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
   printer: ascii
+    output_file: "results.txt"
 
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
-  options:
-    # name of output file
-    output_file: "gambit_output.txt"
-
-#########################
-# Logging setup
-#########################
 
 Logger:
 
@@ -92,18 +81,10 @@ Logger:
     [Core,Error] : "core_errors.log"
     [Core,Error,Fatal] : "fatal_core_errors.log"
     [Dependency Resolver] : "dependency_resolver.log"
-    [ExampleBit_A] : "ExampleBit_A.log"
-    [ExampleBit_B] : "ExampleBit_B.log"
     [DecayBit] : "DecayBit.log"
 
 
-##########################
-# Name/Value Section
-##########################
-
 KeyValues:
-
-  default_output_path: "runs/gambit_DecayBit_SS"
 
   dependency_resolution:
     prefer_model_specific_functions: true
@@ -111,15 +92,4 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
 
-
-###############################
-## Printer (output) setup
-###############################
-
-Printer:
-printer: ascii
-options:
-output_file: "runs/DecayBit_test/samples/gambit_output.data"
-buffer_length: 10
-
-
+  default_output_path: "runs/DecayBit_SingletDM"

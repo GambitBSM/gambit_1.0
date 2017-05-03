@@ -13,7 +13,7 @@ Parameters:
   nuclear_params_sigmas_sigmal:
     sigmas:
       range: [19, 67]
-    sigmal: 
+    sigmal:
       range: [31, 85]
     deltau:  0.842
     deltad:  -0.427
@@ -48,6 +48,7 @@ Priors:
 
   # All the priors are simple for this scan, so they are specified directly in the Parameters section.
 
+
 Printer:
 
   printer: hdf5
@@ -56,36 +57,37 @@ Printer:
     output_file: "SingletDM.hdf5"
     group: "/SingletDM"
 
+
 Scanner:
   use_scanner: diver
 
   scanners:
 
     multinest:
-      plugin: MultiNest
+      plugin: multinest
       like:  LogLike
       nlive: 20000
       tol: 0.0001
 
     diver:
-      plugin: Diver
+      plugin: diver
       like: LogLike
       NP: 50000
       verbosity: 1
       convthresh: 0.0001
-      
+
     twalk:
       plugin: twalk
       sqrtR: 1.001
       chain_number: 512
 
     great:
-      plugin: GreAT
+      plugin: great
       nTrialLists: 17
       nTrials: 20000
       like: LogLike
 
-s
+
 ObsLikes:
 
     # LHC likelihoods

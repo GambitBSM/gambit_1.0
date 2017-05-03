@@ -5,14 +5,13 @@
 # Pat Scott <p.scott@imperial.ac.uk>
 # Aug 2015
 
-###################################
-# Input parameter declarations
-###################################
-
 Parameters:
+
+  #SM parameters.
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  MSSM25atQ:
+  #SUSY parameters.
+  MSSM20atQ:
     Qin: 5000
     SignMu: 1
     TanBeta: 10
@@ -26,24 +25,19 @@ Parameters:
     M3:
       range: [0, 1000]
 
-    mq2_1: 15625.0
-    mq2_2: 15625.0
+    mq2_12: 15625.0
     mq2_3: 15625.0
 
-    ml2_1: 15625.0
-    ml2_2: 15625.0
+    ml2_12: 15625.0
     ml2_3: 15625.0
 
-    md2_1: 15625.0
-    md2_2: 15625.0
+    md2_12: 15625.0
     md2_3: 15625.0
 
-    mu2_1: 15625.0
-    mu2_2: 15625.0
+    mu2_12: 15625.0
     mu2_3: 15625.0
 
-    me2_1: 15625.0
-    me2_2: 15625.0
+    me2_12: 15625.0
     me2_3: 15625.0
 
     Ae_12:
@@ -52,63 +46,62 @@ Parameters:
     Ad_3: 0
     Au_3: 0
 
+
 Priors:
-    # none: all parameters fixed in this example.
+
+  # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
 
 Scanner:
 
-  use_scanner: toy_mcmc
+  use_scanner: random
 
   scanners:
-    toy_mcmc:
-      plugin: toy_mcmc
+
+    random:
+      plugin: random
       point_number: 10
-      output_file:  output
-      like:  Likelihood
+      like:  LogLike
+
 
 ObsLikes:
 
-  # Test DecayBit
-  #- purpose:      Test
-  #  capability:   decay_rates
-  #  type:         DecayTable
+  # Test FeynHiggs-related module functions
+  - purpose:  whatever
+    capability:  FH_Precision
 
-  # Uncomment to test FeynHiggs-related module functions
-  #- purpose:  whatever
-  #  capability:  FH_HiggsMasses
-  #- purpose:  whatever
-  #  capability:  FH_PrecisionObs
-  #- purpose:  whatever
-  #  capability:  FH_FlavorObs
-  #- purpose:  whatever
-  #  capability:  FH_MSSMMasses
-  #- purpose:  whatever
-  #  capability:  FH_Couplings
-  #- purpose:  whatever
-  #  capability:  FH_HiggsProd
-
-  # Uncomment to test precision likelihoods and nuisances
-  - purpose:  Likelihood
+  # Test precision likelihoods and nuisances
+  - purpose:  LogLikelihood
     capability:  lnL_Z_mass
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_t_mass
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_mcmc
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_mbmb
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_alpha_em
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_alpha_s
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_W_mass
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_sinW2_eff
-  - purpose:  Likelihood
+
+  - purpose:  LogLikelihood
     capability:  lnL_deltarho
+
   - purpose:    Observable
     capability: muon_gm2
     function: GM2C_SUSY
+
   - purpose:  Likelihood
     capability:  lnL_gm2
 
@@ -116,11 +109,12 @@ Rules:
 
   - capability: unimproved_MSSM_spectrum
     function: get_MSSMatQ_spectrum
-    options:
-      invalid_point_fatal: true
 
-  - capability: HB_ModelParameters
-    function: MSSMHiggs_ModelParameters
+  - capability: MSSM_spectrum
+    function: make_MSSM_precision_spectrum_H_W
+
+  - capability: muon_gm2_SM
+    function: gm2_SM_ee
 
   - capability: Higgs_decay_rates
     function: FH_MSSM_h0_1_decays
@@ -143,26 +137,13 @@ Rules:
       - capability: muon_gm2
         function: GM2C_SUSY
 
-##############################
-# Printer setup
-##############################
 
 Printer:
 
-  # Select printer to use via string tag
   printer: ascii
-
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer.
   options:
-    # name of output file
-    output_file: "gambit_output.txt"
+    output_file: "results.txt"
 
-#########################
-# Logging setup
-#########################
 
 Logger:
 
@@ -179,18 +160,10 @@ Logger:
     [Core,Error] : "core_errors.log"
     [Core,Error,Fatal] : "fatal_core_errors.log"
     [Dependency Resolver] : "dependency_resolver.log"
-    [ExampleBit_A] : "ExampleBit_A.log"
-    [ExampleBit_B] : "ExampleBit_B.log"
     [PrecisionBit] : "PrecisionBit.log"
 
 
-##########################
-# Name/Value Section
-##########################
-
 KeyValues:
-
-  default_output_path: "runs/gambit_PrecisionBit"
 
   dependency_resolution:
     prefer_model_specific_functions: true
@@ -198,3 +171,4 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
 
+  default_output_path: "runs/PrecisionBit_CMSSM"

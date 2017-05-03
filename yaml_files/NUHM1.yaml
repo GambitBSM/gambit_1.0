@@ -17,11 +17,14 @@ Parameters:
       fixed_value: -0.085
 
   #SUSY parameters.
-  CMSSM:
+  NUHM1:
     M0:
       range: [50, 1e4]
       prior_type: log
     M12:
+      range: [50, 1e4]
+      prior_type: log
+    mH:
       range: [50, 1e4]
       prior_type: log
     A0:
@@ -46,20 +49,17 @@ Parameters:
     beta: 3
     gamma: 1
 
-
 Priors:
 
   # All the priors are simple for this scan, so they are specified directly in the Parameters section.
-
 
 Printer:
 
   printer: hdf5
 
   options:
-    output_file: "CMSSM.hdf5"
-    group: "/CMSSM"
-
+    output_file: "NUHM1.hdf5"
+    group: "/NUHM1"
 
 Scanner:
 
@@ -329,7 +329,7 @@ Rules:
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   # Options set to match benchmark point specified in SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
   - capability: unimproved_MSSM_spectrum
-    function: get_CMSSM_spectrum
+    function: get_MSSMatMGUT_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0
@@ -541,6 +541,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e5
     model_invalid_for_lnlike_below_alt: -1e5
 
-  default_output_path: "runs/CMSSM/"
+  default_output_path: "runs/NUHM1/"
 
-  debug: true
+  debug: false

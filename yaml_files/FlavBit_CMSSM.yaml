@@ -1,7 +1,7 @@
 Parameters:
 
   #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_scan.yaml
 
   #SUSY parameters.
   CMSSM:
@@ -151,6 +151,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e5
     model_invalid_for_lnlike_below_alt: -1e5
 
-  default_output_path: "runs/CMSSM_Flav_Only/"
+  default_output_path: "runs/FlavBit_CMSSM/"
 
   debug: true
