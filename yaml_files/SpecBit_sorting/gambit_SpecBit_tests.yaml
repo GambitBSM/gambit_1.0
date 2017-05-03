@@ -14,7 +14,7 @@ Parameters:
       fixed_value: 1
     TanBeta:
       fixed_value: 3
-  
+
 Priors:
 
 Printer:
@@ -24,7 +24,7 @@ Printer:
 
 Scanner:
   use_scanner: toy_mcmc
-  
+
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
@@ -38,9 +38,11 @@ ObsLikes:
     capability:   run_MSSMspectrum_test
     type:         bool
     function:     MSSMspectrum_test
+  - purpose:      Test
+    capability:   run_light_quark_test
 
 Rules:
-  - capability: unimproved_MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum
     type: Spectrum
     function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
@@ -75,4 +77,4 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
+

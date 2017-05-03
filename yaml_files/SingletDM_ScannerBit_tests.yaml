@@ -110,9 +110,6 @@ Parameters:
     beta: 3
     gamma: 1
 
-#   Uncomment the below to use DarkSUSY nuclear parameters.
-#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
-
 
 ##############################
 # Prior setup

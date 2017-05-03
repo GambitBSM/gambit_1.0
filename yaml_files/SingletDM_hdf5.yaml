@@ -5,7 +5,7 @@
 ###################################
 
 Parameters:
-    StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
       mH:
@@ -85,9 +85,6 @@ Parameters:
       alpha: 1
       beta: 3
       gamma: 1
-
-#   Uncomment the below to use DarkSUSY nuclear parameters.
-#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
 
 
 ##############################
@@ -198,7 +195,7 @@ ObsLikes:
       purpose: LogLike
     - capability: lnL_vesc
       purpose: LogLike
-      
+
 # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:  LogLike

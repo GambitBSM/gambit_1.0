@@ -3,14 +3,14 @@
 #
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
- 
+
 ###################################
 # Input parameter declarations
 ###################################
 
 Parameters:
 
-  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
   StandardModel_Higgs:
     mH:
@@ -30,17 +30,17 @@ Priors:
 Scanner:
 
   use_scanner: toy_mcmc
-  
+
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
       point_number: 200
       output_file:  output
       like:  Likelihood
-            
+
 ObsLikes:
 
-  # Test DecayBit    
+  # Test DecayBit
   - purpose:      Test
     capability:   decay_rates
     type:         DecayTable
@@ -68,7 +68,7 @@ Printer:
   # This options node is passed on wholesale to
   # the printer object; required options may
   # therefore vary according to the selected
-  # printer. 
+  # printer.
   options:
     # name of output file
     output_file: "gambit_output.txt"
@@ -80,7 +80,7 @@ Printer:
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Can redirect to stdout or stderr by specifying these as the "filenames".
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 

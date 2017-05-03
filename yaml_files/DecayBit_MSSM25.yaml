@@ -3,15 +3,53 @@
 #
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
- 
+
 ###################################
 # Input parameter declarations
 ###################################
 
 Parameters:
-  StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ:           !import yaml_files/LesHouches.in.MSSM_1.yaml
-  #MSSM25atQ:           !import yaml_files/LesHouches.in.MSSM_light.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  MSSM25atQ:
+    Qin: 5000
+    SignMu: 1
+    TanBeta: 10
+    mHu2: 15625
+    mHd2: 15625
+
+    M1:
+      range: [0, 1000]
+    M2:
+      range: [0, 1000]
+    M3:
+      range: [0, 1000]
+
+    mq2_1: 15625.0
+    mq2_2: 15625.0
+    mq2_3: 15625.0
+
+    ml2_1: 15625.0
+    ml2_2: 15625.0
+    ml2_3: 15625.0
+
+    md2_1: 15625.0
+    md2_2: 15625.0
+    md2_3: 15625.0
+
+    mu2_1: 15625.0
+    mu2_2: 15625.0
+    mu2_3: 15625.0
+
+    me2_1: 15625.0
+    me2_2: 15625.0
+    me2_3: 15625.0
+
+    Ae_12:
+      range: [-1000, 1000]
+    Ae_3: 0
+    Ad_3: 0
+    Au_3: 0
 
 Priors:
     # none: all parameters fixed in this example.
@@ -19,45 +57,25 @@ Priors:
 Scanner:
 
   use_scanner: toy_mcmc
-  
+
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
       point_number: 2
       output_file:  output
       like:  Likelihood
-            
+
 ObsLikes:
 
-  # Test DecayBit    
+  # Test DecayBit
   - purpose:      Test
     capability:   decay_rates
     type:         DecayTable
 
-  # Test LEP xsecs
-  #- purpose:      Test
-  #  capability:   LEP208_xsec_serserbar
-  #- purpose:      Test
-  #  capability:   LEP208_xsec_smu1smu2bar
-  #- purpose:      Test
-  #  capability:   LEP205_xsec_chi00_11
-  #- purpose:      Test
-  #  capability:   LEP188_xsec_chipm_11
-  #- purpose:      Test
-  #  capability:   LEP205_xsec_selserbar
-  #- purpose:      Test
-  #  capability:   LEP205_xsec_stau1stau1bar
-  #- purpose:      Test
-  #  capability:   LEP188_xsec_chi00_33
-  #- purpose:      Test
-  #  capability:   LEP208_xsec_chipm_12
-  #- purpose:      Test
-  #  capability:   LEP208_xsec_chi00_24
-
 Rules:
 
-  - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum  
+  - capability: unimproved_MSSM_spectrum
+    function: get_MSSMatQ_spectrum
     options:
       invalid_point_fatal: true
 
@@ -72,7 +90,7 @@ Rules:
 
   - capability: H_plus_decay_rates
     function: H_plus_decays
-      
+
   - capability: decay_rates
     function: all_decays
 
@@ -85,8 +103,8 @@ Rules:
   #  options:
   #    debug_SLHA_filenames:
   #      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
-      
-      
+
+
 ##############################
 # Printer setup
 ##############################
@@ -100,7 +118,7 @@ Printer:
   # This options node is passed on wholesale to
   # the printer object; required options may
   # therefore vary according to the selected
-  # printer. 
+  # printer.
   options:
     # name of output file
     output_file: "gambit_output.txt"
@@ -112,7 +130,7 @@ Printer:
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Can redirect to stdout or stderr by specifying these as the "filenames".
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 

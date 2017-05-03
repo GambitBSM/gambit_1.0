@@ -2,20 +2,21 @@ Parameters:
 
   #SM nuisance parameters fixed for now.
   StandardModel_SLHA2: !import yaml_files/StandardModel_SLHA2_defaults.yaml
-  nuclear_params_fnq: !import yaml_files/NuclearParams_fnq_defaults.yaml
 
   #Nuclear matrix parameters fixed for now.
-  #  nuclear_params_sigmas_sigmal:
-  #    sigmas:
-  #      fixed_value:  43.0
-  #    sigmal:
-  #      fixed_value:  58.0
-  #    deltau:
-  #      fixed_value:  0.842
-  #    deltad:
-  #      fixed_value: -0.427
-  #    deltas:
-  #      fixed_value: -0.085
+  nuclear_params_fnq:
+    # proton hadronic matrix elements
+    fpd: 0.0191
+    fpu: 0.0153
+    fps: 0.0447
+    # neutron hadronic matrix elements
+    fnd: 0.0273
+    fnu: 0.011
+    fns: 0.0447
+    # proton spin content
+    deltad: -0.427
+    deltau: 0.842
+    deltas: -0.085
 
   MSSM7atQ:
     Qin:
@@ -84,13 +85,13 @@ Scanner:
       # No options to set, but still need the nodes at the moment...
       aux_printer_txt_options:
       aux_printer_stats_options:
-      aux_printer_live_options:  
+      aux_printer_live_options:
 
 ObsLikes:
 
     - capability: lnL_oh2
       purpose: LogLike
- 
+
     - capability: RD_oh2
       purpose: Observable
 
