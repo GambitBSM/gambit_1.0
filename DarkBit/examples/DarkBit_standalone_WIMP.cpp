@@ -123,6 +123,8 @@ namespace Gambit
       // FIXME: Test all input possible for this function
       addParticle("gamma", 0.0,  2)
       addParticle("Z0", 91.2,  2)
+      addParticle("W+", 80.39, 2)
+      addParticle("W-", 80.39, 2)
       // FIXME: Jonathan: Do we really need the flavour and mass eigenstates?
       addParticle("tau+", 1.8,  1)
       addParticle("tau-", 1.8,  1)
@@ -152,8 +154,8 @@ namespace Gambit
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP);
-      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "e-_1", "phi");
-      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "e+_1", "phi2");
+      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "W-", "e-_1", "phi");
+      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "W+", "e+_1", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
@@ -177,10 +179,10 @@ namespace Gambit
         }
       }
 
-      if ( brList[6] > 0. )
+      if ( brList[7] > 0. )
       {
         auto E = daFunk::var("E");
-        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[6];
+        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[7];
         // FIXME: Include second gamma in AnnYield (currently ignored)
         TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
@@ -236,7 +238,7 @@ int main(int argc, char* argv[])
     std::cout << "  1: Outputs spectrum of gamma rays from WIMP annihilation to gamma Z_0 (dNdE1.dat)" << std::endl;
     std::cout << "  2: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma (dNdE2.dat)" << std::endl;
     std::cout << "  3: Outputs spectrum of gamma rays from WIMP annihilation to tau+ tau- (dNdE3.dat)" << std::endl;
-    std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to e+ e- (dNdE4.dat)" << std::endl;
+    std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to W+ W- (dNdE4.dat)" << std::endl;
     std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma Z_0" << std::endl;
     std::cout << "      (dNdE5.dat)" << std::endl;
     std::cout << "  6: Outputs tables of Fermi-LAT dwarf spheroidal likelihoods and the relic density" << std::endl;
@@ -519,7 +521,7 @@ int main(int argc, char* argv[])
       double mass = 100.;
       double sv = 3e-26;
       std::string filename = "dNdE_FCMC_" + std::to_string(mode) + ".dat";
-      dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0.), mode);
+      dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1., 0.), mode);
     }
 
     // Generate gamma-ray likelihood maps
@@ -549,7 +551,7 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
           std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_one.reset_and_calculate();
@@ -580,7 +582,7 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
           //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_one.reset_and_calculate();
@@ -611,7 +613,7 @@ int main(int argc, char* argv[])
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
           //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
@@ -644,7 +646,7 @@ int main(int argc, char* argv[])
           lnL_array2{boost::extents[mBins][sBins]}, lnL_array3{boost::extents[mBins][sBins]},
           lnL_array4{boost::extents[mBins][sBins]}, lnL_array5{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
-      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
+      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
 
       s_list = daFunk::logspace(-46., -39., sBins);
       // Calculate array of sigma_SI and lnL values for LUX 2016 and 2013, Xenon100,
