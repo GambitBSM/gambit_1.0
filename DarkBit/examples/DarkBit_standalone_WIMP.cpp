@@ -81,6 +81,8 @@ void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<dou
   dump_GammaSpectrum.reset_and_calculate();
 }
 
+// ---- Set up basic internal structures for direct & indirect detection ----
+
 namespace Gambit
 {
   namespace DarkBit
@@ -137,11 +139,10 @@ namespace Gambit
       addParticle("d_3", 4.9,  1)
       addParticle("dbar_3", 4.9,  1)
 
-
       addParticle("WIMP", mWIMP,  0)
       addParticle("phi",  mPhi,  0)
-      addParticle("phi1", 99.99,  0)
-      addParticle("phi2", 99.99,  0)
+      addParticle("phi1", 100.,  0)
+      addParticle("phi2", 100.,  0)
 #undef addParticle
 
       TH_Channel dec_channel(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
@@ -162,10 +163,10 @@ namespace Gambit
           double mtot_final =
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
-          if ( mWIMP*2 > mtot_final * 0 && brList[i]!= 0.) //FIXME: Jonathan: Why is the zero here?
+          if ( mWIMP*2 > mtot_final && brList[i]!= 0.)
           {
             // std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
-            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i]; //FIXME: Jonathan:
+            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
                 daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
@@ -198,6 +199,7 @@ namespace Gambit
       result = catalog;
     } // function TH_ProcessCatalog_WIMP
 
+    // Identifier for DM particle
     void DarkMatter_ID_WIMP(std::string& result)
     {
       result = "WIMP";
@@ -214,8 +216,8 @@ namespace Gambit
       result.gpa = runOptions->getValueOrDef<double>(0., "gpa");
       /// Option gna<double>: gna (default 0)
       result.gna = runOptions->getValueOrDef<double>(0., "gna");
-      std::cout << "DD_coupling says" << std::endl;
-      std::cout << result.gps << std::endl;
+      //std::cout << "DD_coupling says" << std::endl;
+      //std::cout << result.gps << std::endl;
     }
   }
 }
@@ -225,8 +227,8 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
     std::cout << "Welcome to the DarkBit Generic WIMP standalone program!" << std::endl;
     std::cout << std::endl;
-    std::cout << "************************************************************************************" << std::endl;
-    std::cout << "This standalone program calculates a range of observables and likelihoods for a " << std::endl;
+    std::cout << "**************************************************************************************" << std::endl;
+    std::cout << "This standalone example calculates a range of observables and likelihoods for a " << std::endl;
     std::cout << "generic WIMP model defined by the WIMP mass and an annihilation (or scattering) " << std::endl;
     std::cout << "cross section. The model also contains three scalar particles which decay:" << std::endl;
     std::cout << "phi -> gamma gamma    phi_1 -> tau+ tau-  phi_2 -> b bbar" << std::endl;
@@ -247,7 +249,7 @@ int main(int argc, char* argv[])
     std::cout << "      space." << std::endl;
     std::cout << "  >=10: Outputs spectrum of gamma rays from WIMP annihilation to phi phi_2. The" << std::endl;
     std::cout << "       mode value is m_phi while m_phi_2=100 GeV (dNdE_FCMC_(mode).dat)" << std::endl;
-    std::cout << "************************************************************************************" << std::endl;
+    std::cout << "**************************************************************************************" << std::endl;
     std::cout << std::endl;
 
   try
@@ -305,6 +307,8 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_one);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP);
@@ -317,23 +321,13 @@ int main(int argc, char* argv[])
     DarkSUSY_5_1_3_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("Halo_Einasto");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+    // The below allows us to initialise MicrOmegas_MSSM without a particular MSSM model.
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("Halo_Einasto");
     MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
-
-    // ---- Set up basic internal structures for direct & indirect detection ----
-
-    // Set identifier for DM particle
-    // FIXME: Needed?
-
-    // Set up process catalog based on DarkSUSY annihilation rates
-
-    // Assume for direct and indirect detection likelihoods that dark matter
-    // density is always the measured one (despite relic density results)
 
     // ---- Gamma-ray yields ----
 
     // Initialize tabulated gamma-ray yields
-    // FIXME: Use three different simyieldtables
     SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
     SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::dNdE);
     SimYieldTable_DarkSUSY.setOption<bool>("allow_yield_extrapolation", true);
@@ -411,6 +405,8 @@ int main(int argc, char* argv[])
 
     // Calculate Fermi LAT dwarf likelihood
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
     lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
 
@@ -506,12 +502,22 @@ int main(int argc, char* argv[])
       std::cout << "Producing test spectra." << std::endl;
       double mass = 100.;
       double sv = 3e-26;
-      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
-      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0.));
-      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0., 0.));
-      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
-      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0.));
-      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1.));
+      // The array that is being passed to dumpSpectrum give the branching fraction to various final states.
+      // They are (as defined in TH_ProcessCatalog_WIMP):
+      // 0: b bbar
+      // 1: gamma Z_0
+      // 2: gamma gamma
+      // 3: tau+ tau-
+      // 4: W+ W-
+      // 5: e+ e-
+      // 6: phi phi2
+      // 7: gamma gamma Z_0
+      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
+      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0., 0.));
+      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0., 0., 0.));
+      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0., 0.));
+      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0., 0.));
+      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 0., 1.));
     }
 
     // Generate gamma-ray spectra for various masses
@@ -524,16 +530,14 @@ int main(int argc, char* argv[])
       dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1., 0.), mode);
     }
 
-    // Generate gamma-ray likelihood maps
+    // Systematic parameter maps annihilation
     if (mode==6)
     {
-      // Systematic parameter maps annihilation
       std::cout << "Producing gamma ray test maps." << std::endl;
       int mBins = 60;
       int svBins = 40;
       double oh2, lnL;
       std::vector<double> sv_list, m_list;
-      //std::vector<double> m_list = daFunk::logspace(1.0, 4.0, mBins);
 
       boost::multi_array<double, 2> lnL_b_array{boost::extents[mBins][svBins]},
           lnL_tau_array{boost::extents[mBins][svBins]};
@@ -541,7 +545,7 @@ int main(int argc, char* argv[])
 
       sv_list = daFunk::logspace(-28.0, -22.0, svBins);
 
-      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood tables for annihilation to b bbar." << std::endl;
+      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to b bbar." << std::endl;
       m_list = daFunk::logspace(log10(5.), 4., mBins-10);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -549,7 +553,7 @@ int main(int argc, char* argv[])
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
           TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
@@ -572,7 +576,7 @@ int main(int argc, char* argv[])
 
       dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
 
-      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood tables for annihilation to tau+ tau-." << std::endl;
+      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to tau+ tau-." << std::endl;
       m_list = daFunk::logspace(log10(1.9), 4., mBins-10);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -621,6 +625,7 @@ int main(int argc, char* argv[])
           RD_spectrum_ordered_func.reset_and_calculate();
           RD_oh2_general.reset_and_calculate();
           oh2 = RD_oh2_general(0);
+          //std::cout << "Omega h^2 = " << oh2 << std::endl;
           oh2_array[i][j] = oh2;
         }
       }
@@ -628,10 +633,9 @@ int main(int argc, char* argv[])
       dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
     }
 
-    // Generate direct detection likelihood maps
+    // Systematic parameter maps scattering
     if (mode==7)
     {
-      // Systematic parameter maps scattering
       std::cout << "Producing direct detection test maps." << std::endl;
       double lnL1, lnL2, lnL3, lnL4, lnL5;
       double g, reduced_mass;
@@ -664,11 +668,13 @@ int main(int argc, char* argv[])
           ExtractLocalMaxwellianHalo.reset_and_calculate();
 
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
           reduced_mass = (m_list[i] * mN) / (mN + m_list[i]);
           g = sqrt(s_list[j]*pi/gev2cm2) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
+          // Assume for direct and indirect detection likelihoods that dark matter
+          // density is always the measured one (despite relic density results)
           RD_fraction_one.reset_and_calculate();
           DD_couplings_WIMP.setOption<double>("gps", g);
           DD_couplings_WIMP.setOption<double>("gns", g);
@@ -749,7 +755,7 @@ int main(int argc, char* argv[])
           ExtractLocalMaxwellianHalo.reset_and_calculate();
 
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
           reduced_mass = (m_list[i] * m_proton) / (m_proton + m_list[i]);
           g = sqrt(s_list[j]*pi/(3*gev2cm2)) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
