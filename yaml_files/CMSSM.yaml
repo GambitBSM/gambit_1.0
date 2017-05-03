@@ -208,8 +208,8 @@ ObsLikes:
     - capability: lnL_t_mass
       purpose:    LogLike
 
-    #- capability: lnL_mbmb
-    #  purpose:    LogLike
+    - capability: lnL_mbmb
+      purpose:    LogLike
 
     #- capability: lnL_light_quark_masses
     #  purpose:    LogLike
