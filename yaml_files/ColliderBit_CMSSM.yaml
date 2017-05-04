@@ -240,7 +240,8 @@ Rules:
 
 
   # Choose which getPythia to use
-  # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)
+  # For a scan, we use the one that does not expect an input SLHA file (i.e. do not use getPythiaFileReader)
+  # To run on an SLHA file, change "getPythia" to "getPythiaFildeReader" below, the uncomment the SLHA_filenames line
   # Note that you must specify the path to the xmldoc
   # Note also that you can use normal Pythia options here
   - capability:  HardScatteringSim
@@ -253,14 +254,14 @@ Rules:
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = off",
-                             "HadronLevel:all = off",
+                             "HadronLevel:all = on",
                              "SUSY:all = on",
                              "TauDecays:mode = 0"]
       Pythia_SUSY_LHC_13TeV: ["Print:quiet = on",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = off",
-                             "HadronLevel:all = off",
+                             "HadronLevel:all = on",
                              "SUSY:all = on",
                              "TauDecays:mode = 0"]
       # Don't bother generating events if the estimated upper limit on the cross-section is below this value [fb].
@@ -279,7 +280,7 @@ Rules:
     options:
       # useDetector defaults to false for getDelphes, which ignores all "Det" analyses and disables Delphes
       useDetector: [false,false]
-      # Choose which type of event to use: for parton level, change partonOnly to true
+      # Specify the location of the Delphes cards for the two Pythia instances (we assume ATLAS in both cases here)
       delphesConfigFiles: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
   # BuckFast for ATLAS rules and options (ex. the jet radius)
