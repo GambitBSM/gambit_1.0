@@ -1,23 +1,23 @@
-# 
-# GAMBIT YAML initialization file for running ColliderBit on a
-# single parameter point of a user-specified BSM model.  
 #
-# Note that a more appropriate alternative for running single points 
+# GAMBIT YAML initialization file for running ColliderBit on a
+# single parameter point of a user-specified BSM model.
+#
+# Note that a more appropriate alternative for running single points
 # through ColliderBit is to use the ColliderBit_standalone program.
 # See the ColliderBit paper for details on how this works.
-# 
-# In this example, the new model is *not* implemented properly in 
+#
+# In this example, the new model is *not* implemented properly in
 # GAMBIT. Rather, we use a dummy model to bypass the full model
 # machinery in GAMBIT and simply pass the parameter point of interest
-# to Pythia via an SLHA file. We use a version of the Pythia backend 
-# (Pythia 8.212.EM) extended with matrix elements for the new model. 
-# See the main ColliderBit paper for details on the example BSM model 
+# to Pythia via an SLHA file. We use a version of the Pythia backend
+# (Pythia 8.212.EM) extended with matrix elements for the new model.
+# See the main ColliderBit paper for details on the example BSM model
 # and how to replace it with a different one.
 #
-# Note: GAMBIT must be told to use Pythia 8.212.EM. Do this by specifying 
+# Note: GAMBIT must be told to use Pythia 8.212.EM. Do this by specifying
 #       "8_212_EM" as the "Default_Pythia" in the file
 #       /Backends/include/gambit/Backends/default_bossed_versions.hpp
-# 
+#
 #
 # Martin White <martin.white@adelaide.edu.au>
 # Anders Kvellestad <anders.kvellestad@nordita.org>
@@ -30,13 +30,13 @@
 
 Parameters:
 
-  # GAMBIT won't run without a proper GAMBIT model. Here we just provide a dummy 
+  # GAMBIT won't run without a proper GAMBIT model. Here we just provide a dummy
   # model (TestModel1D) that satisfies GAMBIT requirements in a minimal way.
-  # The model is not used by Pythia or ColliderBit in any way. 
+  # The model is not used by Pythia or ColliderBit in any way.
   TestModel1D:
-    x: 
+    x:
       prior_type: flat
-      range: [0, 1]      
+      range: [0, 1]
 
 
 ##############################
@@ -67,8 +67,8 @@ Printer:
 
 Scanner:
 
-  # Use the random scanner to run a single point. 
-  # Note that the sampled TestModel1D parameter is not used for anything, 
+  # Use the random scanner to run a single point.
+  # Note that the sampled TestModel1D parameter is not used for anything,
   # all that happens is that Pythia is run with the SLHA file provided below
   use_scanner: random
 
@@ -98,7 +98,7 @@ ObsLikes:
   - purpose:    Observable
     capability: DummyColliderObservable
     type:       double
-     
+
 
 #########################
 # Rule entries
@@ -128,7 +128,7 @@ Rules:
 
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
-    options:  
+    options:
       #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
       analyses: [ ["ATLAS_0LEP_20invfb", "ATLAS_0LEPStop_20invfb",
                    "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
@@ -137,7 +137,7 @@ Rules:
 
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
-    options:  
+    options:
       #useCMS defaults to true anyways. Set it to false to ignore all these analyses
       analyses: [ ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                    "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"] ]
@@ -198,7 +198,7 @@ Logger:
 
 KeyValues:
 
-  default_output_path: "runs/gambit_External"
+  default_output_path: "runs/ColliderBit_ExternalModel"
 
   dependency_resolution:
     prefer_model_specific_functions: true

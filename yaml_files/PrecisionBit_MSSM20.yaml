@@ -12,18 +12,15 @@ Parameters:
 
   #SUSY parameters.
   MSSM20atQ:
-    Qin: 5000
+    Qin: 1.9422e+16
     SignMu: 1
     TanBeta: 10
     mHu2: 15625
     mHd2: 15625
 
-    M1:
-      range: [0, 1000]
-    M2:
-      range: [0, 1000]
-    M3:
-      range: [0, 1000]
+    M1: 500
+    M2: 500
+    M3: 500
 
     mq2_12: 15625.0
     mq2_3: 15625.0
@@ -40,8 +37,7 @@ Parameters:
     me2_12: 15625.0
     me2_3: 15625.0
 
-    Ae_12:
-      range: [-1000, 1000]
+    Ae_12: 0
     Ae_3: 0
     Ad_3: 0
     Au_3: 0
@@ -60,50 +56,63 @@ Scanner:
 
     random:
       plugin: random
-      point_number: 10
+      point_number: 1
       like:  LogLike
 
 
 ObsLikes:
 
-  # Test FeynHiggs-related module functions
-  - purpose:  whatever
-    capability:  FH_Precision
-
   # Test precision likelihoods and nuisances
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_Z_mass
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_t_mass
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_mcmc
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_mbmb
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_alpha_em
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_alpha_s
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_W_mass
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_sinW2_eff
 
-  - purpose:  LogLikelihood
+  - purpose:  LogLike
     capability:  lnL_deltarho
 
-  - purpose:    Observable
+  - purpose:  LogLike
+    capability:  lnL_gm2
+
+  - purpose:  Observable
     capability: muon_gm2
     function: GM2C_SUSY
 
-  - purpose:  Likelihood
-    capability:  lnL_gm2
+  - purpose:  Observable
+    capability: deltarho
+
+  - purpose:  Observable
+    capability: mw
+    function: mw_from_MSSM_spectrum
+
+  - purpose:  Observable
+    capability: prec_sinW2_eff
+
+  - purpose:  Observable
+    capability: edm_e
+
+  - purpose:  Observable
+    capability: edm_n
+
 
 Rules:
 
@@ -147,21 +156,8 @@ Printer:
 
 Logger:
 
-  # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames".
-  # Obviously this also means it is impossible to redirect output to actual
-  # files with these names.
-
   redirection:
-    [Debug] : "debug.log"
     [Default] : "default.log"
-    [Error] : "errors.log"
-    [Warning] : "warnings.log"
-    [Core,Error] : "core_errors.log"
-    [Core,Error,Fatal] : "fatal_core_errors.log"
-    [Dependency Resolver] : "dependency_resolver.log"
-    [PrecisionBit] : "PrecisionBit.log"
-
 
 KeyValues:
 
@@ -171,4 +167,6 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
 
-  default_output_path: "runs/PrecisionBit_CMSSM"
+  default_output_path: "runs/PrecisionBit_MSSM20"
+
+  debug: true

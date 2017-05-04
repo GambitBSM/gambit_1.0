@@ -65,7 +65,7 @@ Scanner:
       like:  Likelihood
       files:
         output_file: "weights ..."
-  
+
 
 ObsLikes:
 
@@ -102,7 +102,7 @@ ObsLikes:
     - purpose:    Observable
       capability: MSSM_spectrum
       type:       map_str_dbl
-     
+
     # Calculate the LEP likelihoods
     - purpose:    LogLike
       capability: ALEPH_Selectron_LLike
@@ -155,7 +155,7 @@ ObsLikes:
       capability: LEP_Higgs_LogLike
 
     # Calculate the LHC Higgs likelihood
-      
+
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
 
@@ -221,11 +221,11 @@ Rules:
   ##### LHC Detector and Analysis rules #####
   #
   # The current capability structure allows for the user to mix'n'match
-  # collider settings, detector sims and analyses. The user may run BuckFastATLAS 
+  # collider settings, detector sims and analyses. The user may run BuckFastATLAS
   # with ATLAS analyses, BuckFastCMS with CMS analyses, and Delphes with any analyses,
   # for various configurations of Pythia.
   #
-  # The way to turn the detectors on or off is via the boolean option useDetector for 
+  # The way to turn the detectors on or off is via the boolean option useDetector for
   # the module functions getDelphes, getBuckFastATLAS and getBuckFastCMS.
   #
   # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
@@ -320,40 +320,40 @@ Rules:
   # NOTE: The use of Delphes currently only works when running with OMP_NUM_THREADS=1
   - capability: DetAnalysisContainer
     function: getDetAnalysisContainer
-    options:  
+    options:
       analyses: [ ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                    "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                    "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                   "ATLAS_3LEPEW_20invfb"], 
+                   "ATLAS_3LEPEW_20invfb"],
                    [] ]
 
   # Specify the list of ATLAS analyses to run
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
-    options:  
+    options:
       analyses: [ ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                    "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                    "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                   "ATLAS_3LEPEW_20invfb"], 
+                   "ATLAS_3LEPEW_20invfb"],
                   ["ATLAS_13TeV_0LEP_13invfb"] ]
 
   # Specify the list of CMS analyses to run
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
-    options:  
+    options:
       analyses: [ ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                    "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"],
-                  [] ]     
+                  [] ]
 
   # Specify the list of identity analyses to run
   - capability: IdentityAnalysisContainer
     function: getIdentityAnalysisContainer
-    options:  
+    options:
       analyses: [ [ "ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                     "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                     "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
                     "ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
-                    "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"], [] ] 
+                    "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"], [] ]
 
 
     # Use lognormal errors when marginalising the LHC Poisson likelihoods over systematic uncertainties
@@ -391,4 +391,4 @@ KeyValues:
 
     # Set the default output path
 
-  default_output_path: "runs/CMSSM/"
+  default_output_path: "runs/ColliderBit_CMSSM/"

@@ -11,18 +11,15 @@ Parameters:
 
   #SUSY parameters.
   MSSM20atQ:
-    Qin: 5000
+    Qin: 1.9422e+16
     SignMu: 1
     TanBeta: 10
     mHu2: 15625
     mHd2: 15625
 
-    M1:
-      range: [0, 1000]
-    M2:
-      range: [0, 1000]
-    M3:
-      range: [0, 1000]
+    M1: 500
+    M2: 500
+    M3: 500
 
     mq2_12: 15625.0
     mq2_3: 15625.0
@@ -39,8 +36,7 @@ Parameters:
     me2_12: 15625.0
     me2_3: 15625.0
 
-    Ae_12:
-      range: [-1000, 1000]
+    Ae_12: 0
     Ae_3: 0
     Ad_3: 0
     Au_3: 0
@@ -59,7 +55,7 @@ Scanner:
 
     random:
       plugin: random
-      point_number: 10
+      point_number: 1
       like:  LogLike
       printme: false
 
@@ -96,7 +92,7 @@ Rules:
   - capability: MSSM_spectrum
     function: make_MSSM_precision_spectrum_H_W
     options:
-      Higgs_predictions_source: 2
+      Higgs_predictions_source: 1
       Higgs_predictions_error_method: 4
 
   #- function: SUSY_HIT_1_5_init

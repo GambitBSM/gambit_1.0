@@ -99,7 +99,7 @@ int main()
     if (not Backends::backendInfo().works["MicrOmegas_SingletDM3.6.9.2"]) backend_error().raise(LOCAL_INFO, "MicrOmegas 3.6.9.2 for SingletDM is missing!");
     if (not Backends::backendInfo().works["gamLike1.0.0"]) backend_error().raise(LOCAL_INFO, "gamLike 1.0.0 is missing!");
     if (not Backends::backendInfo().works["DDCalc1.0.0"]) backend_error().raise(LOCAL_INFO, "DDCalc 1.0.0 is missing!");
-    //if (not Backends::backendInfo().works["nulike_1_0_3"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.3 is missing!");
+    //if (not Backends::backendInfo().works["nulike_1_0_4"]) backend_error().raise(LOCAL_INFO, "nulike 1.0.4 is missing!");
 
 
     // ---- Initialize models ----
@@ -152,8 +152,8 @@ int main()
     // ---- Initialize backends ----
 
   //  // Initialize nulike backend
-  //  Backends::nulike_1_0_3::Functown::nulike_bounds.setStatus(2);
-  //  nulike_1_0_3_init.reset_and_calculate();
+  //  Backends::nulike_1_0_4::Functown::nulike_bounds.setStatus(2);
+  //  nulike_1_0_4_init.reset_and_calculate();
 
     // Initialize gamLike backend
     gamLike_1_0_0_init.reset_and_calculate();
@@ -414,7 +414,7 @@ int main()
   //  IC79WH_full.resolveDependency(&mwimp_generic);
   //  IC79WH_full.resolveDependency(&annihilation_rate_Sun);
   //  IC79WH_full.resolveDependency(&nuyield_from_DS);
-  //  IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_3::Functown::nulike_bounds);
+  //  IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
   //  IC79WH_full.reset_and_calculate();
   //  // FIXME: Code up other analyses
   //
