@@ -283,7 +283,7 @@ Rules:
       # Specify the location of the Delphes cards for the two Pythia instances (we assume ATLAS in both cases here)
       delphesConfigFiles: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
-  # BuckFast for ATLAS rules and options (ex. the jet radius)
+  # BuckFast for ATLAS rules and options 
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
@@ -294,7 +294,7 @@ Rules:
       partonOnly: [false,false]
       antiktR: [0.4,0.4]
 
-  # BuckFast for CMS rules and options (ex. the jet radius)
+  # BuckFast for CMS rules and options 
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
@@ -328,7 +328,8 @@ Rules:
                    "ATLAS_3LEPEW_20invfb"], 
                    [] ]
 
-  # Specify the list of ATLAS analyses to run
+  # Specify the list of ATLAS analyses to run with BuckFast
+  # These will get run if BuckFast is turned on
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:  
@@ -338,7 +339,8 @@ Rules:
                    "ATLAS_3LEPEW_20invfb"], 
                   ["ATLAS_13TeV_0LEP_13invfb"] ]
 
-  # Specify the list of CMS analyses to run
+  # Specify the list of CMS analyses to run with BuckFast
+  # These will get run if BuckFast is turned on
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
@@ -347,6 +349,7 @@ Rules:
                   [] ]     
 
   # Specify the list of identity analyses to run
+  # These will be run if the identity simulation is turned on
   - capability: IdentityAnalysisContainer
     function: getIdentityAnalysisContainer
     options:  
