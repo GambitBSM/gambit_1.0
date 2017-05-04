@@ -240,7 +240,8 @@ Rules:
 
 
   # Choose which getPythia to use
-  # For a scan, we use the one that does not expect an input SLHA file (which is getPythiaFileReader)
+  # For a scan, we use the one that does not expect an input SLHA file (i.e. do not use getPythiaFileReader)
+  # To run on an SLHA file, change "getPythia" to "getPythiaFildeReader" below, the uncomment the SLHA_filenames line
   # Note that you must specify the path to the xmldoc
   # Note also that you can use normal Pythia options here
   - capability:  HardScatteringSim
@@ -253,14 +254,14 @@ Rules:
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = off",
-                             "HadronLevel:all = off",
+                             "HadronLevel:all = on",
                              "SUSY:all = on",
                              "TauDecays:mode = 0"]
       Pythia_SUSY_LHC_13TeV: ["Print:quiet = on",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = off",
-                             "HadronLevel:all = off",
+                             "HadronLevel:all = on",
                              "SUSY:all = on",
                              "TauDecays:mode = 0"]
       # Don't bother generating events if the estimated upper limit on the cross-section is below this value [fb].
@@ -279,10 +280,10 @@ Rules:
     options:
       # useDetector defaults to false for getDelphes, which ignores all "Det" analyses and disables Delphes
       useDetector: [false,false]
-      # Choose which type of event to use: for parton level, change partonOnly to true
+      # Specify the location of the Delphes cards for the two Pythia instances (we assume ATLAS in both cases here)
       delphesConfigFiles: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
-  # BuckFast for ATLAS rules and options (ex. the jet radius)
+  # BuckFast for ATLAS rules and options 
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
@@ -293,7 +294,7 @@ Rules:
       partonOnly: [false,false]
       antiktR: [0.4,0.4]
 
-  # BuckFast for CMS rules and options (ex. the jet radius)
+  # BuckFast for CMS rules and options 
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
@@ -327,7 +328,8 @@ Rules:
                    "ATLAS_3LEPEW_20invfb"],
                    [] ]
 
-  # Specify the list of ATLAS analyses to run
+  # Specify the list of ATLAS analyses to run with BuckFast
+  # These will get run if BuckFast is turned on
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:
@@ -337,7 +339,8 @@ Rules:
                    "ATLAS_3LEPEW_20invfb"],
                   ["ATLAS_13TeV_0LEP_13invfb"] ]
 
-  # Specify the list of CMS analyses to run
+  # Specify the list of CMS analyses to run with BuckFast
+  # These will get run if BuckFast is turned on
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:
@@ -346,6 +349,7 @@ Rules:
                   [] ]
 
   # Specify the list of identity analyses to run
+  # These will be run if the identity simulation is turned on
   - capability: IdentityAnalysisContainer
     function: getIdentityAnalysisContainer
     options:
