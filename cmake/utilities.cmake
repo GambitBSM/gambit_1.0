@@ -107,7 +107,7 @@ macro(add_external_clean package dir dl target)
   string(REPLACE "." "_" safe_package ${package})
   set(reset_file "${CMAKE_BINARY_DIR}/BOSS_reset_info/reset_info.${safe_package}.boss")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-BOSS ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
-                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true
+                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && (${target})) || true
                                      COMMAND [ -e ${reset_file} ] && python ${BOSS_dir}/boss.py -r ${reset_file} || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-download-failed ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt ${dl} || true
@@ -118,7 +118,7 @@ endmacro()
 macro(add_chained_external_clean package dir target dependee)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
-                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && (${target})) || true)
   add_custom_target(chained-nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${rmstring}-gitclone-lastrun.txt || true)
   add_dependencies(clean-${dependee} clean-${package})

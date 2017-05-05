@@ -198,7 +198,7 @@ if(NOT ditched_${name}_${ver})
           COMMAND make
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} "yes | clean")
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
@@ -216,7 +216,7 @@ if(NOT ditched_${name}_${model}_${ver})
     BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${model} ${CMAKE_MAKE_PROGRAM} sharedlib main=main.c
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
+  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} "yes | clean")
   set_as_default_version("backend model" ${name}_${model} ${ver})
 endif()
 
@@ -234,7 +234,7 @@ if(NOT ditched_${name}_${model}_${ver})
     BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${model} ${CMAKE_MAKE_PROGRAM} sharedlib main=main.c
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
+  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} "yes | clean")
   set_as_default_version("backend model" ${name}_${model} ${ver})
 endif()
 
