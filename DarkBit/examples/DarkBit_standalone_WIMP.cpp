@@ -127,9 +127,6 @@ namespace Gambit
       addParticle("Z0", 91.2,  2)
       addParticle("W+", 80.39, 2)
       addParticle("W-", 80.39, 2)
-      // FIXME: Jonathan: Do we really need the flavour and mass eigenstates?
-      addParticle("tau+", 1.8,  1)
-      addParticle("tau-", 1.8,  1)
       addParticle("e+_3", 1.8,  1)
       addParticle("e-_3", 1.8,  1)
       addParticle("e+_1", 0.00051, 1)
@@ -148,7 +145,7 @@ namespace Gambit
       TH_Channel dec_channel(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
 
-      TH_Channel dec_channel1(daFunk::vec<string>("tau+", "tau-"), daFunk::cnst(1.));
+      TH_Channel dec_channel1(daFunk::vec<string>("e+_3", "e-_3"), daFunk::cnst(1.));
       process_dec1.channelList.push_back(dec_channel1);
 
       TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
