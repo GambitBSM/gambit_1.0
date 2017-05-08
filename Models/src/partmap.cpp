@@ -8,8 +8,8 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott  
+///
+///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Jan
 ///
@@ -40,7 +40,7 @@ namespace Gambit
 
     /// Constructor
     partmap::partmap() { define_particles(this); }
-    
+
     /// Add a new particle to the database
     void partmap::add(str long_name, std::pair<int, int> pdgpr)
     {
@@ -50,21 +50,21 @@ namespace Gambit
       }
       long_name_to_pdg_pair[long_name] = pdgpr;
       pdg_pair_to_long_name[pdgpr] = long_name;
-    } 
+    }
 
     /// Add a new Standard Model particle to the database
     void partmap::add_SM(str long_name, std::pair<int, int> pdgpr)
     {
       add(long_name, pdgpr);
       SM.push_back(pdgpr);
-    }  
+    }
 
     /// Add a new generic particle class to the database
     void partmap::add_generic(str long_name, std::pair<int, int> pdgpr)
     {
       add(long_name, pdgpr);
       generic.push_back(pdgpr);
-    }  
+    }
 
     /// Add a new particle to the database with a short name and an index
     void partmap::add_with_short_pair(str long_name, std::pair<int, int> pdgpr, std::pair<str, int> shortpr)
@@ -125,7 +125,7 @@ namespace Gambit
       return short_name_pair_to_long_name.at(shortpr);
     }
 
-    /// Retrieve the long name, from the PDG code and context integer 
+    /// Retrieve the long name, from the PDG code and context integer
     str partmap::long_name(std::pair<int, int> pdgpr) const
     {
       if (not has_particle(pdgpr))
@@ -143,7 +143,7 @@ namespace Gambit
        return long_name(std::make_pair(pdg_code,context));
     }
 
-    /// Retrieve the short name and index, from the long name 
+    /// Retrieve the short name and index, from the long name
     std::pair<str, int> partmap::short_name_pair(str long_name) const
     {
       if (not has_particle(long_name))
@@ -157,7 +157,7 @@ namespace Gambit
       return long_name_to_short_name_pair.at(long_name);
     }
 
-    /// Retrieve the short name and index, from the PDG code and context integer 
+    /// Retrieve the short name and index, from the PDG code and context integer
     std::pair<str, int> partmap::short_name_pair(std::pair<int, int> pdgpr) const
     {
       if (not has_particle(pdgpr))
@@ -184,22 +184,22 @@ namespace Gambit
     /// Get a vector of PDG codes and context integers of Standard Model particles in the database
     const std::vector<std::pair<int, int> >& partmap::get_SM_particles() const
     {
-      return SM;  
+      return SM;
     }
-    
+
     /// Get a vector of PDG codes and context integers of generic particle classes in the database
     const std::vector<std::pair<int, int> >& partmap::get_generic_particles() const
     {
-      return generic; 
+      return generic;
     }
-    
-    /// Check if a particle is in the database, using the long name 
+
+    /// Check if a particle is in the database, using the long name
     bool partmap::has_particle(str long_name) const
-    { 
+    {
       return (long_name_to_pdg_pair.find(long_name) != long_name_to_pdg_pair.end());
     }
 
-    /// Check if a particle is in the database, using the short name and index 
+    /// Check if a particle is in the database, using the short name and index
     bool partmap::has_particle(str short_name, int i) const
     {
       return has_particle(std::make_pair(short_name,i));
@@ -209,31 +209,31 @@ namespace Gambit
       return (short_name_pair_to_pdg_pair.find(shortpr) != short_name_pair_to_pdg_pair.end());
     }
 
-    /// Check if a particle is in the database, using the PDG code and context integer 
+    /// Check if a particle is in the database, using the PDG code and context integer
     bool partmap::has_particle(std::pair<int, int> pdgpr) const
     {
       return (pdg_pair_to_long_name.find(pdgpr) != pdg_pair_to_long_name.end());
     }
 
-    /// Check if a particle has a short name, using the long name 
+    /// Check if a particle has a short name, using the long name
     bool partmap::has_short_name(str long_name) const
-    { 
+    {
       return (long_name_to_short_name_pair.find(long_name) != long_name_to_short_name_pair.end());
     }
 
-    /// Check if a particle has a short name, using the PDG code and context integer 
+    /// Check if a particle has a short name, using the PDG code and context integer
     bool partmap::has_short_name(std::pair<int, int> pdgpr) const
     {
       return (pdg_pair_to_short_name_pair.find(pdgpr) != pdg_pair_to_short_name_pair.end());
     }
 
-    /// Get the matching anti-particle long name for a particle in the database, using the long name 
+    /// Get the matching anti-particle long name for a particle in the database, using the long name
     str partmap::get_antiparticle(str lname) const
     {
       return long_name(get_antiparticle(pdg_pair(lname)));
     }
 
-    /// Get the matching anti-particle short name and index for a particle in the database, using the short name and index 
+    /// Get the matching anti-particle short name and index for a particle in the database, using the short name and index
     /// @{
     std::pair<str, int> partmap::get_antiparticle(std::pair<str, int> shortpr) const
     {
@@ -245,7 +245,7 @@ namespace Gambit
     }
     /// @}
 
-    /// Get the matching anti-particle PDG code and index for a particle in the database, using the PDG code and index 
+    /// Get the matching anti-particle PDG code and index for a particle in the database, using the PDG code and index
     /// @{
     std::pair<int, int> partmap::get_antiparticle(std::pair<int, int> pdgpr) const
     {
@@ -254,7 +254,7 @@ namespace Gambit
         /// Antiparticles are identified by having the opposite sign PDG code to a particle
         pdgpr.first = -pdgpr.first;
       }
-      /// Else assume particle is its own antiparticle 
+      /// Else assume particle is its own antiparticle
       /// (if this may not be true, use has_anti_particle to check explicitly for match)
       return pdgpr;
     }
@@ -264,18 +264,18 @@ namespace Gambit
     }
     /// @}
 
-    /// Check if a particle has a matching anti-particle in the database, using the long name 
+    /// Check if a particle has a matching anti-particle in the database, using the long name
     /// Note: will throw an error if the particle itself is not in the database!
     bool partmap::has_antiparticle(str long_name) const
     {
-      return has_antiparticle(pdg_pair(long_name)); 
+      return has_antiparticle(pdg_pair(long_name));
     }
 
     /// Check if a particle has a matching anti-particle in the database, using the short name and index
     /// @{
     bool partmap::has_antiparticle(std::pair<str, int> shortpr) const
     {
-      return has_antiparticle(pdg_pair(shortpr)); 
+      return has_antiparticle(pdg_pair(shortpr));
     }
     bool partmap::has_antiparticle(str name, int index) const
     {
@@ -283,14 +283,14 @@ namespace Gambit
     }
     /// @}
 
-    /// Check if a particle has a matching anti-particle in the database, using the PDG code and context integer 
+    /// Check if a particle has a matching anti-particle in the database, using the PDG code and context integer
     /// @{
     bool partmap::has_antiparticle(std::pair<int, int> pdgpr) const
     {
       /// Antiparticles are identified by having the opposite sign PDG code to a particle
       pdgpr.first = -pdgpr.first;
       return has_particle(pdgpr);
-    } 
+    }
     bool partmap::has_antiparticle(int pdgcode, int context) const
     {
       return has_antiparticle(std::make_pair(pdgcode,context));
@@ -303,10 +303,10 @@ namespace Gambit
        // Check that long and short names retrieve same information (when short name exists)
        typedef std::map<str, std::pair<int, int> >::const_iterator                 it_long_name_to_pdg_pair;
        typedef std::map<std::pair<int, int>, str>::const_iterator                  it_pdg_pair_to_long_name;
-       typedef std::map<std::pair<str, int>, std::pair<int, int> >::const_iterator it_short_name_pair_to_pdg_pair;
-       typedef std::map<std::pair<int, int>, std::pair<str, int> >::const_iterator it_pdg_pair_to_short_name_pair;
-       typedef std::map<str, std::pair<str, int> >::const_iterator                 it_long_name_to_short_name_pair;
        typedef std::map<std::pair<str, int>, str>::const_iterator                  it_short_name_pair_to_long_name;
+       //typedef std::map<std::pair<str, int>, std::pair<int, int> >::const_iterator it_short_name_pair_to_pdg_pair;
+       //typedef std::map<std::pair<int, int>, std::pair<str, int> >::const_iterator it_pdg_pair_to_short_name_pair;
+       //typedef std::map<str, std::pair<str, int> >::const_iterator                 it_long_name_to_short_name_pair;
 
        cout << "PDB: long name as key" << endl;
        for(it_long_name_to_pdg_pair it = long_name_to_pdg_pair.begin(); it != long_name_to_pdg_pair.end(); it++) {

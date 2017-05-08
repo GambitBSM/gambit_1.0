@@ -198,7 +198,7 @@ if(NOT ditched_${name}_${ver})
           COMMAND make
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} "yes | clean")
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
@@ -216,7 +216,7 @@ if(NOT ditched_${name}_${model}_${ver})
     BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${model} ${CMAKE_MAKE_PROGRAM} sharedlib main=main.c
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
+  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} "yes | clean")
   set_as_default_version("backend model" ${name}_${model} ${ver})
 endif()
 
@@ -234,7 +234,7 @@ if(NOT ditched_${name}_${model}_${ver})
     BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${model} ${CMAKE_MAKE_PROGRAM} sharedlib main=main.c
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} clean)
+  add_extra_targets("backend model" ${name} ${ver} ${dir}/${model} ${model} "yes | clean")
   set_as_default_version("backend model" ${name}_${model} ${ver})
 endif()
 
@@ -324,19 +324,17 @@ endif()
 
 # Nulike
 set(name "nulike")
-set(ver "1.0.3")
+set(ver "1.0.4")
 set(lib "libnulike")
 set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
-set(md5 "2e77fe4b18891e4838f8af8d861c341b")
+set(md5 "47649992d19984ee53df6a1655c48227")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 check_ditch_status(${name} ${ver})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
-    PATCH_COMMAND patch -p1 < ${patch}
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${lib}.so FF=${CMAKE_Fortran_COMPILER} FOPT=${GAMBIT_Fortran_FLAGS} MODULE=${FMODULE}
     INSTALL_COMMAND ""
@@ -632,8 +630,6 @@ set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
 set(md5 "1bddab5a411a895edd382a1f8a991c15")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3.2.8")
-include_directories("${EIGEN3_DIR}")
 # - Silence the deprecated-declarations warnings coming from Eigen3
 set(GM2CALC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
@@ -645,7 +641,7 @@ if(NOT ditched_${name}_${ver})
     BUILD_IN_SOURCE 1
     PATCH_COMMAND patch -p1 < ${patch}_error.dif
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} alllib
+    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_INCLUDE_DIR} alllib
     INSTALL_COMMAND ""
   )
   BOSS_backend(${name} ${ver})
@@ -673,7 +669,7 @@ if(NOT ditched_${name}_${ver})
           COMMAND patch -p1 < ${patch}_module.dif
           COMMAND patch -p1 < ${patch}_error.dif
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_DIR} sharedlib
+    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_INCLUDE_DIR} sharedlib
     INSTALL_COMMAND ""
   )
   BOSS_backend(${name} ${ver})

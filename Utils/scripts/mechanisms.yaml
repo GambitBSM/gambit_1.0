@@ -8,10 +8,10 @@ drawing_order: [chargino_coannihilation, A0-H0_funnel, stau_coannihilation, stop
 #  colour: purple
 
 chargino_coannihilation:
-  extra_1D_plots: "113 106 105"
-  datastream: "'safe_ratio($106,$105)':113"
-  cut: "113:{1.0,1.2}"
-  label: "113:'$m_{\\chi^\\pm_1} / m_{\\chi^0_1}$'"
+  extra_1D_plots: "115 116 117"
+  datastream: "'#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::~chi0_(1,3) Pole_Mixing':115 '#MSSM_spectrum @SpecBit::get_MSSM_spectrum_as_map::~chi0_(1,4) Pole_Mixing':116 '$115*$115 + $116*$116':117"
+  cut: "117:{0.5,1.0}"
+  label: "115:'$\\chi^0$ mixing matrix entry $W_{1,3}$' 116:'$\\chi^0$ mixing matrix entry $W_{1,4}$' 117:'Higgsino fraction $Z_h$'"
   colour: yellow
   contour_style: Solid
 

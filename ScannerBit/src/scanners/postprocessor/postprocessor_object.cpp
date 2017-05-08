@@ -45,7 +45,7 @@ namespace Gambit
         }
         return answer;
       }
-      
+
       /// Get 'effective' start and end positions for a processing batch
       /// i.e. simply divides up an integer into the most even parts possible
       /// over a given number of processes
@@ -70,7 +70,7 @@ namespace Gambit
          unsigned long long end = start + my_length - 1; // Minus 1 for the zero indexing
          return Chunk(start,end);
       }
-      
+
       /// Compute start/end indices for a given rank process, given previous "done_chunk" data.
       Chunk get_my_chunk(const std::size_t dset_length, const ChunkSet& done_chunks, const int rank, const int numtasks)
       {
@@ -94,8 +94,8 @@ namespace Gambit
               left_to_process += gap_size;
            }
            // Else the new done_chunk started before the previous done_chunk finished,
-           // (they are ordered only based on the start index) 
-           // so we can skip it, or rather "merge" their lengths by just updating the 
+           // (they are ordered only based on the start index)
+           // so we can skip it, or rather "merge" their lengths by just updating the
            // prev_chunk_end location if it has increased.
            if(first_chunk or it->end > prev_chunk_end)
            {
@@ -124,7 +124,7 @@ namespace Gambit
         // if(rank==0) std::cout << "left_to_process = " << left_to_process;
         // Get 'effective' start/end positions for this rank; i.e. what the start index would be if the 'done' points were removed.
         Chunk eff_chunk = get_effective_chunk(left_to_process, rank, numtasks);
-        
+
         // Convert effective chunk to real dataset indices (i.e. add in the 'skipped' indices)
         std::size_t count = 0;
         Chunk realchunk;
@@ -140,7 +140,7 @@ namespace Gambit
         {
            // Need to add up the size of the gaps between chunks until we exceed the "effective" start/end positions,
            // then get the real indices by measuring back from the start of the done_chunk we are up to.
-           //std::cout << "Rank "<<rank<<": Getting next done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl; 
+           //std::cout << "Rank "<<rank<<": Getting next done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
            long long int gap_size = it->start;  // e.g. done_chunk starts at say '5';
            if(not first_chunk) gap_size -= (prev_chunk_end+1); // e.g. previous chunk finished at '1'; then gap_size is len(2,3,4) = 3 = 5 - 2. Unless no previous chunk, then gap_size is len(0,1,2,3,4) = 5.
            //std::cout << "Rank "<<rank<<": "<<"examining done_chunk ["<<it->start<<","<<it->end<<"]"<<std::endl;
@@ -173,8 +173,8 @@ namespace Gambit
               }
            }
            // Else the new done_chunk started before the previous done_chunk finished,
-           // (they are ordered only based on the start index) 
-           // so we can skip it, or rather "merge" their lengths by just updating the 
+           // (they are ordered only based on the start index)
+           // so we can skip it, or rather "merge" their lengths by just updating the
            // prev_chunk_end location if it has increased.
            if(first_chunk or it->end > prev_chunk_end)
            {
@@ -235,26 +235,26 @@ namespace Gambit
         for(ChunkSet::const_iterator it=done_chunks.begin();
              it!=done_chunks.end(); ++it)
         {
-           if(   it->end==realchunk.start  
-              or it->end==realchunk.end  
-              or it->start==realchunk.start  
+           if(   it->end==realchunk.start
+              or it->end==realchunk.end
+              or it->start==realchunk.start
               or it->start==realchunk.end)
-           { 
+           {
               std::ostringstream err;
               err << "Rank "<<rank<<" chunk calculation returned nonsense! The assigned chunk start or end point is already listed as 'done'! This is a bug in the postprocessor, please report it. Debug output:" <<std::endl;
-              err << "Assigned chunk: ["<<realchunk.start << ", " <<realchunk.end<<"]"<<std::endl; 
-              err << "Conflicting done_chunk: ["<<it->start << ", " <<it->end<<"]"<<std::endl; 
+              err << "Assigned chunk: ["<<realchunk.start << ", " <<realchunk.end<<"]"<<std::endl;
+              err << "Conflicting done_chunk: ["<<it->start << ", " <<it->end<<"]"<<std::endl;
               Scanner::scan_error().raise(LOCAL_INFO,err.str());
            }
         }
         return realchunk;
       }
-      
+
       /// Read through resume data files and reconstruct which chunks of points have already been processed
       ChunkSet get_done_points(const std::string& filebase)
       {
         ChunkSet done_chunks;
-       
+
         // First read collated chunk data from past resumes, and the number of processes used in the last run
         std::string inprev = filebase+"_prev.dat";
 
@@ -265,7 +265,7 @@ namespace Gambit
            if(finprev)
            {
               unsigned int prev_size;
-              finprev >> prev_size; 
+              finprev >> prev_size;
               Chunk nextchunk;
               while( finprev >> nextchunk.start >> nextchunk.end )
               {
@@ -284,7 +284,7 @@ namespace Gambit
                   if(fin)
                   {
                     fin >> nextchunk.start >> nextchunk.end;
-                    done_chunks.insert(nextchunk);  
+                    done_chunks.insert(nextchunk);
                   }
                   else
                   {
@@ -308,10 +308,10 @@ namespace Gambit
               Scanner::scan_error().raise(LOCAL_INFO,err.str());
            }
         }
-        // Else there is no resume data, assume that this is a new run started without the --restart flag.      
+        // Else there is no resume data, assume that this is a new run started without the --restart flag.
         return merge_chunks(done_chunks); // Simplify the chunks and return them
       }
- 
+
       /// Simplify a ChunkSet by merging chunks which overlap.
       ChunkSet merge_chunks(const ChunkSet& input_chunks)
       {
@@ -365,7 +365,7 @@ namespace Gambit
         // else there are no input chunks, just return an empty ChunkSet
         return merged_chunks;
       }
-     
+
       /// Write resume data files
       /// These specify which chunks of points have been processed during this run
       void record_done_points(const ChunkSet& done_chunks, const Chunk& mydone, const std::string& filebase, unsigned int rank, unsigned int size)
@@ -381,12 +381,12 @@ namespace Gambit
             {
               perror( ("Error deleting file "+outprev).c_str() );
               std::ostringstream err;
-              err << "Unknown error removing old resume data file '"<<outprev<<"'!"; 
+              err << "Unknown error removing old resume data file '"<<outprev<<"'!";
               Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
           }
           // else was deleted no problem
-          std::ofstream foutprev(outprev); 
+          std::ofstream foutprev(outprev);
           foutprev << size << std::endl;
           for(ChunkSet::const_iterator it=done_chunks.begin();
                it!=done_chunks.end(); ++it)
@@ -395,10 +395,10 @@ namespace Gambit
           }
           // check that the write succeeded
           foutprev.close();
-          if (!foutprev) 
+          if (!foutprev)
           {
               std::ostringstream err;
-              err << "Unknown IO error while writing resume data file '"<<outprev<<"'!"; 
+              err << "Unknown IO error while writing resume data file '"<<outprev<<"'!";
               Scanner::scan_error().raise(LOCAL_INFO,err.str());
           }
         }
@@ -412,19 +412,19 @@ namespace Gambit
           {
             perror( ("Error deleting file "+out).c_str() );
             std::ostringstream err;
-            err << "Unknown error removing old resume data file '"<<out<<"'!"; 
+            err << "Unknown error removing old resume data file '"<<out<<"'!";
             Scanner::scan_error().raise(LOCAL_INFO,err.str());
           }
         }
         // else was deleted no problem, write new file
-        std::ofstream fout(out); 
+        std::ofstream fout(out);
         fout << mydone.start << " " << mydone.end << std::endl;
         // let's just make sure the files had no errors while closing because they are important.
         fout.close();
-        if (!fout) 
+        if (!fout)
         {
             std::ostringstream err;
-            err << "Unknown IO error while writing resume data file '"<<out<<"'!"; 
+            err << "Unknown IO error while writing resume data file '"<<out<<"'!";
             Scanner::scan_error().raise(LOCAL_INFO,err.str());
         }
         // Gah, data could apparantly still be buffered by the OS and not yet written to disk
@@ -479,14 +479,14 @@ namespace Gambit
         , discard_points_outside_cuts()
         , update_interval()
         , discard_old_logl()
-        , logl_purpose_name() 
+        , logl_purpose_name()
         , reweighted_loglike_name()
         , root()
         , numtasks()
         , rank()
         #ifdef WITH_MPI
         , comm(NULL)
-        #endif 
+        #endif
       {}
 
       /// Real constructor
@@ -520,7 +520,7 @@ namespace Gambit
         , rank                       (o.rank                       )
         #ifdef WITH_MPI
         , comm                       (o.comm                       )
-        #endif 
+        #endif
     {
          // Retrieve parameter and model names
          std::vector<std::string> keys = getLogLike()->getPrior().getParameters(); // use to use get_keys() in the objective (prior) plugin;
@@ -535,24 +535,24 @@ namespace Gambit
             std::string par   = splitkey[1];
             req_models[model].push_back(par);
             longname[model][par] = *it;
-         }   
+         }
          #ifdef WITH_MPI
          if(comm==NULL)
          {
              std::ostringstream err;
-             err << "No MPI communicator supplied to postprocessor driver object! This is a bug in the postprocessor scanner plugin, please report it."; 
+             err << "No MPI communicator supplied to postprocessor driver object! This is a bug in the postprocessor scanner plugin, please report it.";
              Scanner::scan_error().raise(LOCAL_INFO,err.str());
          }
          #endif
       }
-      
+
       /// @{ Safe(-ish) accessors for pointer data
       Printers::BaseBaseReader& PPDriver::getReader()
       {
          if(reader==NULL)
          {
              std::ostringstream err;
-             err << "Postprocessor tried to access reader object, but found only a NULL pointer! The postprocessor has therefore not been set up correctly, please report this bug."; 
+             err << "Postprocessor tried to access reader object, but found only a NULL pointer! The postprocessor has therefore not been set up correctly, please report this bug.";
              Scanner::scan_error().raise(LOCAL_INFO,err.str());
          }
          return *reader;
@@ -563,7 +563,7 @@ namespace Gambit
          if(printer==NULL)
          {
              std::ostringstream err;
-             err << "Postprocessor tried to access printer object, but found only a NULL pointer! The postprocessor has therefore not been set up correctly, please report this bug."; 
+             err << "Postprocessor tried to access printer object, but found only a NULL pointer! The postprocessor has therefore not been set up correctly, please report this bug.";
              Scanner::scan_error().raise(LOCAL_INFO,err.str());
          }
          return *printer;
@@ -575,13 +575,13 @@ namespace Gambit
          // if(LogLike==NULL)
          // {
          //     std::ostringstream err;
-         //     err << "Postprocessor tried to access LogLike object, but found only a NULL pointer! The postprocessor has therefore not been set up correctly, please report this bug."; 
+         //     err << "Postprocessor tried to access LogLike object, but found only a NULL pointer! The postprocessor has therefore not been set up correctly, please report this bug.";
          //     Scanner::scan_error().raise(LOCAL_INFO,err.str());
          // }
          return LogLike;
       }
       /// @}
-      
+
       bool PPDriver::check_for_redistribution_request()
       {
          bool request_seen = false;
@@ -607,7 +607,7 @@ namespace Gambit
          while(check_for_redistribution_request())
          {
            int nullbuf;
-           comm->Recv(&nullbuf, 1, MPI_ANY_SOURCE, REDIST_REQ); 
+           comm->Recv(&nullbuf, 1, MPI_ANY_SOURCE, REDIST_REQ);
          }
          #endif
       }
@@ -623,14 +623,14 @@ namespace Gambit
                  != data_labels.end())
             {
                std::ostringstream err;
-               err << "Error starting postprocessing run! The 'purpose' name selected for the likelihood to be computed ('"<<logl_purpose_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'like', or set 'permit_discard_old_likes' to 'true' to allow the old data to be replaced in the new output."; 
+               err << "Error starting postprocessing run! The 'purpose' name selected for the likelihood to be computed ('"<<logl_purpose_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'like', or set 'permit_discard_old_likes' to 'true' to allow the old data to be replaced in the new output.";
                Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
             if(std::find(data_labels.begin(), data_labels.end(), reweighted_loglike_name)
                  != data_labels.end())
             {
                std::ostringstream err;
-               err << "Error starting postprocessing run! The label name selected for the result of likelihood weighting ('"<<reweighted_loglike_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'reweighted_like', or set 'permit_discard_old_likes' to 'true' to allow the old data to be replaced in the new output."; 
+               err << "Error starting postprocessing run! The label name selected for the result of likelihood weighting ('"<<reweighted_loglike_name<<"') collides with an entry in the chosen input data. Please either change the name given in the scanner option 'reweighted_like', or set 'permit_discard_old_likes' to 'true' to allow the old data to be replaced in the new output.";
                Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
          }
@@ -644,7 +644,7 @@ namespace Gambit
             std::string out_label = it->second;
 
             // Make sure input label actually exists
-            if(std::find(data_labels.begin(), data_labels.end(), in_label) 
+            if(std::find(data_labels.begin(), data_labels.end(), in_label)
                 == data_labels.end())
             {
                //Whoops, could not find this label in the input data
@@ -654,7 +654,7 @@ namespace Gambit
             }
 
             // Make sure chosen output name is not already claimed by the printer
-            if(std::find(all_params.begin(), all_params.end(), out_label) 
+            if(std::find(all_params.begin(), all_params.end(), out_label)
                 != all_params.end())
             {
                //Whoops, name already in use by something else!
@@ -666,7 +666,7 @@ namespace Gambit
             // Make sure chosen output name doesn't clash with an un-renamed item to be copied
             std::set<std::string>::iterator jt = std::find(data_labels.begin(), data_labels.end(), out_label);
             if(jt != data_labels.end())
-            { 
+            {
                // Potential clash; check if the name is going to be changed
                std::map<std::string,std::string>::iterator kt = renaming_scheme.find(*jt);
                if(kt == renaming_scheme.end())
@@ -709,7 +709,7 @@ namespace Gambit
             double cut_value = it->second;
 
             // Make sure input label actually exists
-            if(std::find(data_labels.begin(), data_labels.end(), in_label) 
+            if(std::find(data_labels.begin(), data_labels.end(), in_label)
                 == data_labels.end())
             {
                //Whoops, could not find this label in the input data
@@ -717,7 +717,7 @@ namespace Gambit
                err << "Could not find data labelled '"<<in_label<<"' in the input dataset for postprocessing! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' <= "<<cut_value<<", however the requested dataset for cutting could not be found under the specified input label. Please fix the label or remove this entry from the 'cut_less_than' list.";
                Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
-             
+
             // Make sure it has type 'double'
             if(getReader().get_type(in_label) != Printers::getTypeID<double>())
             {
@@ -733,9 +733,9 @@ namespace Gambit
          {
             std::string in_label = it->first;
             double cut_value = it->second;
-         
+
             // Make sure input label actually exists
-            if(std::find(data_labels.begin(), data_labels.end(), in_label) 
+            if(std::find(data_labels.begin(), data_labels.end(), in_label)
                 == data_labels.end())
             {
                //Whoops, could not find this label in the input data
@@ -743,7 +743,7 @@ namespace Gambit
                err << "Could not find data labelled '"<<in_label<<"' in the input dataset for postprocessing! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' >= "<<cut_value<<", however the requested dataset for cutting could not be found under the specified input label. Please fix the label or remove this entry from the 'cut_greater_than' list.";
                Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
- 
+
             // Make sure it has type 'double'
             if(getReader().get_type(in_label) != Printers::getTypeID<double>())
             {
@@ -751,7 +751,7 @@ namespace Gambit
                err << "Type of input dataset '"<<in_label<<"' is not 'double'! In your master YAML file you have requested to only postprocess points satisfying the criteria '"<<in_label<<"' <= "<<cut_value<<", however the requested dataset for cutting cannot be retrieved as type 'double'. Currently cuts can only be applied to datasets stored as doubles, sorry! Please remove this entry from the 'cut_greater_than' list.";
                Scanner::scan_error().raise(LOCAL_INFO,err.str());
             }
-   }     
+   }
 
 
          // Check what data is to be copied and what is to be recomputed
@@ -810,7 +810,7 @@ namespace Gambit
                {
                   // Yep, getting relabelled
                   data_labels_copy.insert(*it); // Allowed to copy this after all since the name will be changed
-                  if(rank==0) 
+                  if(rank==0)
                   {
                      std::cout << "     with old data copied"<<std::endl;
                      std::cout << "     to --> : "<< jt->second <<std::endl;
@@ -818,7 +818,7 @@ namespace Gambit
                }
             }
             // Check if a cut is being applied on this input dataset
-            if(rank==0) 
+            if(rank==0)
             {
                std::map<std::string,double>::iterator jt = cut_less_than.find(*it);
                if(jt != cut_less_than.end())
@@ -870,7 +870,7 @@ namespace Gambit
                   err << "Error starting postprocessing run! One of the data entries listed in the option 'subtract_from_like' is scheduled to be recalculated during postprocessing ("<<*it<<"). This is permitted; the old value will be subtracted from 'like' and then discarded and replaced by the new value, however you must explicitly permit this to occur by setting 'permit_discard_old_likes' to 'true'.";
                   Scanner::scan_error().raise(LOCAL_INFO,err.str());
                }
-              
+
             }
          }
 
@@ -878,7 +878,7 @@ namespace Gambit
 
       /// The main run loop
       int PPDriver::run_main_loop(const ChunkSet& done_chunks)
-      {   
+      {
          // Compute which points this process is supposed to process. Divide up
          // by number of MPI tasks.
          if(rank==0) std::cout<<"Computing work assignments (may take a little time for very large datasets)"<<std::endl;
@@ -902,13 +902,13 @@ namespace Gambit
          bool redistribution_requested = false; // Flag to temporarily stop to redistribute remaining workload amongst MPI processes
          bool redistribution_request_ignored = false;
          bool stop_loop = false;
- 
+
          if(getReader().eoi())
          {
             std::cout << "Postprocessor (rank "<<rank<<") immediately reached end of input file! Skipping execution of main loop, ..."<<std::endl;
             // We should exit with the "unexpected finish" error code if this has happened.
          }
-     
+
          ChunkSet::iterator current_done_chunk=done_chunks.begin(); // Used to skip past points that are already done
          while(not getReader().eoi() and not stop_loop) // while not end of input
          {
@@ -950,7 +950,7 @@ namespace Gambit
               // Progress report
               std::cout << "Rank "<<rank<<" has processed "<<ppi<<" of "<<mychunk.eff_length<<" points ("<<100*ppi/mychunk.eff_length<<"%, with "<<100*n_passed/ppi<<"% passing all cuts)"<<std::endl;
            }
-           ppi++; // Processing is go, update counter. 
+           ppi++; // Processing is go, update counter.
 
            // Data about current point in input file
            if(current_point == Printers::nullpoint)
@@ -970,14 +970,14 @@ namespace Gambit
 
            // Extract the model parameters
            bool valid_modelparams = get_ModelParameters(outputMap);
-     
+
            // Check if valid model parameters were extracted. If not, something may be wrong with the input file, or we could just be at the end of a buffer (e.g. in HDF5 case). Can't tell the difference, so just skip the point and continue.
            if(not valid_modelparams)
            {
               std::cout << "Skipping point "<<loopi<<" as it has no valid ModelParameters" <<std::endl;
               current_point = getReader().get_next_point();
               continue;
-           }   
+           }
 
            /// @}
 
@@ -986,7 +986,7 @@ namespace Gambit
            // For now we will restrict the system so that it only works for datasets with
            // type 'double' (which is most stuff). We check for this earlier, so here we
            // can just assume that the requested datasets have the correct type.
-           
+
            bool cuts_passed = true; // Will be set to false if any cut is failed, or a required entry is invalid
            for(std::map<std::string,double>::iterator it = cut_less_than.begin();
                 it!=cut_less_than.end(); ++it)
@@ -1045,69 +1045,77 @@ namespace Gambit
               getLogLike()->setPtID(pointID);
 
 
-              // NEW! We can now feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit should interpret the map values as post-transformation and not apply a prior to those, and ensure that the length of the cube plus number of transformed parameters add up to the total number of parameter.
+              // We feed the unit hypercube and/or transformed parameter map into the likelihood container. ScannerBit
+              // interprets the map values as post-transformation and not apply a prior to those, and ensures that the
+              // length of the cube plus number of transformed parameters adds up to the total number of parameter.
               double new_logL = getLogLike()(outputMap); // Here we supply *only* the map; no parameters to transform.
 
               // Add old likelihood components as requested in the inifile
-              double combined_logL = new_logL;
-              bool   is_valid;
-              for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
+              if (not add_to_logl.empty() or not subtract_from_logl.empty())
               {
-                  std::string old_logl = *it;
-                  if(std::find(data_labels.begin(), data_labels.end(), old_logl)
-                      == data_labels.end())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested to 'add_to_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-                  if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested 'add_to_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-                  
-                  double old_logl_value;
-                  is_valid = getReader().retrieve(old_logl_value, old_logl);
-                  if(is_valid)
-                  {
-                     // Combine with the new logL component
-                     combined_logL += old_logl_value;
-                  }
-                  // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
-              }
 
-              // Now do the same thing for the components we want to subtract.
-              for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
-              {
-                  std::string old_logl = *it;
-                  if(std::find(data_labels.begin(), data_labels.end(), old_logl)
-                      == data_labels.end())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested to 'subtract_from_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-                  if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
-                  {
-                     std::ostringstream err;
-                     err << "In the input YAML file, you requested 'subtract_from_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
-                     Scanner::scan_error().raise(LOCAL_INFO,err.str());
-                  }
-                  
-                  double old_logl_value;
-                  is_valid = getReader().retrieve(old_logl_value, old_logl);
-                  if(is_valid)
-                  {
-                     // Combine with the new logL component, subtracting this time
-                     combined_logL -= old_logl_value;
-                  }
-                  // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
-              }
+                double combined_logL = new_logL;
+                bool is_valid(true);
 
-              // Output the new reweighted likelihood (if all components were valid)
-              if(is_valid) getPrinter().print( combined_logL, reweighted_loglike_name, MPIrank, pointID);
+                for(auto it=add_to_logl.begin(); it!=add_to_logl.end(); ++it)
+                {
+                    std::string old_logl = *it;
+                    if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+                        == data_labels.end())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested to 'add_to_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+                    if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested 'add_to_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+
+                    double old_logl_value;
+                    is_valid = is_valid and getReader().retrieve(old_logl_value, old_logl);
+                    if(is_valid)
+                    {
+                       // Combine with the new logL component
+                       combined_logL += old_logl_value;
+                    }
+                    // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+                }
+
+                // Now do the same thing for the components we want to subtract.
+                for(auto it=subtract_from_logl.begin(); it!=subtract_from_logl.end(); ++it)
+                {
+                    std::string old_logl = *it;
+                    if(std::find(data_labels.begin(), data_labels.end(), old_logl)
+                        == data_labels.end())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested to 'subtract_from_like' the component '"<<old_logl<<"' from your input data file, however this does not match any of the data labels retrieved from the input data file you specified. Please check the spelling, path, etc. and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+                    if(getReader().get_type(*it) != Gambit::Printers::getTypeID<double>())
+                    {
+                       std::ostringstream err;
+                       err << "In the input YAML file, you requested 'subtract_from_like' component '"<<old_logl<<"' from your input data file, however this data cannot be retrieved as type 'double', therefore it cannot be used as a likelihood component. Please enter a different data label and try again.";
+                       Scanner::scan_error().raise(LOCAL_INFO,err.str());
+                    }
+
+                    double old_logl_value;
+                    is_valid = is_valid and getReader().retrieve(old_logl_value, old_logl);
+                    if(is_valid)
+                    {
+                       // Combine with the new logL component, subtracting this time
+                       combined_logL -= old_logl_value;
+                    }
+                    // Else old likelihood value didn't exist for this point; cannot combine with non-existent likelihood, so don't print the reweighted value.
+                }
+
+                // Output the new reweighted likelihood (if all components were valid)
+                if(is_valid) getPrinter().print(combined_logL, reweighted_loglike_name, MPIrank, pointID);
+
+              }
 
               ///  In the future would be nice if observables could be reconstructed from the
               ///  output file, but that is a big job, need to automatically create functors
@@ -1121,10 +1129,10 @@ namespace Gambit
               ///  Or do I need to check that the output LogL was valid somehow?
               ///  Answer: Loglike function just returns a default low value in that case, scanner plugins do
               ///  not see the invalid point exceptions, they are caught inside the likelihood container.
-           }    
+           }
            else if(not discard_points_outside_cuts)
            {
-              /// No postprocessing to be done, but we still should copy across the modelparameters 
+              /// No postprocessing to be done, but we still should copy across the modelparameters
               /// and point ID data, since the copying routines below assume that these were taken
               /// care of by the likelihood routine, which we never ran.
               getPrinter().print(MPIrank, "MPIrank", MPIrank, pointID);
@@ -1135,14 +1143,14 @@ namespace Gambit
                 ModelParameters modelparameters;
                 std::string model = it->first;
                 bool is_valid = getReader().retrieve(modelparameters, model);
-                if(is_valid) 
+                if(is_valid)
                 {
                    // Use the OutputName set by the reader to preserve the original naming of the modelparameters.
                    getPrinter().print(modelparameters, modelparameters.getOutputName(), MPIrank, pointID);
                 }
               }
            }
- 
+
            /// Copy selected data from input file
            if(not cuts_passed and discard_points_outside_cuts)
            {
@@ -1212,12 +1220,12 @@ namespace Gambit
                  redistribution_request_ignored = true; // deactivate the request.
               }
            }
- 
+
            /// Go to next point
            if(not stop_loop) current_point = getReader().get_next_point();
          }
 
-         // Check if we finished because of reaching the end of the input    
+         // Check if we finished because of reaching the end of the input
          if(getReader().eoi() and loopi!=mychunk.end)
          {
             std::cout << "Postprocessor (rank "<<rank<<") reached the end of the input file! (debug: was this the end of our batch? (loopi="<<loopi<<", mychunk.end="<<mychunk.end<<", dset_length = "<<getReader().get_dataset_length()<<")"<<std::endl;
@@ -1255,11 +1263,11 @@ namespace Gambit
          bool valid_modelparams = true;
          for(auto it=req_models.begin(); it!=req_models.end(); ++it)
          {
-         
+
            ModelParameters modelparameters;
            std::string model = it->first;
            bool is_valid = getReader().retrieve(modelparameters, model);
-           if(not is_valid) 
+           if(not is_valid)
            {
               valid_modelparams = false;
               //std::cout << "ModelParameters marked 'invalid' for model "<<model<<"; point will be skipped." << std::endl;
@@ -1275,7 +1283,7 @@ namespace Gambit
            //  std::cout << "    " << *kt << " : " << modelparameters[*kt] << std::endl;
            //}
            /// @}
-         
+
            // Check that all the required parameters were retrieved
            // Could actually do this in the constructor for the scanner plugin, would be better, but a little more complicated. TODO: do this later.
            std::vector<std::string> req_pars = it->second;
@@ -1290,7 +1298,7 @@ namespace Gambit
                 err << "Error! Reader could not retrieve the required paramater '"<<par<<"' for the model '"<<model<<"' from the supplied data file! Please check that this parameter indeed exists in that file." << std::endl;
                 Scanner::scan_error().raise(LOCAL_INFO,err.str());
              }
-         
+
              // If it was found, add it to the return map
              outputMap[ longname[model][par] ] = modelparameters[par];
            }
@@ -1299,5 +1307,5 @@ namespace Gambit
       }
 
       /// @}
-   }  
+   }
 }

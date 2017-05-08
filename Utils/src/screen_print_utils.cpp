@@ -30,20 +30,25 @@
 #include <fstream>
 #include <iomanip>
 #include <utility>
+
+#include <iostream>
+
 #include "gambit/Utils/screen_print_utils.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/util_macros.hpp"
 
 namespace Gambit
 {
     /********************************************/
     /****** adds spaces to fit to screen ********/
     /********************************************/
-    
+
     inline void add_screen_spaces(std::string &str, std::string::size_type size, std::string::size_type indent)
     {
         std::stringstream ss(str.substr(indent));
         std::string word;
         std::string::size_type words =0;
-        
+
         while (ss >> word){words++;}
         words--;
         if (words <= 0)
@@ -61,7 +66,7 @@ namespace Gambit
             extras_odd = extras;
             extras_even = 0;
         }
-        
+
         std::string::size_type pos = str.find_first_not_of(" ", indent);
         pos = str.find_first_of(" ", pos);
         int i = 0;
@@ -82,22 +87,22 @@ namespace Gambit
             {
                 str.insert(pos, to_add, ' ');
             }
-            
+
             pos = str.find_first_not_of(" ", pos);
             pos = str.find_first_of(" ", pos);
         }
     }
-    
+
     /*********************************************/
     /****** formats output for the screen ********/
     /*********************************************/
-    
+
     std::string format_for_screen(const std::string &input_string)
     {
         int cols = get_screen_cols();
         std::string output_string, str;
         std::stringstream ss(input_string);
-        
+
         if (cols > 0)
         {
             std::string::size_type cols_pos = cols;
@@ -105,19 +110,19 @@ namespace Gambit
             {
                 bool add_n = false;
                 std::string line = str;
-                
+
                 if (str.length() >= 16 && str.substr(0, 16) == "#remove_newlines")
                 {
                     bool ck_space = false;
                     line = "";
-                    
+
                     while(std::getline(ss, str))
                     {
                         if (str.length() >= 21 && str.substr(0, 21) == "#dont_remove_newlines")
                         {
                             break;
                         }
-                        else if (str.find_first_not_of(" ") == std::string::npos) 
+                        else if (str.find_first_not_of(" ") == std::string::npos)
                         {
                             add_n = true;
                             break;
@@ -128,18 +133,18 @@ namespace Gambit
                             {
                                 if (str[0] != ' ')
                                     line += " ";
-                                
+
                                 ck_space = false;
                             }
-                            
+
                             if (str[str.length()-1] != ' ')
                                 ck_space = true;
-                            
+
                             line += str;
                         }
                     }
                 }
-                
+
                 std::string::size_type len = line.find_last_not_of(" ");
                 if (len == std::string::npos || line.length() == 0)
                 {
@@ -148,16 +153,16 @@ namespace Gambit
                 else if (!(line.length() > 0 && line[0] == '#'))
                 {
                     line = line.substr(0, len+1);
-                    
+
                     std::string::size_type cols_corr = line.find_first_of("\x1b");
                     std::string::size_type indent = line.find_first_not_of(" ");
                     std::string::size_type colon_indent = line.find_first_of(":");
-                    
+
                     if (colon_indent != std::string::npos && 2*colon_indent < cols_pos)
                     {
                         indent = line.find_first_not_of(" ", colon_indent +1);
                     }
-                            
+
                     for (;;)
                     {
                         if ((cols_corr == std::string::npos) && (line.length() > cols_pos))
@@ -172,7 +177,7 @@ namespace Gambit
                             break;
                         }
                     }
-                    
+
                     if (add_n)
                         output_string += "\n";
                 }
@@ -189,26 +194,34 @@ namespace Gambit
                 }
             }
         }
-        
+
         return output_string;
     }
-    
+
     /*************************************************/
     /****** pipes output through less or more ********/
     /*************************************************/
-    
+
     void print_to_screen(const std::string &file_in, const std::string &name)
     {
         std::string file = format_for_screen(file_in);
         char temp_file[20] = "_gambit_temp_XXXXXX";
-        mkstemp(temp_file);
+        int err = mkstemp(temp_file);
+        if (err == -1) utils_error().raise(LOCAL_INFO, "Error returned from mkstemp.");
         std::ofstream out(temp_file);
         out << file << std::flush;
         if (std::system("command -v less >/dev/null"))
-            std::system((std::string("more -d ") + std::string(temp_file)).c_str());
-        else  
-            std::system((std::string("less -S -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
-        std::system(("rm -f " + std::string(temp_file) + " >/dev/null").c_str());
+        {
+            err = std::system((std::string("more -d ") + std::string(temp_file)).c_str());
+            if (err) utils_error().raise(LOCAL_INFO, "Error returned from call to more.");
+        }
+        else
+        {
+            err = std::system((std::string("less -S -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
+            if (err) utils_error().raise(LOCAL_INFO, "Error returned from call to less.");
+        }
+        err = std::system(("rm -f " + std::string(temp_file) + " >/dev/null").c_str());
+        if (err) utils_error().raise(LOCAL_INFO, "Error returned from attempt to remove temp file.");
     }
-        
+
 }

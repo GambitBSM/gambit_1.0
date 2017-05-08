@@ -77,11 +77,11 @@ namespace Gambit
 
     /// Setter for indicating if the wrapped function's result should be printed
     template <typename TYPE>
-    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
+    void module_functor<TYPE>::setPrintRequirement(bool flag) { myPrintFlag = flag;}
 
     /// Getter indicating if the wrapped function's result should be printed
     template <typename TYPE>
-    bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
+    bool module_functor<TYPE>::requiresPrinting() const { return myPrintFlag; }
 
     /// Calculate method
     /// (no loop-manager stuff here because only void specialisation can manage loops)
@@ -141,7 +141,6 @@ namespace Gambit
     template <typename TYPE>
     const TYPE& module_functor<TYPE>::operator()(int index)
     {
-      if (this == NULL) functor::failBigTime("operator()");
       init_memory(); // Init memory if this is the first run through.
       return (iRunNested ? myValue[index] : myValue[0]);
     }
@@ -150,7 +149,6 @@ namespace Gambit
     template <typename TYPE>
     safe_ptr<TYPE> module_functor<TYPE>::valuePtr()
     {
-      if (this == NULL) functor::failBigTime("valuePtr");
       init_memory(); // Init memory if this is the first run through.
       return safe_ptr<TYPE>(myValue);
     }
@@ -244,7 +242,7 @@ namespace Gambit
 
     /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
-    str backend_functor_common<PTR_TYPE, TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
+    str backend_functor_common<PTR_TYPE, TYPE, ARGS...>::safe_version() const { return mySafeVersion; }
 
     /// Set the inUse flag.
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
@@ -254,7 +252,6 @@ namespace Gambit
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
     safe_ptr<bool> backend_functor_common<PTR_TYPE, TYPE, ARGS...>::inUsePtr()
     {
-      if (this == NULL) functor::failBigTime("inUsePtr");
       return safe_ptr<bool>(&inUse);
     }
 
@@ -278,7 +275,6 @@ namespace Gambit
     template <typename TYPE, typename... ARGS>
     TYPE backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::operator()(ARGS&&... args)
     {
-      if (this == NULL) functor::failBigTime("operator()");
       logger().entering_backend(this->myLogTag);
       TYPE tmp = this->myFunction(std::forward<ARGS>(args)...);
       logger().leaving_backend();
@@ -305,7 +301,6 @@ namespace Gambit
     template <typename... ARGS>
     void backend_functor<void(*)(ARGS...), void, ARGS...>::operator()(ARGS&&... args)
     {
-      if (this == NULL) functor::functor::failBigTime("operator()");
       logger().entering_backend(this->myLogTag);
       this->myFunction(std::forward<ARGS>(args)...);
       logger().leaving_backend();

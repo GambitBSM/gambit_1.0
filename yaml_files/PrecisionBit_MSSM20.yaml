@@ -1,0 +1,172 @@
+# PrecisionBit test file (in YAML)
+#
+# Chris Rogan <crogan@cern.ch>
+# Apr 2015
+# Pat Scott <p.scott@imperial.ac.uk>
+# Aug 2015
+
+Parameters:
+
+  #SM parameters.
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  #SUSY parameters.
+  MSSM20atQ:
+    Qin: 1.9422e+16
+    SignMu: 1
+    TanBeta: 10
+    mHu2: 15625
+    mHd2: 15625
+
+    M1: 500
+    M2: 500
+    M3: 500
+
+    mq2_12: 15625.0
+    mq2_3: 15625.0
+
+    ml2_12: 15625.0
+    ml2_3: 15625.0
+
+    md2_12: 15625.0
+    md2_3: 15625.0
+
+    mu2_12: 15625.0
+    mu2_3: 15625.0
+
+    me2_12: 15625.0
+    me2_3: 15625.0
+
+    Ae_12: 0
+    Ae_3: 0
+    Ad_3: 0
+    Au_3: 0
+
+
+Priors:
+
+  # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
+
+Scanner:
+
+  use_scanner: random
+
+  scanners:
+
+    random:
+      plugin: random
+      point_number: 1
+      like:  LogLike
+
+
+ObsLikes:
+
+  # Test precision likelihoods and nuisances
+  - purpose:  LogLike
+    capability:  lnL_Z_mass
+
+  - purpose:  LogLike
+    capability:  lnL_t_mass
+
+  - purpose:  LogLike
+    capability:  lnL_mcmc
+
+  - purpose:  LogLike
+    capability:  lnL_mbmb
+
+  - purpose:  LogLike
+    capability:  lnL_alpha_em
+
+  - purpose:  LogLike
+    capability:  lnL_alpha_s
+
+  - purpose:  LogLike
+    capability:  lnL_W_mass
+
+  - purpose:  LogLike
+    capability:  lnL_sinW2_eff
+
+  - purpose:  LogLike
+    capability:  lnL_deltarho
+
+  - purpose:  LogLike
+    capability:  lnL_gm2
+
+  - purpose:  Observable
+    capability: muon_gm2
+    function: GM2C_SUSY
+
+  - purpose:  Observable
+    capability: deltarho
+
+  - purpose:  Observable
+    capability: mw
+    function: mw_from_MSSM_spectrum
+
+  - purpose:  Observable
+    capability: prec_sinW2_eff
+
+  - purpose:  Observable
+    capability: edm_e
+
+  - purpose:  Observable
+    capability: edm_n
+
+
+Rules:
+
+  - capability: unimproved_MSSM_spectrum
+    function: get_MSSMatQ_spectrum
+
+  - capability: MSSM_spectrum
+    function: make_MSSM_precision_spectrum_H_W
+
+  - capability: muon_gm2_SM
+    function: gm2_SM_ee
+
+  - capability: Higgs_decay_rates
+    function: FH_MSSM_h0_1_decays
+
+  - capability: h0_2_decay_rates
+    function: FH_h0_2_decays
+
+  - capability: A0_decay_rates
+    function: FH_A0_decays
+
+  - capability: H_plus_decay_rates
+    function: FH_H_plus_decays
+
+  - capability: decay_rates
+    function: all_decays
+
+  - capability: lnL_gm2
+    function: lnL_gm2_chi2
+    dependencies:
+      - capability: muon_gm2
+        function: GM2C_SUSY
+
+
+Printer:
+
+  printer: ascii
+  options:
+    output_file: "results.txt"
+
+
+Logger:
+
+  redirection:
+    [Default] : "default.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  default_output_path: "runs/PrecisionBit_MSSM20"
+
+  debug: true

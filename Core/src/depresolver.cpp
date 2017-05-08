@@ -1540,18 +1540,26 @@ namespace Gambit
                   cap    != (*masterGraph[fromVertex]).loopManagerCapability())
               {
                 // Hunt through the edges of toVertex and find the one that corresponds to its loop manager.
-                DRes::VertexID managerVertex;
                 graph_traits<DRes::MasterGraphType>::in_edge_iterator ibegin, iend;
-                for (boost::tie(ibegin, iend) = in_edges(toVertex, masterGraph); ibegin != iend; ++ibegin)
+                boost::tie(ibegin, iend) = in_edges(toVertex, masterGraph);
+                if (ibegin != iend)
                 {
-                  managerVertex = source(*ibegin, masterGraph);
-                  if ((*masterGraph[managerVertex]).name() == name and
-                      (*masterGraph[managerVertex]).origin() == origin) break;
+                  DRes::VertexID managerVertex;
+                  for (; ibegin != iend; ++ibegin)
+                  {
+                    managerVertex = source(*ibegin, masterGraph);
+                    if ((*masterGraph[managerVertex]).name() == name and
+                        (*masterGraph[managerVertex]).origin() == origin) break;
+                  }
+                  logger() << "Dynamically adding dependency of " << (*masterGraph[managerVertex]).origin()
+                           << "::" << (*masterGraph[managerVertex]).name() << " on "
+                           << (*masterGraph[fromVertex]).origin() << "::" << (*masterGraph[fromVertex]).name() << endl;
+                  boost::tie(edge, ok) = add_edge(fromVertex, managerVertex, masterGraph);
                 }
-                logger() << "Dynamically adding dependency of " << (*masterGraph[managerVertex]).origin()
-                         << "::" << (*masterGraph[managerVertex]).name() << " on "
-                         << (*masterGraph[fromVertex]).origin() << "::" << (*masterGraph[fromVertex]).name() << endl;
-                boost::tie(edge, ok) = add_edge(fromVertex, managerVertex, masterGraph);
+                else
+                {
+                  core_error().raise(LOCAL_INFO, "toVertex has no edges! So its loop manager hasn't been added as a dependency?!");
+                }
               }
             }
           }

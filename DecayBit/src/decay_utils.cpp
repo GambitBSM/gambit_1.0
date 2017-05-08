@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May
@@ -22,15 +22,14 @@ namespace Gambit
 
   namespace DecayBit
   {
-      
+
     /// Construct a decay table entry for a particle, from the entry for its antiparticle
-    DecayTable::Entry CP_conjugate(const DecayTable::Entry& in)      
-    {  
-      typedef std::map< std::multiset< std::pair<int,int> >, std::pair<double, double> > channelmap;
+    DecayTable::Entry CP_conjugate(const DecayTable::Entry& in)
+    {
       DecayTable::Entry out;
 
       // Copy all the basic info to the new DecayTable entry
-      out.width_in_GeV = in.width_in_GeV;                    
+      out.width_in_GeV = in.width_in_GeV;
       out.positive_error = in.positive_error;
       out.negative_error = out.negative_error;
       out.calculator = in.calculator;
@@ -47,7 +46,7 @@ namespace Gambit
         std::multiset< std::pair<int,int> > antiparticles;
         for (auto particle : particles)
         {
-          std::pair<int,int> antiparticle(-1*(particle.first), particle.second); 
+          std::pair<int,int> antiparticle(-1*(particle.first), particle.second);
           // If the antiparticle exists as a distinct particle, add it.
           if (Models::ParticleDB().has_particle(antiparticle)) antiparticles.insert(antiparticle);
           //Otherwise, use the original particle
@@ -63,4 +62,4 @@ namespace Gambit
 
   }
 
-}  
+}

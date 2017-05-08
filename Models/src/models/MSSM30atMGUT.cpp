@@ -3,7 +3,7 @@
 ///
 ///  MSSMD30atMGUT translation function definitions
 ///
-///  Specialisation of MSSM63atMGUT with all 
+///  Specialisation of MSSM63atMGUT with all
 ///  off-diagonal m and A terms set to zero.
 ///
 ///  *********************************************
@@ -39,7 +39,7 @@ using namespace Gambit::Utils;
   void MODEL_NAMESPACE::MSSM30atMGUT_to_MSSM63atMGUT (const ModelParameters &myP, ModelParameters &targetP)
   {
      logger()<<"Running interpret_as_parent calculations for MSSM30atMGUT --> MSSM63atMGUT..."<<LogTags::info<<EOM;
-    
+
      targetP.setValue("TanBeta", myP["TanBeta"] );
      targetP.setValue("SignMu",  myP["SignMu"] );
 
@@ -47,7 +47,7 @@ using namespace Gambit::Utils;
      targetP.setValue("M1",  myP["M1"] );
      targetP.setValue("M2",  myP["M2"] );
      targetP.setValue("M3",  myP["M3"] );
-  
+
      // soft Higgs masses
      targetP.setValue("mHu2",  myP["mHu2"] );
      targetP.setValue("mHd2",  myP["mHd2"] );
@@ -143,7 +143,6 @@ using namespace Gambit::Utils;
 
      // down-type trilinear couplings
      // Off-diagonal elements set to zero
-     // First and second generation to zero
      targetP.setValue("Ad_11",  myP["Ad_1"] );
      targetP.setValue("Ad_12",  0. );
      targetP.setValue("Ad_13",  0. );
@@ -158,7 +157,6 @@ using namespace Gambit::Utils;
 
      // up-type trilinear couplings
      // Off-diagonal elements set to zero
-     // First and second generation set to zero
      targetP.setValue("Au_11",  myP["Au_1"] );
      targetP.setValue("Au_12",  0. );
      targetP.setValue("Au_13",  0. );
