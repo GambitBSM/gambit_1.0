@@ -49,7 +49,7 @@ def signed_sqrt(x):
   indices = np.where(x == 0)
   z = copy.deepcopy(x)
   z[indices] = 1
-  z = z/np.abs(z) * np.sqrt(np.abs(z))
+  z = z/np.fabs(z) * np.sqrt(np.fabs(z))
   z[indices] = 0
   return z
 
