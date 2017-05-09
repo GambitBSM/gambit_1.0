@@ -401,9 +401,9 @@ namespace Gambit
           // Note: use same binning for all particle species
           /// Option cMC_NhistBins<int>: Number of histogram bins (default 140)
           cMC_NhistBins = runOptions->getValueOrDef<int>   (140,     "cMC_NhistBins");
-          /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
+          /// Option cMC_binLow<double>: Histogram min energy in GeV (default 0.001)
           cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");
-          /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
+          /// Option cMC_binHigh<double>: Histogram max energy in GeV (default 10000)
           cMC_binHigh = runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");
           histList.clear();
           return;
