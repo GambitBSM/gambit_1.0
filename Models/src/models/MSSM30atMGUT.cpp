@@ -52,7 +52,7 @@ using namespace Gambit::Utils;
      targetP.setValue("mHu2",  myP["mHu2"] );
      targetP.setValue("mHd2",  myP["mHd2"] );
 
-     // RH squark soft masses
+     // LH squark soft masses
      // Off-diagonal elements set to zero
      // Only upper diagonal needed (symmetric)
      targetP.setValue("mq2_11",  myP["mq2_1"] );
@@ -67,7 +67,7 @@ using namespace Gambit::Utils;
      //targetP.setValue("mq2_32",  0. );
      targetP.setValue("mq2_33",  myP["mq2_2"] );
 
-     // RH slepton soft masses
+     // LH slepton soft masses
      // Off-diagonal elements set to zero
      // Only upper diagonal needed (symmetric)
      targetP.setValue("ml2_11",  myP["ml2_1"] );
@@ -82,7 +82,7 @@ using namespace Gambit::Utils;
      //targetP.setValue("ml2_32",  0. );
      targetP.setValue("ml2_33",  myP["ml2_3"] );
 
-     // LH down-type slepton soft masses
+     // RH down-type squark soft masses
      // Off-diagonal elements set to zero
      // Only upper diagonal needed (symmetric)
      targetP.setValue("md2_11",  myP["md2_1"] );
@@ -97,7 +97,7 @@ using namespace Gambit::Utils;
      //targetP.setValue("md2_32",  0. );
      targetP.setValue("md2_33",  myP["md2_3"] );
 
-     // LH up-type slepton soft masses
+     // RH up-type squark soft masses
      // Off-diagonal elements set to zero
      // Only upper diagonal needed (symmetric)
      targetP.setValue("mu2_11",  myP["mu2_1"] );
@@ -112,7 +112,7 @@ using namespace Gambit::Utils;
      //targetP.setValue("mu2_32",  0. );
      targetP.setValue("mu2_33",  myP["mu2_3"] );
 
-     // LH charged slepton soft masses
+     // RH charged slepton soft masses
      // Off-diagonal elements set to zero
      // Only upper diagonal needed (symmetric)
      targetP.setValue("me2_11",  myP["me2_1"] );
