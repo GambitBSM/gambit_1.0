@@ -21,10 +21,10 @@
 #include "gambit/Models/models/MSSM30atMGUT.hpp" 
 
 #define MODEL NUHM2
-#define PARENT MSSM30atMGUT
+#define PARENT MSSM63atMGUT
   START_MODEL
   DEFINEPARS(M0,M12,mHu,mHd,A0,TanBeta,SignMu)
-  INTERPRET_AS_PARENT_FUNCTION(NUHM2_to_MSSM30atMGUT)
+  INTERPRET_AS_PARENT_FUNCTION(NUHM2_to_MSSM63atMGUT)
   // Translation functions defined in NUHM2.cpp
 #undef PARENT
 #undef MODEL
