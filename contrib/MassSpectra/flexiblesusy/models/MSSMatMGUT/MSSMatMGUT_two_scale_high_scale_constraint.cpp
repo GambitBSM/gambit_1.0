@@ -97,26 +97,6 @@ void MSSMatMGUT_high_scale_constraint<Two_scale>::apply()
    const auto Yd = MODELPARAMETER(Yd);
    const auto Yu = MODELPARAMETER(Yu);
 
-   std::cout << "Aeij = " << Aeij << std::endl;
-   std::cout << "Adij = " << Adij << std::endl;
-   std::cout << "Auij = " << Auij << std::endl;
-   std::cout << "mHd2IN = " << mHd2IN << std::endl;
-   std::cout << "mHu2IN = " << mHu2IN << std::endl;   
-
-   std::cout << "mq2Input = " << mq2Input << std::endl;
-   std::cout << "ml2Input = " << ml2Input << std::endl;
-   std::cout << "me2Input = " << me2Input << std::endl;
-   std::cout << "md2Input = " << md2Input << std::endl;
-   std::cout << "mu2Input = " << mu2Input << std::endl;
-
-   std::cout << "MassBInput = " << MassBInput << std::endl;
-   std::cout << "MassWBInput = " << MassWBInput << std::endl;
-   std::cout << "MassGInput = " << MassGInput << std::endl;
-
-   std::cout << "Ye = " << Ye << std::endl;
-   std::cout << "Yd = " << Yd << std::endl;
-   std::cout << "Yu = " << Yu << std::endl;
-   
    MODEL->set_TYe((Aeij.cwiseProduct(Ye)).real());
    MODEL->set_TYd((Adij.cwiseProduct(Yd)).real());
    MODEL->set_TYu((Auij.cwiseProduct(Yu)).real());
@@ -130,20 +110,7 @@ void MSSMatMGUT_high_scale_constraint<Two_scale>::apply()
    MODEL->set_MassB(Re(MassBInput));
    MODEL->set_MassWB(Re(MassWBInput));
    MODEL->set_MassG(Re(MassGInput));
-   std::cout << "MODEL->get_TYe() = "  << MODEL->get_TYe() << std::endl;
-   std::cout << "MODEL->get_TYd() = "  << MODEL->get_TYd() << std::endl;
-   std::cout << "MODEL->get_TYu() = "  << MODEL->get_TYu() << std::endl;
-   std::cout << "MODEL->get_mHd2() = "  << MODEL->get_mHd2() << std::endl;
-   std::cout << "MODEL->get_mHu2() = "  << MODEL->get_mHu2() << std::endl;
-   std::cout << "MODEL->get_mq2() = "  << MODEL->get_mq2() << std::endl;
-   std::cout << "MODEL->get_ml2() = "  << MODEL->get_ml2() << std::endl;
-   std::cout << "MODEL->get_mu2() = "  << MODEL->get_mu2() << std::endl;
-   std::cout << "MODEL->get_md2() = "  << MODEL->get_md2() << std::endl;
-   std::cout << "MODEL->get_me2() = "  << MODEL->get_me2() << std::endl;
-   std::cout << "MassB = "  << MODEL->get_MassB() << std::endl;
-   std::cout << "MassWB = "  << MODEL->get_MassWB() << std::endl;
-   std::cout << "MassG = "  << MODEL->get_MassG() << std::endl;
-
+   
    check_non_perturbative();
 
 
