@@ -159,12 +159,6 @@ ObsLikes:
     - capability: SuperCDMS_2014_LogLikelihood
       purpose:    LogLike
 
-#    - capability: DARWIN_Ar_LogLikelihood
-#      purpose:    LogLike
-
-#    - capability: DARWIN_Xe_LogLikelihood
-#      purpose:    LogLike
-
     # Calculate all IceCube likelihoods (including 22 string)
     - capability: IceCube_likelihood
       purpose: LogLike
@@ -370,7 +364,7 @@ Rules:
     options:
       nulike_speed: 3
 
-  # Cascade decay options
+  # Cascade decay MC options
   - function: cascadeMC_LoopManager
     options: 
       cMC_maxEvents: 20000 # Maximum number of cascade MC runs
