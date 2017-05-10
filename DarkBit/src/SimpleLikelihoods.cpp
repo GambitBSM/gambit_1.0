@@ -190,8 +190,8 @@ namespace Gambit {
       double fraction = *Dep::RD_fraction;
       result = 0;
 
-      // from 250 GeV to 10 TeV
-      std::vector<double> x = daFunk::logspace(2.40, 4.00, 100);
+      // from 10 GeV to 10 TeV
+      std::vector<double> x = daFunk::logspace(1.00, 4.00, 100);
       x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
