@@ -400,12 +400,28 @@ int main(int argc, char* argv[])
     // FIXME: Extend existing gamma-ray spectrum dumper
     dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
 
+    // Resolve Galactic halo requirements for gamLike
+    set_gamLike_GC_halo.resolveDependency(&GalacticHalo_Einasto);
+    set_gamLike_GC_halo.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::set_halo_profile);
+
     // Calculate Fermi LAT dwarf likelihood
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
     // Assume for direct and indirect detection likelihoods that dark matter
     // density is always the measured one (despite relic density results)
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
     lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
+
+    lnL_HESSGC_gamLike.resolveDependency(&GA_AnnYield_General);
+    lnL_HESSGC_gamLike.resolveDependency(&RD_fraction_one);
+    lnL_HESSGC_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
+
+    lnL_CTAGC_gamLike.resolveDependency(&GA_AnnYield_General);
+    lnL_CTAGC_gamLike.resolveDependency(&RD_fraction_one);
+    lnL_CTAGC_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
+
+    lnL_FermiGC_gamLike.resolveDependency(&GA_AnnYield_General);
+    lnL_FermiGC_gamLike.resolveDependency(&RD_fraction_one);
+    lnL_FermiGC_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
 
 
     // -- Calculate relic density --
@@ -532,18 +548,25 @@ int main(int argc, char* argv[])
     {
       std::cout << "Producing gamma ray test maps." << std::endl;
       int mBins = 60;
-      int svBins = 40;
+      int svBins = 60;
       double oh2, lnL;
       std::vector<double> sv_list, m_list;
 
-      boost::multi_array<double, 2> lnL_b_array{boost::extents[mBins][svBins]},
-          lnL_tau_array{boost::extents[mBins][svBins]};
+      GalacticHalo_Einasto.reset_and_calculate();
+      set_gamLike_GC_halo.reset_and_calculate();
+
+      boost::multi_array<double, 2> 
+        lnL_b_array{boost::extents[mBins][svBins]},
+        lnL_b_array2{boost::extents[mBins][svBins]},
+        lnL_b_array3{boost::extents[mBins][svBins]},
+        lnL_b_array4{boost::extents[mBins][svBins]},
+        lnL_tau_array{boost::extents[mBins][svBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
 
       sv_list = daFunk::logspace(-28.0, -22.0, svBins);
 
       std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to b bbar." << std::endl;
-      m_list = daFunk::logspace(log10(5.), 4., mBins-10);
+      m_list = daFunk::logspace(log10(5.), 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < sv_list.size(); j++)
@@ -564,17 +587,35 @@ int main(int argc, char* argv[])
           cascadeMC_LoopManager.reset_and_calculate();
           cascadeMC_gammaSpectra.reset_and_calculate();
           GA_AnnYield_General.reset_and_calculate();
+          lnL_FermiLATdwarfs_gamLike.setOption<std::string>("version", "pass8");
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
           lnL = lnL_FermiLATdwarfs_gamLike(0);
-          //std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+          std::cout << "Fermi dwarf likelihood: " << lnL << std::endl;
           lnL_b_array[i][j] = lnL;
+          lnL_HESSGC_gamLike.setOption<std::string>("version", "integral_fixedJ");
+          lnL_HESSGC_gamLike.reset_and_calculate();
+          lnL = lnL_HESSGC_gamLike(0);
+          std::cout << "HESS GC likelihood: " << lnL << std::endl;
+          lnL_b_array2[i][j] = lnL;
+          lnL_CTAGC_gamLike.reset_and_calculate();
+          lnL = lnL_CTAGC_gamLike(0);
+          std::cout << "CTA GC likelihood: " << lnL << std::endl;
+          lnL_b_array3[i][j] = lnL;
+          lnL_FermiGC_gamLike.setOption<std::string>("version", "fixedJ");
+          lnL_FermiGC_gamLike.reset_and_calculate();
+          lnL = lnL_FermiGC_gamLike(0);
+          lnL_b_array4[i][j] = lnL;
+          std::cout << "Fermi GC likelihood: " << lnL << std::endl;
         }
       }
 
-      dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
+      dump_array_to_file("FermiD_b_table.dat", lnL_b_array, m_list, sv_list);
+      dump_array_to_file("HESSGC_b_table.dat", lnL_b_array2, m_list, sv_list);
+      dump_array_to_file("CTAGC_b_table.dat", lnL_b_array3, m_list, sv_list);
+      dump_array_to_file("FermiGC_b_table.dat", lnL_b_array4, m_list, sv_list);
 
       std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to tau+ tau-." << std::endl;
-      m_list = daFunk::logspace(log10(1.9), 4., mBins-10);
+      m_list = daFunk::logspace(log10(1.9), 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < sv_list.size(); j++)
@@ -602,7 +643,7 @@ int main(int argc, char* argv[])
         }
       }
 
-      dump_array_to_file("Fermi_tau_table.dat", lnL_tau_array, m_list, sv_list);
+      dump_array_to_file("FermiD_tau_table.dat", lnL_tau_array, m_list, sv_list);
 
       std::cout << "Calculating table of Omega h^2 values." << std::endl;
       m_list = daFunk::logspace(-1.0, 4., mBins);
