@@ -39,7 +39,8 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
         Gambit::Options txt_options;
         txt_options.setValue("synchronised",false);
         get_printer().new_stream("txt", txt_options);
-
+        set_resume_params.set_resume_mode(get_printer().resume_mode());
+        
         int pdim = get_inifile_value<int>("projection_dimension", 4);
         TWalk(LogLike, get_printer(),
                         set_resume_params,
@@ -83,6 +84,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     double Ravg = 0.0;
 
     set_resume_params(chisq, a0, mult, totN, count, total, ttotal, Nlength, covT, avgT, W, avgTot, ids, ranks);
+    
     Gambit::Scanner::assign_aux_numbers("mult", "chain");
 
 #ifdef WITH_MPI
@@ -109,7 +111,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
     out_stream->reset();
 
-    if (printer.resume_mode())
+    if (set_resume_params.resume_mode())
     {
 #ifdef WITH_MPI
         for (int i = 0; i < numtasks; i++)

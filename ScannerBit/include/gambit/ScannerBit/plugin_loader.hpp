@@ -213,7 +213,7 @@ namespace Gambit
                         }
                         if (resume_streams[name]->is_open())
                         {
-                           get_resume(*resume_streams[name], data...);
+                            get_resume(*resume_streams[name], data...);
                         }
                         else
                         {

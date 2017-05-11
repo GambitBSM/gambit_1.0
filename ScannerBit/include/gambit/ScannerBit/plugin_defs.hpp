@@ -28,6 +28,7 @@
 #include <set>
 #include <algorithm>
 #include <typeinfo>
+#include <unistd.h>
 
 #ifdef WITH_MPI
 #include <mpi.h>
@@ -49,9 +50,10 @@ namespace Gambit
         {
         private:
             std::string name;
+            bool resume;
             
         public:
-            resume_params_func(const std::string &name_in)
+            resume_params_func(const std::string &name_in) : resume(false)
             {
                 int rank;
 #ifdef WITH_MPI
@@ -63,6 +65,13 @@ namespace Gambit
                 ss << rank;
                 name = name_in + "_" + ss.str();
             }
+            
+            void set_resume_mode(const bool &mode)
+            {
+                resume = (mode && access( name.c_str(), F_OK )) ? false : mode;
+            }
+            
+            bool resume_mode() const {return resume;}
             
             template <typename... T>
             void operator ()(T&... params)
