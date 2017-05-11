@@ -61,7 +61,7 @@ namespace Gambit
     }
 
     // Create decay object from SLHA file input.slha
-    // FIXME: Get the actual Higgs width for this point (from MicrOmegas?)
+    // TODO: Get the actual Higgs width for this point (from MicrOmegas?)
     // (or just use SM value).
     void createDecays(DecayTable& outDecays)
     {
@@ -200,7 +200,7 @@ int main()
     mwimp_generic.resolveDependency(&DarkMatter_ID_SingletDM);
     mwimp_generic.reset_and_calculate();
 
-    // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
+    // Set generic annihilation rate in late universe (v->0 limit)  // TODO: Check limit
     sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_SingletDM);
     sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
     sigmav_late_universe.reset_and_calculate();
@@ -286,7 +286,7 @@ int main()
     sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
 
-    //FIXME: This does not agree with standalone MicrOmegas!!!!!!
+    // TODO: This does not agree with standalone MicrOmegas!!!!!!
     cout << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << endl;
     logger() << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << LogTags::info << EOM;
 

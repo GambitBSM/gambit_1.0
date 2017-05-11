@@ -119,10 +119,6 @@ namespace Gambit
       /// Option mWIMP<double>: WIMP mass in GeV (required)
       double mPhi = runOptions->getValueOrDef<double>(59.0, "mPhi");
 
-      // FIXME: Use various channels include 3-body and complicated cascade
-      // decay
-      // FIXME: Check stability of codes w.r.t. extreme parameters
-      // FIXME: Test all input possible for this function
       addParticle("gamma", 0.0,  2)
       addParticle("Z0", 91.2,  2)
       addParticle("W+", 80.39, 2)
@@ -181,7 +177,7 @@ namespace Gambit
       {
         auto E = daFunk::var("E");
         daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[7];
-        // FIXME: Include second gamma in AnnYield (currently ignored)
+        // Note: curently the second gamma in AnnYield is ignored by construction
         TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
       }
@@ -379,7 +375,6 @@ int main(int argc, char* argv[])
     //cascadeMC_Histograms.reset_and_calculate();
 
     // Check convergence of cascade MC
-    // FIXME: Test dynamic convergence criteria for cascade routines
     cascadeMC_EventCount.resolveDependency(&cascadeMC_InitialState);
     cascadeMC_EventCount.resolveLoopManager(&cascadeMC_LoopManager);
     //cascadeMC_EventCount.reset_and_calculate();
@@ -398,7 +393,6 @@ int main(int argc, char* argv[])
     GA_AnnYield_General.resolveDependency(&DarkMatter_ID_WIMP);
     GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
 
-    // FIXME: Extend existing gamma-ray spectrum dumper
     dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
 
     // Resolve Galactic halo requirements for gamLike

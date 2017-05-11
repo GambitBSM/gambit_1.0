@@ -83,7 +83,7 @@ namespace Gambit
       double Higgs_mass_charged;
 
       // Set annihilation branching fractions
-      // FIXME needs to be fixed once BFs are available directly from TH_Process
+      // TODO: needs to be fixed once BFs are available directly from TH_Process
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       std::vector< std::vector<str> > neutral_channels = BEreq::get_DS_neutral_h_decay_channels();
@@ -159,7 +159,7 @@ namespace Gambit
           LOCAL_INFO, "H- decays exist in process catalog but not H+.");
 
       // Set the neutral Higgs decay branching fractions
-      // FIXME needs to be fixed once BFs are available directly from TH_Process
+      // TODO: needs to be fixed once BFs are available directly from TH_Process
       for (int i=0; i<3; i++)       // Loop over the three neutral Higgs
       {
 
@@ -168,7 +168,7 @@ namespace Gambit
         {
 
           // Get the total decay width, for normalising partial widths to BFs.
-          // FIXME: Replace when BFs become directly available.
+          // TODO: Replace when BFs become directly available.
           double totalwidth = 0.0;
           for (std::vector<TH_Channel>::const_iterator
               it = h0_decays[i]->channelList.begin();
@@ -226,7 +226,7 @@ namespace Gambit
         std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels()
 ;
         // Get the total decay width, for normalising partial widths to BFs.
-        // FIXME: Replace when BFs become directly available.
+        // TODO: Replace when BFs become directly available.
         double totalwidth = 0.0;
         for (std::vector<TH_Channel>::const_iterator
             it = Hplus_decays->channelList.begin();
@@ -310,7 +310,7 @@ namespace Gambit
       // Hand back the pointer to the DarkSUSY neutrino yield function
       result.pointer = BEreq::nuyield.pointer();
 
-      //FIXME change below to >= when version numbers are available as ints
+      //TODO: change below to >= when version numbers are available as ints
       // Treat the yield function as threadsafe only if the loaded version of DarkSUSY supports it.
       result.threadsafe = (BEreq::nuyield.version() == "5.1.3");
 

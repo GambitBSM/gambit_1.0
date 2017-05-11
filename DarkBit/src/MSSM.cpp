@@ -575,7 +575,7 @@ namespace Gambit
     void DarkMatter_ID_MSSM(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_MSSM;
-      // FIXME: need ask Dep::MSSM_spectrum in future; might have sneutralinos and gravitinos later.
+      // TODO: need ask Dep::MSSM_spectrum in future; might have sneutralinos and gravitinos later.
       result = "~chi0_1";
     }
   }

@@ -254,7 +254,7 @@ int main(int argc, char* argv[])
       RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
       RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
       RD_oh2_DarkSUSY.reset_and_calculate();
-      // FIXME: Use "general" version instead
+      // TODO: Use "general" version instead
 
       // Calculate WMAP likelihoods, based on DarkSUSY result
       lnL_oh2_Simple.resolveDependency(&RD_oh2_DarkSUSY);
@@ -340,7 +340,7 @@ int main(int argc, char* argv[])
       mwimp_generic.reset_and_calculate();
 
       // Set generic annihilation rate in late universe (v->0 limit)
-      // FIXME: Check whether limit is really calculated
+      // TODO: Check whether limit is really calculated
       sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_MSSM);
       sigmav_late_universe.resolveDependency(&DarkMatter_ID_MSSM);
       sigmav_late_universe.reset_and_calculate();
@@ -400,7 +400,8 @@ int main(int argc, char* argv[])
     // Set generic scattering cross-section for later use
     double sigma_SI_p_DS, sigma_SI_p_MO;
 
-    sigma_SI_p_simple.resolveDependency(&mwimp_generic); //FIXME this doesn't work with SLHA1, as mwimp_generic needs the process catalog, which needs DarkSUSY.
+    // Note: this doesn't work with SLHA1, as mwimp_generic needs the process catalog, which needs DarkSUSY.
+    sigma_SI_p_simple.resolveDependency(&mwimp_generic);
     if (slha_version == 1)
     {
       sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
@@ -417,7 +418,8 @@ int main(int argc, char* argv[])
     // Set generic scattering cross-section for later use
     double sigma_SD_p_DS, sigma_SD_p_MO;
 
-    sigma_SD_p_simple.resolveDependency(&mwimp_generic); //FIXME this doesn't work with SLHA1, as mwimp_generic needs the process catalog, which needs DarkSUSY.
+    // Note: this doesn't work with SLHA1, as mwimp_generic needs the process catalog, which needs DarkSUSY.
+    sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     if (slha_version == 1)
     {
       sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
