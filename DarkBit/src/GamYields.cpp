@@ -161,9 +161,8 @@ namespace Gambit {
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
         ->set_epsabs(0)->set_limit(100)->set_epsrel(1e-3)->set_use_log_fallback(true)->set("Ep", daFunk::var("E"));
       //
-      // TODO: Check whether to use numerically more stable integration over lnE instead
-      // Note: this causes problems in the WIMP example (3) as the singularity is dropped
-      //return (integrand*E)->set("E", exp(lnE))->gsl_integration("lnE", log(Ep*gamma-halfBox_bound), log(Ep*gamma+halfBox_bound))
+      // Note: integration over lnE causes problems in the WIMP example (3) as the singularity is dropped.
+      // return (integrand*E)->set("E", exp(lnE))->gsl_integration("lnE", log(Ep*gamma-halfBox_bound), log(Ep*gamma+halfBox_bound))
       //  ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", daFunk::var("E"));
     }
 
