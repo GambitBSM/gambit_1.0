@@ -278,13 +278,14 @@ int main(int argc, char* argv[])
 
     // Initialize halo model
     ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
-    Halo_primary_parameters->setValue("rho0", 0.4);
-    Halo_primary_parameters->setValue("rhos", 0.08);
-    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("vrot", 235.); // Local properties
     Halo_primary_parameters->setValue("v0", 235.);
     Halo_primary_parameters->setValue("vesc", 550.);
-    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("rho0", 0.4);
     Halo_primary_parameters->setValue("r_sun", 8.5);
+
+    Halo_primary_parameters->setValue("rs", 20.);  // Global properties
+    Halo_primary_parameters->setValue("rhos", 0.08);
     Halo_primary_parameters->setValue("alpha", 0.17);
 
 
