@@ -131,11 +131,8 @@ ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
     type:         bool
-    #function:     MSSMspectrum_test
-    function:     SPheno_MSSM_test
-
-#  - purpose:      Test
-#    capability:   run_light_quark_test
+    function:     MSSMspectrum_test
+    #function:     SPheno_MSSM_test
 
 Rules:
 
@@ -144,10 +141,10 @@ Rules:
 
   - capabilty:    unimproved_MSSM_spectrum
     type:         Spectrum
-    #function:     get_CMSSM_spectrum
+    function:     get_CMSSM_spectrum
     #function:     get_MSSMatMGUT_spectrum
     #function:     get_MSSMatQ_spectrum
-    function:     get_CMSSM_spectrum_SPheno
+    #function:     get_CMSSM_spectrum_SPheno
     #function:     get_MSSMatMGUT_spectrum_SPheno
     #function:     get_MSSMatQ_spectrum_SPheno
     options:
