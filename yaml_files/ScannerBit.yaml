@@ -71,7 +71,7 @@ Scanner:
   # the objectives section
   use_objectives: EggBox #[EggBox, gaussian]
   # this tag specifies which plugin to use as the scanner.
-  # Here the multinest scanner is choose, but you could
+  # Here the multinest scanner is choosen, but you could
   # choose any scanner defined under the scanners section
   use_scanner: multinest #twalk
 

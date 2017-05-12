@@ -154,7 +154,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     MPI_Bcast (c_ptr(ranks), ranks.size(), MPI_INT, 0, MPI_COMM_WORLD);
 #endif
 
-    std::cout << "Metropolis Hastings/TWalk Algorthm Started"  << std::endl;
+    std::cout << "Metropolis Hastings/TWalk Algorithm Started"  << std::endl;
 
     do
     {

@@ -29,6 +29,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <type_traits>
 
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -109,7 +110,7 @@ namespace Gambit
             {
             public:
                 virtual void print(std::ofstream &) = 0;
-                virtual ~__plugin_resume_base__(){}
+                virtual ~__plugin_resume_base__() {}
             };
             
             ///Container class to store plugin values for resume function
@@ -126,6 +127,7 @@ namespace Gambit
                 {
                     resume_file_output<T>(out, *data);
                 }
+                
                 ~__plugin_resume__(){}
             };
             
@@ -156,7 +158,7 @@ namespace Gambit
                 template<typename U, typename... T>
                 void set_resume(std::vector<__plugin_resume_base__ *> &r_data, U& param, T&... params)
                 {
-                    r_data.push_back(new __plugin_resume__<U>(param));
+                    r_data.push_back(new __plugin_resume__<typename std::decay<U>::type>(param));
                     set_resume(r_data, params...); 
                 }
                 
