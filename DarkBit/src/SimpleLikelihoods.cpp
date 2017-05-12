@@ -141,6 +141,7 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
+      /// Option version <string>: Set Fermi LAT dwarf likelihood version (default: pass8)
       std::string version = runOptions->getValueOrDef<std::string>("pass8", "version");
       if ( version == "pass8" ) mode = 1;
       else if ( version == "pass7" ) mode = 0;
@@ -165,9 +166,12 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
-      std::string version = runOptions->getValueOrDef<std::string>("integral", "version");
-      if ( version == "integral" ) mode = 6;
-      else if ( version == "spectral" ) mode = 7;
+      /// Option version <string>: Set HESS GC likelihood version (default: spectral_externalJ)
+      std::string version = runOptions->getValueOrDef<std::string>("spectral_externalJ", "version");
+      if ( version == "integral_fixedJ" ) mode = 6;
+      else if ( version == "spectral_fixedJ" ) mode = 7;
+      else if ( version == "integral_externalJ" ) mode = 9;
+      else if ( version == "spectral_externalJ" ) mode = 10;
       else DarkBit_error().raise(LOCAL_INFO, "HESS GC likelihood version unknown.");
 
       // from 230(265) GeV to 30 TeV
@@ -188,8 +192,8 @@ namespace Gambit {
       double fraction = *Dep::RD_fraction;
       result = 0;
 
-      // from 250 GeV to 10 TeV
-      std::vector<double> x = daFunk::logspace(2.40, 4.00, 100);
+      // from 25 GeV to 10 TeV
+      std::vector<double> x = daFunk::logspace(1.39, 4.00, 100);
       x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
@@ -209,6 +213,7 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
+      /// Option version <string>: Set Fermi LAT GC likelihood version (default: externalJ)
       std::string version = runOptions->getValueOrDef<std::string>("externalJ", "version");
       if ( version == "fixedJ" ) mode = 2;
       else if ( version == "margJ" ) mode = 3;
@@ -235,11 +240,12 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_oh2_Simple;
       double oh2_theory = *Dep::RD_oh2;
-      // FIXME: Add getValue documentation
+      /// option oh2_fractional_theory_err<double>: Relic density fractional 1 sigma theory
+      /// error (default: 0.05)
       double oh2_theoryerr = oh2_theory*runOptions->getValueOrDef<double>(0.05, "oh2_fractional_theory_err");
-      // FIXME: Add getValue documentation
+      /// option oh2_obs<double>: Observed value of Omega h^2 (default: 0.1188)
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
-      // FIXME: Add getValue documentation
+      /// option oh2_obserr<double>: 1 sigma error on observed value of Omega h^2 (default: 0.001)
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -255,11 +261,12 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_oh2_upperlimit;
       double oh2_theory = *Dep::RD_oh2;
-      // FIXME: Add getValue documentation
+      /// option oh2_fractional_theory_err<double>: Relic density fractional 1 sigma theory
+      /// error (default: 0.05)
       double oh2_theoryerr = oh2_theory*runOptions->getValueOrDef<double>(0.05, "oh2_fractional_theory_err");
-      // FIXME: Add getValue documentation
+      /// option oh2_obs<double>: Observed value of Omega h^2 (default: 0.1188)
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
-      // FIXME: Add getValue documentation
+      /// option oh2_obserr<double>: 1 sigma error on observed value of Omega h^2 (default: 0.001)
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -272,7 +279,6 @@ namespace Gambit {
     /// of Cline, et. al. Phys. Rev. D. 88, 055025 (2013)
     /// Default data:
     ///  sigma_s = 43 +/- 8 MeV arXiv:1112.2435v1
-    ///  sigma_s < 70 MeV arXiv:1301.1765 -- Top-hat function not yet implemented
     ///  sigma_l = 58 +/- 9 MeV
 
     void lnL_sigmas_sigmal(double &result)
@@ -280,13 +286,13 @@ namespace Gambit {
         using namespace Pipes::lnL_sigmas_sigmal;
         double sigmas = *Param["sigmas"];
         double sigmal = *Param["sigmal"];
-      // FIXME: Add getValue documentation
+        /// Option sigmas_obs<double>: Experimental value of sigma_s (default 43.)
         double sigmas_obs = runOptions->getValueOrDef<double>(43., "sigmas_obs");
-      // FIXME: Add getValue documentation
+        /// Option sigmas_obserr<double>: 1 sigma error on sigma_s (default 8.)
         double sigmas_obserr = runOptions->getValueOrDef<double>(8., "sigmas_obserr");
-      // FIXME: Add getValue documentation
+        /// Option sigmal_obs<double>: Experimental value of sigma_l (default 58.)
         double sigmal_obs = runOptions->getValueOrDef<double>(58., "sigmal_obs");
-      // FIXME: Add getValue documentation
+        /// Option sigmal_obserr<double>: 1 sigma error on sigma_l (default 9.)
         double sigmal_obserr = runOptions->getValueOrDef<double>(9., "sigmal_obserr");
         /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
         bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -314,17 +320,17 @@ namespace Gambit {
         double a3 = deltau - deltad;
         double a8 = deltau + deltad - 2*deltas;
 
-      // FIXME: Add getValue documentation
+        /// Option a3_obs<double>: Experimental value of a3 (default 1.2723)
         double a3_obs = runOptions->getValueOrDef<double>(1.2723, "a3_obs");
-      // FIXME: Add getValue documentation
+        /// Option a3_obserr<double>: 1 sigma error on a3 (default 0.0023)
         double a3_obserr = runOptions->getValueOrDef<double>(0.0023, "a3_obserr");
-      // FIXME: Add getValue documentation
+        /// Option a8_obs<double>: Experimental value of a8 (default 0.585)
         double a8_obs = runOptions->getValueOrDef<double>(0.585, "a8_obs");
-      // FIXME: Add getValue documentation
+        /// Option a8_obserr<double>: 1 sigma error on a8 (default 0.025)
         double a8_obserr = runOptions->getValueOrDef<double>(0.025, "a8_obserr");
-      // FIXME: Add getValue documentation
+        /// Option deltas_obs<double>: Experimental value of Delta_s (default -0.09)
         double deltas_obs = runOptions->getValueOrDef<double>(-0.09, "deltas_obs");
-      // FIXME: Add getValue documentation
+        /// Option deltas_obserr<double>: 1 sigma error on Delta_s (default 0.03)
         double deltas_obserr = runOptions->getValueOrDef<double>(0.03, "deltas_obserr");
         /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
         bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -344,9 +350,9 @@ namespace Gambit {
         using namespace Pipes::lnL_rho0_lognormal;
         LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
         double rho0 = LocalHaloParameters.rho0;
-      // FIXME: Add getValue documentation
+        /// Option rho0_obs<double>: Best fit value for local dark matter density (default .4)
         double rho0_obs = runOptions->getValueOrDef<double>(.4, "rho0_obs");
-      // FIXME: Add getValue documentation
+        /// Option rho0_obserr<double>: Error on local dark matter density (default .15)
         double rho0_obserr = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
         /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
         bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -361,9 +367,9 @@ namespace Gambit {
       using namespace Pipes::lnL_vrot_gaussian;
       LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
       double vrot = LocalHaloParameters.vrot;
-      // FIXME: Add getValue documentation
+      /// Option vrot_obs<double>: Best fit value for local disk rotational speed (default 235)
       double vrot_obs = runOptions->getValueOrDef<double>(235, "vrot_obs");
-      // FIXME: Add getValue documentation
+      /// Option vrot_obserr<double>: 1 sigma error on local disk rotational speed (default 20)
       double vrot_obserr  = runOptions->getValueOrDef<double>(20, "vrot_obserr");
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -376,9 +382,9 @@ namespace Gambit {
       using namespace Pipes::lnL_v0_gaussian;
       LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
       double v0 = LocalHaloParameters.v0;
-      // FIXME: Add getValue documentation
+      /// Option v0_obs<double>: Best fit value for most-probable DM speed (default 235)
       double v0_obs = runOptions->getValueOrDef<double>(235, "v0_obs");
-      // FIXME: Add getValue documentation
+      /// Option v0_obserr<double>: 1 sigma error on most-probable DM speed (default 20)
       double v0_obserr  = runOptions->getValueOrDef<double>(20, "v0_obserr");
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -391,9 +397,9 @@ namespace Gambit {
       using namespace Pipes::lnL_vesc_gaussian;
       LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
       double vesc = LocalHaloParameters.vesc;
-      // FIXME: Add getValue documentation
+      /// Option vesc_obs<double>: Best fit value for escape velocity (default 550)
       double vesc_obs = runOptions->getValueOrDef<double>(550, "vesc_obs");
-      // FIXME: Add getValue documentation
+      /// Option vesc_obserr<double>: 1 sigma error on escape velocity (default 35)
       double vesc_obserr  = runOptions->getValueOrDef<double>(35, "vesc_obserr");
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");
@@ -406,7 +412,8 @@ namespace Gambit {
     {
       using namespace Pipes::dump_GammaSpectrum;
       daFunk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
-      // FIXME: Add getValue documentation
+      // Option filename<string>: Filename for gamma-ray spectrum dump
+      // (default: dNdE.dat)
       std::string filename = runOptions->getValueOrDef<std::string>(
           "dNdE.dat", "filename");
       logger() << "FILENAME for gamma dump: " << filename << EOM;
