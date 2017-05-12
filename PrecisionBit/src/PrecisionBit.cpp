@@ -732,7 +732,7 @@ namespace Gambit
       double amu_theory = amu_sm + amu_bsm;
       double amu_theory_err = sqrt(Gambit::Utils::sqr(amu_sm_error) + Gambit::Utils::sqr(amu_bsm_error));
       // From hep-ex/0602035.  Error combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.
-      double amu_exp = 11659208.9e-10;
+      double amu_exp = 11659208.0e-10;
       double amu_exp_error = 6.3e-10;
       /// Option profile_systematics<bool>: Use likelihood version that has been profiled over systematic errors (default false)
       bool profile = runOptions->getValueOrDef<bool>(false, "profile_systematics");

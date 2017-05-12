@@ -28,6 +28,9 @@
 /// Name of the gambit executable
 #define GAMBIT_EXECUTABLE "@PROJECT_NAME@"
 
+/// Compiler supports C++14 features
+#cmakedefine COMPILER_SUPPORTS_CXX14 1
+
 /// Found regex in STL
 #cmakedefine HAVE_REGEX_H 1
 
@@ -39,6 +42,9 @@
 
 /// Leave Delphes out of the compile
 #cmakedefine EXCLUDE_DELPHES 1
+
+/// Found ROOT version 6 or later
+#cmakedefine ROOT_6_OR_LATER_FOUND 1
 
 /// Version info
 /// @{

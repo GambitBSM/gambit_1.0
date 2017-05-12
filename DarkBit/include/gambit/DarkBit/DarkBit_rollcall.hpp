@@ -422,7 +422,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, daFunk::Funk)
       DEPENDENCY(RD_fraction, double)
-      DEPENDENCY(set_gamLike_GC_halo, bool)
+      //DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY

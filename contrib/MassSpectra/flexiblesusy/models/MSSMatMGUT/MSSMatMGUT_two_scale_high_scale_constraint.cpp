@@ -97,9 +97,9 @@ void MSSMatMGUT_high_scale_constraint<Two_scale>::apply()
    const auto Yd = MODELPARAMETER(Yd);
    const auto Yu = MODELPARAMETER(Yu);
 
-   MODEL->set_TYe((Aeij*Ye).real());
-   MODEL->set_TYd((Adij*Yd).real());
-   MODEL->set_TYu((Auij*Yu).real());
+   MODEL->set_TYe((Aeij.cwiseProduct(Ye)).real());
+   MODEL->set_TYd((Adij.cwiseProduct(Yd)).real());
+   MODEL->set_TYu((Auij.cwiseProduct(Yu)).real());
    MODEL->set_mHd2(Re(mHd2IN));
    MODEL->set_mHu2(Re(mHu2IN));
    MODEL->set_mq2((mq2Input).real());
@@ -110,8 +110,7 @@ void MSSMatMGUT_high_scale_constraint<Two_scale>::apply()
    MODEL->set_MassB(Re(MassBInput));
    MODEL->set_MassWB(Re(MassWBInput));
    MODEL->set_MassG(Re(MassGInput));
-
-
+   
    check_non_perturbative();
 
 

@@ -382,21 +382,28 @@ namespace Gambit
       {
         case MC_INIT:
           // Initialization
-          /// Option cMC_numSpecSamples<int>: (default 10)
+          /// Option cMC_numSpecSamples<int>: number of samples to draw from tabulated
+          /// spectra (default 10)
           cMC_numSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_numSpecSamples");
+          /// Option cMC_endCheckFrequency: number of events to wait between successive
+          /// checks of the convergence criteria (default 25)
           cMC_endCheckFrequency  =
             runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
+          /// Option cMC_gammaBGPower: power-law slope to assume for astrophysical
+          /// background (default -2.5)
           cMC_gammaBGPower       =
             runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
+          /// Option cMC_gammaRelError: max allowed relative error in bin with highest
+          /// expected signal-to-background (default 0.20)
           cMC_gammaRelError      =
             runOptions->getValueOrDef<double>(0.20,   "cMC_gammaRelError");
 
           // Note: use same binning for all particle species
           /// Option cMC_NhistBins<int>: Number of histogram bins (default 140)
           cMC_NhistBins = runOptions->getValueOrDef<int>   (140,     "cMC_NhistBins");
-          /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
+          /// Option cMC_binLow<double>: Histogram min energy in GeV (default 0.001)
           cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");
-          /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
+          /// Option cMC_binHigh<double>: Histogram max energy in GeV (default 10000)
           cMC_binHigh = runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");
           histList.clear();
           return;

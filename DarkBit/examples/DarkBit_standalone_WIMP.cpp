@@ -81,6 +81,8 @@ void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<dou
   dump_GammaSpectrum.reset_and_calculate();
 }
 
+// ---- Set up basic internal structures for direct & indirect detection ----
+
 namespace Gambit
 {
   namespace DarkBit
@@ -123,9 +125,8 @@ namespace Gambit
       // FIXME: Test all input possible for this function
       addParticle("gamma", 0.0,  2)
       addParticle("Z0", 91.2,  2)
-      // FIXME: Jonathan: Do we really need the flavour and mass eigenstates?
-      addParticle("tau+", 1.8,  1)
-      addParticle("tau-", 1.8,  1)
+      addParticle("W+", 80.39, 2)
+      addParticle("W-", 80.39, 2)
       addParticle("e+_3", 1.8,  1)
       addParticle("e-_3", 1.8,  1)
       addParticle("e+_1", 0.00051, 1)
@@ -135,35 +136,34 @@ namespace Gambit
       addParticle("d_3", 4.9,  1)
       addParticle("dbar_3", 4.9,  1)
 
-
       addParticle("WIMP", mWIMP,  0)
       addParticle("phi",  mPhi,  0)
-      addParticle("phi1", 99.99,  0)
-      addParticle("phi2", 99.99,  0)
+      addParticle("phi1", 100.,  0)
+      addParticle("phi2", 100.,  0)
 #undef addParticle
 
       TH_Channel dec_channel(daFunk::vec<string>("gamma", "gamma"), daFunk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
 
-      TH_Channel dec_channel1(daFunk::vec<string>("tau+", "tau-"), daFunk::cnst(1.));
+      TH_Channel dec_channel1(daFunk::vec<string>("e+_3", "e-_3"), daFunk::cnst(1.));
       process_dec1.channelList.push_back(dec_channel1);
 
       TH_Channel dec_channel2(daFunk::vec<string>("d_3", "dbar_3"), daFunk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.resonances_thresholds.threshold_energy.push_back(2*mWIMP);
-      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "e-_1", "phi");
-      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "e+_1", "phi2");
+      auto p1 = daFunk::vec<string>("d_3", "gamma", "gamma", "e-_3", "W-", "e-_1", "phi");
+      auto p2 = daFunk::vec<string>("dbar_3", "Z0", "gamma", "e+_3", "W+", "e+_1", "phi2");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
           double mtot_final =
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
-          if ( mWIMP*2 > mtot_final * 0 && brList[i]!= 0.) //FIXME: Jonathan: Why is the zero here?
+          if ( mWIMP*2 > mtot_final && brList[i]!= 0.)
           {
-            std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
-            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i]; //FIXME: Jonathan:
+            // std::cout << p1[i] << " " << p2[i] << " " << brList[i] << std::endl;
+            daFunk::Funk kinematicFunction = (daFunk::one("v")+pow(daFunk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
                 daFunk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
@@ -177,10 +177,10 @@ namespace Gambit
         }
       }
 
-      if ( brList[6] > 0. )
+      if ( brList[7] > 0. )
       {
         auto E = daFunk::var("E");
-        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[6];
+        daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[7];
         // FIXME: Include second gamma in AnnYield (currently ignored)
         TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
@@ -196,6 +196,7 @@ namespace Gambit
       result = catalog;
     } // function TH_ProcessCatalog_WIMP
 
+    // Identifier for DM particle
     void DarkMatter_ID_WIMP(std::string& result)
     {
       result = "WIMP";
@@ -212,14 +213,42 @@ namespace Gambit
       result.gpa = runOptions->getValueOrDef<double>(0., "gpa");
       /// Option gna<double>: gna (default 0)
       result.gna = runOptions->getValueOrDef<double>(0., "gna");
-      std::cout << "DD_coupling says" << std::endl;
-      std::cout << result.gps << std::endl;
+      //std::cout << "DD_coupling says" << std::endl;
+      //std::cout << result.gps << std::endl;
     }
   }
 }
 
 int main(int argc, char* argv[])
 {
+    std::cout << std::endl;
+    std::cout << "Welcome to the DarkBit Generic WIMP standalone program!" << std::endl;
+    std::cout << std::endl;
+    std::cout << "**************************************************************************************" << std::endl;
+    std::cout << "This standalone example calculates a range of observables and likelihoods for a " << std::endl;
+    std::cout << "generic WIMP model defined by the WIMP mass and an annihilation (or scattering) " << std::endl;
+    std::cout << "cross section. The model also contains three scalar particles which decay:" << std::endl;
+    std::cout << "phi -> gamma gamma    phi_1 -> tau+ tau-  phi_2 -> b bbar" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Usage: DarkBit_standalone_WIMP mode" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Mode Options: " << std::endl;
+    std::cout << "  0: Outputs spectrum of gamma rays from WIMP annihilation to b bbar (dNdE0.dat)" << std::endl;
+    std::cout << "  1: Outputs spectrum of gamma rays from WIMP annihilation to gamma Z_0 (dNdE1.dat)" << std::endl;
+    std::cout << "  2: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma (dNdE2.dat)" << std::endl;
+    std::cout << "  3: Outputs spectrum of gamma rays from WIMP annihilation to tau+ tau- (dNdE3.dat)" << std::endl;
+    std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to W+ W- (dNdE4.dat)" << std::endl;
+    std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma Z_0" << std::endl;
+    std::cout << "      (dNdE5.dat)" << std::endl;
+    std::cout << "  6: Outputs tables of Fermi-LAT dwarf spheroidal likelihoods and the relic density" << std::endl;
+    std::cout << "      in <sigma v> / m_WIMP parameter space." << std::endl;
+    std::cout << "  7: Outputs tables of direct detection likelihoods in <sigma v> / m_WIMP parameter" << std::endl;
+    std::cout << "      space." << std::endl;
+    std::cout << "  >=10: Outputs spectrum of gamma rays from WIMP annihilation to phi phi_2. The" << std::endl;
+    std::cout << "       mode value is m_phi while m_phi_2=100 GeV (dNdE_FCMC_(mode).dat)" << std::endl;
+    std::cout << "**************************************************************************************" << std::endl;
+    std::cout << std::endl;
+
   try
   {
     if (argc==1)
@@ -249,13 +278,14 @@ int main(int argc, char* argv[])
 
     // Initialize halo model
     ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
-    Halo_primary_parameters->setValue("rho0", 0.4);
-    Halo_primary_parameters->setValue("rhos", 0.08);
-    Halo_primary_parameters->setValue("vrot", 235.);
+    Halo_primary_parameters->setValue("vrot", 235.); // Local properties
     Halo_primary_parameters->setValue("v0", 235.);
     Halo_primary_parameters->setValue("vesc", 550.);
-    Halo_primary_parameters->setValue("rs", 20.);
+    Halo_primary_parameters->setValue("rho0", 0.4);
     Halo_primary_parameters->setValue("r_sun", 8.5);
+
+    Halo_primary_parameters->setValue("rs", 20.);  // Global properties
+    Halo_primary_parameters->setValue("rhos", 0.08);
     Halo_primary_parameters->setValue("alpha", 0.17);
 
 
@@ -275,6 +305,8 @@ int main(int argc, char* argv[])
     Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment.setStatus(2);
     Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood.setStatus(2);
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_one);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
     DDCalc_1_0_0_init.resolveDependency(&DD_couplings_WIMP);
@@ -287,23 +319,13 @@ int main(int argc, char* argv[])
     DarkSUSY_5_1_3_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("Halo_Einasto");  // FIXME: Just a hack to get MicrOmegas initialized without specifying an MSSM model
+    // The below allows us to initialise MicrOmegas_MSSM without a particular MSSM model.
+    MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("Halo_Einasto");
     MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
-
-    // ---- Set up basic internal structures for direct & indirect detection ----
-
-    // Set identifier for DM particle
-    // FIXME: Needed?
-
-    // Set up process catalog based on DarkSUSY annihilation rates
-
-    // Assume for direct and indirect detection likelihoods that dark matter
-    // density is always the measured one (despite relic density results)
 
     // ---- Gamma-ray yields ----
 
     // Initialize tabulated gamma-ray yields
-    // FIXME: Use three different simyieldtables
     SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
     SimYieldTable_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::dNdE);
     SimYieldTable_DarkSUSY.setOption<bool>("allow_yield_extrapolation", true);
@@ -379,11 +401,28 @@ int main(int argc, char* argv[])
     // FIXME: Extend existing gamma-ray spectrum dumper
     dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
 
+    // Resolve Galactic halo requirements for gamLike
+    set_gamLike_GC_halo.resolveDependency(&GalacticHalo_Einasto);
+    set_gamLike_GC_halo.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::set_halo_profile);
+
     // Calculate Fermi LAT dwarf likelihood
-    // FIXME: Check whether Fermi lat limits can be reproduced
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
     lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_one);
     lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
+
+    lnL_HESSGC_gamLike.resolveDependency(&GA_AnnYield_General);
+    lnL_HESSGC_gamLike.resolveDependency(&RD_fraction_one);
+    lnL_HESSGC_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
+
+    lnL_CTAGC_gamLike.resolveDependency(&GA_AnnYield_General);
+    lnL_CTAGC_gamLike.resolveDependency(&RD_fraction_one);
+    lnL_CTAGC_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
+
+    lnL_FermiGC_gamLike.resolveDependency(&GA_AnnYield_General);
+    lnL_FermiGC_gamLike.resolveDependency(&RD_fraction_one);
+    lnL_FermiGC_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
 
 
     // -- Calculate relic density --
@@ -433,6 +472,8 @@ int main(int argc, char* argv[])
     SIMPLE_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
     PICO_2L_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PICO_2L_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
+    SuperCDMS_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    SuperCDMS_2014_Calc.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple);
 
     // Calculate direct detection likelihood for LUX 2016, PandaX 2016, LUX 2013, XENON100 2012, SIMPLE and PICO
     LUX_2016_GetLogLikelihood.resolveDependency(&LUX_2016_Calc);
@@ -459,6 +500,9 @@ int main(int argc, char* argv[])
     PICO_2L_GetLogLikelihood.resolveDependency(&PICO_2L_Calc);
     PICO_2L_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
     PICO_2L_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
+    SuperCDMS_2014_GetLogLikelihood.resolveDependency(&SuperCDMS_2014_Calc);
+    SuperCDMS_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_Experiment);
+    SuperCDMS_2014_GetLogLikelihood.resolveBackendReq(&Backends::DDCalc_1_0_0::Functown::DDCalc_LogLikelihood);
 
     // Set generic WIMP mass object
     mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -472,12 +516,22 @@ int main(int argc, char* argv[])
       std::cout << "Producing test spectra." << std::endl;
       double mass = 100.;
       double sv = 3e-26;
-      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
-      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0.,0.));
-      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0.,0.));
-      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0.,0.));
-      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0.));
-      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1.));
+      // The array that is being passed to dumpSpectrum give the branching fraction to various final states.
+      // They are (as defined in TH_ProcessCatalog_WIMP):
+      // 0: b bbar
+      // 1: gamma Z_0
+      // 2: gamma gamma
+      // 3: tau+ tau-
+      // 4: W+ W-
+      // 5: e+ e-
+      // 6: phi phi2
+      // 7: gamma gamma Z_0
+      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
+      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0., 0.));
+      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0., 0., 0.));
+      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0., 0.));
+      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0., 0.));
+      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 0., 1.));
     }
 
     // Generate gamma-ray spectra for various masses
@@ -487,36 +541,42 @@ int main(int argc, char* argv[])
       double mass = 100.;
       double sv = 3e-26;
       std::string filename = "dNdE_FCMC_" + std::to_string(mode) + ".dat";
-      dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0.), mode);
+      dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1., 0.), mode);
     }
 
-    // Generate gamma-ray likelihood maps
+    // Systematic parameter maps annihilation
     if (mode==6)
     {
-      // Systematic parameter maps annihilation
-      std::cout << "Producing test maps." << std::endl;
+      std::cout << "Producing gamma ray test maps." << std::endl;
       int mBins = 60;
-      int svBins = 40;
+      int svBins = 60;
       double oh2, lnL;
       std::vector<double> sv_list, m_list;
-      //std::vector<double> m_list = daFunk::logspace(1.0, 4.0, mBins);
 
-      boost::multi_array<double, 2> lnL_b_array{boost::extents[mBins][svBins]},
-          lnL_tau_array{boost::extents[mBins][svBins]};
+      GalacticHalo_Einasto.reset_and_calculate();
+      set_gamLike_GC_halo.reset_and_calculate();
+
+      boost::multi_array<double, 2> 
+        lnL_b_array{boost::extents[mBins][svBins]},
+        lnL_b_array2{boost::extents[mBins][svBins]},
+        lnL_b_array3{boost::extents[mBins][svBins]},
+        lnL_b_array4{boost::extents[mBins][svBins]},
+        lnL_tau_array{boost::extents[mBins][svBins]};
       boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
 
       sv_list = daFunk::logspace(-28.0, -22.0, svBins);
 
-      m_list = daFunk::logspace(log10(5.), 4., mBins-10);
+      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to b bbar." << std::endl;
+      m_list = daFunk::logspace(log10(5.), 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < sv_list.size(); j++)
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0.,0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_one.reset_and_calculate();
@@ -528,26 +588,44 @@ int main(int argc, char* argv[])
           cascadeMC_LoopManager.reset_and_calculate();
           cascadeMC_gammaSpectra.reset_and_calculate();
           GA_AnnYield_General.reset_and_calculate();
-          //dump_GammaSpectrum.reset_and_calculate();
+          lnL_FermiLATdwarfs_gamLike.setOption<std::string>("version", "pass8");
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
           lnL = lnL_FermiLATdwarfs_gamLike(0);
-          std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+          std::cout << "Fermi dwarf likelihood: " << lnL << std::endl;
           lnL_b_array[i][j] = lnL;
+          lnL_HESSGC_gamLike.setOption<std::string>("version", "integral_fixedJ");
+          lnL_HESSGC_gamLike.reset_and_calculate();
+          lnL = lnL_HESSGC_gamLike(0);
+          std::cout << "HESS GC likelihood: " << lnL << std::endl;
+          lnL_b_array2[i][j] = lnL;
+          lnL_CTAGC_gamLike.reset_and_calculate();
+          lnL = lnL_CTAGC_gamLike(0);
+          std::cout << "CTA GC likelihood: " << lnL << std::endl;
+          lnL_b_array3[i][j] = lnL;
+          lnL_FermiGC_gamLike.setOption<std::string>("version", "fixedJ");
+          lnL_FermiGC_gamLike.reset_and_calculate();
+          lnL = lnL_FermiGC_gamLike(0);
+          lnL_b_array4[i][j] = lnL;
+          std::cout << "Fermi GC likelihood: " << lnL << std::endl;
         }
       }
 
-      dump_array_to_file("Fermi_b_table.dat", lnL_b_array, m_list, sv_list);
+      dump_array_to_file("FermiD_b_table.dat", lnL_b_array, m_list, sv_list);
+      dump_array_to_file("HESSGC_b_table.dat", lnL_b_array2, m_list, sv_list);
+      dump_array_to_file("CTAGC_b_table.dat", lnL_b_array3, m_list, sv_list);
+      dump_array_to_file("FermiGC_b_table.dat", lnL_b_array4, m_list, sv_list);
 
-      m_list = daFunk::logspace(log10(1.9), 4., mBins-10);
+      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to tau+ tau-." << std::endl;
+      m_list = daFunk::logspace(log10(1.9), 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < sv_list.size(); j++)
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_fraction_one.reset_and_calculate();
@@ -559,16 +637,16 @@ int main(int argc, char* argv[])
           cascadeMC_LoopManager.reset_and_calculate();
           cascadeMC_gammaSpectra.reset_and_calculate();
           GA_AnnYield_General.reset_and_calculate();
-          //dump_GammaSpectrum.reset_and_calculate();
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
           lnL = lnL_FermiLATdwarfs_gamLike(0);
-          std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+          //std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
           lnL_tau_array[i][j] = lnL;
         }
       }
 
-      dump_array_to_file("Fermi_tau_table.dat", lnL_tau_array, m_list, sv_list);
+      dump_array_to_file("FermiD_tau_table.dat", lnL_tau_array, m_list, sv_list);
 
+      std::cout << "Calculating table of Omega h^2 values." << std::endl;
       m_list = daFunk::logspace(-1.0, 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -576,9 +654,9 @@ int main(int argc, char* argv[])
         {
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
           TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-          std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
 
-          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0.));
+          TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(0., 0., 0., 0., 0., 1., 0., 0.));
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
           RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
@@ -586,6 +664,7 @@ int main(int argc, char* argv[])
           RD_spectrum_ordered_func.reset_and_calculate();
           RD_oh2_general.reset_and_calculate();
           oh2 = RD_oh2_general(0);
+          //std::cout << "Omega h^2 = " << oh2 << std::endl;
           oh2_array[i][j] = oh2;
         }
       }
@@ -593,12 +672,11 @@ int main(int argc, char* argv[])
       dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
     }
 
-    // Generate direct detection likelihood maps
+    // Systematic parameter maps scattering
     if (mode==7)
     {
-      // Systematic parameter maps scattering
-      std::cout << "Producing test maps." << std::endl;
-      double lnL1, lnL2, lnL3, lnL4;
+      std::cout << "Producing direct detection test maps." << std::endl;
+      double lnL1, lnL2, lnL3, lnL4, lnL5;
       double g, reduced_mass;
       //int mBins = 300;
       //int sBins = 200;
@@ -607,14 +685,16 @@ int main(int argc, char* argv[])
       const double mN = (m_proton + m_neutron) / 2;
       std::vector<double> m_list = daFunk::logspace(0.0, 4.0, mBins);
       std::vector<double> s_list;
-      boost::multi_array<double, 2> lnL_array1{boost::extents[mBins][sBins]}, lnL_array2{boost::extents[mBins][sBins]},
-          lnL_array3{boost::extents[mBins][sBins]}, lnL_array4{boost::extents[mBins][sBins]};
+      boost::multi_array<double, 2> lnL_array1{boost::extents[mBins][sBins]},
+          lnL_array2{boost::extents[mBins][sBins]}, lnL_array3{boost::extents[mBins][sBins]},
+          lnL_array4{boost::extents[mBins][sBins]}, lnL_array5{boost::extents[mBins][sBins]};
       TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
-      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0.));
+      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
 
       s_list = daFunk::logspace(-46., -39., sBins);
       // Calculate array of sigma_SI and lnL values for LUX 2016 and 2013, Xenon100,
       // and PandaX, assuming gps=gns
+      std::cout << "Calculating tables of SI likelihoods." << std::endl;
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -627,11 +707,13 @@ int main(int argc, char* argv[])
           ExtractLocalMaxwellianHalo.reset_and_calculate();
 
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
           reduced_mass = (m_list[i] * mN) / (mN + m_list[i]);
           g = sqrt(s_list[j]*pi/gev2cm2) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
           TH_ProcessCatalog_WIMP.reset_and_calculate();
+          // Assume for direct and indirect detection likelihoods that dark matter
+          // density is always the measured one (despite relic density results)
           RD_fraction_one.reset_and_calculate();
           DD_couplings_WIMP.setOption<double>("gps", g);
           DD_couplings_WIMP.setOption<double>("gns", g);
@@ -664,26 +746,42 @@ int main(int argc, char* argv[])
           XENON100_2012_GetLogLikelihood.reset_and_calculate();
           lnL4 = XENON100_2012_GetLogLikelihood(0);
 
-          std::cout << "LUX2016 lnL = " << lnL1 << std::endl;
-          std::cout << "PandaX lnL = " << lnL2 << std::endl;
-          std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
-          std::cout << "XENON100_2012 = " << lnL4 << std::endl;
+          // Re-initialize DDCalc with SUPER-CDMS halo parameters
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 231.7); // v_Earth = 244 km/s
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
+          ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          SuperCDMS_2014_Calc.reset_and_calculate();
+          SuperCDMS_2014_GetLogLikelihood.reset_and_calculate();
+          lnL5 = SuperCDMS_2014_GetLogLikelihood(0);
+
+          //std::cout << "LUX2016 SI lnL = " << lnL1 << std::endl;
+          //std::cout << "PandaX lnL = " << lnL2 << std::endl;
+          //std::cout << "LUX2013 lnL = " << lnL3 << std::endl;
+          //std::cout << "XENON100_2012 lnL = " << lnL4 << std::endl;
+          //std::cout << "SuperCDMS_2014 lnL = " << lnL5 << std::endl;
 
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
           lnL_array4[i][j] = lnL4;
+          lnL_array5[i][j] = lnL5;
         }
       }
 
-      //dump_array_to_file("sigmaSIp_table.dat", sigma_array, m_list, s_list);
       dump_array_to_file("LUX_2016_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PandaX_2016_table.dat", lnL_array2, m_list, s_list);
-      dump_array_to_file("LUX_2013_table.dat", lnL_array3, m_list, s_list);
+      dump_array_to_file("LUX_2013_SI_table.dat", lnL_array3, m_list, s_list);
       dump_array_to_file("XENON100_2012_table.dat", lnL_array4, m_list, s_list);
+      dump_array_to_file("SuperCDMS_2014_table.dat", lnL_array5, m_list, s_list);
 
       s_list = daFunk::logspace(-41., -35., sBins);
-      // Calculate array of sigma_SD,p and lnL values for PICO-60 and SIMPLE 2014, assuming gps=gns
+      // Calculate array of sigma_SD,p and lnL values for PICO-60, LUX 2013,
+      // SIMPLE 2014, and PandaX assuming gna=0
+      std::cout << "Calculating tables of SD likelihoods." << std::endl;
       for (size_t i = 0; i < m_list.size(); i++)
       {
         for (size_t j = 0; j < s_list.size(); j++)
@@ -696,7 +794,7 @@ int main(int argc, char* argv[])
           ExtractLocalMaxwellianHalo.reset_and_calculate();
 
           TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-          std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+          //std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
           reduced_mass = (m_list[i] * m_proton) / (m_proton + m_list[i]);
           g = sqrt(s_list[j]*pi/(3*gev2cm2)) / (reduced_mass);
           DarkMatter_ID_WIMP.reset_and_calculate();
@@ -730,14 +828,36 @@ int main(int argc, char* argv[])
           SIMPLE_2014_Calc.reset_and_calculate();
           SIMPLE_2014_GetLogLikelihood.reset_and_calculate();
           lnL3 = SIMPLE_2014_GetLogLikelihood(0);
+          SIMPLE_2014_Calc.reset_and_calculate();
+          SIMPLE_2014_GetLogLikelihood.reset_and_calculate();
+          lnL3 = SIMPLE_2014_GetLogLikelihood(0);
+
+          // Re-initialize DDCalc with LUX 2013 halo parameters (and PandaX?)
+          Halo_primary_parameters->setValue("rho0", 0.3);
+          Halo_primary_parameters->setValue("vrot", 232.7); // v_Earth = 245 km/s
+          Halo_primary_parameters->setValue("v0", 220.);
+          Halo_primary_parameters->setValue("vesc", 544.);
+          ExtractLocalMaxwellianHalo.reset_and_calculate();
+
+          DDCalc_1_0_0_init.reset_and_calculate();
+          LUX_2013_Calc.reset_and_calculate();
+          LUX_2013_GetLogLikelihood.reset_and_calculate();
+          lnL4 = LUX_2013_GetLogLikelihood(0);
+          PandaX_2016_Calc.reset_and_calculate();
+          PandaX_2016_GetLogLikelihood.reset_and_calculate();
+          lnL5 = PandaX_2016_GetLogLikelihood(0);
 
           lnL_array1[i][j] = lnL1;
           lnL_array2[i][j] = lnL2;
           lnL_array3[i][j] = lnL3;
+          lnL_array4[i][j] = lnL4;
+          lnL_array5[i][j] = lnL5;
 
-          std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
-          std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
-          std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
+          //std::cout << "PICO_60 lnL = " << lnL1 << std::endl;
+          //std::cout << "PICO_2L lnL = " << lnL2 << std::endl;
+          //std::cout << "SIMPLE_2014 lnL = " << lnL3 << std::endl;
+          //std::cout << "LUX_2013 SD,p lnL = " << lnL4 << std::endl;
+          //std::cout << "PandaX_2016_SD,p lnL = " << lnL5 << std::endl;
         }
       }
 
@@ -752,6 +872,8 @@ int main(int argc, char* argv[])
       dump_array_to_file("PICO_60_table.dat", lnL_array1, m_list, s_list);
       dump_array_to_file("PICO_2L_table.dat", lnL_array2, m_list, s_list);
       dump_array_to_file("SIMPLE_2014_table.dat", lnL_array3, m_list, s_list);
+      dump_array_to_file("LUX_2013_SDp_table.dat", lnL_array4, m_list, s_list);
+      dump_array_to_file("PandaX_2016_SDp_table.dat", lnL_array5, m_list, s_list);
     }
   }
 
