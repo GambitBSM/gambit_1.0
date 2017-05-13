@@ -28,7 +28,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, ())
+QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, SingletDM)
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 
@@ -48,13 +48,14 @@ namespace Gambit
     // Create spectrum object from SLHA file input.slha
     void createSpectrum(Spectrum& outSpec)
     {
+      using namespace Pipes::createSpectrum;
       std::string inputFileName = "DarkBit/data/example.slha1";
 
       Models::SingletDMModel singletmodel;
-      singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
-      singletmodel.HiggsVEV        = 246.; // 1. / sqrt(sqrt(2.)*sminputs.GF);
-      singletmodel.SingletPoleMass = 100.; // *myPipe::Param.at("mS");
-      singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
+      singletmodel.HiggsPoleMass   = 125.;
+      singletmodel.HiggsVEV        = 246.;
+      singletmodel.SingletPoleMass = *Param["mS"];
+      singletmodel.SingletLambda   = *Param["lambda_hS"];
 
       SLHAstruct slhaea = read_SLHA(inputFileName);
       outSpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea, Spectrum::mc_info(), Spectrum::mr_info());
@@ -146,6 +147,8 @@ int main()
 
     // ---- Initialize spectrum and decays from SLHA file ----
 
+    createSpectrum.notifyOfModel("SingletDM");
+    createSpectrum.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
     createSpectrum.reset_and_calculate();
     createDecays.reset_and_calculate();
 
