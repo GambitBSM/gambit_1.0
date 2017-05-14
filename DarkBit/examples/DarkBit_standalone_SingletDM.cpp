@@ -45,11 +45,11 @@ namespace Gambit
       result = sfm;
     }
 
-    // Create spectrum object from SLHA file input.slha
+    // Create spectrum object from SLHA file SM.slha and SingletDM model parameters
     void createSpectrum(Spectrum& outSpec)
     {
       using namespace Pipes::createSpectrum;
-      std::string inputFileName = "DarkBit/data/example.slha1";
+      std::string inputFileName = "DarkBit/data/SM.slha";
 
       Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = 125.;
@@ -61,13 +61,13 @@ namespace Gambit
       outSpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea, Spectrum::mc_info(), Spectrum::mr_info());
     }
 
-    // Create decay object from SLHA file input.slha
-    // TODO: Get the actual Higgs width for this point (from MicrOmegas?)
-    // (or just use SM value).
+    // Create decay object from SLHA file decays.slha
     void createDecays(DecayTable& outDecays)
     {
-      std::string inputFileName = "DarkBit/data/example.slha1";
-      outDecays = DecayTable(inputFileName);
+      using namespace Pipes::createDecays;
+
+      std::string filename = "DarkBit/data/decays.slha";
+      outDecays = DecayTable(filename);
     }
   }
 }
@@ -83,8 +83,9 @@ int main()
     std::cout << "---------------------------------------------------" << std::endl;
     std::cout << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    std::cout << "This program reads and needs a file 'DarkBit/data/example.slha1' for SM  " << std::endl;
-    std::cout << "masses and decay rates. If this is not present, it dies!" << std::endl;
+    std::cout << "This program needs DarkBit/data/SM.slha for SM parameters and            " << std::endl;
+    std::cout << "DarkBit/data/decays.slha for the Higgs width and branching fraction. If  " << std::endl;
+    std::cout << "these are not present, it dies!"                                           << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     std::cout << std::endl;
 
@@ -108,8 +109,8 @@ int main()
 
     // Initialize SingletDM model -- Adjust the model parameters here:
     ModelParameters* SingletDM_primary_parameters = Models::SingletDM::Functown::primary_parameters.getcontentsPtr();
-    SingletDM_primary_parameters->setValue("mS", 100.);
-    SingletDM_primary_parameters->setValue("lambda_hS", 0.05);
+    SingletDM_primary_parameters->setValue("mS", 1000.);
+    SingletDM_primary_parameters->setValue("lambda_hS", 1.0);
 
     // Initialize halo model
     ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
@@ -150,6 +151,8 @@ int main()
     createSpectrum.notifyOfModel("SingletDM");
     createSpectrum.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
     createSpectrum.reset_and_calculate();
+
+    createDecays.notifyOfModel("SingletDM");
     createDecays.reset_and_calculate();
 
 
@@ -454,7 +457,7 @@ int main()
 
     // ---- Dump results on screen ----
 
-    cout << "Relic density from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
+    cout << "Omega h^2 from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
     cout << "Omega h^2 from GAMBIT: " << RD_oh2_general(0) << endl;
     cout << "LUX_2016 lnL: " << LUX_2016_GetLogLikelihood(0) << endl;
     cout << "Fermi LAT dwarf spheroidal lnL: " << lnL_FermiLATdwarfs_gamLike(0) << endl;
