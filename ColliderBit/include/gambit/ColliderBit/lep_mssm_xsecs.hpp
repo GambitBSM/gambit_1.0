@@ -75,7 +75,7 @@ namespace Gambit
 
     /// Low-level cross section routines.
     /// @{
-    /// Cross section [pb] for e^+e^- -> \tilde l_i \tilde l_j^*
+    /// Cross section [pb] for \f$e^+e^- -> \tilde l_i \tilde l_j^*\f$
     /// To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
     double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, 
                          MixMatrix N, const double mN[4], double alpha, double mZ, double gZ,
@@ -91,7 +91,7 @@ namespace Gambit
                          MixMatrix U, double msn, double alpha, double mZ, double gZ, double sin2thetaW);
     /// @}
     
-    /// Conversion between SLHA and BFM conventions. \tan\beta is as per SLHA.
+    /// Conversion between SLHA and BFM conventions. \f$\tan\beta\f$ is as per SLHA.
     /// @{
     void SLHA2BFM_NN(MixMatrix &NN, double tanb, double sin2thetaW);
     void SLHA2BFM_VV(MixMatrix &VV);
