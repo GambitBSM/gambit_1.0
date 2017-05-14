@@ -289,7 +289,6 @@ int main()
     sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
 
-    // TODO: This does not agree with standalone MicrOmegas!!!!!!
     cout << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << endl;
     logger() << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << LogTags::info << EOM;
 
