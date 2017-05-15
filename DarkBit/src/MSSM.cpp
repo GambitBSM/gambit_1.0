@@ -136,7 +136,7 @@ namespace Gambit
             dsSLHAread = true;
         }
 
-        // Use an actual SLHA2 file.  DarkSUSY is on its own wrt (s)particle widths this way.
+        // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
         if (dsSLHAread || slha_version == 1)
         {
           if (!dsSLHAread) {DarkBit_error().raise(LOCAL_INFO,
