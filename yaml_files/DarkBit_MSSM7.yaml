@@ -282,6 +282,12 @@ Rules:
        oh2_obs: 0.1188
 #    function: RD_fraction_one # Do not rescale the local DM density
 
+  - function: DarkSUSY_PointInit_MSSM
+    options:
+       # Set the below to true to write SLHA file to disk and read it in using DarkSUSY
+       # SLHA reader instead of using diskless initialisation (not recommended!)                      
+       use_dsSLHAread: false 
+
   # Choose whether MicrOmegas calculates decays widths for the MSSM internally using CalcHEP (internal_decays=true) or uses 
   # values from the GAMBIT decay table (internal_decays=false).
   - function: MicrOmegas_MSSM_3_6_9_2_init
