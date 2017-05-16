@@ -20,6 +20,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
+#include "gambit/DarkBit/DarkBit_utils.hpp"
 
 //#define DARKBIT_DEBUG
 
@@ -179,15 +180,19 @@ namespace Gambit
               it->genRate->bind()->eval();
           }
 
+          std::vector<str> neutral_channel;
           // Loop over the decay channels for neutral scalars
           for (int j=0; j<29; j++)
           {
-            const TH_Channel* channel = h0_decays[i]->find(neutral_channels[j]);
+            neutral_channel.clear();
+            neutral_channel.push_back(DarkBit_utils::str_flav_to_mass((neutral_channels[j])[0]));
+            neutral_channel.push_back(DarkBit_utils::str_flav_to_mass((neutral_channels[j])[1]));
+            const TH_Channel* channel = h0_decays[i]->find(neutral_channel);
             // If this Higgs can decay into this channel, set the BF.
             if (channel != NULL)
             {
               Higgs_decay_BFs_neutral[j][i] = channel->genRate->bind()->eval();
-              if (i == 10)          // Add W- H+ for this channel
+              if (j == 10)          // Add W- H+ for this channel
               {
                 channel = h0_decays[i]->find(adhoc_chan);
                 if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
@@ -197,7 +202,7 @@ namespace Gambit
                   += channel->genRate->bind()->eval();
               }
               // This channel has not been implemented in DarkSUSY.
-              if (i == 26) Higgs_decay_BFs_neutral[j][i] = 0.;
+              if (j == 26) Higgs_decay_BFs_neutral[j][i] = 0.;
               Higgs_decay_BFs_neutral[j][i] /= totalwidth;
             }
             else
@@ -562,7 +567,6 @@ namespace Gambit
           double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
 
           BEreq::dshmcom->rho0 = rho0;
-          BEreq::dshmcom->rhox = rho0;
           BEreq::dshmcom->v_sun = vrot;
           BEreq::dshmcom->v_earth = v_earth;
           BEreq::dshmcom->rhox = rho0_eff;
