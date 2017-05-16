@@ -241,10 +241,14 @@ namespace Gambit
           if (it->nFinalStates == 2) totalwidth += it->genRate->bind()->eval();
         }
 
+        std::vector<str> charged_channel;
         // Loop over the decay channels for charged scalars
         for (int j=0; j<15; j++)
         {
-          const TH_Channel* channel = Hplus_decays->find(charged_channels[j]);
+          charged_channel.clear();
+          charged_channel.push_back(DarkBit_utils::str_flav_to_mass((charged_channels[j])[0]));
+          charged_channel.push_back(DarkBit_utils::str_flav_to_mass((charged_channels[j])[1]));
+          const TH_Channel* channel = Hplus_decays->find(charged_channel);
           // If this Higgs can decay into this channel, set the BF.
           if (channel != NULL)
           {
