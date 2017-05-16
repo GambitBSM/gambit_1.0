@@ -146,7 +146,7 @@ int main()
     nuclear_params_fnq->setValue("deltas", -0.12);
 
 
-    // ---- Initialize spectrum and decays from SLHA file ----
+    // ---- Initialize spectrum and decays ---
 
     createSpectrum.notifyOfModel("SingletDM");
     createSpectrum.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
@@ -170,6 +170,12 @@ int main()
     MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
     MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createDecays);
     MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
+    // For the below VXdecay = 0 - no 3 body final states via virtual X
+    //                         1 - annihilations to 3 body final states via virtual X
+    //                         2 - (co)annihilations to 3 body final states via virtual X
+    MicrOmegas_SingletDM_3_6_9_2_init.setOption<int>("VZdecay", 1);
+    MicrOmegas_SingletDM_3_6_9_2_init.setOption<int>("VWdecay", 1);
+    MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -187,12 +193,10 @@ int main()
 
     // Set identifier for DM particle
     DarkMatter_ID_SingletDM.notifyOfModel("SingletDM");
-    DarkMatter_ID_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
     DarkMatter_ID_SingletDM.reset_and_calculate();
 
-    // Set up process catalog based on DarkSUSY annihilation rates
+    // Set up process catalog
     TH_ProcessCatalog_SingletDM.notifyOfModel("SingletDM");
-    TH_ProcessCatalog_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
     TH_ProcessCatalog_SingletDM.resolveDependency(&createSpectrum);
     TH_ProcessCatalog_SingletDM.resolveDependency(&createDecays);
     TH_ProcessCatalog_SingletDM.reset_and_calculate();
@@ -261,7 +265,6 @@ int main()
     lnL_oh2_Simple.reset_and_calculate();
 
     logger() << "Relic density lnL: " << lnL_oh2_Simple((0)) << LogTags::info << EOM;
-    cout << "Relic density lnL: " << lnL_oh2_Simple((0)) << endl;
 
     // ---- Direct detection -----
 
@@ -284,27 +287,27 @@ int main()
     DD_couplings_SingletDM.reset_and_calculate();
 
     // Set generic scattering cross-sections for later use
+    double sigma_SI_p_GB, sigma_SI_p_MO;
+
     sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
     sigma_SI_p_simple.resolveDependency(&mwimp_generic);
     sigma_SI_p_simple.reset_and_calculate();
+    sigma_SI_p_MO = sigma_SI_p_simple(0);
 
-    sigma_SD_p_simple.resolveDependency(&DD_couplings_SingletDM);
+    sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
     sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
 
-    cout << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << endl;
     logger() << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << LogTags::info << EOM;
 
     // Set generic scattering cross-sections for later use
     sigma_SI_p_simple.resolveDependency(&DD_couplings_SingletDM);
-    sigma_SI_p_simple.resolveDependency(&mwimp_generic);
     sigma_SI_p_simple.reset_and_calculate();
+    sigma_SI_p_GB = sigma_SI_p_simple(0);
 
     sigma_SD_p_simple.resolveDependency(&DD_couplings_SingletDM);
-    sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
 
-    cout << "sigma_SI,p with GAMBIT: " << sigma_SI_p_simple(0) << endl;
     logger() << "sigma_SI,p with GAMBIT: " << sigma_SI_p_simple(0) << LogTags::info << EOM;
 
     // Initialize DDCalc backend
@@ -448,20 +451,51 @@ int main()
     IC79WH_full.resolveDependency(&nuyield_from_DS);
     IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
     IC79WH_full.reset_and_calculate();
+    IC79WL_full.resolveDependency(&mwimp_generic);
+    IC79WL_full.resolveDependency(&annihilation_rate_Sun);
+    IC79WL_full.resolveDependency(&nuyield_from_DS);
+    IC79WL_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
+    IC79WL_full.reset_and_calculate();
+    IC79SL_full.resolveDependency(&mwimp_generic);
+    IC79SL_full.resolveDependency(&annihilation_rate_Sun);
+    IC79SL_full.resolveDependency(&nuyield_from_DS);
+    IC79SL_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
+    IC79SL_full.reset_and_calculate();
 
     // Calculate IceCube likelihood
+    IC79WH_bgloglike.resolveDependency(&IC79WH_full);
+    IC79WH_bgloglike.reset_and_calculate();
     IC79WH_loglike.resolveDependency(&IC79WH_full);
     IC79WH_loglike.reset_and_calculate();
+    IC79WL_bgloglike.resolveDependency(&IC79WL_full);
+    IC79WL_bgloglike.reset_and_calculate();
+    IC79WL_loglike.resolveDependency(&IC79WL_full);
+    IC79WL_loglike.reset_and_calculate();
+    IC79SL_bgloglike.resolveDependency(&IC79SL_full);
+    IC79SL_bgloglike.reset_and_calculate();
+    IC79SL_loglike.resolveDependency(&IC79SL_full);
+    IC79SL_loglike.reset_and_calculate();
+    IC79_loglike.resolveDependency(&IC79WH_bgloglike);
+    IC79_loglike.resolveDependency(&IC79WH_loglike);
+    IC79_loglike.resolveDependency(&IC79WL_bgloglike);
+    IC79_loglike.resolveDependency(&IC79WL_loglike);
+    IC79_loglike.resolveDependency(&IC79SL_bgloglike);
+    IC79_loglike.resolveDependency(&IC79SL_loglike);
+    IC79_loglike.reset_and_calculate();
 
-    logger() << "IceCube 79WH lnL: " << IC79WH_loglike(0) << LogTags::info << EOM;
+    logger() << "IceCube 79 lnL: " << IC79_loglike(0) << LogTags::info << EOM;
 
     // ---- Dump results on screen ----
 
+    cout << endl;
     cout << "Omega h^2 from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
     cout << "Omega h^2 from GAMBIT: " << RD_oh2_general(0) << endl;
+    cout << "Relic density lnL: " << lnL_oh2_Simple(0) << endl;
+    cout << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_MO << endl;
+    cout << "sigma_SI,p with GAMBIT: " << sigma_SI_p_GB << endl;
     cout << "LUX_2016 lnL: " << LUX_2016_GetLogLikelihood(0) << endl;
     cout << "Fermi LAT dwarf spheroidal lnL: " << lnL_FermiLATdwarfs_gamLike(0) << endl;
-    cout << "IceCube 79WH lnL: " << IC79WH_loglike(0) << endl;
+    cout << "IceCube 79 lnL: " << IC79_loglike(0) << endl;
   }
 
   catch (std::exception& e)
