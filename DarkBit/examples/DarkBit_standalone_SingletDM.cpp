@@ -156,6 +156,32 @@ int main()
     createDecays.reset_and_calculate();
 
 
+    // ---- Set up basic internal structures for direct & indirect detection ----
+
+    // Set identifier for DM particle
+    DarkMatter_ID_SingletDM.notifyOfModel("SingletDM");
+    DarkMatter_ID_SingletDM.reset_and_calculate();
+
+    // Set up process catalog
+    TH_ProcessCatalog_SingletDM.notifyOfModel("SingletDM");
+    TH_ProcessCatalog_SingletDM.resolveDependency(&createSpectrum);
+    TH_ProcessCatalog_SingletDM.resolveDependency(&createDecays);
+    TH_ProcessCatalog_SingletDM.reset_and_calculate();
+
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
+    RD_fraction_one.reset_and_calculate();
+
+    // Set generic WIMP mass object
+    mwimp_generic.resolveDependency(&TH_ProcessCatalog_SingletDM);
+    mwimp_generic.resolveDependency(&DarkMatter_ID_SingletDM);
+    mwimp_generic.reset_and_calculate();
+
+    // Set generic annihilation rate in late universe (v->0 limit)  // TODO: Check limit
+    sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_SingletDM);
+    sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
+    sigmav_late_universe.reset_and_calculate();
+
     // ---- Initialize backends ----
 
     // Initialize nulike backend
@@ -188,32 +214,6 @@ int main()
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
     DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
-
-    // ---- Set up basic internal structures for direct & indirect detection ----
-
-    // Set identifier for DM particle
-    DarkMatter_ID_SingletDM.notifyOfModel("SingletDM");
-    DarkMatter_ID_SingletDM.reset_and_calculate();
-
-    // Set up process catalog
-    TH_ProcessCatalog_SingletDM.notifyOfModel("SingletDM");
-    TH_ProcessCatalog_SingletDM.resolveDependency(&createSpectrum);
-    TH_ProcessCatalog_SingletDM.resolveDependency(&createDecays);
-    TH_ProcessCatalog_SingletDM.reset_and_calculate();
-
-    // Assume for direct and indirect detection likelihoods that dark matter
-    // density is always the measured one (despite relic density results)
-    RD_fraction_one.reset_and_calculate();
-
-    // Set generic WIMP mass object
-    mwimp_generic.resolveDependency(&TH_ProcessCatalog_SingletDM);
-    mwimp_generic.resolveDependency(&DarkMatter_ID_SingletDM);
-    mwimp_generic.reset_and_calculate();
-
-    // Set generic annihilation rate in late universe (v->0 limit)  // TODO: Check limit
-    sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_SingletDM);
-    sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
-    sigmav_late_universe.reset_and_calculate();
 
     // ---- Relic density ----
 
