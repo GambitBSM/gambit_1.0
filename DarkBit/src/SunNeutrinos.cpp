@@ -228,8 +228,8 @@ namespace Gambit
       {
 
         // Define the charged Higgs decay channels
-        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels()
-;
+        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels();
+
         // Get the total decay width, for normalising partial widths to BFs.
         // TODO: Replace when BFs become directly available.
         double totalwidth = 0.0;
