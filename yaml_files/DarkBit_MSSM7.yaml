@@ -322,7 +322,8 @@ Rules:
 
   - function: lnL_HESSGC_gamLike
     options:
-       version: "integral" # Other option is spectral
+       version: "spectral_externalJ"
+       # Other options are integral_fixedJ, integral_externalJ, and spectral_fixedJ
 
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
