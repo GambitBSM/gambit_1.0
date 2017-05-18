@@ -285,7 +285,7 @@ template<class T> void SearchTree<T>::Node::reset_parents_link_to_me(typename Se
 }
 template<class T> class SearchTree<T>::circulator{
 public:
-  friend class SearchTree<T>::const_circulator;
+  //friend class SearchTree<T>::const_circulator;
   friend class SearchTree<T>;
   circulator() : _node(NULL) {}
   circulator(Node * node) : _node(node) {}

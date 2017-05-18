@@ -118,3 +118,5 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+
+  debug: true
