@@ -526,7 +526,7 @@ int main(int argc, char* argv[])
       // 4: W+ W-
       // 5: e+ e-
       // 6: phi phi2
-      // 7: gamma gamma Z_0
+      // 7: gamma e+ e-
       if (mode==5) dumpSpectrum("dPhi_dE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 0., 1.));
       if (mode==0) dumpSpectrum("dPhi_dE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
       if (mode==1) dumpSpectrum("dPhi_dE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0., 0.));
