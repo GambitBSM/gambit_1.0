@@ -39,3 +39,7 @@ def closest_to(val, x, y):
   z = copy.deepcopy(y)
   z[indices] = x[indices]
   return z
+
+def signed_sqrt(val):
+  return np.sign(val) * np.sqrt(np.abs(val))
+
