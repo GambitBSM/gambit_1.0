@@ -842,7 +842,7 @@ DDCalc_1_0_0_init: |
    Initialises DDCalc 1.0.0.
 
 DD_Experiment: |
-   Call a previously initialised experiment.
+   The name of the DDcalc experiment corresponding to a specific experiment index.
 
 DD_Background: |
    The number of background events for a given direct detection experiment.
