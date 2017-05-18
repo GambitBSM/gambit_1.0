@@ -344,7 +344,7 @@ namespace Gambit
       logger() << "#######################################";
       for (auto it = observables.begin(); it != observables.end(); ++it)
       {
-        // TODO: Format output
+        // Format output
         logger() << LogTags::dependency_resolver << endl << it->capability << " (" << it->type << ") [" << it->purpose << "]";
         queueEntry.first.first = it->capability;
         queueEntry.first.second = it->type;
@@ -706,7 +706,6 @@ namespace Gambit
     // Returns pointer to ini-file entry associated with ObsLike
     const IniParser::ObservableType * DependencyResolver::getIniEntry(VertexID v)
     {
-      // TODO: Needs to be changed to follow rules style
       for (std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
           it != outputVertexInfos.end(); it++)
       {
@@ -809,7 +808,8 @@ namespace Gambit
     /// Also activate the model-conditional dependencies and backend requirements of those functors.
     void DependencyResolver::makeFunctorsModelCompatible()
     {
-      static bool already_run = false;  // TODO: CW: this function should probably be called somewhere else.
+      // Run just once
+      static bool already_run = false;
       if (already_run) return;
 
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
@@ -866,11 +866,10 @@ namespace Gambit
         masterGraph[*vi]->setTimingVertexID(Printers::get_param_id(timing_label));
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
-        // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
-        //       how it should be in the end.
+        // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  
         if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
         {
-          functors_to_print.push_back(index[*vi]); // TODO: This may be obsolete
+          functors_to_print.push_back(index[*vi]); // TODO: Probably obsolete
           boundPrinter->addToPrintList(label); // Needed mainly by postprocessor.
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
@@ -893,7 +892,7 @@ namespace Gambit
       // Similarly for extra results, i.e. from any functors not in this
       // initial list, whose "requiresPrinting" flag later gets set to 'true'
       // somehow.)
-      boundPrinter->initialise(functors_to_print); // TODO: May be obsolete
+      boundPrinter->initialise(functors_to_print); // TODO: Probably obsolete
     }
 
     std::vector<DRes::VertexID> DependencyResolver::closestCandidateForModel(std::vector<DRes::VertexID> candidates)
@@ -1375,7 +1374,7 @@ namespace Gambit
         {
             errmsg += "\n   [" + masterGraph[*it]->name() + "," + masterGraph[*it]->origin() + "]";
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       return boost::tie(depEntry, vertexCandidates[0]);
@@ -1475,7 +1474,6 @@ namespace Gambit
               errmsg += printGenericFunctorList(
                     initVector<functor*>(masterGraph[fromVertex]));
               dependency_resolver_error().raise(LOCAL_INFO,errmsg);
-              // TODO: Test error output
             }
             std::set<DRes::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
