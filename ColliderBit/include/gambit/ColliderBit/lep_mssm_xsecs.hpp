@@ -75,17 +75,17 @@ namespace Gambit
 
     /// Low-level cross section routines.
     /// @{
-    /// Cross section [pb] for \f$e^+e^- -> \tilde l_i \tilde l_j^*\f$
+    /// Cross section [pb] for \f$ e^+e^- -> \tilde l_i \tilde l_j^* \f$
     /// To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
     double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, 
                          MixMatrix N, const double mN[4], double alpha, double mZ, double gZ,
                          double sin2thetaW, bool warn_on_CP_violating_masses = true);
-    /// Cross section [pb] for e^+e^- -> \tilde\chi^0_i \tilde\chi^0_j
+    /// Cross section [pb] for \f$ e^+e^- -> \tilde\chi^0_i \tilde\chi^0_j \f$
     /// Masses mi and mj for the neutralinos are signed. mS are the selectron masses (left = 0, right = 1).
-    /// Warning! BFM uses inverted \tan\beta! Use tanb = 1 / tanb in converting from SLHA.
+    /// Warning! BFM uses inverted \f$\tan\beta\f$! Use tanb = 1 / tanb in converting from SLHA.
     double xsec_neuineuj(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix N,
                          const double mS[2], double tanb, double alpha, double mZ, double gZ, double sin2thetaW);
-    /// Cross section [pb] for e^+e^- -> \tilde\chi^+_i \tilde\chi^-_j
+    /// Cross section [pb] for \f$ e^+e^- -> \tilde\chi^+_i \tilde\chi^-_j \f$
     /// Masses mi and mj for the charginos are signed. msn is electron sneutrino mass.
     double xsec_chaichaj(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix V, 
                          MixMatrix U, double msn, double alpha, double mZ, double gZ, double sin2thetaW);
