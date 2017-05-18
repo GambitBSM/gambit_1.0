@@ -223,9 +223,9 @@ int main(int argc, char* argv[])
     std::cout << "Welcome to the DarkBit Generic WIMP standalone program!" << std::endl;
     std::cout << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
-    std::cout << "This standalone example calculates a range of observables and likelihoods for a " << std::endl;
-    std::cout << "generic WIMP model defined by the WIMP mass and an annihilation (or scattering) " << std::endl;
-    std::cout << "cross section. The model also contains three scalar particles which decay:" << std::endl;
+    std::cout << "This standalone example demonstrates how to calculate a range of observables and " << std::endl;
+    std::cout << "likelihoods for a generic WIMP model defined by the WIMP mass and an annihilation (or"
+    std::cout <<" scattering) cross section. The model also contains three scalar particles which decay:" << std::endl;
     std::cout << "phi -> gamma gamma    phi_1 -> tau+ tau-  phi_2 -> b bbar" << std::endl;
     std::cout << std::endl;
     std::cout << "Usage: DarkBit_standalone_WIMP mode" << std::endl;

@@ -337,7 +337,6 @@ int main(int argc, char* argv[])
       mwimp_generic.reset_and_calculate();
 
       // Set generic annihilation rate in late universe (v->0 limit)
-      // TODO: Check whether limit is really calculated
       sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_MSSM);
       sigmav_late_universe.resolveDependency(&DarkMatter_ID_MSSM);
       sigmav_late_universe.reset_and_calculate();
