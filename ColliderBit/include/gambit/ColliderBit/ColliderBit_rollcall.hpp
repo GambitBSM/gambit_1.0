@@ -430,8 +430,9 @@ START_MODULE
 
 
   // Dummy observable that creates a dependency on TestModel1D, which is used to satisfy the normal
-  // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to run
-  // ColliderBit on a single point with a custom Pythia version, using Pythia's SLHA interface.
+  // GAMBIT model requrements in a minimal way. This is useful in the case where we just want to test
+  // ColliderBit on a single point with Pythia's SLHA interface, but not use the ColliderBit standalone
+  // interface.
   #define CAPABILITY DummyColliderObservable
   START_CAPABILITY
     #define FUNCTION getDummyColliderObservable
