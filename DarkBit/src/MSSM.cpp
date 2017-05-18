@@ -121,17 +121,28 @@ namespace Gambit
         }
       }
 
-      // use SLHA2 format for initialization
       else if (ModelInUse("MSSM63atQ") || ModelInUse("CMSSM"))
       {
-        // Retrieve SLHAea object from spectrum object
+        SLHAstruct mySLHA;
+        /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
+        bool dsSLHAread = runOptions->getValueOrDef<bool>(false, "use_dsSLHAread");
+        int slha_version = 2;
         const Spectrum& mySpec = *Dep::MSSM_spectrum;
-        SLHAstruct mySLHA = mySpec.getSLHAea(2);
+        try{mySLHA = mySpec.getSLHAea(2);}
+        catch(Gambit::exception& e)
+        {
+            slha_version = 1;
+            mySLHA = mySpec.getSLHAea(1);
+            dsSLHAread = true;
+        }
 
         // Use an actual SLHA2 file.  DarkSUSY is on its own wrt (s)particle widths this way.
-        /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
-        if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
+        if (dsSLHAread || slha_version == 1)
         {
+          if (!dsSLHAread) {DarkBit_error().raise(LOCAL_INFO,
+                  "A SLHA1 spectrum requires use of the DarkSUSY SLHA reader rather than the diskless\n"
+                  "GAMBIT DarkSUSY initialization. To enable the DarkSUSY SLHA reader, set the option\n"
+                  "use_dsSLHAread for the function DarkSUSY_PointInit_MSSM to true.");}
           int rank = 0;
           #ifdef WITH_MPI
             if(GMPI::Is_initialized())
@@ -142,10 +153,13 @@ namespace Gambit
           #endif
 
           // Add model select block to inform DS about 6x6 mixing
-          SLHAea::Block modsel_block("MODSEL");
-          modsel_block.push_back("BLOCK MODSEL");
-          modsel_block.push_back("6 3 # FV");
-          mySLHA.push_back(modsel_block);
+          if (slha_version == 2)
+          {
+              SLHAea::Block modsel_block("MODSEL");
+              modsel_block.push_back("BLOCK MODSEL");
+              modsel_block.push_back("6 3 # FV");
+              mySLHA.push_back(modsel_block);
+          }
 
           // Set filename
           std::string fstr = "DarkBit_temp_";
@@ -527,7 +541,8 @@ namespace Gambit
       // Set of imported decays - avoids double imports
       std::set<string> importedDecays;
 
-      // FIXME: Add getValue documentation
+      // Option minBranching <double>: Minimum branching fraction of included
+      // processes (default 0.)
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 

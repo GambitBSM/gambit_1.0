@@ -71,12 +71,24 @@ namespace Gambit
 
 int main(int argc, char* argv[])
 {
+  std::cout << std::endl;
+  std::cout << "Welcome to the DarkBit MSSM standalone program!" << std::endl;
+  std::cout << std::endl;
+  std::cout << "********************************************************************************" << std::endl;
+  std::cout << "Usage: DarkBit_standalone_MSSM SLHA_file (spectrum) (data) (dump)" << std::endl;
+  std::cout << std::endl;
+  std::cout << "SLHA_file: SLHA file used to intialise the program (required)" << std::endl;
+  std::cout << "spectrum: name of output file for gamma-ray spectrum (default: dNdE.dat)" << std::endl;
+  std::cout << "data: name of output file for observables and likelihoods (default: data.yaml)" << std::endl;
+  std::cout << "dump: name of unit test output file (default: dump.yaml)" << std::endl;
+  std::cout << "********************************************************************************" << std::endl;
+  std::cout << std::endl;
 
   try
   {
     if (argc == 1)
     {
-      std::cout << "Please provide name of slha file at command line." << std::endl;
+      std::cout << "Please provide name of SLHA file at command line." << std::endl;
       exit(1);
     }
     std::string filename = argv[1];
@@ -148,7 +160,19 @@ int main(int argc, char* argv[])
 
     int slha_version = 2;
     try { createSpectrum(0).getSLHAea(2); }
-    catch(Gambit::exception& e) { slha_version = 1; }
+    catch(Gambit::exception& e) { slha_version = 1;
+    cout << "SLHA 1 reading does not work correctly! Do not believe results!" << endl;}
+
+    // Check that the decay table contains ~chi0_2 (if it doesn't,
+    // we do not use information from the SLHA decay block)
+    bool decays = true;
+    try { createDecays(0).at("~chi0_2"); }
+    catch(std::exception& e)
+    {
+        decays = false;
+        cout << "It appears that the decay block is missing from the SLHA file. Decay widths\n"
+                "will be determined by the backends." << endl;
+    }
 
     // ---- Initialize backends ----
 
@@ -163,13 +187,17 @@ int main(int argc, char* argv[])
     if (slha_version == 1)
     {
       MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createSpectrum);
+      MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createDecays);
       MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("MSSM30atQ");
+      // Use decay table if it is present:
+      if (decays) MicrOmegas_MSSM_3_6_9_2_init.setOption<bool>("internal_decays", false);
+      else MicrOmegas_MSSM_3_6_9_2_init.setOption<bool>("internal_decays", true);
       MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
     }
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
-    if (slha_version == 2)
+//    if (slha_version == 1)
     {
       DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
       DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
@@ -179,7 +207,13 @@ int main(int argc, char* argv[])
       DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dssusy_isasugra);
       DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsSLHAread);
       DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsprep);
-      DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
+      if (decays && slha_version == 2) DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", false);
+      else DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
+      // For the below VXdecay = 0 - no 3 body final states via virtual X
+      //                         1 - annihilations to 3 body final states via virtual X
+      //                         2 - (co)annihilations to 3 body final states via virtual X
+      DarkSUSY_PointInit_MSSM.setOption<int>("VZdecay", 0);
+      DarkSUSY_PointInit_MSSM.setOption<int>("VWdecay", 0);
       DarkSUSY_PointInit_MSSM.reset_and_calculate();
     }
 
@@ -203,6 +237,9 @@ int main(int argc, char* argv[])
     if (slha_version == 1)
     {
       RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::darkOmega);
+//      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VZdecay);
+//      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::VWdecay);
+//      RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::cleanDecayTable);
       RD_oh2_MicrOmegas.setOption<int>("fast", 1);  // 0: accurate; 1: fast
       RD_oh2_MicrOmegas.reset_and_calculate();
       // Calculate WMAP likelihoods, based on MicrOmegas result
@@ -211,15 +248,67 @@ int main(int argc, char* argv[])
     }
 
     // Relic density calculation with DarkSUSY (the sloppy version)
-    if (slha_version == 2)
+//    if (slha_version == 2)
     {
       RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
       RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
       RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
       RD_oh2_DarkSUSY.reset_and_calculate();
       // FIXME: Use "general" version instead
+
       // Calculate WMAP likelihoods, based on DarkSUSY result
       lnL_oh2_Simple.resolveDependency(&RD_oh2_DarkSUSY);
+      lnL_oh2_Simple.reset_and_calculate();
+    }
+
+    // Relic density calculation with GAMBIT routines:
+    {
+      RD_spectrum_SUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mspctm);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::widths);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::intdof);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::pacodes);
+      RD_spectrum_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DSparticle_code);
+      // Below true if charginos and neutralinos are included in coannihilations:
+      RD_spectrum_SUSY.setOption<bool>("CoannCharginosNeutralinos", true);
+      // Below true if sfermions are included in coannihilations:
+      RD_spectrum_SUSY.setOption<bool>("CoannSfermions", true);
+      // Maximum sparticle mass to be icluded in coannihilations, in units of DM mass:
+      RD_spectrum_SUSY.setOption<double>("CoannMaxMass", 1.6);
+      RD_spectrum_SUSY.reset_and_calculate();
+
+      RD_spectrum_ordered_func.resolveDependency(&RD_spectrum_SUSY);
+      RD_spectrum_ordered_func.reset_and_calculate();
+
+      RD_annrate_DSprep_func.resolveDependency(&RD_spectrum_SUSY);
+      RD_annrate_DSprep_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdmgev);
+      RD_annrate_DSprep_func.reset_and_calculate();
+
+      RD_eff_annrate_SUSY.resolveDependency(&RD_annrate_DSprep_func);
+      RD_eff_annrate_SUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsanwx);
+      RD_eff_annrate_SUSY.reset_and_calculate();
+
+      RD_oh2_general.resolveDependency(&RD_spectrum_ordered_func);
+      RD_oh2_general.resolveDependency(&RD_eff_annrate_SUSY);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdthlim);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdtab);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdeqn);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdwintp);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DSparticle_code);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::widths);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdmgev);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpth);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpars);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdswitch);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdlun);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rdpadd);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rddof);
+      RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rderrors);
+      RD_oh2_general.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+      RD_oh2_general.reset_and_calculate();
+
+      // Calculate WMAP likelihoods, based on GAMBIT result
+      lnL_oh2_Simple.resolveDependency(&RD_oh2_general);
       lnL_oh2_Simple.reset_and_calculate();
     }
 
@@ -230,7 +319,7 @@ int main(int argc, char* argv[])
     DarkMatter_ID_MSSM.resolveDependency(&createSpectrum);
     DarkMatter_ID_MSSM.reset_and_calculate();
 
-    if (slha_version == 2)
+//    if (slha_version == 2)
     {
       // Set up process catalog based on DarkSUSY annihilation rates
       TH_ProcessCatalog_MSSM.resolveDependency(&DarkSUSY_PointInit_MSSM);
@@ -273,7 +362,7 @@ int main(int argc, char* argv[])
     }
 
     // Calculate DD couplings with DarkSUSY
-    if (slha_version == 2)
+//    if (slha_version == 2)
     {
       DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
       DD_couplings_DarkSUSY.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
@@ -318,7 +407,7 @@ int main(int argc, char* argv[])
       sigma_SI_p_simple.reset_and_calculate();
       sigma_SI_p_MO = sigma_SI_p_simple(0);
     }
-    else
+//    else
     {
       sigma_SI_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
       sigma_SI_p_simple.reset_and_calculate();
@@ -335,7 +424,7 @@ int main(int argc, char* argv[])
       sigma_SD_p_simple.reset_and_calculate();
       sigma_SD_p_MO = sigma_SD_p_simple(0);
     }
-    else
+//    else
     {
       sigma_SD_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
       sigma_SD_p_simple.reset_and_calculate();
@@ -345,7 +434,7 @@ int main(int argc, char* argv[])
 
     // ---- Gamma-ray yields ----
 
-    if (slha_version == 2)
+//    if (slha_version == 2)
     {
 
       // Initialize tabulated gamma-ray yields
@@ -436,7 +525,7 @@ int main(int argc, char* argv[])
 
     // ---- IceCube limits ----
 
-    if (slha_version == 2)
+//    if (slha_version == 2)
     {
 
       // Infer WIMP capture rate in Sun
@@ -534,11 +623,25 @@ int main(int argc, char* argv[])
     }
 
     // Retrieve and print DarkSUSY result
-    if (slha_version == 2)
+//    if (slha_version == 2)
     {
       oh2 = RD_oh2_DarkSUSY(0);
       cout << "Relic density from DarkSUSY: " << oh2 << endl;
+      oh2 = RD_oh2_general(0);
+      cout << "Relic density from GAMBIT routines: " << oh2 << endl;
     }
+
+    // Print annihilation cross section for DS and MO:
+    cout << " sigma_SI_p [cm^2]: " << std::endl;
+    if (slha_version == 1)
+      cout << "    MO: " << sigma_SI_p_MO << std::endl;
+//    else
+      cout << "    DS: " << sigma_SI_p_DS << std::endl;
+    cout << " sigma_SD_p [cm^2]: " << std::endl;
+    if (slha_version == 1)
+      cout << "    MO: " << sigma_SD_p_MO << std::endl;
+//    else
+      cout << "    DS: " << sigma_SD_p_DS << std::endl;
 
     // ---- Dump output into file ----
 
@@ -551,7 +654,7 @@ int main(int argc, char* argv[])
       oh2 = RD_oh2_MicrOmegas(0);
       file << "  MO: " << oh2 << std::endl;
     }
-    else
+//    else
     {
       oh2 = RD_oh2_DarkSUSY(0);
       file << "  DS: " << oh2 << std::endl;
@@ -566,7 +669,7 @@ int main(int argc, char* argv[])
       dd_gps = DD_couplings_MicrOmegas(0).gps;
       file << "    MO: " << dd_gps << std::endl;
     }
-    else
+//    else
     {
       dd_gps = DD_couplings_DarkSUSY(0).gps;
       file << "    DS: " << dd_gps << std::endl;
@@ -579,7 +682,7 @@ int main(int argc, char* argv[])
       dd_gns = DD_couplings_MicrOmegas(0).gns;
       file << "    MO: " << dd_gns << std::endl;
     }
-    else
+//    else
     {
       dd_gns = DD_couplings_DarkSUSY(0).gns;
       file << "    DS: " << dd_gns << std::endl;
@@ -592,7 +695,7 @@ int main(int argc, char* argv[])
       dd_gpa = DD_couplings_MicrOmegas(0).gpa;
       file << "    MO: " << dd_gpa << std::endl;
     }
-    else
+//    else
     {
       dd_gpa = DD_couplings_DarkSUSY(0).gpa;
       file << "    DS: " << dd_gpa << std::endl;
@@ -605,7 +708,7 @@ int main(int argc, char* argv[])
       dd_gna = DD_couplings_MicrOmegas(0).gna;
       file << "    MO: " << dd_gna << std::endl;
     }
-    else
+//    else
     {
       dd_gna = DD_couplings_DarkSUSY(0).gna;
       file << "    DS: " << dd_gna << std::endl;
@@ -614,12 +717,12 @@ int main(int argc, char* argv[])
     file << " sigma_SI_p [cm^2]: " << std::endl;
     if (slha_version == 1)
       file << "    MO: " << sigma_SI_p_MO << std::endl;
-    else
+//    else
       file << "    DS: " << sigma_SI_p_DS << std::endl;
     file << " sigma_SD_p [cm^2]: " << std::endl;
     if (slha_version == 1)
       file << "    MO: " << sigma_SD_p_MO << std::endl;
-    else
+//    else
       file << "    DS: " << sigma_SD_p_DS << std::endl;
     file.close();
 

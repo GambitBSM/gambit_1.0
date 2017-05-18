@@ -189,7 +189,7 @@ namespace Gambit {
 
          // Extend the dataset if needed
          // To do this need to know largest target coordinate
-         ulong max_coord = *std::max_element(coords,coords+npoints);
+         unsigned long max_coord = *std::max_element(coords,coords+npoints);
          
          this->extend_dset(max_coord);
 

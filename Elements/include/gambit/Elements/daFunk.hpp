@@ -1618,7 +1618,7 @@ namespace daFunk
                     if (status and this->use_log_fallback)
                     {
                         // The last resort: A cheap integration on log grid, linear interpolation
-                        const double N = 100;
+                        const double N = 300;
                         std::vector<double> Xgrid = 
                             logspace(std::log10(x0), std::log10(x1), N);
                         double sum = 0, y0, y1, dx;

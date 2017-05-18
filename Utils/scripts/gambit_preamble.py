@@ -10,6 +10,10 @@
 # Authors:
 #  Pat Scott (p.scott@imperial.ac.uk)
 #  Jan 2017
+#
+#  Anders Kvellestad (anders.kvellestad@nordita.org)
+#  May 2017
+#  
 #############################################################
 
 import numpy as np
@@ -40,6 +44,12 @@ def closest_to(val, x, y):
   z[indices] = x[indices]
   return z
 
-def signed_sqrt(val):
-  return np.sign(val) * np.sqrt(np.abs(val))
+# Elementwise calculation that returns a "signed" square root, sgn(x)*sqrt(x).
+def signed_sqrt(x):
+  indices = np.where(x == 0)
+  z = copy.deepcopy(x)
+  z[indices] = 1
+  z = z/np.fabs(z) * np.sqrt(np.fabs(z))
+  z[indices] = 0
+  return z
 

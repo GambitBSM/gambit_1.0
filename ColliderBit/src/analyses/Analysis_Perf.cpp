@@ -1,5 +1,20 @@
-// Written by A Saavedra 19-06-2013 to test the FastSim module
-// Edited by MJW on 07-01-2015 to test generic sims
+///  \file
+///
+///  Code to test simulation modules.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Aldo Saavedra
+///  \date 2013 June
+///
+///  \author Martin White
+///  \date 2015 Jan
+///
+///  *********************************************
+
+
 
 #include <vector>
 #include <algorithm>
@@ -449,7 +464,7 @@ namespace Gambit {
     };
 
 
-    DEFINE_ANALYSIS_FACTORY(Perf)
+    DEFINE_ANALYSIS_FACTORY(Perf);
 
     #ifndef EXCLUDE_DELPHES
     // Static member initialization

@@ -361,6 +361,18 @@ GalacticHalo: |
    in terms of the structure GalacticHaloProperties containing the function rho(r)
    and the Sun-GC distance r_sun.
 
+lnL_rho0: |
+   Log-likelihood for the local DM density.
+
+lnL_vrot: |
+   Log-likelihood for the local disk rotational speed.
+
+lnL_v0: |
+   Log-likelihood for the most-probable DM speed.
+
+lnL_vesc: |
+   Log-likelihood for the escape velocity.
+
 XENON100_2012_Calculate: |
    Perform rate and likelihood calculations for the XENON100 2012 direct detection analysis.
 
@@ -403,6 +415,69 @@ LUX_2013_SignalSD: |
 LUX_2013_LogLikelihood: |
    Calculate the log-likelihood for the LUX 2013 direct detection analysis.
 
+LUX_2015_Calculate: |
+   Perform rate and likelihood calculations for the LUX 2015 direct detection analysis.
+
+LUX_2015_Events: |
+   The number of observed events for the LUX 2015 direct detection analysis.
+   
+LUX_2015_Background: |
+   The number of background events for the LUX 2015 direct detection analysis.
+
+LUX_2015_Signal: |
+   The number of signal events for the LUX 2015 direct detection analysis.
+
+LUX_2015_SignalSI: |
+   The number of spin-independent signal events for the LUX 2015 direct detection analysis.
+
+LUX_2015_SignalSD: |
+   The number of spin-independent signal events for the LUX 2015 direct detection analysis.
+
+LUX_2015_LogLikelihood: |
+   Calculate the log-likelihood for the LUX 2015 direct detection analysis.
+
+LUX_2016_Calculate: |
+   Perform rate and likelihood calculations for the LUX 2016 direct detection analysis.
+
+LUX_2016_Events: |
+   The number of observed events for the LUX 2016 direct detection analysis.
+   
+LUX_2016_Background: |
+   The number of background events for the LUX 2016 direct detection analysis.
+
+LUX_2016_Signal: |
+   The number of signal events for the LUX 2016 direct detection analysis.
+
+LUX_2016_SignalSI: |
+   The number of spin-independent signal events for the LUX 2016 direct detection analysis.
+
+LUX_2016_SignalSD: |
+   The number of spin-independent signal events for the LUX 2016 direct detection analysis.
+
+LUX_2016_LogLikelihood: |
+   Calculate the log-likelihood for the LUX 2016 direct detection analysis.
+
+PandaX_2016_Calculate: |
+   Perform rate and likelihood calculations for the PandaX 2016 direct detection analysis.
+
+PandaX_2016_Events: |
+   The number of observed events for the PandaX 2016 direct detection analysis.
+   
+PandaX_2016_Background: |
+   The number of background events for the PandaX 2016 direct detection analysis.
+
+PandaX_2016_Signal: |
+   The number of signal events for the PandaX 2016 direct detection analysis.
+
+PandaX_2016_SignalSI: |
+   The number of spin-independent signal events for the PandaX 2016 direct detection analysis.
+
+PandaX_2016_SignalSD: |
+   The number of spin-independent signal events for the PandaX 2016 direct detection analysis.
+
+PandaX_2016_LogLikelihood: |
+   Calculate the log-likelihood for the PandaX 2016 direct detection analysis.
+
 SuperCDMS_2014_Calculate: |
    Perform rate and likelihood calculations for the SuperCDMS 2014 direct detection analysis.
 
@@ -444,6 +519,69 @@ SIMPLE_2014_SignalSD: |
 
 SIMPLE_2014_LogLikelihood: |
    Calculate the log-likelihood for the SIMPLE 2014 direct detection analysis.
+
+PICO_2L_Calculate: |
+   Perform rate and likelihood calculations for the PICO-2L direct detection analysis.
+
+PICO_2L_Events: |
+   The number of observed events for the PICO-2L direct detection analysis.
+   
+PICO_2L_Background: |
+   The number of background events for the PICO-2L direct detection analysis.
+
+PICO_2L_Signal: |
+   The number of signal events for the PICO-2L direct detection analysis.
+
+PICO_2L_SignalSI: |
+   The number of spin-independent signal events for the PICO-2L direct detection analysis.
+
+PICO_2L_SignalSD: |
+   The number of spin-independent signal events for the PICO-2L direct detection analysis.
+
+PICO_2L_LogLikelihood: |
+   Calculate the log-likelihood for the PICO-2L direct detection analysis.
+
+PICO_60_F_Calculate: |
+   Perform rate and likelihood calculations for the PICO-60 direct detection analysis (flourine only).
+
+PICO_60_F_Events: |
+   The number of observed events for the PICO-60 direct detection analysis (flourine only).
+   
+PICO_60_F_Background: |
+   The number of background events for the PICO-60 direct detection analysis (flourine only).
+
+PICO_60_F_Signal: |
+   The number of signal events for the PICO-60 direct detection analysis (flourine only).
+
+PICO_60_F_SignalSI: |
+   The number of spin-independent signal events for the PICO-60 direct detection analysis (flourine only).
+
+PICO_60_F_SignalSD: |
+   The number of spin-independent signal events for the PICO-60 direct detection analysis (flourine only).
+
+PICO_60_F_LogLikelihood: |
+   Calculate the log-likelihood for the PICO-60 direct detection analysis (flourine only).
+
+PICO_60_I_Calculate: |
+   Perform rate and likelihood calculations for the PICO-60 direct detection analysis (iodine only).
+
+PICO_60_I_Events: |
+   The number of observed events for the PICO-60 direct detection analysis (iodine only).
+   
+PICO_60_I_Background: |
+   The number of background events for the PICO-60 direct detection analysis (iodine only).
+
+PICO_60_I_Signal: |
+   The number of signal events for the PICO-60 direct detection analysis (iodine only).
+
+PICO_60_I_SignalSI: |
+   The number of spin-independent signal events for the PICO-60 direct detection analysis (iodine only).
+
+PICO_60_I_SignalSD: |
+   The number of spin-independent signal events for the PICO-60 direct detection analysis (iodine only).
+
+PICO_60_I_LogLikelihood: |
+   Calculate the log-likelihood for the PICO-60 direct detection analysis (iodine only).
 
 DARWIN_Ar_2015_Calculate: |
    Perform rate and likelihood calculations for the DARWIN Ar 2015 direct detection analysis.
@@ -488,52 +626,58 @@ DARWIN_Xe_2015_LogLikelihood: |
    Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
 
 lnL_SI_nuclear_parameters: |
-   The log-likehood for the nuclear parameters.
+   The log-likehood for the spin-independent nuclear parameters.
+
+lnL_SD_nuclear_parameters: |
+   The log-likehood for the spin-dependent nuclear parameters.
 
 SimYieldTable: |
-   DESCRIPTION MISSING
+   Table of simulated particle yields.
 
-GA_FinalStates: |
-   DESCRIPTION MISSING
+GA_missingFinalStates: |
+   Final states that are not avaialable with tabulated spectra.
 
 GA_AnnYield: |
-   DESCRIPTION MISSING
+   Calculate the gamma-ray yield from the process catalogue.
 
 cascadeMC_FinalStates: |
-   DESCRIPTION MISSING
+   List of final states for cascade decays.
 
 cascadeMC_DecayTable: |
-   DESCRIPTION MISSING
+   Decay table for the decay chain.
 
 cascadeMC_gammaSpectra: |
-   DESCRIPTION MISSING
+   Gamma-ray spectrum from cascade decays.
 
 cascadeMC_LoopManager: |
-   DESCRIPTION MISSING
+   Controls the loop for the cascade decay Monte Carlo simulation.
 
 cascadeMC_InitialState: |
-   DESCRIPTION MISSING
+   The intial state for the cascade decay chain.
 
 cascadeMC_EventCount: |
-   DESCRIPTION MISSING
+   Event counter for cascade decays.
 
 cascadeMC_ChainEvent: |
-   DESCRIPTION MISSING
+   Generates decay chains.
 
 cascadeMC_Histograms: |
-   DESCRIPTION MISSING
+   Creates histograms and evaluates the end conditions for the event loop in the cascade decay simulation.
 
 lnL_FermiLATdwarfs: |
-   DESCRIPTION MISSING
+   Log-likelihood for the Fermi-LAT dwarf galaxy search.
 
 lnL_FermiGC: |
-   DESCRIPTION MISSING
+   Log-likelihood for the Fermi-LAT GeV excess at the Galactic centre.
 
 lnL_HESSGC: |
-   DESCRIPTION MISSING
+   Log-likelihood for the HESS Galactic halo searches.
 
 lnL_CTAGC: |
-   DESCRIPTION MISSING
+   Log-likelihood for projected dark matter searches with CTA.
+
+set_gamLike_GC_halo: |
+   Intialises the Galactic DM distribution in GamLike.
 
 capture_rate_Sun: |
    Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections; s^−1).
@@ -638,16 +782,16 @@ IceCube_likelihood: |
    The complete IceCube log-likelihood, including 22-string and 79-string data.
 
 DarkSUSY_PointInit: |
-   DESCRIPTION MISSING
+   Initialises DarkSUSY for a specific model point.
+
+DarkSUSY_PointInit_LocalHalo: |
+   Initialises Milky Way halo model parameters in DarkSUSY
 
 dump_GammaSpectrum: |
-   DESCRIPTION MISSING
+   Dumps gamma-ray yield into ASCII table
 
 UnitTest_DarkBit: |
-   DESCRIPTION MISSING
-
-vSigma: |
-   DESCRIPTION MISSING
+   Prints various DarkBit results into YAML file.
 
 
 #-------------------------------------
