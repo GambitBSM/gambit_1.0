@@ -459,7 +459,11 @@ namespace Gambit
       cout << "Testing Pythia backend" << endl;
       cout << "======================" << endl;
 
-      Pythia8::Pythia pythia("../extras/boss/bossed_pythia_source/xmldoc", false);
+      static str default_doc_path = GAMBIT_DIR "/Backends/installed/Pythia/" + 
+                                    Backends::backendInfo().default_version("Pythia") + 
+                                    "/share/Pythia8/xmldoc/";
+
+      Pythia8::Pythia pythia(default_doc_path, false);
 
       pythia.readString("Beams:eCM = 8000.");
       pythia.readString("HardQCD:all = on");
