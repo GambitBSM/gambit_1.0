@@ -166,10 +166,12 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
-      /// Option version <string>: Set HESS GC likelihood version (default: integral)
-      std::string version = runOptions->getValueOrDef<std::string>("integral", "version");
-      if ( version == "integral" ) mode = 6;
-      else if ( version == "spectral" ) mode = 7;
+      /// Option version <string>: Set HESS GC likelihood version (default: spectral_externalJ)
+      std::string version = runOptions->getValueOrDef<std::string>("spectral_externalJ", "version");
+      if ( version == "integral_fixedJ" ) mode = 6;
+      else if ( version == "spectral_fixedJ" ) mode = 7;
+      else if ( version == "integral_externalJ" ) mode = 9;
+      else if ( version == "spectral_externalJ" ) mode = 10;
       else DarkBit_error().raise(LOCAL_INFO, "HESS GC likelihood version unknown.");
 
       // from 230(265) GeV to 30 TeV
@@ -190,8 +192,8 @@ namespace Gambit {
       double fraction = *Dep::RD_fraction;
       result = 0;
 
-      // from 250 GeV to 10 TeV
-      std::vector<double> x = daFunk::logspace(2.40, 4.00, 100);
+      // from 25 GeV to 10 TeV
+      std::vector<double> x = daFunk::logspace(1.39, 4.00, 100);
       x = daFunk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);

@@ -117,9 +117,7 @@ if(NOT ditched_${name}_${ver})
     INSTALL_COMMAND ""
   )
   add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
-  if (ROOT_FOUND)
-    set_as_default_version("scanner" ${name} ${ver})
-  endif()
+  set_as_default_version("scanner" ${name} ${ver})
 endif()
 
 
