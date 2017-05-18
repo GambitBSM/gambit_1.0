@@ -176,9 +176,11 @@ namespace Gambit
       if ( brList[7] > 0. )
       {
         auto E = daFunk::var("E");
+        // Note:: The below is an arbitrary form of the differential section for demonstration purposes
         daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[7];
-        // Note: curently the second gamma in AnnYield is ignored by construction
-        TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
+        // Note: In the three body final states, the gamma yield from AnnYield currently is just the contribution
+        // from the first particle in the list (here the photon):
+        TH_Channel new_channel(daFunk::vec<string>("gamma", "e+_1", "e-_1"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
       }
 
@@ -234,7 +236,7 @@ int main(int argc, char* argv[])
     std::cout << "  2: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma (dPhi_dE2.dat)" << std::endl;
     std::cout << "  3: Outputs spectrum of gamma rays from WIMP annihilation to tau+ tau- (dPhi_dE3.dat)" << std::endl;
     std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to W+ W- (dPhi_dE4.dat)" << std::endl;
-    std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma Z_0" << std::endl;
+    std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma e+ e- " << std::endl;
     std::cout << "      (dPhi_dE5.dat)" << std::endl;
     std::cout << "  6: Outputs tables of gamma-ray likelihoods and the relic density" << std::endl;
     std::cout << "      in <sigma v> / m_WIMP parameter space." << std::endl;
