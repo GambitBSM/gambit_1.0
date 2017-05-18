@@ -625,6 +625,48 @@ DARWIN_Xe_2015_SignalSD: |
 DARWIN_Xe_2015_LogLikelihood: |
    Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
 
+DARWIN_Ar_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_Events: |
+   The number of observed events for the DARWIN Ar 2015 direct detection analysis.
+   
+DARWIN_Ar_Background: |
+   The number of background events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_Signal: |
+   The number of signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Xe_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_Events: |
+   The number of observed events for the DARWIN Xe 2015 direct detection analysis.
+   
+DARWIN_Xe_Background: |
+   The number of background events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_Signal: |
+   The number of signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
+
 lnL_SI_nuclear_parameters: |
    The log-likehood for the spin-independent nuclear parameters.
 
@@ -792,6 +834,67 @@ dump_GammaSpectrum: |
 
 UnitTest_DarkBit: |
    Prints various DarkBit results into YAML file.
+
+DD_SetDetectorEmin: |
+   Sets the minimum recoil energy relevant for a given direct detection experiment.
+
+DDCalc_1_0_0_init: |
+   Initialises DDCalc 1.0.0.
+
+DD_Experiment: |
+   Call a previously initialised experiment.
+
+DD_Background: |
+   The number of background events for a given direct detection experiment.
+
+DD_CalcRates: |
+   Perform rate and likelihood calculations for a given direct detection experiment.
+ 
+DD_Events: |
+   The number of observed events for a given direct detection experiment.
+
+DD_LogLikelihood: |
+   Calculate the log-likelihood for a given direct detection experiment.
+
+DD_LogPValue: |
+   Calculate the log p-value for a given direct detection experiment.
+ 
+DD_Signal: |
+   The number of signal events for a given direct detection experiment.
+
+DD_SignalSD: |
+   The number of spin-dependent signal events for a given direct detection experiment.
+
+DD_SignalSI: |
+   The number of spin-independent signal events for a given direct detection experiment.
+
+LUX_2013_Init: |
+   Initialises a direct detection experiment with the properties of the 2013 analysis of LUX.
+
+LUX_2015_Init: |
+   Initialises a direct detection experiment with the properties of the 2015 reanalysis of LUX.
+
+LUX_2016_Init: |
+   Initialises a direct detection experiment with the properties of the 2016 analysis of LUX.
+
+SIMPLE_2014_Init: |
+   Initialises a direct detection experiment with the properties of the 2014 analysis of SIMPLE.
+
+PICO_2L_Init: |
+   Initialises a direct detection experiment with the properties of the analysis of PICO-2L.
+
+PICO_60_F_Init: |
+   Initialises a direct detection experiment with the properties of the analysis of PICO-60, including only fluorine.
+
+PICO_60_I_Init: |
+   Initialises a direct detection experiment with the properties of the analysis of PICO-60, including only iodine.
+
+PandaX_2016_Init: |
+   Initialises a direct detection experiment with the properties of the 2016 analysis of PandaX.
+
+XENON100_2012_Init: |
+   Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
+
 
 
 #-------------------------------------
