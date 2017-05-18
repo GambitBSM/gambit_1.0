@@ -65,7 +65,6 @@ BE_INI_FUNCTION
      double mH = spec.get(Par::Pole_Mass,"h0_1");
      double mW = le.get(Par::Pole_Mass, "W+");
      double lambda = he.get(Par::dimensionless,"lambda_hS");
-//     double v = he.get(Par::mass1,"vev");
 
      error = assignVal((char*)"MS", mS);
      if (error != 0) backend_error().raise(LOCAL_INFO, "Unable to set DM mass in"
