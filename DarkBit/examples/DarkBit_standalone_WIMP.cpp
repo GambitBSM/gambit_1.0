@@ -224,8 +224,8 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "This standalone example demonstrates how to calculate a range of observables and " << std::endl;
-    std::cout << "likelihoods for a generic WIMP model defined by the WIMP mass and an annihilation (or"
-    std::cout <<" scattering) cross section. The model also contains three scalar particles which decay:" << std::endl;
+    std::cout << "likelihoods for a generic WIMP model defined by the WIMP mass and an annihilation (or " << std::endl;
+    std::cout << "scattering) cross section. The model also contains three scalar particles which decay:" << std::endl;
     std::cout << "phi -> gamma gamma    phi_1 -> tau+ tau-  phi_2 -> b bbar" << std::endl;
     std::cout << std::endl;
     std::cout << "Usage: DarkBit_standalone_WIMP mode" << std::endl;
