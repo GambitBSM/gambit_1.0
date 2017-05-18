@@ -1284,7 +1284,7 @@ namespace daFunk
             FunkInterp(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
                 setup(f, Xgrid, Ygrid, mode);
-            };
+            }
             FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
                 setup(var(arg), Xgrid, Ygrid, mode);
@@ -1311,7 +1311,7 @@ namespace daFunk
                 this->Ygrid = Ygrid;
                 if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
                 else if ( mode == "log" ) this->ptr = &FunkInterp::logInterp;
-            };
+            }
 
             double logInterp(double x)
             {
