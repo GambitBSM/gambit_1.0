@@ -1,0 +1,22 @@
+# This SLHA file is used to intialise the SM values.
+BLOCK SMINPUTS
+    1   1.279400100000000e+02   # alpha^{-1}(mZ)^MSbar
+    2   1.166378700000000e-05   # G_Fermi
+    3   1.185000000000000e-01   # alpha_s(mZ)^MSbar
+    4   9.118760000000000e+01   # mZ(pole)
+    5   4.180000000000000e+00   # mb(mb)^MSbar
+    6   1.733400000000000e+02   # mtop(pole)
+    7   1.776820000000000e+00   # mtau(pole)
+    8   0.000000000000000e+00   # mnu3(pole)
+    11  5.109989280000000e-04   # melectron(pole)
+    12  0.000000000000000e+00   # mnu1(pole)
+    13  1.056583720000000e-01   # mmuon(pole)
+    14  0.000000000000000e+00   # mnu2(pole)
+    21  4.800000000000000e-03   # md(2 GeV)^MSbar
+    22  2.300000000000000e-03   # mu(2 GeV)^MSbar
+    23  9.500000000000000e-02   # ms(2 GeV)^MSbar
+    24  1.275000000000000e+00   # mc(mc)^MSbar
+
+BLOCK MASS
+    24  8.038500000000000e+01   # W+
+

@@ -28,7 +28,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, ())
+QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, Spectrum, SingletDM)
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 
@@ -45,28 +45,29 @@ namespace Gambit
       result = sfm;
     }
 
-    // Create spectrum object from SLHA file input.slha
+    // Create spectrum object from SLHA file SM.slha and SingletDM model parameters
     void createSpectrum(Spectrum& outSpec)
     {
-      std::string inputFileName = "DarkBit/data/example.slha1";
+      using namespace Pipes::createSpectrum;
+      std::string inputFileName = "DarkBit/data/SM.slha";
 
       Models::SingletDMModel singletmodel;
-      singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
-      singletmodel.HiggsVEV        = 246.; // 1. / sqrt(sqrt(2.)*sminputs.GF);
-      singletmodel.SingletPoleMass = 100.; // *myPipe::Param.at("mS");
-      singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
+      singletmodel.HiggsPoleMass   = 125.;
+      singletmodel.HiggsVEV        = 246.;
+      singletmodel.SingletPoleMass = *Param["mS"];
+      singletmodel.SingletLambda   = *Param["lambda_hS"];
 
       SLHAstruct slhaea = read_SLHA(inputFileName);
       outSpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea, Spectrum::mc_info(), Spectrum::mr_info());
     }
 
-    // Create decay object from SLHA file input.slha
-    // FIXME: Get the actual Higgs width for this point (from MicrOmegas?)
-    // (or just use SM value).
+    // Create decay object from SLHA file decays.slha
     void createDecays(DecayTable& outDecays)
     {
-      std::string inputFileName = "DarkBit/data/example.slha1";
-      outDecays = DecayTable(inputFileName);
+      using namespace Pipes::createDecays;
+
+      std::string filename = "DarkBit/data/decays.slha";
+      outDecays = DecayTable(filename);
     }
   }
 }
@@ -82,8 +83,9 @@ int main()
     std::cout << "---------------------------------------------------" << std::endl;
     std::cout << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    std::cout << "This program reads and needs a file 'DarkBit/data/example.slha1' for SM  " << std::endl;
-    std::cout << "masses and decay rates. If this is not present, it dies!" << std::endl;
+    std::cout << "This program needs DarkBit/data/SM.slha for SM parameters and            " << std::endl;
+    std::cout << "DarkBit/data/decays.slha for the Higgs width and branching fraction. If  " << std::endl;
+    std::cout << "these are not present, it dies!"                                           << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     std::cout << std::endl;
 
@@ -107,8 +109,8 @@ int main()
 
     // Initialize SingletDM model -- Adjust the model parameters here:
     ModelParameters* SingletDM_primary_parameters = Models::SingletDM::Functown::primary_parameters.getcontentsPtr();
-    SingletDM_primary_parameters->setValue("mS", 100.);
-    SingletDM_primary_parameters->setValue("lambda_hS", 0.05);
+    SingletDM_primary_parameters->setValue("mS", 1000.);
+    SingletDM_primary_parameters->setValue("lambda_hS", 1.0);
 
     // Initialize halo model
     ModelParameters* Halo_primary_parameters = Models::Halo_Einasto::Functown::primary_parameters.getcontentsPtr();
@@ -144,11 +146,41 @@ int main()
     nuclear_params_fnq->setValue("deltas", -0.12);
 
 
-    // ---- Initialize spectrum and decays from SLHA file ----
+    // ---- Initialize spectrum and decays ---
 
+    createSpectrum.notifyOfModel("SingletDM");
+    createSpectrum.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
     createSpectrum.reset_and_calculate();
+
+    createDecays.notifyOfModel("SingletDM");
     createDecays.reset_and_calculate();
 
+
+    // ---- Set up basic internal structures for direct & indirect detection ----
+
+    // Set identifier for DM particle
+    DarkMatter_ID_SingletDM.notifyOfModel("SingletDM");
+    DarkMatter_ID_SingletDM.reset_and_calculate();
+
+    // Set up process catalog
+    TH_ProcessCatalog_SingletDM.notifyOfModel("SingletDM");
+    TH_ProcessCatalog_SingletDM.resolveDependency(&createSpectrum);
+    TH_ProcessCatalog_SingletDM.resolveDependency(&createDecays);
+    TH_ProcessCatalog_SingletDM.reset_and_calculate();
+
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
+    RD_fraction_one.reset_and_calculate();
+
+    // Set generic WIMP mass object
+    mwimp_generic.resolveDependency(&TH_ProcessCatalog_SingletDM);
+    mwimp_generic.resolveDependency(&DarkMatter_ID_SingletDM);
+    mwimp_generic.reset_and_calculate();
+
+    // Set generic annihilation rate in late universe (v->0 limit)
+    sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_SingletDM);
+    sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
+    sigmav_late_universe.reset_and_calculate();
 
     // ---- Initialize backends ----
 
@@ -164,6 +196,12 @@ int main()
     MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
     MicrOmegas_SingletDM_3_6_9_2_init.resolveDependency(&createDecays);
     MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
+    // For the below VXdecay = 0 - no 3 body final states via virtual X
+    //                         1 - annihilations to 3 body final states via virtual X
+    //                         2 - (co)annihilations to 3 body final states via virtual X
+    MicrOmegas_SingletDM_3_6_9_2_init.setOption<int>("VZdecay", 1);
+    MicrOmegas_SingletDM_3_6_9_2_init.setOption<int>("VWdecay", 1);
+    MicrOmegas_SingletDM_3_6_9_2_init.reset_and_calculate();
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -176,34 +214,6 @@ int main()
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
     DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
     DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
-
-    // ---- Set up basic internal structures for direct & indirect detection ----
-
-    // Set identifier for DM particle
-    DarkMatter_ID_SingletDM.notifyOfModel("SingletDM");
-    DarkMatter_ID_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
-    DarkMatter_ID_SingletDM.reset_and_calculate();
-
-    // Set up process catalog based on DarkSUSY annihilation rates
-    TH_ProcessCatalog_SingletDM.notifyOfModel("SingletDM");
-    TH_ProcessCatalog_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
-    TH_ProcessCatalog_SingletDM.resolveDependency(&createSpectrum);
-    TH_ProcessCatalog_SingletDM.resolveDependency(&createDecays);
-    TH_ProcessCatalog_SingletDM.reset_and_calculate();
-
-    // Assume for direct and indirect detection likelihoods that dark matter
-    // density is always the measured one (despite relic density results)
-    RD_fraction_one.reset_and_calculate();
-
-    // Set generic WIMP mass object
-    mwimp_generic.resolveDependency(&TH_ProcessCatalog_SingletDM);
-    mwimp_generic.resolveDependency(&DarkMatter_ID_SingletDM);
-    mwimp_generic.reset_and_calculate();
-
-    // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
-    sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_SingletDM);
-    sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
-    sigmav_late_universe.reset_and_calculate();
 
     // ---- Relic density ----
 
@@ -255,7 +265,6 @@ int main()
     lnL_oh2_Simple.reset_and_calculate();
 
     logger() << "Relic density lnL: " << lnL_oh2_Simple((0)) << LogTags::info << EOM;
-    cout << "Relic density lnL: " << lnL_oh2_Simple((0)) << endl;
 
     // ---- Direct detection -----
 
@@ -278,28 +287,27 @@ int main()
     DD_couplings_SingletDM.reset_and_calculate();
 
     // Set generic scattering cross-sections for later use
+    double sigma_SI_p_GB, sigma_SI_p_MO;
+
     sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
     sigma_SI_p_simple.resolveDependency(&mwimp_generic);
     sigma_SI_p_simple.reset_and_calculate();
+    sigma_SI_p_MO = sigma_SI_p_simple(0);
 
-    sigma_SD_p_simple.resolveDependency(&DD_couplings_SingletDM);
+    sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
     sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
 
-    //FIXME: This does not agree with standalone MicrOmegas!!!!!!
-    cout << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << endl;
     logger() << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_simple(0) << LogTags::info << EOM;
 
     // Set generic scattering cross-sections for later use
     sigma_SI_p_simple.resolveDependency(&DD_couplings_SingletDM);
-    sigma_SI_p_simple.resolveDependency(&mwimp_generic);
     sigma_SI_p_simple.reset_and_calculate();
+    sigma_SI_p_GB = sigma_SI_p_simple(0);
 
     sigma_SD_p_simple.resolveDependency(&DD_couplings_SingletDM);
-    sigma_SD_p_simple.resolveDependency(&mwimp_generic);
     sigma_SD_p_simple.reset_and_calculate();
 
-    cout << "sigma_SI,p with GAMBIT: " << sigma_SI_p_simple(0) << endl;
     logger() << "sigma_SI,p with GAMBIT: " << sigma_SI_p_simple(0) << LogTags::info << EOM;
 
     // Initialize DDCalc backend
@@ -443,20 +451,51 @@ int main()
     IC79WH_full.resolveDependency(&nuyield_from_DS);
     IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
     IC79WH_full.reset_and_calculate();
+    IC79WL_full.resolveDependency(&mwimp_generic);
+    IC79WL_full.resolveDependency(&annihilation_rate_Sun);
+    IC79WL_full.resolveDependency(&nuyield_from_DS);
+    IC79WL_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
+    IC79WL_full.reset_and_calculate();
+    IC79SL_full.resolveDependency(&mwimp_generic);
+    IC79SL_full.resolveDependency(&annihilation_rate_Sun);
+    IC79SL_full.resolveDependency(&nuyield_from_DS);
+    IC79SL_full.resolveBackendReq(&Backends::nulike_1_0_4::Functown::nulike_bounds);
+    IC79SL_full.reset_and_calculate();
 
     // Calculate IceCube likelihood
+    IC79WH_bgloglike.resolveDependency(&IC79WH_full);
+    IC79WH_bgloglike.reset_and_calculate();
     IC79WH_loglike.resolveDependency(&IC79WH_full);
     IC79WH_loglike.reset_and_calculate();
+    IC79WL_bgloglike.resolveDependency(&IC79WL_full);
+    IC79WL_bgloglike.reset_and_calculate();
+    IC79WL_loglike.resolveDependency(&IC79WL_full);
+    IC79WL_loglike.reset_and_calculate();
+    IC79SL_bgloglike.resolveDependency(&IC79SL_full);
+    IC79SL_bgloglike.reset_and_calculate();
+    IC79SL_loglike.resolveDependency(&IC79SL_full);
+    IC79SL_loglike.reset_and_calculate();
+    IC79_loglike.resolveDependency(&IC79WH_bgloglike);
+    IC79_loglike.resolveDependency(&IC79WH_loglike);
+    IC79_loglike.resolveDependency(&IC79WL_bgloglike);
+    IC79_loglike.resolveDependency(&IC79WL_loglike);
+    IC79_loglike.resolveDependency(&IC79SL_bgloglike);
+    IC79_loglike.resolveDependency(&IC79SL_loglike);
+    IC79_loglike.reset_and_calculate();
 
-    logger() << "IceCube 79WH lnL: " << IC79WH_loglike(0) << LogTags::info << EOM;
+    logger() << "IceCube 79 lnL: " << IC79_loglike(0) << LogTags::info << EOM;
 
     // ---- Dump results on screen ----
 
-    cout << "Relic density from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
+    cout << endl;
+    cout << "Omega h^2 from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
     cout << "Omega h^2 from GAMBIT: " << RD_oh2_general(0) << endl;
+    cout << "Relic density lnL: " << lnL_oh2_Simple(0) << endl;
+    cout << "sigma_SI,p with MicrOmegas: " << sigma_SI_p_MO << endl;
+    cout << "sigma_SI,p with GAMBIT: " << sigma_SI_p_GB << endl;
     cout << "LUX_2016 lnL: " << LUX_2016_GetLogLikelihood(0) << endl;
     cout << "Fermi LAT dwarf spheroidal lnL: " << lnL_FermiLATdwarfs_gamLike(0) << endl;
-    cout << "IceCube 79WH lnL: " << IC79WH_loglike(0) << endl;
+    cout << "IceCube 79 lnL: " << IC79_loglike(0) << endl;
   }
 
   catch (std::exception& e)
