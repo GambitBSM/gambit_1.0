@@ -141,7 +141,7 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
-      /// Option version <string>: Set Fermi LAT dwarf likelihood version (default: pass8)
+      /// Option version \code <string> \endcode : Set Fermi LAT dwarf likelihood version (default: pass8)
       std::string version = runOptions->getValueOrDef<std::string>("pass8", "version");
       if ( version == "pass8" ) mode = 1;
       else if ( version == "pass7" ) mode = 0;
@@ -166,7 +166,7 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
-      /// Option version <string>: Set HESS GC likelihood version (default: spectral_externalJ)
+      /// Option version \code <string> \endcode : Set HESS GC likelihood version (default: spectral_externalJ)
       std::string version = runOptions->getValueOrDef<std::string>("spectral_externalJ", "version");
       if ( version == "integral_fixedJ" ) mode = 6;
       else if ( version == "spectral_fixedJ" ) mode = 7;
@@ -213,7 +213,7 @@ namespace Gambit {
       int mode = 0;
       result = 0;
 
-      /// Option version <string>: Set Fermi LAT GC likelihood version (default: externalJ)
+      /// Option version \code <string> \endcode : Set Fermi LAT GC likelihood version (default: externalJ)
       std::string version = runOptions->getValueOrDef<std::string>("externalJ", "version");
       if ( version == "fixedJ" ) mode = 2;
       else if ( version == "margJ" ) mode = 3;

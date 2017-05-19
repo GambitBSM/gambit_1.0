@@ -278,7 +278,8 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define DEFINED_PROBE_PROXY(...)       DEFINED_PROBE_PRIMITIVE(__VA_ARGS__)       // expand arguments
 #define DEFINED_PROBE_PRIMITIVE(x)     DEFINED_PROBE_COMBINE_ x                   // collapse again
 #define DEFINED_PROBE_COMBINE_(...)    PROBE(X)   
-/// Returns 1 or 0 depending on whether a corresponding DEFINED_<NAME> () macro has been #defined or not. 
+/// Returns 1 or 0 depending on whether a corresponding DEFINED_<NAME> () macro has been
+/// \code #defined \endcode or not.
 #define DEFINED(NAME)                  CHECK(DEFINED_PROBE(NAME))
 /// @}
 
