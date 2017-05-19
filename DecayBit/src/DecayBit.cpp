@@ -2316,7 +2316,7 @@ namespace Gambit
       if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
       {
         str filename = runOptions->getValueOrDef<str>("GAMBIT_decays.slha", "SLHA_output_filename");
-        decays.getSLHA(filename);
+        decays.writeSLHAfile(filename);
       }
 
     }
