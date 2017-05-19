@@ -105,7 +105,7 @@ SPheno_3_3_8_init: |
 SPheno_MSSMspectrum: |
     Calculates and returns a MSSM spectrum object using SPheno.
 
-SPheno_internal |
+SPheno_internal: |
     Exclusively used for internal variables and function for the SPheno backend. 
 
 
