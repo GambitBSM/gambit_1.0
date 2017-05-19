@@ -66,6 +66,7 @@ namespace Gambit
   namespace DarkBit
   {
     
+    /// General annihilation/decay channel for sim yield tables
     SimYieldChannel::SimYieldChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
     : dNdE(dNdE)
     , p1(p1)
@@ -84,6 +85,7 @@ namespace Gambit
       dNdE_bound = this->dNdE->bind("E", "Ecm");
     }
     
+    /// Sim yield table dummy constructor
     SimYieldTable::SimYieldTable() : dummy_channel(daFunk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
     
     void SimYieldTable::addChannel(daFunk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
@@ -140,16 +142,19 @@ namespace Gambit
       return channel_list[index];
     }
     
+    /// Retrieve simyield table entries at given center of mass energy (GeV)
     daFunk::Funk SimYieldTable::operator()(std::string p1, std::string p2, std::string finalState, double Ecm) const
     {
       return this->operator()(p1, p2, finalState)->set("Ecm", Ecm);
     }
     
+    /// Retrieve simyield table entries at given center of mass energy (GeV)
     daFunk::Funk SimYieldTable::operator()(std::string p1, std::string finalState, double Ecm) const
     {
       return this->operator()(p1,finalState)->set("Ecm", Ecm);
     }
     
+    /// Retrieve simyield table entries at given center of mass energy (GeV)
     daFunk::Funk SimYieldTable::operator()(std::string p1, std::string p2, std::string finalState) const
     {
       int index = findChannel(p1, p2, finalState);
