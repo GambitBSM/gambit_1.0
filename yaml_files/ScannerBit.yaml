@@ -1,20 +1,7 @@
-# Ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A and ExampleBit_B,
-# plus example backends libfirst and libFortran.
-#
-# To use this you'll need to
-# make
-# make libfirst
-# make libfortran
-#
-# Don't commit modified versions of this file!
-# If you want to change it in order to test
-# your own modifications to the code, copy
-# it to spartan_personal.yaml, which will be
-# ignored by git.
-#
-# Pat Scott <p.scott@imperial.ac.uk>
-# Oct 2014
+# Ultra-minimal GAMBIT (ScannerBit) Initialization file (in YAML)
+# Below is an example to explore a EggBox likelihood using the
+# multinest sampler.  Also include are instructions to use other
+# likelihoods and scanners.
 #
 
 ###################################
@@ -40,8 +27,7 @@ Priors:
 
 Printer:
 
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
+  # Select printer to use via string tag)
   #printer: ascii
   printer: hdf5
 
@@ -50,11 +36,10 @@ Printer:
   # therefore vary according to the selected
   # printer.
   options:
-    # name of output file
-    #output_file: "runs/spartan/samples/gambit_output2.txt"
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
-
+    
+    # name of output file
     output_file: "gambit_output.hdf5"
     group: "/test"
     delete_file_on_restart: true
@@ -200,9 +185,6 @@ Logger:
 ###############################
 ## Printer (output) setup
 ###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
 
 
 ##########################
