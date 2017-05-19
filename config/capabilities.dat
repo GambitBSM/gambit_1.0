@@ -33,6 +33,49 @@ widths: |
 xsection: |
    A cross-section for some make-believe process.
 
+nevents: |
+   Number of events for some make-believe process.
+
+Example_lnL_A: |
+   An example likelihood that ExampleBitA can calculate.
+
+eventLoopManagement: |
+   An example of a manager for loops over other module functions.
+
+event: |
+   An event of some make-believe process.
+
+eventAccumulation: |
+   An example of a collector of events.
+
+particle_id: |
+   Name of some make-believe particle.
+
+damu: |
+   Mock muon (g-2) anomalous contribution;
+   an example of how to interact with models.
+
+normaldist_loglike: |
+   A test likelihood: normal distribution.
+
+function_pointer: |
+   Example of how to retrieve a pointer to some backend function.
+
+test_Farrays: |
+   Test interaction with arrays in Fortran backends.
+
+test_marg_lnlike: |
+   Tester for marginalised Poisson likelihood.
+
+test_Pythia: |
+   Tester for Pythia backend.
+
+test_BE_Array: |
+   Tester for C/C++ backend array interfaces.
+
+test_flat_likelihood: |
+   Tester for C/C++ backend array interfaces.
+
 
 #-------------------------------------
 #  SpecBit
@@ -1363,6 +1406,89 @@ XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
 
+#-------------------------------------
+#  DarkSUSY capabilities
+#-------------------------------------
+
+dsIBffdxdy: |
+   Differential internal bremsstrahlung photon yield for fermion final states.
+
+dsIBfsrdxdy: |
+   Differential final state radiation photon yield for fermion final states.
+
+dsIBhhdxdy: |
+   Differential internal bremsstrahlung photon yield for the H+ H- final state.
+
+dsIBwhdxdy: |
+   Differential internal bremsstrahlung photon yield for W+- H-+ final states.
+
+dsIBwwdxdy: |
+   Differential internal bremsstrahlung photon yield for the W+ W- final state.
+
+dsSLHAread: |
+   DarkSUSY SLHA file reader.
+
+dsanwx: |
+   Neutralino self-annihilation invariant rate.
+
+dsddgpgn: |
+   Neutralino nucleon four-fermion couplings.
+
+dsgf2s2thw: |
+   Determines sin^2(theta_W) based on Fermi constant.
+
+dsgive_model_isasugra: |
+   Sets CMSSM model parameters in ISASUGRA included with DarkSUSY.
+
+dshainit: |
+   Intialises and loads common block values needed by DarkSUSY halo yield routines.
+
+dshayield: |
+   Integrated or differential yield of a range of SM species from various final states.
+
+dshigwid: |
+   Choose which Higgs width calculation to use in DarkSUSY.
+
+dshmcom: |
+   Halo model density, distance, and velocity parameters.
+
+dshmframevelcom: |
+   Velocity of observer in frame of galaxy.
+
+dshmisodf: |
+   Velocity dispersion and escape velocity.
+
+dshmnoclue: |
+   Mysterious DarkSUSY halo model common block (contains observer velocity).
+
+dsibyieldone: |
+   Inverse bremsstrahlung yield from one channel.
+ 
+dsinit: |
+   Initialise DarkSUSY.
+   
+#   dsmqpole4loop
+#   dsmssmzero
+#   dsorder_flavour
+#   dsprep
+#   dsrdeqn
+#   dsrdinit
+#   dsrdomega
+#   dsrdset
+#   dsrdtab
+#   dsrdthlim
+#   dsrdwintp
+#   dssigmav
+#   dsspectrum
+#   dsspwid
+#   dssuconst
+#   dssuconst_ckm
+#   dssuconst_yukawa_running
+#   dssusy
+#   dssusy_isasugra
+#   dsvertx
+#   dswspectrum
+#   dswwidth
 
 #-------------------------------------
 #  DecayBit capabilities
