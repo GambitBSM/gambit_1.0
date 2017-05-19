@@ -660,7 +660,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAstruct;
       const SLHAstruct& input_slha_tmp = *myPipe::Dep::unimproved_MSSM_spectrum; // Retrieve dependency on SLHAstruct
 
-      /// @TODO @FIXME this needs to be fixed -- is it needed any more?  Where is this GAMBIT block supposed to be written?
+      /// @todo FIXME this needs to be fixed -- is it needed any more?  Where is this GAMBIT block supposed to be written?
       SLHAstruct input_slha(input_slha_tmp); // Copy struct (for demo adding of GAMBIT block only)
       // For example; add this to your input SLHAstruct:
       input_slha["GAMBIT"][""] << "BLOCK" << "GAMBIT";
