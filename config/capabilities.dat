@@ -1410,6 +1410,9 @@ XENON100_2012_Init: |
 #  DarkSUSY capabilities
 #-------------------------------------
 
+DarkSUSY_5_1_3_init: |
+   Initialise DarkSUSY backend.
+   
 dsIBffdxdy: |
    Differential internal bremsstrahlung photon yield for fermion final states.
 
@@ -1467,28 +1470,71 @@ dsibyieldone: |
 dsinit: |
    Initialise DarkSUSY.
    
-#   dsmqpole4loop
-#   dsmssmzero
-#   dsorder_flavour
-#   dsprep
-#   dsrdeqn
-#   dsrdinit
-#   dsrdomega
-#   dsrdset
-#   dsrdtab
-#   dsrdthlim
-#   dsrdwintp
-#   dssigmav
-#   dsspectrum
-#   dsspwid
-#   dssuconst
-#   dssuconst_ckm
-#   dssuconst_yukawa_running
-#   dssusy
-#   dssusy_isasugra
-#   dsvertx
-#   dswspectrum
-#   dswwidth
+dsmqpole4loop: |
+   Calculate quark pole mass.
+
+dsmssmzero: |
+   Zeros all electroweak parameters in DarkSUSY.
+
+dsorder_flavour: |
+   Orders sfermions based on flavour content as expected by DarkSUSY routines.
+
+dsprep: |
+   Calculates cross sections and brnaching ratios and sets common block variables in DarkSUSY
+
+dsrdeqn: |
+   Solves the relic density evolution equation.
+
+dsrdinit: |
+   Initialise the DarkSUSY relic density routines (read in the degree of freedom table).
+
+dsrdomega: |
+   Calculates Omega h^2 for the MSSM neutralino.
+
+dsrdset: |
+   Set parameters for DarkSUSY relic density routines (which DOF table is used).
+
+dsrdtab: |
+   Tabulate the invariant annihilation rate in DarkSUSY.
+
+dsrdthlim: |
+   Determine which limits in p_eff for DarkSUSY to use when integrating for the thermal average.
+
+dsrdwintp: |
+   Interpolation of tabulated invariant rate.
+
+dssigmav: |
+   Neutralino self-annihilation cross section <sigma v> in zero velocity limit.
+
+dsspectrum: |
+   Sets up particle mass spectrum and mixing matrices in DarkSUSY.
+
+dsspwid: |
+   Sets widths of particles in DarkSUSY.
+
+dssuconst: |
+   Sets many useful constants in DarkSUSY.
+
+dssuconst_ckm: |
+   Sets CKM mixing parameters in DarkSUSY.
+
+dssuconst_yukawa_running: |
+   Calculates Yukawa couplings in DarkSUSY with running masses.
+
+dssusy: |
+   Sets up supersymmetric model routines in DarkSUSY.
+
+dssusy_isasugra:
+   Sets up supersymmetric model routines in DarkSUSY using ISASUGRA.
+
+dsvertx:
+   Sets up SUSY vertices in DarkSUSY.
+
+dswspectrum:
+   Writes out mass spectrum.
+
+dswwidth:
+   Writes out widths.
 
 #-------------------------------------
 #  DecayBit capabilities
