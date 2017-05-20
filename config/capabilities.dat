@@ -1678,7 +1678,7 @@ suspectSUGRA: |
 lesHinput: |
    Initialises MicrOmegas using an SLHA file.
 
-sortOddParticles: |
+mass_spectrum: |
    Calculates all masses/couplings in MicrOmegas and sorts odd particles by mass.
 
 cleanDecayTable: |
@@ -1704,7 +1704,7 @@ readSpectra: |
 
 MOcommon: |
    MicrOmegas global variables.
-   
+
 ForceUG: |
    Flag to force CalcHEP in MicrOmegas to do calculation in unitary gauge.
 
