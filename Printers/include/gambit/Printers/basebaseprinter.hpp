@@ -217,7 +217,9 @@ namespace Gambit
         ///      1. some way to iterate through printer output
         ///      2. a generic function that can read in a particular entry,
         ///         knowing e.g. the following:
+        ///    \code
         ///       Column 6: #NormalDist_parameters @NormalDist::primary_parameters::mu
+        ///    \endcode
         ///         and can put it back into some Gambit object, e.g.
         ///       Parameters:
         ///         NormalDist:
