@@ -327,8 +327,7 @@ for fname in fnames:
          ## # The way this works is a bit trippy, but it is fast.
          ## #y = target (IDs_out)
          ## #x = sources (IDs_in)
-         ## #result = array of length(y), containing positions of 
-
+         ## #result = array of length(y), containing positions of
          ## #e.g. 
          ## #x = np.array([3,5,7,1 ,9  ,8,6,6])
          ## #y = np.array([2,1,5,10,100,6])
@@ -345,7 +344,6 @@ for fname in fnames:
          ## print y1
          ## print ypos1
          ## print xsort1[ypos1]
-
          ## # less trivial test:
          ## x2 = np.array([0,1,7,2,7,8,6,4])
          ## y2 = np.array([4,0,1,2,6,8,7])
