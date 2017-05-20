@@ -1524,17 +1524,125 @@ dssuconst_yukawa_running: |
 dssusy: |
    Sets up supersymmetric model routines in DarkSUSY.
 
-dssusy_isasugra:
+dssusy_isasugra: |
    Sets up supersymmetric model routines in DarkSUSY using ISASUGRA.
 
-dsvertx:
+dsvertx: |
    Sets up SUSY vertices in DarkSUSY.
 
-dswspectrum:
+dswspectrum: |
    Writes out mass spectrum.
 
-dswwidth:
+dswwidth: |
    Writes out widths.
+
+cap_Sun_v0q0_isoscalar: |
+   Capture rate of dark matter in the sun.
+
+raw_muonyield: |
+   Gives either the differential or total yield of muons in a neutrino telescope from dark matter annihilation in the sun.
+
+pacodes: |
+   Common block containing particle codes used in DarkSUSY.
+
+mssmiuseful: |
+   Common block containing DarkSUSY particle codes for lightest supersymmmetric particle and neutralino.
+
+mspctm: | 
+   DarkSUSY mass spectrum.
+
+#widths: |
+#   DarkSUSY particle widths. (Capability is defined twice.)
+
+intdof: |
+   Number of spin and color states for each particle for DarkSUSY.
+
+vrtxs: |
+   DarkSUSY interaction vertices.
+
+smruseful: |
+   Various standard model parameters.
+
+smcuseful: |
+   Contains option to determine how DarkSUSY runs particle masses.
+
+couplingconstants: |
+   Coupling constants.
+
+sckm: |
+   CKM matrix parameters.
+
+mixing: |
+   The CKM matrix.
+
+mssmtype: |
+   DarkSUSY parameter that specifies parameterisation of MSSM.
+
+mssmpar: |
+   MSSM parameters for DarkSUSY.
+
+mssmswitch: |
+   Switches that tell DarkSUSY how to calculate various quantities.
+
+sfermionmass: |
+   Sfermion masses for DarkSUSY.
+
+mssmwidths: |
+   Widths of Higgs sector particle for DarkSUSY.
+
+mssmmixing: |
+   MSSM mixing matrices.
+
+rdmgev: |
+   Information about (co)annihilating particles for the DarkSUSY relic density routines.
+
+rdpth: |
+   Momentum thresholds relevant for DarkSUSY relic density calculation.
+
+rddof: |
+   Common block for effective degrees of freedom in DarkSUSY.
+
+rderrors: |
+   Common block containing information about errors and warnings from DarkSUSY relic density routines.
+
+rdpars: |
+   Parameters that effect the DarkSUSY relic density calculation.
+
+rdswitch: |
+   Options for the DarkSUSY relic density calculation.
+
+rdlun: |
+   Logical units for DarkSUSY relic density calculation.
+
+rdpadd: |
+   Parameters that effect the tabulation of the invariant annihilation rate in DarkSUSY.
+
+IBintvars: |
+   Common block for DarkSUSY internal Bremsstrahlung routines.
+
+ddcom: |
+   Common block containing DM nucleon couplings and options for their calculation in DarkSUSY.
+
+nu_common_block: |
+   Annihilation branching rates and scalar decay rates used by DarkSUSY routines for DM annihilation in sun.
+
+nuyield: |
+   Neutrino yields at the top of the atmosphere.
+
+nuyield_setup: |
+   Sets DarkSUSY common blocks with all necessary information to calculate neutrino yields.
+
+particle_code: |
+   Transaltes GAMBIT string particle identifiers to corresponding DarkSUSY integer codes.
+
+intfromSLHAeaAndDecayTable: |
+   Initialises an MSSM model in DarkSUSY from an SLHAea object and a DecayTable.
+
+get_DS_neutral_h_decay_channels: |
+   Vector containing neutral Higgs decay channels in DarkSUSY.
+
+get_DS_charged_h_decay_channels: |
+   Vector containing charged Higgs decay channels in DarkSUSY.
 
 #-------------------------------------
 #  DecayBit capabilities
