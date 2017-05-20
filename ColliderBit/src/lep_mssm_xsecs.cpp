@@ -713,7 +713,7 @@ namespace Gambit
     ///////////////////////////////////////////////////////////////////////
     /// @{
 
-    /// Converts a neutralino mixing matrix in SLHA conventions to BFM conventions, \tan\beta is as defined in SLHA
+    /// Converts a neutralino mixing matrix in SLHA conventions to BFM conventions, \f$\tan\beta\f$ is as defined in SLHA
     void SLHA2BFM_NN(MixMatrix &NN, double tanb, double sin2thetaW)
     {
       // Define conversion matrix

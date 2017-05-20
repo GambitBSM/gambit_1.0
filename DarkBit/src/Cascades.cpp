@@ -34,10 +34,10 @@ namespace Gambit
     //
     //////////////////////////////////////////////////////////////////////////
 
-    // Special events for event loop
+    /// Special events for event loop
     enum cascadeMC_SpecialEvents {MC_INIT=-1, MC_NEXT_STATE=-2, MC_FINALIZE=-3};
 
-    // Function for retrieving list of final states for cascade decays
+    /// Function for retrieving list of final states for cascade decays
     void cascadeMC_FinalStates(std::vector<std::string> &list)
     {
       list.clear();
@@ -54,7 +54,7 @@ namespace Gambit
       #endif
     }
 
-    // Function setting up the decay table used in decay chains
+    /// Function setting up the decay table used in decay chains
     void cascadeMC_DecayTable(DarkBit::DecayChain::DecayTable &table)
     {
       using namespace DecayChain;
@@ -76,7 +76,7 @@ namespace Gambit
 #endif
     }
 
-    // Loop manager for cascade decays
+    /// Loop manager for cascade decays
     void cascadeMC_LoopManager()
     {
       using namespace Pipes::cascadeMC_LoopManager;
@@ -136,7 +136,7 @@ namespace Gambit
       Loop::executeIteration(MC_FINALIZE);
     }
 
-    // Function selecting initial state for decay chain
+    /// Function selecting initial state for decay chain
     void cascadeMC_InitialState(std::string &pID)
     {
       using namespace DecayChain;
@@ -171,7 +171,7 @@ namespace Gambit
 #endif
     }
 
-    // Event counter for cascade decays
+    /// Event counter for cascade decays
     void cascadeMC_EventCount(std::map<std::string, int> &counts)
     {
       using namespace Pipes::cascadeMC_EventCount;
@@ -194,7 +194,7 @@ namespace Gambit
       }
     }
 
-    // Function for generating decay chains
+    /// Function for generating decay chains
     void cascadeMC_GenerateChain(
         DarkBit::DecayChain::ChainContainer &chain)
     {
@@ -229,9 +229,9 @@ namespace Gambit
       chain=ChainContainer(chn);
     }
 
-    // Function for sampling SimYieldTables (tabulated spectra).
-    // This is a convenience function used in cascadeMC_Histograms, and does
-    // not have an associated capability.
+    /** Function for sampling SimYieldTables (tabulated spectra).
+      * This is a convenience function used in cascadeMC_Histograms, and does
+      * not have an associated capability.  */
     void cascadeMC_sampleSimYield( const SimYieldTable &table,
         const DarkBit::DecayChain::ChainParticle* endpoint,
         std::string finalState,
@@ -359,8 +359,7 @@ namespace Gambit
       }
     }
 
-    // Function responsible for histogramming, and evaluating end conditions
-    // for event loop
+    /// Function responsible for histogramming, and evaluating end conditions for event loop
     void cascadeMC_Histograms(std::map<std::string, std::map<std::string,
         SimpleHist> > &result)
     {
@@ -619,10 +618,10 @@ namespace Gambit
       }
     }
 
-    // Convenience function for getting a daFunk::Funk object of a given spectrum.
-    // This function has no associated capability.
-    // Function retrieving specific spectra (like cascadeMC_gammaSpectra)
-    // should call this function.
+    /** Convenience function for getting a daFunk::Funk object of a given spectrum.
+        This function has no associated capability.
+        Function retrieving specific spectra (like cascadeMC_gammaSpectra)
+        should call this function.*/
     void cascadeMC_fetchSpectra(std::map<std::string, daFunk::Funk> &spectra,
         std::string finalState,
         const std::vector<std::string> &ini,
@@ -684,7 +683,7 @@ namespace Gambit
       }
     }
 
-    // Function requesting and returning gamma ray spectra from cascade decays.
+    /// Function requesting and returning gamma ray spectra from cascade decays.
     void cascadeMC_gammaSpectra(std::map<std::string, daFunk::Funk> &spectra)
     {
       using namespace Pipes::cascadeMC_gammaSpectra;

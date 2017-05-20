@@ -142,6 +142,15 @@ Higgs_Couplings: |
 SMlike_Higgs_PDG_code: |
     The PDG code of the neutral Higgs boson that is most SM-like in the theory at hand.
 
+SPheno_3_3_8_init: |
+    Initalises SPheno 3.3.8 and sets the internal model type according to the one being scanned.
+
+SPheno_MSSMspectrum: |
+    Calculates and returns a MSSM spectrum object using SPheno.
+
+SPheno_internal: |
+    Exclusively used for internal variables and function for the SPheno backend. 
+
 
 #-------------------------------------
 #  PrecisionBit

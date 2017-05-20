@@ -127,11 +127,9 @@ endif()
 # Gamlike
 set(name "gamlike")
 set(ver "1.0.0")
-#set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
-set(dl "null")
-set(md5 "FIXME")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(md5 "16b763a2e8b9d6c174d8b7ca2f4cb575")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(loc "${GAMBIT_INTERNAL}/gamLike") #FIXME can be deleted when public
 if(GSL_FOUND)
   execute_process(
     COMMAND gsl-config --libs
@@ -149,9 +147,7 @@ endif()
 check_ditch_status(${name} ${ver})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-             COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-             COMMAND ${CMAKE_COMMAND} -E copy_directory ${loc} ${dir}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ""
