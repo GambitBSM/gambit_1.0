@@ -96,12 +96,15 @@ namespace Gambit
     //////////////////////////////////////////////////////////////////////////
 
 
-    // Dark matter halo profiles
+    /// Generalized NFW dark matter halo profile function
     double profile_gNFW(double rhos, double rs, double alpha, double beta, double gamma, double r)
     { return pow(2, (beta-gamma)/alpha)*rhos/pow(r/rs, gamma)/pow(1+pow(r/rs, alpha), (beta-gamma)/alpha); }
+
+    /// Einasto dark matter halo profile function
     double profile_Einasto(double rhos, double rs, double alpha, double r)
     { return rhos*exp((-2.0/alpha)*(pow(r/rs, alpha)-1)); }
 
+    /// Module function to generate GalacticHaloProperties for gNFW profile
     void GalacticHalo_gNFW(GalacticHaloProperties &result)
     {
       using namespace Pipes::GalacticHalo_gNFW;
@@ -115,6 +118,7 @@ namespace Gambit
       result.r_sun = r_sun;
     }
 
+    /// Module function to generate GalacticHaloProperties for Einasto profile
     void GalacticHalo_Einasto(GalacticHaloProperties &result)
     {
       using namespace Pipes::GalacticHalo_Einasto;
@@ -126,6 +130,7 @@ namespace Gambit
       result.r_sun = r_sun;
     }
 
+    /// Module function providing local density and velocity dispersion parameters
     void ExtractLocalMaxwellianHalo(LocalMaxwellianHalo &result)
     {
       using namespace Pipes::ExtractLocalMaxwellianHalo;

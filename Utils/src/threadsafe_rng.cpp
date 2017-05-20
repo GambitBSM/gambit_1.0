@@ -5,7 +5,7 @@
 ///  A threadsafe interface to the STL random
 ///  number generators.  The generator to use can
 ///  be chosen in the ini/yaml file with option
-///    rng: <name>
+///    rng: name
 ///  where name is one of the following:
 ///    default_random_engine
 ///      Default random engine

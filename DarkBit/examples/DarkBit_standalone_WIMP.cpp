@@ -119,10 +119,6 @@ namespace Gambit
       /// Option mWIMP<double>: WIMP mass in GeV (required)
       double mPhi = runOptions->getValueOrDef<double>(59.0, "mPhi");
 
-      // FIXME: Use various channels include 3-body and complicated cascade
-      // decay
-      // FIXME: Check stability of codes w.r.t. extreme parameters
-      // FIXME: Test all input possible for this function
       addParticle("gamma", 0.0,  2)
       addParticle("Z0", 91.2,  2)
       addParticle("W+", 80.39, 2)
@@ -180,9 +176,11 @@ namespace Gambit
       if ( brList[7] > 0. )
       {
         auto E = daFunk::var("E");
+        // Note:: The below is an arbitrary form of the differential section for demonstration purposes
         daFunk::Funk kinematicFunction = daFunk::one("v", "E1")/(pow(E-50, 4)+1)*sv*brList[7];
-        // FIXME: Include second gamma in AnnYield (currently ignored)
-        TH_Channel new_channel(daFunk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
+        // Note: In the three body final states, the gamma yield from AnnYield currently is just the contribution
+        // from the first particle in the list (here the photon):
+        TH_Channel new_channel(daFunk::vec<string>("gamma", "e+_1", "e-_1"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
       }
 
@@ -225,27 +223,28 @@ int main(int argc, char* argv[])
     std::cout << "Welcome to the DarkBit Generic WIMP standalone program!" << std::endl;
     std::cout << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
-    std::cout << "This standalone example calculates a range of observables and likelihoods for a " << std::endl;
-    std::cout << "generic WIMP model defined by the WIMP mass and an annihilation (or scattering) " << std::endl;
-    std::cout << "cross section. The model also contains three scalar particles which decay:" << std::endl;
+    std::cout << "This standalone example demonstrates how to calculate a range of observables and " << std::endl;
+    std::cout << "likelihoods for a generic WIMP model defined by the WIMP mass and an annihilation (or " << std::endl;
+    std::cout << "scattering) cross section. The model also contains three scalar particles which decay:" << std::endl;
     std::cout << "phi -> gamma gamma    phi_1 -> tau+ tau-  phi_2 -> b bbar" << std::endl;
     std::cout << std::endl;
     std::cout << "Usage: DarkBit_standalone_WIMP mode" << std::endl;
     std::cout << std::endl;
     std::cout << "Mode Options: " << std::endl;
-    std::cout << "  0: Outputs spectrum of gamma rays from WIMP annihilation to b bbar (dNdE0.dat)" << std::endl;
-    std::cout << "  1: Outputs spectrum of gamma rays from WIMP annihilation to gamma Z_0 (dNdE1.dat)" << std::endl;
-    std::cout << "  2: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma (dNdE2.dat)" << std::endl;
-    std::cout << "  3: Outputs spectrum of gamma rays from WIMP annihilation to tau+ tau- (dNdE3.dat)" << std::endl;
-    std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to W+ W- (dNdE4.dat)" << std::endl;
-    std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma Z_0" << std::endl;
-    std::cout << "      (dNdE5.dat)" << std::endl;
-    std::cout << "  6: Outputs tables of Fermi-LAT dwarf spheroidal likelihoods and the relic density" << std::endl;
+    std::cout << "  0: Outputs spectrum of gamma rays from WIMP annihilation to b bbar (dPhi_dE0.dat)" << std::endl;
+    std::cout << "  1: Outputs spectrum of gamma rays from WIMP annihilation to gamma Z_0 (dPhi_dE1.dat)" << std::endl;
+    std::cout << "  2: Outputs spectrum of gamma rays from WIMP annihilation to gamma gamma (dPhi_dE2.dat)" << std::endl;
+    std::cout << "  3: Outputs spectrum of gamma rays from WIMP annihilation to tau+ tau- (dPhi_dE3.dat)" << std::endl;
+    std::cout << "  4: Outputs spectrum of gamma rays from WIMP annihilation to W+ W- (dPhi_dE4.dat)" << std::endl;
+    std::cout << "  5: Outputs spectrum of gamma rays from WIMP annihilation to gamma e+ e- " << std::endl;
+    std::cout << "      (dPhi_dE5.dat)" << std::endl;
+    std::cout << "  6: Outputs tables of gamma-ray likelihoods and the relic density" << std::endl;
     std::cout << "      in <sigma v> / m_WIMP parameter space." << std::endl;
-    std::cout << "  7: Outputs tables of direct detection likelihoods in <sigma v> / m_WIMP parameter" << std::endl;
+    std::cout << "  7: Outputs tables of direct detection likelihoods in sigma / m_WIMP parameter" << std::endl;
     std::cout << "      space." << std::endl;
     std::cout << "  >=10: Outputs spectrum of gamma rays from WIMP annihilation to phi phi_2. The" << std::endl;
-    std::cout << "       mode value is m_phi while m_phi_2=100 GeV (dNdE_FCMC_(mode).dat)" << std::endl;
+    std::cout << "       mode value is m_phi while m_phi_2=100 GeV (dPhi_dE_FCMC_(mode).dat)" << std::endl;
+    std::cout << " N.B. Here dPhi/dE = sigma v / m_chi^2 * dN/dE" << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << std::endl;
 
@@ -299,6 +298,10 @@ int main(int argc, char* argv[])
     GalacticHalo_Einasto.reset_and_calculate();
 
     // ---- Initialize backends ----
+
+    // Assume for direct and indirect detection likelihoods that dark matter
+    // density is always the measured one (despite relic density results)
+    RD_fraction_one.reset_and_calculate();
 
     // Set up DDCalc backend initialization
     Backends::DDCalc_1_0_0::Functown::DDCalc_CalcRates_simple.setStatus(2);
@@ -379,7 +382,6 @@ int main(int argc, char* argv[])
     //cascadeMC_Histograms.reset_and_calculate();
 
     // Check convergence of cascade MC
-    // FIXME: Test dynamic convergence criteria for cascade routines
     cascadeMC_EventCount.resolveDependency(&cascadeMC_InitialState);
     cascadeMC_EventCount.resolveLoopManager(&cascadeMC_LoopManager);
     //cascadeMC_EventCount.reset_and_calculate();
@@ -398,7 +400,6 @@ int main(int argc, char* argv[])
     GA_AnnYield_General.resolveDependency(&DarkMatter_ID_WIMP);
     GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
 
-    // FIXME: Extend existing gamma-ray spectrum dumper
     dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
 
     // Resolve Galactic halo requirements for gamLike
@@ -525,13 +526,13 @@ int main(int argc, char* argv[])
       // 4: W+ W-
       // 5: e+ e-
       // 6: phi phi2
-      // 7: gamma gamma Z_0
-      if (mode==0) dumpSpectrum("dNdE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
-      if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0., 0.));
-      if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0., 0., 0.));
-      if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0., 0.));
-      if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0., 0.));
-      if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 0., 1.));
+      // 7: gamma e+ e-
+      if (mode==5) dumpSpectrum("dPhi_dE5.dat", mass, sv*0.1, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 0., 1.));
+      if (mode==0) dumpSpectrum("dPhi_dE0.dat", mass, sv, daFunk::vec<double>(1., 0., 0., 0., 0., 0., 0., 0.));
+      if (mode==1) dumpSpectrum("dPhi_dE1.dat", mass, sv, daFunk::vec<double>(0., 1., 0., 0., 0., 0., 0., 0.));
+      if (mode==2) dumpSpectrum("dPhi_dE2.dat", mass, sv, daFunk::vec<double>(0., 0., 1., 0., 0., 0., 0., 0.));
+      if (mode==3) dumpSpectrum("dPhi_dE3.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 1., 0., 0., 0., 0.));
+      if (mode==4) dumpSpectrum("dPhi_dE4.dat", mass, sv, daFunk::vec<double>(0., 0., 0., 0., 1., 0., 0., 0.));
     }
 
     // Generate gamma-ray spectra for various masses
@@ -540,7 +541,7 @@ int main(int argc, char* argv[])
       std::cout << "Producing test spectra." << std::endl;
       double mass = 100.;
       double sv = 3e-26;
-      std::string filename = "dNdE_FCMC_" + std::to_string(mode) + ".dat";
+      std::string filename = "dPhi_dE_FCMC_" + std::to_string(mode) + ".dat";
       dumpSpectrum(filename, mass, sv, daFunk::vec<double>(0., 0., 0., 0., 0., 0., 1., 0.), mode);
     }
 
@@ -566,7 +567,7 @@ int main(int argc, char* argv[])
 
       sv_list = daFunk::logspace(-28.0, -22.0, svBins);
 
-      std::cout << "Calculating Fermi-LAT dwarf spheroidal likehood table for annihilation to b bbar." << std::endl;
+      std::cout << "Calculating gamma-ray likelihood tables for annihilation to b bbar." << std::endl;
       m_list = daFunk::logspace(log10(5.), 4., mBins);
       for (size_t i = 0; i < m_list.size(); i++)
       {
@@ -591,22 +592,22 @@ int main(int argc, char* argv[])
           lnL_FermiLATdwarfs_gamLike.setOption<std::string>("version", "pass8");
           lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
           lnL = lnL_FermiLATdwarfs_gamLike(0);
-          std::cout << "Fermi dwarf likelihood: " << lnL << std::endl;
+          //std::cout << "Fermi dwarf likelihood: " << lnL << std::endl;
           lnL_b_array[i][j] = lnL;
           lnL_HESSGC_gamLike.setOption<std::string>("version", "integral_fixedJ");
           lnL_HESSGC_gamLike.reset_and_calculate();
           lnL = lnL_HESSGC_gamLike(0);
-          std::cout << "HESS GC likelihood: " << lnL << std::endl;
+          //std::cout << "HESS GC likelihood: " << lnL << std::endl;
           lnL_b_array2[i][j] = lnL;
           lnL_CTAGC_gamLike.reset_and_calculate();
           lnL = lnL_CTAGC_gamLike(0);
-          std::cout << "CTA GC likelihood: " << lnL << std::endl;
+          //std::cout << "CTA GC likelihood: " << lnL << std::endl;
           lnL_b_array3[i][j] = lnL;
           lnL_FermiGC_gamLike.setOption<std::string>("version", "fixedJ");
           lnL_FermiGC_gamLike.reset_and_calculate();
           lnL = lnL_FermiGC_gamLike(0);
           lnL_b_array4[i][j] = lnL;
-          std::cout << "Fermi GC likelihood: " << lnL << std::endl;
+          //std::cout << "Fermi GC likelihood: " << lnL << std::endl;
         }
       }
 

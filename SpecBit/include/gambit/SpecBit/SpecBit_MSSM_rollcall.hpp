@@ -42,31 +42,12 @@
     // GUT MSSM parameterisations 
     // (CMSSM and its various non-universal generalisations)    
 
-    /// SPheno spectrum functions, parallel to the FS ones
-    // CMSSM
-    #define FUNCTION get_CMSSM_spectrum_SPheno
+    /// SPheno spectrum function
+    #define FUNCTION get_MSSM_spectrum_SPheno
     START_FUNCTION(Spectrum)
-    ALLOW_MODELS(CMSSM)
+    ALLOW_MODELS(CMSSM, MSSM63atMGUT, MSSM63atQ)
     DEPENDENCY(SMINPUTS, SMInputs)
-    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
-    BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
-    #undef FUNCTION
-
-    // MGUT scale MSSM
-    #define FUNCTION get_MSSMatMGUT_spectrum_SPheno
-    START_FUNCTION(Spectrum)
-    ALLOW_MODELS(MSSM63atMGUT)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
-    BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
-    #undef FUNCTION
-
-    // Q scale MSSM
-    #define FUNCTION get_MSSMatQ_spectrum_SPheno
-    START_FUNCTION(Spectrum)
-    ALLOW_MODELS(MSSM63atQ)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const SMInputs&, const std::map<str, safe_ptr<double> >&) )
+    BACKEND_REQ(SPheno_MSSMspectrum, (libSPheno), int, (Spectrum&, const Finputs&) )
     BACKEND_OPTION((SPheno, 3.3.8), (libSPheno))
     #undef FUNCTION
 

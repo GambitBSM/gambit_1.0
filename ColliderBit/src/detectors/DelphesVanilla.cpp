@@ -117,7 +117,7 @@ namespace Gambit {
         const Pythia8::Particle& p = event[ip];
         candidate = _impl->factory->NewCandidate();
 
-        /// @TODO How to convert Py8 events without hadronisation?
+        /// @todo How to convert Py8 events without hadronisation?
         candidate->PID = p.id();
         pdgCode = abs(candidate->PID);
 
@@ -132,7 +132,7 @@ namespace Gambit {
         candidate->D1 = p.daughter1();
         candidate->D2 = p.daughter2();
 
-        /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
+        /// @todo Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
         _impl->allParticleOutputArray->Add(candidate);
         if (!pdgParticle) continue;
         if (p.isFinal()) _impl->stableParticleOutputArray->Add(candidate);
