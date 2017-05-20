@@ -1642,9 +1642,9 @@ nuyield_setup: |
    Sets DarkSUSY common blocks with all necessary information to calculate neutrino yields.
 
 particle_code: |
-   Transaltes GAMBIT string particle identifiers to corresponding DarkSUSY integer codes.
+   Translates GAMBIT string particle identifiers to corresponding DarkSUSY integer codes.
 
-intfromSLHAeaAndDecayTable: |
+initFromSLHAeaAndDecayTable: |
    Initialises an MSSM model in DarkSUSY from an SLHAea object and a DecayTable.
 
 get_DS_neutral_h_decay_channels: |
@@ -1652,6 +1652,71 @@ get_DS_neutral_h_decay_channels: |
 
 get_DS_charged_h_decay_channels: |
    Vector containing charged Higgs decay channels in DarkSUSY.
+
+#-------------------------------------
+#  MicrOmegas capabilities
+#-------------------------------------
+
+MicrOmegas_MSSM_3_6_9_2_init: |
+   Initialise MicrOmegas MSSM backend.
+
+MicrOmegas_SingletDM_3_6_9_2_init: |
+   Initialise MicrOmegas SingletDM backend.
+
+assignVal: |
+   Assigns a value to a model parameter in MicrOmegas.
+
+vSigma: |
+   The velocity averaged cross section calculated at a specified temperature.
+
+oh2: |
+   The dark matter relic density (Omega h^2).
+
+suspectSUGRA: |
+   Calculates MSSM mass spectrum using SuSpect and use that to intialise MicrOmegas.
+
+lesHinput: |
+   Initialises MicrOmegas using an SLHA file.
+
+sortOddParticles: |
+   Calculates all masses/couplings in MicrOmegas and sorts odd particles by mass.
+
+cleanDecayTable: |
+   Removes all information from MicrOmegas decay table.
+
+nucleonAmplitudes: |
+   Calculates WIMP-nucleon scattering amplitudes.
+
+FeScLoop: |
+   Calculates loop contributions to WIMP-nucleon scattering.
+
+calcScalarQuarkFF: |
+   Calculates nuclear matrix elements for scalar DM-quark interactions.
+
+mInterp: |
+   MicrOmegas routine to interpolate between different center of mass energies to determine cosmic ray yields.
+
+zInterp: |
+   MicrOmegas routine for interpolating cosmic ray spectra.
+
+readSpectra: |
+   MicrOmegas routine to initialise cosmic-ray yield tables.
+
+MOcommon: |
+   MicrOmegas global variables.
+   
+ForceUG: |
+   Flag to force CalcHEP in MicrOmegas to do calculation in unitary gauge.
+
+VZdecay: |
+   MicrOmegas flag that turns on 3 body decays via a virtual Z.
+
+VWdecay: |
+   MicrOmegas flag that turns on 3 body decays via a virtual W.
+
+dNdE: |
+   Differential cosmic-ray yield.
+
 
 #-------------------------------------
 #  DecayBit capabilities
