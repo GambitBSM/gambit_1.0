@@ -31,41 +31,41 @@
 
 twalk: |
   #remove_newlines
-  The twalk sampler is a ensemble MCMC.  Its a multiple chain MCMC that advances each 
+  The twalk sampler is an ensemble MCMC.  It is a multiple chain MCMC that advances each
   chain by jumping over or away from a current point in another chain.  This
-  implementation also mixes in normal "Gaussian" jumps to add variability.  M-H 
+  implementation also mixes in normal "Gaussian" jumps to add variability.  Metropolis-Hastings
   jumps are done on a random lower dimension subspace of the full parameter space.
-  The Gelman-Rubin statistic is used as the second moment convergence criterion.  
-  This implementation is based on the algorithm developed by Christen and Fox: 
+  The Gelman-Rubin statistic is used as the second moment convergence criterion.
+  This implementation is based on the algorithm developed by Christen and Fox:
   http://ba.stat.cmu.edu/journal/2010/vol05/issue02/christen.pdf
-  
-  MCMC inifile options:
-      kwalk_ratio (0.9836):      The ratio of kwalk jumps to Gaussian jumps. 
+
+  MCMC YAML options (defaults):
+      kwalk_ratio (0.9836):      The ratio of kwalk jumps to Gaussian jumps.
       projection_dimension (4):  The dimension of the space being projected onto.
       gaussian_distance (2.4):   The distance of the Gaussian jump.
       walk_distance: (2.5):      The distance of the kwalk jump over a point.
       transverse_distance (6.0): The distance of the kwalk jump away from a point.
       chain_number (5+proc_num): The number of MCMC chains.  Default is 5 + number of processes.
       hyper_grid (true):         Confines the search to the hypercube defined by the priors.
-    
-  Convergence inifile options:
+
+  Convergence YAML options (defaults):
       tolerance (1.001): The accuracy of the second order moment (1 is perfect).
-      cut: (1000):       Number of burn-in points that are not considered.
-      
-  Auxillary output variables:
+      burn_in (0):       Number of burn-in points that are not considered in the convergence.
+
+  Auxillary output variables (defaults):
       mult:     Multiplicity (weight) of each point.
       chains:   Chain number that each point is a member of.  Rejected points have chain number of -1.
-    
-MultiNest: |
+
+multinest: |
   #remove_newlines
-  Multinest is a nested sampling algorithm that calculates the evidence and
+  MultiNest is a nested sampling algorithm that calculates the evidence and
   explores the posterior.  It continuously updates a random set of "live" points
   by removing the point of lowest likelihood and replaces to with a point of
-  greater likelihood.  The Multinest algorithm improves the efficiency by
+  greater likelihood.  The MultiNest algorithm improves the efficiency by
   encapsulating these live points with ellipsoids.  This implementation uses
   code developed by Feroz et. al.:  http://arxiv.org/abs/0809.3437
 
-  Inifile options:
+  YAML options (defaults):
       IS (1):          do Nested Importance Sampling?
       mmodal (1):      do mode separation?
       ceff (0):        run in constant efficiency mode?
@@ -74,7 +74,7 @@ MultiNest: |
       tol (0.5):       tol, defines the stopping criteria
       nClsPar (dim):   No. of parameters to do mode separation on. Default set to parameter dimension.
   #remove_newlines
-      updInt (1000):   after how many iterations feedback is required & the output 
+      updInt (1000):   after how many iterations feedback is required & the output
   files should be updated (*10 for dumper)
   #dont_remove_newlines
       Ztol (-1E90):    all the modes with logZ < Ztol are ignored
@@ -85,24 +85,24 @@ MultiNest: |
       outfile (0):     write output files?
       logZero (-1E90): points with loglike < logZero will be ignored by MultiNest
       maxiter (0):     Max no. of iterations, a non-positive value means infinity.
-      
+
   Auxillary output variables:
       Posterior:    Statistical weight of each point.
       live_points:  Boolean, true if the point is a live point.  False otherwise.
-  
+
 raster: |
   #remove_newlines
-  The Raster scanner prints an user defined set of points.  Any non-specified parameters will be randomly chosen and transformed by the priors.  Note that any specified point must use the "none"
+  The raster scanner prints a user-defined set of points.  Any non-specified parameters will be randomly chosen and transformed by the priors.  Note that any specified point must use the "none"
   prior.  The parameters can be specified with a number or vector.  Different parameters can have
-  different vector lengths.  If different lengths are specified, then the parameters will short
-  vector lengths values will be repeated.
-  
+  different vector lengths.  If different lengths are specified, then the values of parameters with short
+  vector lengths will be repeated.
+
   Inifile options:
       like:         The purpose to use for the likelihood.
       parameters:   The parameters specified by the user.
-      
-  Example inifile entry:
-  
+
+  Example YAML file entry:
+
     raster_example:
       plugin: raster
       like: LogLike
@@ -110,47 +110,152 @@ raster: |
         "model::param_1": [0, 1]
         "model::param_2": 0.5
 
-GreAT: |
+great: |
   #remove_newlines
-  The Grenoble Analysis Toolkit (GreAT) is a flexible C++ framework for statistical analyses. In order to provide efficient handling and plotting of the data, GreAT is interfaced with the ROOT package developed at CERN. The GreAT package comes with a Markov Chain Monte Carlo (MCMC) algorithm for Bayesian parameter inference. The implemented Metropolis-Hastings algorithms use different proposal functions. In the current version of the GreAT interface implemented in GAMBIT, only the multivariate Gaussian distribution is used where the covariance matrix can be automatically reevaluated after each chain from all previous processed chains. To obtain a reliable estimate of the PDF, the chain analysis is based on the selection of a subset of points from the chains. Some steps at the beginning of the chain are discarded (burn-in length), in order to forget the random starting point. By construction, each step of the chain is correlated with the previous steps: sets of independent samples are obtained by thinning the chain (over the correlation length). The final results of the MCMC analysis are obtained by merely counting the number of samples within the related region of parameter space.
+  The Grenoble Analysis Toolkit (GreAT) is a flexible C++ framework for statistical analyses. In order to provide efficient handling and plotting of the data, GreAT is interfaced with the ROOT package developed at CERN. The GreAT package comes with a Markov Chain Monte Carlo (MCMC) algorithm for Bayesian parameter inference. The implemented Metropolis-Hastings algorithms use different proposal functions. In the current version of the GreAT interface implemented in GAMBIT, only the multivariate Gaussian distribution is used where the covariance matrix can be automatically re-evaluated after each chain from all previous processed chains. To obtain a reliable estimate of the PDF, the chain analysis is based on the selection of a subset of points from the chains. Some steps at the beginning of the chain are discarded (burn-in length), in order to forget the random starting point. By construction, each step of the chain is correlated with the previous steps: sets of independent samples are obtained by thinning the chain (over the correlation length). The final results of the MCMC analysis are obtained by merely counting the number of samples within the related region of parameter space.
 
-  GreAT inifile options:
+  GreAT YAML options:
       nTrialLists:    The number of trial lists (Markov Chains)
       nTrials:        The number of trials (steps in the parameter space per trial list)
 
   Auxillary output variables:
       multiplicity:    Statistical weight (multiplicity) of each point
-    
+
 grid: |
   Simple grid scanner.  Evaluation points along a user-defined grid.
-  
-  inifile options:
-      grid_pts:    The number of points along each dimension on the grid.  A vector is given with each element correponding to each dimension.
-      like:        Use the functors thats corresponds to the specified purpose.
-    
+
+  YAML options:
+      grid_pts[req'd]: The number of points along each dimension on the grid.  A vector is given with each element corresponding to each dimension.
+      like:            Use the functors thats corresponds to the specified purpose.
+
 square_grid: |
   Simple grid scanner where each dimension of grid are identical.  Evaluation points along a user-defined grid.
-  
-  inifile options:
-      grid_pts:    The number of points along each dimension on the grid.
-      like:        Use the functors thats corresponds to the specified purpose.
-    
-random_scanner: |
+
+  YAML options:
+      grid_pts[req'd]: The number of points along each dimension on the grid.
+      like:            Use the functors thats corresponds to the specified purpose.
+
+random: |
   Simple scanner that randomly chooses points.
-  
-  inifile options:
+
+  YAML options (defaults):
       point_number(1000):  The number of points to be randomly selected.  Default is 1000.
       like:                Use the functors thats corresponds to the specified purpose.
-    
-toy_scanner: |
+
+toy_mcmc: |
   #remove_newlines
-  Simple independent Metropolis-Hastings algorithm.  Points are choosed uniformly from the unit hypercube 
+  Simple independent Metropolis-Hastings algorithm.  Points are choosed uniformly from the unit hypercube
   and is then accepted or rejected based on the Metropolis-Hastings acceptance probablity.
-  
-  inifile options:
+
+  YAML options:
       point_number(1000):  The number of accepted points.  Default is 1000.
       like:                Use the functors thats corresponds to the specified purpose.
-    
+
   Auxillary output variables:
       mult:     Multiplicity (weight) of each point.
-  
+
+
+postprocessor: |
+  #remove_newlines
+  This plugin reads a series of samples computed in some previous scan, and computes additional likelihoods or observables for them. Log-likelihoods for the original samples may be added to or subtracted from a newly-computed contribution, allowing existing likelihood constraints to be replaced or new ones added to previously-completed scans.  Like the simple scanners, the postprocessor uses MPI to divide its objective calculations evenly between available processes.
+
+  #remove_newlines
+  The yaml setup required to run the postprocessor spans two sections of the master \YAML file
+  -- the usual Scanner section, plus also the Parameters section. It should be noted that
+  parameter that are being postprocessed should be assigned the "none" prior.  In the Scanner
+  section, the options [and defaults] are as follows:
+
+  #remove_newlines
+  like:                  The purpose to use as the objective; should generally match the purpose set for likelihood components.
+  #dont_remove_newlines
+
+  reweighted_like:       The output label used for the final result of 'add_to_like' and 'subtract_from_like' operations.
+
+  #remove_newlines
+  add_to_like[]:         A vector of names of datasets present in the input samples, presumably
+  log-likelihood values, to be added to the newly computed \yaml{like} and output as
+  'reweighted_like'.  (Note that the `newly-computed' 'like' may be zero if no entries in the
+  'ObsLike' section have been assigned a purpose that matches 'like'). For example, if the
+  combined likelihood of a previous scan were labelled "LogLike", and one were to choose "like: New_LogLike" as the new composite (log-)likelihood for a new `scan', then the way to ensure
+  that the old and the new composite log-likelihoods were automatically summed for every model
+  point would be to set "add_to_like: [LogLike]". The results of this summation would appear in
+  the new output with the label by 'reweighted_like'.
+  #dont_remove_newlines
+
+  #remove_newlines
+  subtract_from_like[]:  As per 'add_to_like', except the old output is subtracted from 'like'.
+  permit_discard_old_likes[false]: When set to \yaml{false}, this option forbids the purpose
+  chosen for 'like' from clashing with any data label in the input samples. For example: if the
+  original purpose was "LogLike", a different purpose must be chosen for 'like', or an error
+  will be thrown. If this option is set "true", then clashes are permitted, and will be
+  resolved in the new output by replacing the old data with the newly-computed data (as occurs
+  automatically for all other clashes between old and new dataset names). This option also
+  applies to likelihood components listed in 'add_to_like', 'subtract_from_like', and
+  'reweighted_like'. If set to "false" then these names may not be recomputed during
+  postprocessing.
+  #dont_remove_newlines
+
+  update_interval[1000]: Defines the number of iterations between messages reporting on the progress of the postprocessing.
+
+  #remove_newlines
+  reader:                Options under this item specify the format of the old output file to
+  be read, along with the path at which the file is located. The required options differ
+  depending on which 'printer' was used to save the results of the previous scan.
+  #dont_remove_newlines
+
+  #remove_newlines
+  The final option, 'reader', is used to inform the postprocessor of the format and location of the old data that needs to
+  be reprocessed.  For files created with the hdf5 printer:
+
+  type:  hdf5
+  file:  Path to the HDF5 file containing the data to be parsed
+  group: Group within the HDF5 file containing datasets to be parsed.
+
+  For ascii output:
+
+  type:          ascii
+  data_filename: Path to the ASCII file containing the data to be parsed
+  info_filename: Path to the ASCII `header' file that contains the labelling information for the columns of 'data_filename'.
+
+  #remove_newlines
+  Note that the 'reader' need not match the chosen 'printer' in a postprocessing run; reading
+  samples in "ascii" and outputting updated samples in "hdf5", or vice versa, is permitted.
+  This allows Gambit samples produced in one format to be easily converted into any other
+  format.
+
+diver: |
+  #remove_newlines
+  Diver is a differential evolution (DE) optimization package that is also highly effective at sampling parameter spaces.
+  DE works by evolving a population of points in parameter space, with successive generations chosen by a form of
+  vector addition between members of the current population.  As descibed in the Gambit paper, this implementation
+  has the following YAML options.
+
+  YAML options [defaults]:
+      nDiscrete[0]:                       Number of parameters that are to be treated as discrete.
+      partitionDiscrete[false]:           Split the population evenly amongst discrete parameters and evolve separately.
+      maxciv[1]:                          Maximum number of civilisations.
+      maxgen[5000]:                       Maximum number of generations per civilization.
+      NP[required]:                       Population size (individuals per generation).
+      Cr[0.9]:                            Crossover factor.
+      lambda[0.0]:                        Mixing factor between best and rand/current.
+      current[false]:                     Use current vector for mutation.
+      expon[false]:                       Use exponential crossover.
+      bndry[3]:                           Boundary constraint: 1=brick wall, 2=random re-initialization, 3=reflection.
+      jDE[true]:                          Use self-adaptive choices for rand/1/bin parameters as per Brest et al 2006.
+      lambdajDE[true]:                    Use self-adaptive rand-to-best/1/bin parameters; based on Brest et al 2006.
+      convthresh[1.e-3]:                  Threshold for gen-level convergence: smoothed fractional improvement in the mean population value.
+      convsteps[10]:                      Number of steps to smooth over when checking convergence.
+      removeDuplicates[true]:             Weed out duplicate vectors within a single generation.
+      savecount[1]:                       Save progress every savecount generations.
+      full_native_output[true]:           Output .raw file (Diver native sample output format).
+      init_population_strategy[2]:        Initialisation strategy: 0=one shot, 1=n-shot, 2=n-shot with error if no valid vectors found.
+      max_initialisation_attempts[10000]: Maximum number of times to try to find a valid vector for each slot in the initial population.
+
+  #remove_newlines
+  max_acceptable_value[0.9999*min]:   Maximum function value to accept for the initial generation if init_population_strategy > 0.
+  Here "min" is the valued extracted from key values section of the main yaml file corresponding to the
+  "likelihood: model_invalid_for_lnlike_below" tag.
+  #dont_remove_newlines
+
+  verbosity[0]:                       Output verbosity: 0=only error messages, 1=basic info, 2=civ-level info, 3+=population info.
+

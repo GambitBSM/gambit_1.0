@@ -271,7 +271,7 @@ public:
 
 
 
-void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut);
+void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func, const int &ma, const double &div, const int &proj, const double &din, const double &alim, const double &alimt, const long long &rand, const double &tol, const int &NThreads, const bool &hyper_grid, const int &cut, const int &save_freq);
 
 #endif
 
