@@ -322,12 +322,12 @@ for fname in fnames:
          ## for understand how the rearrangment of the input data to match the output
          ## selection works.
          ##
+         ## \code
          ## # Compute sorting index array for rearranging the source entries to match the target locations
          ## # The way this works is a bit trippy, but it is fast.
          ## #y = target (IDs_out)
          ## #x = sources (IDs_in)
-         ## #result = array of length(y), containing positions of 
-
+         ## #result = array of length(y), containing positions of
          ## #e.g. 
          ## #x = np.array([3,5,7,1 ,9  ,8,6,6])
          ## #y = np.array([2,1,5,10,100,6])
@@ -344,7 +344,6 @@ for fname in fnames:
          ## print y1
          ## print ypos1
          ## print xsort1[ypos1]
-
          ## # less trivial test:
          ## x2 = np.array([0,1,7,2,7,8,6,4])
          ## y2 = np.array([4,0,1,2,6,8,7])
@@ -363,6 +362,7 @@ for fname in fnames:
          ## print ypos2
          ## print indices 
          ## print x2[indices]
+         ## \endcode
 
          print "   Sorting input data to match order in output selection..."
          xsort = np.argsort(IDs_in)

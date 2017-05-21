@@ -28,7 +28,7 @@ test_vector: |
    An example vector.
 
 widths: |
-   The width of some make-believe particle.  
+   The width of some make-believe particle.
 
 xsection: |
    A cross-section for some make-believe process.
@@ -149,7 +149,7 @@ SPheno_MSSMspectrum: |
     Calculates and returns a MSSM spectrum object using SPheno.
 
 SPheno_internal: |
-    Exclusively used for internal variables and function for the SPheno backend. 
+    Exclusively used for internal variables and function for the SPheno backend.
 
 
 #-------------------------------------
@@ -168,7 +168,7 @@ MSSM_spectrum: |
 
 
 DummyColliderObservable: |
-   Dummy observable that creates a dependency on TestModel1D, which is used 
+   Dummy observable that creates a dependency on TestModel1D, which is used
    to satisfy the normal GAMBIT model requrements in a minimal way. Used
    for testing.
 
@@ -349,463 +349,463 @@ FH_HiggsProd: |
 
 
 LEP188_xsec_chi00_11: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi01' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_12: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi02' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_13: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi03' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_14: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi04' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_22: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi02' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_23: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi03' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_24: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi04' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_33: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi03' and 'chi03' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_34: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi03' and 'chi04' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chi00_44: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi04' and 'chi04' at centre of mass energy 188 GeV.
 
 LEP205_xsec_chi00_11: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi01' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_12: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi02' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_13: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi03' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_14: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi04' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_22: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi02' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_23: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi03' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_24: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi04' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_33: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi03' and 'chi03' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_34: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi03' and 'chi04' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chi00_44: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi04' and 'chi04' at centre of mass energy 205 GeV.
 
 LEP208_xsec_chi00_11: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi01' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_12: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi02' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_13: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi03' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_14: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi01' and 'chi04' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_22: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi02' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_23: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi03' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_24: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi02' and 'chi04' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_33: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi03' and 'chi03' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_34: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi03' and 'chi04' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chi00_44: |
-   Calculates the LEP neutralino pair production cross-section for
+   The LEP neutralino pair production cross-section for
    mass eigenstates 'chi04' and 'chi04' at centre of mass energy 208 GeV.
 
 
 LEP188_xsec_chipm_11: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm1' and 'chipm1' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chipm_12: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm1' and 'chipm2' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chipm_21: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm2' and 'chipm1' at centre of mass energy 188 GeV.
 
 LEP188_xsec_chipm_22: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm2' and 'chipm2' at centre of mass energy 188 GeV.
 
 LEP205_xsec_chipm_11: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm1' and 'chipm1' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chipm_12: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm1' and 'chipm2' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chipm_21: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm2' and 'chipm1' at centre of mass energy 205 GeV.
 
 LEP205_xsec_chipm_22: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm2' and 'chipm2' at centre of mass energy 205 GeV.
 
 LEP208_xsec_chipm_11: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm1' and 'chipm1' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chipm_12: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm1' and 'chipm2' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chipm_21: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm2' and 'chipm1' at centre of mass energy 208 GeV.
 
 LEP208_xsec_chipm_22: |
-   Calculates the LEP chargino pair production cross-section for
+   The LEP chargino pair production cross-section for
    mass eigenstates 'chipm2' and 'chipm2' at centre of mass energy 208 GeV.
 
 
 LEP188_xsec_se1se1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se1' and 'se1bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_se1se2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se1' and 'se2bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_se2se1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se2' and 'se1bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_se2se2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se2' and 'se2bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smu1smu1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu1' and 'smu1bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smu1smu2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu1' and 'smu2bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smu2smu1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu2' and 'smu1bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smu2smu2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu2' and 'smu2bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_stau1stau1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau1' and 'stau1bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_stau1stau2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau1' and 'stau2bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_stau2stau1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau2' and 'stau1bar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_stau2stau2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau2' and 'stau2bar' at centre of mass energy 188 GeV.
 
 LEP205_xsec_se1se1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se1' and 'se1bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_se1se2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se1' and 'se2bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_se2se1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se2' and 'se1bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_se2se2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se2' and 'se2bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smu1smu1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu1' and 'smu1bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smu1smu2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu1' and 'smu2bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smu2smu1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu2' and 'smu1bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smu2smu2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu2' and 'smu2bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_stau1stau1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau1' and 'stau1bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_stau1stau2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau1' and 'stau2bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_stau2stau1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau2' and 'stau1bar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_stau2stau2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau2' and 'stau2bar' at centre of mass energy 205 GeV.
 
 LEP208_xsec_se1se1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se1' and 'se1bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_se1se2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se1' and 'se2bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_se2se1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se2' and 'se1bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_se2se2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'se2' and 'se2bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smu1smu1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu1' and 'smu1bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smu1smu2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu1' and 'smu2bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smu2smu1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu2' and 'smu1bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smu2smu2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smu2' and 'smu2bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_stau1stau1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau1' and 'stau1bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_stau1stau2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau1' and 'stau2bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_stau2stau1bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau2' and 'stau1bar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_stau2stau2bar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'stau2' and 'stau2bar' at centre of mass energy 208 GeV.
 
 
 
 LEP188_xsec_selselbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'sel' and 'selbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_selserbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'sel' and 'serbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_serselbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'ser' and 'selbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_serserbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'ser' and 'serbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smulsmulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smul' and 'smulbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smulsmurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smul' and 'smurbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smursmulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smur' and 'smulbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_smursmurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smur' and 'smurbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_staulstaulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staul' and 'staulbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_staulstaurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staul' and 'staurbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_staurstaulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staulbar' at centre of mass energy 188 GeV.
 
 LEP188_xsec_staurstaurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staurbar' at centre of mass energy 188 GeV.
 
 LEP205_xsec_selselbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'sel' and 'selbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_selserbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'sel' and 'serbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_serselbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'ser' and 'selbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_serserbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'ser' and 'serbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smulsmulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smul' and 'smulbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smulsmurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smul' and 'smurbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smursmulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smur' and 'smulbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_smursmurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smur' and 'smurbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_staulstaulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staul' and 'staulbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_staulstaurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staul' and 'staurbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_staurstaulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staulbar' at centre of mass energy 205 GeV.
 
 LEP205_xsec_staurstaurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staurbar' at centre of mass energy 205 GeV.
 
 LEP208_xsec_selselbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'sel' and 'selbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_selserbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'sel' and 'serbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_serselbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'ser' and 'selbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_serserbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'ser' and 'serbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smulsmulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smul' and 'smulbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smulsmurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smul' and 'smurbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smursmulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smur' and 'smulbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_smursmurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'smur' and 'smurbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_staulstaulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staul' and 'staulbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_staulstaurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staul' and 'staurbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_staurstaulbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staulbar' at centre of mass energy 208 GeV.
 
 LEP208_xsec_staurstaurbar: |
-   Calculates the LEP pair production cross-section for sfermion
+   The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staurbar' at centre of mass energy 208 GeV.
 
 
@@ -848,8 +848,8 @@ RD_spectrum: |
    particles, as well as location of thresholds and resonances.
 
 RD_spectrum_ordered: |
-   Same as RD_spectrum, but with all resonances and thresholds 
-   ordered with increasing p_eff, and coannihilation thresholds 
+   Same as RD_spectrum, but with all resonances and thresholds
+   ordered with increasing p_eff, and coannihilation thresholds
    included
 
 RD_eff_annrate_DSprep: |
@@ -897,7 +897,7 @@ XENON100_2012_Calculate: |
 
 XENON100_2012_Events: |
    The number of observed events for the XENON100 2012 direct detection analysis.
-   
+
 XENON100_2012_Background: |
    The number of background events for the XENON100 2012 direct detection analysis.
 
@@ -918,7 +918,7 @@ LUX_2013_Calculate: |
 
 LUX_2013_Events: |
    The number of observed events for the LUX 2013 direct detection analysis.
-   
+
 LUX_2013_Background: |
    The number of background events for the LUX 2013 direct detection analysis.
 
@@ -939,7 +939,7 @@ LUX_2015_Calculate: |
 
 LUX_2015_Events: |
    The number of observed events for the LUX 2015 direct detection analysis.
-   
+
 LUX_2015_Background: |
    The number of background events for the LUX 2015 direct detection analysis.
 
@@ -960,7 +960,7 @@ LUX_2016_Calculate: |
 
 LUX_2016_Events: |
    The number of observed events for the LUX 2016 direct detection analysis.
-   
+
 LUX_2016_Background: |
    The number of background events for the LUX 2016 direct detection analysis.
 
@@ -981,7 +981,7 @@ PandaX_2016_Calculate: |
 
 PandaX_2016_Events: |
    The number of observed events for the PandaX 2016 direct detection analysis.
-   
+
 PandaX_2016_Background: |
    The number of background events for the PandaX 2016 direct detection analysis.
 
@@ -1002,7 +1002,7 @@ SuperCDMS_2014_Calculate: |
 
 SuperCDMS_2014_Events: |
    The number of observed events for the SuperCDMS 2014 direct detection analysis.
-   
+
 SuperCDMS_2014_Background: |
    The number of background events for the SuperCDMS 2014 direct detection analysis.
 
@@ -1023,7 +1023,7 @@ SIMPLE_2014_Calculate: |
 
 SIMPLE_2014_Events: |
    The number of observed events for the SIMPLE 2014 direct detection analysis.
-   
+
 SIMPLE_2014_Background: |
    The number of background events for the SIMPLE 2014 direct detection analysis.
 
@@ -1044,7 +1044,7 @@ PICO_2L_Calculate: |
 
 PICO_2L_Events: |
    The number of observed events for the PICO-2L direct detection analysis.
-   
+
 PICO_2L_Background: |
    The number of background events for the PICO-2L direct detection analysis.
 
@@ -1065,7 +1065,7 @@ PICO_60_F_Calculate: |
 
 PICO_60_F_Events: |
    The number of observed events for the PICO-60 direct detection analysis (flourine only).
-   
+
 PICO_60_F_Background: |
    The number of background events for the PICO-60 direct detection analysis (flourine only).
 
@@ -1086,7 +1086,7 @@ PICO_60_I_Calculate: |
 
 PICO_60_I_Events: |
    The number of observed events for the PICO-60 direct detection analysis (iodine only).
-   
+
 PICO_60_I_Background: |
    The number of background events for the PICO-60 direct detection analysis (iodine only).
 
@@ -1107,7 +1107,7 @@ DARWIN_Ar_2015_Calculate: |
 
 DARWIN_Ar_2015_Events: |
    The number of observed events for the DARWIN Ar 2015 direct detection analysis.
-   
+
 DARWIN_Ar_2015_Background: |
    The number of background events for the DARWIN Ar 2015 direct detection analysis.
 
@@ -1128,7 +1128,7 @@ DARWIN_Xe_2015_Calculate: |
 
 DARWIN_Xe_2015_Events: |
    The number of observed events for the DARWIN Xe 2015 direct detection analysis.
-   
+
 DARWIN_Xe_2015_Background: |
    The number of background events for the DARWIN Xe 2015 direct detection analysis.
 
@@ -1149,7 +1149,7 @@ DARWIN_Ar_Calculate: |
 
 DARWIN_Ar_Events: |
    The number of observed events for the DARWIN Ar 2015 direct detection analysis.
-   
+
 DARWIN_Ar_Background: |
    The number of background events for the DARWIN Ar 2015 direct detection analysis.
 
@@ -1170,7 +1170,7 @@ DARWIN_Xe_Calculate: |
 
 DARWIN_Xe_Events: |
    The number of observed events for the DARWIN Xe 2015 direct detection analysis.
-   
+
 DARWIN_Xe_Background: |
    The number of background events for the DARWIN Xe 2015 direct detection analysis.
 
@@ -1250,7 +1250,7 @@ annihilation_rate_Sun: |
    Annihilation rate of dark matter in the Sun (s^-1).
 
 nuyield_ptr: |
-   A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
+   A pointer to a function that returns the neutrino yield from dark matter in the Sun.
 
 IC22_data: |
    Do signal, likelihood and related calculations for neutrino indirect detection analysis IC22.
@@ -1368,7 +1368,7 @@ DD_Background: |
 
 DD_CalcRates: |
    Perform rate and likelihood calculations for a given direct detection experiment.
- 
+
 DD_Events: |
    The number of observed events for a given direct detection experiment.
 
@@ -1377,7 +1377,7 @@ DD_LogLikelihood: |
 
 DD_LogPValue: |
    Calculate the log p-value for a given direct detection experiment.
- 
+
 DD_Signal: |
    The number of signal events for a given direct detection experiment.
 
@@ -1421,7 +1421,7 @@ XENON100_2012_Init: |
 
 DarkSUSY_5_1_3_init: |
    Initialise DarkSUSY backend.
-   
+
 dsIBffdxdy: |
    Differential internal bremsstrahlung photon yield for fermion final states.
 
@@ -1475,10 +1475,10 @@ dshmnoclue: |
 
 dsibyieldone: |
    Inverse bremsstrahlung yield from one channel.
- 
+
 dsinit: |
    Initialise DarkSUSY.
-   
+
 dsmqpole4loop: |
    Calculate quark pole mass.
 
@@ -1533,17 +1533,190 @@ dssuconst_yukawa_running: |
 dssusy: |
    Sets up supersymmetric model routines in DarkSUSY.
 
-dssusy_isasugra:
+dssusy_isasugra: |
    Sets up supersymmetric model routines in DarkSUSY using ISASUGRA.
 
-dsvertx:
+dsvertx: |
    Sets up SUSY vertices in DarkSUSY.
 
-dswspectrum:
+dswspectrum: |
    Writes out mass spectrum.
 
-dswwidth:
+dswwidth: |
    Writes out widths.
+
+cap_Sun_v0q0_isoscalar: |
+   Capture rate of dark matter in the sun.
+
+raw_muonyield: |
+   Gives either the differential or total yield of muons in a neutrino telescope from dark matter annihilation in the sun.
+
+pacodes: |
+   Common block containing particle codes used in DarkSUSY.
+
+mssmiuseful: |
+   Common block containing DarkSUSY particle codes for lightest supersymmmetric particle and neutralino.
+
+mspctm: |
+   DarkSUSY mass spectrum.
+
+#widths: |
+#   DarkSUSY particle widths. (Capability is defined twice.)
+
+intdof: |
+   Number of spin and color states for each particle for DarkSUSY.
+
+vrtxs: |
+   DarkSUSY interaction vertices.
+
+smruseful: |
+   Various standard model parameters.
+
+smcuseful: |
+   Contains option to determine how DarkSUSY runs particle masses.
+
+couplingconstants: |
+   Coupling constants.
+
+sckm: |
+   CKM matrix parameters.
+
+mixing: |
+   The CKM matrix.
+
+mssmtype: |
+   DarkSUSY parameter that specifies parameterisation of MSSM.
+
+mssmpar: |
+   MSSM parameters for DarkSUSY.
+
+mssmswitch: |
+   Switches that tell DarkSUSY how to calculate various quantities.
+
+sfermionmass: |
+   Sfermion masses for DarkSUSY.
+
+mssmwidths: |
+   Widths of Higgs sector particle for DarkSUSY.
+
+mssmmixing: |
+   MSSM mixing matrices.
+
+rdmgev: |
+   Information about (co)annihilating particles for the DarkSUSY relic density routines.
+
+rdpth: |
+   Momentum thresholds relevant for DarkSUSY relic density calculation.
+
+rddof: |
+   Common block for effective degrees of freedom in DarkSUSY.
+
+rderrors: |
+   Common block containing information about errors and warnings from DarkSUSY relic density routines.
+
+rdpars: |
+   Parameters that effect the DarkSUSY relic density calculation.
+
+rdswitch: |
+   Options for the DarkSUSY relic density calculation.
+
+rdlun: |
+   Logical units for DarkSUSY relic density calculation.
+
+rdpadd: |
+   Parameters that effect the tabulation of the invariant annihilation rate in DarkSUSY.
+
+IBintvars: |
+   Common block for DarkSUSY internal Bremsstrahlung routines.
+
+ddcom: |
+   Common block containing DM nucleon couplings and options for their calculation in DarkSUSY.
+
+nu_common_block: |
+   Annihilation branching rates and scalar decay rates used by DarkSUSY routines for DM annihilation in sun.
+
+nuyield: |
+   Neutrino yields at the top of the atmosphere.
+
+nuyield_setup: |
+   Sets DarkSUSY common blocks with all necessary information to calculate neutrino yields.
+
+particle_code: |
+   Translates GAMBIT string particle identifiers to corresponding DarkSUSY integer codes.
+
+initFromSLHAeaAndDecayTable: |
+   Initialises an MSSM model in DarkSUSY from an SLHAea object and a DecayTable.
+
+get_DS_neutral_h_decay_channels: |
+   Vector containing neutral Higgs decay channels in DarkSUSY.
+
+get_DS_charged_h_decay_channels: |
+   Vector containing charged Higgs decay channels in DarkSUSY.
+
+#-------------------------------------
+#  MicrOmegas capabilities
+#-------------------------------------
+
+MicrOmegas_MSSM_3_6_9_2_init: |
+   Initialise MicrOmegas MSSM backend.
+
+MicrOmegas_SingletDM_3_6_9_2_init: |
+   Initialise MicrOmegas SingletDM backend.
+
+assignVal: |
+   Assigns a value to a model parameter in MicrOmegas.
+
+vSigma: |
+   The velocity averaged cross section calculated at a specified temperature.
+
+oh2: |
+   The dark matter relic density (Omega h^2).
+
+suspectSUGRA: |
+   Calculates MSSM mass spectrum using SuSpect and use that to intialise MicrOmegas.
+
+lesHinput: |
+   Initialises MicrOmegas using an SLHA file.
+
+mass_spectrum: |
+   Calculates all masses/couplings in MicrOmegas and sorts odd particles by mass.
+
+cleanDecayTable: |
+   Removes all information from MicrOmegas decay table.
+
+nucleonAmplitudes: |
+   Calculates WIMP-nucleon scattering amplitudes.
+
+FeScLoop: |
+   Calculates loop contributions to WIMP-nucleon scattering.
+
+calcScalarQuarkFF: |
+   Calculates nuclear matrix elements for scalar DM-quark interactions.
+
+mInterp: |
+   MicrOmegas routine to interpolate between different center of mass energies to determine cosmic ray yields.
+
+zInterp: |
+   MicrOmegas routine for interpolating cosmic ray spectra.
+
+readSpectra: |
+   MicrOmegas routine to initialise cosmic-ray yield tables.
+
+MOcommon: |
+   MicrOmegas global variables.
+
+ForceUG: |
+   Flag to force CalcHEP in MicrOmegas to do calculation in unitary gauge.
+
+VZdecay: |
+   MicrOmegas flag that turns on 3 body decays via a virtual Z.
+
+VWdecay: |
+   MicrOmegas flag that turns on 3 body decays via a virtual W.
+
+dNdE: |
+   Differential cosmic-ray yield.
+
 
 #-------------------------------------
 #  DecayBit capabilities
@@ -1622,7 +1795,7 @@ electron_ C _decay_rates : |
 
 smuon_ C _decay_rates : |
    Decays of the μ_R sleptons.
-   
+
 stop_1_decay_rates : |
    Decays of the t_1 squarks.
 
@@ -1670,7 +1843,7 @@ electronbar_ C _decay_rates : |
 
 smuonbar_ C _decay_rates : |
    Decays of the anti-μ_L sleptons.
-   
+
 supbar_ C _decay_rates : |
    Decays of the anti-u_R squarks.
 
@@ -1688,7 +1861,7 @@ electronbar_ C _decay_rates : |
 
 smuonbar_ C _decay_rates : |
    Decays of the anti-μ_R sleptons.
-   
+
 stopbar_1_decay_rates : |
    Decays of the anti-t_1 squarks.
 
@@ -1706,7 +1879,7 @@ sbottombar_2_decay_rates : |
 
 staubar_2_decay_rates : |
    Decays of the anti-τ_2 sleptons.
-   
+
 mu_plus_decay_rates : |
   All decays of the μ+ lepton.
 
@@ -1761,16 +1934,16 @@ piminus_decay_rates : |
 rhominus_decay_rates : |
   All decays of the ρ- meson.
 
-neutralino_1_decay_rates : | 
+neutralino_1_decay_rates : |
    Decays of the neutralino 1.
 
-neutralino_2_decay_rates : | 
+neutralino_2_decay_rates : |
    Decays of the neutralino 2.
 
-neutralino_3_decay_rates : | 
+neutralino_3_decay_rates : |
    Decays of the neutralino 3.
 
-neutralino_4_decay_rates : | 
+neutralino_4_decay_rates : |
    Decays of the neutralino 4.
 
 
@@ -1852,3 +2025,248 @@ lnL_gm2 : |
 
 lnL_deltarho : |
    Log-likelihood of ∆ρ, the departure from one of the ratio of the Fermi effective coupling (G_F) in W and Z-mediated processes.
+
+
+#-------------------------------------
+#  FlavBit capabilities
+#-------------------------------------
+
+AI_BKstarmumu : |
+   The isospin asymmetry in B-> K* μ+ μ-.
+
+AI_BKstarmumu_zero : |
+   The zero-crossing of the isospin asymmetry in B-> K* μ+ μ-.
+
+A_BXsll_highq2 : |
+   The integrated forward-backward asymmetry of B->Xs l+ l- in the high-q2 bin.
+
+A_BXsll_lowq2 : |
+   The integrated forward-backward asymmetry of B->Xs l+ l- in the low-q2 bin.
+
+A_BXsll_zero : |
+   The zero crossing of the forward-backward asymmetry of B->Xs l+ l-.
+
+A_BXsmumu_highq2 : |
+   The integrated forward-backward asymmetry of B->Xs μ+ μ- in the high-q2 bin.
+
+A_BXsmumu_highq2_CONV : |
+   The Wilson coefficients and the integrated forward-backward asymmetry of B->Xs μ+ μ- in the high-q2 bin.
+
+A_BXsmumu_lowq2 : |
+   The integrated forward-backward asymmetry of B->Xs μ+ μ- in the low-q2 bin.
+
+A_BXsmumu_lowq2_CONV : |
+   The Wilson coefficients and the integrated forward-backward asymmetry of B->Xs μ+ μ- in the low-q2 bin.
+
+A_BXsmumu_zero : |
+   The zero crossing of the forward-backward asymmetry of B->Xs μ+ μ-.
+
+A_BXsmumu_zero_CONV : |
+   The Wilson coefficients and the zero crossing of the forward-backward asymmetry of B->Xs μ+ μ-.
+
+A_BXstautau_highq2 : |
+   The integrated forward-backward asymmetry of B->Xs tau+ tau- in the high-q2 bin.
+
+A_BXstautau_highq2_CONV : |
+   The Wilson coefficients and the integrated forward-backward asymmetry of B->Xs tau+ tau- in the high-q2 bin.
+
+BDmunu : |
+   The branching ratio of B-> D mu nu.
+
+BDtaunu : |
+   The branching ratio of B-> D tau nu.
+
+BRBDlnu : |
+   The branching ratio of B-> D l nu.
+
+BDtaunu_BDenu : |
+   The ratio of BR(B-> D tau nu)/BR(B-> D e nu).
+
+BDstarmunu : |
+   The branching ratio of B-> D* mu nu.
+
+BDstartaunu : |
+   The branching ratio of B-> D* tau nu.
+
+BRBDstarlnu : |
+   The branching ratio of B-> D* l nu.
+
+BDstartaunu_BDstarenu : |
+   The ratio of BR(B-> D* tau nu)/BR(B-> D* e nu).
+
+BKstarmumu_11_25 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 1.1 and 2.5 GeV^2.
+
+BKstarmumu_25_40 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 2.5 and 4 GeV^2.
+
+BKstarmumu_40_60 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 4 and 6 GeV^2.
+
+BKstarmumu_60_80 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 6 and 8 GeV^2.
+
+BKstarmumu_15_17 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 15 and 17 GeV^2.
+
+BKstarmumu_17_19 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 17 and 19 GeV^2.
+
+BKstarmumu_CONV : |
+   The Wilson coefficients and the integrated differential cross-section and angular observables of B-> K* μ+ μ-.
+
+BRBKll : |
+   The differential cross-section and angular observables of B-> K l+ l-.
+
+BRBKstarll : |
+   The differential cross-section and angular observables of B-> K* l+ l-.
+
+BRBXsll_highq2 : |
+   The branching ratio B-> Xs l+ l- in the high-q2 bin.
+
+BRBXsll_lowq2 : |
+   The branching ratio B-> Xs l+ l- in the low-q2 bin.
+
+BRBXsmumu_highq2 : |
+   The branching ratio B-> Xs μ+ μ- in the high-q2 bin.
+
+BRBXsmumu_highq2_CONV : |
+   The Wilson coefficients and the branching ratio B-> Xs μ+ μ- in the high-q2 bin.
+
+BRBXsmumu_lowq2 : |
+   The branching ratio B-> Xs μ+ μ- in the low-q2 bin.
+
+BRBXsmumu_lowq2_CONV : |
+   The Wilson coefficients and the branching ratio B-> Xs μ+ μ- in the low-q2 bin.
+
+BRBXstautau_highq2 : |
+   The branching ratio B-> Xs tau+ tau- in the low-q2 bin.
+
+BRBXstautau_highq2_CONV : |
+   The Wilson coefficients and the branching ratio B-> Xs tau+ tau- in the low-q2 bin.
+
+BRBsphill : |
+   The differential cross-section and angular observables of Bs-> phi l+ l-.
+
+Bll : |
+   The branching ratio of Bd-> l+ l-.
+
+Bll_CONV : |
+   The Wilson coefficients and the branching ratio of Bd-> l+ l-.
+
+Blnu : |
+   The branching ratio of B-> l nu.
+
+Bmumu : |
+   The branching ratio of Bd-> μ+ μ-.
+
+Bsee_untag : |
+   The untagged branching ratio of Bs-> e+ e-.
+
+Bsll_untag : |
+   The untagged branching ratio of Bs-> l+ l-.
+
+Bsll_untag_CONV : |
+   The Wilson coefficients and the untagged branching ratio of Bs-> l+ l-.
+
+Bsmumu : |
+   The branching ratio of Bs-> μ+ μ-.
+
+Bsmumu_untag : |
+   The untagged branching ratio of Bs-> μ+ μ-.
+
+Btaunu : |
+   The branching ratio of B-> tau nu.
+
+CQ_calculator : |
+   The scalar and pseudoscalar Wilson coefficients.
+
+CW_calculator : |
+   The Wilson coefficients at the W mass scale.
+
+C_calculator_base1 : |
+   The Wilson coefficients at the b mass scale in the operator basis 1.
+
+C_calculator_base2 : |
+   The Wilson coefficients at the b mass scale in the operator basis 2.
+
+Cprime_calculator : |
+   The primed Wilson coefficients.
+
+DeltaMs : |
+   The Bs meson mass difference.
+
+Dmunu : |
+   The branching ratio of D-> mu nu.
+
+Dsmunu : |
+   The branching ratio of Ds-> mu nu.
+
+Dstaunu : |
+   The branching ratio of Ds-> tau nu.
+
+Kmunu_pimunu : |
+   The ratio of BR(K-> mu nu)/BR(pi-> mu nu).
+
+RD : |
+   The ratio of BR(B-> D tau nu)/BR(B-> D e nu).
+
+RDstar : |
+   The ratio of BR(B-> D* tau nu)/BR(B-> D* e nu).
+
+Rmu : |
+   The ratio of BR(K-> mu nu)/BR(pi-> mu nu).
+
+Rmu23 : |
+   The Rmu23 observable related to K-> mu nu and pi-> mu nu.
+
+SI_AI_BKstarmumu_CONV : |
+   The Wilson coefficients and the isospin asymmetry in B-> K* μ+ μ-.
+
+SI_AI_BKstarmumu_zero_CONV : |
+   The Wilson coefficients and the zero crossing of isospin asymmetry in B-> K* μ+ μ-.
+
+SL_LL : |
+  Log-likelihood for the tree-level leptonic and semileptonic B and D decays.
+
+SL_M : |
+  Measurements related to the tree-level leptonic and semileptonic B and D decays.
+
+SuperIso_3_6_init : |
+   Initalise SuperIso v3.6.
+
+SuperIso_modelinfo : |
+   SuperIso internal model information.
+
+b2ll_LL : |
+   Log-likelihood for BR(Bd-> μ+ μ-) and BR(Bs-> μ+ μ-).
+
+b2ll_M : |
+   Measurements related to BR(Bd-> μ+ μ-) and BR(Bs-> μ+ μ-).
+
+b2sgamma_LL : |
+   Log-likelihood for inclusive branching ratio of B-> Xs gamma.
+
+b2sll_LL : |
+   Log-likelihood for B-> K* μ+ μ- observables.
+
+b2sll_M : |
+   Measurements for B-> K* μ+ μ- observables.
+
+bsgamma : |
+   The inclusive branching ratio of B-> Xs gamma with a photon energy cut of 1.6 GeV.
+
+bsgamma_CONV : |
+   The Wilson coefficients and the inclusive branching ratio of B-> Xs gamma.
+
+bsgamma_Ecut : |
+   The inclusive branching ratio of B-> Xs gamma with a photon energy cut Ecut.
+
+delta0 : |
+   The isospin asymmetry of B-> K* gamma.
+
+deltaMB_LL : |
+   Log-likelihood for the Bs meson mass difference.
+
+mb_1S : |
+   The 1S bottom quark mass.
