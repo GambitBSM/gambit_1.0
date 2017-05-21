@@ -125,15 +125,15 @@ grid: |
   Simple grid scanner.  Evaluation points along a user-defined grid.
 
   YAML options:
-      grid_pts:    The number of points along each dimension on the grid.  A vector is given with each element corresponding to each dimension.
-      like:        Use the functors thats corresponds to the specified purpose.
+      grid_pts[req'd]: The number of points along each dimension on the grid.  A vector is given with each element corresponding to each dimension.
+      like:            Use the functors thats corresponds to the specified purpose.
 
 square_grid: |
   Simple grid scanner where each dimension of grid are identical.  Evaluation points along a user-defined grid.
 
   YAML options:
-      grid_pts:    The number of points along each dimension on the grid.
-      like:        Use the functors thats corresponds to the specified purpose.
+      grid_pts[req'd]: The number of points along each dimension on the grid.
+      like:            Use the functors thats corresponds to the specified purpose.
 
 random: |
   Simple scanner that randomly chooses points.
