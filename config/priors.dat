@@ -115,7 +115,8 @@ other: |
     Does a transformation that does absolutely nothing.
 
   none:
-    Does absolutely nothing, not even a transformation.
+  #remove_newlines
+    Does absolutely nothing, not even a transformation.  Used for parameters that are being postprocessed
 
 internal: The maze is not meant for you.
 

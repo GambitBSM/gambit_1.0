@@ -26,5 +26,42 @@
 
 uniform: |
   #remove_newlines
-  this is a test
+  This likelihood returns 0, regardness of inputed parameters.
+  
+gaussian: |
+  #remove_newlines
+  Gaussian likelihood of variable dimension (set by the user
+  specified parameters) with the following inifile options:
+  
+  #remove_newlines
+  mean[0, ...]:  A vector representing the center of the gaussion.  The
+  vector is set to zero by default.
+  
+  #remove_newlines
+  cov:           A vector of vectors representing the covariance matrix of the
+  Gaussian.
+  
+  #remove_newlines
+  sig[1, ...]:   If cov is not specified, the covariance matrix defaults
+  to a diagonal matrix whose values are the square of the elements
+  of this vector.  The element are set to one by default.
+
+EggBox: |
+  #remove_newlines
+  Simple two dimensional EggBox likelihood of the form:
+  
+  L ~ (2.0 + std::cos(x*length[0]*pi/2)*std::cos(y*length[1]*pi/2))^5
+  
+  Inifile option:
+  
+  length[10, 10]: A two-vector representing the scale length (default [10, 10]).
+
+flat_prior: |
+  #remove_newlines
+  A simple example of using a plugin as a prior.  Implements a simple flat
+  prior.
+  
+  Inifile option:
+  
+  range[0, 1]: A two-vector representing the range of the prior.
   

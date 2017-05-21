@@ -24,6 +24,9 @@
 #include <sstream>
 #include <unordered_map>
 #include <typeinfo>
+#include <utility>
+#include <limits>
+#include <type_traits>
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/scan.hpp"
@@ -75,6 +78,18 @@ namespace Gambit
             return ret;
         }
         
+        template <typename ret>
+        typename std::enable_if<!std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
+        {
+            return ret();
+        }
+        
+        template <typename ret>
+        typename std::enable_if<std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
+        {
+            return -std::pow(10.0, std::numeric_limits<double>::max_exponent10);
+        };
+        
         template <typename ret, typename... args>
         class Scanner_Plugin_Function<ret (args...)> : public Plugins::Plugin_Interface<ret (args...)>, public Function_Base<ret (args...)>
         {
@@ -93,7 +108,6 @@ namespace Gambit
                 if(signaldata().check_if_shutdown_begun())
                 {
                     Function_Base<ret (args...)>::tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
-                    return ret();
                 }
 
                 if(signaldata().shutdown_begun() and not Function_Base<ret (args...)>::scanner_can_quit())
@@ -101,7 +115,7 @@ namespace Gambit
                     signaldata().attempt_soft_shutdown();
                     //lnlike = alt_min_valid_lnlike;
                     //point_invalidated = true;
-                    return ret();
+                    return scanner_plugin_def_ret<ret>();
                 }
                 else
                     return this->Plugins::Plugin_Interface<ret (args...)>::operator()(in...);
@@ -129,7 +143,6 @@ namespace Gambit
                 if(signaldata().check_if_shutdown_begun())
                 {
                     Function_Base<ret (args...)>::tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
-                    return ret();
                 }
 
                 if(signaldata().shutdown_begun() and not Function_Base<ret (args...)>::scanner_can_quit())
@@ -137,7 +150,7 @@ namespace Gambit
                     signaldata().attempt_soft_shutdown();
                     //lnlike = alt_min_valid_lnlike;
                     //point_invalidated = true;
-                    return ret();
+                    return scanner_plugin_def_ret<ret>();
                 }
                 else
                 {

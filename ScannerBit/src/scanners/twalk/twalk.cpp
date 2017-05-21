@@ -22,7 +22,7 @@
 #include "scanner_plugin.hpp"
 #include "twalk.hpp"
 
-scanner_plugin(twalk, version(1, 0, 0, beta))
+scanner_plugin(twalk, version(1, 0, 0))
 {
     int plugin_main ()
     {
