@@ -47,10 +47,11 @@ twalk: |
       transverse_distance (6.0): The distance of the kwalk jump away from a point.
       chain_number (5+proc_num): The number of MCMC chains.  Default is 5 + number of processes.
       hyper_grid (true):         Confines the search to the hypercube defined by the priors.
+  #   save_freq(100):            Number of likelihood evaluations between resume saves.
     
   Convergence inifile options:
       tolerance (1.001): The accuracy of the second order moment (1 is perfect).
-      cut: (1000):       Number of burn-in points that are not considered.
+      burn_in: (0):      Number of burn-in points that are not considered in the convergence.
       
   Auxillary output variables:
       mult:     Multiplicity (weight) of each point.

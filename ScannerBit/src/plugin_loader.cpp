@@ -622,6 +622,20 @@ namespace Gambit
                 // #endif
                 // std::cout << "Gambit has written resume data to disk, preparing to stop!" << std::endl;
             }
+            
+            void pluginInfo::dump(const std::string &name)
+            {
+                auto it = resume_data.find(name);
+                if (it != resume_data.end()) 
+                {
+                    std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files/" + name);
+                    std::ofstream out((path).c_str(), std::ofstream::binary);
+                    for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
+                    {
+                        (*v_it)->print(out);
+                    }
+                }
+            }
 
             /// Save persistence file to record that the alternative min_LogL value is in use for this scan
             void pluginInfo::save_alt_min_LogL_state() const

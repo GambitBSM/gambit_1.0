@@ -73,6 +73,11 @@ namespace Gambit
             
             bool resume_mode() const {return resume;}
             
+            void dump()
+            {
+                Gambit::Scanner::Plugins::plugin_info.dump(name);
+            }
+            
             template <typename... T>
             void operator ()(T&... params)
             {

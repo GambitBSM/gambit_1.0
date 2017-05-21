@@ -210,9 +210,10 @@ namespace Gambit
                     {
                         if (resume_streams.find(name) == resume_streams.end())
                         {
-                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
-                            resume_streams[name] = new std::ifstream((path + "/" + name).c_str(), std::ifstream::binary);
+                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files/" + name);
+                            resume_streams[name] = new std::ifstream((path).c_str(), std::ifstream::binary);
                         }
+                        
                         if (resume_streams[name]->is_open())
                         {
                             get_resume(*resume_streams[name], data...);
@@ -227,8 +228,11 @@ namespace Gambit
                     set_resume(resume_data[name], data...);
                 }
                 
-                ///Dump contains for resume.
+                ///Dump contents for resume.
                 void dump();
+                
+                ///Dump contents for one plugin
+                void dump(const std::string &);
 
                 ///Save persistence file to record that the alternative min_LogL value is in use for this scan
                 void save_alt_min_LogL_state() const;
