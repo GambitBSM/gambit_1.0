@@ -91,9 +91,16 @@ namespace Gambit
     }
   }
 
-  bool SLHAea_check_block(SLHAstruct& slha, const str& block)
+  bool SLHAea_block_exists(SLHAstruct& slha, const str& block)
   {
     // Check if block exists
+    bool found = false;
+    if(slha.find(block) != slha.end()) found = true;
+    return found;
+  }
+
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block)
+  {
     try
     {
       slha.at(block);
@@ -108,8 +115,9 @@ namespace Gambit
   }
 
   /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
-  // TODO: Ben: I just found this, and I can't say I understand the logic related to "overwrite".
-  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite)
+  // TODO: Ben: I just found this, and I can't say I understand the logic related to "overwrite". It also makes
+  // overloading for two indices very difficult, so I'm going to delete it.
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index) /*, const bool overwrite)*/
   {
     // Check if block exists
     try
@@ -122,21 +130,52 @@ namespace Gambit
       slha[block][""] << "BLOCK" << block;
     }
     // Check for existing entry
-    if(not overwrite)
+    //if(not overwrite)
+    //{
+    try // Might as well always do this check? Don't see why a flag is needed.
     {
-      try
-      {
-        slha.at(block).at(index).at(1);
-        // Entry exists, no further action required
-        return true;
-      }
-      catch (const std::out_of_range& e)
-      {
-        // entry doesn't exist; continue with writing
-      }
+      slha.at(block).at(index).at(1);
+      // Entry exists, no further action required
+      return true;
     }
+    catch (const std::out_of_range& e)
+    {
+      // entry doesn't exist; continue with writing
+    }
+    //}
     return false;
   }
+
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index1, const int index2) /*, const bool overwrite)*/
+  {
+    // Check if block exists
+    try
+    {
+      slha.at(block);
+    }
+    catch (const std::out_of_range& e)
+    {
+      // Nope; add it.
+      slha[block][""] << "BLOCK" << block;
+    }
+    // Check for existing entry
+    //if(not overwrite)
+    //{
+    try // Might as well always do this check? Don't see why a flag is needed.
+    {
+      slha.at(block).at(index1).at(index2).at(1);
+      // Entry exists, no further action required
+      return true;
+    }
+    catch (const std::out_of_range& e)
+    {
+      // entry doesn't exist; continue with writing
+    }
+    //}
+    return false;
+  }
+
+
 
   /// Check if a line exists in an SLHAea block, then overwrite it if it does.  Otherwise add the line.
   template <class T>
@@ -190,21 +229,34 @@ namespace Gambit
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const double value, const str& comment, const bool overwrite)
   {
-    if (SLHAea_check_block(slha, block, index, overwrite)) return;
+    if (SLHAea_check_block(slha, block, index) and not overwrite) return;
     SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
+
+  // string version
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const str& value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
     SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
+
+  // int version
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const int value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
     SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
+
+  // two index version
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index1, const int index2,
+   const double& value, const str& comment, const bool overwrite)
+  {
+    if (SLHAea_check_block(slha, block, index1, index2) and not overwrite) return;
+    SLHAea_overwrite_block(slha, block, index1, index2, value, (comment == "" ? "" : "# " + comment));
+  }
+
   /// @}
 
   /// Add an entry from a subspectrum getter to an SLHAea object; SLHA index given by pdg code

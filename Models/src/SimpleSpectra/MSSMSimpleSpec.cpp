@@ -143,7 +143,7 @@ namespace Gambit
           for (int k=0;k<5;k++)
           {
             std::string block(M[k].first);
-            SLHAea_add_block(data, block, scale);
+            if(not SLHAea_block_exists(data, block)) SLHAea_add_block(data, block, scale); //TODO: maybe just always delete and replace
             for(int i=1;i<4;i++) for(int j=1;j<4;j++)
             {
               std::ostringstream comment;
@@ -184,21 +184,20 @@ namespace Gambit
                 double Aentry;
                 if(i==j)
                 {
-                  // Find a better syntax for this...
-                  try
+                  if(SLHAea_check_block(data,Y[k].first,i,j))
                   {
                     Yentry = data.at(Y[k].first).at(i).at(j).at(1);
                   }
-                  catch (const std::out_of_range& e)
+                  else
                   {
                     Yentry = 0;
                   }
 
-                  try
+                  if(SLHAea_check_block(data,A[k].first,i,j))
                   {
                     Aentry = data.at(A[k].first).at(i).at(j).at(1);
                   }
-                  catch (const std::out_of_range& e)
+                  else
                   {
                     Aentry = 0;
                   }
@@ -209,13 +208,10 @@ namespace Gambit
                   Aentry = 0;
                 }
               
-                double Tentry = Aentry * Yentry;  
-                data[Y[k].first][i][j][1] = Yentry;
-                data[Y[k].first][i][j][2] = "# "+Y[k].first+"_"+comment.str();
-                data[A[k].first][i][j][1] = Aentry;
-                data[A[k].first][i][j][2] = "# "+A[k].first+"_"+comment.str();
-                data[T[k].first][i][j][1] = Tentry;
-                data[T[k].first][i][j][2] = "# "+T[k].first+"_"+comment.str();
+                double Tentry = Aentry * Yentry;
+                SLHAea_add(data, Y[k].first, i, j, Yentry, "# "+Y[k].first+"_"+comment.str(), true);
+                SLHAea_add(data, A[k].first, i, j, Aentry, "# "+A[k].first+"_"+comment.str(), true);
+                SLHAea_add(data, T[k].first, i, j, Tentry, "# "+T[k].first+"_"+comment.str(), true);
               }
             }
           }
