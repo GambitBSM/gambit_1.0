@@ -210,9 +210,12 @@ namespace Gambit
                 }
               
                 double Tentry = Aentry * Yentry;  
-                data[Y[k].first][""] << i << j << Yentry << "# "+Y[k].first+"_"+comment.str();
-                data[A[k].first][""] << i << j << Aentry << "# "+A[k].first+"_"+comment.str();
-                data[T[k].first][""] << i << j << Tentry << "# "+T[k].first+"_"+comment.str();
+                data[Y[k].first][i][j][1] = Yentry;
+                data[Y[k].first][i][j][2] = "# "+Y[k].first+"_"+comment.str();
+                data[A[k].first][i][j][1] = Aentry;
+                data[A[k].first][i][j][2] = "# "+A[k].first+"_"+comment.str();
+                data[T[k].first][i][j][1] = Tentry;
+                data[T[k].first][i][j][2] = "# "+T[k].first+"_"+comment.str();
               }
             }
           }

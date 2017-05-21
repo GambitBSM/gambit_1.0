@@ -97,7 +97,7 @@ namespace Gambit
     try
     {
       slha.at(block);
-      return true
+      return true;
     }
     catch (const std::out_of_range& e)
     {
