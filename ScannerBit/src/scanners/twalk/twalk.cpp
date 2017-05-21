@@ -22,7 +22,7 @@
 #include "scanner_plugin.hpp"
 #include "twalk.hpp"
 
-scanner_plugin(twalk, version(1, 0, 0, beta))
+scanner_plugin(twalk, version(1, 0, 0))
 {
     int plugin_main ()
     {
@@ -39,7 +39,8 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
         Gambit::Options txt_options;
         txt_options.setValue("synchronised",false);
         get_printer().new_stream("txt", txt_options);
-
+        set_resume_params.set_resume_mode(get_printer().resume_mode());
+        
         int pdim = get_inifile_value<int>("projection_dimension", 4);
         TWalk(LogLike, get_printer(),
                         set_resume_params,
@@ -53,14 +54,29 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                         get_inifile_value<double>("sqrtR", 1.001),
                         get_inifile_value<int>("chain_number", 1 + pdim + numtasks),
                         get_inifile_value<bool>("hyper_grid", true),
-                        get_inifile_value<int>("burn_in", 1000)
+                        get_inifile_value<int>("burn_in", 0),
+                        get_inifile_value<int>("save_freq", 1000)
                 );
 
         return 0;
     }
 }
 
-void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double sqrtR, const int NThreads, const bool hyper_grid, const int /*burn_in*/) //FIXME burn_in not yet implemented
+void TWalk(Gambit::Scanner::like_ptr LogLike, 
+           Gambit::Scanner::printer_interface &printer, 
+           Gambit::Scanner::resume_params_func set_resume_params, 
+           const int &ma, 
+           const double &div, 
+           const int &proj, 
+           const double &din, 
+           const double &alim, 
+           const double &alimt, 
+           const long long &rand, 
+           const double &sqrtR, 
+           const int &NThreads, 
+           const bool &hyper_grid, 
+           const int &burn_in, 
+           const int &/*save_freq*/)
 {
     std::vector<double> chisq(NThreads);
     std::vector<double> aNext(ma);
@@ -83,6 +99,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     double Ravg = 0.0;
 
     set_resume_params(chisq, a0, mult, totN, count, total, ttotal, Nlength, covT, avgT, W, avgTot, ids, ranks);
+    
     Gambit::Scanner::assign_aux_numbers("mult", "chain");
 
 #ifdef WITH_MPI
@@ -109,7 +126,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
     out_stream->reset();
 
-    if (printer.resume_mode())
+    if (set_resume_params.resume_mode())
     {
 #ifdef WITH_MPI
         for (int i = 0; i < numtasks; i++)
@@ -152,7 +169,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
     MPI_Bcast (c_ptr(ranks), ranks.size(), MPI_INT, 0, MPI_COMM_WORLD);
 #endif
 
-    std::cout << "Metropolis Hastings/TWalk Algorthm Started"  << std::endl;
+    std::cout << "Metropolis Hastings/TWalk Algorithm Started"  << std::endl;
 
     do
     {
@@ -226,6 +243,14 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
             mult[l]++;
 
         total++;
+        
+//         if (total%save_freq == 0) 
+//         {
+//              set_resume_params.dump();
+//              //out_stream->reset();
+//         }
+            
+        
 #ifdef WITH_MPI
         if (rank == 0)
         {
@@ -237,7 +262,7 @@ void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface
                 cnt += *it;
             }
 
-            if (total%NThreads == 0) //cnt >= burn_in*NThreads &&
+            if (total%NThreads == 0 && cnt >= burn_in*NThreads)
             {
                 for (int ttt = 0; ttt < NThreads; ttt++) for (int i = 0; i < ma; i++)
                 {
