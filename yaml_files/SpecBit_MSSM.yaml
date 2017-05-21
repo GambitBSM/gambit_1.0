@@ -131,8 +131,8 @@ ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
     type:         bool
-    function:     MSSMspectrum_test
-    #function:     SPheno_MSSM_test
+    #function:     MSSMspectrum_test
+    function:     SPheno_MSSM_test
 
 Rules:
 
@@ -141,13 +141,12 @@ Rules:
 
   - capabilty:    unimproved_MSSM_spectrum
     type:         Spectrum
-    function:     get_CMSSM_spectrum
+    #function:     get_CMSSM_spectrum
     #function:     get_MSSMatMGUT_spectrum
     #function:     get_MSSMatQ_spectrum
-    #function:     get_CMSSM_spectrum_SPheno
-    #function:     get_MSSMatMGUT_spectrum_SPheno
-    #function:     get_MSSMatQ_spectrum_SPheno
+    function:     get_MSSM_spectrum_SPheno
     options:
+    # FlexibleSUSY options
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -160,16 +159,11 @@ Rules:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
+   # SPheno options
+      n_run:                 30
+      delta_mass:            1.0e-4
 
 
-  # Specify the backend function to use when running SPheno and its options
-  - capability:   SPheno_MSSMspectrum
-    type:         void
-    function:     run_SPheno
-    options:
-      delta_mass:     1.0e-4
-      n_run:          30
-           
 Logger:
 
   # Select the log files

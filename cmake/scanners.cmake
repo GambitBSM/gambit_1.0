@@ -29,11 +29,11 @@
 
 
 # Diver
-set(loc "${GAMBIT_INTERNAL}/Diver") #FIXME delete on release
 set(name "diver")
 set(ver "1.0.0")
 set(lib "libdiver")
-set(dl "null")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(md5 "61c76e948855f19dfa394c14df8c6af2")
 set(dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/${name}/${ver}")
 set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS} -fopenmp")
 if(MPI_Fortran_FOUND)
@@ -45,9 +45,7 @@ check_ditch_status(${name} ${ver})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
     DOWNLOAD_DIR ${scanner_download}
-    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-             COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-             COMMAND ${CMAKE_COMMAND} -E copy_directory ${loc} ${dir}
+    DOWNLOAD_COMMAND ${DL_SCANNER} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ""

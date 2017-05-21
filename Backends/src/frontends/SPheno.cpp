@@ -25,11 +25,11 @@ BE_NAMESPACE
 {
 
   // Run SPheno
-  int run_SPheno(Spectrum &spectrum, const SMInputs &sminputs, const std::map<str, safe_ptr<double> >& Param)
+  int run_SPheno(Spectrum &spectrum, const Finputs &inputs)
   {
     Set_All_Parameters_0();
 
-    ReadingData(sminputs, Param);
+    ReadingData(inputs);
 
     *epsI = pow(10,-5);
     *deltaM = pow(10,-3);
@@ -100,7 +100,7 @@ BE_NAMESPACE
 
       *Q_in = sqrt(GetRenormalizationScale());
 
-      spectrum = Spectrum_Out(Param);
+      spectrum = Spectrum_Out(inputs.param);
 
 
       *BRBtosgamma = 0.0;
@@ -713,10 +713,207 @@ BE_NAMESPACE
   }
 
   // Function to read data from the Gambit inputs and fill SPheno internal variables
-  void ReadingData(const SMInputs &sminputs, const std::map<str, safe_ptr<double> > &Param)
+  void ReadingData(const Finputs &inputs)
   {
 
-    InitializeStandardModel(sminputs);
+    // Set up options, same as BLOCK SPHENOINPUT
+
+    // 1, Error_Level
+    *ErrorLevel = inputs.options->getValueOrDef<Finteger>(-1, "ErrorLevel");
+    // GAMBIT: keep error level always 0 (print every warning), let GAMBIT handle errors
+    *ErrorLevel = 0;
+
+    // 2, SPA_convention
+    *SPA_convention = inputs.options->getValueOrDef<Flogical>(false, "SPA_convention");
+    if(*SPA_convention)
+    {
+      Freal8 scale = 1E6;
+      SetRGEScale(scale);
+    }
+
+    // 3, External_Spectrum
+    // GAMBIT: no need for external spectrum options
+    *External_Spectrum = false;
+    *External_Higgs = false;
+
+    // 4, Use_Flavour_States
+    // GAMBIT: private variable, cannot import
+
+    // 5, FermionMassResummation
+    // GAMBIT: not covered
+    *FermionMassResummation = true;
+
+    // 6, Ynu_at_MR3, Fixed_Nu_Yukawas
+    // GAMBIT: not covered
+    *Ynu_at_MR3 = false;
+    *Fixed_Nu_Yukawas = false;
+
+    // 7, Only_1loop_Higgsmass
+    // GAMBIT: not covered
+    *Only_1loop_Higgsmass = false;
+
+    // 8, Calculates Masses for extra scales if required, Calc_Mass
+    // GAMBIT: not covered
+    *Calc_Mass = false;
+
+    // 9, Use old version of BoundaryEW, UseNewBoundaryEW
+    // GAMBIT: not covered
+    *UseNewBoundaryEW = true;
+
+    // 10, use old version to calculate scale, UseNewScale
+    // GAMBIT: not covered
+    *UseNewScale = true;
+
+    // 11, whether to calculate branching ratios or not, L_BR
+    // TODO: Branching ratios, not covered yet
+    //*L_BR = inputs.options->getValueOrDef<Flogical>(false, "L_BR");
+    *L_BR = false;
+
+    // 12, minimal value such that a branching ratio is written out, BRMin
+    // TODO: Branching ratios, not covered yet
+    //Freal8 BrMin = inputs.options->getValueOrDef<Freal8>(0.0, "BRMin");
+    //if(BrMin > 0.0)
+    //  SetWriteMinBr(BrMin);
+
+    // 13, whether the output of h-> V V* should be folded with branching ratios of the V*,
+    // BR_Higgs_with_offshell_V
+    // GAMBIT: private variable, cannot import
+
+    // 21, whether to calculate cross sections or not, L_CS
+    // TODO: Cross sections, not covered yet
+    //*L_CS = inputs.options->getValueOrDef<Flogical>(false, "L_CS");
+    //*L_CS = false;
+
+    // 22, CMS energy, Ecms
+    // TODO: Perhaps there is the option of setting more than one Ecms
+    // TODO: Cross sections, not covered yet
+    //static  int p_max = 100;
+    //static Finteger p_act = 0;
+    //p_act ++;
+    //if(p_act <= p_max)
+    //  (*Ecms)(p_act) = inputs.options->getValueOrDef<Freal8>(0.0, "Ecms");
+    //else
+    //  backend_error().raise(LOCAL_INFO, "The number of required points for the calculation of cross sections exceeds the maximum");
+
+    // 23, polarisation of incoming e- beam, Pm
+    // TODO: Cross sections, not covered yet
+    //if(p_act <= p_max)
+    //  (*Pm)(p_act) = inputs.options->getValueOrDef<Freal8>(0.0, "Pm");
+    //if((*Pm)(p_act) > 1)
+    //{
+    //  backend_error().raise(LOCAL_INFO, "e- beam polarisation has to be between -1 and 1");
+    //  (*Pm)(p_act) = 0;
+    //}
+
+    // 24, polarisation of incoming e+ beam, Pp
+    // TODO: Cross sections, not covered yet
+    //if(p_act <= p_max)
+    //  (*Pp)(p_act) = inputs.options->getValueOrDef<Freal8>(0.0, "Pp");
+    //if((*Pp)(p_act) > 1)
+    //{
+    //  backend_error().raise(LOCAL_INFO, "e+ beam polarisation has to be between -1 and 1");
+    //  (*Pp)(p_act) = 0;
+    //}
+
+    // 25, caluclate initial state radiation, ISR
+    // TODO: Cross sections, not covered yet
+    //if(p_act <= p_max)
+    //  (*ISR)(p_act) = inputs.options->getValueOrDef<Flogical>(false, "ISR");
+    //
+
+    // 26, minimal value such that a cross section is written out, SigMin
+    // TODO: Cross sections, not covered yet
+    //*Freal8 SigMin = inputs.options->getValueOrDef<Freal8>(0.0, "SigMin");
+    //if(SigMin > 0.0)
+    //  SetWriteMinSig(SigMin);
+
+    // 31, setting a fixed GUT scale, GUTScale
+    Freal8 GUTScale = inputs.options->getValueOrDef<Freal8>(0.0, "GUTScale");
+    if(GUTScale > 0.0)
+       SetGUTScale(GUTScale);
+
+    // 32, requires strict unification, StrictUnification
+    Flogical StrictUnification = inputs.options->getValueOrDef<Flogical>(false, "StrictUnification");
+    if(StrictUnification)
+      SetStrictUnification(StrictUnification);
+
+    // 34, precision of mass calculation, delta_mass
+    *delta_mass = inputs.options->getValueOrDef<Freal8>(0.00001, "delta_mass");
+
+    // 35, maximal number of iterations, n_run
+    *n_run = inputs.options->getValueOrDef<Finteger>(40, "n_run");
+
+    // 36, write out debug information, WriteOut
+    // GAMBIT: no write out, all debug info is handled by GAMBIT
+    *WriteOut = false;
+
+    // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d, YukawaScheme
+    // GAMBIT: not covered
+
+    // 38, set looplevel of RGEs, TwoLoopRGE
+    *TwoLoopRGE = inputs.options->getValueOrDef<Flogical>(true, "TwoLoopRGE");
+
+    // 39, write additional SLHA1 file, Write_SLHA1
+    // GABMIT: Always false, no file output
+    *Write_SLHA1 = false;
+
+    // 40, alpha(0), Alpha
+    Freal8 alpha = 1.0/137.035999074;
+    *Alpha = inputs.options->getValueOrDef<Freal8>(alpha,"Alpha");
+
+    // 41, Z-boson width, gamZ
+    *gamZ = inputs.options->getValueOrDef<Freal8>(2.49,"gamZ");
+
+    // 42, W-boson width, gamW
+    *gamW = inputs.options->getValueOrDef<Freal8>(2.06,"gamW");
+
+    // 80, exit for sure with non-zero value if problem occurs, Non_Zero_Exit
+    // GAMBIT: never brute exit, let GAMBIT do a controlled exit
+    *Non_Zero_Exit = false;
+
+    // 81, quick and dirty way to implement model by Suchita Kulkarni, Model_Suchita
+    // GAMBIT: not covered
+    *Model_Suchita = false;
+
+    // 90, add R-parity at low energies, Add_RParity
+    // TODO: RParity, not covered yet
+    //*Add_RParity = inputs.options->getValueOrDef<Flogical>(false, "Add_RParity");
+    *Add_RParity = false;
+
+    // 91, fit RP parameters such that neutrino data are ok, L_Fit_RP_Parameters
+    // TODO: RParity, not covered yet
+    //*L_Fit_RP_Parameters = inputs.options->getValueOrDef<Flogical>(false, "L_Fit_RP_Parameters");
+    *L_Fit_RP_Parameters = false;
+
+    // 92, for Pythia input, L_RP_Pythia
+    // GAMBIT: private variable, cannot import
+
+    // 93, calculates cross section in case of RP, only partially implemented, L_CSrp
+    // TODO: RParity and Cross Sections, not covered yet
+    //*L_CSrp = inputs.options->getValueOrDef<Flogical>(false, "L_CSrp");
+    *L_CSrp = false;
+
+    // 94, io_RP
+    // GAMBIT: private variable, cannot import
+
+    // 99, MADGraph output style, some additional information
+    // GAMBIT: always false, no file output, private variable, cannot import
+
+    // 100, use bsstep instead of rkqs, Use_bsstep_instead_of_rkqs
+    Flogical bsstep = inputs.options->getValueOrDef<Flogical>(false, "Use_bsstep_instead_of_rkqs");
+    if(bsstep)
+      Set_Use_bsstep_instead_of_rkqs(bsstep);
+
+    // 101, use rzextr instead of pzextr, Use_rzextr_instead_of_pzextr
+    Flogical rzextr = inputs.options->getValueOrDef<Flogical>(false, "Use_rzextr_instead_of_pzextr");
+    if(rzextr)
+      Set_Use_rzextr_instead_of_pzextr(rzextr);
+
+    // 110, write ouput for LHC observables, LWrite_LHC_Observables
+    // GAMBIT: private variable, cannot import
+
+
+    InitializeStandardModel(inputs.sminputs);
     InitializeLoopFunctions();
 
     //*ErrorLevel = -1;
@@ -746,34 +943,34 @@ BE_NAMESPACE
     if(*HighScaleModel == "mSUGRA")
     {
       // M0
-      if(Param.find("M0") != Param.end())
+      if(inputs.param.find("M0") != inputs.param.end())
       {
         for(int i=1; i<=3; i++)
-          (*M2D_0_sckm)(i,i) = pow(*Param.at("M0"),2);
+          (*M2D_0_sckm)(i,i) = pow(*inputs.param.at("M0"),2);
         *M2E_0_pmns = *M2D_0_sckm;
         *M2L_0_pmns = *M2D_0_sckm;
         *M2_R_0 = *M2D_0_sckm;
         *M2Q_0_sckm = *M2D_0_sckm;
         *M2U_0_sckm = *M2D_0_sckm;
         for(int i=1; i<=2; i++)
-          (*M2_H_0)(i) = pow(*Param.at("M0"),2);
+          (*M2_H_0)(i) = pow(*inputs.param.at("M0"),2);
         *M2_T_0 = *M2_H_0;
       }
       // M12
-      if(Param.find("M12") != Param.end())
+      if(inputs.param.find("M12") != inputs.param.end())
       {
         for(int i=1; i<=3; i++)
-          (*Mi_0)(i) = *Param.at("M12");
+          (*Mi_0)(i) = *inputs.param.at("M12");
       }
       // TanBeta
-      *tanb = *Param.at("TanBeta");
+      *tanb = *inputs.param.at("TanBeta");
       // SignMu
-      *phase_mu = *Param.at("SignMu");
+      *phase_mu = *inputs.param.at("SignMu");
       // A0
-      if(Param.find("A0") != Param.end())
+      if(inputs.param.find("A0") != inputs.param.end())
       {
         for(int i=1; i<=3; i++)
-          (*AoY_d_0)(i,i) = *Param.at("A0");
+          (*AoY_d_0)(i,i) = *inputs.param.at("A0");
         *AoY_l_0 = *AoY_d_0;
         *AoY_u_0 = *AoY_d_0;
         *AoY_nu_0 = *AoY_d_0;
@@ -785,38 +982,39 @@ BE_NAMESPACE
     else if(*HighScaleModel == "GMSB")
     {
       // Lambda
-      *Lambda = *Param.at("Lambda");
+      *Lambda = *inputs.param.at("Lambda");
       // M_M
-      *MLambdaS = *Param.at("MLambdaS");
+      *MLambdaS = *inputs.param.at("MLambdaS");
       // SignMu
-      *phase_mu = *Param.at("SignMu");
+      *phase_mu = *inputs.param.at("SignMu");
       // n_5
-      *n5plets = *Param.at("n5");
+      *n5plets = *inputs.param.at("n5");
       // n_10
       *n10plets = 0;
       // grav_fac
-      *grav_fac = *Param.at("grav_fac");
+      *grav_fac = *inputs.param.at("grav_fac");
       // TanBeta
-      *tanb = *Param.at("TanBeta");
+      *tanb = *inputs.param.at("TanBeta");
     }
     else if(*HighScaleModel == "AMSB")
     {
       // M0
-      *M0_amsb = *Param.at("M0");
+      *M0_amsb = *inputs.param.at("M0");
       // M32
-      *M_32 = *Param.at("M32");
+      *M_32 = *inputs.param.at("M32");
       // SignMu
-      *phase_mu = *Param.at("SignMu");
+      *phase_mu = *inputs.param.at("SignMu");
+
       // TanBeta
-      *tanb = *Param.at("TanBeta");
+      *tanb = *inputs.param.at("TanBeta");
 
     }
     else if(*HighScaleModel == "SUGRA")
     {
       // SignMu
-      *phase_mu = *Param.at("SignMu");
+      *phase_mu = *inputs.param.at("SignMu");
       // TanBeta
-      *tanb = *Param.at("TanBeta");
+      *tanb = *inputs.param.at("TanBeta");
     }
     // Missing pars 7 - 10
 
@@ -824,32 +1022,31 @@ BE_NAMESPACE
     if(*HighScaleModel == "SUGRA") // SUGRA
     {
       // Scale of input parameters
-      if(Param.find("Qin") != Param.end())
+      if(inputs.param.find("Qin") != inputs.param.end())
       {
-        Freal8 Qin = *Param.at("Qin");
+        Freal8 Qin = *inputs.param.at("Qin");
 	SetGUTScale(Qin);
       }
       // M_1
-      if(Param.find("M1") != Param.end())
+      if(inputs.param.find("M1") != inputs.param.end())
       {
-        (*Mi)(1).re = *Param.at("M1");
-        (*Mi_0)(1).re = *Param.at("M1");
+        (*Mi)(1).re = *inputs.param.at("M1");
+        (*Mi_0)(1).re = *inputs.param.at("M1");
       }
       // M_2
-      if(Param.find("M2") != Param.end())
+      if(inputs.param.find("M2") != inputs.param.end())
       {
-        (*Mi)(2).re = *Param.at("M2");
-        (*Mi_0)(2).re = *Param.at("M2");
+        (*Mi)(2).re = *inputs.param.at("M2");
+        (*Mi_0)(2).re = *inputs.param.at("M2");
       }
       // M_3
-      if(Param.find("M3") != Param.end())
+      if(inputs.param.find("M3") != inputs.param.end())
       {
-        (*Mi)(3).re = *Param.at("M3");
-        (*Mi_0)(3).re = *Param.at("M3");
+        (*Mi)(3).re = *inputs.param.at("M3");
+        (*Mi_0)(3).re = *inputs.param.at("M3");
       }
       // tanb
       // in GAMBIT tanb is always at mZ
-      //*tanb_Q = *Param.at("TanBeta");
       *tanb_in_at_Q = false;
 
       for(int i=1; i<=3; i++)
@@ -858,62 +1055,62 @@ BE_NAMESPACE
           // A_u, Block TUIN
           std::stringstream parname;
           parname << "Au_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*Au_0_sckm)(i,j).re = *Param.at(parname.str());
-            (*Au_sckm)(j,i).re = *Param.at(parname.str());
+            (*Au_0_sckm)(i,j).re = *inputs.param.at(parname.str());
+            (*Au_sckm)(j,i).re = *inputs.param.at(parname.str());
           }
           // A_d, Block TDIN
           parname.str(std::string());
           parname << "Ad_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*Ad_0_sckm)(i,j).re = *Param.at(parname.str());
-            (*Ad_sckm)(j,i).re = *Param.at(parname.str());
+            (*Ad_0_sckm)(i,j).re = *inputs.param.at(parname.str());
+            (*Ad_sckm)(j,i).re = *inputs.param.at(parname.str());
           }
           // A_l, Block TEIN
           parname.str(std::string());
           parname << "Ae_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*Al_0_pmns)(i,j).re = *Param.at(parname.str());
-            (*Al_pmns)(j,i).re = *Param.at(parname.str());
+            (*Al_0_pmns)(i,j).re = *inputs.param.at(parname.str());
+            (*Al_pmns)(j,i).re = *inputs.param.at(parname.str());
           }
         }
 
       // A_t
-      if(Param.find("Au_33") != Param.end())
+      if(inputs.param.find("Au_33") != inputs.param.end())
       {
-        (*AoY_u)(3,3).re = *Param.at("Au_33");
+        (*AoY_u)(3,3).re = *inputs.param.at("Au_33");
         *At_save = (*AoY_u)(3,3);
         *AoY_u_0 = *AoY_u;
       }
       // A_b
-      if(Param.find("Ad_33") != Param.end())
+      if(inputs.param.find("Ad_33") != inputs.param.end())
       {
-        (*AoY_d)(3,3).re = *Param.at("Ad_33");
+        (*AoY_d)(3,3).re = *inputs.param.at("Ad_33");
         *Ab_save = (*AoY_d)(3,3);
         *AoY_d_0 = *AoY_d;
       }
       // A_tau
-      if(Param.find("Ae_33") != Param.end())
+      if(inputs.param.find("Ae_33") != inputs.param.end())
       {
-        (*AoY_l)(3,3).re = *Param.at("Ae_33");
+        (*AoY_l)(3,3).re = *inputs.param.at("Ae_33");
         *Atau_save = (*AoY_l)(3,3);
         *AoY_l_0 = *AoY_l;
       }
 
       // M^2_Hd
-      if(Param.find("mHd2") != Param.end())
+      if(inputs.param.find("mHd2") != inputs.param.end())
       {
-        (*M2_H)(1) = *Param.at("mHd2");
-        (*M2_H_0)(1) = *Param.at("mHd2");
+        (*M2_H)(1) = *inputs.param.at("mHd2");
+        (*M2_H_0)(1) = *inputs.param.at("mHd2");
       }
       // M^2_Hu
-      if(Param.find("mHu2") != Param.end())
+      if(inputs.param.find("mHu2") != inputs.param.end())
       {
-        (*M2_H)(2) = *Param.at("mHu2");
-        (*M2_H_0)(2) = *Param.at("mHu2");
+        (*M2_H)(2) = *inputs.param.at("mHu2");
+        (*M2_H_0)(2) = *inputs.param.at("mHu2");
       }
       // mu, not in GAMBIT input
       // M^2_A(Q), not in GAMBIT input
@@ -924,42 +1121,42 @@ BE_NAMESPACE
           // M^2_L, Block MSL2
           std::stringstream parname;
           parname << "ml2_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-           (*M2L_pmns)(i,j) = *Param.at(parname.str());
-            (*M2L_pmns)(j,i) = *Param.at(parname.str());
+           (*M2L_pmns)(i,j) = *inputs.param.at(parname.str());
+            (*M2L_pmns)(j,i) = *inputs.param.at(parname.str());
           }
           // M^2_E, Block MSE2
           parname.str(std::string());
           parname << "me2_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*M2E_pmns)(i,j) = *Param.at(parname.str());
-            (*M2E_pmns)(j,i) = *Param.at(parname.str());
+            (*M2E_pmns)(i,j) = *inputs.param.at(parname.str());
+            (*M2E_pmns)(j,i) = *inputs.param.at(parname.str());
           }
           // M^2_Q, Block MSQ2
           parname.str(std::string());
           parname << "mq2_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*M2Q_sckm)(i,j) = *Param.at(parname.str());
-            (*M2Q_sckm)(j,i) = *Param.at(parname.str());
+            (*M2Q_sckm)(i,j) = *inputs.param.at(parname.str());
+            (*M2Q_sckm)(j,i) = *inputs.param.at(parname.str());
           }
           // M^2_U, Block MSU2
           parname.str(std::string());
           parname << "mu2_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*M2U_sckm)(i,j) = *Param.at(parname.str());
-            (*M2U_sckm)(j,i) = *Param.at(parname.str());
+            (*M2U_sckm)(i,j) = *inputs.param.at(parname.str());
+            (*M2U_sckm)(j,i) = *inputs.param.at(parname.str());
           }
           // M^2_D, Block MSD2
           parname.str(std::string());
           parname << "md2_" << i << j;
-          if(Param.find(parname.str()) != Param.end())
+          if(inputs.param.find(parname.str()) != inputs.param.end())
           {
-            (*M2D_sckm)(i,j) = *Param.at(parname.str());
-            (*M2D_sckm)(j,i) = *Param.at(parname.str());
+            (*M2D_sckm)(i,j) = *inputs.param.at(parname.str());
+            (*M2D_sckm)(j,i) = *inputs.param.at(parname.str());
           }
         }
       *M2L_0_pmns = *M2L_pmns;
@@ -974,7 +1171,7 @@ BE_NAMESPACE
     // TODO: R-parity breaking
 
     // Block SPHENOINPUT
-    // Already in BE_INI_FUNCTION
+    // Already in run_SPheno
 
     // Block SPINFO, nothing to do here
 
@@ -1318,221 +1515,6 @@ BE_INI_FUNCTION
       *HighScaleModel = "SUGRA"; // SUGRA
       SetHighScaleModel("SUGRA");
     }
-
-    // Set up options, same as BLOCK SPHENOINPUT
-    // 1
-    *ErrorLevel = runOptions->getValueOrDef<Finteger>(-1, "ErrorLevel");
-    // GAMBIT: keep error level always 0 (print every warning), let GAMBIT handle errors
-    *ErrorLevel = 0;
-
-    // 2
-    *SPA_convention = runOptions->getValueOrDef<Flogical>(false, "SPA_convention");
-    if(*SPA_convention)
-    {
-      Freal8 scale = 1E6;
-      SetRGEScale(scale);
-    }
-
-    // 3
-    // GAMBIT: no need for external spectrum options
-    //*External_Spectrum = runOptions->getValueOrDef<Flogical>(false, "External_Spectrum");
-    //*External_Higgs = runOptions->getValueOrDef<Flogical>(false, "External_Higgs");
-    *External_Spectrum = false;
-    *External_Higgs = false;
-
-    // 4
-    // GAMBIT: private variable, cannot import
-    //*Use_Flavour_States = runOptions->getValueOrDef<Flogical>(false, "Use_Flavour_States");
-
-    // 5
-    // GAMBIT: not covered
-    //*FermionMassResummation = runOptions->getValueOrDef<Flogical>(true, "FermionMassResummation");
-    *FermionMassResummation = true;
-
-    // 6
-    // GAMBIT: not covered
-    //*Ynu_at_MR3 = runOptions->getValueOrDef<Flogical>(false, "Ynu_at_MR3");
-    //*Fixed_Nu_Yukawas = !runOptions->getValueOrDef<Flogical>(true, "Fixed_Nu_Yukawas");
-    *Ynu_at_MR3 = false;
-    *Fixed_Nu_Yukawas = false;
-
-    // 7
-    // GAMBIT: not covered
-    //*Only_1loop_Higgsmass = runOptions->getValueOrDef<Flogical>(false, "Only_1loop_Higgsmass");
-    *Only_1loop_Higgsmass = false;
-
-    // 8, Calculates Masses for extra scales if required
-    // GAMBIT: not covered
-    //*Calc_Mass = runOptions->getValueOrDef<Flogical>(false, "Calc_Mass");
-    *Calc_Mass = false;
-
-    // 9, Use old version of BoundaryEW
-    // GAMBIT: not covered
-    //*UseNewBoundaryEW = runOptions->getValueOrDef<Flogical>(true, "UseNewBoundaryEW");
-    *UseNewBoundaryEW = true;
-
-    // 10, use old version to calculate scale
-    // GAMBIT: not covered
-    //*UseNewScale = runOptions->getValueOrDef<Flogical>(true, "UseNewScale");
-    *UseNewScale = true;
-
-    // 11, whether to calculate branching ratios or not
-    // TODO: Branching ratios, not covered yet
-    //*L_BR = runOptions->getValueOrDef<Flogical>(false, "L_BR");
-    *L_BR = false;
-
-    // 12, minimal value such that a branching ratio is written out
-    // TODO: Branching ratios, not covered yet
-    //Freal8 BrMin = runOptions->getValueOrDef<Freal8>(0.0, "BRMin");
-    //if(BrMin > 0.0)
-    //  SetWriteMinBr(BrMin);
-
-    // 13, whether the output of h-> V V* should be folded with branching ratios of the V*
-    // GAMBIT: private variable, cannot import
-    //*BR_Higgs_with_offshell_V = runOptions->getValueOrDef<Flogical>(false, "BR_Higgs_with_offshell_V");
-
-    // 21, whether to calculate cross sections or not
-    // TODO: Cross sections, not covered yet
-    //*L_CS = runOptions->getValueOrDef<Flogical>(false, "L_CS");
-    //*L_CS = false;
-
-    // 22, CMS energy
-    // TODO: Perhaps there is the option of setting more than one Ecms
-    // TODO: Cross sections, not covered yet
-    //static  int p_max = 100;
-    //static Finteger p_act = 0;
-    //p_act ++;
-    //if(p_act <= p_max)
-    //  (*Ecms)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Ecms");
-    //else
-    //  backend_error().raise(LOCAL_INFO, "The number of required points for the calculation of cross sections exceeds the maximum");
-
-    // 23, polarisation of incoming e- beam
-    // TODO: Cross sections, not covered yet
-    //if(p_act <= p_max)
-    //  (*Pm)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pm");
-    //if((*Pm)(p_act) > 1)
-    //{
-    //  backend_error().raise(LOCAL_INFO, "e- beam polarisation has to be between -1 and 1");
-    //  (*Pm)(p_act) = 0;
-    //}
-
-    // 24, polarisation of incoming e+ beam
-    // TODO: Cross sections, not covered yet
-    //if(p_act <= p_max)
-    //  (*Pp)(p_act) = runOptions->getValueOrDef<Freal8>(0.0, "Pp");
-    //if((*Pp)(p_act) > 1)
-    //{
-    //  backend_error().raise(LOCAL_INFO, "e+ beam polarisation has to be between -1 and 1");
-    //  (*Pp)(p_act) = 0;
-    //}
-
-    // 25, caluclate initial state radiation
-    // TODO: Cross sections, not covered yet
-    //if(p_act <= p_max)
-    //  (*ISR)(p_act) = runOptions->getValueOrDef<Flogical>(false, "ISR");
-    //
-
-    // 26, minimal value such that a cross section is written out
-    // TODO: Cross sections, not covered yet
-    //*Freal8 SigMin = runOptions->getValueOrDef<Freal8>(0.0, "SigMin");
-    //if(SigMin > 0.0)
-    //  SetWriteMinSig(SigMin);
-
-    // 31, setting a fixed GUT scale
-    Freal8 GUTScale = runOptions->getValueOrDef<Freal8>(0.0, "GUTScale");
-    if(GUTScale > 0.0)
-       SetGUTScale(GUTScale);
-
-    // 32, requires strict unification
-    Flogical StrictUnification = runOptions->getValueOrDef<Flogical>(false, "StrictUnification");
-    if(StrictUnification)
-      SetStrictUnification(StrictUnification);
-
-    // 34, precision of mass calculation
-    *delta_mass = runOptions->getValueOrDef<Freal8>(0.00001, "delta_mass");
-
-    // 35, maximal number of iterations
-    *n_run = runOptions->getValueOrDef<Finteger>(40, "n_run");
-
-    // 36, write out debug information
-    // GAMBIT: no write out, all debug info is handled by GAMBIT
-    //*WriteOut = runOptions->getValueOrDef<Flogical>(false, "WriteOut");
-    *WriteOut = false;
-
-    // 37, if = 1 -> CKM through V_u, if = 2 CKM through V_d
-    // GAMBIT: not covered
-    //Finteger YukawaScheme = runOptions->getValueOrDef<Finteger>(0, "YukawaScheme");
-    //if(YukawaScheme > 0)
-    //  SetYukawaScheme(YukawaScheme);
-
-    // 38, set looplevel of RGEs
-    *TwoLoopRGE = runOptions->getValueOrDef<Flogical>(true, "TwoLoopRGE");
-
-    // 39, write additional SLHA1 file
-    // GABMIT: Always false, no file output
-    *Write_SLHA1 = false;
-
-    // 40, alpha(0)
-    Freal8 alpha = 1.0/137.035999074;
-    *Alpha = runOptions->getValueOrDef<Freal8>(alpha,"Alpha");
-
-    // 41, Z-boson width
-    *gamZ = runOptions->getValueOrDef<Freal8>(2.49,"gamZ");
-
-    // 42, W-boson width
-    *gamW = runOptions->getValueOrDef<Freal8>(2.06,"gamW");
-
-    // 80, exit for sure with non-zero value if problem occurs
-    // GAMBIT: never brute exit, let GAMBIT do a controlled exit
-    //*Non_Zero_Exit = runOptions->getValueOrDef<Flogical>(false, "Non_Zero_Exit");
-    *Non_Zero_Exit = false;
-
-    // 81, quick and dirty way to implement model by Suchita Kulkarni
-    // GAMBIT: not covered
-    //*Model_Suchita = runOptions->getValueOrDef<Flogical>(false, "Model_Suchita");
-    *Model_Suchita = false;
-
-    // 90, add R-parity at low energies
-    // TODO: RParity, not covered yet
-    //*Add_RParity = runOptions->getValueOrDef<Flogical>(false, "Add_RParity");
-    *Add_RParity = false;
-
-    // 91, fit RP parameters such that neutrino data are ok
-    // TODO: RParity, not covered yet
-    //*L_Fit_RP_Parameters = runOptions->getValueOrDef<Flogical>(false, "L_Fit_RP_Parameters");
-    *L_Fit_RP_Parameters = false;
-
-    // 92, for Pythia input
-    // GAMBIT: private variable, cannot import
-    // *L_RP_Pythia = runOptions->getValueOrDef<Flogical>(false, "L_RP_Pythia");
-
-    // 93, calculates cross sectionin case of RP, only partially implemented
-    // TODO: RParity and Cross Sections, not covered yet
-    //*L_CSrp = runOptions->getValueOrDef<Flogical>(false, "L_CSrp");
-    *L_CSrp = false;
-
-    // 94, io_RP
-    // GAMBIT: private variable, cannot import
-    // *io_RP = runOptions->getValueOrDef<Finteger>(0, "io_RP");
-
-    // 99, MADGraph output style, some additional information
-    // GAMBIT: always false, no file output, private variable, cannot import
-    // *MADGraph_style = false;
-
-    // 100, use bsstep instead of rkqs
-    Flogical bsstep = runOptions->getValueOrDef<Flogical>(false, "Use_bsstep_instead_of_rkqs");
-    if(bsstep)
-      Set_Use_bsstep_instead_of_rkqs(bsstep);
-
-    // 101, use rzextr instead of pzextr
-    Flogical rzextr = runOptions->getValueOrDef<Flogical>(false, "Use_rzextr_instead_of_pzextr");
-    if(rzextr)
-      Set_Use_rzextr_instead_of_pzextr(rzextr);
-
-    // 110, write ouput for LHC observables
-    // GAMBIT: private variable, cannot import
-    // *LWrite_LHC_Observables = runOptions->getValueOrDef<Flogical>(false, "LWrite_LHC_Observables");
 
 }
 END_BE_INI_FUNCTION

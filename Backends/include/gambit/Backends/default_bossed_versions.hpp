@@ -5,14 +5,14 @@
 ///
 ///  Choices about the default versions of backends
 ///  to use for loading types (specific versions
-///  of types can always be used by employing the 
+///  of types can always be used by employing the
 ///  qualified type BACKENDNAME_SAFEVERSION::TYPE)
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott  
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2014 Nov
 ///

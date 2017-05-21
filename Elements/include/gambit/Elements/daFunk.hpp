@@ -630,7 +630,7 @@ namespace daFunk
                 if(my_index.size() <= bindID)
                 {
                     my_index.resize(bindID+1);
-                    // FIXME: Introduce informative error message if bind fails
+                    // TODO: Introduce informative error message if bind fails
                     // because of inconsistencies, e.g. along the lines:
                     //
                     //    std::cout << "FATAL ERROR: bind() attempts to resolve dependencies for FunkDerived" << std::endl;
@@ -964,7 +964,7 @@ namespace daFunk
         if(indices.size() <= bindID)
         {
             indices.resize(bindID+1);
-            // FIXME: Throw error if problems are encountered
+            // TODO: Throw error if problems are encountered
             //std::cout << "FATAL ERROR: bind() attempts to resolve dependencies of FunkBase" << std::endl;
             //std::cout << "object inconsistently." << std::endl;
             //std::cout << "Encountered while resolving: " << std::endl;
@@ -1284,7 +1284,7 @@ namespace daFunk
             FunkInterp(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
                 setup(f, Xgrid, Ygrid, mode);
-            };
+            }
             FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
                 setup(var(arg), Xgrid, Ygrid, mode);
@@ -1303,7 +1303,7 @@ namespace daFunk
         private:
             void setup(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode)
             {
-                // FIXME: Catch invalid setup
+                // TODO: Catch invalid setup
                 functions = vec(f);
                 singularities = f->getSingl();
                 arguments = f->getArgs();
@@ -1311,7 +1311,7 @@ namespace daFunk
                 this->Ygrid = Ygrid;
                 if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
                 else if ( mode == "log" ) this->ptr = &FunkInterp::logInterp;
-            };
+            }
 
             double logInterp(double x)
             {
@@ -1519,7 +1519,7 @@ namespace daFunk
                 if(index.size() <= bindID)
                 {
                     index.resize(bindID+1);
-                    // FIXME: Throw error if problems are encountered
+                    // TODO: Throw error if problems are encountered
                     //std::cout << "FATAL ERROR: bind() attempts to resolve dependencies of FunkIntegrate_gsl1d" << std::endl;
                     //std::cout << "object inconsistently." << std::endl;
                     //std::cout << "Encountered while resolving " << arg << " and:" << std::endl;
@@ -1634,7 +1634,7 @@ namespace daFunk
                         }
                         result = sum;
                     }
-                    // FIXME: Implement flags to optionally throw an error
+                    // TODO: Implement flags to optionally throw an error
                     if (status and not this->use_log_fallback)
                     {
                         std::cerr << "daFunk::FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
