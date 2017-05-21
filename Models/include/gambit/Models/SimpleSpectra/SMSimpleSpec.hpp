@@ -89,13 +89,10 @@ namespace Gambit
             virtual ~SMSimpleSpec() {};
 
             virtual double GetScale() const;
-            
+           
             /// Map filler
             /// Used to initialise maps of function pointers
             static GetterMaps fill_getter_maps();
-            
- 
-
       };
 
 } // end Gambit namespace

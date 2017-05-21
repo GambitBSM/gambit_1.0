@@ -51,8 +51,14 @@ namespace Gambit
   /// Add a new block to an SLHAea object, with our without a scale
   void SLHAea_add_block(SLHAstruct&, const str& name, const double scale = -1);
 
+  /// Check if a block exists in an SLHAea object, add it if not
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block);
+
   /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
   bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite);
+
+  /// Write the SPINFO block with GAMBIT name and version number
+  void SLHAea_add_GAMBIT_SPINFO(SLHAstruct& slha /*modify*/);
 
   /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
   /// @{

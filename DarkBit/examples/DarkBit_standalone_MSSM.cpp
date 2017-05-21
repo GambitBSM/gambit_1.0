@@ -55,6 +55,12 @@ namespace Gambit
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading spectrum from: " << inputFileName << std::endl;
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName, Spectrum::mc_info(), Spectrum::mr_info());
+
+      /// TEST! Immediate output SLHA file
+      cout << "Writing SLHA1&2 file for comparison to input!" << std::endl;
+      outSpec.writeSLHAfile(1,"dbsa_test.slha1");
+      outSpec.writeSLHAfile(2,"dbsa_test.slha2");
+      exit(0);
     }
 
     // Create decay object from SLHA file

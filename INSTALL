@@ -6,7 +6,16 @@ To build GAMBIT:
   make darksusy    # If intending to use DarkBit (part of 'backends' target)
   make micromegas  # If intending to use micromegas (not part of 'backends')
   make             # Ordering of make commands is unimportant.
-                 
+(and to build standalone codes):                 
+  make ExampleBit_A_standalone 
+  make ColliderBit_standalone
+  make DarkBit_standalone_MSSM 
+  make DarkBit_standalone_SingletDM 
+  make DarkBit_standalone_WIMP
+  make 3bithit
+  make FlavBit_standalone
+  make ScannerBit_standalone
+
 To choose compilers, change the cmake step to, e.g.
   FC=gfortran CC=gcc CXX=g++ cmake ..
 

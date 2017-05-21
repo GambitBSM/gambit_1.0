@@ -40,9 +40,12 @@ namespace Gambit
 
            /// @{ Getters for MSSM information
            double get_Mu()  const;
+           double get_v()   const; 
+           double get_mA2() const;
            double get_BMu() const;
            double get_vd()  const;
            double get_vu()  const;
+           double get_tanbeta() const;
 
            double get_MassB () const;
            double get_MassWB() const;
@@ -67,7 +70,6 @@ namespace Gambit
            double get_g1() const;
            double get_g2() const;
            double get_g3() const;
-           double get_tanbeta() const;
            double get_sinthW2_DRbar() const;
 
            double get_MGlu_pole() const;
@@ -75,6 +77,7 @@ namespace Gambit
            double get_Mhh_pole_slha(int i) const;
            double get_MAh_pole () const;
            double get_MHpm_pole() const;
+           double get_MW_pole()   const;
 
            double get_MCha_pole_slha(int i) const;
            double get_MSd_pole_slha(int i) const;
@@ -129,7 +132,7 @@ namespace Gambit
             virtual ~MSSMSimpleSpec() {};
 
             virtual int get_index_offset() const;
-            virtual SLHAstruct getSLHAea(int) const;
+            //virtual SLHAstruct getSLHAea(int) const; // Using SubSpectrum bass class version
             virtual void add_to_SLHAea(int, SLHAea::Coll&) const;
             virtual const std::map<int, int>& PDG_translator() const;
 

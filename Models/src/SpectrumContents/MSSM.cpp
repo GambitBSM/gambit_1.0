@@ -62,7 +62,12 @@ namespace Gambit {
      addParameter(Par::mass1, "ad" , m3x3);
      addParameter(Par::mass1, "ae" , m3x3);
      addParameter(Par::mass1, "au" , m3x3);
-  
+
+     // EXTRAS! Kind of logical to always include these, without forcing users to calculate them themselves
+     addParameter(Par::dimensionless, "tanbeta", scalar);
+     addParameter(Par::mass2, "mA2" , scalar);
+     //
+
      addParameter(Par::dimensionless, "g1", scalar);
      addParameter(Par::dimensionless, "g2", scalar);
      addParameter(Par::dimensionless, "g3", scalar);
@@ -84,6 +89,7 @@ namespace Gambit {
      addParameter(Par::Pole_Mass, "h0",    v2);
      addParameter(Par::Pole_Mass, "A0", scalar);
      addParameter(Par::Pole_Mass, "H+", scalar);
+     addParameter(Par::Pole_Mass, "W+", scalar);
   
      addParameter(Par::Pole_Mixing, "~d",    m6x6); 
      addParameter(Par::Pole_Mixing, "~u",    m6x6);

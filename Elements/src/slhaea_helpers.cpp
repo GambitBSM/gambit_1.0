@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Helper functions for SMInputs struct
+///  Helper functions for dealing with SLHAea objects
 ///
 ///  *********************************************
 ///
@@ -19,6 +19,7 @@
 ///  *********************************************
 
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/version.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 
@@ -90,7 +91,24 @@ namespace Gambit
     }
   }
 
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block)
+  {
+    // Check if block exists
+    try
+    {
+      slha.at(block);
+      return true
+    }
+    catch (const std::out_of_range& e)
+    {
+      // Nope; add it.
+      slha[block][""] << "BLOCK" << block;
+      return false; // Didn't exist, but now it does.
+    }
+  }
+
   /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
+  // TODO: Ben: I just found this, and I can't say I understand the logic related to "overwrite".
   bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite)
   {
     // Check if block exists
@@ -153,6 +171,18 @@ namespace Gambit
     }
     catch (const std::out_of_range& e) {}
     slha[block][""] << index1 << index2 << value << comment;
+  }
+
+  void SLHAea_add_GAMBIT_SPINFO(SLHAstruct& slha /*modify*/)
+  {
+     // For now we don't try to track where the data originally came from, we just label
+     // it as GAMBIT-produced.
+     std::ostringstream progname;
+     if(not SLHAea_check_block(slha, "SPINFO", 1, false))
+     {
+        SLHAea_add(slha, "SPINFO", 1, "GAMBIT", "# Program");
+        SLHAea_add(slha, "SPINFO", 2, gambit_version(), "# Version number");
+     }
   }
 
   /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
@@ -234,5 +264,6 @@ namespace Gambit
     // else skip this entry
     return;
   }
+
 
 }
