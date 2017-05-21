@@ -24,12 +24,18 @@
 #include <sstream>
 #include <unordered_map>
 #include <typeinfo>
+#include <utility>
+#include <limits>
+#include <type_traits>
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/scan.hpp"
 #include "gambit/ScannerBit/plugin_interface.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/type_index.hpp"
+#include "gambit/Utils/signal_helpers.hpp"
+#include "gambit/Utils/signal_handling.hpp"
+#include "gambit/ScannerBit/factory_defs.hpp"
 
 #define LOAD_FUNC_TEMPLATE(name, ...) REGISTER_ELEM(__functions__, typeid(__VA_ARGS__), name<__VA_ARGS__>) 
 #define LOAD_MULTI_FUNC_TEMPLATE(name, ...) REGISTER_ELEM(__multi_functions__, typeid(__VA_ARGS__), name<__VA_ARGS__>) 
@@ -72,6 +78,18 @@ namespace Gambit
             return ret;
         }
         
+        template <typename ret>
+        typename std::enable_if<!std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
+        {
+            return ret();
+        }
+        
+        template <typename ret>
+        typename std::enable_if<std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
+        {
+            return -std::pow(10.0, std::numeric_limits<double>::max_exponent10);
+        };
+        
         template <typename ret, typename... args>
         class Scanner_Plugin_Function<ret (args...)> : public Plugins::Plugin_Interface<ret (args...)>, public Function_Base<ret (args...)>
         {
@@ -86,7 +104,21 @@ namespace Gambit
             
             ret main(const args&... in)
             {
-                return this->Plugins::Plugin_Interface<ret (args...)>::operator()(in...);
+                // Check for signals to abort run
+                if(signaldata().check_if_shutdown_begun())
+                {
+                    Function_Base<ret (args...)>::tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
+                }
+
+                if(signaldata().shutdown_begun() and not Function_Base<ret (args...)>::scanner_can_quit())
+                {
+                    signaldata().attempt_soft_shutdown();
+                    //lnlike = alt_min_valid_lnlike;
+                    //point_invalidated = true;
+                    return scanner_plugin_def_ret<ret>();
+                }
+                else
+                    return this->Plugins::Plugin_Interface<ret (args...)>::operator()(in...);
             }
         };
         
@@ -107,13 +139,30 @@ namespace Gambit
             
             ret main(const args&... in)
             {
-                ret retval = 0.0;
-                for (auto it = functions.begin(); it != functions.end(); it++)
+                // Check for signals to abort run
+                if(signaldata().check_if_shutdown_begun())
                 {
-                    retval += it->main(in...);
+                    Function_Base<ret (args...)>::tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
                 }
-                
-                return retval;
+
+                if(signaldata().shutdown_begun() and not Function_Base<ret (args...)>::scanner_can_quit())
+                {
+                    signaldata().attempt_soft_shutdown();
+                    //lnlike = alt_min_valid_lnlike;
+                    //point_invalidated = true;
+                    return scanner_plugin_def_ret<ret>();
+                }
+                else
+                {
+                    ret retval = 0.0;
+                    for (auto it = functions.begin(); it != functions.end(); it++)
+                    {
+                        //retval += it->main(in...);
+                        retval += it->Plugins::Plugin_Interface<ret (args...)>::operator()(in...);
+                    }
+                    
+                    return retval;
+                }
             }
         };
         
