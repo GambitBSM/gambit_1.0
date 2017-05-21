@@ -1266,7 +1266,8 @@ namespace Gambit
            SpecBit_error().forced_throw(LOCAL_INFO,errmsg.str());
          }
       }
-
+      // add the scale!
+      specmap["scale(Q)"] = subspec.GetScale();
     }
 
     /// @} End Gambit module functions

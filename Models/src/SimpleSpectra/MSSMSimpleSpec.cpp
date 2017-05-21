@@ -19,10 +19,12 @@
 ///  *********************************************
 
 #include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Logs/logger.hpp"
 
+#include <math.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace SLHAea;
@@ -59,9 +61,24 @@ namespace Gambit
               data.find(gen3mix[1]) == data.end() or
               data.find(gen3mix[2]) == data.end() )
           {
-            utils_error().raise(LOCAL_INFO, "SLHA file appears to be neither SLHA1 nor SLHA2.");
+            utils_error().raise(LOCAL_INFO, "Input SLHA data appears to be neither SLHA1 nor SLHA2.");
           }
-          logger() << "SLHA for setting up simple spectrum is SLHA1.  You old dog." << EOM;
+          logger() << "Input SLHA for setting up simple spectrum is SLHA1.  You old dog." << EOM;
+
+          // Get scale, needed for specifying SLHA2 blocks
+          /// TODO: Currently assumes all blocks at same scale. Should check if this
+          /// is true.
+          double scale = 0.0;
+          try
+          {
+            scale = SLHAea::to<double>(data.at("GAUGE").find_block_def()->at(3));
+          }
+          catch (const std::out_of_range& e)
+          {
+            std::ostringstream errmsg;
+            errmsg << "Could not find block \"GAUGE\" in SLHAea object. Received out_of_range error with message: " << e.what();
+            utils_error().raise(LOCAL_INFO,errmsg.str());
+          }
 
           //Looks like it is SLHA1, so convert it to SLHA2.
           int lengths[4] = {6, 6, 6, 3};
@@ -120,24 +137,137 @@ namespace Gambit
             }
 
           }
+          // Now deal with MSOFT --> SLHA2 soft mass matrix blocks
+          // (inverse of retrieval code in add_MSSM_spectrum_to_SLHAea) 
+          sspair M[5] = {sspair("MSL2","ml2"), sspair("MSE2","me2"), sspair("MSQ2","mq2"), sspair("MSU2","mu2"), sspair("MSD2","md2")};
+          for (int k=0;k<5;k++)
+          {
+            std::string block(M[k].first);
+            SLHAea_add_block(data, block, scale);
+            for(int i=1;i<4;i++) for(int j=1;j<4;j++)
+            {
+              std::ostringstream comment;
+              comment << block << "(" << i << "," << j << ")";
+              std::cout << "comment: " << comment.str() << std::endl;
+              double entry;
+              if(i==j)
+              {
+                entry = getdata("MSOFT",30+3*k+i+(k>1?4:0)); // black magic to get correct index in MSOFT matching diagonal elements
+              }
+              else
+              {
+                // Everything off-diagonal is zero in SLHA1
+                entry = 0;
+              }
+              data[block][""] << i << j << entry*entry << "# "+comment.str();
+            }
+          }
+
+          // Yukawa and trilinear blocks.  YU, YD and YE, plus [YU, YD and YE; SLHA1 only], or [TU, TD and TE; SLHA2 only].
+          sspair A[3] = {sspair("AU","Au"), sspair("AD","Ad"), sspair("AE","Ae")};
+          sspair Y[3] = {sspair("YU","Yu"), sspair("YD","Yd"), sspair("YE","Ye")};
+          sspair T[3] = {sspair("TU","TYu"), sspair("TD","TYd"), sspair("TE","TYe")};
+          for (int k=0;k<3;k++)
+          {
+            SLHAea_check_block(data, A[k].first);
+            SLHAea_check_block(data, Y[k].first);
+            SLHAea_check_block(data, T[k].first); // TODO: should delete superceded slha1 "A" blocks?
+            for(int i=1;i<4;i++)
+            {
+              for(int j=1;j<4;j++)
+              {
+                std::ostringstream comment;
+                comment << "(" << i << "," << j << ")";
+                // SLHA1 has only diagonal elements in Y and A. We should fill them out fully.
+                // Assume missing diagonal elements are also zero.
+                double Yentry;
+                double Aentry;
+                if(i==j)
+                {
+                  // Find a better syntax for this...
+                  try
+                  {
+                    Yentry = data.at(Y[k].first).at(i).at(j).at(1);
+                  }
+                  catch (const std::out_of_range& e)
+                  {
+                    Yentry = 0;
+                  }
+
+                  try
+                  {
+                    Aentry = data.at(A[k].first).at(i).at(j).at(1);
+                  }
+                  catch (const std::out_of_range& e)
+                  {
+                    Aentry = 0;
+                  }
+                }
+                else
+                {
+                  Yentry = 0;
+                  Aentry = 0;
+                }
+              
+                double Tentry = Aentry * Yentry;  
+                data[Y[k].first][i][j][1] = Yentry;
+                data[Y[k].first][i][j][2] = "# "+Y[k].first+"_"+comment.str();
+                data[A[k].first][i][j][1] = Aentry;
+                data[A[k].first][i][j][2] = "# "+A[k].first+"_"+comment.str();
+                data[T[k].first][i][j][1] = Tentry;
+                data[T[k].first][i][j][2] = "# "+T[k].first+"_"+comment.str();
+              }
+            }
+          }
+
 
         }
 
-        else logger() << "SLHA for setting up simple spectrum is SLHA2.  *living in the future*" << EOM;
-
+        else logger() << "Input SLHA data for setting up simple spectrum is SLHA2.  *living in the future*" << EOM;
+        // In the end, we should always have converted to SLHA2 by now, so set this as the internally-tracked version.
+        wrapped_slha_version = 2;
       }
 
       /// @{ Getters for MSSM information
-
-      double MSSMea::get_Mu()      const { return getdata("HMIX",1); }
-      double MSSMea::get_BMu()     const { return getdata("HMIX",101); }
-      double MSSMea::get_vd()      const { return getdata("HMIX",102); }
-      double MSSMea::get_vu()      const { return getdata("HMIX",103); }
-      double MSSMea::get_tanbeta() const
+      double MSSMea::get_Mu()      const{ return getdata("HMIX",1); } // mu(Q) DRbar
+      double MSSMea::get_tanbeta() const{ return getdata("HMIX",2); } // tan beta(Q) DRbar ( = vu/vd)
+      double MSSMea::get_v()       const{ return getdata("HMIX",3); } // v = sqrt(vd^2 + vu^2) DRbar
+      double MSSMea::get_mA2()     const{ return getdata("HMIX",4); } // m^2_A=[m3^2/cosBsinB](Q) DRbar, tree
+      ////// THESE ARE NOT SLHA! Therefore cannot rely on them being in the SLHAea object.
+      ////// But we can compute them instead.
+      // double MSSMea::get_BMu()     const { return getdata("HMIX",101); }
+      // double MSSMea::get_vd()      const { return getdata("HMIX",102); }
+      // double MSSMea::get_vu()      const { return getdata("HMIX",103); }
+      ///////
+      double MSSMea::get_BMu() const 
       {
-        try { return get_vu()/get_vd(); }
-        catch(std::exception ex) { return getdata("HMIX",2); }
+        double tb = get_tanbeta();
+        double cb = cos(atan(tb));
+        double sb = sin(atan(tb));
+        return get_mA2() * (sb * cb);
       }
+      // TODO: Need to look up quadratic formula and fix these 
+      double MSSMea::get_vd() const { return -1; }
+      double MSSMea::get_vu() const { return -1; }
+      //{ 
+      //  tb = get_tanbeta();
+      //  v = get_v();
+      //  
+      //  v^2 = vd^2 + vu^2 )
+      //  vd2 = v2 - vu2
+      //  tb = vu/vd
+
+      //  vu2 = tb2/vd2
+      //      = tb2 / (v2 - vu2)
+      //  vu2*(v2 - vu2) = tb2
+      //  v2*vu2 - vu4 = tb2
+      //  -vu4 + v2^vu2 - tb2 = 0
+
+      //  x = b^2 +- sqrt(b + 4ac) / 2b
+      //       
+
+      //  return; 
+      //}
 
       double MSSMea::get_MassB () const { return getdata("MSOFT",1); }
       double MSSMea::get_MassWB() const { return getdata("MSOFT",2); }
@@ -178,6 +308,7 @@ namespace Gambit
       }
       double MSSMea::get_MAh_pole () const { return getdata("MASS",36); }
       double MSSMea::get_MHpm_pole() const { return getdata("MASS",37); }
+      double MSSMea::get_MW_pole()    const { return getdata("MASS",24); } // REQUIRED output of MSSM-compatible subspectrum
 
       double MSSMea::get_MCha_pole_slha(int i) const
       {
@@ -281,16 +412,18 @@ namespace Gambit
       /// Ofset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
       int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions. (because Peter is god, he knows user assumptions before they do.)
 
-      /// Retrieve SLHAea object
-      SLHAea::Coll MSSMSimpleSpec::getSLHAea(int slha_version) const
-      {
-        return slhawrap.getSLHAea(slha_version);
-      }
+      /// Retrieve SLHAea object 
+      // NOTE! No need to write this function, SubSpectrum base class can handle it if add_to_SLHAea exists.
+      //SLHAea::Coll MSSMSimpleSpec::getSLHAea(int slha_version) const 
 
       /// Add SLHAea object to another
       void MSSMSimpleSpec::add_to_SLHAea(int slha_version, SLHAea::Coll& slha) const
       {
-        return slhawrap.add_to_SLHAea(slha_version, slha);
+        // Add SPINFO data if not already present
+        SLHAea_add_GAMBIT_SPINFO(slha);
+
+        // All MSSM blocks
+        slhahelp::add_MSSM_spectrum_to_SLHAea(*this, slha, slha_version);
       }
 
       /// Retrieve the PDG translation map
@@ -345,6 +478,7 @@ namespace Gambit
          {
             MTget::fmap0 tmp_map;
             tmp_map["BMu"] = &Model::get_BMu;
+            tmp_map["mA2"] = &Model::get_mA2;
             tmp_map["mHd2"] = &Model::get_mHd2;
             tmp_map["mHu2"] = &Model::get_mHu2;
             map_collection[Par::mass2].map0 = tmp_map;
@@ -403,6 +537,7 @@ namespace Gambit
             tmp_map["H+"] = &Model::get_MHpm_pole;
             // Antiparticle label
             tmp_map["H-"] = &Model::get_MHpm_pole;
+            tmp_map["W+"] = &Model::get_MW_pole;
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
          {
