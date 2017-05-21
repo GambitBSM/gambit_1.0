@@ -1,0 +1,1094 @@
+# This SLHA(ea) object was created from a GAMBIT spectrum object.
+# Note that block MODSEL is not automatically emitted, as its contents
+# depend on which calculator you intend this object or file to be used with.
+BLOCK SMINPUTS
+    1   1.279400100000000e+02   # alpha^{-1}(mZ)^MSbar
+    2   1.166378700000000e-05   # G_Fermi
+    3   1.187214890460000e-01   # alpha_s(mZ)^MSbar
+    4   9.118760000000000e+01   # mZ(pole)
+    5   4.180000000000000e+00   # mb(mb)^MSbar
+    6   1.729477703140000e+02   # mtop(pole)
+    7   1.776820000000000e+00   # mtau(pole)
+    8   0.000000000000000e+00   # mnu3(pole)
+    11  5.109989280000000e-04   # melectron(pole)
+    12  0.000000000000000e+00   # mnu1(pole)
+    13  1.056583720000000e-01   # mmuon(pole)
+    14  0.000000000000000e+00   # mnu2(pole)
+    21  4.800000000000000e-03   # md(2 GeV)^MSbar
+    22  2.300000000000000e-03   # mu(2 GeV)^MSbar
+    23  9.500000000000000e-02   # ms(2 GeV)^MSbar
+    24  1.275000000000000e+00   # mc(mc)^MSbar
+BLOCK VCKMIN
+    1   2.253700000000000e-01   # lambda
+    2   8.139999999999999e-01   # A
+    3   1.170000000000000e-01   # rhobar
+    4   3.530000000000000e-01   # etabar
+BLOCK UPMNSIN
+    1   5.837599999999999e-01   # theta12 (solar angle)
+    2   7.695800000000000e-01   # theta12 (atmospheric mixing angle)
+    3   1.549500000000000e-01   # theta13
+    4   0.000000000000000e+00   # delta13 (Dirac CP-violating phase)
+    5   0.000000000000000e+00   # alpha1 (first Majorana CP-violating phase)
+    6   0.000000000000000e+00   # alpha2 (second CP-violating Majorana phase)
+BLOCK MASS
+    24  8.038663028222750e+01   # W+
+    5   4.962471103620739e+00   # mb (pole)
+    25  1.240549838925486e+02   # h0_1
+    35  3.588891844053337e+03   # h0_2
+    37  3.592696622289539e+03   # H+
+    36  3.588875532926197e+03   # A0
+    1000021     1.083285074560932e+04   # ~g
+    1000024     1.729661426498864e+03   # ~chi+_1
+    1000037     3.457482059484500e+03   # ~chi+_2
+    1000022     1.695990157195802e+03   # ~chi0_1
+    1000023    -1.731447723697919e+03   # ~chi0_2
+    1000025     1.761131353249397e+03   # ~chi0_3
+    1000035     3.457317856185750e+03   # ~chi0_4
+    1000006     7.763619140371376e+03   # ~u_3
+    2000006     7.952269303988209e+03   # ~u_6
+    1000005     7.762985761776530e+03   # ~d_3
+    2000005     7.901303641284111e+03   # ~d_6
+    1000015     8.556343928814933e+03   # ~e-_3
+    2000015     8.605235592340599e+03   # ~e-_6
+    1000012     8.555149021484754e+03   # ~nu_1
+    1000014     8.555232841743264e+03   # ~nu_2
+    1000016     8.578793761396033e+03   # ~nu_3
+    1000001     7.747798976784280e+03   # ~d_1
+    1000003     7.747827057381548e+03   # ~d_2
+    2000001     7.763012602992188e+03   # ~d_4
+    2000003     7.837404458605589e+03   # ~d_5
+    1000011     8.555385564341963e+03   # ~e-_1
+    1000013     8.555510266610014e+03   # ~e-_2
+    2000011     8.556647997301614e+03   # ~e-_4
+    2000013     8.577671090716711e+03   # ~e-_5
+    1000002     7.751071482392957e+03   # ~u_1
+    1000004     7.751078679646824e+03   # ~u_2
+    2000002     7.763633183253914e+03   # ~u_4
+    2000004     7.894954280487949e+03   # ~u_5
+BLOCK SPINFO
+    1   GAMBIT, using FlexibleSUSY
+    2   1.0.0 (GAMBIT); 1.5.1 (FlexibleSUSY)
+BLOCK MINPAR
+    3   3.922449959100000e+01   # tanbeta(mZ)^DRbar
+    4   1   # sign(mu)
+BLOCK HMIX  Q=  7.735988655505107e+03
+    1   1.697970100587021e+03   # mu DRbar
+    2   3.802048585247053e+01   # tan(beta) = vu/vd DRbar
+    3   2.418412866623016e+02   # v = sqrt(vd^2 + vu^2) DRbar
+    4   1.690209792176366e+07   # m^2_A (tree)
+    101     4.442450742609927e+05   # Bmu DRbar
+    102     6.358616276856830e+00   # vd DRbar
+    103     2.417576801955239e+02   # vu DRbar
+BLOCK GAUGE     Q=  7.735988655505107e+03
+    1   3.667286796551451e-01   # g'  = g1 = gY DRbar
+    2   6.328289794516764e-01   # g   = g2      DRbar
+    3   9.642815801871172e-01   # g_s = g3      DRbar
+BLOCK USQMIX    Q=  7.735988655505107e+03
+    1   1   6.831641932847306e-06   # ~u-type sfermion mixing (1,1)
+    1   2   0.000000000000000e+00   # ~u-type sfermion mixing (1,2)
+    1   3   0.000000000000000e+00   # ~u-type sfermion mixing (1,3)
+    1   4  -9.999999999766644e-01   # ~u-type sfermion mixing (1,4)
+    1   5   0.000000000000000e+00   # ~u-type sfermion mixing (1,5)
+    1   6   0.000000000000000e+00   # ~u-type sfermion mixing (1,6)
+    2   1  -0.000000000000000e+00   # ~u-type sfermion mixing (2,1)
+    2   2   3.255890524435926e-03   # ~u-type sfermion mixing (2,2)
+    2   3  -0.000000000000000e+00   # ~u-type sfermion mixing (2,3)
+    2   4  -0.000000000000000e+00   # ~u-type sfermion mixing (2,4)
+    2   5  -9.999946995743991e-01   # ~u-type sfermion mixing (2,5)
+    2   6  -0.000000000000000e+00   # ~u-type sfermion mixing (2,6)
+    3   1   9.999999999766644e-01   # ~u-type sfermion mixing (3,1)
+    3   2   0.000000000000000e+00   # ~u-type sfermion mixing (3,2)
+    3   3   0.000000000000000e+00   # ~u-type sfermion mixing (3,3)
+    3   4   6.831641932847306e-06   # ~u-type sfermion mixing (3,4)
+    3   5   0.000000000000000e+00   # ~u-type sfermion mixing (3,5)
+    3   6   0.000000000000000e+00   # ~u-type sfermion mixing (3,6)
+    4   1   0.000000000000000e+00   # ~u-type sfermion mixing (4,1)
+    4   2   9.999946995743991e-01   # ~u-type sfermion mixing (4,2)
+    4   3   0.000000000000000e+00   # ~u-type sfermion mixing (4,3)
+    4   4   0.000000000000000e+00   # ~u-type sfermion mixing (4,4)
+    4   5   3.255890524435926e-03   # ~u-type sfermion mixing (4,5)
+    4   6   0.000000000000000e+00   # ~u-type sfermion mixing (4,6)
+    5   1  -0.000000000000000e+00   # ~u-type sfermion mixing (5,1)
+    5   2  -0.000000000000000e+00   # ~u-type sfermion mixing (5,2)
+    5   3  -9.516207782146536e-01   # ~u-type sfermion mixing (5,3)
+    5   4  -0.000000000000000e+00   # ~u-type sfermion mixing (5,4)
+    5   5  -0.000000000000000e+00   # ~u-type sfermion mixing (5,5)
+    5   6  -3.072749493045879e-01   # ~u-type sfermion mixing (5,6)
+    6   1   0.000000000000000e+00   # ~u-type sfermion mixing (6,1)
+    6   2   0.000000000000000e+00   # ~u-type sfermion mixing (6,2)
+    6   3   3.072749493045879e-01   # ~u-type sfermion mixing (6,3)
+    6   4   0.000000000000000e+00   # ~u-type sfermion mixing (6,4)
+    6   5   0.000000000000000e+00   # ~u-type sfermion mixing (6,5)
+    6   6  -9.516207782146536e-01   # ~u-type sfermion mixing (6,6)
+BLOCK DSQMIX    Q=  7.735988655505107e+03
+    1   1   5.870008100595724e-04   # ~d-type sfermion mixing (1,1)
+    1   2   0.000000000000000e+00   # ~d-type sfermion mixing (1,2)
+    1   3   0.000000000000000e+00   # ~d-type sfermion mixing (1,3)
+    1   4   9.999998277150096e-01   # ~d-type sfermion mixing (1,4)
+    1   5   0.000000000000000e+00   # ~d-type sfermion mixing (1,5)
+    1   6   0.000000000000000e+00   # ~d-type sfermion mixing (1,6)
+    2   1   0.000000000000000e+00   # ~d-type sfermion mixing (2,1)
+    2   2   1.164067261307427e-02   # ~d-type sfermion mixing (2,2)
+    2   3   0.000000000000000e+00   # ~d-type sfermion mixing (2,3)
+    2   4   0.000000000000000e+00   # ~d-type sfermion mixing (2,4)
+    2   5   9.999322450751926e-01   # ~d-type sfermion mixing (2,5)
+    2   6   0.000000000000000e+00   # ~d-type sfermion mixing (2,6)
+    3   1   9.999998277150096e-01   # ~d-type sfermion mixing (3,1)
+    3   2   0.000000000000000e+00   # ~d-type sfermion mixing (3,2)
+    3   3   0.000000000000000e+00   # ~d-type sfermion mixing (3,3)
+    3   4  -5.870008100595724e-04   # ~d-type sfermion mixing (3,4)
+    3   5   0.000000000000000e+00   # ~d-type sfermion mixing (3,5)
+    3   6   0.000000000000000e+00   # ~d-type sfermion mixing (3,6)
+    4   1   0.000000000000000e+00   # ~d-type sfermion mixing (4,1)
+    4   2   9.999322450751926e-01   # ~d-type sfermion mixing (4,2)
+    4   3   0.000000000000000e+00   # ~d-type sfermion mixing (4,3)
+    4   4   0.000000000000000e+00   # ~d-type sfermion mixing (4,4)
+    4   5  -1.164067261307427e-02   # ~d-type sfermion mixing (4,5)
+    4   6   0.000000000000000e+00   # ~d-type sfermion mixing (4,6)
+    5   1   0.000000000000000e+00   # ~d-type sfermion mixing (5,1)
+    5   2   0.000000000000000e+00   # ~d-type sfermion mixing (5,2)
+    5   3   1.630246470744070e-01   # ~d-type sfermion mixing (5,3)
+    5   4   0.000000000000000e+00   # ~d-type sfermion mixing (5,4)
+    5   5   0.000000000000000e+00   # ~d-type sfermion mixing (5,5)
+    5   6   9.866219967374867e-01   # ~d-type sfermion mixing (5,6)
+    6   1   0.000000000000000e+00   # ~d-type sfermion mixing (6,1)
+    6   2   0.000000000000000e+00   # ~d-type sfermion mixing (6,2)
+    6   3   9.866219967374867e-01   # ~d-type sfermion mixing (6,3)
+    6   4   0.000000000000000e+00   # ~d-type sfermion mixing (6,4)
+    6   5   0.000000000000000e+00   # ~d-type sfermion mixing (6,5)
+    6   6  -1.630246470744070e-01   # ~d-type sfermion mixing (6,6)
+BLOCK SELMIX    Q=  7.735988655505107e+03
+    1   1  -0.000000000000000e+00   # ~e--type sfermion mixing (1,1)
+    1   2  -5.854775909292940e-01   # ~e--type sfermion mixing (1,2)
+    1   3  -0.000000000000000e+00   # ~e--type sfermion mixing (1,3)
+    1   4  -0.000000000000000e+00   # ~e--type sfermion mixing (1,4)
+    1   5  -8.106885903475085e-01   # ~e--type sfermion mixing (1,5)
+    1   6  -0.000000000000000e+00   # ~e--type sfermion mixing (1,6)
+    2   1   5.484699368548646e-03   # ~e--type sfermion mixing (2,1)
+    2   2   0.000000000000000e+00   # ~e--type sfermion mixing (2,2)
+    2   3   0.000000000000000e+00   # ~e--type sfermion mixing (2,3)
+    2   4   9.999849589233013e-01   # ~e--type sfermion mixing (2,4)
+    2   5   0.000000000000000e+00   # ~e--type sfermion mixing (2,5)
+    2   6   0.000000000000000e+00   # ~e--type sfermion mixing (2,6)
+    3   1   9.999849589233013e-01   # ~e--type sfermion mixing (3,1)
+    3   2   0.000000000000000e+00   # ~e--type sfermion mixing (3,2)
+    3   3   0.000000000000000e+00   # ~e--type sfermion mixing (3,3)
+    3   4  -5.484699368548646e-03   # ~e--type sfermion mixing (3,4)
+    3   5   0.000000000000000e+00   # ~e--type sfermion mixing (3,5)
+    3   6   0.000000000000000e+00   # ~e--type sfermion mixing (3,6)
+    4   1   0.000000000000000e+00   # ~e--type sfermion mixing (4,1)
+    4   2  -8.106885903475085e-01   # ~e--type sfermion mixing (4,2)
+    4   3   0.000000000000000e+00   # ~e--type sfermion mixing (4,3)
+    4   4   0.000000000000000e+00   # ~e--type sfermion mixing (4,4)
+    4   5   5.854775909292940e-01   # ~e--type sfermion mixing (4,5)
+    4   6   0.000000000000000e+00   # ~e--type sfermion mixing (4,6)
+    5   1  -0.000000000000000e+00   # ~e--type sfermion mixing (5,1)
+    5   2  -0.000000000000000e+00   # ~e--type sfermion mixing (5,2)
+    5   3  -9.677086948687388e-01   # ~e--type sfermion mixing (5,3)
+    5   4  -0.000000000000000e+00   # ~e--type sfermion mixing (5,4)
+    5   5  -0.000000000000000e+00   # ~e--type sfermion mixing (5,5)
+    5   6  -2.520711841433724e-01   # ~e--type sfermion mixing (5,6)
+    6   1   0.000000000000000e+00   # ~e--type sfermion mixing (6,1)
+    6   2   0.000000000000000e+00   # ~e--type sfermion mixing (6,2)
+    6   3   2.520711841433724e-01   # ~e--type sfermion mixing (6,3)
+    6   4   0.000000000000000e+00   # ~e--type sfermion mixing (6,4)
+    6   5   0.000000000000000e+00   # ~e--type sfermion mixing (6,5)
+    6   6  -9.677086948687388e-01   # ~e--type sfermion mixing (6,6)
+BLOCK SNUMIX    Q=  7.735988655505107e+03
+    1   1   1.000000000000000e+00   # ~nu mixing matrix (1,1)
+    1   2   0.000000000000000e+00   # ~nu mixing matrix (1,2)
+    1   3   0.000000000000000e+00   # ~nu mixing matrix (1,3)
+    2   1   0.000000000000000e+00   # ~nu mixing matrix (2,1)
+    2   2   1.000000000000000e+00   # ~nu mixing matrix (2,2)
+    2   3   0.000000000000000e+00   # ~nu mixing matrix (2,3)
+    3   1   0.000000000000000e+00   # ~nu mixing matrix (3,1)
+    3   2   0.000000000000000e+00   # ~nu mixing matrix (3,2)
+    3   3   1.000000000000000e+00   # ~nu mixing matrix (3,3)
+BLOCK MSOFT     Q=  7.735988655505107e+03
+    1   1.739872153755688e+03   # bino mass parameter M1
+    2   3.341859335626448e+03   # wino mass parameter M2
+    3   1.085644973468306e+04   # gluino mass parameter M3
+    21  1.055224223943319e+07   # d-type Higgs mass parameter mHd2
+    22 -1.743358512759497e+06   # u-type Higgs mass parameter mHu2
+    31  8.533995074157361e+03   # sqrt(ml2(1,1))
+    32  8.534125804378202e+03   # sqrt(ml2(2,2))
+    33  8.570942920274776e+03   # sqrt(ml2(3,3))
+    34  8.546015110021213e+03   # sqrt(me2(1,1))
+    35  8.546277792612669e+03   # sqrt(me2(2,2))
+    36  8.620246623126326e+03   # sqrt(me2(3,3))
+    41  7.484673764578442e+03   # sqrt(mq2(1,1))
+    42  7.484702712324722e+03   # sqrt(mq2(2,2))
+    43  7.690465152828755e+03   # sqrt(mq2(3,3))
+    44  7.496930067225849e+03   # sqrt(mu2(1,1))
+    45  7.496934368303947e+03   # sqrt(mu2(2,2))
+    46  7.779743477299292e+03   # sqrt(mu2(3,3))
+    47  7.492815312911178e+03   # sqrt(md2(1,1))
+    48  7.492869317611469e+03   # sqrt(md2(2,2))
+    49  7.624700725653554e+03   # sqrt(md2(3,3))
+BLOCK MSL2  Q=  7.735988655505107e+03
+    1   1   7.282907192574209e+07   # ml2(1,1)
+    1   2   0.000000000000000e+00   # ml2(1,2)
+    1   3   0.000000000000000e+00   # ml2(1,3)
+    2   1   0.000000000000000e+00   # ml2(2,1)
+    2   2   7.283130324495389e+07   # ml2(2,2)
+    2   3   0.000000000000000e+00   # ml2(2,3)
+    3   1   0.000000000000000e+00   # ml2(3,1)
+    3   2   0.000000000000000e+00   # ml2(3,2)
+    3   3   7.346106254260832e+07   # ml2(3,3)
+BLOCK MSE2  Q=  7.735988655505107e+03
+    1   1   7.303437426071088e+07   # me2(1,1)
+    1   2   0.000000000000000e+00   # me2(1,2)
+    1   3   0.000000000000000e+00   # me2(1,3)
+    2   1   0.000000000000000e+00   # me2(2,1)
+    2   2   7.303886410850449e+07   # me2(2,2)
+    2   3   0.000000000000000e+00   # me2(2,3)
+    3   1   0.000000000000000e+00   # me2(3,1)
+    3   2   0.000000000000000e+00   # me2(3,2)
+    3   3   7.430865184352084e+07   # me2(3,3)
+BLOCK MSQ2  Q=  7.735988655505107e+03
+    1   1   5.602034136216883e+07   # mq2(1,1)
+    1   2   0.000000000000000e+00   # mq2(1,2)
+    1   3   0.000000000000000e+00   # mq2(1,3)
+    2   1   0.000000000000000e+00   # mq2(2,1)
+    2   2   5.602077469188105e+07   # mq2(2,2)
+    2   3   0.000000000000000e+00   # mq2(2,3)
+    3   1   0.000000000000000e+00   # mq2(3,1)
+    3   2   0.000000000000000e+00   # mq2(3,2)
+    3   3   5.914325426687340e+07   # mq2(3,3)
+BLOCK MSU2  Q=  7.735988655505107e+03
+    1   1   5.620396043287497e+07   # mu2(1,1)
+    1   2   0.000000000000000e+00   # mu2(1,2)
+    1   3   0.000000000000000e+00   # mu2(1,3)
+    2   1   0.000000000000000e+00   # mu2(2,1)
+    2   2   5.620402492265690e+07   # mu2(2,2)
+    2   3   0.000000000000000e+00   # mu2(2,3)
+    3   1   0.000000000000000e+00   # mu2(3,1)
+    3   2   0.000000000000000e+00   # mu2(3,2)
+    3   3   6.052440857258087e+07   # mu2(3,3)
+BLOCK MSD2  Q=  7.735988655505107e+03
+    1   1   5.614228131339623e+07   # md2(1,1)
+    1   2   0.000000000000000e+00   # md2(1,2)
+    1   3   0.000000000000000e+00   # md2(1,3)
+    2   1   0.000000000000000e+00   # md2(2,1)
+    2   2   5.614309061080337e+07   # md2(2,2)
+    2   3   0.000000000000000e+00   # md2(2,3)
+    3   1   0.000000000000000e+00   # md2(3,1)
+    3   2   0.000000000000000e+00   # md2(3,2)
+    3   3   5.813606115578184e+07   # md2(3,3)
+BLOCK YU    Q=  7.735988655505107e+03
+    1   1   6.494143460580638e-06   # Yu(1,1)
+    1   2   0.000000000000000e+00   # Yu(1,2)
+    1   3   0.000000000000000e+00   # Yu(1,3)
+    2   1   0.000000000000000e+00   # Yu(2,1)
+    2   2   3.094744453448477e-03   # Yu(2,2)
+    2   3   0.000000000000000e+00   # Yu(2,3)
+    3   1   0.000000000000000e+00   # Yu(3,1)
+    3   2   0.000000000000000e+00   # Yu(3,2)
+    3   3   7.907301655208521e-01   # Yu(3,3)
+BLOCK TU    Q=  7.735988655505107e+03
+    1   1   9.554808205432681e-03   # TYu(1,1)
+    1   2   0.000000000000000e+00   # TYu(1,2)
+    1   3   0.000000000000000e+00   # TYu(1,3)
+    2   1   0.000000000000000e+00   # TYu(2,1)
+    2   2   4.553294323441538e+00   # TYu(2,2)
+    2   3   0.000000000000000e+00   # TYu(2,3)
+    3   1   0.000000000000000e+00   # TYu(3,1)
+    3   2   0.000000000000000e+00   # TYu(3,2)
+    3   3  -1.291410366451406e+03   # TYu(3,3)
+BLOCK YD    Q=  7.735988655505107e+03
+    1   1   5.189630653460684e-04   # Yd(1,1)
+    1   2   0.000000000000000e+00   # Yd(1,2)
+    1   3   0.000000000000000e+00   # Yd(1,3)
+    2   1   0.000000000000000e+00   # Yd(2,1)
+    2   2   1.027125423309305e-02   # Yd(2,2)
+    2   3   0.000000000000000e+00   # Yd(2,3)
+    3   1   0.000000000000000e+00   # Yd(3,1)
+    3   2   0.000000000000000e+00   # Yd(3,2)
+    3   3   4.757256459164262e-01   # Yd(3,3)
+BLOCK TD    Q=  7.735988655505107e+03
+    1   1   7.814617989484836e-01   # TYd(1,1)
+    1   2   0.000000000000000e+00   # TYd(1,2)
+    1   3   0.000000000000000e+00   # TYd(1,3)
+    2   1   0.000000000000000e+00   # TYd(2,1)
+    2   2   1.546666750705163e+01   # TYd(2,2)
+    2   3   0.000000000000000e+00   # TYd(2,3)
+    3   1   0.000000000000000e+00   # TYd(3,1)
+    3   2   0.000000000000000e+00   # TYd(3,2)
+    3   3  -1.936963382873941e+03   # TYd(3,3)
+BLOCK YE    Q=  7.735988655505107e+03
+    1   1   1.140755138028857e-04   # Ye(1,1)
+    1   2   0.000000000000000e+00   # Ye(1,2)
+    1   3   0.000000000000000e+00   # Ye(1,3)
+    2   1   0.000000000000000e+00   # Ye(2,1)
+    2   2   2.358724355711316e-02   # Ye(2,2)
+    2   3   0.000000000000000e+00   # Ye(2,3)
+    3   1   0.000000000000000e+00   # Ye(3,1)
+    3   2   0.000000000000000e+00   # Ye(3,2)
+    3   3   3.977657673757666e-01   # Ye(3,3)
+BLOCK TE    Q=  7.735988655505107e+03
+    1   1   2.438000946243617e-03   # TYe(1,1)
+    1   2   0.000000000000000e+00   # TYe(1,2)
+    1   3   0.000000000000000e+00   # TYe(1,3)
+    2   1   0.000000000000000e+00   # TYe(2,1)
+    2   2   5.041147165900044e-01   # TYe(2,2)
+    2   3   0.000000000000000e+00   # TYe(2,3)
+    3   1   0.000000000000000e+00   # TYe(3,1)
+    3   2   0.000000000000000e+00   # TYe(3,2)
+    3   3   8.560521989685801e+00   # TYe(3,3)
+BLOCK ALPHA     Q=  7.735988655505107e+03
+    -2.634585126612431e-02  # sin^-1(SCALARMIX(2,2))
+BLOCK UMIX  Q=  7.735988655505107e+03
+    1   1  -2.238249473535948e-02   # ~chi- mixing matrix (1,1)
+    1   2   9.997494805847220e-01   # ~chi- mixing matrix (1,2)
+    2   1   9.997494805847220e-01   # ~chi- mixing matrix (2,1)
+    2   2   2.238249473535948e-02   # ~chi- mixing matrix (2,2)
+BLOCK VMIX  Q=  7.735988655505107e+03
+    1   1  -4.321498558990879e-02   # ~chi+ mixing matrix (1,1)
+    1   2   9.990657961418076e-01   # ~chi+ mixing matrix (1,2)
+    2   1   9.990657961418076e-01   # ~chi+ mixing matrix (2,1)
+    2   2   4.321498558990879e-02   # ~chi+ mixing matrix (2,2)
+BLOCK PSEUDOSCALARMIX   Q=  7.735988655505107e+03
+    1   1  -2.415298004653355e-02   # A0 mixing matrix (1,1)
+    1   2   9.997082742254721e-01   # A0 mixing matrix (1,2)
+    2   1   9.997082742254721e-01   # A0 mixing matrix (2,1)
+    2   2   2.415298004653355e-02   # A0 mixing matrix (2,2)
+BLOCK SCALARMIX     Q=  7.735988655505107e+03
+    1   1   2.634280357897052e-02   # h0 mixing matrix (1,1)
+    1   2   9.996529681342420e-01   # h0 mixing matrix (1,2)
+    2   1   9.996529681342420e-01   # h0 mixing matrix (2,1)
+    2   2  -2.634280357897052e-02   # h0 mixing matrix (2,2)
+BLOCK CHARGEMIX     Q=  7.735988655505107e+03
+    1   1  -2.438279167435219e-02   # H+ mixing matrix (1,1)
+    1   2   9.997026955401117e-01   # H+ mixing matrix (1,2)
+    2   1   9.997026955401117e-01   # H+ mixing matrix (2,1)
+    2   2   2.438279167435219e-02   # H+ mixing matrix (2,2)
+BLOCK NMIX  Q=  7.735988655505107e+03
+    1   1  -7.101275014028015e-01   # ~chi0 mixing matrix (1,1)
+    1   2   2.243292787174730e-02   # ~chi0 mixing matrix (1,2)
+    1   3  -5.022807506478367e-01   # ~chi0 mixing matrix (1,3)
+    1   4   4.928790348829626e-01   # ~chi0 mixing matrix (1,4)
+    2   1   8.789885738515911e-03   # ~chi0 mixing matrix (2,1)
+    2   2  -1.042295986029200e-02   # ~chi0 mixing matrix (2,2)
+    2   3  -7.068685549230038e-01   # ~chi0 mixing matrix (2,3)
+    2   4  -7.072135079857556e-01   # ~chi0 mixing matrix (2,4)
+    3   1   7.040177414675673e-01   # ~chi0 mixing matrix (3,1)
+    3   2   2.393638556893026e-02   # ~chi0 mixing matrix (3,2)
+    3   3  -4.977956108962927e-01   # ~chi0 mixing matrix (3,3)
+    3   4   5.059501941072737e-01   # ~chi0 mixing matrix (3,4)
+    4   1  -8.302764740929345e-04   # ~chi0 mixing matrix (4,1)
+    4   2   9.994074119700874e-01   # ~chi0 mixing matrix (4,2)
+    4   3   1.582477052270766e-02   # ~chi0 mixing matrix (4,3)
+    4   4  -3.055670430745113e-02   # ~chi0 mixing matrix (4,4)
+
+# This SLHA(ea) object was created from a GAMBIT DecayTable object.
+# Note that block MODSEL is not automatically emitted, as its contents
+# depend on which calculator you intend this object or file to be used with.
+BLOCK DCINFO              # Decay Program information
+    1   GAMBIT, using: GAMBIT::DecayBit | SUSY_HIT  # Decay calculators
+    2   1.0.0: 1.0.0 | 1.5  # Version numbers
+#     PDG         Width (GeV)
+DECAY -2000015  9.310375836987049e+01   # ~e+_6 decays
+#          BF              NDA Daughter PDG codes
+    2.461132305251350e-01   2  -16  1000024     # BF(~e+_6 --> nubar_tau ~chi+_1)
+    3.653442157127600e-02   2  -16  1000037     # BF(~e+_6 --> nubar_tau ~chi+_2)
+    2.546765065458607e-01   2  -15  1000022     # BF(~e+_6 --> tau+ ~chi0_1)
+    1.354723536839022e-01   2  -15  1000023     # BF(~e+_6 --> tau+ ~chi0_2)
+    3.089590725580315e-01   2  -15  1000025     # BF(~e+_6 --> tau+ ~chi0_3)
+    1.824441511579463e-02   2  -15  1000035     # BF(~e+_6 --> tau+ ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000013  1.065286700467722e+02   # ~e+_5 decays
+#          BF              NDA Daughter PDG codes
+    1.914181681169298e-02   2  -16  1000024     # BF(~e+_5 --> nubar_tau ~chi+_1)
+    4.181050304182219e-01   2  -16  1000037     # BF(~e+_5 --> nubar_tau ~chi+_2)
+    1.417794169281017e-01   2  -15  1000022     # BF(~e+_5 --> tau+ ~chi0_1)
+    1.151393364017964e-01   2  -15  1000023     # BF(~e+_5 --> tau+ ~chi0_2)
+    9.707804650236325e-02   2  -15  1000025     # BF(~e+_5 --> tau+ ~chi0_3)
+    2.087563529378237e-01   2  -15  1000035     # BF(~e+_5 --> tau+ ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000011  8.213975950554109e+01   # ~e+_4 decays
+#          BF              NDA Daughter PDG codes
+    3.824851870463438e-04   2  -14  1000024     # BF(~e+_4 --> nubar_mu ~chi+_1)
+    5.807326968090479e-01   2  -14  1000037     # BF(~e+_4 --> nubar_mu ~chi+_2)
+    5.798225721520025e-02   2  -13  1000022     # BF(~e+_4 --> mu+ ~chi0_1)
+    1.083949210342752e-05   2  -13  1000023     # BF(~e+_4 --> mu+ ~chi0_2)
+    7.099261964965839e-02   2  -13  1000025     # BF(~e+_4 --> mu+ ~chi0_3)
+    2.898991016469435e-01   2  -13  1000035     # BF(~e+_4 --> mu+ ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000006  1.916171087108195e+02   # ~ubar_6 decays
+#          BF              NDA Daughter PDG codes
+    2.455395961935998e-05   2  -2000003    -24  # BF(~ubar_6 --> ~dbar_5 W-)
+    3.280932851792814e-02   2  -1000037    -5   # BF(~ubar_6 --> ~chi-_2 bbar)
+    4.164049379436697e-01   2  -1000024    -5   # BF(~ubar_6 --> ~chi-_1 bbar)
+    1.159624470417330e-01   2  -6   1000022     # BF(~ubar_6 --> tbar ~chi0_1)
+    2.273137355644299e-01   2  -6   1000023     # BF(~ubar_6 --> tbar ~chi0_2)
+    1.910251901585133e-01   2  -6   1000025     # BF(~ubar_6 --> tbar ~chi0_3)
+    1.645980681410642e-02   2  -6   1000035     # BF(~ubar_6 --> tbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000005  1.789248234000154e+02   # ~dbar_6 decays
+#          BF              NDA Daughter PDG codes
+    4.796823416950707e-01   2  -6   1000024     # BF(~dbar_6 --> tbar ~chi+_1)
+    2.251610820048270e-01   2  -6   1000037     # BF(~dbar_6 --> tbar ~chi+_2)
+    3.734346517430796e-02   2  -5   1000022     # BF(~dbar_6 --> bbar ~chi0_1)
+    8.927605279246180e-02   2  -5   1000023     # BF(~dbar_6 --> bbar ~chi0_2)
+    5.640903198551597e-02   2  -5   1000025     # BF(~dbar_6 --> bbar ~chi0_3)
+    1.121280263478167e-01   2  -5   1000035     # BF(~dbar_6 --> bbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000004  1.839131910877648e+02   # ~ubar_5 decays
+#          BF              NDA Daughter PDG codes
+    1.893119147801511e-01   2  -1000037    -5   # BF(~ubar_5 --> ~chi-_2 bbar)
+    2.184051298089506e-01   2  -1000024    -5   # BF(~ubar_5 --> ~chi-_1 bbar)
+    1.600386868392195e-01   2  -6   1000022     # BF(~ubar_5 --> tbar ~chi0_1)
+    2.414362844738240e-01   2  -6   1000023     # BF(~ubar_5 --> tbar ~chi0_2)
+    9.574732225247887e-02   2  -6   1000025     # BF(~ubar_5 --> tbar ~chi0_3)
+    9.506066184537586e-02   2  -6   1000035     # BF(~ubar_5 --> tbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000003  7.010992059387306e+01   # ~dbar_5 decays
+#          BF              NDA Daughter PDG codes
+    4.715445041318830e-01   2  -6   1000024     # BF(~dbar_5 --> tbar ~chi+_1)
+    1.258810741241180e-02   2  -6   1000037     # BF(~dbar_5 --> tbar ~chi+_2)
+    1.734073763191516e-01   2  -5   1000022     # BF(~dbar_5 --> bbar ~chi0_1)
+    2.226646101346548e-01   2  -5   1000023     # BF(~dbar_5 --> bbar ~chi0_2)
+    1.135328382323601e-01   2  -5   1000025     # BF(~dbar_5 --> bbar ~chi0_3)
+    6.262563769538732e-03   2  -5   1000035     # BF(~dbar_5 --> bbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000002  6.058979232064195e+01   # ~ubar_4 decays
+#          BF              NDA Daughter PDG codes
+    6.535705319662318e-01   2  -1000037    -3   # BF(~ubar_4 --> ~chi-_2 sbar)
+    1.714238544413980e-03   2  -1000024    -3   # BF(~ubar_4 --> ~chi-_1 sbar)
+    6.066562053933545e-03   2  -4   1000022     # BF(~ubar_4 --> cbar ~chi0_1)
+    3.493118730393321e-05   2  -4   1000023     # BF(~ubar_4 --> cbar ~chi0_2)
+    1.169464151424518e-02   2  -4   1000025     # BF(~ubar_4 --> cbar ~chi0_3)
+    3.269190947338715e-01   2  -4   1000035     # BF(~ubar_4 --> cbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -2000001  6.055657040326229e+01   # ~dbar_4 decays
+#          BF              NDA Daughter PDG codes
+    4.600643892621747e-04   2  -4   1000024     # BF(~dbar_4 --> cbar ~chi+_1)
+    6.547256911237509e-01   2  -4   1000037     # BF(~dbar_4 --> cbar ~chi+_2)
+    1.174374257509020e-02   2  -3   1000022     # BF(~dbar_4 --> sbar ~chi0_1)
+    6.744474209860918e-05   2  -3   1000023     # BF(~dbar_4 --> sbar ~chi0_2)
+    5.743906386427267e-03   2  -3   1000025     # BF(~dbar_4 --> sbar ~chi0_3)
+    3.272591507833709e-01   2  -3   1000035     # BF(~dbar_4 --> sbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000037  2.590857911252459e+01   # ~chi-_2 decays
+#          BF              NDA Daughter PDG codes
+    2.535819906374002e-01   2  -1000024     23  # BF(~chi-_2 --> ~chi-_1 Z0)
+    2.576341331679979e-01   2  -1000024     25  # BF(~chi-_2 --> ~chi-_1 h0_1)
+    1.132836743642530e-01   2  -24  1000022     # BF(~chi-_2 --> W- ~chi0_1)
+    2.443794366325826e-01   2  -24  1000023     # BF(~chi-_2 --> W- ~chi0_2)
+    1.311207651977662e-01   2  -24  1000025     # BF(~chi-_2 --> W- ~chi0_3)
+#     PDG         Width (GeV)
+DECAY -1000024  2.696437287660057e-05   # ~chi-_1 decays
+#          BF              NDA Daughter PDG codes
+    1.097510311040671e-01   3  -16  15  1000022     # BF(~chi-_1 --> nubar_tau tau- ~chi0_1)
+    1.112812311283279e-01   3  -14  13  1000022     # BF(~chi-_1 --> nubar_mu mu- ~chi0_1)
+    1.112812311283279e-01   3  -12  11  1000022     # BF(~chi-_1 --> nubar_e e- ~chi0_1)
+    3.338432533196385e-01   3  -4   3   1000022     # BF(~chi-_1 --> cbar s ~chi0_1)
+    3.338432533196385e-01   3  -2   1   1000022     # BF(~chi-_1 --> ubar d ~chi0_1)
+#     PDG         Width (GeV)
+DECAY -1000016  1.073692394806343e+02   # ~nubar_3 decays
+#          BF              NDA Daughter PDG codes
+    4.458283285784309e-01   2  -1000037    -15  # BF(~nubar_3 --> ~chi-_2 tau+)
+    2.324400412832905e-01   2  -1000024    -15  # BF(~nubar_3 --> ~chi-_1 tau+)
+    5.534560028740778e-02   2  -16  1000022     # BF(~nubar_3 --> nubar_tau ~chi0_1)
+    7.051776159505745e-05   2  -16  1000023     # BF(~nubar_3 --> nubar_tau ~chi0_2)
+    4.307130922039955e-02   2  -16  1000025     # BF(~nubar_3 --> nubar_tau ~chi0_3)
+    2.232442028688763e-01   2  -16  1000035     # BF(~nubar_3 --> nubar_tau ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000015  8.213975950554109e+01   # ~e+_3 decays
+#          BF              NDA Daughter PDG codes
+    3.824851870463438e-04   2  -12  1000024     # BF(~e+_3 --> nubar_e ~chi+_1)
+    5.807326968090479e-01   2  -12  1000037     # BF(~e+_3 --> nubar_e ~chi+_2)
+    5.798225721520025e-02   2  -11  1000022     # BF(~e+_3 --> e+ ~chi0_1)
+    1.083949210342752e-05   2  -11  1000023     # BF(~e+_3 --> e+ ~chi0_2)
+    7.099261964965839e-02   2  -11  1000025     # BF(~e+_3 --> e+ ~chi0_3)
+    2.898991016469435e-01   2  -11  1000035     # BF(~e+_3 --> e+ ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000014  8.213394486659791e+01   # ~nubar_2 decays
+#          BF              NDA Daughter PDG codes
+    5.798355279974264e-01   2  -1000037    -13  # BF(~nubar_2 --> ~chi-_2 mu+)
+    1.425693388225011e-03   2  -1000024    -13  # BF(~nubar_2 --> ~chi-_1 mu+)
+    7.211839876753319e-02   2  -14  1000022     # BF(~nubar_2 --> nubar_mu ~chi0_1)
+    9.188674697996208e-05   2  -14  1000023     # BF(~nubar_2 --> nubar_mu ~chi0_2)
+    5.612224802357088e-02   2  -14  1000025     # BF(~nubar_2 --> nubar_mu ~chi0_3)
+    2.904062450762645e-01   2  -14  1000035     # BF(~nubar_2 --> nubar_mu ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000013  4.212070239350852e+01   # ~e+_2 decays
+#          BF              NDA Daughter PDG codes
+    5.058846877834591e-01   2  -11  1000022     # BF(~e+_2 --> e+ ~chi0_1)
+    7.724011714300105e-05   2  -11  1000023     # BF(~e+_2 --> e+ ~chi0_2)
+    4.940375475517179e-01   2  -11  1000025     # BF(~e+_2 --> e+ ~chi0_3)
+    5.245476799371244e-07   2  -11  1000035     # BF(~e+_2 --> e+ ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000012  8.213394486659791e+01   # ~nubar_1 decays
+#          BF              NDA Daughter PDG codes
+    5.798355279974264e-01   2  -1000037    -11  # BF(~nubar_1 --> ~chi-_2 e+)
+    1.425693388225011e-03   2  -1000024    -11  # BF(~nubar_1 --> ~chi-_1 e+)
+    7.211839876753319e-02   2  -12  1000022     # BF(~nubar_1 --> nubar_e ~chi0_1)
+    9.188674697996208e-05   2  -12  1000023     # BF(~nubar_1 --> nubar_e ~chi0_2)
+    5.612224802357088e-02   2  -12  1000025     # BF(~nubar_1 --> nubar_e ~chi0_3)
+    2.904062450762645e-01   2  -12  1000035     # BF(~nubar_1 --> nubar_e ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000011  4.212070239350852e+01   # ~e+_1 decays
+#          BF              NDA Daughter PDG codes
+    5.058846877834591e-01   2  -13  1000022     # BF(~e+_1 --> mu+ ~chi0_1)
+    7.724011714300105e-05   2  -13  1000023     # BF(~e+_1 --> mu+ ~chi0_2)
+    4.940375475517179e-01   2  -13  1000025     # BF(~e+_1 --> mu+ ~chi0_3)
+    5.245476799371244e-07   2  -13  1000035     # BF(~e+_1 --> mu+ ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000006  6.058979232064195e+01   # ~ubar_3 decays
+#          BF              NDA Daughter PDG codes
+    6.535705319662318e-01   2  -1000037    -1   # BF(~ubar_3 --> ~chi-_2 dbar)
+    1.714238544413980e-03   2  -1000024    -1   # BF(~ubar_3 --> ~chi-_1 dbar)
+    6.066562053933545e-03   2  -2   1000022     # BF(~ubar_3 --> ubar ~chi0_1)
+    3.493118730393321e-05   2  -2   1000023     # BF(~ubar_3 --> ubar ~chi0_2)
+    1.169464151424518e-02   2  -2   1000025     # BF(~ubar_3 --> ubar ~chi0_3)
+    3.269190947338715e-01   2  -2   1000035     # BF(~ubar_3 --> ubar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000005  6.055657040326229e+01   # ~dbar_3 decays
+#          BF              NDA Daughter PDG codes
+    4.600643892621747e-04   2  -2   1000024     # BF(~dbar_3 --> ubar ~chi+_1)
+    6.547256911237509e-01   2  -2   1000037     # BF(~dbar_3 --> ubar ~chi+_2)
+    1.174374257509020e-02   2  -1   1000022     # BF(~dbar_3 --> dbar ~chi0_1)
+    6.744474209860918e-05   2  -1   1000023     # BF(~dbar_3 --> dbar ~chi0_2)
+    5.743906386427267e-03   2  -1   1000025     # BF(~dbar_3 --> dbar ~chi0_3)
+    3.272591507833709e-01   2  -1   1000035     # BF(~dbar_3 --> dbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000004  1.657351637833825e+01   # ~ubar_2 decays
+#          BF              NDA Daughter PDG codes
+    5.062317595907623e-01   2  -4   1000022     # BF(~ubar_2 --> cbar ~chi0_1)
+    7.723535334136969e-05   2  -4   1000023     # BF(~ubar_2 --> cbar ~chi0_2)
+    4.936905139640748e-01   2  -4   1000025     # BF(~ubar_2 --> cbar ~chi0_3)
+    4.910918215402470e-07   2  -4   1000035     # BF(~ubar_2 --> cbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000003  4.141381251607972e+00   # ~dbar_2 decays
+#          BF              NDA Daughter PDG codes
+    5.062334971860268e-01   2  -3   1000022     # BF(~dbar_2 --> sbar ~chi0_1)
+    7.723532922206247e-05   2  -3   1000023     # BF(~dbar_2 --> sbar ~chi0_2)
+    4.936887765536406e-01   2  -3   1000025     # BF(~dbar_2 --> sbar ~chi0_3)
+    4.909311105996283e-07   2  -3   1000035     # BF(~dbar_2 --> sbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000002  1.657351637833825e+01   # ~ubar_1 decays
+#          BF              NDA Daughter PDG codes
+    5.062317595907623e-01   2  -2   1000022     # BF(~ubar_1 --> ubar ~chi0_1)
+    7.723535334136969e-05   2  -2   1000023     # BF(~ubar_1 --> ubar ~chi0_2)
+    4.936905139640748e-01   2  -2   1000025     # BF(~ubar_1 --> ubar ~chi0_3)
+    4.910918215402470e-07   2  -2   1000035     # BF(~ubar_1 --> ubar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -1000001  4.141381251607972e+00   # ~dbar_1 decays
+#          BF              NDA Daughter PDG codes
+    5.062334971860268e-01   2  -1   1000022     # BF(~dbar_1 --> dbar ~chi0_1)
+    7.723532922206247e-05   2  -1   1000023     # BF(~dbar_1 --> dbar ~chi0_2)
+    4.936887765536406e-01   2  -1   1000025     # BF(~dbar_1 --> dbar ~chi0_3)
+    4.909311105996283e-07   2  -1   1000035     # BF(~dbar_1 --> dbar ~chi0_4)
+#     PDG         Width (GeV)
+DECAY -213  1.491000000000000e-01   # rho- decays
+#          BF              NDA Daughter PDG codes
+#     PDG         Width (GeV)
+DECAY -211  2.528400000000000e-17   # pi- decays
+#          BF              NDA Daughter PDG codes
+    9.998770000000000e-01   2  -14  13  # BF(pi- --> nubar_mu mu-)
+    1.230000000000000e-04   2  -12  11  # BF(pi- --> nubar_e e-)
+#     PDG         Width (GeV)
+DECAY -37   6.006419920672079e+01   # H- decays
+#          BF              NDA Daughter PDG codes
+    6.086356478551081e-03   2  -1000024     1000022     # BF(H- --> ~chi-_1 ~chi0_1)
+    3.053124707389818e-05   2  -1000024     1000023     # BF(H- --> ~chi-_1 ~chi0_2)
+    4.908079349342655e-03   2  -1000024     1000025     # BF(H- --> ~chi-_1 ~chi0_3)
+    6.378475646671618e-07   2  -24  25  # BF(H- --> W- h0_1)
+    1.784593006240302e-11   2  -24  36  # BF(H- --> W- A0)
+    1.791602058500682e-01   2  -16  15  # BF(H- --> nubar_tau tau-)
+    1.481818031834709e-08   2  -14  13  # BF(H- --> nubar_mu mu-)
+    8.082435365811883e-01   2  -6   5   # BF(H- --> tbar b)
+    1.717317036379132e-04   2  -4   3   # BF(H- --> cbar s)
+    1.379985223710511e-03   2  -4   5   # BF(H- --> cbar b)
+    8.721903616564236e-06   2  -2   3   # BF(H- --> ubar s)
+    1.019897921989006e-05   2  -2   5   # BF(H- --> ubar b)
+#     PDG         Width (GeV)
+DECAY -24   2.085000000000000e+00   # W- decays
+#          BF              NDA Daughter PDG codes
+    1.138000000000000e-01   2  -16  15  # BF(W- --> nubar_tau tau-)
+    1.063000000000000e-01   2  -14  13  # BF(W- --> nubar_mu mu-)
+    1.071000000000000e-01   2  -12  11  # BF(W- --> nubar_e e-)
+    6.741000000000000e-01   2   9900086     9900086     # BF(W- --> hadron hadron)
+#     PDG         Width (GeV)
+DECAY -15   2.267000000000000e-12   # e+_3 decays
+#          BF              NDA Daughter PDG codes
+    4.620000000000000e-02   5  -211    -16  111     211     211     # BF(e+_3 --> pi- nubar_tau pi0 pi+ pi+)
+    9.310000000000000e-02   4  -211    -16  211     211     # BF(e+_3 --> pi- nubar_tau pi+ pi+)
+    1.741000000000000e-01   3  -16 -13  14  # BF(e+_3 --> nubar_tau mu+ nu_mu)
+    1.783000000000000e-01   3  -16 -11  12  # BF(e+_3 --> nubar_tau e+ nu_e)
+    1.050000000000000e-02   5  -16  111     111     111     211     # BF(e+_3 --> nubar_tau pi0 pi0 pi0 pi+)
+    9.300000000000000e-02   4  -16  111     111     211     # BF(e+_3 --> nubar_tau pi0 pi0 pi+)
+    2.552000000000000e-01   3  -16  111     211     # BF(e+_3 --> nubar_tau pi0 pi+)
+    1.083000000000000e-01   2  -16  211     # BF(e+_3 --> nubar_tau pi+)
+#     PDG         Width (GeV)
+DECAY -15   2.267000000000000e-12   # tau+ decays
+#          BF              NDA Daughter PDG codes
+    4.620000000000000e-02   5  -211    -16  111     211     211     # BF(tau+ --> pi- nubar_tau pi0 pi+ pi+)
+    9.310000000000000e-02   4  -211    -16  211     211     # BF(tau+ --> pi- nubar_tau pi+ pi+)
+    1.741000000000000e-01   3  -16 -13  14  # BF(tau+ --> nubar_tau mu+ nu_mu)
+    1.783000000000000e-01   3  -16 -11  12  # BF(tau+ --> nubar_tau e+ nu_e)
+    1.050000000000000e-02   5  -16  111     111     111     211     # BF(tau+ --> nubar_tau pi0 pi0 pi0 pi+)
+    9.300000000000000e-02   4  -16  111     111     211     # BF(tau+ --> nubar_tau pi0 pi0 pi+)
+    2.552000000000000e-01   3  -16  111     211     # BF(tau+ --> nubar_tau pi0 pi+)
+    1.083000000000000e-01   2  -16  211     # BF(tau+ --> nubar_tau pi+)
+#     PDG         Width (GeV)
+DECAY -13   2.995984700000000e-19   # e+_2 decays
+#          BF              NDA Daughter PDG codes
+    1.000000000000000e+00   3  -14 -11  12  # BF(e+_2 --> nubar_mu e+ nu_e)
+#     PDG         Width (GeV)
+DECAY -13   2.995984700000000e-19   # mu+ decays
+#          BF              NDA Daughter PDG codes
+    1.000000000000000e+00   3  -14 -11  12  # BF(mu+ --> nubar_mu e+ nu_e)
+#     PDG         Width (GeV)
+DECAY -6    2.000000000000000e+00   # ubar_3 decays
+#          BF              NDA Daughter PDG codes
+    9.100000000000000e-01   2  -24 -5   # BF(ubar_3 --> W- bbar)
+#     PDG         Width (GeV)
+DECAY -6    2.000000000000000e+00   # tbar decays
+#          BF              NDA Daughter PDG codes
+    9.100000000000000e-01   2  -24 -5   # BF(tbar --> W- bbar)
+#     PDG         Width (GeV)
+DECAY 6     2.000000000000000e+00   # u_3 decays
+#          BF              NDA Daughter PDG codes
+    9.100000000000000e-01   2   5   24  # BF(u_3 --> b W+)
+#     PDG         Width (GeV)
+DECAY 6     2.000000000000000e+00   # t decays
+#          BF              NDA Daughter PDG codes
+    9.100000000000000e-01   2   5   24  # BF(t --> b W+)
+#     PDG         Width (GeV)
+DECAY 13    2.995984700000000e-19   # e-_2 decays
+#          BF              NDA Daughter PDG codes
+    1.000000000000000e+00   3  -12  11  14  # BF(e-_2 --> nubar_e e- nu_mu)
+#     PDG         Width (GeV)
+DECAY 13    2.995984700000000e-19   # mu- decays
+#          BF              NDA Daughter PDG codes
+    1.000000000000000e+00   3  -12  11  14  # BF(mu- --> nubar_e e- nu_mu)
+#     PDG         Width (GeV)
+DECAY 15    2.267000000000000e-12   # e-_3 decays
+#          BF              NDA Daughter PDG codes
+    4.620000000000000e-02   5  -211    -211     16  111     211     # BF(e-_3 --> pi- pi- nu_tau pi0 pi+)
+    9.310000000000000e-02   4  -211    -211     16  211     # BF(e-_3 --> pi- pi- nu_tau pi+)
+    1.083000000000000e-01   2  -211     16  # BF(e-_3 --> pi- nu_tau)
+    2.552000000000000e-01   3  -211     16  111     # BF(e-_3 --> pi- nu_tau pi0)
+    9.300000000000000e-02   4  -211     16  111     111     # BF(e-_3 --> pi- nu_tau pi0 pi0)
+    1.050000000000000e-02   5  -211     16  111     111     111     # BF(e-_3 --> pi- nu_tau pi0 pi0 pi0)
+    1.741000000000000e-01   3  -14  13  16  # BF(e-_3 --> nubar_mu mu- nu_tau)
+    1.783000000000000e-01   3  -12  11  16  # BF(e-_3 --> nubar_e e- nu_tau)
+#     PDG         Width (GeV)
+DECAY 15    2.267000000000000e-12   # tau- decays
+#          BF              NDA Daughter PDG codes
+    4.620000000000000e-02   5  -211    -211     16  111     211     # BF(tau- --> pi- pi- nu_tau pi0 pi+)
+    9.310000000000000e-02   4  -211    -211     16  211     # BF(tau- --> pi- pi- nu_tau pi+)
+    1.083000000000000e-01   2  -211     16  # BF(tau- --> pi- nu_tau)
+    2.552000000000000e-01   3  -211     16  111     # BF(tau- --> pi- nu_tau pi0)
+    9.300000000000000e-02   4  -211     16  111     111     # BF(tau- --> pi- nu_tau pi0 pi0)
+    1.050000000000000e-02   5  -211     16  111     111     111     # BF(tau- --> pi- nu_tau pi0 pi0 pi0)
+    1.741000000000000e-01   3  -14  13  16  # BF(tau- --> nubar_mu mu- nu_tau)
+    1.783000000000000e-01   3  -12  11  16  # BF(tau- --> nubar_e e- nu_tau)
+#     PDG         Width (GeV)
+DECAY 23    2.495200000000000e+00   # Z0 decays
+#          BF              NDA Daughter PDG codes
+    3.370000000000000e-02   2  -15  15  # BF(Z0 --> tau+ tau-)
+    3.366000000000000e-02   2  -13  13  # BF(Z0 --> mu+ mu-)
+    3.363000000000000e-02   2  -11  11  # BF(Z0 --> e+ e-)
+    6.991000000000001e-01   2   9900086     9900086     # BF(Z0 --> hadron hadron)
+#     PDG         Width (GeV)
+DECAY 24    2.085000000000000e+00   # W+ decays
+#          BF              NDA Daughter PDG codes
+    1.138000000000000e-01   2  -15  16  # BF(W+ --> tau+ nu_tau)
+    1.063000000000000e-01   2  -13  14  # BF(W+ --> mu+ nu_mu)
+    1.071000000000000e-01   2  -11  12  # BF(W+ --> e+ nu_e)
+    6.741000000000000e-01   2   9900086     9900086     # BF(W+ --> hadron hadron)
+#     PDG         Width (GeV)
+DECAY 25    3.992285851390661e-03   # h0_1 decays
+#          BF              NDA Daughter PDG codes
+    1.898879353147148e-01   2  -24  24  # BF(h0_1 --> W- W+)
+    6.455338774275858e-02   2  -15  15  # BF(h0_1 --> tau+ tau-)
+    5.345728836604118e-09   2  -13  13  # BF(h0_1 --> mu+ mu-)
+    6.345939403520637e-01   2  -5   5   # BF(h0_1 --> bbar b)
+    1.385670785511913e-02   2  -4   4   # BF(h0_1 --> cbar c)
+    1.129245153088251e-04   2  -3   3   # BF(h0_1 --> sbar s)
+    6.951340450293803e-02   2   21  21  # BF(h0_1 --> g g)
+    2.621173542898477e-03   2   22  22  # BF(h0_1 --> gamma gamma)
+    1.538154363121598e-03   2   22  23  # BF(h0_1 --> gamma Z0)
+    2.332236646534803e-02   2   23  23  # BF(h0_1 --> Z0 Z0)
+#     PDG         Width (GeV)
+DECAY 35    6.447116367791197e+01   # h0_2 decays
+#          BF              NDA Daughter PDG codes
+    1.617773204363674e-05   2  -1000024     1000024     # BF(h0_2 --> ~chi-_1 ~chi+_1)
+    5.935924643129742e-07   2  -24  24  # BF(h0_2 --> W- W+)
+    1.667362321516149e-01   2  -15  15  # BF(h0_2 --> tau+ tau-)
+    1.379061810571544e-08   2  -13  13  # BF(h0_2 --> mu+ mu-)
+    1.522685391951175e-03   2  -6   6   # BF(h0_2 --> tbar t)
+    8.213688771113423e-01   2  -5   5   # BF(h0_2 --> bbar b)
+    9.922898415777714e-09   2  -4   4   # BF(h0_2 --> cbar c)
+    1.623435618954096e-04   2  -3   3   # BF(h0_2 --> sbar s)
+    9.576517920825985e-06   2   21  21  # BF(h0_2 --> g g)
+    6.688374666394730e-09   2   22  22  # BF(h0_2 --> gamma gamma)
+    6.691740603356119e-09   2   22  23  # BF(h0_2 --> gamma Z0)
+    2.965401288959932e-07   2   23  23  # BF(h0_2 --> Z0 Z0)
+    3.951858006615576e-20   2   23  36  # BF(h0_2 --> Z0 A0)
+    1.786673741665061e-06   2   25  25  # BF(h0_2 --> h0_1 h0_1)
+    6.387576982167226e-04   2   1000022     1000022     # BF(h0_2 --> ~chi0_1 ~chi0_1)
+    5.673140419341732e-03   2   1000022     1000023     # BF(h0_2 --> ~chi0_1 ~chi0_2)
+    2.279241340743480e-06   2   1000022     1000025     # BF(h0_2 --> ~chi0_1 ~chi0_3)
+    1.030089246632466e-06   2   1000023     1000023     # BF(h0_2 --> ~chi0_2 ~chi0_2)
+    3.768778825443949e-03   2   1000023     1000025     # BF(h0_2 --> ~chi0_2 ~chi0_3)
+    9.740735967524812e-05   2   1000025     1000025     # BF(h0_2 --> ~chi0_3 ~chi0_3)
+#     PDG         Width (GeV)
+DECAY 36    6.449275261583732e+01   # A0 decays
+#          BF              NDA Daughter PDG codes
+    2.408568432329082e-04   2  -1000024     1000024     # BF(A0 --> ~chi-_1 ~chi+_1)
+    1.666802645805169e-01   2  -15  15  # BF(A0 --> tau+ tau-)
+    1.378597555701358e-08   2  -13  13  # BF(A0 --> mu+ mu-)
+    1.525267056142322e-03   2  -6   6   # BF(A0 --> tbar t)
+    8.211118424252276e-01   2  -5   5   # BF(A0 --> bbar b)
+    9.978271132609935e-09   2  -4   4   # BF(A0 --> cbar c)
+    1.622975005178956e-04   2  -3   3   # BF(A0 --> sbar s)
+    2.199359637916731e-05   2   21  21  # BF(A0 --> g g)
+    4.460781174686382e-08   2   22  22  # BF(A0 --> gamma gamma)
+    1.970918235785506e-08   2   22  23  # BF(A0 --> gamma Z0)
+    5.918917389543576e-07   2   23  25  # BF(A0 --> Z0 h0_1)
+    6.634415212750265e-03   2   1000022     1000022     # BF(A0 --> ~chi0_1 ~chi0_1)
+    4.463160873506933e-04   2   1000022     1000023     # BF(A0 --> ~chi0_1 ~chi0_2)
+    3.617863934496850e-05   2   1000022     1000025     # BF(A0 --> ~chi0_1 ~chi0_3)
+    1.343381442681897e-05   2   1000023     1000023     # BF(A0 --> ~chi0_2 ~chi0_2)
+    1.806352232977881e-04   2   1000023     1000025     # BF(A0 --> ~chi0_2 ~chi0_3)
+    2.945819047833061e-03   2   1000025     1000025     # BF(A0 --> ~chi0_3 ~chi0_3)
+#     PDG         Width (GeV)
+DECAY 37    6.006419920672079e+01   # H+ decays
+#          BF              NDA Daughter PDG codes
+    1.791602058500682e-01   2  -15  16  # BF(H+ --> tau+ nu_tau)
+    1.481818031834709e-08   2  -13  14  # BF(H+ --> mu+ nu_mu)
+    1.019897921989006e-05   2  -5   2   # BF(H+ --> bbar u)
+    1.379985223710511e-03   2  -5   4   # BF(H+ --> bbar c)
+    8.082435365811883e-01   2  -5   6   # BF(H+ --> bbar t)
+    8.721903616564236e-06   2  -3   2   # BF(H+ --> sbar u)
+    1.717317036379132e-04   2  -3   4   # BF(H+ --> sbar c)
+    6.378475646671618e-07   2   24  25  # BF(H+ --> W+ h0_1)
+    1.784593006240302e-11   2   24  36  # BF(H+ --> W+ A0)
+    6.086356478551081e-03   2   1000022     1000024     # BF(H+ --> ~chi0_1 ~chi+_1)
+    3.053124707389818e-05   2   1000023     1000024     # BF(H+ --> ~chi0_2 ~chi+_1)
+    4.908079349342655e-03   2   1000024     1000025     # BF(H+ --> ~chi+_1 ~chi0_3)
+#     PDG         Width (GeV)
+DECAY 111   7.730000000000000e-09   # pi0 decays
+#          BF              NDA Daughter PDG codes
+    3.340000000000000e-05   4  -11 -11  11  11  # BF(pi0 --> e+ e+ e- e-)
+    6.460000000000000e-08   2  -11  11  # BF(pi0 --> e+ e-)
+    1.174000000000000e-02   3  -11  11  22  # BF(pi0 --> e+ e- gamma)
+    9.882300000000001e-01   2   22  22  # BF(pi0 --> gamma gamma)
+#     PDG         Width (GeV)
+DECAY 113   1.491000000000000e-01   # rho0 decays
+#          BF              NDA Daughter PDG codes
+#     PDG         Width (GeV)
+DECAY 211   2.528400000000000e-17   # pi+ decays
+#          BF              NDA Daughter PDG codes
+    9.998770000000000e-01   2  -13  14  # BF(pi+ --> mu+ nu_mu)
+    1.230000000000000e-04   2  -11  12  # BF(pi+ --> e+ nu_e)
+#     PDG         Width (GeV)
+DECAY 213   1.491000000000000e-01   # rho+ decays
+#          BF              NDA Daughter PDG codes
+#     PDG         Width (GeV)
+DECAY 221   1.310000000000000e-06   # eta decays
+#          BF              NDA Daughter PDG codes
+#     PDG         Width (GeV)
+DECAY 223   8.489999999999999e-03   # omega decays
+#          BF              NDA Daughter PDG codes
+#     PDG         Width (GeV)
+DECAY 1000001   4.141381251607972e+00   # ~d_1 decays
+#          BF              NDA Daughter PDG codes
+    5.062334971860268e-01   2   1   1000022     # BF(~d_1 --> d ~chi0_1)
+    7.723532922206247e-05   2   1   1000023     # BF(~d_1 --> d ~chi0_2)
+    4.936887765536406e-01   2   1   1000025     # BF(~d_1 --> d ~chi0_3)
+    4.909311105996283e-07   2   1   1000035     # BF(~d_1 --> d ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000002   1.657351637833825e+01   # ~u_1 decays
+#          BF              NDA Daughter PDG codes
+    5.062317595907623e-01   2   2   1000022     # BF(~u_1 --> u ~chi0_1)
+    7.723535334136969e-05   2   2   1000023     # BF(~u_1 --> u ~chi0_2)
+    4.936905139640748e-01   2   2   1000025     # BF(~u_1 --> u ~chi0_3)
+    4.910918215402470e-07   2   2   1000035     # BF(~u_1 --> u ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000003   4.141381251607972e+00   # ~d_2 decays
+#          BF              NDA Daughter PDG codes
+    5.062334971860268e-01   2   3   1000022     # BF(~d_2 --> s ~chi0_1)
+    7.723532922206247e-05   2   3   1000023     # BF(~d_2 --> s ~chi0_2)
+    4.936887765536406e-01   2   3   1000025     # BF(~d_2 --> s ~chi0_3)
+    4.909311105996283e-07   2   3   1000035     # BF(~d_2 --> s ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000004   1.657351637833825e+01   # ~u_2 decays
+#          BF              NDA Daughter PDG codes
+    5.062317595907623e-01   2   4   1000022     # BF(~u_2 --> c ~chi0_1)
+    7.723535334136969e-05   2   4   1000023     # BF(~u_2 --> c ~chi0_2)
+    4.936905139640748e-01   2   4   1000025     # BF(~u_2 --> c ~chi0_3)
+    4.910918215402470e-07   2   4   1000035     # BF(~u_2 --> c ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000005   6.055657040326229e+01   # ~d_3 decays
+#          BF              NDA Daughter PDG codes
+    6.547256911237509e-01   2  -1000037     2   # BF(~d_3 --> ~chi-_2 u)
+    4.600643892621747e-04   2  -1000024     2   # BF(~d_3 --> ~chi-_1 u)
+    1.174374257509020e-02   2   1   1000022     # BF(~d_3 --> d ~chi0_1)
+    6.744474209860918e-05   2   1   1000023     # BF(~d_3 --> d ~chi0_2)
+    5.743906386427267e-03   2   1   1000025     # BF(~d_3 --> d ~chi0_3)
+    3.272591507833709e-01   2   1   1000035     # BF(~d_3 --> d ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000006   6.058979232064195e+01   # ~u_3 decays
+#          BF              NDA Daughter PDG codes
+    1.714238544413980e-03   2   1   1000024     # BF(~u_3 --> d ~chi+_1)
+    6.535705319662318e-01   2   1   1000037     # BF(~u_3 --> d ~chi+_2)
+    6.066562053933545e-03   2   2   1000022     # BF(~u_3 --> u ~chi0_1)
+    3.493118730393321e-05   2   2   1000023     # BF(~u_3 --> u ~chi0_2)
+    1.169464151424518e-02   2   2   1000025     # BF(~u_3 --> u ~chi0_3)
+    3.269190947338715e-01   2   2   1000035     # BF(~u_3 --> u ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000011   4.212070239350852e+01   # ~e-_1 decays
+#          BF              NDA Daughter PDG codes
+    5.058846877834591e-01   2   13  1000022     # BF(~e-_1 --> mu- ~chi0_1)
+    7.724011714300105e-05   2   13  1000023     # BF(~e-_1 --> mu- ~chi0_2)
+    4.940375475517179e-01   2   13  1000025     # BF(~e-_1 --> mu- ~chi0_3)
+    5.245476799371244e-07   2   13  1000035     # BF(~e-_1 --> mu- ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000012   8.213394486659791e+01   # ~nu_1 decays
+#          BF              NDA Daughter PDG codes
+    1.425693388225011e-03   2   11  1000024     # BF(~nu_1 --> e- ~chi+_1)
+    5.798355279974264e-01   2   11  1000037     # BF(~nu_1 --> e- ~chi+_2)
+    7.211839876753319e-02   2   12  1000022     # BF(~nu_1 --> nu_e ~chi0_1)
+    9.188674697996208e-05   2   12  1000023     # BF(~nu_1 --> nu_e ~chi0_2)
+    5.612224802357088e-02   2   12  1000025     # BF(~nu_1 --> nu_e ~chi0_3)
+    2.904062450762645e-01   2   12  1000035     # BF(~nu_1 --> nu_e ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000013   4.212070239350852e+01   # ~e-_2 decays
+#          BF              NDA Daughter PDG codes
+    5.058846877834591e-01   2   11  1000022     # BF(~e-_2 --> e- ~chi0_1)
+    7.724011714300105e-05   2   11  1000023     # BF(~e-_2 --> e- ~chi0_2)
+    4.940375475517179e-01   2   11  1000025     # BF(~e-_2 --> e- ~chi0_3)
+    5.245476799371244e-07   2   11  1000035     # BF(~e-_2 --> e- ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000014   8.213394486659791e+01   # ~nu_2 decays
+#          BF              NDA Daughter PDG codes
+    1.425693388225011e-03   2   13  1000024     # BF(~nu_2 --> mu- ~chi+_1)
+    5.798355279974264e-01   2   13  1000037     # BF(~nu_2 --> mu- ~chi+_2)
+    7.211839876753319e-02   2   14  1000022     # BF(~nu_2 --> nu_mu ~chi0_1)
+    9.188674697996208e-05   2   14  1000023     # BF(~nu_2 --> nu_mu ~chi0_2)
+    5.612224802357088e-02   2   14  1000025     # BF(~nu_2 --> nu_mu ~chi0_3)
+    2.904062450762645e-01   2   14  1000035     # BF(~nu_2 --> nu_mu ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000015   8.213975950554109e+01   # ~e-_3 decays
+#          BF              NDA Daughter PDG codes
+    5.807326968090479e-01   2  -1000037     12  # BF(~e-_3 --> ~chi-_2 nu_e)
+    3.824851870463438e-04   2  -1000024     12  # BF(~e-_3 --> ~chi-_1 nu_e)
+    5.798225721520025e-02   2   11  1000022     # BF(~e-_3 --> e- ~chi0_1)
+    1.083949210342752e-05   2   11  1000023     # BF(~e-_3 --> e- ~chi0_2)
+    7.099261964965839e-02   2   11  1000025     # BF(~e-_3 --> e- ~chi0_3)
+    2.898991016469435e-01   2   11  1000035     # BF(~e-_3 --> e- ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000016   1.073692394806343e+02   # ~nu_3 decays
+#          BF              NDA Daughter PDG codes
+    2.324400412832905e-01   2   15  1000024     # BF(~nu_3 --> tau- ~chi+_1)
+    4.458283285784309e-01   2   15  1000037     # BF(~nu_3 --> tau- ~chi+_2)
+    5.534560028740778e-02   2   16  1000022     # BF(~nu_3 --> nu_tau ~chi0_1)
+    7.051776159505745e-05   2   16  1000023     # BF(~nu_3 --> nu_tau ~chi0_2)
+    4.307130922039955e-02   2   16  1000025     # BF(~nu_3 --> nu_tau ~chi0_3)
+    2.232442028688763e-01   2   16  1000035     # BF(~nu_3 --> nu_tau ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 1000021   5.251900203386161e+02   # ~g decays
+#          BF              NDA Daughter PDG codes
+    3.976013332926463e-02   2  -2000006     6   # BF(~g --> ~ubar_6 t)
+    3.945392749610271e-02   2  -2000005     5   # BF(~g --> ~dbar_6 b)
+    3.801385332519699e-02   2  -2000004     6   # BF(~g --> ~ubar_5 t)
+    4.086622063057360e-02   2  -2000003     5   # BF(~g --> ~dbar_5 b)
+    4.257045290772050e-02   2  -2000002     4   # BF(~g --> ~ubar_4 c)
+    4.258450201547682e-02   2  -2000001     3   # BF(~g --> ~dbar_4 s)
+    4.257045290772050e-02   2  -1000006     2   # BF(~g --> ~ubar_3 u)
+    4.258450201547682e-02   2  -1000005     1   # BF(~g --> ~dbar_3 d)
+    4.286133961952704e-02   2  -1000004     4   # BF(~g --> ~ubar_2 c)
+    4.293663806670667e-02   2  -1000003     3   # BF(~g --> ~dbar_2 s)
+    4.286133961952704e-02   2  -1000002     2   # BF(~g --> ~ubar_1 u)
+    4.293663806670667e-02   2  -1000001     1   # BF(~g --> ~dbar_1 d)
+    3.801385332519699e-02   2  -6   2000004     # BF(~g --> tbar ~u_5)
+    3.976013332926463e-02   2  -6   2000006     # BF(~g --> tbar ~u_6)
+    4.086622063057360e-02   2  -5   2000003     # BF(~g --> bbar ~d_5)
+    3.945392749610271e-02   2  -5   2000005     # BF(~g --> bbar ~d_6)
+    4.286133961952704e-02   2  -4   1000004     # BF(~g --> cbar ~u_2)
+    4.257045290772050e-02   2  -4   2000002     # BF(~g --> cbar ~u_4)
+    4.293663806670667e-02   2  -3   1000003     # BF(~g --> sbar ~d_2)
+    4.258450201547682e-02   2  -3   2000001     # BF(~g --> sbar ~d_4)
+    4.286133961952704e-02   2  -2   1000002     # BF(~g --> ubar ~u_1)
+    4.257045290772050e-02   2  -2   1000006     # BF(~g --> ubar ~u_3)
+    4.293663806670667e-02   2  -1   1000001     # BF(~g --> dbar ~d_1)
+    4.258450201547682e-02   2  -1   1000005     # BF(~g --> dbar ~d_3)
+#     PDG         Width (GeV)
+DECAY 1000022   0.000000000000000e+00   # ~chi0_1 decays
+#          BF              NDA Daughter PDG codes
+#     PDG         Width (GeV)
+DECAY 1000023   2.864058679259667e-05   # ~chi0_2 decays
+#          BF              NDA Daughter PDG codes
+    5.715087311638250e-15   3  -1000024    -15  16  # BF(~chi0_2 --> ~chi-_1 tau+ nu_tau)
+    8.175606766489773e-08   3  -1000024    -13  14  # BF(~chi0_2 --> ~chi-_1 mu+ nu_mu)
+    8.175606766489773e-08   3  -1000024    -11  12  # BF(~chi0_2 --> ~chi-_1 e+ nu_e)
+    2.452681934689787e-07   3  -1000024    -3   4   # BF(~chi0_2 --> ~chi-_1 sbar c)
+    2.452681934689787e-07   3  -1000024    -1   2   # BF(~chi0_2 --> ~chi-_1 dbar u)
+    5.715087311638250e-15   3  -16  15  1000024     # BF(~chi0_2 --> nubar_tau tau- ~chi+_1)
+    7.159574278360471e-02   3  -16  16  1000022     # BF(~chi0_2 --> nubar_tau nu_tau ~chi0_1)
+    3.522638659658987e-02   3  -15  15  1000022     # BF(~chi0_2 --> tau+ tau- ~chi0_1)
+    8.175606766489773e-08   3  -14  13  1000024     # BF(~chi0_2 --> nubar_mu mu- ~chi+_1)
+    7.159574344812016e-02   3  -14  14  1000022     # BF(~chi0_2 --> nubar_mu nu_mu ~chi0_1)
+    3.579888267536189e-02   3  -13  13  1000022     # BF(~chi0_2 --> mu+ mu- ~chi0_1)
+    8.175606766489773e-08   3  -12  11  1000024     # BF(~chi0_2 --> nubar_e e- ~chi+_1)
+    7.159574344812016e-02   3  -12  12  1000022     # BF(~chi0_2 --> nubar_e nu_e ~chi0_1)
+    3.579888267536189e-02   3  -11  11  1000022     # BF(~chi0_2 --> e+ e- ~chi0_1)
+    1.302806757982543e-01   3  -5   5   1000022     # BF(~chi0_2 --> bbar b ~chi0_1)
+    2.452681934689787e-07   3  -4   3   1000024     # BF(~chi0_2 --> cbar s ~chi+_1)
+    1.190601602114468e-01   3  -4   4   1000022     # BF(~chi0_2 --> cbar c ~chi0_1)
+    1.548567012513028e-01   3  -3   3   1000022     # BF(~chi0_2 --> sbar s ~chi0_1)
+    2.452681934689787e-07   3  -2   1   1000024     # BF(~chi0_2 --> ubar d ~chi+_1)
+    1.190601602114468e-01   3  -2   2   1000022     # BF(~chi0_2 --> ubar u ~chi0_1)
+    1.548567012513028e-01   3  -1   1   1000022     # BF(~chi0_2 --> dbar d ~chi0_1)
+    2.729115520317944e-04   2   22  1000022     # BF(~chi0_2 --> gamma ~chi0_1)
+#     PDG         Width (GeV)
+DECAY 1000024   2.696437287660057e-05   # ~chi+_1 decays
+#          BF              NDA Daughter PDG codes
+    1.097510311040671e-01   3  -15  16  1000022     # BF(~chi+_1 --> tau+ nu_tau ~chi0_1)
+    1.112812311283279e-01   3  -13  14  1000022     # BF(~chi+_1 --> mu+ nu_mu ~chi0_1)
+    1.112812311283279e-01   3  -11  12  1000022     # BF(~chi+_1 --> e+ nu_e ~chi0_1)
+    3.338432533196385e-01   3  -3   4   1000022     # BF(~chi+_1 --> sbar c ~chi0_1)
+    3.338432533196385e-01   3  -1   2   1000022     # BF(~chi+_1 --> dbar u ~chi0_1)
+#     PDG         Width (GeV)
+DECAY 1000025   5.147926144073947e-05   # ~chi0_3 decays
+#          BF              NDA Daughter PDG codes
+    4.113016245671542e-02   3  -1000024    -15  16  # BF(~chi0_3 --> ~chi-_1 tau+ nu_tau)
+    4.178733482659085e-02   3  -1000024    -13  14  # BF(~chi0_3 --> ~chi-_1 mu+ nu_mu)
+    4.178733482659085e-02   3  -1000024    -11  12  # BF(~chi0_3 --> ~chi-_1 e+ nu_e)
+    1.253622108400824e-01   3  -1000024    -3   4   # BF(~chi0_3 --> ~chi-_1 sbar c)
+    1.253622108400824e-01   3  -1000024    -1   2   # BF(~chi0_3 --> ~chi-_1 dbar u)
+    4.113016245671542e-02   3  -16  15  1000024     # BF(~chi0_3 --> nubar_tau tau- ~chi+_1)
+    3.908765554707464e-06   3  -16  16  1000022     # BF(~chi0_3 --> nubar_tau nu_tau ~chi0_1)
+    1.628009077953455e-02   3  -16  16  1000023     # BF(~chi0_3 --> nubar_tau nu_tau ~chi0_2)
+    2.130610456834494e-06   3  -15  15  1000022     # BF(~chi0_3 --> tau+ tau- ~chi0_1)
+    7.964941565765358e-03   3  -15  15  1000023     # BF(~chi0_3 --> tau+ tau- ~chi0_2)
+    4.178733482659085e-02   3  -14  13  1000024     # BF(~chi0_3 --> nubar_mu mu- ~chi+_1)
+    3.909464426253691e-06   3  -14  14  1000022     # BF(~chi0_3 --> nubar_mu nu_mu ~chi0_1)
+    1.628009064456446e-02   3  -14  14  1000023     # BF(~chi0_3 --> nubar_mu nu_mu ~chi0_2)
+    1.608432972027812e-06   3  -13  13  1000022     # BF(~chi0_3 --> mu+ mu- ~chi0_1)
+    8.140324566488890e-03   3  -13  13  1000023     # BF(~chi0_3 --> mu+ mu- ~chi0_2)
+    4.178733482659085e-02   3  -12  11  1000024     # BF(~chi0_3 --> nubar_e e- ~chi+_1)
+    3.909464426253691e-06   3  -12  12  1000022     # BF(~chi0_3 --> nubar_e nu_e ~chi0_1)
+    1.628009064456446e-02   3  -12  12  1000023     # BF(~chi0_3 --> nubar_e nu_e ~chi0_2)
+    1.608432972027812e-06   3  -11  11  1000022     # BF(~chi0_3 --> e+ e- ~chi0_1)
+    8.140324566488890e-03   3  -11  11  1000023     # BF(~chi0_3 --> e+ e- ~chi0_2)
+    9.876296258373238e-06   3  -5   5   1000022     # BF(~chi0_3 --> bbar b ~chi0_1)
+    2.752058311839435e-02   3  -5   5   1000023     # BF(~chi0_3 --> bbar b ~chi0_2)
+    1.253622108400824e-01   3  -4   3   1000024     # BF(~chi0_3 --> cbar s ~chi+_1)
+    6.612315098534422e-06   3  -4   4   1000022     # BF(~chi0_3 --> cbar c ~chi0_1)
+    2.707305086078880e-02   3  -4   4   1000023     # BF(~chi0_3 --> cbar c ~chi0_2)
+    8.122955450288226e-06   3  -3   3   1000022     # BF(~chi0_3 --> sbar s ~chi0_1)
+    3.521287563437554e-02   3  -3   3   1000023     # BF(~chi0_3 --> sbar s ~chi0_2)
+    1.253622108400824e-01   3  -2   1   1000024     # BF(~chi0_3 --> ubar d ~chi+_1)
+    6.612315098534422e-06   3  -2   2   1000022     # BF(~chi0_3 --> ubar u ~chi0_1)
+    2.707305086078880e-02   3  -2   2   1000023     # BF(~chi0_3 --> ubar u ~chi0_2)
+    8.122955450288226e-06   3  -1   1   1000022     # BF(~chi0_3 --> dbar d ~chi0_1)
+    3.521287563437554e-02   3  -1   1   1000023     # BF(~chi0_3 --> dbar d ~chi0_2)
+    2.336386175651613e-02   2   22  1000022     # BF(~chi0_3 --> gamma ~chi0_1)
+    5.429097790662290e-04   2   22  1000023     # BF(~chi0_3 --> gamma ~chi0_2)
+#     PDG         Width (GeV)
+DECAY 1000035   2.590877318286288e+01   # ~chi0_4 decays
+#          BF              NDA Daughter PDG codes
+    2.445945940665353e-01   2  -1000024     24  # BF(~chi0_4 --> ~chi-_1 W+)
+    2.445945940665353e-01   2  -24  1000024     # BF(~chi0_4 --> W- ~chi+_1)
+    1.134459074189928e-02   2   23  1000022     # BF(~chi0_4 --> Z0 ~chi0_1)
+    2.299848431927068e-01   2   23  1000023     # BF(~chi0_4 --> Z0 ~chi0_2)
+    1.196250706993907e-02   2   23  1000025     # BF(~chi0_4 --> Z0 ~chi0_3)
+    1.083770105446701e-01   2   25  1000022     # BF(~chi0_4 --> h0_1 ~chi0_1)
+    2.328517769384683e-02   2   25  1000023     # BF(~chi0_4 --> h0_1 ~chi0_2)
+    1.258566826238671e-01   2   25  1000025     # BF(~chi0_4 --> h0_1 ~chi0_3)
+#     PDG         Width (GeV)
+DECAY 1000037   2.590857911252459e+01   # ~chi+_2 decays
+#          BF              NDA Daughter PDG codes
+    2.535819906374002e-01   2   23  1000024     # BF(~chi+_2 --> Z0 ~chi+_1)
+    1.132836743642530e-01   2   24  1000022     # BF(~chi+_2 --> W+ ~chi0_1)
+    2.443794366325826e-01   2   24  1000023     # BF(~chi+_2 --> W+ ~chi0_2)
+    1.311207651977662e-01   2   24  1000025     # BF(~chi+_2 --> W+ ~chi0_3)
+    2.576341331679979e-01   2   25  1000024     # BF(~chi+_2 --> h0_1 ~chi+_1)
+#     PDG         Width (GeV)
+DECAY 2000001   6.055657040326229e+01   # ~d_4 decays
+#          BF              NDA Daughter PDG codes
+    6.547256911237509e-01   2  -1000037     4   # BF(~d_4 --> ~chi-_2 c)
+    4.600643892621747e-04   2  -1000024     4   # BF(~d_4 --> ~chi-_1 c)
+    1.174374257509020e-02   2   3   1000022     # BF(~d_4 --> s ~chi0_1)
+    6.744474209860918e-05   2   3   1000023     # BF(~d_4 --> s ~chi0_2)
+    5.743906386427267e-03   2   3   1000025     # BF(~d_4 --> s ~chi0_3)
+    3.272591507833709e-01   2   3   1000035     # BF(~d_4 --> s ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000002   6.058979232064195e+01   # ~u_4 decays
+#          BF              NDA Daughter PDG codes
+    1.714238544413980e-03   2   3   1000024     # BF(~u_4 --> s ~chi+_1)
+    6.535705319662318e-01   2   3   1000037     # BF(~u_4 --> s ~chi+_2)
+    6.066562053933545e-03   2   4   1000022     # BF(~u_4 --> c ~chi0_1)
+    3.493118730393321e-05   2   4   1000023     # BF(~u_4 --> c ~chi0_2)
+    1.169464151424518e-02   2   4   1000025     # BF(~u_4 --> c ~chi0_3)
+    3.269190947338715e-01   2   4   1000035     # BF(~u_4 --> c ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000003   7.010992059387306e+01   # ~d_5 decays
+#          BF              NDA Daughter PDG codes
+    1.258810741241180e-02   2  -1000037     6   # BF(~d_5 --> ~chi-_2 t)
+    4.715445041318830e-01   2  -1000024     6   # BF(~d_5 --> ~chi-_1 t)
+    1.734073763191516e-01   2   5   1000022     # BF(~d_5 --> b ~chi0_1)
+    2.226646101346548e-01   2   5   1000023     # BF(~d_5 --> b ~chi0_2)
+    1.135328382323601e-01   2   5   1000025     # BF(~d_5 --> b ~chi0_3)
+    6.262563769538732e-03   2   5   1000035     # BF(~d_5 --> b ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000004   1.839131910877648e+02   # ~u_5 decays
+#          BF              NDA Daughter PDG codes
+    2.184051298089506e-01   2   5   1000024     # BF(~u_5 --> b ~chi+_1)
+    1.893119147801511e-01   2   5   1000037     # BF(~u_5 --> b ~chi+_2)
+    1.600386868392195e-01   2   6   1000022     # BF(~u_5 --> t ~chi0_1)
+    2.414362844738240e-01   2   6   1000023     # BF(~u_5 --> t ~chi0_2)
+    9.574732225247887e-02   2   6   1000025     # BF(~u_5 --> t ~chi0_3)
+    9.506066184537586e-02   2   6   1000035     # BF(~u_5 --> t ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000005   1.789248234000154e+02   # ~d_6 decays
+#          BF              NDA Daughter PDG codes
+    2.251610820048270e-01   2  -1000037     6   # BF(~d_6 --> ~chi-_2 t)
+    4.796823416950707e-01   2  -1000024     6   # BF(~d_6 --> ~chi-_1 t)
+    3.734346517430796e-02   2   5   1000022     # BF(~d_6 --> b ~chi0_1)
+    8.927605279246180e-02   2   5   1000023     # BF(~d_6 --> b ~chi0_2)
+    5.640903198551597e-02   2   5   1000025     # BF(~d_6 --> b ~chi0_3)
+    1.121280263478167e-01   2   5   1000035     # BF(~d_6 --> b ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000006   1.916171087108195e+02   # ~u_6 decays
+#          BF              NDA Daughter PDG codes
+    4.164049379436697e-01   2   5   1000024     # BF(~u_6 --> b ~chi+_1)
+    3.280932851792814e-02   2   5   1000037     # BF(~u_6 --> b ~chi+_2)
+    1.159624470417330e-01   2   6   1000022     # BF(~u_6 --> t ~chi0_1)
+    2.273137355644299e-01   2   6   1000023     # BF(~u_6 --> t ~chi0_2)
+    1.910251901585133e-01   2   6   1000025     # BF(~u_6 --> t ~chi0_3)
+    1.645980681410642e-02   2   6   1000035     # BF(~u_6 --> t ~chi0_4)
+    2.455395961935998e-05   2   24  2000003     # BF(~u_6 --> W+ ~d_5)
+#     PDG         Width (GeV)
+DECAY 2000011   8.213975950554109e+01   # ~e-_4 decays
+#          BF              NDA Daughter PDG codes
+    5.807326968090479e-01   2  -1000037     14  # BF(~e-_4 --> ~chi-_2 nu_mu)
+    3.824851870463438e-04   2  -1000024     14  # BF(~e-_4 --> ~chi-_1 nu_mu)
+    5.798225721520025e-02   2   13  1000022     # BF(~e-_4 --> mu- ~chi0_1)
+    1.083949210342752e-05   2   13  1000023     # BF(~e-_4 --> mu- ~chi0_2)
+    7.099261964965839e-02   2   13  1000025     # BF(~e-_4 --> mu- ~chi0_3)
+    2.898991016469435e-01   2   13  1000035     # BF(~e-_4 --> mu- ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000013   1.065286700467722e+02   # ~e-_5 decays
+#          BF              NDA Daughter PDG codes
+    4.181050304182219e-01   2  -1000037     16  # BF(~e-_5 --> ~chi-_2 nu_tau)
+    1.914181681169298e-02   2  -1000024     16  # BF(~e-_5 --> ~chi-_1 nu_tau)
+    1.417794169281017e-01   2   15  1000022     # BF(~e-_5 --> tau- ~chi0_1)
+    1.151393364017964e-01   2   15  1000023     # BF(~e-_5 --> tau- ~chi0_2)
+    9.707804650236325e-02   2   15  1000025     # BF(~e-_5 --> tau- ~chi0_3)
+    2.087563529378237e-01   2   15  1000035     # BF(~e-_5 --> tau- ~chi0_4)
+#     PDG         Width (GeV)
+DECAY 2000015   9.310375836987049e+01   # ~e-_6 decays
+#          BF              NDA Daughter PDG codes
+    3.653442157127600e-02   2  -1000037     16  # BF(~e-_6 --> ~chi-_2 nu_tau)
+    2.461132305251350e-01   2  -1000024     16  # BF(~e-_6 --> ~chi-_1 nu_tau)
+    2.546765065458607e-01   2   15  1000022     # BF(~e-_6 --> tau- ~chi0_1)
+    1.354723536839022e-01   2   15  1000023     # BF(~e-_6 --> tau- ~chi0_2)
+    3.089590725580315e-01   2   15  1000025     # BF(~e-_6 --> tau- ~chi0_3)
+    1.824441511579463e-02   2   15  1000035     # BF(~e-_6 --> tau- ~chi0_4)

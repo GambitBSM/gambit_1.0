@@ -483,7 +483,7 @@ namespace Gambit {
 #undef ADD_CHANNEL
 
         // Add approximations for single-particle cases.
-        // FIXME: Replace by boosted rest frame spectrum Z0
+        // TODO: Replace by boosted rest frame spectrum Z0
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 12, yieldk, flag);
         result.addChannel(dNdE/2, "Z0", "gamma", 90.288, mDM_max);
         dNdE = daFunk::func_fromThreadsafe(BEreq::dshayield.pointer(), daFunk::var("Ecm"), daFunk::var("E"), 13, yieldk, flag);

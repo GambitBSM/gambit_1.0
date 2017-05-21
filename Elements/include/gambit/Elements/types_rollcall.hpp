@@ -14,8 +14,8 @@
 ///  used except as a local convenience in your new
 ///  module/backend/model, then there is no need to 
 ///  do anything more than put it in a header and 
-///  #include that from wherever you plan to use it,
-///  as per standard programming practice.
+///  \code #include \endcode that from wherever you
+///  plan to use it, as per standard programming practice.
 ///  You should only have to bother with the 
 ///  instructions below if GAMBIT or its other 
 ///  modules/backends/models need to be aware of this

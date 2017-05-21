@@ -159,7 +159,7 @@ namespace Gambit {
       /// Examples:
       ///Column 3: MPIrank
       ///Column 4: pointID
-      ///Column 6: #NormalDist_parameters @NormalDist::primary_parameters::mu
+      ///Column 6: "#NormalDist_parameters @NormalDist::primary_parameters::mu"
       std::string line;
       while(std::getline(infoFile, line)){
          std::string garbage;
