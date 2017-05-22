@@ -77,53 +77,58 @@ test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
 LibFarrayTest_1_0_init: |
-   Initialize function for the LibFarrayTest backend
+   Initialize function for the LibFarrayTest backend.
 
 libFarrayTestCommonBlock: |
-   Tester for Fortran common blocks in the backend LibFarrayTest
+   Tester for Fortran common blocks in the backend LibFarrayTest.
 
 libFarrayTestCommonBlock2: |
-   Tester for Fortran common blocks in the backend LibFarrayTest
+   Tester for Fortran common blocks in the backend LibFarrayTest.
 
 libFarrayTestCommonBlock3: |
-   Tester for Fortran common blocks in the backend LibFarrayTest
+   Tester for Fortran common blocks in the backend LibFarrayTest.
 
 libFarrayTest_doubleFuncArray: |
-   Tester for Fortran functions using arrays in the backend LibFarrayTest
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
 
 libFarrayTest_doubleFuncArray2: |
-   Tester for Fortran functions using arrays in the backend LibFarrayTest
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
 
 libFarrayTest_doubleFuncArray3: |
-   Tester for Fortran functions using arrays in the backend LibFarrayTest
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
 
 libFarrayTest_fillArrays: |
-   Tester for filling Fortran arrays in the backend LibFarrayTest
+   Tester for filling Fortran arrays in the backend LibFarrayTest.
 
 libFarrayTest_fptrRoutine: |
-   Tester for pointers to Fortran routines in the backend LibFarrayTest
+   Tester for pointers to Fortran routines in the backend LibFarrayTest.
 
 libFarrayTest_printStuff: |
-   Test printer for the backend LibFarrayTest
+   Test printer for the backend LibFarrayTest.
 
 libFarrayTest_testcomplex: |
-   Fortran subroutine that test complex numbers
+   Fortran subroutine that test complex numbers.
 
 LibFirst_1_0_init: |
-   Initialize the C++ testing LibFirst backend, version 1.0
+   Initialize the C++ testing LibFirst backend, version 1.0.
 
 LibFirst_1_1_init: |
-   Initialize the C++ testing LibFirst backend, version 1.1
+   Initialize the C++ testing LibFirst backend, version 1.1.
 
 LibFirst_initialize_capability: |
-   Tester function for the initialization of backends   
+   Tester function for the initialization of backends.
 
 LibFirst_returnResult_capability: |
-   Tester function for the return of results from backends
+   Tester function for the return of results from backends.
 
 LibFortran_1_0_init: |
-   Initialize the Fortran testing LibFortran backend
+   Initialize the Fortran testing LibFortran backend.
 
+run_MSSMspectrum_test: |
+   Function to thest the Spectrum object for the MSSM.
+
+run_light_quark_test: |
+   Tests the Standrad Model Spectrum wrapper (QedQcdWrapper).
 
 #-------------------------------------
 #  SpecBit
@@ -2116,6 +2121,12 @@ neutralino_3_decay_rates : |
 
 neutralino_4_decay_rates : |
    Decays of the neutralino 4.
+
+SLHA1_violation: |
+   Checks if the first or second generation left-right mixing exceeds the specified tolerance (which means that SLHA1 is an invalid format for this model point).
+
+SLHA_pseudonyms: |
+   Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
 
 
 #-------------------------------------
