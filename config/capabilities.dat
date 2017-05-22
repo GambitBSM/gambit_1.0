@@ -2205,6 +2205,11 @@ SLHA1_violation: |
 SLHA_pseudonyms: |
    Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
 
+Reference_SM_A0_decay_rates: |
+   Computation of decays of SM Higgs with mass equal to the mass of the CP-odd Higgs boson.
+
+Reference_SM_other_Higgs_decay_rates: |
+   Computation of decays of SM Higgs with mass equal to the mass of the least SM-like CP-even Higgs.
 
 #-------------------------------------
 #  PrecisionBit capabilities
