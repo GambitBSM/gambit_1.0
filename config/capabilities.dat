@@ -207,7 +207,7 @@ ptr_arr_tests: |
 
 SingletDM_spectrum: |
     Create spectrum object for scalar singlet dark matter model, available functions
-    are a simple container spectrum and one produced by a spectrum generator
+    are a simple container spectrum and one produced by a spectrum generator.
 
 SingletDMZ3_spectrum: |
     Create spectrum object for scalar singlet dark matter model with a Z3 symmetry.
@@ -275,11 +275,6 @@ SPheno_MSSMspectrum: |
 
 SPheno_internal: |
     Exclusively used for internal variables and function for the SPheno backend.
-
-
-#-------------------------------------
-#  PrecisionBit
-#-------------------------------------
 
 
 #-------------------------------------

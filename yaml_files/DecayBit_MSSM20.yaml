@@ -1,15 +1,17 @@
-# DecayBit test file (in YAML)
-# Only needs DecayBit and backend SUSYHIT.
-#
-# Pat Scott <p.scott@imperial.ac.uk>
-# Oct 2014
+##########################################################################
+## GAMBIT configuration for testing DecayBit, printing out a decay table
+## for MSSM20 at a single model point.
+##
+## Only needs DecayBit and backend SUSYHIT.
+##########################################################################
+
 
 Parameters:
 
-  #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_defaults.yaml
 
-  #SUSY parameters.
+  # SUSY parameters.
   MSSM20atQ:
     Qin: 1.9422e+16
     SignMu: 1
@@ -111,10 +113,6 @@ Printer:
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames".
-  # Obviously this also means it is impossible to redirect output to actual
-  # files with these names.
-
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"

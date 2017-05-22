@@ -53,6 +53,7 @@ COMPULSORY:
  - GNU Scientific Library (GSL) 1.10 or greater
  - Eigen 3.1.0 or greater
  - LAPACK
+ - PKG Config
 
 OPTIONAL:
 

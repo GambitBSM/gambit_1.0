@@ -1,7 +1,9 @@
-# Ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs ExampleBit_A and a scanner (Diver, MultiNest, GreAT or TWalk).
+##########################################################################
+## GAMBIT configuration for an ultra-minimal MultiNest scan of a toy model.
+##
+## Only needs ExampleBit_A and a scanner (Diver, MultiNest, GreAT or TWalk).
+##########################################################################
 
-#======== Input parameter declarations =======
 
 Parameters:
   # In this example we will simply be fitting the mean and standard deviation of a normal distribution.
@@ -11,12 +13,11 @@ Parameters:
     sigma:
       range: [0, 5]
 
-#======== Prior setup ========
 
 Priors:
-  # None needed: flat priors automatically generated for mu and sigma
 
-#======== Printer (output) setup ========
+  # None needed: flat priors are automatically generated for mu and sigma
+
 
 Printer:
 
@@ -32,7 +33,6 @@ Printer:
   #  buffer_length: 10
   #  delete_file_on_restart: true
 
-#======== Scanner setup ========
 
 Scanner:
 
@@ -60,7 +60,6 @@ Scanner:
     twalk:
       plugin: twalk
 
-#======== Observables of interest ========
 
 ObsLikes:
 
@@ -69,12 +68,11 @@ ObsLikes:
     module:       ExampleBit_A
     type:         double
 
-#======== Rule entries ========
 
 Rules:
-  # None required
 
-#======== Logging ========
+  # None required, since no module dependencies to be resolved.
+
 
 Logger:
 
@@ -83,7 +81,7 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
 
-#======== Generic Name/Value Section ========
+
 KeyValues:
 
   default_output_path: "runs/spartan"

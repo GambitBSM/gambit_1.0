@@ -1,15 +1,19 @@
-# CMSSM scan using only ColliderBit likelihoods (LHC and LEP particle searches,
-# LHC and LEP Higgs data). SM nuisance parameters are fixed to default values, 
-# and no astrophysical nuisance parameters are used. See the ColliderBit paper
-# for more details.
+##########################################################################
+## GAMBIT configuration for running a MultiNest scan of the CMSSM using
+## only ColliderBit likelihoods (LHC and LEP particle searches, LHC and LEP
+## Higgs data).
+##
+## SM nuisance parameters are fixed to default values, and no astrophysical
+## nuisance parameters are used. See the ColliderBit paper for more details.
+##########################################################################
+
 
 Parameters:
 
-  #SM nuisance parameters fixed for now.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  # SM nuisance parameters fixed for now.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_defaults.yaml
 
-  # Specify CMSSM parameter ranges and priors here
-
+  # CMSSM parameter ranges and priors
   CMSSM:
     M0:
       range: [100, 5000]
@@ -25,9 +29,11 @@ Parameters:
       prior_type: flat
     SignMu: 1
 
+
 Priors:
 
   # All priors simple, so specified in Parameters section
+
 
 Printer:
 
@@ -36,27 +42,22 @@ Printer:
   # using the ascii lines below
 
   printer: hdf5
-
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
     delete_file_on_restart: true
 
   #printer: ascii
-
   #options:
   #  output_file: "gambit_output.txt"
 
+
 Scanner:
-
-  # Choose which scanner to use
-  # Default is multinest
-  # Random scanner setup is given below (can switch by using use_scanner: random)
-
 
   use_scanner: multinest
 
   scanners:
+
     multinest:
       plugin: multinest
       like:  LogLike
@@ -288,7 +289,7 @@ Rules:
       # Specify the location of the Delphes cards for the two Pythia instances (we assume ATLAS in both cases here)
       delphesConfigFiles: ["ColliderBit/data/delphes_card_ATLAS.tcl","ColliderBit/data/delphes_card_ATLAS.tcl"]
 
-  # BuckFast for ATLAS rules and options 
+  # BuckFast for ATLAS rules and options
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
@@ -299,7 +300,7 @@ Rules:
       partonOnly: [false,false]
       antiktR: [0.4,0.4]
 
-  # BuckFast for CMS rules and options 
+  # BuckFast for CMS rules and options
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS

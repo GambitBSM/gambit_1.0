@@ -1,29 +1,23 @@
-# Ultra-minimal GAMBIT (ScannerBit) Initialization file (in YAML)
-# Below is an example to explore a EggBox likelihood using the
-# multinest sampler.  Also include are instructions to use other
-# likelihoods and scanners.
-#
+##########################################################################
+## GAMBIT example configuration for the scanner system.
+##
+## This example configures ScannerBit to explore a EggBox likelihood using
+## the multinest sampler.  Also include are instructions to use other
+## likelihoods and scanners.
+##########################################################################
 
-###################################
-# Input parameter declarations
-###################################
 
 Parameters:
 
+  # None -- we're using ScannerBit's built-in objective functions in this example
 
-##############################
-# Prior setup
-##############################
 
 Priors:
 
-  # Here specify the priors, the parameters they work with, and any options as needed for that prior
+  # Specify the priors, the parameters they work with, and any options as needed for that prior.
   # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
-  # and then they are combined into a "composite" prior
+  # and then they are combined into a "composite" prior.
 
-##############################
-# Printer setup
-##############################
 
 Printer:
 
@@ -36,26 +30,23 @@ Printer:
   # therefore vary according to the selected
   # printer.
   options:
-    # name of info file (explains content of output file)
+    # Name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
-    
-    # name of output file
+    # Name of output file
     output_file: "gambit_output.hdf5"
     group: "/test"
     delete_file_on_restart: true
 
-##############################
-# Scanner setup
-##############################
 
 Scanner:
-  
+
   # This tag specifies which plugin(s) to use as likelihood functions
   # Here the EggBox likelihood is chosen, but you could choose the
   # EggBox and a gaussian ([EggBox, gaussian]) as defined under
   # the objectives section
   use_objectives: EggBox #[EggBox, gaussian]
-  # this tag specifies which plugin to use as the scanner.
+
+  # This tag specifies which plugin to use as the scanner.
   # Here the multinest scanner is choosen, but you could
   # choose any scanner defined under the scanners section
   use_scanner: multinest #twalk
@@ -95,9 +86,7 @@ Scanner:
 
     square_grid:
       plugin: square_grid
-      # the version number can be directly specific, or
-      # you can give a logical statement.  Here, we
-      # want any verion greater or equal to 1.0.
+      # The version number can be absolute, or a logical statement (as here).
       version: ">=1.0"
       like: LogLike
       grid_pts: 3 #NxN grid
@@ -121,8 +110,8 @@ Scanner:
         "EggBox::param_0": 3.14
         "EggBox::param_1": [.2, .3]
 
-  # the objectives defines the likelihoods you can use 
-  # below are several examples.
+
+  # Define built-in SB likelihoods
   objectives:
 
     uniform:
@@ -153,43 +142,26 @@ Scanner:
         param...20:
           range: [-5, 5]
 
-###############################
-# Observables of interest
-###############################
 
 ObsLikes:
 
-#########################
-# Rule entries
-#########################
+  # None in this example: the objective function is not defined in terms of a model
+
 
 Rules:
 
-#########################
-# Logging setup
-#########################
+  # No model = no need for other Bits' capability rules
+
 
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames".
-  # Obviously this also means it is impossible to redirect output to actual
-  # files with these names.
-
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
     [Error] : "errors.log"
     [Warning] : "warnings.log"
 
-###############################
-## Printer (output) setup
-###############################
-
-
-##########################
-# Name/Value Section
-##########################
 
 KeyValues:
 
