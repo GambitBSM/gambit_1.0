@@ -195,7 +195,7 @@ run_MSSMspectrum_test: |
 run_light_quark_test: |
    Tests the Standrad Model Spectrum wrapper (QedQcdWrapper).
 
-ptr_arr_test: |
+ptr_arr_tests: |
    Function that tests array and -> operators on deps and BE vars.
 
 
@@ -208,6 +208,9 @@ ptr_arr_test: |
 SingletDM_spectrum: |
     Create spectrum object for scalar singlet dark matter model, available functions
     are a simple container spectrum and one produced by a spectrum generator
+
+SingletDMZ3_spectrum: |
+    Create spectrum object for scalar singlet dark matter model with a Z3 symmetry.
 
 check_perturb: |
     Compute the spectrum with the spectrum generator and return a
