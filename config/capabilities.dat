@@ -1473,35 +1473,35 @@ HiggsBounds_4_2_1_init:
 HiggsBounds_4_3_1_init:
    Initialise HiggsBounds backend, version 4.3.1.
 
-HiggsBounds_charged_input
+HiggsBounds_charged_input: |
    Required charged input values to initialise HiggsBounds.
 
-HiggsBounds_neutral_input_part
+HiggsBounds_neutral_input_part: |
    Required neutral input values to initialise HiggsBounds.
 
-HiggsBounds_input_SLHA
+HiggsBounds_input_SLHA: |
    HiggsBounds SLHA file reader
 
-HiggsBounds_set_mass_uncertainties
+HiggsBounds_set_mass_uncertainties: |
    Assign mass uncertainties for HiggsBounds backend.
 
 #-------------------------------------
 #  HiggsSignals capabilities
 #-------------------------------------
 
-HiggsSignals_1_4_init
+HiggsSignals_1_4_init: |
    Initialise HiggsSignals backend.
 
-HiggsSignals_neutral_input_MassUncertainty
+HiggsSignals_neutral_input_MassUncertainty: |
    Assign mass uncertainties for HiggsSignals backend.
 
-HiggsBounds_charged_input_HS
+HiggsBounds_charged_input_HS: |
    Required charged input values to initialise HiggsSignals.
 
-HiggsBounds_neutral_input_part_HS
+HiggsBounds_neutral_input_part_HS: |
    Required neutral input values to initialise HiggsSignals.
 
-HiggsBounds_input_SLHA_HS
+HiggsBounds_input_SLHA_HS: |
    HiggsSignals SLHA file reader
 
 
