@@ -155,6 +155,9 @@ namespace Gambit
             /************ Plugin Interface ***************/
             /*********************************************/
             
+            /// Interface for a ScannerBit plugin.  Called like:
+            /// Plugins::Plugin_Interface<int ()> interface("scanner", pluginName, dim, *factory);
+            /// interface();
             template <typename... T> 
             class Plugin_Interface : public Plugin_Interface_Base, public Plugin_Main_Interface_Base<T>...
             {

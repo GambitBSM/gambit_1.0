@@ -45,7 +45,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-#define COLLIDERBIT_DEBUG
+//#define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {

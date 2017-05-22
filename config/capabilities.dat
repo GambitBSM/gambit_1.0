@@ -30,11 +30,17 @@ test_vector: |
 widths: |
    The width of some make-believe particle.
 
+charge: |
+   The charge of some make-believe particle.
+
 xsection: |
    A cross-section for some make-believe process.
 
 nevents: |
    Number of events for some make-believe process.
+
+nevents_postcuts: |
+   Number of events post cuts for some make-believe process.
 
 Example_lnL_A: |
    An example likelihood that ExampleBitA can calculate.
@@ -77,52 +83,120 @@ test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
 LibFarrayTest_1_0_init: |
-   Initialize function for the LibFarrayTest backend
+   Initialize function for the LibFarrayTest backend.
 
 libFarrayTestCommonBlock: |
-   Tester for Fortran common blocks in the backend LibFarrayTest
+   Tester for Fortran common blocks in the backend LibFarrayTest.
 
 libFarrayTestCommonBlock2: |
-   Tester for Fortran common blocks in the backend LibFarrayTest
+   Tester for Fortran common blocks in the backend LibFarrayTest.
 
 libFarrayTestCommonBlock3: |
-   Tester for Fortran common blocks in the backend LibFarrayTest
+   Tester for Fortran common blocks in the backend LibFarrayTest.
 
 libFarrayTest_doubleFuncArray: |
-   Tester for Fortran functions using arrays in the backend LibFarrayTest
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
 
 libFarrayTest_doubleFuncArray2: |
-   Tester for Fortran functions using arrays in the backend LibFarrayTest
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
 
 libFarrayTest_doubleFuncArray3: |
-   Tester for Fortran functions using arrays in the backend LibFarrayTest
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
 
 libFarrayTest_fillArrays: |
-   Tester for filling Fortran arrays in the backend LibFarrayTest
+   Tester for filling Fortran arrays in the backend LibFarrayTest.
 
 libFarrayTest_fptrRoutine: |
-   Tester for pointers to Fortran routines in the backend LibFarrayTest
+   Tester for pointers to Fortran routines in the backend LibFarrayTest.
 
 libFarrayTest_printStuff: |
-   Test printer for the backend LibFarrayTest
+   Test printer for the backend LibFarrayTest.
 
 libFarrayTest_testcomplex: |
-   Fortran subroutine that test complex numbers
+   Fortran subroutine that test complex numbers.
 
 LibFirst_1_0_init: |
-   Initialize the C++ testing LibFirst backend, version 1.0
+   Initialize the C++ testing LibFirst backend, version 1.0.
 
 LibFirst_1_1_init: |
-   Initialize the C++ testing LibFirst backend, version 1.1
+   Initialize the C++ testing LibFirst backend, version 1.1.
 
 LibFirst_initialize_capability: |
-   Tester function for the initialization of backends   
+   Tester function for the initialization of backends.
 
 LibFirst_returnResult_capability: |
-   Tester function for the return of results from backends
+   Tester function for the return of results from backends.
 
 LibFortran_1_0_init: |
-   Initialize the Fortran testing LibFortran backend
+   Initialize the Fortran testing LibFortran backend.
+
+average: |
+   Test Fortran function that supposedly calculates an average.
+  
+externalFunction: |
+   Simple example external function that output a double in inputs an integer.
+   
+externalComplicatedFunction: |
+   Simple example external function that output a double in inputs an integer and a double.
+  
+example_be_array_1D: |
+   Example 1D backend array.
+   
+example_be_array_2D: |
+   Example 2D backend array.
+   
+example_be_array_3D: |
+   Example 3D backend array.
+  
+funcGauss: |
+   Test Fortran function that supposedly calculates a Gaussian function.
+  
+awesomeness: |
+   Awesome example function by Anders that returns an awesome double and inputs
+   an awesome integer.  It runs an awesome example initalize function and some other
+   awesome function, and returns some awesome result.  It also send an awesome message from 
+   "awesomenessByAnders" to the logger.
+   
+SomeArray: |
+   Example double array in libfirst.
+   
+SomeDouble: |
+   Example double in libfirst.
+   
+SomeInt: |
+   Example integer in libfirst.
+   
+funcBE: |
+   Example Fortran backend function that simulates a backend function
+   in a Fortran library.
+   
+runMe: |
+   Example fortran subroutine that simulated a main functionality.
+   
+refex: |
+   Example function in libfirst that inputs a variable by refernce.
+   
+refex2: |
+   Example function in libfirst that inputs a variable by refernce
+   and another variable to value.
+   
+someFunction: |
+   Example void function that does nothing.
+   
+varex: |
+   Return value of a nasty example variadic function in libfirst.
+   
+varex2: |
+   Return value of a nasty variadic convenience function in libfirst.
+
+run_MSSMspectrum_test: |
+   Function to thest the Spectrum object for the MSSM.
+
+run_light_quark_test: |
+   Tests the Standrad Model Spectrum wrapper (QedQcdWrapper).
+
+ptr_arr_tests: |
+   Function that tests array and -> operators on deps and BE vars.
 
 
 #-------------------------------------
@@ -133,7 +207,10 @@ LibFortran_1_0_init: |
 
 SingletDM_spectrum: |
     Create spectrum object for scalar singlet dark matter model, available functions
-    are a simple container spectrum and one produced by a spectrum generator
+    are a simple container spectrum and one produced by a spectrum generator.
+
+SingletDMZ3_spectrum: |
+    Create spectrum object for scalar singlet dark matter model with a Z3 symmetry.
 
 check_perturb: |
     Compute the spectrum with the spectrum generator and return a
@@ -198,16 +275,6 @@ SPheno_MSSMspectrum: |
 
 SPheno_internal: |
     Exclusively used for internal variables and function for the SPheno backend.
-
-
-#-------------------------------------
-#  PrecisionBit
-#-------------------------------------
-
-
-MSSM_spectrum: |
-    Provide an updated MSSM spectrum from the unimproved version with
-    precision W and Higgs masses.
 
 
 #-------------------------------------
@@ -856,6 +923,12 @@ LEP208_xsec_staurstaurbar: |
    The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staurbar' at centre of mass energy 208 GeV.
 
+Pythia_8_212_EM_init: |
+   Initializes Pythia 8.212 EM.
+
+Pythia_8_212_init: |
+   Initializes Pythia 8.212.
+
 
 
 #-------------------------------------
@@ -1258,7 +1331,7 @@ cascadeMC_DecayTable: |
 cascadeMC_gammaSpectra: |
    Gamma-ray spectrum from cascade decays.
 
-cascadeMC_LoopManager: |
+cascadeMC_LoopManagement: |
    Controls the loop for the cascade decay Monte Carlo simulation.
 
 cascadeMC_InitialState: |
@@ -1462,6 +1535,9 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
+SuperCDMS_2014_Init: |
+   Initialises a direct detection experiment with the properties of the 2014 analysis of SuperCDMS.
+
 FreeDetectorss: |
    Deletes the detector object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
 
@@ -1504,8 +1580,23 @@ InitHalo: |
 SetSHM: |
   Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
 
+nulike_init: |
+  Initializes nulike.
+
+nulike_1_0_4_init: |
+  Initializes nulike_1_0_4.
+
+nubounds:
+  Counts, likelihoods and p-values from neutrino telescope searches for dark matter annihilation in the Sun.
+
 Example_lnL_B: |
   Example log likelihood in ExampleBit B.
+  
+lnlike_marg_poisson_gaussian_error: |
+  log of the convolution of a Poisson and Gausian distributions.
+  
+lnlike_marg_poisson_lognormal_error: |
+  log of the convolution of a poisson and log-normal distributions.
 
 #-------------------------------------
 #  HiggsBounds capabilities
@@ -1547,6 +1638,9 @@ finish_HiggsBounds_chisqtables: |
 initialize_HiggsBounds_chisqtables: |
    Initializes HiggsBounds to produce chi squared tables.
 
+HB_calc_stats: |
+   To quote from HiggsBounds: "this is in the middle of development! DO NOT USE!"
+
 
 #-------------------------------------
 #  HiggsSignals capabilities
@@ -1585,6 +1679,11 @@ initialize_HiggsSignals_latestresults: |
 run_HiggsSignals: |
    Runs HiggsSignals after Initialization.
 
+setup_pdf: |
+   Set pdf shape in HiggsSignals.
+
+setup_rate_uncertainties: |
+   Set the rate uncertainties in HiggsSignals.
 
 #-------------------------------------
 #  DarkSUSY capabilities
@@ -1893,6 +1992,9 @@ dNdE: |
 #  DecayBit capabilities
 #-------------------------------------
 
+decay_rates: |
+   Collect all the decay rates into a table.
+
 Z_decay_rates : |
    All decays of the Z gauge boson.
 
@@ -2117,10 +2219,26 @@ neutralino_3_decay_rates : |
 neutralino_4_decay_rates : |
    Decays of the neutralino 4.
 
+SLHA1_violation: |
+   Checks if the first or second generation left-right mixing exceeds the specified tolerance (which means that SLHA1 is an invalid format for this model point).
+
+SLHA_pseudonyms: |
+   Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
+
+Reference_SM_A0_decay_rates: |
+   Computation of decays of SM Higgs with mass equal to the mass of the CP-odd Higgs boson.
+
+Reference_SM_other_Higgs_decay_rates: |
+   Computation of decays of SM Higgs with mass equal to the mass of the least SM-like CP-even Higgs.
 
 #-------------------------------------
 #  PrecisionBit capabilities
 #-------------------------------------
+
+
+MSSM_spectrum: |
+    Provide an updated MSSM spectrum from the unimproved version with
+    precision W and Higgs masses.
 
 lnL_alpha_em : |
    Log-likelihood of α_EM (m_Z), the MSBar value of the fine structure constant at μ = m_Z.
@@ -2454,6 +2572,15 @@ SetFlags_SUSYPOPE: |
 SetPara_SUSYPOPE: |
    Set internal parameters for SUSYPOPE
 
+Init_param : |
+   Initialiases the SuperIso parameter structure.
+
+alphas_running : |
+   Computes the alphas running coupling at a given energy.
+
+slha_adjust : |
+   Adjusts the SLHA parameters to the SuperIso standard. 
+
 #-------------------------------------
 #  SUSY-HIT capabilities
 #-------------------------------------
@@ -2718,65 +2845,6 @@ supbar_l_decay_rates: |
    
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
-   
-average: |
-   Test Fortran function that supposedly calculates an average.
-  
-externalFunction: |
-   Simple example external function that output a double in inputs an integer.
-   
-externalComplicatedFunction: |
-   Simple example external function that output a double in inputs an integer and a double.
-  
-example_be_array_1D: |
-   Example 1D backend array.
-   
-example_be_array_2D: |
-   Example 2D backend array.
-   
-example_be_array_3D: |
-   Example 3D backend array.
-  
-funcGauss: |
-   Test Fortran function that supposedly calculates a Gaussian function.
-  
-awesomeness: |
-   Awesome example function by Anders that returns a double and inputs
-   a integer.  It runs a example initalize function and some other
-   function, and return some result.  It aslo send a message from 
-   "awesomenessByAnders" to the logger.
-   
-SomeArray: |
-   Example double array in libfirst.
-   
-SomeDouble: |
-   Example double in libfirst.
-   
-SomeInt: |
-   Example integer in libfirst.
-   
-funcBE: |
-   Example Fortran backend function that simulates a backend function
-   in a Fortran library.
-   
-runMe: |
-   Example fortran subroutine that simulated a main functionality.
-   
-refex: |
-   Example function in libfirst that inputs a variable by refernce.
-   
-refex2: |
-   Example function in libfirst that inputs a variable by refernce
-   and another variable to value.
-   
-someFunction: |
-   Example void function that does nothing.
-   
-varex: |
-   Return value of a nasty example variadic function in libfirst.
-   
-varex2: |
-   Return value of a nasty variadic convenience function in libfirst.
 
 #-------------------------------------
 #  Model capabilities
@@ -2952,15 +3020,43 @@ FH_FlavourObs: |
 #----------------------------
 
 gamLike_1_0_0_init: |
-   Initialisation of gamLike
+   Initialisation of gamLike.
 
 init: |
-   Initialise variables in gamLike 
+   Initialise variables in gamLike.
 lnL: |
-   Calculates the likelihood for gamma-ray indirect searches for dark matter
+   Calculates the likelihood for gamma-ray indirect searches for dark matter.
 
 set_data_path: |
-   Set the data path for gamLike
+   Set the data path for gamLike.
 
 set_halo_profile: |
-   Set the halo profile in gamLike
+   Set the halo profile in gamLike.
+
+#----------------------------
+#  gm2calc capabilities
+#----------------------------
+
+gm2calc_1_2_0_init: |
+   Initialises gm2calc, version 1.2.0.
+
+gm2calc_1_3_0_init: |
+   Initialised gm2calc, version 1.3.0.
+
+calculate_amu_1loop: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop.
+
+calculate_amu_1loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop with no resummation of tan beta.
+
+calculate_amu_2loop: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops.
+
+calculate_amu_2loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops with no resummation of tan beta.
+
+calculate_uncertainty_amu_2loop: |
+   Calculates the uncertainty on the anomalous magnetic moment of the muon at 2 loops.
+
+
+
