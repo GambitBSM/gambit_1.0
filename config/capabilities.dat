@@ -76,6 +76,9 @@ test_BE_Array: |
 test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
+LibFarrayTest_1_0_init: |
+   Initialize function for the LibFarrayTest backend
+
 libFarrayTestCommonBlock: |
    Tester for Fortran common blocks in the backend LibFarrayTest
 
@@ -105,6 +108,21 @@ libFarrayTest_printStuff: |
 
 libFarrayTest_testcomplex: |
    Fortran subroutine that test complex numbers
+
+LibFirst_1_0_init: |
+   Initialize the C++ testing LibFirst backend, version 1.0
+
+LibFirst_1_1_init: |
+   Initialize the C++ testing LibFirst backend, version 1.1
+
+LibFirst_initialize_capability: |
+   Tester function for the initialization of backends   
+
+LibFirst_returnResult_capability: |
+   Tester function for the return of results from backends
+
+LibFortran_1_0_init: |
+   Initialize the Fortran testing LibFortran backend
 
 
 #-------------------------------------
@@ -1443,6 +1461,49 @@ PandaX_2016_Init: |
 
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
+
+
+#-------------------------------------
+#  HiggsBounds capabilities
+#-------------------------------------
+
+HiggsBounds_4_2_1_init:
+   Initialise HiggsBounds backend, version 4.2.1.
+
+HiggsBounds_4_3_1_init:
+   Initialise HiggsBounds backend, version 4.3.1.
+
+HiggsBounds_charged_input
+   Required charged input values to initialise HiggsBounds.
+
+HiggsBounds_neutral_input_part
+   Required neutral input values to initialise HiggsBounds.
+
+HiggsBounds_input_SLHA
+   HiggsBounds SLHA file reader
+
+HiggsBounds_set_mass_uncertainties
+   Assign mass uncertainties for HiggsBounds backend.
+
+#-------------------------------------
+#  HiggsSignals capabilities
+#-------------------------------------
+
+HiggsSignals_1_4_init
+   Initialise HiggsSignals backend.
+
+HiggsSignals_neutral_input_MassUncertainty
+   Assign mass uncertainties for HiggsSignals backend.
+
+HiggsBounds_charged_input_HS
+   Required charged input values to initialise HiggsSignals.
+
+HiggsBounds_neutral_input_part_HS
+   Required neutral input values to initialise HiggsSignals.
+
+HiggsBounds_input_SLHA_HS
+   HiggsSignals SLHA file reader
+
 
 #-------------------------------------
 #  DarkSUSY capabilities
