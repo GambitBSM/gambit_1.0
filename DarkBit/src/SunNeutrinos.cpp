@@ -323,12 +323,12 @@ namespace Gambit
       // Treat the yield function as threadsafe only if the loaded version of DarkSUSY supports it.
       result.threadsafe = (BEreq::nuyield.version() == "5.1.3");
 
-      // Avoid OpenMP with gfortran 6.3, as its implemetation seems to be buggy (causes stack overflows).
+      // Avoid OpenMP with gfortran 6.x, as its implementation seems to be buggy (causes stack overflows).
       #ifdef __GNUC__
         #define GCC_VERSION (__GNUC__ * 10000 \
                      + __GNUC_MINOR__ * 100 \
                      + __GNUC_PATCHLEVEL__)
-        #if GCC_VERSION > 60299
+        #if GCC_VERSION > 60000
           result.threadsafe = false;
         #endif
         #undef GCC_VERSION
