@@ -1,0 +1,184 @@
+diff -rupN ./HiggsSignals.F90 ../../installed/higgssignals/1.4.0/HiggsSignals.F90
+--- ./HiggsSignals.F90	2015-07-24 21:23:34.000000000 +0200
++++ ../../installed/higgssignals/1.4.0/HiggsSignals.F90	2017-05-21 18:20:14.000000000 +0200
+@@ -36,7 +36,7 @@ program HiggsSignals
+  elseif(runmode.eq.'both') then
+   mode = 3
+  else
+-  stop"Error: runmode is unknown. Please specify as peak, mass or both." 
++  stop "Error: runmode is unknown. Please specify as peak, mass or both." 
+  endif
+  
+  call run_HiggsSignals( mode, Chisq_mu, Chisq_mh, Chisq, ndf, Pvalue)
+
+diff -rupN ./HiggsSignals_subroutines.F90 ../../installed/higgssignals/1.4.0/HiggsSignals_subroutines.F90
+--- ./HiggsSignals_subroutines.F90	2015-07-24 21:23:34.000000000 +0200
++++ ../../installed/higgssignals/1.4.0/HiggsSignals_subroutines.F92017-05-21 18:19:23.000000000 +0200
+@@ -715,7 +715,7 @@ else if(mode.eq.3) then
+  write(*,*) "         The peak-centered chi^2 method will be used instead."
+  runmode="peak"
+ else 
+- stop'Error in subroutine run_HiggsSignals: mode unknown'
++ stop 'Error in subroutine run_HiggsSignals: mode unknown'
+ endif
+ 
+  if(.not.allocated(theo))then
+
+diff -rupN ./io.f90 ../../installed/higgssignals/1.4.0/io.f90
+--- ./io.f90	2015-07-24 21:23:39.000000000 +0200
++++ ../../installed/higgssignals/1.4.0/io.f90	2017-05-21 18:15:24.000000000 +0200
+@@ -46,7 +46,7 @@ module io
+    !haven't yet set whichanalyses,whichinput
+    infile1=''
+   case default
+-   stop'incorrect value for inputmethod'
++   stop 'incorrect value for inputmethod'
+   end select
+ 
+   !getting ndat and n_additional...
+@@ -69,7 +69,7 @@ module io
+      write(*,*)'Check that <prefix> was specified correctly'
+      write(*,*)'and that file exists.'
+      call flush(6)
+-     stop'Problem opening file: see standard output for more info'
++     stop 'Problem opening file: see standard output for more info'
+     endif
+ 
+     ndat=getfilelength(f) ! number of data sets (i.e. lines) in input 
+@@ -81,7 +81,7 @@ module io
+     stem=stem_array(g)
+     f=f_orig+g
+     !the last element in stem_array should be 'additional'
+-    if(trim(stem_array(g)).ne.'additional')stop'Error in subroutine setup_input (a)'
++    if(trim(stem_array(g)).ne.'additional') stop 'Error in subroutine setup_input (a)'
+ 
+     required(g)=.False.
+ 
+@@ -103,12 +103,12 @@ module io
+    case('SLHA')
+     ndat=1  ;  n_additional=0 
+    case default
+-    stop'error in subroutine do_input (1a)'
++    stop 'error in subroutine do_input (1a)'
+    end select
+   case('website','subrout')
+    ndat=1   ;  n_additional=0
+   case default
+-   stop'error in subroutine do_input (1b)'
++   stop 'error in subroutine do_input (1b)'
+   end select
+   !...finished getting ndat and n_additional
+ 
+@@ -297,7 +297,7 @@ module io
+       endif
+      enddo
+    else
+-    stop'error in subroutine do_output(1)'
++    stop 'error in subroutine do_output(1)'
+    endif
+  
+    format43='(1I14,'
+@@ -445,7 +445,7 @@ module io
+   close(file_id_common)
+   deallocate(Mhall) 
+   case default
+-   stop'error in subroutine do_output (*2)'    
++   stop 'error in subroutine do_output (*2)'    
+   end select
+ ! case('website')               
+ !    do jj=1,ndat 
+@@ -457,10 +457,10 @@ module io
+     case('SLHA')
+        call HiggsSignals_outputSLHAdata(infile1)
+     case default
+-       stop'error in subroutine do_output(c)'
++       stop 'error in subroutine do_output(c)'
+     end select
+  case default
+-    stop'error in subroutine do_output (*1)'                                              
++    stop 'error in subroutine do_output (*1)'                                              
+  end select  
+                                                
+  end subroutine do_output_for_hs
+@@ -633,7 +633,7 @@ if(detailed.eq.0) SLHAdetailed = .False.
+ !!!integer, intent(in) :: i
+ 
+   if(.not.just_after_run)then
+-   stop'subroutine run_HiggsSignals should be called'//&
++   stop 'subroutine run_HiggsSignals should be called'//&
+    	   ' before subroutine HiggsSignals_SLHA_output' 
+   endif  
+ 
+@@ -641,7 +641,7 @@ if(detailed.eq.0) SLHAdetailed = .False.
+   case('SLHA')
+     call do_HiggsSignals_output
+   case default
+-    stop'The subroutine HiggsSignals_SLHA_output should'//&
++    stop 'The subroutine HiggsSignals_SLHA_output should'//&
+     ' only be used if an input SLHA file is given.'
+   end select
+ 
+@@ -659,17 +659,17 @@ end subroutine HiggsSignals_SLHA_output
+   case('SLHA')
+    call HiggsSignals_outputSLHAdata(infile1)
+    case default
+-    stop'error in subroutine do_output (*2)'    
++    stop 'error in subroutine do_output (*2)'    
+    end select
+  case('subrout') 
+     select case(whichinput)
+     case('SLHA')
+        call HiggsSignals_outputSLHAdata(infile1)
+     case default
+-       stop'error in subroutine do_output(c)'
++       stop 'error in subroutine do_output(c)'
+     end select
+  case default
+-    stop'error in subroutine do_output (*1)'                                              
++    stop 'error in subroutine do_output (*1)'                                              
+  end select  
+                                                
+  end subroutine do_HiggsSignals_output
+@@ -704,7 +704,7 @@ subroutine HiggsSignals_create_SLHA_outp
+   endif
+   
+   if(.not.just_after_run)then
+-   stop'subroutine run_HiggsSignals should be called'//&
++   stop 'subroutine run_HiggsSignals should be called'//&
+    	   ' before subroutine HiggsSignals_SLHA_output' 
+   endif  
+
+diff -rupN ./mc_chisq.f90 ../../installed/higgssignals/1.4.0/mc_chisq.f90
+--- ./mc_chisq.f90	2015-07-24 21:23:39.000000000 +0200
++++ ../../installed/higgssignals/1.4.0/mc_chisq.f90	2017-05-21 18:18:41.000000000 +0200
+@@ -776,7 +776,7 @@ subroutine create_covariance_matrix_mp
+  character(LEN=50) :: title 
+  
+  if(.not.allocated(analyses)) then
+-  stop'Error in subroutine create_covariance_matrix_mp: analyses not allocated.' 
++  stop 'Error in subroutine create_covariance_matrix_mp: analyses not allocated.' 
+  endif
+  if(allocated(cov_mp)) deallocate(cov_mp)
+ 
+diff -rupN ./pc_chisq.f90 ../../installed/higgssignals/1.4.0/pc_chisq.f90
+--- ./pc_chisq.f90	2015-07-24 21:23:39.000000000 +0200
++++ ../../installed/higgssignals/1.4.0/pc_chisq.f90	2017-05-21 18:18:06.000000000 +0200
+@@ -843,7 +843,7 @@ subroutine create_covariance_matrix_mhne
+  elseif(domax.eq.1) then
+   allocate(cov_mhneut_max(np(Hneut),Npeaks,Npeaks))
+  else
+-  stop'ERROR in subroutine create_covariance_matrix_mhneut. Specify domax correctly!'
++  stop 'ERROR in subroutine create_covariance_matrix_mhneut. Specify domax correctly!'
+  endif
+   
+ !-First, fill all elements of the covariance matrices with zero except the diagonal
+@@ -966,7 +966,7 @@ subroutine create_covariance_matrix_mh_a
+  elseif(domax.eq.1) then
+   allocate(cov_mh_av_max(Npeaks,Npeaks))
+  else
+-  stop'ERROR in subroutine create_covariance_matrix_mh_av. Specify domax correctly!'
++  stop 'ERROR in subroutine create_covariance_matrix_mh_av. Specify domax correctly!'
+  endif
+   
+ !-First, fill all elements of the covariance matrices with zero except the diagonal
+
