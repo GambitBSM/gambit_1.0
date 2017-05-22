@@ -30,11 +30,17 @@ test_vector: |
 widths: |
    The width of some make-believe particle.
 
+charge: |
+   The charge of some make-believe particle.
+
 xsection: |
    A cross-section for some make-believe process.
 
 nevents: |
    Number of events for some make-believe process.
+
+nevents_postcuts: |
+   Number of events post cuts for some make-believe process.
 
 Example_lnL_A: |
    An example likelihood that ExampleBitA can calculate.
@@ -146,9 +152,9 @@ funcGauss: |
    Test Fortran function that supposedly calculates a Gaussian function.
   
 awesomeness: |
-   Awesome example function by Anders that returns a double and inputs
-   a integer.  It runs a example initalize function and some other
-   function, and return some result.  It aslo send a message from 
+   Awesome example function by Anders that returns an awesome double and inputs
+   an awesome integer.  It runs an awesome example initalize function and some other
+   awesome function, and returns some awesome result.  It also send an awesome message from 
    "awesomenessByAnders" to the logger.
    
 SomeArray: |
@@ -188,6 +194,10 @@ run_MSSMspectrum_test: |
 
 run_light_quark_test: |
    Tests the Standrad Model Spectrum wrapper (QedQcdWrapper).
+
+ptr_arr_test: |
+   Function that tests array and -> operators on deps and BE vars.
+
 
 #-------------------------------------
 #  SpecBit
@@ -1583,6 +1593,9 @@ nulike_init: |
 nulike_1_0_4_init: |
   Initializes nulike_1_0_4.
 
+nubounds:
+  Counts, likelihoods and p-values from neutrino telescope searches for dark matter annihilation in the Sun.
+
 Example_lnL_B: |
   Example log likelihood in ExampleBit B.
   
@@ -1673,6 +1686,11 @@ initialize_HiggsSignals_latestresults: |
 run_HiggsSignals: |
    Runs HiggsSignals after Initialization.
 
+setup_pdf: |
+   Set pdf shape in HiggsSignals.
+
+setup_rate_uncertainties: |
+   Set the rate uncertainties in HiggsSignals.
 
 #-------------------------------------
 #  DarkSUSY capabilities
@@ -1980,6 +1998,9 @@ dNdE: |
 #-------------------------------------
 #  DecayBit capabilities
 #-------------------------------------
+
+decay_rates: |
+   Collect all the decay rates into a table.
 
 Z_decay_rates : |
    All decays of the Z gauge boson.
@@ -2547,6 +2568,15 @@ SetFlags_SUSYPOPE: |
 
 SetPara_SUSYPOPE: |
    Set internal parameters for SUSYPOPE
+
+Init_param : |
+   Initialiases the SuperIso parameter structure.
+
+alphas_running : |
+   Computes the alphas running coupling at a given energy.
+
+slha_adjust : |
+   Adjusts the SLHA parameters to the SuperIso standard. 
 
 #-------------------------------------
 #  SUSY-HIT capabilities
