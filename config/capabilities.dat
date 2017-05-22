@@ -76,6 +76,9 @@ test_BE_Array: |
 test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
+LibFarrayTest_1_0_init: |
+   Initialize function for the LibFarrayTest backend
+
 libFarrayTestCommonBlock: |
    Tester for Fortran common blocks in the backend LibFarrayTest
 
@@ -105,6 +108,21 @@ libFarrayTest_printStuff: |
 
 libFarrayTest_testcomplex: |
    Fortran subroutine that test complex numbers
+
+LibFirst_1_0_init: |
+   Initialize the C++ testing LibFirst backend, version 1.0
+
+LibFirst_1_1_init: |
+   Initialize the C++ testing LibFirst backend, version 1.1
+
+LibFirst_initialize_capability: |
+   Tester function for the initialization of backends   
+
+LibFirst_returnResult_capability: |
+   Tester function for the return of results from backends
+
+LibFortran_1_0_init: |
+   Initialize the Fortran testing LibFortran backend
 
 
 #-------------------------------------
