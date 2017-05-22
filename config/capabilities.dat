@@ -2533,6 +2533,12 @@ supbar_l_decay_rates: |
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
    
+awesomeness: |
+   Awesome example function by Anders that returns a double and inputs
+   a integer.  It runs a example initalize function and some other
+   function, and return some result.  It aslo send a message from 
+   "awesomenessByAnders" to the logger.
+   
 funcBE: |
    Example Fortran backend function that simulates a backend function
    in a Fortran library.
