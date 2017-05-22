@@ -60,8 +60,6 @@ namespace Gambit
      , model_dbase_file(GAMBIT_DIR "/scratch/central_models.dat")
      , input_capability_descriptions(GAMBIT_DIR "/config/capabilities.dat")
      , input_model_descriptions(GAMBIT_DIR "/config/models.dat")
-     , report_file(GAMBIT_DIR "/config/report.txt")
-     , report(report_file.c_str())
      , outprec(8)
      /* command line flags */
      , processed_options(false)
@@ -281,7 +279,6 @@ namespace Gambit
     }
 
     /// Check the capability and model databases for conflicts and missing descriptions
-    // Emits a report to file regard missing and conflicting descriptions.
     void gambit_core::check_databases()
     {
       // Loop through registered capabilities and try to find their descriptions (potentially from many files, but for now just checking one)
@@ -372,8 +369,6 @@ namespace Gambit
           }
         }
         msg << "Please add descriptions of these to "<< input_capability_descriptions << endl;
-        //logger().disable();
-        //report << msg.str() << endl;
         core_error().raise(LOCAL_INFO,msg.str());
       }
 
@@ -473,8 +468,6 @@ namespace Gambit
           }
         }
         msg << "Please add descriptions of these to "<< input_model_descriptions << endl;
-        //logger().disable();
-        //report << msg.str() << endl;
         core_error().raise(LOCAL_INFO,msg.str());
       }
 
