@@ -2444,3 +2444,115 @@ cb_sd_selectron: |
 susy_hit_backend_level_init: |
    Runs SUSY-HIT decay calculations.
 
+scharm_l_decay_rates: |
+   Decay rate of the left-handed scharm.
+
+scharm_r_decay_rates: |
+   Decay rate of the right-handed scharm.
+   
+scharmbar_l_decay_rates: |
+   Decay rate of the left-handed anti-scharm.
+   
+scharmbar_r_decay_rates: |
+   Decay rate of the right-handed anti-scharm.
+   
+sdown_l_decay_rates: |
+   Decay rate of the left-handed sdown.
+   
+sdown_r_decay_rates: |
+   Decay rate of the right-handed sdown.
+   
+sdownbar_l_decay_rates: |
+   Decay rate of the left-handed anti-sdown.
+   
+sdownbar_r_decay_rates: |
+   Decay rate of the right-handed auti-sdown.
+   
+selectron_l_decay_rates: |
+   Decay rate of the left-handed selectron.
+   
+selectron_r_decay_rates: |
+   Decay rate of the right-handed selectron.
+   
+selectronbar_l_decay_rates: |
+   Decay rate of the left-handed anti-selectron.
+   
+selectronbar_r_decay_rates: |
+   Decay rate of the right-handed anti-selectron.
+   
+pi_0_decay_rates: |
+   Decay rate of the pi_0 meson.
+   
+pi_minus_decay_rates: |
+   Decay rate of the pi minus mesaon.
+   
+pi_plus_decay_rates: |
+   Decay rate of the pi plus meson.
+   
+rho_0_decay_rates: |
+   Decay rate of the rho_0 meson.
+   
+rho_minus_decay_rates: |
+   Decay rate of the rho minus meson.
+   
+rho_plus_decay_rates: |
+   Decay rate of the rho plus meson.
+   
+smuon_l_decay_rates: |
+   Decay rate of the left-handed smuon.
+   
+smuon_r_decay_rates: |
+   Decay rate of the right-handed smuon.
+   
+smuonbar_l_decay_rates: |
+   Decay rate of the left-handed anti-smuon.
+   
+smuonbar_r_decay_rates: |
+   Decay rate of the right-handed anti-smuon.
+   
+sstrange_l_decay_rates: |
+   Decay rate of the left-handed sstrang.
+   
+sstrange_r_decay_rates: |
+   Decay rate of the right-handed sstrang.
+   
+sstrangebar_l_decay_rates: |
+   Decay rate of the left-handed anti-sstrang.
+   
+sstrangebar_r_decay_rates: |
+   Decay rate of the right-handed anti-sstrang.
+   
+sup_l_decay_rates: |
+   Decay rate of the left-handed sup.
+   
+sup_r_decay_rates: |
+   Decay rate of the right-handed sup.
+   
+supbar_l_decay_rates: |
+   Decay rate of the left-handed anti-sup.
+   
+supbar_r_decay_rates: |
+   Decay rate of the right-handed anti-sup.
+   
+funcBE: |
+   Example Fortran backend function that simulates a backend function
+   in a Fortran library.
+   
+runMe: |
+   Example fortran subroutine that simulated a main functionality.
+   
+refex: |
+   Example function in libfirst that inputs a variable by refernce.
+   
+refex: |
+   Example function in libfirst that inputs a variable by refernce
+   and another variable to value.
+   
+someFunction: |
+   Example void function that does nothing.
+   
+varex: |
+   Return value of a nasty example variadic function in libfirst.
+   
+varex2: |
+   Return value of a nasty variadic convenience function in libfirst.
