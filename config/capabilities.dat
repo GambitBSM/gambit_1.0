@@ -1510,10 +1510,10 @@ SetSHM: |
 #  HiggsBounds capabilities
 #-------------------------------------
 
-HiggsBounds_4_2_1_init:
+HiggsBounds_4_2_1_init: |
    Initialise HiggsBounds backend, version 4.2.1.
-s
-HiggsBounds_4_3_1_init:
+
+HiggsBounds_4_3_1_init: |
    Initialise HiggsBounds backend, version 4.3.1.
 
 HiggsBounds_charged_input: |
