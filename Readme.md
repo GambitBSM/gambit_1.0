@@ -8,14 +8,14 @@ Citation(s)
 
 Please cite the following GAMBIT papers, depending on your use of different modules:
 
- - GAMBIT Collaboration: P. Athron, C. Balazs, et. al., GAMBIT: The Global and Modular Beyond-the-Standard-Model Inference Tool, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
- - GAMBIT Collider Workgroup: C. Balazs, A. Buckley, et. al., ColliderBit: A GAMBIT module for the calculation of high energy collider observables and likelihoods, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
- - GAMBIT Models Workgroup: P. Athron, C. Balazs, et. al., SpecBit, DecayBit and PrecisionBit: GAMBIT modules for computing mass spectra, particle decay rates and precision observables, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
- - GAMBIT Flavour Workgroup: F. U. Bernlochner, M. Chrzaszcz, et. al., FlavBit: A GAMBIT module for computing flavour observables and likelihoods, Eur. Phys. J. C, submitted (2017), arXiv:1705.xxxxx
- - GAMBIT Scanner Workgroup: G. D. Martinez, J. McKay, et. al., Comparison of statistical sampling methods with ScannerBit, the GAMBIT scanning module, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
- - GAMBIT Dark Matter Workgroup: T. Bringmann, J. Conrad, et. al., DarkBit: A GAMBIT module for computing dark matter observables and likelihoods, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
+ - GAMBIT Collaboration: P. Athron, C. Balazs, et. al., **GAMBIT**: The Global and Modular Beyond-the-Standard-Model Inference Tool, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
+ - GAMBIT Collider Workgroup: C. Balazs, A. Buckley, et. al., **ColliderBit**: A GAMBIT module for the calculation of high energy collider observables and likelihoods, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
+ - GAMBIT Models Workgroup: P. Athron, C. Balazs, et. al., **SpecBit, DecayBit and PrecisionBit**: GAMBIT modules for computing mass spectra, particle decay rates and precision observables, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
+ - GAMBIT Flavour Workgroup: F. U. Bernlochner, M. Chrzaszcz, et. al., **FlavBit**: A GAMBIT module for computing flavour observables and likelihoods, Eur. Phys. J. C, submitted (2017), arXiv:1705.xxxxx
+ - GAMBIT Scanner Workgroup: G. D. Martinez, J. McKay, et. al., Comparison of statistical sampling methods with **ScannerBit**, the GAMBIT scanning module, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
+ - GAMBIT Dark Matter Workgroup: T. Bringmann, J. Conrad, et. al., **DarkBit**: A GAMBIT module for computing dark matter observables and likelihoods, Eur. Phys. J. C submitted (2017), arXiv:1705.xxxxx
 
-GAMBIT also comes bundled with interfaces to external codes. Please cite as appropriate if you use these components:
+GAMBIT contains interfaces to various external codes, along with scripts for downloading and configuring them. Please cite as appropriate if you use those codes:
 
  - **DDCalc:** GAMBIT Dark Matter Workgroup: T. Bringmann, J. Conrad, et. al., DarkBit: A GAMBIT module for computing dark matter observables and likelihoods, Eur. Phys. J. C submitted, arXiv:1705.xxxxx
  - **Multinest:** F. Feroz, M. P. Hobson, and M. Bridges, MULTINEST: an efficient and robust Bayesian inference tool for cosmology and particle physics, MNRAS 398 (2009) 1601–1614, arXiv:0809.3437
@@ -125,7 +125,9 @@ To run an example GAMBIT MSSM7 scan, do:
 gambit -f yaml_files/MSSM7.yaml
 ```
 
-Other examples are provided in the yaml_files folder.
+Other examples are provided in the yaml_files folder.  Further readmes and documentation can also be found in the doc folder.
+
+
 
 License
 --
