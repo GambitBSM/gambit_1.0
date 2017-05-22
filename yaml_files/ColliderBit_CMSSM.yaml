@@ -1,3 +1,8 @@
+# CMSSM scan using only ColliderBit likelihoods (LHC and LEP particle searches,
+# LHC and LEP Higgs data). SM nuisance parameters are fixed to default values, 
+# and no astrophysical nuisance parameters are used. See the ColliderBit paper
+# for more details.
+
 Parameters:
 
   #SM nuisance parameters fixed for now.

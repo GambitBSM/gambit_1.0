@@ -1,3 +1,9 @@
+# Scan of the singlet DM model using likelihoods from DarkBit. Nuisance parameters include
+# the nuclear matrix elements, the SM Higgs mass and the dark matter halo parameters. The likelihoods
+# include the relic density, indirect DM searches and direct DM searches (plus constraints for the 
+# nuisance parameters.
+
+
 Parameters:
 
   #SM parameters.
