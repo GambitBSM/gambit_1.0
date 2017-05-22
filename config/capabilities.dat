@@ -209,6 +209,8 @@ MSSM_spectrum: |
     Provide an updated MSSM spectrum from the unimproved version with
     precision W and Higgs masses.
 
+FH_Couplings_output: |
+   Higgs couplings.
 
 #-------------------------------------
 #  ColliderBit capabilities
@@ -2438,6 +2440,9 @@ deltaMB_LL : |
 mb_1S : |
    The 1S bottom quark mass.
 
+FH_FlavourObs: |
+   Flavour observables (decay rates and mass asymmetries of B-mesons).
+
 SUSYPOPE_0_2_init: |
    Initialize SUSYPOPE backend
 
@@ -2897,6 +2902,7 @@ nuclear_params_sigma0_sigmal_parameters: |
 
 nuclear_params_sigmas_sigmal_parameters: |
    Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
+
 #-------------------------------------
 #  FeynHiggs capabilities
 #-------------------------------------
@@ -2911,37 +2917,47 @@ FeynHiggs_2_12_0_init: |
    Initialisation of FeynHiggs.
 
 FHConstraints: |
-   FeynHiggs precision constraint observables.
+   Precision electroweak observables.
 
 FHCouplings: |
+   Evaluation of Higgs couplings for FeynHiggs (decay rates and mass asymmetries of B-mesons).
 
 FHFlavour: |
+   Flavour observables (decay rates and mass asymmetries of B-mesons).
 
 FHGetPara: |
+   Many SUSY parameters.
 
 FHHiggsCorr: |
+   Calculation of higher order corrections to the MSSM Higgs sector.
 
 FHHiggsProd: |
+   Higgs production cross-sections.
 
 FHSelectUZ: |
+   Set whether to use UHiggs or ZHiggs for internal or external Higgs mixing.
 
 FHSetDebug: |
+   Set FeynHiggs debug level.
 
 FHSetFlags: |
+   Set FeynHiggs flags.
 
 FHSetLFV: |
+   Set the lepton flavour violation parameters in FeynHiggs.
 
 FHSetNMFV: |
+   Set the non-minimal flavour violation parameters in FeynHiggs.
 
 FHSetPara: |
+   Set the FeynHiggs input parameters.
 
 FHSetSMPara: |
+   Set the FeynHiggs standard model parameters.
 
 FHUncertainties: |
+   Error estimates for the Higgs masses and mixings.
    
-FH_Couplings_output: |
-
-FH_FlavourObs: |
 
 #----------------------------
 #  gamLike capabilities
@@ -2952,6 +2968,7 @@ gamLike_1_0_0_init: |
 
 init: |
    Initialise variables in gamLike 
+
 lnL: |
    Calculates the likelihood for gamma-ray indirect searches for dark matter
 
@@ -2960,3 +2977,30 @@ set_data_path: |
 
 set_halo_profile: |
    Set the halo profile in gamLike
+
+#----------------------------
+#  gm2calc capabilities
+#----------------------------
+
+gm2calc_1_2_0_init: |
+   Initialisation of gm2calc, version 1.2.0
+
+gm2calc_1_3_0_init: |
+   Initialisation of gm2calc, version 1.3.0
+
+calculate_amu_1loop: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop 
+
+calculate_amu_1loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop without resumming tan beta
+
+calculate_amu_2loop: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops
+
+calculate_amu_2loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops without resumming tan beta
+
+calculate_uncertainty_amu_2loop: |
+   Calculates the uncertainty on the anomalous magnetic moment of the muon at 2 loops
+ 
+
