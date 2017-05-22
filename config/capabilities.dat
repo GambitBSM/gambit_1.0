@@ -76,6 +76,36 @@ test_BE_Array: |
 test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
+libFarrayTestCommonBlock: |
+   Tester for Fortran common blocks in the backend LibFarrayTest
+
+libFarrayTestCommonBlock2: |
+   Tester for Fortran common blocks in the backend LibFarrayTest
+
+libFarrayTestCommonBlock3: |
+   Tester for Fortran common blocks in the backend LibFarrayTest
+
+libFarrayTest_doubleFuncArray: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest
+
+libFarrayTest_doubleFuncArray2: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest
+
+libFarrayTest_doubleFuncArray3: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest
+
+libFarrayTest_fillArrays: |
+   Tester for filling Fortran arrays in the backend LibFarrayTest
+
+libFarrayTest_fptrRoutine: |
+   Tester for pointers to Fortran routines in the backend LibFarrayTest
+
+libFarrayTest_printStuff: |
+   Test printer for the backend LibFarrayTest
+
+libFarrayTest_testcomplex: |
+   Fortran subroutine that test complex numbers
+
 
 #-------------------------------------
 #  SpecBit
@@ -2313,6 +2343,17 @@ deltaMB_LL : |
 mb_1S : |
    The 1S bottom quark mass.
 
+SUSYPOPE_0_2_init: |
+   Initialize SUSYPOPE backend
+
+CalcObs_SUSYPOPE: |
+   Calculate precision observables using SUSYPOPE
+
+SetFlags_SUSYPOPE: |
+   Set internal flags for SUSYPOPE
+
+SetPara_SUSYPOPE: |
+   Set internal parameters for SUSYPOPE
 
 #-------------------------------------
 #  SUSY-HIT capabilities
@@ -2486,3 +2527,284 @@ cb_sd_selectron: |
 susy_hit_backend_level_init: |
    Runs SUSY-HIT decay calculations.
 
+scharm_l_decay_rates: |
+   Decay rate of the left-handed scharm.
+
+scharm_r_decay_rates: |
+   Decay rate of the right-handed scharm.
+   
+scharmbar_l_decay_rates: |
+   Decay rate of the left-handed anti-scharm.
+   
+scharmbar_r_decay_rates: |
+   Decay rate of the right-handed anti-scharm.
+   
+sdown_l_decay_rates: |
+   Decay rate of the left-handed sdown.
+   
+sdown_r_decay_rates: |
+   Decay rate of the right-handed sdown.
+   
+sdownbar_l_decay_rates: |
+   Decay rate of the left-handed anti-sdown.
+   
+sdownbar_r_decay_rates: |
+   Decay rate of the right-handed auti-sdown.
+   
+selectron_l_decay_rates: |
+   Decay rate of the left-handed selectron.
+   
+selectron_r_decay_rates: |
+   Decay rate of the right-handed selectron.
+   
+selectronbar_l_decay_rates: |
+   Decay rate of the left-handed anti-selectron.
+   
+selectronbar_r_decay_rates: |
+   Decay rate of the right-handed anti-selectron.
+   
+pi_0_decay_rates: |
+   Decay rate of the pi_0 meson.
+   
+pi_minus_decay_rates: |
+   Decay rate of the pi minus mesaon.
+   
+pi_plus_decay_rates: |
+   Decay rate of the pi plus meson.
+   
+rho_0_decay_rates: |
+   Decay rate of the rho_0 meson.
+   
+rho_minus_decay_rates: |
+   Decay rate of the rho minus meson.
+   
+rho_plus_decay_rates: |
+   Decay rate of the rho plus meson.
+   
+smuon_l_decay_rates: |
+   Decay rate of the left-handed smuon.
+   
+smuon_r_decay_rates: |
+   Decay rate of the right-handed smuon.
+   
+smuonbar_l_decay_rates: |
+   Decay rate of the left-handed anti-smuon.
+   
+smuonbar_r_decay_rates: |
+   Decay rate of the right-handed anti-smuon.
+   
+sstrange_l_decay_rates: |
+   Decay rate of the left-handed sstrang.
+   
+sstrange_r_decay_rates: |
+   Decay rate of the right-handed sstrang.
+   
+sstrangebar_l_decay_rates: |
+   Decay rate of the left-handed anti-sstrang.
+   
+sstrangebar_r_decay_rates: |
+   Decay rate of the right-handed anti-sstrang.
+   
+sup_l_decay_rates: |
+   Decay rate of the left-handed sup.
+   
+sup_r_decay_rates: |
+   Decay rate of the right-handed sup.
+   
+supbar_l_decay_rates: |
+   Decay rate of the left-handed anti-sup.
+   
+supbar_r_decay_rates: |
+   Decay rate of the right-handed anti-sup.
+   
+funcBE: |
+   Example Fortran backend function that simulates a backend function
+   in a Fortran library.
+   
+runMe: |
+   Example fortran subroutine that simulated a main functionality.
+   
+refex: |
+   Example function in libfirst that inputs a variable by refernce.
+   
+refex2: |
+   Example function in libfirst that inputs a variable by refernce
+   and another variable to value.
+   
+someFunction: |
+   Example void function that does nothing.
+   
+varex: |
+   Return value of a nasty example variadic function in libfirst.
+   
+varex2: |
+   Return value of a nasty variadic convenience function in libfirst.
+
+#-------------------------------------
+#  Model capabilities
+#-------------------------------------
+
+Halo_Einasto_parameters: |
+   Parameters of the Einasto halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha).
+   See also ./gambit Halo_Einasto
+
+Halo_Einasto_rho0_parameters: |
+   Parameters of the Einasto halo profile, with rhos being internally calculated from rho0 and the other parameters.
+   See also ./gambit Halo_Einasto_rho0
+
+Halo_Einasto_rhos_parameters: |
+   Parameters of the Einasto halo profile, with rho0 being internally calculated from rhos and the other parameters.
+   See also ./gambit Halo_Einasto_rhos
+
+Halo_gNFW_parameters: |
+   Parameters of the generalized NFW halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha, beta, gamma).
+   See also ./gambit Halo_gNFW
+
+Halo_gNFW_rho0_parameters: |
+   Parameters of the generalized NFW halo profile, with rhos being internally calculated from rho0 and the other parameters.
+   See also ./gambit Halo_gNFW_rho0
+
+Halo_gNFW_rhos_parameters: |
+   Parameters of the generalized NFW halo profile, with rho0 being internally calculated from rhos and the other parameters.
+   See also ./gambit Halo_gNFW_rhos
+
+MSSM10atQ_parameters: |
+   Parameters for the model MSSM10atQ (see ./gambit MSSM10atQ)
+
+MSSM10batQ_parameters: |
+   Parameters for the model MSSM10batQ (see ./gambit MSSM10batQ)
+
+MSSM10catQ_parameters: |
+   Parameters for the model MSSM10catQ (see ./gambit MSSM10catQ)
+
+MSSM11atQ_parameters: |
+   Parameters for the model MSSM11atQ (see ./gambit MSSM11atQ)
+
+MSSM15atQ_parameters: |
+   Parameters for the model MSSM15atQ (see ./gambit MSSM15atQ)
+
+MSSM16atQ_parameters: |
+   Parameters for the model MSSM16atQ (see ./gambit MSSM16atQ)
+
+MSSM19atQ_parameters: |
+   Parameters for the model MSSM19atQ (see ./gambit MSSM19atQ)
+
+MSSM20atQ_parameters: |
+   Parameters for the model MSSM20atQ (see ./gambit MSSM20atQ)
+
+MSSM24atQ_parameters: |
+   Parameters for the model MSSM24atQ (see ./gambit MSSM24atQ)
+
+MSSM25atQ_parameters: |
+   Parameters for the model MSSM25atQ (see ./gambit MSSM25atQ)
+
+MSSM30atMGUT_parameters: |
+   Parameters for the model MSSM30atMGUT (see ./gambit MSSM30atMGUT)
+
+MSSM30atQ_parameters: |
+   Parameters for the model MSSM30atQ (see ./gambit MSSM30atQ)
+
+MSSM63atMGUT_parameters: |
+   Parameters for the model MSSM63atMGUT (see ./gambit MSSM63atMGUT)
+
+MSSM63atQ_parameters: |
+   Parameters for the model MSSM63atQ (see ./gambit MSSM63atQ)
+
+MSSM7atQ_parameters: |
+   Parameters for the model MSSM7atQ (see ./gambit MSSM7atQ)
+
+MSSM9atQ_parameters: |
+   Parameters for the model MSSM9atQ (see ./gambit MSSM9atQ)
+
+NUHM1_parameters: |
+   Parameters for the model NUHM1 (see ./gambit NUHM1)
+
+NUHM2_parameters: |
+   Parameters for the model NUHM2 (see ./gambit NUHM2)
+
+CMSSM_parameters: |
+   Parameters for the model CMSSM (see ./gambit CMSSM)
+
+NormalDist_parameters: |
+   Parameters for the model NormalDist (see ./gambit NormalDist)
+
+SingletDMZ3_parameters: |
+   Parameters for the model SingletDMZ3 (see ./gambit SingletDMZ3)
+
+SingletDM_parameters: |
+   Parameters for the model SingletDM (see ./gambit SingletDM)
+
+SingletDM_running_parameters: |
+   Parameters for the model SingletDM_running (see ./gambit SingletDM_running)
+
+StandardModel_Higgs_parameters: |
+   Parameters for the model StandardModel_Higgs (see ./gambit StandardModel_Higgs)
+
+StandardModel_Higgs_running_parameters: |
+   Parameters for the model StandardModel_Higgs_running (see ./gambit StandardModel_Higgs_running)
+
+StandardModel_SLHA2_parameters: |
+   Parameters for the model StandardModel_SLHA2 (see ./gambit StandardModel_SLHA2)
+
+TestModel1D_parameters: |
+   Parameters for the model TestModel1D (see ./gambit TestModel1D)
+
+WC_parameters: |
+   Parameters for the model WC (see ./gambit WC)
+
+mSUGRA_parameters: |
+   Parameters for the model mSUGRA (see ./gambit mSUGRA)
+
+nuclear_params_fnq_parameters: |
+   Parameters for the model nuclear_params_fnq (see ./gambit nuclear_params_fnq)
+
+nuclear_params_sigma0_sigmal_parameters: |
+   Parameters for the model nuclear_params_sigma0_sigmal (see ./gambit nuclear_params_sigma0_sigmal)
+
+nuclear_params_sigmas_sigmal_parameters: |
+   Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
+#-------------------------------------
+#  FeynHiggs capabilities
+#-------------------------------------
+
+FeynHiggs_2_11_2_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_11_3_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_12_0_init: |
+   Initialisation of FeynHiggs.
+
+FHConstraints: |
+   FeynHiggs precision constraint observables.
+
+FHCouplings: |
+
+FHFlavour: |
+
+FHGetPara: |
+
+FHHiggsCorr: |
+
+FHHiggsProd: |
+
+FHSelectUZ: |
+
+FHSetDebug: |
+
+FHSetFlags: |
+
+FHSetLFV: |
+
+FHSetNMFV: |
+
+FHSetPara: |
+
+FHSetSMPara: |
+
+FHUncertainties: |
+   
+FH_Couplings_output: |
+
+FH_FlavourObs: |
