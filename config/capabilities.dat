@@ -1592,6 +1592,12 @@ nulike_1_0_4_init: |
 
 Example_lnL_B: |
   Example log likelihood in ExampleBit B.
+  
+lnlike_marg_poisson_gaussian_error: |
+  log of the convolution of a Poisson and Gausian distributions.
+  
+lnlike_marg_poisson_lognormal_error: |
+  log of the convolution of a poisson and log-normal distributions.
 
 #-------------------------------------
 #  HiggsBounds capabilities
