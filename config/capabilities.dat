@@ -1590,6 +1590,9 @@ nulike_init: |
 nulike_1_0_4_init: |
   Initializes nulike_1_0_4.
 
+nubounds:
+  Counts, likelihoods and p-values from neutrino telescope searches for dark matter annihilation in the Sun.
+
 Example_lnL_B: |
   Example log likelihood in ExampleBit B.
   
