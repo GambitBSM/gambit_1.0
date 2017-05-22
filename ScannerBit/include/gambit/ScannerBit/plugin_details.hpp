@@ -144,6 +144,7 @@ namespace Gambit
                 operator const Plugin_Details &() const {return *details;}
             };
             
+            ///compares the user defined plugin version to the actual plugin version.
             bool Plugin_Version_Supersedes(const Plugin_Details &plug1, const Plugin_Details &plug2);
                                 
         }

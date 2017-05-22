@@ -1519,16 +1519,24 @@ nulike_init: |
 nulike_1_0_4_init: |
   Initializes nulike_1_0_4.
 
+Example_lnL_B: |
+  Example log likelihood in ExampleBit B.
 
 #-------------------------------------
 #  HiggsBounds capabilities
 #-------------------------------------
+
+Higgs_Production_Xsecs: |
+   Higss Production cross section
 
 HiggsBounds_4_2_1_init:
    Initialises HiggsBounds backend, version 4.2.1.
 
 HiggsBounds_4_3_1_init:
    Initialises HiggsBounds backend, version 4.3.1.
+   
+finish_HiggsBounds: |
+   Finishes HiggsBound.
 
 initialize_HiggsBounds_int: |
    Initialises HiggsBounds for library linking.
