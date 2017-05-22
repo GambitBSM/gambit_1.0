@@ -2580,6 +2580,15 @@ awesomeness: |
    function, and return some result.  It aslo send a message from 
    "awesomenessByAnders" to the logger.
    
+SomeArray: |
+   Example double array in libfirst.
+   
+SomeDouble: |
+   Example double in libfirst.
+   
+SomeInt: |
+   Example integer in libfirst.
+   
 funcBE: |
    Example Fortran backend function that simulates a backend function
    in a Fortran library.
