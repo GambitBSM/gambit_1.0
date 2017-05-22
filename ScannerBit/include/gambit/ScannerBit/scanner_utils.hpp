@@ -42,15 +42,19 @@
 
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/local_info.hpp"
-//#include "gambit/Logs/logger.hpp" // Not used?
 #include "gambit/Utils/factory_registry.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
+/// Defined to macros to output errors in the form:
+/// scan_err << "error" << scan_end;
+/// scan_warn << "warning" << scan_end;
+/// @{
 #define scan_err        SCAN_ERR
 #define scan_warn       SCAN_WARN
 #define scan_end        SCAN_END
 #define scan_flush      SCAN_FLUSH
+///@}
 
 #define SCAN_ERR                                                \
 Gambit::Scanner::Errors::_bool_() = true,                       \
@@ -115,6 +119,7 @@ namespace Gambit
         /****** zip for range loop ********/
         /**********************************/
         
+        /// Use for combine container in a range loop:  for (auto &&x : zip(a, b)){...}.
         template <typename... T>
         inline auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
         {
@@ -127,6 +132,7 @@ namespace Gambit
         /****** demangle function ********/
         /*********************************/
         
+        /// Demangles gnu c++ name.
         inline std::string demangle(const std::string &in)
         {
 #ifdef __GNUG__
@@ -151,6 +157,10 @@ namespace Gambit
         /****** get_yaml_vector function ********/
         /****************************************/
         
+        /// Input a vector from the yaml file of the following forms:
+        /// vec: [a, b, ...]
+        /// vec: a, b, ...
+        /// vec: a; b; ...
         template <typename T>
         inline std::vector<T> get_yaml_vector(const YAML::Node &node)
         {
@@ -210,6 +220,8 @@ namespace Gambit
         /****** input_variadic_vector ********/
         /*************************************/
         
+        /// Inputs a varibadic pack into a vector
+        /// @{
         inline void input_variadic_vector(std::vector<void *> &){}
         
         template <typename T, typename... args>
@@ -218,11 +230,13 @@ namespace Gambit
             input.push_back((void *)&value);
             input_variadic_vector(input, params...);
         }
+        /// @}
             
         /*****************************/
         /****** String to Int ********/
         /*****************************/
         
+        /// Converts a string to an int
         inline int StringToInt(const std::string &str)
         {
             int ret;
@@ -233,6 +247,7 @@ namespace Gambit
                     return 0;
         }
         
+        /// Converts a int into a string
         inline std::string IntToString(const int &in)
         {
             std::stringstream ss;
@@ -244,12 +259,52 @@ namespace Gambit
         /********* pi function **********/
         /********************************/
         
+        /// Output pi.
         inline double pi() {return 3.14159265358979323846;}
+        
+        /***********************************/
+        /********* convert_to_map **********/
+        /***********************************/
+        
+        /// Turns a vector with enters [model::parameter, ...] into a map with [{model, parameter}, ...].
+        inline std::map<std::string, std::vector<std::string>> convert_to_map(const std::vector<std::string> &vec)
+        {
+            std::map<std::string, std::vector<std::string>> ret;
+            
+            for (auto it = vec.begin(), end = vec.end(); it != end; it++)
+            {
+                std::string::size_type pos = it->find("::");
+                ret[it->substr(0, pos)].push_back(*it);
+            }
+            
+            return ret;
+        }
+        
+        /*******************************************/
+        /********* scanner_plugin_def_ret **********/
+        /*******************************************/
+        
+        /// Turns a type into an object.  If it's a floating point number, it replaces it with a big negative number.
+        /// @{
+        template <typename ret>
+        typename std::enable_if<!std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
+        {
+            return ret();
+        }
+        
+        template <typename ret>
+        typename std::enable_if<std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
+        {
+            return -std::pow(10.0, std::numeric_limits<double>::max_exponent10);
+        };
+        /// @}
             
         /********************************/
         /******** pow function **********/
         /********************************/
         
+        /// Outputs a^i
+        /// @{
         template <int i>
         inline double pow(const double &a)
         {
@@ -285,6 +340,7 @@ namespace Gambit
         {
             return a;
         };
+        /// @}
             
         /********************************/
         /****** Remove All Func *********/
@@ -541,35 +597,12 @@ namespace Gambit
             static const bool value = true;
         };
             
-        /****************************/
-        /****** triple class ********/
-        /****************************/
-        
-        template <typename T1, typename T2, typename T3>
-        struct triple
-        {
-            typedef T1 first_type;
-            typedef T1 second_type;
-            typedef T1 third_type;
-            T1 first;
-            T2 second;
-            T3 third;
-            
-            triple(){}
-            triple(const T1 &first, const T2 &second, const T3 &third) : first(first), second(second), third(third) {}
-            triple(const triple &trip) : first(trip.first), second(trip.second), third(trip.third) {}
-            
-            triple &operator = (const triple &trip)
-            {
-                first = trip.first, trip.second = second, trip.third = third; 
-                return *this;
-            }
-        };
-            
         /********************************/
         /****** Stream Operators ********/
         /********************************/
         
+        /// Outputs containers to an output stream
+        /// @{
         template <typename T>
         inline typename std::enable_if <is_container<T>::value, std::ostream &>::type
         operator << (std::ostream &out, const T &in)
@@ -595,11 +628,14 @@ namespace Gambit
         {
             return out << "{" << in.first << " : " << in.second << "}";
         }
+        /// @}
             
         /********************************/
         /****** Output Functions ********/
         /********************************/
         
+        /// Functions to output data for the plugin resume functions
+        /// @{
         template<typename T>
         inline typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
         resume_file_output(std::ofstream &out, T &param)
@@ -687,6 +723,7 @@ namespace Gambit
         {
             return param.length();
         }
+        /// @}
     }
 }
 
