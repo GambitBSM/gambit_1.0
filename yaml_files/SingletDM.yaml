@@ -1,8 +1,10 @@
-# Minimal GAMBIT DarkBit test initialization file (in YAML)
+##########################################################################
+## GAMBIT configuration for a Diver scan of the singlet dark matter model
+##
+## Includes likelihood constraints from LHC, precision EW, and dark matter
+## observables, with SM and direct detection nuisance parameters.
+##########################################################################
 
-###################################
-# Input parameter declarations
-###################################
 
 Parameters:
 

@@ -1,4 +1,4 @@
-# SpecBit test file
+# SpecBit test file, for several MSSM variants (CMSSM by default)
 
 Parameters:
 
@@ -10,7 +10,7 @@ Parameters:
 
   CMSSM:
 
-    M0: 
+    M0:
       range: [1500, 1600]
     M12: 301.79
     A0: 3150.25
@@ -98,7 +98,7 @@ Parameters:
 
 
 Priors:
-   
+
   # none: all parameters are fixed
 
 Printer:
@@ -114,7 +114,7 @@ Scanner:
   # Use trivial scanner toy_mcmc with the minumum number of points
 
   use_scanner: toy_mcmc
-  
+
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
@@ -136,7 +136,7 @@ ObsLikes:
 
 Rules:
 
-  # Specify the rules to calculate the MSSM spectrum, 
+  # Specify the rules to calculate the MSSM spectrum,
   # i.e. the function specific to the model and spectrum calculator
 
   - capabilty:    unimproved_MSSM_spectrum
@@ -185,4 +185,3 @@ KeyValues:
   # Choose a lower cutoff for the likelihood
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
