@@ -2954,8 +2954,7 @@ FHSetSMPara: |
 
 FHUncertainties: |
    Error estimates for the Higgs masses and mixings.
-
-FH_FlavourObs: |
+   
 
 #----------------------------
 #  gamLike capabilities
@@ -2966,6 +2965,7 @@ gamLike_1_0_0_init: |
 
 init: |
    Initialise variables in gamLike 
+
 lnL: |
    Calculates the likelihood for gamma-ray indirect searches for dark matter
 
