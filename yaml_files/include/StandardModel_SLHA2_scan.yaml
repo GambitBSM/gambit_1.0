@@ -3,7 +3,7 @@
 ##
 ## Not a top-level configuration file! Instead, import this file, e.g.
 ## Parameters:
-##   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+##   StandardModel_SLHA2: !import include/StandardModel_SLHA2_defaults.yaml
 ##
 ## These values are as for the default SM params file, but with 3-sigma uncertainty
 ## ranges on the alpha_s and m_top values.

@@ -9,7 +9,7 @@
 Parameters:
 
   # SM parameters
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_defaults.yaml
 
   # SUSY parameters
   # Choose here the model and parameters to be tested, as well as the equivalent function below
