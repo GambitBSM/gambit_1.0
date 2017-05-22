@@ -1468,10 +1468,13 @@ XENON100_2012_Init: |
 #-------------------------------------
 
 HiggsBounds_4_2_1_init:
-   Initialise HiggsBounds backend, version 4.2.1.
+   Initialises HiggsBounds backend, version 4.2.1.
 
 HiggsBounds_4_3_1_init:
-   Initialise HiggsBounds backend, version 4.3.1.
+   Initialises HiggsBounds backend, version 4.3.1.
+
+initialize_HiggsBounds_int: |
+   Initialises HiggsBounds for library linking.
 
 HiggsBounds_charged_input: |
    Required charged input values to initialise HiggsBounds.
@@ -1484,6 +1487,16 @@ HiggsBounds_input_SLHA: |
 
 HiggsBounds_set_mass_uncertainties: |
    Assign mass uncertainties for HiggsBounds backend.
+
+run_HiggsBounds_classic: |
+   Runs HiggsBounds after initialization.
+
+finish_HiggsBounds_chisqtables: |
+   Generates chi squared tables from HiggsBounds.
+
+initialize_HiggsBounds_chisqtables: |
+   Initializes HiggsBounds to produce chi squared tables.
+
 
 #-------------------------------------
 #  HiggsSignals capabilities
@@ -1503,6 +1516,24 @@ HiggsBounds_neutral_input_part_HS: |
 
 HiggsBounds_input_SLHA_HS: |
    HiggsSignals SLHA file reader
+
+initialize_HiggsBounds_int_HS: |
+   Initialises HiggsBounds for library linking from HiggsSignals.
+
+finish_HiggsBounds_HS: |
+   Finishes HiggsBounds from HiggsSignals.      
+
+finish_HiggsSignals: |
+   Finishes HiggsSignal Backend.   
+
+initialize_HiggsSignals: |
+   Initializes HiggsSignals.
+
+initialize_HiggsSignals_latestresults: |
+   Initializes HiggsSignals.
+
+run_HiggsSignals: |
+   Runs HiggsSignals after Initialization.
 
 
 #-------------------------------------
