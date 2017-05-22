@@ -1462,16 +1462,62 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
+FreeDetectorss: |
+   Deletes the detector object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeHalos: |
+   Deletes the halo object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeWIMPs: |
+   Deletes the WIMP object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeAll: |
+   Deletes the detector, halo and WIMP objects held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+GetWIMP_mG: |
+  Gets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+GetWIMP_mfa: |
+  Gets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+GetWIMP_msigma: |
+  Gets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+SetWIMP_mG: |
+  Sets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+SetWIMP_mfa: |
+  Sets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+SetWIMP_msigma: |
+  Sets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+InitDetector: |
+  Default detector setup used in DDCalc
+
+InitWIMP: |
+  Default WIMP structure used in DDCalc
+
+InitHalo: |
+  Default Halo structure used in DDCalc
+
+SetSHM: |
+  Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
+
+
 
 #-------------------------------------
 #  HiggsBounds capabilities
 #-------------------------------------
 
 HiggsBounds_4_2_1_init:
-   Initialise HiggsBounds backend, version 4.2.1.
+   Initialises HiggsBounds backend, version 4.2.1.
 
 HiggsBounds_4_3_1_init:
-   Initialise HiggsBounds backend, version 4.3.1.
+   Initialises HiggsBounds backend, version 4.3.1.
+
+initialize_HiggsBounds_int: |
+   Initialises HiggsBounds for library linking.
 
 HiggsBounds_charged_input: |
    Required charged input values to initialise HiggsBounds.
@@ -1484,6 +1530,16 @@ HiggsBounds_input_SLHA: |
 
 HiggsBounds_set_mass_uncertainties: |
    Assign mass uncertainties for HiggsBounds backend.
+
+run_HiggsBounds_classic: |
+   Runs HiggsBounds after initialization.
+
+finish_HiggsBounds_chisqtables: |
+   Generates chi squared tables from HiggsBounds.
+
+initialize_HiggsBounds_chisqtables: |
+   Initializes HiggsBounds to produce chi squared tables.
+
 
 #-------------------------------------
 #  HiggsSignals capabilities
@@ -1503,6 +1559,24 @@ HiggsBounds_neutral_input_part_HS: |
 
 HiggsBounds_input_SLHA_HS: |
    HiggsSignals SLHA file reader
+
+initialize_HiggsBounds_int_HS: |
+   Initialises HiggsBounds for library linking from HiggsSignals.
+
+finish_HiggsBounds_HS: |
+   Finishes HiggsBounds from HiggsSignals.      
+
+finish_HiggsSignals: |
+   Finishes HiggsSignal Backend.   
+
+initialize_HiggsSignals: |
+   Initializes HiggsSignals.
+
+initialize_HiggsSignals_latestresults: |
+   Initializes HiggsSignals.
+
+run_HiggsSignals: |
+   Runs HiggsSignals after Initialization.
 
 
 #-------------------------------------
@@ -2544,6 +2618,9 @@ cb_sd_selectron: |
 
 susy_hit_backend_level_init: |
    Runs SUSY-HIT decay calculations.
+   
+H_minus_decay_rates: |
+   Decay rate of the negative chared higgs.
 
 scharm_l_decay_rates: |
    Decay rate of the left-handed scharm.
@@ -2635,6 +2712,27 @@ supbar_l_decay_rates: |
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
    
+average: |
+   Test Fortran function that supposedly calculates an average.
+  
+externalFunction: |
+   Simple example external function that output a double in inputs an integer.
+   
+externalComplicatedFunction: |
+   Simple example external function that output a double in inputs an integer and a double.
+  
+example_be_array_1D: |
+   Example 1D backend array.
+   
+example_be_array_2D: |
+   Example 2D backend array.
+   
+example_be_array_3D: |
+   Example 3D backend array.
+  
+funcGauss: |
+   Test Fortran function that supposedly calculates a Gaussian function.
+  
 awesomeness: |
    Awesome example function by Anders that returns a double and inputs
    a integer.  It runs a example initalize function and some other
