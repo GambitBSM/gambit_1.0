@@ -1,7 +1,9 @@
-## GAMBIT steering files
+GAMBIT steering files
+=====================
 
 
-## Functionality/configuration demos and minimal examples
+Functionality/configuration demos and minimal examples
+------------------------------------------------------
 
 spartan.yaml  --- Simplest example of using GAMBIT: a toy-model MultiNest scan
 spartan_CMSSM.yaml  --- Simple example of using GAMBIT in a random scan of CMSSM params
@@ -25,7 +27,8 @@ SpecBit_MSSM.yaml  --- Single-point test of mass spectrum generation in MSSM sub
 SpecBit_vacuum_stability.yaml  --- 50x50 grid scan of vacuum stability in [mT,mH]
 
 
-## Physics model scan configurations
+Physics model scan configurations
+---------------------------------
 
 CMSSM.yaml  --- Diver scan on CMSSM model
 MSSM7.yaml  --- Diver scan on MSSM7 model
@@ -35,7 +38,8 @@ SingletDM.yaml  --- Diver scan on Singlet DM model
 WC.yaml  --- MultiNest scan of flavour physics Wilson Coeffs
 
 
-## Config fragments containing parameters for inclusion in other steering files
+Config fragments containing parameters for inclusion in other steering files
+----------------------------------------------------------------------------
 
 StandardModel_SLHA2_defaults.yaml
 StandardModel_SLHA2_scan.yaml

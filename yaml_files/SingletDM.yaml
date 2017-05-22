@@ -8,10 +8,10 @@
 
 Parameters:
 
-  #SM parameters.
+  # SM parameters.
   StandardModel_SLHA2: !import StandardModel_SLHA2_scan.yaml
 
-  #Nuclear matrix parameters.
+  # Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
       range: [19, 67]
