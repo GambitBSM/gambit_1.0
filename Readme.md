@@ -72,32 +72,28 @@ The basic build instructions are as follows, but note that cmake will fail to fi
 Assuming that you have retrieved the git repository or the tarball and unpacked it:
 
 ```
-
-cd gambit
-mkdir build
-cd build
-cmake ..
-make -jn scanners (where n specifies the desired number of cores for the build, e.g. 4)
-cmake ..
-make -jn gambit
+  cd gambit
+  mkdir build
+  cd build
+  cmake ..
+  make -jn scanners (where n specifies the desired number of cores for the build, e.g. 4)
+  cmake ..
+  make -jn gambit
 ```
 
 To build all backend codes:
 ```
-
-make -jn backends
+  make -jn backends
 ```
 
 You can also build individual backends using:
 ```
-
-make -jn <backend name>
+  make -jn <backend name>
 ```
 
 and clean them with:
 ```
-
-make clean-<backend name>
+  make clean-<backend name>
 ```
 
 Running GAMBIT
@@ -108,21 +104,18 @@ For complete documentation on running GAMBIT, please see the Core and module pap
 To see which backends and scanners have been installed correctly, do:
 
 ```
-
-gambit backends
-gambit scanners
+  gambit backends
+  gambit scanners
 ```
 
 To run the GAMBIT spartan example, do
 ```
-
-gambit -f yaml_files/spartan.yaml
+  gambit -f yaml_files/spartan.yaml
 ```
 
 To run an example GAMBIT MSSM7 scan, do:
 ```
-
-gambit -f yaml_files/MSSM7.yaml
+  gambit -f yaml_files/MSSM7.yaml
 ```
 
 Other examples are provided in the yaml_files folder.  Further readmes and documentation can also be found in the doc folder.
