@@ -2544,6 +2544,9 @@ cb_sd_selectron: |
 
 susy_hit_backend_level_init: |
    Runs SUSY-HIT decay calculations.
+   
+H_minus_decay_rates: |
+   Decay rate of the negative chared higgs.
 
 scharm_l_decay_rates: |
    Decay rate of the left-handed scharm.
@@ -2635,6 +2638,27 @@ supbar_l_decay_rates: |
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
    
+average: |
+   Test Fortran function that supposedly calculates an average.
+  
+externalFunction: |
+   Simple example external function that output a double in inputs an integer.
+   
+externalComplicatedFunction: |
+   Simple example external function that output a double in inputs an integer and a double.
+  
+example_be_array_1D: |
+   Example 1D backend array.
+   
+example_be_array_2D: |
+   Example 2D backend array.
+   
+example_be_array_3D: |
+   Example 3D backend array.
+  
+funcGauss: |
+   Test Fortran function that supposedly calculates a Gaussian function.
+  
 awesomeness: |
    Awesome example function by Anders that returns a double and inputs
    a integer.  It runs a example initalize function and some other
