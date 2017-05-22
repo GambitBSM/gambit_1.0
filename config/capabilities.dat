@@ -2974,3 +2974,30 @@ set_data_path: |
 
 set_halo_profile: |
    Set the halo profile in gamLike
+
+#----------------------------
+#  gm2calc capabilities
+#----------------------------
+
+gm2calc_1_2_0_init: |
+   Initialisation of gm2calc, version 1.2.0
+
+gm2calc_1_3_0_init: |
+   Initialisation of gm2calc, version 1.3.0
+
+calculate_amu_1loop: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop 
+
+calculate_amu_1loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop without resumming tan beta
+
+calculate_amu_2loop: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops
+
+calculate_amu_2loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops without resumming tan beta
+
+calculate_uncertainty_amu_2loop: |
+   Calculates the uncertainty on the anomalous magnetic moment of the muon at 2 loops
+ 
+
