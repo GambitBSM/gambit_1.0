@@ -65,31 +65,7 @@ namespace Gambit
         LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, std::vector<double> (std::unordered_map<std::string, double> &));
         LOAD_MULTI_FUNC_TEMPLATE(Multi_Scanner_Plugin_Function, double(std::unordered_map<std::string, double> &));
         
-        inline std::map<std::string, std::vector<std::string>> convert_to_map(const std::vector<std::string> &vec)
-        {
-            std::map<std::string, std::vector<std::string>> ret;
-            
-            for (auto it = vec.begin(), end = vec.end(); it != end; it++)
-            {
-                std::string::size_type pos = it->find("::");
-                ret[it->substr(0, pos)].push_back(*it);
-            }
-            
-            return ret;
-        }
-        
-        template <typename ret>
-        typename std::enable_if<!std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
-        {
-            return ret();
-        }
-        
-        template <typename ret>
-        typename std::enable_if<std::is_floating_point<ret>::value, ret>::type scanner_plugin_def_ret()
-        {
-            return -std::pow(10.0, std::numeric_limits<double>::max_exponent10);
-        };
-        
+        /// Objective functor made up a single plugin. 
         template <typename ret, typename... args>
         class Scanner_Plugin_Function<ret (args...)> : public Plugins::Plugin_Interface<ret (args...)>, public Function_Base<ret (args...)>
         {
@@ -122,6 +98,7 @@ namespace Gambit
             }
         };
         
+        /// Objective functor made up of multiple plugins. 
         template <typename ret, typename... args>
         class Multi_Scanner_Plugin_Function <ret (args...)> : public Function_Base<ret (args...)>
         {
@@ -166,6 +143,7 @@ namespace Gambit
             }
         };
         
+        /// Factory class to make objectives using objective plugins.
         class Plugin_Function_Factory : public Factory_Base
         {
         private:

@@ -245,6 +245,7 @@ namespace Gambit
 
                 ///Retrieve plugin data.
                 const Plugin_Loader &operator()() {return plugins;}
+                
                 ///Get plugin data for single plugin.
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
                 ~pluginInfo();
