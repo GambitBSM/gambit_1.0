@@ -1414,7 +1414,6 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
-
 #-------------------------------------
 #  DarkSUSY capabilities
 #-------------------------------------
@@ -2544,7 +2543,7 @@ runMe: |
 refex: |
    Example function in libfirst that inputs a variable by refernce.
    
-refex: |
+refex2: |
    Example function in libfirst that inputs a variable by refernce
    and another variable to value.
    
@@ -2556,3 +2555,127 @@ varex: |
    
 varex2: |
    Return value of a nasty variadic convenience function in libfirst.
+
+#-------------------------------------
+#  Model capabilities
+#-------------------------------------
+
+Halo_Einasto_parameters: |
+   Parameters of the Einasto halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha).
+   See also ./gambit Halo_Einasto
+
+Halo_Einasto_rho0_parameters: |
+   Parameters of the Einasto halo profile, with rhos being internally calculated from rho0 and the other parameters.
+   See also ./gambit Halo_Einasto_rho0
+
+Halo_Einasto_rhos_parameters: |
+   Parameters of the Einasto halo profile, with rho0 being internally calculated from rhos and the other parameters.
+   See also ./gambit Halo_Einasto_rhos
+
+Halo_gNFW_parameters: |
+   Parameters of the generalized NFW halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha, beta, gamma).
+   See also ./gambit Halo_gNFW
+
+Halo_gNFW_rho0_parameters: |
+   Parameters of the generalized NFW halo profile, with rhos being internally calculated from rho0 and the other parameters.
+   See also ./gambit Halo_gNFW_rho0
+
+Halo_gNFW_rhos_parameters: |
+   Parameters of the generalized NFW halo profile, with rho0 being internally calculated from rhos and the other parameters.
+   See also ./gambit Halo_gNFW_rhos
+
+MSSM10atQ_parameters: |
+   Parameters for the model MSSM10atQ (see ./gambit MSSM10atQ)
+
+MSSM10batQ_parameters: |
+   Parameters for the model MSSM10batQ (see ./gambit MSSM10batQ)
+
+MSSM10catQ_parameters: |
+   Parameters for the model MSSM10catQ (see ./gambit MSSM10catQ)
+
+MSSM11atQ_parameters: |
+   Parameters for the model MSSM11atQ (see ./gambit MSSM11atQ)
+
+MSSM15atQ_parameters: |
+   Parameters for the model MSSM15atQ (see ./gambit MSSM15atQ)
+
+MSSM16atQ_parameters: |
+   Parameters for the model MSSM16atQ (see ./gambit MSSM16atQ)
+
+MSSM19atQ_parameters: |
+   Parameters for the model MSSM19atQ (see ./gambit MSSM19atQ)
+
+MSSM20atQ_parameters: |
+   Parameters for the model MSSM20atQ (see ./gambit MSSM20atQ)
+
+MSSM24atQ_parameters: |
+   Parameters for the model MSSM24atQ (see ./gambit MSSM24atQ)
+
+MSSM25atQ_parameters: |
+   Parameters for the model MSSM25atQ (see ./gambit MSSM25atQ)
+
+MSSM30atMGUT_parameters: |
+   Parameters for the model MSSM30atMGUT (see ./gambit MSSM30atMGUT)
+
+MSSM30atQ_parameters: |
+   Parameters for the model MSSM30atQ (see ./gambit MSSM30atQ)
+
+MSSM63atMGUT_parameters: |
+   Parameters for the model MSSM63atMGUT (see ./gambit MSSM63atMGUT)
+
+MSSM63atQ_parameters: |
+   Parameters for the model MSSM63atQ (see ./gambit MSSM63atQ)
+
+MSSM7atQ_parameters: |
+   Parameters for the model MSSM7atQ (see ./gambit MSSM7atQ)
+
+MSSM9atQ_parameters: |
+   Parameters for the model MSSM9atQ (see ./gambit MSSM9atQ)
+
+NUHM1_parameters: |
+   Parameters for the model NUHM1 (see ./gambit NUHM1)
+
+NUHM2_parameters: |
+   Parameters for the model NUHM2 (see ./gambit NUHM2)
+
+CMSSM_parameters: |
+   Parameters for the model CMSSM (see ./gambit CMSSM)
+
+NormalDist_parameters: |
+   Parameters for the model NormalDist (see ./gambit NormalDist)
+
+SingletDMZ3_parameters: |
+   Parameters for the model SingletDMZ3 (see ./gambit SingletDMZ3)
+
+SingletDM_parameters: |
+   Parameters for the model SingletDM (see ./gambit SingletDM)
+
+SingletDM_running_parameters: |
+   Parameters for the model SingletDM_running (see ./gambit SingletDM_running)
+
+StandardModel_Higgs_parameters: |
+   Parameters for the model StandardModel_Higgs (see ./gambit StandardModel_Higgs)
+
+StandardModel_Higgs_running_parameters: |
+   Parameters for the model StandardModel_Higgs_running (see ./gambit StandardModel_Higgs_running)
+
+StandardModel_SLHA2_parameters: |
+   Parameters for the model StandardModel_SLHA2 (see ./gambit StandardModel_SLHA2)
+
+TestModel1D_parameters: |
+   Parameters for the model TestModel1D (see ./gambit TestModel1D)
+
+WC_parameters: |
+   Parameters for the model WC (see ./gambit WC)
+
+mSUGRA_parameters: |
+   Parameters for the model mSUGRA (see ./gambit mSUGRA)
+
+nuclear_params_fnq_parameters: |
+   Parameters for the model nuclear_params_fnq (see ./gambit nuclear_params_fnq)
+
+nuclear_params_sigma0_sigmal_parameters: |
+   Parameters for the model nuclear_params_sigma0_sigmal (see ./gambit nuclear_params_sigma0_sigmal)
+
+nuclear_params_sigmas_sigmal_parameters: |
+   Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
