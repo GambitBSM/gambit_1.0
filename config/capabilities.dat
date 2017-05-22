@@ -76,6 +76,9 @@ test_BE_Array: |
 test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
+LibFarrayTest_1_0_init: |
+   Initialize function for the LibFarrayTest backend
+
 libFarrayTestCommonBlock: |
    Tester for Fortran common blocks in the backend LibFarrayTest
 
@@ -105,6 +108,21 @@ libFarrayTest_printStuff: |
 
 libFarrayTest_testcomplex: |
    Fortran subroutine that test complex numbers
+
+LibFirst_1_0_init: |
+   Initialize the C++ testing LibFirst backend, version 1.0
+
+LibFirst_1_1_init: |
+   Initialize the C++ testing LibFirst backend, version 1.1
+
+LibFirst_initialize_capability: |
+   Tester function for the initialization of backends   
+
+LibFirst_returnResult_capability: |
+   Tester function for the return of results from backends
+
+LibFortran_1_0_init: |
+   Initialize the Fortran testing LibFortran backend
 
 
 #-------------------------------------
@@ -1446,6 +1464,123 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
+FreeDetectorss: |
+   Deletes the detector object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeHalos: |
+   Deletes the halo object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeWIMPs: |
+   Deletes the WIMP object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeAll: |
+   Deletes the detector, halo and WIMP objects held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+GetWIMP_mG: |
+  Gets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+GetWIMP_mfa: |
+  Gets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+GetWIMP_msigma: |
+  Gets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+SetWIMP_mG: |
+  Sets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+SetWIMP_mfa: |
+  Sets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+SetWIMP_msigma: |
+  Sets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+InitDetector: |
+  Default detector setup used in DDCalc
+
+InitWIMP: |
+  Default WIMP structure used in DDCalc
+
+InitHalo: |
+  Default Halo structure used in DDCalc
+
+SetSHM: |
+  Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
+
+
+
+#-------------------------------------
+#  HiggsBounds capabilities
+#-------------------------------------
+
+HiggsBounds_4_2_1_init:
+   Initialises HiggsBounds backend, version 4.2.1.
+
+HiggsBounds_4_3_1_init:
+   Initialises HiggsBounds backend, version 4.3.1.
+
+initialize_HiggsBounds_int: |
+   Initialises HiggsBounds for library linking.
+
+HiggsBounds_charged_input: |
+   Required charged input values to initialise HiggsBounds.
+
+HiggsBounds_neutral_input_part: |
+   Required neutral input values to initialise HiggsBounds.
+
+HiggsBounds_input_SLHA: |
+   HiggsBounds SLHA file reader
+
+HiggsBounds_set_mass_uncertainties: |
+   Assign mass uncertainties for HiggsBounds backend.
+
+run_HiggsBounds_classic: |
+   Runs HiggsBounds after initialization.
+
+finish_HiggsBounds_chisqtables: |
+   Generates chi squared tables from HiggsBounds.
+
+initialize_HiggsBounds_chisqtables: |
+   Initializes HiggsBounds to produce chi squared tables.
+
+
+#-------------------------------------
+#  HiggsSignals capabilities
+#-------------------------------------
+
+HiggsSignals_1_4_init: |
+   Initialise HiggsSignals backend.
+
+HiggsSignals_neutral_input_MassUncertainty: |
+   Assign mass uncertainties for HiggsSignals backend.
+
+HiggsBounds_charged_input_HS: |
+   Required charged input values to initialise HiggsSignals.
+
+HiggsBounds_neutral_input_part_HS: |
+   Required neutral input values to initialise HiggsSignals.
+
+HiggsBounds_input_SLHA_HS: |
+   HiggsSignals SLHA file reader
+
+initialize_HiggsBounds_int_HS: |
+   Initialises HiggsBounds for library linking from HiggsSignals.
+
+finish_HiggsBounds_HS: |
+   Finishes HiggsBounds from HiggsSignals.      
+
+finish_HiggsSignals: |
+   Finishes HiggsSignal Backend.   
+
+initialize_HiggsSignals: |
+   Initializes HiggsSignals.
+
+initialize_HiggsSignals_latestresults: |
+   Initializes HiggsSignals.
+
+run_HiggsSignals: |
+   Runs HiggsSignals after Initialization.
+
+
 #-------------------------------------
 #  DarkSUSY capabilities
 #-------------------------------------
@@ -2488,6 +2623,9 @@ cb_sd_selectron: |
 
 susy_hit_backend_level_init: |
    Runs SUSY-HIT decay calculations.
+   
+H_minus_decay_rates: |
+   Decay rate of the negative chared higgs.
 
 scharm_l_decay_rates: |
    Decay rate of the left-handed scharm.
@@ -2578,6 +2716,42 @@ supbar_l_decay_rates: |
    
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
+   
+average: |
+   Test Fortran function that supposedly calculates an average.
+  
+externalFunction: |
+   Simple example external function that output a double in inputs an integer.
+   
+externalComplicatedFunction: |
+   Simple example external function that output a double in inputs an integer and a double.
+  
+example_be_array_1D: |
+   Example 1D backend array.
+   
+example_be_array_2D: |
+   Example 2D backend array.
+   
+example_be_array_3D: |
+   Example 3D backend array.
+  
+funcGauss: |
+   Test Fortran function that supposedly calculates a Gaussian function.
+  
+awesomeness: |
+   Awesome example function by Anders that returns a double and inputs
+   a integer.  It runs a example initalize function and some other
+   function, and return some result.  It aslo send a message from 
+   "awesomenessByAnders" to the logger.
+   
+SomeArray: |
+   Example double array in libfirst.
+   
+SomeDouble: |
+   Example double in libfirst.
+   
+SomeInt: |
+   Example integer in libfirst.
    
 funcBE: |
    Example Fortran backend function that simulates a backend function
@@ -2781,3 +2955,22 @@ FHSetSMPara: |
 FHUncertainties: |
    Error estimates for the Higgs masses and mixings.
 
+FH_FlavourObs: |
+
+#----------------------------
+#  gamLike capabilities
+#----------------------------
+
+gamLike_1_0_0_init: |
+   Initialisation of gamLike
+
+init: |
+   Initialise variables in gamLike 
+lnL: |
+   Calculates the likelihood for gamma-ray indirect searches for dark matter
+
+set_data_path: |
+   Set the data path for gamLike
+
+set_halo_profile: |
+   Set the halo profile in gamLike

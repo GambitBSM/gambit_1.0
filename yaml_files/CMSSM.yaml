@@ -1,3 +1,10 @@
+# A scan of the CMSSM using Diver. Includes likelihoods for LHC and LEP
+# particle searches, LHC and LEP Higgs searches (and LHC signal strengths),
+# flavour physics, indirect DM detection, direct DM detection, electroweak
+# precision observables, and nuisance parameter constraints. Includes SM, 
+# nuclear matrix element and dark matter halo nuisances.
+
+
 Parameters:
 
   #SM parameters.
