@@ -251,7 +251,8 @@ namespace Gambit
                 ~pluginInfo();
             };
             
-            ///Access Functor for plugin info
+            ///Access Functor for plugin info.  This will manage all the 
+            ///plugins including stored and writing resume info.
             extern pluginInfo plugin_info;
             
         }
