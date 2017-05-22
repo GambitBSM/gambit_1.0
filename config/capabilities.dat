@@ -1462,6 +1462,49 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
+
+#-------------------------------------
+#  HiggsBounds capabilities
+#-------------------------------------
+
+HiggsBounds_4_2_1_init:
+   Initialise HiggsBounds backend, version 4.2.1.
+
+HiggsBounds_4_3_1_init:
+   Initialise HiggsBounds backend, version 4.3.1.
+
+HiggsBounds_charged_input
+   Required charged input values to initialise HiggsBounds.
+
+HiggsBounds_neutral_input_part
+   Required neutral input values to initialise HiggsBounds.
+
+HiggsBounds_input_SLHA
+   HiggsBounds SLHA file reader
+
+HiggsBounds_set_mass_uncertainties
+   Assign mass uncertainties for HiggsBounds backend.
+
+#-------------------------------------
+#  HiggsSignals capabilities
+#-------------------------------------
+
+HiggsSignals_1_4_init
+   Initialise HiggsSignals backend.
+
+HiggsSignals_neutral_input_MassUncertainty
+   Assign mass uncertainties for HiggsSignals backend.
+
+HiggsBounds_charged_input_HS
+   Required charged input values to initialise HiggsSignals.
+
+HiggsBounds_neutral_input_part_HS
+   Required neutral input values to initialise HiggsSignals.
+
+HiggsBounds_input_SLHA_HS
+   HiggsSignals SLHA file reader
+
+
 #-------------------------------------
 #  DarkSUSY capabilities
 #-------------------------------------
@@ -2738,3 +2781,48 @@ nuclear_params_sigma0_sigmal_parameters: |
 
 nuclear_params_sigmas_sigmal_parameters: |
    Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
+#-------------------------------------
+#  FeynHiggs capabilities
+#-------------------------------------
+
+FeynHiggs_2_11_2_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_11_3_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_12_0_init: |
+   Initialisation of FeynHiggs.
+
+FHConstraints: |
+   FeynHiggs precision constraint observables.
+
+FHCouplings: |
+
+FHFlavour: |
+
+FHGetPara: |
+
+FHHiggsCorr: |
+
+FHHiggsProd: |
+
+FHSelectUZ: |
+
+FHSetDebug: |
+
+FHSetFlags: |
+
+FHSetLFV: |
+
+FHSetNMFV: |
+
+FHSetPara: |
+
+FHSetSMPara: |
+
+FHUncertainties: |
+   
+FH_Couplings_output: |
+
+FH_FlavourObs: |
