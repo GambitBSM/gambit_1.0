@@ -76,6 +76,36 @@ test_BE_Array: |
 test_flat_likelihood: |
    Tester for C/C++ backend array interfaces.
 
+libFarrayTestCommonBlock: |
+   Tester for Fortran common blocks in the backend LibFarrayTest
+
+libFarrayTestCommonBlock2: |
+   Tester for Fortran common blocks in the backend LibFarrayTest
+
+libFarrayTestCommonBlock3: |
+   Tester for Fortran common blocks in the backend LibFarrayTest
+
+libFarrayTest_doubleFuncArray: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest
+
+libFarrayTest_doubleFuncArray2: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest
+
+libFarrayTest_doubleFuncArray3: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest
+
+libFarrayTest_fillArrays: |
+   Tester for filling Fortran arrays in the backend LibFarrayTest
+
+libFarrayTest_fptrRoutine: |
+   Tester for pointers to Fortran routines in the backend LibFarrayTest
+
+libFarrayTest_printStuff: |
+   Test printer for the backend LibFarrayTest
+
+libFarrayTest_testcomplex: |
+   Fortran subroutine that test complex numbers
+
 
 #-------------------------------------
 #  SpecBit
@@ -2270,6 +2300,17 @@ deltaMB_LL : |
 mb_1S : |
    The 1S bottom quark mass.
 
+SUSYPOPE_0_2_init: |
+   Initialize SUSYPOPE backend
+
+CalcObs_SUSYPOPE: |
+   Calculate precision observables using SUSYPOPE
+
+SetFlags_SUSYPOPE: |
+   Set internal flags for SUSYPOPE
+
+SetPara_SUSYPOPE: |
+   Set internal parameters for SUSYPOPE
 
 #-------------------------------------
 #  SUSY-HIT capabilities
@@ -2685,3 +2726,48 @@ nuclear_params_sigma0_sigmal_parameters: |
 
 nuclear_params_sigmas_sigmal_parameters: |
    Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
+#-------------------------------------
+#  FeynHiggs capabilities
+#-------------------------------------
+
+FeynHiggs_2_11_2_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_11_3_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_12_0_init: |
+   Initialisation of FeynHiggs.
+
+FHConstraints: |
+   FeynHiggs precision constraint observables.
+
+FHCouplings: |
+
+FHFlavour: |
+
+FHGetPara: |
+
+FHHiggsCorr: |
+
+FHHiggsProd: |
+
+FHSelectUZ: |
+
+FHSetDebug: |
+
+FHSetFlags: |
+
+FHSetLFV: |
+
+FHSetNMFV: |
+
+FHSetPara: |
+
+FHSetSMPara: |
+
+FHUncertainties: |
+   
+FH_Couplings_output: |
+
+FH_FlavourObs: |
