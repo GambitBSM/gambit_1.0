@@ -1567,6 +1567,9 @@ finish_HiggsBounds_chisqtables: |
 initialize_HiggsBounds_chisqtables: |
    Initializes HiggsBounds to produce chi squared tables.
 
+HB_calc_stats: |
+   To quote from HiggsBounds: "this is in the middle of development! DO NOT USE!"
+
 
 #-------------------------------------
 #  HiggsSignals capabilities
