@@ -35,6 +35,7 @@ namespace Gambit
 {
     namespace Scanner
     {       
+        // Scan manager class that manages everything that is ScannerBit.
         class Scan_Manager
         {
         private:
