@@ -363,7 +363,7 @@ namespace Gambit
       {
         // Warn user of missing descriptions
         std::ostringstream msg;
-        msg << "WARNING" << endl << "Descriptions are missing for the following capabilities:" <<endl;
+        msg << "Descriptions are missing for the following capabilities:" <<endl;
         for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
         {
           if(not it->has_description)
@@ -371,12 +371,10 @@ namespace Gambit
             msg << "   " << it->name << endl;
           }
         }
-        msg << "Please add descriptions of these to "<< input_capability_descriptions <<endl;
-        //core_warning().raise(LOCAL_INFO,msg.str()); //Ok can't do this since logger isn't initialised yet, and gets disabled anyway.
-        // Send to a hardcoded file for now
-        report << msg.str() << endl;
-        // Also make user directly aware of this problem
-        if (GET_RANK == 0) cout << "WARNING: Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
+        msg << "Please add descriptions of these to "<< input_capability_descriptions << endl;
+        //logger().disable();
+        //report << msg.str() << endl;
+        core_error().raise(LOCAL_INFO,msg.str());
       }
 
       // Write out the centralised database file containing all this information
@@ -466,7 +464,7 @@ namespace Gambit
       {
         // Warn user of missing descriptions
         std::ostringstream msg;
-        msg << "WARNING" << endl << "Descriptions are missing for the following models:" <<endl;
+        msg << "Descriptions are missing for the following models:" <<endl;
         for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
         {
           if(not it->has_description)
@@ -474,10 +472,10 @@ namespace Gambit
             msg << "   " << it->name << endl;
           }
         }
-        msg << "Please add descriptions of these to "<< input_model_descriptions <<endl;
-        report << msg.str() << endl;
-        // Also make user directly aware of this problem
-        if (GET_RANK == 0) cout << "WARNING: Descriptions missing for some models! See "<<report_file<<" for details." << endl;
+        msg << "Please add descriptions of these to "<< input_model_descriptions << endl;
+        //logger().disable();
+        //report << msg.str() << endl;
+        core_error().raise(LOCAL_INFO,msg.str());
       }
 
       // Write out the centralised database file containing all this information

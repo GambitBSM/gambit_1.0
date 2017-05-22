@@ -27,9 +27,6 @@
 test_vector: |
    An example vector.
 
-widths: |
-   The width of some make-believe particle.
-
 charge: |
    The charge of some make-believe particle.
 
@@ -132,60 +129,60 @@ LibFortran_1_0_init: |
 
 average: |
    Test Fortran function that supposedly calculates an average.
-  
+
 externalFunction: |
    Simple example external function that output a double in inputs an integer.
-   
+
 externalComplicatedFunction: |
    Simple example external function that output a double in inputs an integer and a double.
-  
+
 example_be_array_1D: |
    Example 1D backend array.
-   
+
 example_be_array_2D: |
    Example 2D backend array.
-   
+
 example_be_array_3D: |
    Example 3D backend array.
-  
+
 funcGauss: |
    Test Fortran function that supposedly calculates a Gaussian function.
-  
+
 awesomeness: |
    Awesome example function by Anders that returns an awesome double and inputs
    an awesome integer.  It runs an awesome example initalize function and some other
-   awesome function, and returns some awesome result.  It also send an awesome message from 
+   awesome function, and returns some awesome result.  It also send an awesome message from
    "awesomenessByAnders" to the logger.
-   
+
 SomeArray: |
    Example double array in libfirst.
-   
+
 SomeDouble: |
    Example double in libfirst.
-   
+
 SomeInt: |
    Example integer in libfirst.
-   
+
 funcBE: |
    Example Fortran backend function that simulates a backend function
    in a Fortran library.
-   
+
 runMe: |
    Example fortran subroutine that simulated a main functionality.
-   
+
 refex: |
    Example function in libfirst that inputs a variable by refernce.
-   
+
 refex2: |
    Example function in libfirst that inputs a variable by refernce
    and another variable to value.
-   
+
 someFunction: |
    Example void function that does nothing.
-   
+
 varex: |
    Return value of a nasty example variadic function in libfirst.
-   
+
 varex2: |
    Return value of a nasty variadic convenience function in libfirst.
 
@@ -1591,10 +1588,10 @@ nubounds:
 
 Example_lnL_B: |
   Example log likelihood in ExampleBit B.
-  
+
 lnlike_marg_poisson_gaussian_error: |
   log of the convolution of a Poisson and Gausian distributions.
-  
+
 lnlike_marg_poisson_lognormal_error: |
   log of the convolution of a poisson and log-normal distributions.
 
@@ -1610,7 +1607,7 @@ HiggsBounds_4_2_1_init:
 
 HiggsBounds_4_3_1_init:
    Initialises HiggsBounds backend, version 4.3.1.
-   
+
 finish_HiggsBounds: |
    Finishes HiggsBound.
 
@@ -1665,10 +1662,10 @@ initialize_HiggsBounds_int_HS: |
    Initialises HiggsBounds for library linking from HiggsSignals.
 
 finish_HiggsBounds_HS: |
-   Finishes HiggsBounds from HiggsSignals.      
+   Finishes HiggsBounds from HiggsSignals.
 
 finish_HiggsSignals: |
-   Finishes HiggsSignal Backend.   
+   Finishes HiggsSignal Backend.
 
 initialize_HiggsSignals: |
    Initializes HiggsSignals.
@@ -1830,8 +1827,8 @@ mssmiuseful: |
 mspctm: |
    DarkSUSY mass spectrum.
 
-#widths: |
-#   DarkSUSY particle widths. (Capability is defined twice.)
+widths: |
+   DarkSUSY particle widths. (Capability is defined twice.)
 
 intdof: |
    Number of spin and color states for each particle for DarkSUSY.
@@ -2579,7 +2576,7 @@ alphas_running : |
    Computes the alphas running coupling at a given energy.
 
 slha_adjust : |
-   Adjusts the SLHA parameters to the SuperIso standard. 
+   Adjusts the SLHA parameters to the SuperIso standard.
 
 #-------------------------------------
 #  SUSY-HIT capabilities
@@ -2602,7 +2599,7 @@ cb_susyhitin: |
 
 cb_sd_leshouches1: |
    SLHA1 values for SDecay.
-   
+
 cb_sd_leshouches2: |
    SLHA2 values for SDecay
 
@@ -2752,7 +2749,7 @@ cb_sd_selectron: |
 
 susy_hit_backend_level_init: |
    Runs SUSY-HIT decay calculations.
-   
+
 H_minus_decay_rates: |
    Decay rate of the negative chared higgs.
 
@@ -2761,88 +2758,88 @@ scharm_l_decay_rates: |
 
 scharm_r_decay_rates: |
    Decay rate of the right-handed scharm.
-   
+
 scharmbar_l_decay_rates: |
    Decay rate of the left-handed anti-scharm.
-   
+
 scharmbar_r_decay_rates: |
    Decay rate of the right-handed anti-scharm.
-   
+
 sdown_l_decay_rates: |
    Decay rate of the left-handed sdown.
-   
+
 sdown_r_decay_rates: |
    Decay rate of the right-handed sdown.
-   
+
 sdownbar_l_decay_rates: |
    Decay rate of the left-handed anti-sdown.
-   
+
 sdownbar_r_decay_rates: |
    Decay rate of the right-handed auti-sdown.
-   
+
 selectron_l_decay_rates: |
    Decay rate of the left-handed selectron.
-   
+
 selectron_r_decay_rates: |
    Decay rate of the right-handed selectron.
-   
+
 selectronbar_l_decay_rates: |
    Decay rate of the left-handed anti-selectron.
-   
+
 selectronbar_r_decay_rates: |
    Decay rate of the right-handed anti-selectron.
-   
+
 pi_0_decay_rates: |
    Decay rate of the pi_0 meson.
-   
+
 pi_minus_decay_rates: |
    Decay rate of the pi minus mesaon.
-   
+
 pi_plus_decay_rates: |
    Decay rate of the pi plus meson.
-   
+
 rho_0_decay_rates: |
    Decay rate of the rho_0 meson.
-   
+
 rho_minus_decay_rates: |
    Decay rate of the rho minus meson.
-   
+
 rho_plus_decay_rates: |
    Decay rate of the rho plus meson.
-   
+
 smuon_l_decay_rates: |
    Decay rate of the left-handed smuon.
-   
+
 smuon_r_decay_rates: |
    Decay rate of the right-handed smuon.
-   
+
 smuonbar_l_decay_rates: |
    Decay rate of the left-handed anti-smuon.
-   
+
 smuonbar_r_decay_rates: |
    Decay rate of the right-handed anti-smuon.
-   
+
 sstrange_l_decay_rates: |
    Decay rate of the left-handed sstrang.
-   
+
 sstrange_r_decay_rates: |
    Decay rate of the right-handed sstrang.
-   
+
 sstrangebar_l_decay_rates: |
    Decay rate of the left-handed anti-sstrang.
-   
+
 sstrangebar_r_decay_rates: |
    Decay rate of the right-handed anti-sstrang.
-   
+
 sup_l_decay_rates: |
    Decay rate of the left-handed sup.
-   
+
 sup_r_decay_rates: |
    Decay rate of the right-handed sup.
-   
+
 supbar_l_decay_rates: |
    Decay rate of the left-handed anti-sup.
-   
+
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
 
@@ -3010,7 +3007,7 @@ FHSetPara: |
 FHSetSMPara: |
 
 FHUncertainties: |
-   
+
 FH_Couplings_output: |
 
 FH_FlavourObs: |
