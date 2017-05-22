@@ -30,11 +30,17 @@ test_vector: |
 widths: |
    The width of some make-believe particle.
 
+charge: |
+   The charge of some make-believe particle.
+
 xsection: |
    A cross-section for some make-believe process.
 
 nevents: |
    Number of events for some make-believe process.
+
+nevents_postcuts: |
+   Number of events post cuts for some make-believe process.
 
 Example_lnL_A: |
    An example likelihood that ExampleBitA can calculate.
@@ -188,6 +194,7 @@ run_MSSMspectrum_test: |
 
 run_light_quark_test: |
    Tests the Standrad Model Spectrum wrapper (QedQcdWrapper).
+
 
 #-------------------------------------
 #  SpecBit
@@ -1975,6 +1982,9 @@ dNdE: |
 #  DecayBit capabilities
 #-------------------------------------
 
+decay_rates: |
+   Collect all the decay rates into a table.
+
 Z_decay_rates : |
    All decays of the Z gauge boson.
 
@@ -2541,6 +2551,15 @@ SetFlags_SUSYPOPE: |
 
 SetPara_SUSYPOPE: |
    Set internal parameters for SUSYPOPE
+
+Init_param : |
+   Initialiases the SuperIso parameter structure.
+
+alphas_running : |
+   Computes the alphas running coupling at a given energy.
+
+slha_adjust : |
+   Adjusts the SLHA parameters to the SuperIso standard. 
 
 #-------------------------------------
 #  SUSY-HIT capabilities
