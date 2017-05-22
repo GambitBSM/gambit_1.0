@@ -1462,6 +1462,49 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
+FreeDetectorss: |
+   Deletes the detector object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeHalos: |
+   Deletes the halo object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeWIMPs: |
+   Deletes the WIMP object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeAll: |
+   Deletes the detector, halo and WIMP objects held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+GetWIMP_mG: |
+  Gets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+GetWIMP_mfa: |
+  Gets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+GetWIMP_msigma: |
+  Gets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+SetWIMP_mG: |
+  Sets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+SetWIMP_mfa: |
+  Sets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+SetWIMP_msigma: |
+  Sets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+InitDetector: |
+  Default detector setup used in DDCalc
+
+InitWIMP: |
+  Default WIMP structure used in DDCalc
+
+InitHalo: |
+  Default Halo structure used in DDCalc
+
+SetSHM: |
+  Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
+
+
 
 #-------------------------------------
 #  HiggsBounds capabilities
@@ -2872,3 +2915,21 @@ FHUncertainties: |
 FH_Couplings_output: |
 
 FH_FlavourObs: |
+
+#----------------------------
+#  gamLike capabilities
+#----------------------------
+
+gamLike_1_0_0_init: |
+   Initialisation of gamLike
+
+init: |
+   Initialise variables in gamLike 
+lnL: |
+   Calculates the likelihood for gamma-ray indirect searches for dark matter
+
+set_data_path: |
+   Set the data path for gamLike
+
+set_halo_profile: |
+   Set the halo profile in gamLike
