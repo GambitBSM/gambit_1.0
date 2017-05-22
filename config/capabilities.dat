@@ -124,6 +124,65 @@ LibFirst_returnResult_capability: |
 LibFortran_1_0_init: |
    Initialize the Fortran testing LibFortran backend.
 
+average: |
+   Test Fortran function that supposedly calculates an average.
+  
+externalFunction: |
+   Simple example external function that output a double in inputs an integer.
+   
+externalComplicatedFunction: |
+   Simple example external function that output a double in inputs an integer and a double.
+  
+example_be_array_1D: |
+   Example 1D backend array.
+   
+example_be_array_2D: |
+   Example 2D backend array.
+   
+example_be_array_3D: |
+   Example 3D backend array.
+  
+funcGauss: |
+   Test Fortran function that supposedly calculates a Gaussian function.
+  
+awesomeness: |
+   Awesome example function by Anders that returns a double and inputs
+   a integer.  It runs a example initalize function and some other
+   function, and return some result.  It aslo send a message from 
+   "awesomenessByAnders" to the logger.
+   
+SomeArray: |
+   Example double array in libfirst.
+   
+SomeDouble: |
+   Example double in libfirst.
+   
+SomeInt: |
+   Example integer in libfirst.
+   
+funcBE: |
+   Example Fortran backend function that simulates a backend function
+   in a Fortran library.
+   
+runMe: |
+   Example fortran subroutine that simulated a main functionality.
+   
+refex: |
+   Example function in libfirst that inputs a variable by refernce.
+   
+refex2: |
+   Example function in libfirst that inputs a variable by refernce
+   and another variable to value.
+   
+someFunction: |
+   Example void function that does nothing.
+   
+varex: |
+   Return value of a nasty example variadic function in libfirst.
+   
+varex2: |
+   Return value of a nasty variadic convenience function in libfirst.
+
 run_MSSMspectrum_test: |
    Function to thest the Spectrum object for the MSSM.
 
@@ -1567,6 +1626,9 @@ finish_HiggsBounds_chisqtables: |
 initialize_HiggsBounds_chisqtables: |
    Initializes HiggsBounds to produce chi squared tables.
 
+HB_calc_stats: |
+   To quote from HiggsBounds: "this is in the middle of development! DO NOT USE!"
+
 
 #-------------------------------------
 #  HiggsSignals capabilities
@@ -2744,65 +2806,6 @@ supbar_l_decay_rates: |
    
 supbar_r_decay_rates: |
    Decay rate of the right-handed anti-sup.
-   
-average: |
-   Test Fortran function that supposedly calculates an average.
-  
-externalFunction: |
-   Simple example external function that output a double in inputs an integer.
-   
-externalComplicatedFunction: |
-   Simple example external function that output a double in inputs an integer and a double.
-  
-example_be_array_1D: |
-   Example 1D backend array.
-   
-example_be_array_2D: |
-   Example 2D backend array.
-   
-example_be_array_3D: |
-   Example 3D backend array.
-  
-funcGauss: |
-   Test Fortran function that supposedly calculates a Gaussian function.
-  
-awesomeness: |
-   Awesome example function by Anders that returns a double and inputs
-   a integer.  It runs a example initalize function and some other
-   function, and return some result.  It aslo send a message from 
-   "awesomenessByAnders" to the logger.
-   
-SomeArray: |
-   Example double array in libfirst.
-   
-SomeDouble: |
-   Example double in libfirst.
-   
-SomeInt: |
-   Example integer in libfirst.
-   
-funcBE: |
-   Example Fortran backend function that simulates a backend function
-   in a Fortran library.
-   
-runMe: |
-   Example fortran subroutine that simulated a main functionality.
-   
-refex: |
-   Example function in libfirst that inputs a variable by refernce.
-   
-refex2: |
-   Example function in libfirst that inputs a variable by refernce
-   and another variable to value.
-   
-someFunction: |
-   Example void function that does nothing.
-   
-varex: |
-   Return value of a nasty example variadic function in libfirst.
-   
-varex2: |
-   Return value of a nasty variadic convenience function in libfirst.
 
 #-------------------------------------
 #  Model capabilities
