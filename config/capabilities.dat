@@ -191,6 +191,8 @@ MSSM_spectrum: |
     Provide an updated MSSM spectrum from the unimproved version with
     precision W and Higgs masses.
 
+FH_Couplings_output: |
+   Higgs couplings.
 
 #-------------------------------------
 #  ColliderBit capabilities
@@ -2300,6 +2302,9 @@ deltaMB_LL : |
 mb_1S : |
    The 1S bottom quark mass.
 
+FH_FlavourObs: |
+   Flavour observables (decay rates and mass asymmetries of B-mesons).
+
 SUSYPOPE_0_2_init: |
    Initialize SUSYPOPE backend
 
@@ -2720,6 +2725,7 @@ nuclear_params_sigma0_sigmal_parameters: |
 
 nuclear_params_sigmas_sigmal_parameters: |
    Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
+
 #-------------------------------------
 #  FeynHiggs capabilities
 #-------------------------------------
@@ -2734,34 +2740,44 @@ FeynHiggs_2_12_0_init: |
    Initialisation of FeynHiggs.
 
 FHConstraints: |
-   FeynHiggs precision constraint observables.
+   Precision electroweak observables.
 
 FHCouplings: |
+   Evaluation of Higgs couplings for FeynHiggs (decay rates and mass asymmetries of B-mesons).
 
 FHFlavour: |
+   Flavour observables (decay rates and mass asymmetries of B-mesons).
 
 FHGetPara: |
+   Many SUSY parameters.
 
 FHHiggsCorr: |
+   Calculation of higher order corrections to the MSSM Higgs sector.
 
 FHHiggsProd: |
+   Higgs production cross-sections.
 
 FHSelectUZ: |
+   Set whether to use UHiggs or ZHiggs for internal or external Higgs mixing.
 
 FHSetDebug: |
+   Set FeynHiggs debug level.
 
 FHSetFlags: |
+   Set FeynHiggs flags.
 
 FHSetLFV: |
+   Set the lepton flavour violation parameters in FeynHiggs.
 
 FHSetNMFV: |
+   Set the non-minimal flavour violation parameters in FeynHiggs.
 
 FHSetPara: |
+   Set the FeynHiggs input parameters.
 
 FHSetSMPara: |
+   Set the FeynHiggs standard model parameters.
 
 FHUncertainties: |
-   
-FH_Couplings_output: |
+   Error estimates for the Higgs masses and mixings.
 
-FH_FlavourObs: |
