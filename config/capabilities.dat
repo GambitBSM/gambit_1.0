@@ -2270,3 +2270,177 @@ deltaMB_LL : |
 
 mb_1S : |
    The 1S bottom quark mass.
+
+
+#-------------------------------------
+#  SUSY-HIT capabilities
+#-------------------------------------
+
+SUSY_HIT_1_5_init: |
+   Initialise SUSY-HIT backend
+
+sdecay: |
+   Computation of all MSSM decays.
+
+unlikely: |
+   An unlikely double (used for SUSY-HIT initialisation).
+
+cb_checkfavvio: |
+   Common block containing options for flavour violation.
+
+cb_susyhitin: |
+   Various standard model parameters used by SUSY-HIT.
+
+cb_sd_leshouches1: |
+   SLHA1 values for SDecay.
+   
+cb_sd_leshouches2: |
+   SLHA2 values for SDecay
+
+cb_slha_leshouches1_hdec: |
+   SLHA1 values for HDecay.
+
+cb_slha_leshouches2_hdec: |
+   SLHA2 values for HDecay.
+
+cb_widtha_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of A_0.
+
+cb_widthhl_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of h0_1.
+
+cb_widthhh_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of h0_2.
+
+cb_widthhc_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of H_+.
+
+cb_wisusy_hdec: |
+   Branching fractions of various particles to SUSY particles.
+
+cb_wisfer_hdec: |
+   Branching fractions of various particles to sfermions.
+
+cb_hd_golddec: |
+   Goldstino decay widths.
+
+cb_sd_char2body: |
+   Branching fractions for two body decays of chargino_+_1.
+
+cb_sd_char2bodygrav: |
+   Branching fractions for two body decays of chargino_+_1 with gravitino in final state.
+
+cb_sd_char3body: |
+   Branching fractions for three body decays of chargino_+_1.
+
+cb_sd_charwidth: |
+   The total width of chargino_+_1.
+
+cb_sd_neut2body: |
+   Branching fractions for two body decays of neutralino_1.
+
+cb_sd_neut2bodygrav: |
+   Branching fractions for two body decays of neutralino_1 with gravitino in final state.
+
+cb_sd_neut3body: |
+   Branching fractions for three body decays of neutralino_1.
+
+cb_sd_neutloop: |
+   Branching fractions for loop induced decays of neutralino_1.
+
+cb_sd_neutwidth: |
+   Total width of neutralino_1.
+
+cb_sd_glui2body: |
+   Branching fractions for two body decays of gluino.
+
+cb_sd_glui3body: |
+   Branching fractions for three body decays of gluino.
+
+cb_sd_gluiloop: |
+   Branching fractions for loop induced decays of gluino.
+
+cb_sd_gluiwidth: |
+   Total width of gluino.
+
+cb_sd_sup2body: |
+   Branching fractions for two body decays of sups.
+
+cb_sd_supwidth: |
+   Total width of sups.
+
+cb_sd_sdown2body: |
+   Branching fractions for two body decays of sdowns.
+
+cb_sd_sdownwidth: |
+   Total width of sdowns.
+
+cb_sd_stop2body: |
+   Branching fractions for two body decays of stops.
+
+cb_sd_stop3body: |
+   Branching fractions for three body decays of stops.
+
+cb_sd_stoploop: |
+   Branching fractions for loop induced decays of stops.
+
+cb_sd_stop4body: |
+   Branching fractions for four body decays of stops.
+
+cb_sd_stopwidth: |
+   Total width of stops.
+
+cb_sd_sbot2body: |
+   Branching fractions for two body decays of sbottoms.
+
+cb_sd_sbot3body: |
+   Branching fractions for three body decays of sbottoms.
+
+cb_sd_sbotwidth: |
+   Total width of sbottoms.
+
+cb_sd_sel2body: |
+   Branching fractions for two body decaus of selectrons.
+
+cb_sd_selwidth: |
+   Total width of selectrons.
+
+cb_sd_snel2body: |
+   Branching fractions for two body decays of electron sneutrinos.
+
+cb_sd_snelwidth: |
+   Total width of electron sneutrinos.
+
+cb_sd_stau2body: |
+   Branching fractions for two body decauys of staus.
+
+cb_sd_stau2bodygrav: |
+   Branching fractions for two body decays of staus with gravitinos in the final state.
+
+cb_sd_stauwidth: |
+   Total width of staus.
+
+cb_sd_sntau2body: |
+   Branching fractions for two body decays of tau sneutrinos.
+
+cb_sd_sntauwidth: |
+   Total width of tau sneutrinos.
+
+cb_sd_top2body: |
+   Branching fractions for tops to two body final states.
+
+cb_sd_topwidth: |
+   Total width of top.
+
+cb_flavviolation: |
+   Mixing matrices.
+
+cb_sd_mbmb: |
+   Mb(Mb) in the MSbar scheme.
+
+cb_sd_selectron: |
+   Selectron mixing matrix.
+
+susy_hit_backend_level_init: |
+   Runs SUSY-HIT decay calculations.
+
