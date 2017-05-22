@@ -46,6 +46,7 @@ namespace Gambit
     {
         typedef Priors::BasePrior prior_interface;
         
+        /// class to interface with the plugin manager resume functions.
         class resume_params_func
         {
         private:
@@ -89,6 +90,8 @@ namespace Gambit
         {
             using Gambit::type_index;
             
+            /// These classes are used by the plugins to load and save data
+            /// @{
             class factoryBase
             {
             public:
@@ -128,6 +131,7 @@ namespace Gambit
                         delete *it;
                 }
             };
+            /// @}
             
             /// Structure that holds all the data provided by plugins about themselves.
             struct pluginData
