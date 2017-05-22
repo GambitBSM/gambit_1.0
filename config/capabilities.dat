@@ -861,6 +861,12 @@ LEP208_xsec_staurstaurbar: |
    The LEP pair production cross-section for sfermion
    eigenstates 'staur' and 'staurbar' at centre of mass energy 208 GeV.
 
+Pythia_8_212_EM_init: |
+   Initializes Pythia 8.212 EM.
+
+Pythia_8_212_init: |
+   Initializes Pythia 8.212.
+
 
 
 #-------------------------------------
@@ -1467,6 +1473,9 @@ PandaX_2016_Init: |
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
+SuperCDMS_2014_Init: |
+   Initialises a direct detection experiment with the properties of the 2014 analysis of SuperCDMS.
+
 FreeDetectorss: |
    Deletes the detector object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
 
@@ -1508,6 +1517,12 @@ InitHalo: |
 
 SetSHM: |
   Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
+
+nulike_init: |
+  Initializes nulike.
+
+nulike_1_0_4_init: |
+  Initializes nulike_1_0_4.
 
 Example_lnL_B: |
   Example log likelihood in ExampleBit B.
