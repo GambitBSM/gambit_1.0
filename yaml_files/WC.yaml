@@ -1,3 +1,11 @@
+#############################################################################
+## GAMBIT configuration for a MultiNest scan of flavour physics Wilson coeffs
+##
+## Uses likelihood constraints from flavour physics observables only,
+## without nuisance parameters.
+#############################################################################
+
+
 Parameters:
 
   StandardModel_SLHA2:
@@ -48,9 +56,11 @@ Parameters:
     Re_DeltaCQ2:  0
     Im_DeltaCQ2:  0
 
+
 Priors:
 
-  # All priors simple, so specified in Parameters section
+  # All priors are simple, so specified in Parameters section
+
 
 Printer:
 
@@ -60,11 +70,13 @@ Printer:
     output_file: "WC.hdf5"
     group: "/WC"
 
+
 Scanner:
 
   use_scanner: multinest
 
   scanners:
+
     multinest:
       plugin: multinest
       like:  LogLike
@@ -82,6 +94,7 @@ Scanner:
       like: LogLike
       grid_pts: 20
 
+
 ObsLikes:
 
   # Likelihoods
@@ -94,7 +107,7 @@ ObsLikes:
   - purpose:    LogLike
     capability: b2sgamma_LL
 
-  #Observables
+  # Observables
   - purpose:    Observable
     capability: bsgamma
 
@@ -122,6 +135,7 @@ ObsLikes:
   - purpose:    Observable
     capability: BKstarmumu_17_19
 
+
 Rules:
 
   # Use SuperIso instead of FeynHiggs for b->sgamma
@@ -132,12 +146,14 @@ Rules:
   - capability: Bsmumu_untag
     function: SI_Bsmumu_untag
 
+
 Logger:
 
   redirection:
     [Debug]   : "debug.log"
     [Default] : "default.log"
     [FlavBit] : "FlavBit.log"
+
 
 KeyValues:
 

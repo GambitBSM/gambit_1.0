@@ -15,7 +15,7 @@ DarkBit_MSSM7.yaml  --- DM constraint demo with a MultiNest scan of the MSSM7 mo
 DarkBit_SingletDM.yaml  --- DarkBit demo with a simple of MultiNest scan of Singlet DM model
 
 DecayBit_MSSM20.yaml  --- Test of DecayBit, printing out a decay table for MSSM20 at a single model point
-DecayBit_SingletDM.yaml  --- Test of DecayBit, printing out a decay table for Singlet DM at 20 model points
+DecayBit_SingletDM.yaml  --- Test of DecayBit, printing out a decay table for Singlet DM at 10 model points
 
 FlavBit_CMSSM.yaml  --- Flavour physics fits to CMSSM with Diver scan
 
