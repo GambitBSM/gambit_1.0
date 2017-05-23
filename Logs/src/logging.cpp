@@ -290,7 +290,7 @@ namespace Gambit
       , MPIsize(1)
     {
       #ifdef WITH_MPI
-      if(GMPI::Is_initialized())
+      if(GMPI::Is_initialized() && !GMPI::Is_finalized())
       {
         GMPI::Comm COMM_WORLD;
         MPIsize = COMM_WORLD.Get_size();
