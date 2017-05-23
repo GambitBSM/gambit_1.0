@@ -24,12 +24,16 @@
   #include <mpi.h>
 #endif
 
+#include <stdlib.h>
+#include <getopt.h>
+
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logmaster.hpp"
 #include "gambit/Printers/printermanager.hpp"
 #include "gambit/Utils/yaml_parser_base.hpp"
 #include "gambit/Utils/screen_print_utils.hpp"
 #include "gambit/Utils/table_formatter.hpp"
+#include "gambit/Utils/version.hpp"
 #include "gambit/ScannerBit/scannerbit.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
@@ -49,44 +53,6 @@ void do_cleanup()
 void sighandler(int)
 {
     Gambit::Scanner::Plugins::plugin_info.set_running(false);
-}
-
-inline bool arg_parser(std::string &filename, std::vector<std::string> &vec, int argc, char **argv)
-{
-    bool resume = true;
-    for (int i = 1; i < argc; i++)
-    {
-        std::string arg = argv[i];
-        if (arg == "-rf" || arg == "-fr")
-        {
-            i++;
-            if (i < argc)
-                filename = argv[i];
-            
-            resume = false;
-        }
-        else if (arg == "-f")
-        {
-            i++;
-            if (i < argc)
-                filename = argv[i];
-        }
-        else if (arg == "-r" || arg == "--restart")
-        {
-            resume = false;
-        }
-        else if (arg == "-h" || arg == "--help")
-        {
-            vec.resize(0);
-            return true;
-        }
-        else
-        {
-            vec.push_back(arg);
-        }
-    }
-    
-    return resume;
 }
 
 inline void scanner_diagnostic()
@@ -136,7 +102,7 @@ inline void ff_test_function_diagnostic(const std::string& command)
 
 inline void bail()
 {
-cout << "\nusage: scannerbit [options] [<command>]                                    "
+cout << "\nusage: ScannerBit_standalone [options] [<command>]                         "
         "\n                                                                           "
         "\nRun scan:                                                                  "
         "\n   ScannerBit_standalone -f <inifile>   Start a scan using instructions from inifile  "
@@ -151,7 +117,7 @@ cout << "\nusage: scannerbit [options] [<command>]                              
         "\n                                 ScannerBit_standalone MultiNest           "
         "\n                                                                           "
         "\nBasic options:                                                             "
-        //"\n   --version             Display GAMBIT/ScannerBit version information     "
+        "\n   -v/--version          Display GAMBIT/ScannerBit version information     "
         "\n   -h/--help             Display this usage information                    "
         "\n   -f <inifile>          Start scan using <inifile>                        "
         "\n   -r/--restart          Restart the scan defined by <inifile>. Existing   "
@@ -164,13 +130,68 @@ cout << "\nusage: scannerbit [options] [<command>]                              
         //scan_error().silent_forced_throw();
 }
 
+inline bool arg_parser(std::string &filename, std::vector<std::string> &vec, int argc, char **argv)
+{
+    int iarg = 0;
+    int index = -1;
+    int file_index;
+    bool resume = true;
+    
+    if (argc < 2)
+    {
+        bail();
+        return EXIT_SUCCESS;
+    }
+    
+    const struct option primary_options[] =
+    {
+    {"version", no_argument, 0, 'v'},
+    {"restart", no_argument, 0, 'r'},
+    {0,0,0,0},
+    };
+
+    while(iarg != -1)
+    {
+        iarg = getopt_long(argc, argv, "vhrf:", primary_options, &index);
+        
+        switch (iarg)
+        {
+            case 'v':
+            {
+                std::cout << "\nThis is ScannerBit v" + gambit_version() << std::endl;
+                //logger().disable();
+                return EXIT_SUCCESS;
+            }
+            case 'h':
+            case '?':
+                bail();
+                return EXIT_SUCCESS;
+            case 'r':
+                resume = false;
+                break;
+            case 'f':
+                filename = optarg;
+                file_index = optind - 1;
+                break;
+        }
+    }
+    
+    for (int i = 1; i < argc; i++)
+    {
+        if (i != file_index && argv[i][0] != '-')
+            vec.push_back(argv[i]);
+    }
+    
+    return resume;
+}
+
 int main(int argc, char **argv)
 {
     signal(SIGTERM, sighandler_soft);
     signal(SIGINT,  sighandler_soft);
     signal(SIGUSR1, sighandler_soft);
     signal(SIGUSR2, sighandler_soft);
-
+    
     #ifdef WITH_MPI
       GMPI::Init();
     #endif
@@ -181,17 +202,17 @@ int main(int argc, char **argv)
     
     {
         #ifdef WITH_MPI
-            /// Create an MPI communicator group for use by error handlers
+            // Create an MPI communicator group for use by error handlers
             GMPI::Comm errorComm;
             errorComm.dup(MPI_COMM_WORLD,"errorComm"); // duplicates the COMM_WORLD context
             const int ERROR_TAG=1;         // Tag for error messages
             errorComm.mytag = ERROR_TAG;
             signaldata().set_MPI_comm(&errorComm); // Provide a communicator for signal handling routines to use.
-            /// Create an MPI communicator group for ScannerBit to use
+            // Create an MPI communicator group for ScannerBit to use
             GMPI::Comm scanComm;
             scanComm.dup(MPI_COMM_WORLD,"scanComm"); // duplicates the COMM_WORLD context
             Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
-            /// MPI rank for use in error messages;
+            // MPI rank for use in error messages;
             int rank = scanComm.Get_rank();
         #else
             int rank = 0;
@@ -199,13 +220,13 @@ int main(int argc, char **argv)
         
         try
         {
-            bool help = true;
             std::string filename = "";
             std::vector<std::string> args;
             bool resume = arg_parser(filename, args, argc, argv);
             
             if (args.size() > 0)
             {
+                bool help = true;
                 std::unordered_set<std::string> valid_commands;
                 std::vector<std::string> scanner_names = Scanner::Plugins::plugin_info().print_plugin_names("scanner");
                 std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");
@@ -232,17 +253,15 @@ int main(int argc, char **argv)
                     }
                 }
                 
-                if (help)
+                if (help && filename == "")
                 {
                     bail();
+                    return EXIT_SUCCESS;
                 }
-
-                return EXIT_SUCCESS;
             }
             
             if (filename != "")
             {
-                help = false;
                 IniParser::Parser iniFile;
                 iniFile.readFile(filename);
                 
@@ -270,17 +289,11 @@ int main(int argc, char **argv)
                 signaldata().set_cleanup(&do_cleanup);
 
                 //Do the scan!
-                logger() << "Starting scan." << EOM;
+                //logger() << "Starting scan." << EOM;
                 scan.Run();
 
                 if (rank == 0)
                     std::cout << "ScannerBit has finished successfully!" << std::endl;
-            }
-            
-            if (help)
-            {
-                bail();
-                return EXIT_SUCCESS;
             }
         }
         
@@ -297,6 +310,7 @@ int main(int argc, char **argv)
             if(rank == 0) 
                 std::cout << ss.str();
         }
+        
         catch (const HardShutdownException& e)
         {
             std::ostringstream ss;
@@ -308,7 +322,7 @@ int main(int argc, char **argv)
             return EXIT_SUCCESS;
         }
 
-        /// Shut down due receipt of MPI emergency shutdown message
+        // Shut down due receipt of MPI emergency shutdown message
         catch (const MPIShutdownException& e)
         {
             std::ostringstream ss;
@@ -341,6 +355,7 @@ int main(int argc, char **argv)
         }
         
         #ifdef WITH_MPI
+        if (signaldata().shutdown_begun())
             signaldata().discard_excess_shutdown_messages();
         #endif
     }
