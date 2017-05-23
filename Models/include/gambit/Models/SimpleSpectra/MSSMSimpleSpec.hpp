@@ -46,6 +46,7 @@ namespace Gambit
            double get_vd()  const;
            double get_vu()  const;
            double get_tanbeta() const;
+           double get_tanbeta_mZ() const;
 
            double get_MassB () const;
            double get_MassWB() const;

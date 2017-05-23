@@ -232,6 +232,7 @@ namespace Gambit
       /// @{ Getters for MSSM information
       double MSSMea::get_Mu()      const{ return getdata("HMIX",1); } // mu(Q) DRbar
       double MSSMea::get_tanbeta() const{ return getdata("HMIX",2); } // tan beta(Q) DRbar ( = vu/vd)
+      double MSSMea::get_tanbeta_mZ() const{ return getdata("MINPAR",3); } // tan beta(mZ) DRbar
       double MSSMea::get_v()       const{ return getdata("HMIX",3); } // v = sqrt(vd^2 + vu^2) DRbar
       double MSSMea::get_mA2()     const{ return getdata("HMIX",4); } // m^2_A=[m3^2/cosBsinB](Q) DRbar, tree
       ////// THESE ARE NOT SLHA! Therefore cannot rely on them being in the SLHAea object.
@@ -509,6 +510,7 @@ namespace Gambit
             tmp_map["g2"]= &Model::get_g2;
             tmp_map["g3"]= &Model::get_g3;
             tmp_map["tanbeta"]= &Model::get_tanbeta;
+            tmp_map["tanbeta(mZ)"]= &Model::get_tanbeta_mZ; // Special entry for reproducing MINPAR entry in SLHA
             tmp_map["sinW2"]= &Model::get_sinthW2_DRbar;
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
