@@ -209,9 +209,10 @@ namespace Gambit
       mssmspec.set_override(Par::Pole_Mass_1srd_low,  rd_mW, "W+", true);
 
       // Save the input value of TanBeta
-      if (input_Param.find("TanBeta") != input_Param.end())
+      // Probably need to make it a full requirement of the MSSM SpectrumContents
+      if(input_Param.find("TanBeta") != input_Param.end())
       {
-        mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", true);
+        mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "tanbeta(mZ)", true);
       }
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator

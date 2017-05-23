@@ -87,7 +87,7 @@ namespace Gambit
          // TODO: This needs to become more sophisticated to deal with data potentially
          // produced by different LE and HE spectrum sources. For now whichever subspectrum
          // adds this block first will "win".
-         if(not SLHAea_check_block(slha, "SPINFO", 1, false))
+         if(not SLHAea_block_exists(slha, "SPINFO"))
          {
             SLHAea_add_block(slha, "SPINFO");
             SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+backend_name);
