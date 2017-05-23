@@ -46,8 +46,8 @@ using namespace Gambit::Scanner;
 Printers::PrinterManager * printerInterface = NULL;
 
 void do_cleanup()
-{ 
-    Gambit::Scanner::Plugins::plugin_info.dump(); // Also calls printer finalise() routine 
+{
+    Gambit::Scanner::Plugins::plugin_info.dump(); // Also calls printer finalise() routine
 }
 
 void sighandler(int)
@@ -106,7 +106,7 @@ cout << "\nusage: ScannerBit_standalone [options] [<command>]                   
         "\n                                                                           "
         "\nRun scan:                                                                  "
         "\n   ScannerBit_standalone -f <inifile>   Start a scan using instructions from inifile  "
-        "\n                           e.g.: ScannerBit_standalone -f scannerbit.yaml  "
+        "\n                           e.g.: ScannerBit_standalone -f yaml_files/ScannerBit.yaml  "
         "\n                                                                           "
         "\nAvailable commands:                                                        "
         "\n   scanners              List registered scanners plugins                  "
@@ -136,13 +136,13 @@ inline bool arg_parser(std::string &filename, std::vector<std::string> &vec, int
     int index = -1;
     int file_index;
     bool resume = true;
-    
+
     if (argc < 2)
     {
         bail();
         return EXIT_SUCCESS;
     }
-    
+
     const struct option primary_options[] =
     {
     {"version", no_argument, 0, 'v'},
@@ -153,7 +153,7 @@ inline bool arg_parser(std::string &filename, std::vector<std::string> &vec, int
     while(iarg != -1)
     {
         iarg = getopt_long(argc, argv, "vhrf:", primary_options, &index);
-        
+
         switch (iarg)
         {
             case 'v':
@@ -175,13 +175,13 @@ inline bool arg_parser(std::string &filename, std::vector<std::string> &vec, int
                 break;
         }
     }
-    
+
     for (int i = 1; i < argc; i++)
     {
         if (i != file_index && argv[i][0] != '-')
             vec.push_back(argv[i]);
     }
-    
+
     return resume;
 }
 
@@ -191,15 +191,15 @@ int main(int argc, char **argv)
     signal(SIGINT,  sighandler_soft);
     signal(SIGUSR1, sighandler_soft);
     signal(SIGUSR2, sighandler_soft);
-    
+
     #ifdef WITH_MPI
       GMPI::Init();
     #endif
-      
+
     #ifdef WITH_MPI
         bool use_mpi_abort = true; // Set later via inifile value
     #endif
-    
+
     {
         #ifdef WITH_MPI
             // Create an MPI communicator group for use by error handlers
@@ -211,19 +211,19 @@ int main(int argc, char **argv)
             // Create an MPI communicator group for ScannerBit to use
             GMPI::Comm scanComm;
             scanComm.dup(MPI_COMM_WORLD,"scanComm"); // duplicates the COMM_WORLD context
-            Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
+            Scanner::Plugins::plugin_info.initMPIdata(&scanComm);
             // MPI rank for use in error messages;
             int rank = scanComm.Get_rank();
         #else
             int rank = 0;
         #endif
-        
+
         try
         {
             std::string filename = "";
             std::vector<std::string> args;
             bool resume = arg_parser(filename, args, argc, argv);
-            
+
             if (args.size() > 0)
             {
                 bool help = true;
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
                 valid_commands.insert("objectives");
                 valid_commands.insert("test-functions");
                 valid_commands.insert("scanners");
-                
+
                 for (auto &&command : args)
                 {
                     if (valid_commands.find(command) != valid_commands.end())
@@ -252,19 +252,19 @@ int main(int argc, char **argv)
                         ff_prior_diagnostic(command);
                     }
                 }
-                
+
                 if (help && filename == "")
                 {
                     bail();
                     return EXIT_SUCCESS;
                 }
             }
-            
+
             if (filename != "")
             {
                 IniParser::Parser iniFile;
                 iniFile.readFile(filename);
-                
+
                 #ifdef WITH_MPI
                     use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
                 #endif
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
 
                 //Create the master scan manager
                 Scanner::Scan_Manager scan(scanner_node, &printerManager, 0);
-                
+
                 // Set cleanup function to call during premature shutdown
                 signaldata().set_cleanup(&do_cleanup);
 
@@ -296,7 +296,7 @@ int main(int argc, char **argv)
                     std::cout << "ScannerBit has finished successfully!" << std::endl;
             }
         }
-        
+
         catch (const SilentShutdownException& e)
         {
         // No need to do anything, just let program shut down normally from here
@@ -307,18 +307,18 @@ int main(int argc, char **argv)
             std::ostringstream ss;
             ss << e.what() << endl;
             ss << "ScannerBit has performed a controlled early shutdown." << endl;
-            if(rank == 0) 
+            if(rank == 0)
                 std::cout << ss.str();
         }
-        
+
         catch (const HardShutdownException& e)
         {
             std::ostringstream ss;
             ss << e.what() << endl;
             ss << "ScannerBit has shutdown (but could not finalise or abort MPI)." << endl;
-            if(rank == 0) 
+            if(rank == 0)
                 std::cout << ss.str();
-            
+
             return EXIT_SUCCESS;
         }
 
@@ -328,13 +328,13 @@ int main(int argc, char **argv)
             std::ostringstream ss;
             ss << e.what() << endl;
             ss << "ScannerBit has shutdown due to an error on another process." << endl;
-            if(rank == 0) 
+            if(rank == 0)
                 std::cout << ss.str();
             #ifdef WITH_MPI
                 signaldata().discard_excess_shutdown_messages();
                 GMPI::FinalizeWithTimeout(use_mpi_abort);
-            #endif   
-                
+            #endif
+
             return EXIT_FAILURE;
         }
 
@@ -349,17 +349,17 @@ int main(int argc, char **argv)
                 signaldata().broadcast_shutdown_signal();
                 signaldata().discard_excess_shutdown_messages();
                 GMPI::FinalizeWithTimeout(use_mpi_abort);
-            #endif 
-                
-            return EXIT_FAILURE;  
+            #endif
+
+            return EXIT_FAILURE;
         }
-        
+
         #ifdef WITH_MPI
         if (signaldata().shutdown_begun())
             signaldata().discard_excess_shutdown_messages();
         #endif
     }
-    
+
     #ifdef WITH_MPI
         GMPI::Finalize();
     #endif
