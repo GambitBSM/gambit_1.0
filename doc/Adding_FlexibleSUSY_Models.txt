@@ -137,17 +137,18 @@ class used for transporting all spectrum information in GAMBIT. The
 purpose of the module function is to run the spectrum generator, wrap
 it in a Spectrum object, and return this wrapper object to GAMBIT. 
 
-First, a dependency on SMINPUTS is retrieved (line 5). This is Standard Model information required to run the spectrum generator (see SpecBit manual for
-details on SMINPUTS).
+First, a dependency on SMINPUTS is retrieved (line 5). This is 
+Standard Model information required to run the spectrum generator 
+(see SpecBit manual for details on SMINPUTS).
 
-Next, a helper function "fill_SingletDM_input" is run (line 10), which fills a
-FlexibleSUSY parameter structure "SingletDM_input_parameters" with the
-appropriate parameters supplied by the GAMBIT model hierarchy. If your
-spectrum generator operates with a model outside those shipped with 
-GAMBIT then you will need to add appropriate model parameters for it 
-to the GAMBIT model hierarchy (see the main GAMBIT manual for details). 
-The SingletDM_input_parameters struct is accessible via the 
-FlexibleSUSY headers which are included in step 1.
+Next, a helper function "fill_SingletDM_input" is run (line 10), which
+fills a FlexibleSUSY parameter structure "SingletDM_input_parameters" 
+with the appropriate parameters supplied by the GAMBIT model 
+hierarchy. If your spectrum generator operates with a model outside
+those shipped with GAMBIT then you will need to add appropriate model 
+parameters for it to the GAMBIT model hierarchy (see the main GAMBIT 
+manual for details). The SingletDM_input_parameters struct is 
+accessible via the FlexibleSUSY headers which are included in step 1.
 
 Next, the input parameters are supplied to a GAMBIT template helper
 function (line 11) that we use to automate the running of FlexibleSUSY
