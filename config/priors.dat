@@ -54,12 +54,12 @@ priors: |
   #remove_newlines
   The various priors that GAMBIT recognises are listed above, separated into three groups: one-dimensional priors (flat, log, double_log_flat_join, sin, cos, tan, cot), multi-dimensional priors (gaussian, cauchy, dummy), and others (same_as, fixed_value, plugin, none).
 
-"1d": [flat, log, double_log_flat_join, sin, cos, tan, cot]
-"nd": [gaussian, cauchy, dummy]
-"other": [same_as, fixed_value, plugin, none]
-"internal": [composite]
+"1d_priors": [flat, log, double_log_flat_join, sin, cos, tan, cot]
+"nd_priors": [gaussian, cauchy, dummy]
+"other_priors": [same_as, fixed_value, plugin, none]
+"internal_priors": [composite]
 
-1d: |
+1d_priors: |
   #remove_newlines
   Specifies a one-dimensional prior.  Different prior types that fall into this
   category are flat (uniform distribution), log (1/x distribution), and trig
@@ -80,7 +80,7 @@ priors: |
       lower:       the lower edge of the overall prior box
       upper:       the upper edge of the overall prior box
 
-nd: |
+nd_priors: |
   #remove_newlines
   Specifies a multivariate prior.
 
@@ -89,7 +89,7 @@ nd: |
       sigs ([1...]):  specifies the sqrt of the diagonal components of the covariance matrix.
       mean ([0...]):  specifies the mean (or median) of the prior distribution.
 
-other: |
+other_priors: |
   #remove_newlines
 
   same_as:
@@ -118,5 +118,5 @@ other: |
   #remove_newlines
     Does absolutely nothing, not even a transformation.  Used for parameters that are being postprocessed
 
-internal: The maze is not meant for you.
+internal_priors: The maze is not meant for you.
 
