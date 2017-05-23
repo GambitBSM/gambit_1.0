@@ -59,9 +59,7 @@ scanner_plugin(great, version(1, 0, 0))
   // Tell CMake to search for the GreAT library.
   reqd_libraries("great");
   reqd_headers("fparser.hh", "TGreatModel.h", "TGreatManager.h", "TGreatMCMCAlgorithmCovariance.h");
-#ifdef ROOT_6_OR_LATER_FOUND
-  cxx_flags("-std=c++14");
-#endif
+
   // Code to execute when the plugin is loaded.
   plugin_constructor
   {

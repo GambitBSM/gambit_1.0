@@ -23,6 +23,7 @@
 
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Elements/ini_functions.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit
 {
@@ -775,14 +776,14 @@ namespace Gambit
          // Make sure to overwrite all entries if they exist already (from say a "hurriedly" copied SM subspectrum + unknown extra MSSM junk)
 
          //SPINFO block should be added separately.
-         // MINPAR block //TODO: don't add MINPAR block? We don't in general know what these were anymore.
-         //SLHAea_check_block(slha, "MINPAR");
-         //if (mssmspec.has(Par::dimensionless,"TanBeta_input"))
-         //{
-         //  SLHAea_add_from_subspec(slha,LOCAL_INFO,mssmspec,Par::dimensionless,"TanBeta_input","MINPAR",3,"# tanbeta(mZ)^DRbar");
-         //}
-         //int sgnmu = sign(mssmspec.get(Par::mass1,"Mu")); // Wait, this is at some different scale to input. Don't want this.
-         //SLHAea_add(slha,"MINPAR",4,sgnmu,"# sign(mu(Q_input))", true);
+         // MINPAR block; some programs need tanbeta(mZ), so we should output it here if possible
+         SLHAea_check_block(slha, "MINPAR");
+         if(mssmspec.has(Par::dimensionless,"tanbeta(mZ)"))
+         {
+            SLHAea_add_from_subspec(slha,LOCAL_INFO,mssmspec,Par::dimensionless,"tanbeta(mZ)","MINPAR",3,"# tanbeta(mZ)^DRbar");
+         }
+         int sgnmu = sgn(mssmspec.get(Par::mass1,"Mu")); // Mu isn't at the input scale anymore, but sign(mu) doesn't change with running.
+         SLHAea_add(slha,"MINPAR",4,sgnmu,"# sign(mu)", true);
 
          // HMIX block
          SLHAea_delete_block(slha, "HMIX");

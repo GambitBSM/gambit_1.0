@@ -65,6 +65,7 @@ namespace Gambit {
 
      // EXTRAS! Kind of logical to always include these, without forcing users to calculate them themselves
      addParameter(Par::dimensionless, "tanbeta", scalar);
+     //addParameter(Par::dimensionless, "tanbeta(mZ)", scalar); // i.e. the SLHA MINPAR value of tanbeta(mZ). Not yet a strict requirement, but highly recommended for wrappers to add it via override setters.
      addParameter(Par::mass2, "mA2" , scalar);
      //
 
