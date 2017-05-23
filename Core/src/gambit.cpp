@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors:
-///   
+///
 ///  \author The GAMBIT Collaboration
 ///  \date 2012 Oct onwards
 ///
@@ -28,8 +28,8 @@ using namespace LogTags;
 
 /// Cleanup function
 void do_cleanup()
-{ 
-    Gambit::Scanner::Plugins::plugin_info.dump(); // Also calls printer finalise() routine 
+{
+  Gambit::Scanner::Plugins::plugin_info.dump(); // Also calls printer finalise() routine
 }
 
 /// Main GAMBIT program
@@ -37,6 +37,10 @@ int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
   cout << std::setprecision(Core().get_outprec());
+
+  // Default exit behaviour in cases where no exceptions are raised
+  int return_value(EXIT_SUCCESS);
+  bool allow_finalize(true);
 
   #ifdef WITH_MPI
     GMPI::Init();
@@ -50,7 +54,7 @@ int main(int argc, char* argv[])
     signal(SIGINT,  sighandler_soft);
     signal(SIGUSR1, sighandler_soft);
     signal(SIGUSR2, sighandler_soft);
- 
+
     #ifdef WITH_MPI
       /// Create an MPI communicator group for use by error handlers
       GMPI::Comm errorComm;
@@ -61,7 +65,7 @@ int main(int argc, char* argv[])
       /// Create an MPI communicator group for ScannerBit to use
       GMPI::Comm scanComm;
       scanComm.dup(MPI_COMM_WORLD,"scanComm"); // duplicates the COMM_WORLD context
-      Scanner::Plugins::plugin_info.initMPIdata(&scanComm); 
+      Scanner::Plugins::plugin_info.initMPIdata(&scanComm);
       /// MPI rank for use in error messages;
       int rank = scanComm.Get_rank();
     #else
@@ -73,7 +77,7 @@ int main(int argc, char* argv[])
       // Parse command line arguments, launching into the appropriate diagnostic mode
       // if the argument passed warrants it. Otherwise just get the filename.
       const str filename = Core().run_diagnostic(argc,argv);
- 
+
       if (rank == 0)
       {
         cout << endl << "Starting GAMBIT" << endl;
@@ -91,8 +95,8 @@ int main(int argc, char* argv[])
       logger() << Core().getModuleFunctors().size() << endl;
       logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
       logger() << Core().getBackendFunctors().size() << EOM;
- 
-      // Read YAML file, which also initialises the logger. 
+
+      // Read YAML file, which also initialises the logger.
       IniParser::IniFile iniFile;
       iniFile.readFile(filename);
 
@@ -106,7 +110,7 @@ int main(int argc, char* argv[])
 
       // Determine selected model(s)
       std::set<str> selectedmodels = iniFile.getModelNames();
-    
+
       // Activate "primary" model functors
       Core().registerActiveModelFunctors( Models::ModelDB().getPrimaryModelFunctorsToActivate( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
@@ -132,7 +136,7 @@ int main(int argc, char* argv[])
 
       // Report the proposed (output) functor evaluation order
       dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
-      
+
       // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
       if (not Core().show_runorder)
       {
@@ -142,14 +146,14 @@ int main(int argc, char* argv[])
             , errorComm
           #endif
         );
- 
+
         //Make scanner yaml node
         YAML::Node scanner_node;
         scanner_node["Scanner"] = iniFile.getScannerNode();
         scanner_node["Parameters"] = iniFile.getParametersNode();
         scanner_node["Priors"] = iniFile.getPriorsNode();
 
-        //Create the master scan manager 
+        //Create the master scan manager
         Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
 
         // Set cleanup function to call during premature shutdown
@@ -163,23 +167,23 @@ int main(int argc, char* argv[])
         if (rank == 0) std::cerr << "Starting scan." << std::endl;
         scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
         logger().enable(); // Turn logs back on (in case they were disabled for speed)
-        // Check why we have exited the scanner; scan may have been terminated early by a signal. 
-        // We assume here that because the scanner has exited that it has already down whatever 
+        // Check why we have exited the scanner; scan may have been terminated early by a signal.
+        // We assume here that because the scanner has exited that it has already down whatever
         // cleanup it requires, including finalising the printers, i.e. the 'do_cleanup()' function will NOT run.
         if(signaldata().shutdown_begun())
         {
            logger() << "GAMBIT has performed a controlled early shutdown due to early termination of the scanner plugin." << EOM;
            if (rank == 0) cout << "GAMBIT has performed a controlled early shutdown." << endl << endl;
-        } 
+        }
         else
         {
-           //Scan is done; inform signal handlers 
+           //Scan is done; inform signal handlers
            signaldata().set_shutdown_begun();
            logger() << "GAMBIT run completed successfully." << EOM;
            if (rank == 0) cout << endl << "GAMBIT has finished successfully!" << endl << endl;
         }
       }
-    
+
     }
 
     /// Special catch block for silent shutdown
@@ -234,10 +238,10 @@ int main(int argc, char* argv[])
         logger() << ss.str() << EOM;
         #ifdef WITH_MPI
           signaldata().discard_excess_shutdown_messages();
-          GMPI::FinalizeWithTimeout(use_mpi_abort); // Do we need to move this outside the main scope to destruct all the MPI communicator objects first?
-        #endif     
+          allow_finalize = GMPI::PrepareForFinalizeWithTimeout(use_mpi_abort);
+        #endif
       }
-      return EXIT_FAILURE;
+      return_value = EXIT_FAILURE;
     }
 
     catch (const std::exception& e)
@@ -250,9 +254,9 @@ int main(int argc, char* argv[])
       #ifdef WITH_MPI
         signaldata().broadcast_shutdown_signal();
         signaldata().discard_excess_shutdown_messages();
-        GMPI::FinalizeWithTimeout(use_mpi_abort);
-      #endif     
-      return EXIT_FAILURE;  
+        allow_finalize = GMPI::PrepareForFinalizeWithTimeout(use_mpi_abort);
+      #endif
+      return_value = EXIT_FAILURE;
     }
 
     catch (str& e)
@@ -267,13 +271,13 @@ int main(int argc, char* argv[])
       #ifdef WITH_MPI
         signaldata().broadcast_shutdown_signal();
         signaldata().discard_excess_shutdown_messages();
-        GMPI::FinalizeWithTimeout(use_mpi_abort);
-      #endif     
-      return EXIT_FAILURE;  
+        allow_finalize = GMPI::PrepareForFinalizeWithTimeout(use_mpi_abort);
+      #endif
+      return_value = EXIT_FAILURE;
     }
 
     #ifdef WITH_MPI
-      signaldata().discard_excess_shutdown_messages();
+      if (signaldata().shutdown_begun()) signaldata().discard_excess_shutdown_messages();
       // If all processes receive a POSIX signal to shutdown there might be many of these
       // (e.g. says 1000 processes all independently get a POSIX signal to shut down;
       // they will each broadcast this command via MPI to all other processes, i.e.
@@ -284,9 +288,9 @@ int main(int argc, char* argv[])
   } // End main scope; want to destruct all communicators before MPI_Finalize() is called
 
   #ifdef WITH_MPI
-    GMPI::Finalize();
+    if (allow_finalize) GMPI::Finalize();
   #endif
 
-  return EXIT_SUCCESS;
+  return return_value;
 
 }

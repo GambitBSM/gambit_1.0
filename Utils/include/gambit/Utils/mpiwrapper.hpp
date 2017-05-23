@@ -455,8 +455,8 @@ namespace Gambit
       /// Finalize MPI
       void Finalize();
 
-      // Finalize MPI, but call MPI_abort and exit function if timeout is exceeded
-      void FinalizeWithTimeout(bool use_mpi_abort);
+      /// Prepare for calling MPI_Finalize, but call MPI_abort and exit function if timeout is exceeded.
+      bool PrepareForFinalizeWithTimeout(bool use_mpi_abort);
 
       /// Nice wrapper for getting the message size from an MPI_status struct.
       /// Provide the type whose MPI_Datatype you want to retrieve as the

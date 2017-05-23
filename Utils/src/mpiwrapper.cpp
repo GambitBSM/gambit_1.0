@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Apr
@@ -33,9 +33,9 @@ namespace Gambit
 
    namespace GMPI
    {
- 
+
       /// @{ Main "Communicator" class
-            
+
       /// @{ Constructors
       /// Default (attaches to MPI_COMM_WORLD):
       Comm::Comm() : boundcomm(MPI_COMM_WORLD), myname("COMM_WORLD")
@@ -65,7 +65,7 @@ namespace Gambit
          int errflag = MPI_Comm_dup(comm, &boundcomm);
          if(errflag!=0) {
            std::ostringstream errmsg;
-           errmsg << "Error performing MPI_Comm_dup! Received error flag: "<<errflag; 
+           errmsg << "Error performing MPI_Comm_dup! Received error flag: "<<errflag;
            utils_error().raise(LOCAL_INFO, errmsg.str());
          }
          // Change bound name
@@ -75,7 +75,7 @@ namespace Gambit
       /// Destructor
       ///́ Warn if any undelivered messages exist
       Comm::~Comm() { check_for_undelivered_messages(); }
-      /// @}      
+      /// @}
 
       /// Check for undelivered messages (unless finalize has already been called)
       void Comm::check_for_undelivered_messages()
@@ -94,7 +94,7 @@ namespace Gambit
           }
         }
       }
-  
+
       /// Get total number of MPI tasks in this communicator group
       int Comm::Get_size() const
       {
@@ -122,10 +122,10 @@ namespace Gambit
       MPI_Request req_null = MPI_REQUEST_NULL;
 
       /// Tells master to wait until all other processes pass this function, with the specified MPI tag
-      /// Could be modified to take a function pointer to loop over, 
+      /// Could be modified to take a function pointer to loop over,
       void Comm::masterWaitForAll(int tag)
       {
-         std::size_t mpiSize = Get_size(); 
+         std::size_t mpiSize = Get_size();
          std::size_t myRank  = Get_rank();
          if(mpiSize>1)
          {
@@ -136,7 +136,7 @@ namespace Gambit
                   // Do a blocking wait for each worker, until all messages received
                   int recv_buffer = 0; // To receive the null message
                   //std::cerr<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<sender<<std::endl;
-                  Recv(&recv_buffer, 1, sender, tag); 
+                  Recv(&recv_buffer, 1, sender, tag);
                   //std::cerr<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<sender<<std::endl;
                }
             }
@@ -153,7 +153,7 @@ namespace Gambit
       /// Tells all processes to wait until master passes this point before proceeding, with the specified MPI tag
       void Comm::allWaitForMaster(int tag)
       {
-         std::size_t mpiSize = Get_size(); 
+         std::size_t mpiSize = Get_size();
          std::size_t myRank  = Get_rank();
          if(mpiSize>1)
          {
@@ -183,7 +183,7 @@ namespace Gambit
       /// Calls "func" periodically while waiting (can be used to e.g. check for error messages from other processes)
       void Comm::allWaitForMasterWithFunc(int tag, void (*func)())
       {
-         std::size_t mpiSize = Get_size(); 
+         std::size_t mpiSize = Get_size();
          std::size_t myRank  = Get_rank();
          if(mpiSize>1)
          {
@@ -213,7 +213,7 @@ namespace Gambit
                     Recv(&recv_buffer, 1, 0 /*source*/, tag);
                     message_received = true;
                   }
- 
+
                   if(not message_received)
                   {
                     // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
@@ -231,7 +231,7 @@ namespace Gambit
 
       bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag)
       {
-         std::size_t mpiSize = Get_size(); 
+         std::size_t mpiSize = Get_size();
          std::size_t myRank  = Get_rank();
          bool timedout = false;
          double total_timeout = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
@@ -247,7 +247,7 @@ namespace Gambit
             // First, tell all other processes that we have entered the barrier.
             IsendToAll(&BARRIER_ENTERED, 1, tag, &req_null);
 
-            // Setup timeout interval and sleep time             
+            // Setup timeout interval and sleep time
             unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
             std::chrono::time_point<std::chrono::system_clock> truestart = std::chrono::system_clock::now();
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
@@ -270,7 +270,7 @@ namespace Gambit
                      // (for example if it has already timed out waiting for us in this barrier for several attempts)
                      int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
                      Recv_all(&recv_buffer, 1, source, tag, max_loops);
-                     // The last message will indicate whether the sender process is waiting in their barrier, or has left it already 
+                     // The last message will indicate whether the sender process is waiting in their barrier, or has left it already
                      if(recv_buffer==BARRIER_ENTERED)
                      {
                        // Ok the source is (probably) waiting at this barrier (modulo message delays)
@@ -281,9 +281,9 @@ namespace Gambit
                      {
                        if(not entered[source])
                        {
-                         LOGGER << "rank " << myRank <<": Last message from process "<<source<<" indicates that it has LEFT BarrierWithTimeout (with tag "<<tag<<"). We did not see it enter this barrier. We will continue waiting in the hope that it will re-enter the barrier soon."<<EOM;                         
-                       } 
-                       else 
+                         LOGGER << "rank " << myRank <<": Last message from process "<<source<<" indicates that it has LEFT BarrierWithTimeout (with tag "<<tag<<"). We did not see it enter this barrier. We will continue waiting in the hope that it will re-enter the barrier soon."<<EOM;
+                       }
+                       else
                        {
                           LOGGER << "rank " << myRank <<": Process "<<source<<" has LEFT BarrierWithTimeout (with tag "<<tag<<"). We will therefore abandon the barrier as well."<<EOM;                                 timedout = true;
                        }
@@ -291,14 +291,14 @@ namespace Gambit
                      else
                      {
                        std::ostringstream errmsg;
-                       errmsg << "Error in BarrierWithTimeout! Unrecognised barrier entry/exit message received from process "<<source<<" (value was "<<recv_buffer<<")."; 
+                       errmsg << "Error in BarrierWithTimeout! Unrecognised barrier entry/exit message received from process "<<source<<" (value was "<<recv_buffer<<").";
                        utils_error().raise(LOCAL_INFO, errmsg.str());
                      }
-                  } 
+                  }
                }
 
                // While waiting, could do work here.
-                
+
                LOGGER << "rank " << myRank <<": sleeping... (total timeout = "<<total_timeout<<"ms; sleeptime = "<<sleeptime.tv_nsec*1e-6<<"ms)"<< EOM;
                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
                nanosleep(&sleeptime,NULL);
@@ -310,9 +310,9 @@ namespace Gambit
                double time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_waited).count();
                double true_time_waited_d = std::chrono::duration_cast<std::chrono::milliseconds>(true_time_waited).count();
 
-               double fraction = time_waited_d/total_timeout; 
+               double fraction = time_waited_d/total_timeout;
                LOGGER << "rank " << myRank <<": time_waited = "<<time_waited_d<<"ms ("<<fraction*100<<"%% of time allowed). True time waited is "<<true_time_waited_d<<"ms."<< EOM;
-               
+
                if(not timedout)
                {
                  if(time_waited >= timeout) timedout = true;
@@ -335,12 +335,12 @@ namespace Gambit
             LOGGER << EOM;
             // Tell all other processes that we are leaving the barrier.
             IsendToAll(&BARRIER_LEFT, 1, tag, &req_null);
-         } 
+         }
          else
          {
             // Do a barrier to sync the processes
             //LOGGER << "rank " << myRank << ": Entering final sync Barrier in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
-            //Barrier(); // For some reason this did not work as expected... some processed stopped by it and others were not? One process even exited, without the others! Wtf. 
+            //Barrier(); // For some reason this did not work as expected... some processed stopped by it and others were not? One process even exited, without the others! Wtf.
             LOGGER << "rank " << myRank << ": Synchronisation succeeded in BarrierWithTimeout (tag="<<tag<<")!" << EOM;
          }
 
@@ -360,11 +360,11 @@ namespace Gambit
       /// This helps the synchronisation to be achieved next time.
       /// NOTE! Don't use this! It is still experimental. It works, but can leave some messages
       /// lying around which can screw up MPI_Finalize. Stick to plain BarrierWithTimeout for now.
-      bool Comm::BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
-                                          const int tag_entered, 
+      bool Comm::BarrierWithCommonTimeout(std::chrono::duration<double> timeout,
+                                          const int tag_entered,
                                           const int tag_timeleft)
       {
-         std::size_t mpiSize = Get_size(); 
+         std::size_t mpiSize = Get_size();
          std::size_t myRank  = Get_rank();
          bool timedout = false;
 
@@ -379,7 +379,7 @@ namespace Gambit
             // First, tell all other processes that we have entered the barrier
             IsendToAll(&null_send_buffer, 1, tag_entered, &req_null);
 
-            // Setup timeout interval and sleep time             
+            // Setup timeout interval and sleep time
             unsigned int Nchecks = 10; // Check for messages 10 times evenly spaced over the timeout interval
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
@@ -399,7 +399,7 @@ namespace Gambit
             unsigned int overtime_loop = 0;
             unsigned int max_overtime_loops = 10; // Should really only need 1 on average
             bool overtime_exceeded = true; // No overtime used by default, only turned on if extra message cleanup needed
- 
+
             // Now, loop and wait for all other processes to send their own entering signals
             while( (not (timedout and overtime_exceeded)) // Exit if both timeout and overtime loops are elapsed.
                and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
@@ -419,7 +419,7 @@ namespace Gambit
                      // (for example if it has already timed out waiting for us in this barrier for several attempts)
                      int max_loops = 10000; // Just hardcoded; if more messages than this are waiting then something crazy has happened.
                      Recv_all(&null_recv_buffer, 1, source, tag_entered, max_loops);
-                  } 
+                  }
                }
 
                // Send our "timeleft" data to all processes waiting in this loop (that we know about), if we haven't already done so
@@ -433,7 +433,7 @@ namespace Gambit
                      std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                      std::chrono::duration<double> our_timeleft = timeout - (current - start);
                      buf_timeleft = std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count();
-                     Isend(&buf_timeleft, 1, source, tag_timeleft, &req_null); 
+                     Isend(&buf_timeleft, 1, source, tag_timeleft, &req_null);
                      sent_timeleft[source] = true;
                      LOGGER << myRank <<": "<< "Sent our_timeleft ("<<buf_timeleft<<" ms) to process "<<source<< EOM;
                   }
@@ -459,13 +459,13 @@ namespace Gambit
                      std::chrono::duration<double> diff = our_timeleft - their_timeleft;
                      if(diff>std::chrono::milliseconds(10)) // We have more time left than them, need to correct. But ignore discrepances of less than 100 ms.
                      {
-                        timeout = timeout - diff; 
+                        timeout = timeout - diff;
                         // Debug
                         LOGGER << myRank <<": "<< "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << EOM;
                      } else {
                         LOGGER << myRank <<": "<< "Difference between their_timeleft and our_timeleft is less than 10ms; will not bother to adjust." << EOM;
                      }
-                  } 
+                  }
                }
 
                // While waiting, could do work here.
@@ -477,7 +477,7 @@ namespace Gambit
                std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                std::chrono::duration<double> time_waited = current - start;
                //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
-               
+
                if(time_waited >= timeout) timedout = true;
 
                if(timedout)
@@ -516,14 +516,14 @@ namespace Gambit
                  // Supposedly the synchronisation succeeded, but process 'source' is not recorded as having entered the barrier!
                  LOGGER << "Error! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Synchronisation registered as successful, but process "<<source<<" was not detected as having entered the barrier!"<<EOM;
                }
-   
+
                if(entered[source])
                {
                  if(not sent_timeleft[source])
                  {
                     LOGGER << "WARNING! Exiting BarrierWithCommonTimeout, but inconsistency in final state detected. Process "<<source<<" was detected as having entered the barrier, however we (process "<<myRank<<") did not send 'our_timeleft' to that process"<<EOM;
                  }
-   
+
                  // From processes that we know are waiting in this loop, check for messages from them with their time_left data
                  if(not received_timeleft[source])
                  {
@@ -551,8 +551,8 @@ namespace Gambit
       /// @}
 
       /// Check if MPI_Init has been called (it is an error to call it twice)
-      bool Is_initialized() 
-      { 
+      bool Is_initialized()
+      {
         int flag;
         MPI_Initialized(&flag);
         return (flag!=0);
@@ -607,16 +607,16 @@ namespace Gambit
         if(Is_initialized())
         {
            std::ostringstream errmsg;
-           errmsg << "Error initialising MPI! It is already initialised!"; 
+           errmsg << "Error initialising MPI! It is already initialised!";
            utils_error().raise(LOCAL_INFO, errmsg.str());
-        } 
+        }
         else
         {
            int errflag;
            errflag = MPI_Init(&argc,&argv);
 
            // // Test case for thread-safe MPI. Probably not going to use this though.
-           // int provided; // output; level of thread support provided (may not meet the requested level)    
+           // int provided; // output; level of thread support provided (may not meet the requested level)
            // errflag = MPI_Init_thread(&argc,&argv,MPI_THREAD_FUNNELED,&provided);
            // if(provided<MPI_THREAD_MULTIPLE)
            // {
@@ -635,7 +635,7 @@ namespace Gambit
 
            if(errflag!=0) {
               std::ostringstream errmsg;
-              errmsg << "Error initialising MPI! Received error flag: "<<errflag; 
+              errmsg << "Error initialising MPI! Received error flag: "<<errflag;
               utils_error().raise(LOCAL_INFO, errmsg.str());
            }
         }
@@ -683,37 +683,35 @@ namespace Gambit
             #ifdef MPI_DEBUG_OUTPUT
             std::cerr << "rank " << COMM_WORLD.Get_rank() << ": Shutting down MPI..." << std::endl;
             #endif
-          // Warn if any unreceived messages exist from WORLD (when it is destructed). Undelivered messages from other communicators are checked when their wrappers are destructed, so try to make sure this happens before finalize is called, otherwise the warnings will not occur. 
+          // Warn if any unreceived messages exist from WORLD (when it is destructed). Undelivered messages from other communicators are checked when their wrappers are destructed, so try to make sure this happens before finalize is called, otherwise the warnings will not occur.
           }
           MPI_Finalize();
         }
       }
 
-      // Finalize MPI, also check for pending messages as these could cause MPI_Finalize() to hang,
-      // but call MPI_abort and exit if timeout is exceeded 
-      void FinalizeWithTimeout(bool use_mpi_abort)
+      // Prepare to finalise MPI by checking for pending messages, as these could cause MPI_Finalize() to hang,
+      // but call MPI_abort and exit if timeout is exceeded
+      bool PrepareForFinalizeWithTimeout(bool use_mpi_abort)
       {
+        bool synced_ok(false);
         if(not Is_finalized() and Is_initialized())
         {
           Comm COMM_WORLD;
-          std::chrono::seconds timeout(10); // TODO: Perhaps make longer 
-          if( COMM_WORLD.BarrierWithTimeout(timeout, 6666) ) // TODO: decide on tag in a safer way
+          std::chrono::seconds timeout(10); // TODO: Perhaps make longer
+          synced_ok = !COMM_WORLD.BarrierWithTimeout(timeout, 6666);  // TODO: decide on tag in a safer way
+          if (!synced_ok)
           {
             // Doh timed out
             if(use_mpi_abort)
-            { 
+            {
               //#ifdef MPI_DEBUG_OUTPUT
               std::cerr << "rank " << COMM_WORLD.Get_rank() << ": FinalizeWithTimeout failed to sync for clean MPI shutdown, calling MPI_Abort..." << std::endl;
               //#endif
               COMM_WORLD.Abort();
             }
           }
-          else
-          {
-            // Hurrah, we synced, now call the real finalize, it should succeed
-            MPI_Finalize();
-          }
         }
+        return synced_ok;
       }
 
    }
