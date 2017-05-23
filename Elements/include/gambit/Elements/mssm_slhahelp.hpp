@@ -181,6 +181,9 @@ namespace Gambit
       ///   @}
 
       /// @}
+
+      /// Add an entire MSSM spectrum to an SLHAea object
+      void add_MSSM_spectrum_to_SLHAea(const SubSpectrum& mssmspec, SLHAstruct& slha, int slha_version);
       
    }  // namespace slhahelp
    

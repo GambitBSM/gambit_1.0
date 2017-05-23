@@ -147,7 +147,7 @@ namespace Gambit
   }
 
   /// Output entire decay table as an SLHA file full of DECAY blocks
-  void DecayTable::getSLHA(str filename, bool include_zero_bfs) const
+  void DecayTable::writeSLHAfile(str filename, bool include_zero_bfs) const
   {
     Utils::FileLock mylock(filename);
     mylock.get_lock();

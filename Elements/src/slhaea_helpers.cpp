@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Helper functions for SMInputs struct
+///  Helper functions for dealing with SLHAea objects
 ///
 ///  *********************************************
 ///
@@ -19,6 +19,7 @@
 ///  *********************************************
 
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/version.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 
@@ -90,50 +91,97 @@ namespace Gambit
     }
   }
 
-  /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
-  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite)
+  bool SLHAea_block_exists(SLHAstruct& slha, const str& block)
   {
     // Check if block exists
-    try
-    {
-      slha.at(block);
-    }
-    catch (const std::out_of_range& e)
-    {
-      // Nope; add it.
-      slha[block][""] << "BLOCK" << block;
-    }
-    // Check for existing entry
-    if(not overwrite)
-    {
-      try
-      {
-        slha.at(block).at(index).at(1);
-        // Entry exists, no further action required
-        return true;
-      }
-      catch (const std::out_of_range& e)
-      {
-        // entry doesn't exist; continue with writing
-      }
-    }
-    return false;
+    bool found = false;
+    if(slha.find(block) != slha.end()) found = true;
+    return found;
   }
+
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block)
+  {
+    bool exists;
+    if(SLHAea_block_exists(slha,block))
+    {
+      exists = true;
+    }
+    else
+    {
+      slha[block][""] << "BLOCK" << block;
+      exists = false; // Didn't exist, but now it does.
+    }
+    return exists;
+  }
+
+  /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
+  // TODO: Ben: I just found this, and I can't say I understand the logic related to "overwrite". It also makes
+  // overloading for two indices very difficult, so I'm going to delete it.
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index) /*, const bool overwrite)*/
+  {
+    bool found;
+    // Check if block exists and create it if it doesn't
+    SLHAea_check_block(slha, block);
+    // Check for existing entry
+    std::stringstream i;
+    i<<index;
+    SLHAea::Block::key_type key(1);
+    key[0] = i.str();
+    //std::cout << "Searching block "<<block<<" for key "<<key[0]<<std::endl;
+    if( slha[block].find(key) != slha[block].end()) 
+    {
+      found = true;
+    }
+    else
+    {
+      found = false;
+    }
+    return found;
+  }
+
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index1, const int index2) /*, const bool overwrite)*/
+  {
+    bool found;
+    // Check if block exists and create it if it doesn't
+    SLHAea_check_block(slha, block);
+    // Check for existing entry
+    std::stringstream i,j;
+    i<<index1; j<<index2;
+    SLHAea::Block::key_type key(2);
+    key[0] = i.str();
+    key[1] = j.str();
+    //std::cout << "Searching block "<<block<<" for key "<<key[0]<<", "<<key[1]<<std::endl;
+    if( slha[block].find(key) != slha[block].end() ) 
+    {
+      found = true;
+    }
+    else
+    {
+      found = false;
+    }
+    return found;
+  }
+
+
 
   /// Check if a line exists in an SLHAea block, then overwrite it if it does.  Otherwise add the line.
   template <class T>
   void SLHAea_overwrite_block(SLHAstruct& slha /*modify*/, const str& block, int index,
    T value, const str& comment)
   {
-    try
+    if(SLHAea_check_block(slha, block, index))
     {
+      //std::cout << "Entry "<<block<<", "<<index<<" already exists, deleting and replacing it." <<std::endl;
+      // entry exists already, delete it
       slha.at(block).at(index).at(1);
       auto& line = slha[block][index];
       line.clear();
       line << index << value << comment;
     }
-    catch (const std::out_of_range& e)
+    else
     {
+      // Doesn't already exist, add it
+      //std::cout << "Adding entry "<<block<<", "<<index<<std::endl;
       slha[block][""] << index << value << comment;
     }
   }
@@ -143,16 +191,46 @@ namespace Gambit
   void SLHAea_overwrite_block(SLHAstruct& slha /*modify*/, const str& block, int index1, int index2,
    T value, const str& comment)
   {
-    std::vector<int> indices = initVector<int>(index1, index2);
-    try
+    //std::vector<int> indices = initVector<int>(index1, index2);
+    if(SLHAea_check_block(slha, block, index1, index2))
     {
-      slha.at(block).at(indices).at(1);
-      auto& line = slha[block][indices];
+      //std::cout << "Entry "<<block<<", "<<index1<<","<<index2<<" already exists, deleting and replacing it." <<std::endl;
+      // entry exists already, delete it
+      //slha.at(block).at(indices).at(1); // Is this actually a valid way to use SLHAea? I don't see it in their documentation.
+      std::stringstream i,j;
+      i<<index1; j<<index2;
+      SLHAea::Block::key_type key(2);
+      key[0] = i.str();
+      key[1] = j.str();
+      auto& line = slha[block][key];
       line.clear();
       line << index1 << index2 << value << comment;
     }
-    catch (const std::out_of_range& e) {}
-    slha[block][""] << index1 << index2 << value << comment;
+    else
+    {
+      //std::cout << "Adding entry "<<block<<","<<index1<<","<<index2<<std::endl;
+      // Doesn't exist, add it
+      slha[block][""] << index1 << index2 << value << comment;
+    }
+  }
+
+  /// Delete a block entirely if it exists (TODO: actually only deletes first instance of the block found!)
+  void SLHAea_delete_block(SLHAstruct& slha, const std::string& block)
+  {
+     auto it = slha.find(block);
+     if(it!=slha.end()) slha.erase(it);
+  }
+
+  void SLHAea_add_GAMBIT_SPINFO(SLHAstruct& slha /*modify*/)
+  {
+     // For now we don't try to track where the data originally came from, we just label
+     // it as GAMBIT-produced.
+     std::ostringstream progname;
+     if(not SLHAea_check_block(slha, "SPINFO", 1, false))
+     {
+        SLHAea_add(slha, "SPINFO", 1, "GAMBIT", "Program");
+        SLHAea_add(slha, "SPINFO", 2, gambit_version(), "Version number");
+     }
   }
 
   /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
@@ -160,21 +238,34 @@ namespace Gambit
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const double value, const str& comment, const bool overwrite)
   {
-    if (SLHAea_check_block(slha, block, index, overwrite)) return;
+    if (SLHAea_check_block(slha, block, index) and not overwrite) return;
     SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
+
+  // string version
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const str& value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
     SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
+
+  // int version
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const int value, const str& comment, const bool overwrite)
   {
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
     SLHAea_overwrite_block(slha, block, index, value, (comment == "" ? "" : "# " + comment));
   }
+
+  // two index version
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index1, const int index2,
+   const double& value, const str& comment, const bool overwrite)
+  {
+    if (SLHAea_check_block(slha, block, index1, index2) and not overwrite) return;
+    SLHAea_overwrite_block(slha, block, index1, index2, value, (comment == "" ? "" : "# " + comment));
+  }
+
   /// @}
 
   /// Add an entry from a subspectrum getter to an SLHAea object; SLHA index given by pdg code
@@ -184,7 +275,7 @@ namespace Gambit
   {
      if(subspec.has(partype,pdg_pair))
      {
-       SLHAea_overwrite_block(slha, block, pdg_pair.first, subspec.get(partype,pdg_pair)*rescale, comment);
+       SLHAea_overwrite_block(slha, block, pdg_pair.first, subspec.get(partype,pdg_pair)*rescale, (comment == "" ? "" : "# " + comment));
      }
      else if(error_if_missing)
      {
@@ -204,7 +295,7 @@ namespace Gambit
   {
      if(subspec.has(partype,name))
      {
-       SLHAea_overwrite_block(slha, block, slha_index, subspec.get(partype,name)*rescale, comment);
+       SLHAea_overwrite_block(slha, block, slha_index, subspec.get(partype,name)*rescale, (comment == "" ? "" : "# " + comment));
      }
      else if(error_if_missing)
      {
@@ -223,7 +314,7 @@ namespace Gambit
   {
     if(subspec.has(partype,name,index1,index2))
     {
-      SLHAea_overwrite_block(slha, block, slha_index1, slha_index2, subspec.get(partype,name,index1,index2)*rescale, comment);
+      SLHAea_overwrite_block(slha, block, slha_index1, slha_index2, subspec.get(partype,name,index1,index2)*rescale, (comment == "" ? "" : "# " + comment));
     }
     else if(error_if_missing)
     {
@@ -234,5 +325,6 @@ namespace Gambit
     // else skip this entry
     return;
   }
+
 
 }

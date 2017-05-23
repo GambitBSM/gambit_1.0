@@ -415,7 +415,7 @@ namespace Gambit
    }
 
    /// Output spectrum contents as an SLHA file, using getSLHAea.
-   void Spectrum::getSLHA(int slha_version, const str& filename) const
+   void Spectrum::writeSLHAfile(int slha_version, const str& filename) const
    {
       Utils::FileLock mylock(filename);
       mylock.get_lock();
@@ -432,8 +432,8 @@ namespace Gambit
       {
          // Spit out the full spectrum as SLHA1 and SLHA2 files.
          str filename = runOptions->getValueOrDef<str>(default_name, "SLHA_output_filename");
-         getSLHA(1,filename+".slha1");
-         getSLHA(2,filename+".slha2");
+         writeSLHAfile(1,filename+".slha1");
+         writeSLHAfile(2,filename+".slha2");
       }
    }
 

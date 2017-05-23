@@ -111,7 +111,7 @@ namespace Gambit
          std::cout << std::endl << slhaea << std::endl;
 
          // Write to file so we can check it
-         spec.getSLHA(2, "SpecBit/MSSMspectrum_test_good.slha");
+         spec.writeSLHAfile(2, "SpecBit/MSSMspectrum_test_good.slha");
 
          // ---------------------------------------------------------
          // BEGIN DEMO OF SPECTRUM OBJECT AND PARTICLE DATABASE

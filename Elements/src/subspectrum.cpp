@@ -37,7 +37,7 @@ namespace Gambit
    /// @{ SubSpectrum member function definitions
 
    /// Dump out spectrum information to an SLHA file (if possible)
-   void SubSpectrum::getSLHA(int slha_version, const str& filename) const
+   void SubSpectrum::writeSLHAfile(int slha_version, const str& filename) const
    {
      std::ofstream ofs(filename);
      if (ofs)

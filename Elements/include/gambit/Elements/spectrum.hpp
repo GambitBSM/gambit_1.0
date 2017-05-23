@@ -231,7 +231,7 @@ namespace Gambit
          SLHAstruct getSLHAea(int) const;
 
          /// Output spectrum contents as an SLHA file, using getSLHAea.
-         void getSLHA(int, const str&) const;
+         void writeSLHAfile(int, const str&) const;
 
          /// Helper function to drop SLHA files
          void drop_SLHAs_if_requested(const safe_ptr<Options>&, const str&);

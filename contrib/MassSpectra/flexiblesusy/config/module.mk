@@ -79,6 +79,6 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DEPGEN_EXE): $(DEPGEN_OBJ)
-		$(CXX) -o $@ $^ $(LDLIBS)
+		$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
 
 ALLEXE += $(DEPGEN_EXE)

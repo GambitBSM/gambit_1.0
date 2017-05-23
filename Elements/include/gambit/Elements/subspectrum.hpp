@@ -102,7 +102,7 @@ namespace Gambit
          virtual std::unique_ptr<SubSpectrum> clone() const = 0;
 
          /// Dump out spectrum information to an SLHA file (if possible)
-         virtual void getSLHA(int, const str&) const;
+         virtual void writeSLHAfile(int, const str&) const;
 
          /// Get spectrum information in SLHAea format (if possible)
          virtual SLHAstruct getSLHAea(int) const;
