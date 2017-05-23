@@ -1,1 +1,190 @@
-Ben to write!
+---------------------------------------------------------------------
+   How to connect FlexibleSUSY spectrum generators to GAMBIT
+---------------------------------------------------------------------
+
+This is an advanced usage of GAMBIT. A good understanding of the 
+basic structure of GAMBIT (in terms of module functions, backends, 
+etc.) is required to understand these instructions, as well as an 
+understanding of the workings of Spectrum and SubSpectrum wrapper 
+objects as are explained in detail in the SpecBit/DecayBit/
+PrecisionBit manual paper. See in particular section 2.4, "Adding 
+support for new models and/or codes".
+
+---
+I. Generating the FlexibleSUSY spectrum generator
+---
+
+FlexibleSUSY is a spectrum generator generator that creates fast and 
+precise C++ spectrum generators in a user chosen model.  The 
+FlexibleSUSY code can be found at https://flexiblesusy.hepforge.org/ 
+or obtained via github https://github.com/FlexibleSUSY/FlexibleSUSY.
+
+GAMBIT is distributed with several spectrum generators created with
+FlexibleSUSY-1.5.1 and the user has the option to both update the
+FlexibleSUSY version and to add new FlexibleSUSY models for a given
+version. To update the FlexibleSUSY version one should replace the
+directory gambit/contrib/flexiblesusy. To do this obtain the desired
+version of FlexibleSUSY and follow the FlexibleSUSY documentation to
+create a spectrum generator for the models currently implemented in
+gambit (GAMBIT-1.0 comes with CMSSM, MSSMatMGUT, MSSM, SingletDM &
+SingletDMZ3 ) and export the generated code to
+gambit/contrib/flexiblesusy/.
+
+In the process of generating the code you can also create additional
+spectrum generators if you wish. Alternatively you can simply
+generate a new spectrum generator with FlexibleSUSY-1.5.1 and add the
+<modelname> directory from FlexibleSUSY-1.5.1/models/ to
+gambit/contrib/flexiblesusy/models/.
+
+The following description provides details on how to interface the
+generated FlexibleSUSY models, assuming the new FlexibleSUSY spectrum
+generators have been installed in contrib/MassSpectra/flexiblesusy/.
+
+---
+II. Required code additions to GAMBIT
+---
+
+As of GAMBIT v1.0.0, FlexibleSUSY spectrum generators cannot be 
+turned into full GAMBIT backends via BOSS, due to technical 
+restrictions in BOSS associated with parsing C++ template code. These
+spectrum generators therefore need to be directly linked into SpecBit
+(or a new user-created module) at compile time. The steps required to
+do this are as follows, assuming the new FlexibleSUSY spectrum 
+generators have been installed in contrib/MassSpectra/flexiblesusy/ 
+as described above.
+
+1. Add the name of the spectrum generator to
+
+   SpecBit/include/gambit/SpecBit/model_files_and_boxes.hpp
+
+This header contains macros which will in-turn automatically include
+all the FlexibleSUSY headers required to use the spectrum generator 
+in GAMBIT code, as well as define a special interface class 
+"<mymodel>_interface" to the important objects associated with that 
+spectrum generator. Add the spectrum generator name following the 
+entries already present, for example
+
+   #define MODELNAME <mymodel>
+   #include "gambit/SpecBit/flexiblesusy_include_automater.hpp"
+   MAKE_INTERFACE
+   #undef MODELNAME
+
+2. Create a GAMBIT module function in which to run the spectrum 
+generator. For example, the scalar singlet dark matter spectrum 
+generators shipped with GAMBIT are run via a module functions defined
+in
+
+   SpecBit/src/SpecBit_SingletDM.cpp
+
+which includes the header "gambit/SpecBit/model_files_and_boxes.hpp",
+which should be modified as in step 1. One such module function is 
+"get_SingletDM_spectrum_pole". Let us look at this function as an 
+example of how to run the spectrum generator.
+
+    void get_SingletDM_spectrum_pole(Spectrum& result)
+    {
+      using namespace softsusy;
+      namespace myPipe = Pipes::get_SingletDM_spectrum_pole;
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+      const Options& runOptions=*myPipe::runOptions;
+      double scale = runOptions.getValueOrDef<double>(173.34,
+                                          "FS_high_scale");
+      SingletDM_input_parameters input;
+      fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
+      result = run_FS_spectrum_generator<
+                 SingletDM_interface<ALGORITHM1>,
+                 SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(
+                  input,sminputs,*myPipe::runOptions,myPipe::Param);
+      // **extra code cut**
+    }
+
+This module returns a Spectrum object, which is an abstract wrapper
+class used for transporting all spectrum information in GAMBIT. The 
+purpose of the module function is to run the spectrum generator, wrap
+it in a Spectrum object, and return this wrapper object to GAMBIT. 
+
+First, a dependency on SMINPUTS is retrieved. This is Standard Model
+information required to run the spectrum generator.
+
+Next, a helper function "fill_SingletDM_input" is run, which fills a
+FlexibleSUSY parameter structure "SingletDM_input_parameters" with the
+appropriate parameters supplied by the GAMBIT model hierarchy. If your
+spectrum generator operates with a model outside those shipped with 
+GAMBIT then you will need to add appropriate model parameters for it 
+to the GAMBIT model hierarchy (see the Core GAMBIT paper for details). 
+The SingletDM_input_parameters struct is accessible via the 
+FlexibleSUSY headers which are included via step 1.
+
+Next, the input parameters are supplied to a GAMBIT template helper 
+function that we use to automate the running of FlexibleSUSY spectrum 
+generators. In this function we perform the actual running of the 
+spectrum generator, and the wrapping of it into a Spectrum object. We
+will not describe exactly how to do this here, as it is a matter of 
+knowing how to run FlexibleSUSY rather than GAMBIT, but this function
+can be a helpful reference point.
+
+The template parameters warrant some further description. In this 
+example they are supplied as
+
+   SingletDM_interface<ALGORITHM1>   and
+   SingletDMSpec<SingletDM_interface<ALGORITHM1>>
+
+The first is the interface class defined by the macro MAKE_INTERFACE
+seen in step 1. This is used by the above template function to access
+the required FlexibleSUSY objects via generic names. The second 
+argument is the name of the specialized wrapper class for the 
+SingletDM spectrum information. This wrapper class is a major part of
+the work of interfacing to a new FlexibleSUSY spectrum generator. 
+The process of writing a wrapper class is described in the SpecBit/
+DecayBit/PrecisionBit manual, for example in appendix G "Worked 
+example of writing a SubSpectrum wrapper", which describes in detail
+a wrapper for FlexibleSUSY spectrum output. We will therefore not 
+discuss it again here. 
+
+Note, however, that if a new spectrum generator is created which 
+results in the same particle and parameter content as an existing 
+Spectrum wrapper, then that wrapper may be able to be re-used. For 
+example, supposed one wants to add the FlexibleSUSY model "lowMSSM", 
+which generates an MSSM spectrum from boundary conditions defined at 
+the scale "MSUSY". This results in MSSM spectrum data, as can be also
+obtained using different boundary conditions via the "MSSMatMGUT" and
+"MSSM" spectrum generators which are included with GAMBIT. Because of
+this, one may re-use the "MSSMSpec" wrapper which is used in 
+SpecBit_MSSM.cpp, in particular see 
+
+  get_CMSSM_spectrum
+  get_MSSMatQ_spectrum and
+  get_MSSMatMGUT_spectrum
+
+which all connect their corresponding FlexibleSUSY spectrum 
+generators to the MSSMSpec wrapper.
+
+---
+III. Required changes to GAMBIT cmake build system
+---
+
+Once sections I and II have been followed, one needs to make some
+changes to the GAMBIT build system, which uses CMake. This should
+require very little modification. One should only modify the line
+
+   set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SingletDMZ3 SingletDM)
+
+in the file cmake/contrib.cmake, adding the name of the new 
+FlexibleSUSY spectrum generator. The rest of the required linking
+should occur automatically.
+
+If the module functions which run the new spectrum generator (as
+discussed in section II) are added to a module other than SpecBit,
+then one should also modify the following lines
+
+   if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
+     set (EXCLUDE_FLEXIBLESUSY FALSE)
+
+adding the name of the new module to the 'if' statement. If this is 
+not done then FlexibleSUSY will be automatically -Ditch'ed by GAMBIT
+if SpecBit is -Ditch'ed, and will therefore fail to link to the new
+user-defined module.
+
+
+
+

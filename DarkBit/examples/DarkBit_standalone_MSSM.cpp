@@ -88,7 +88,6 @@ int main(int argc, char* argv[])
   std::cout << "data: name of output file for observables and likelihoods (default: data.dat)" << std::endl;
   std::cout << "dump: name of unit test output file (default: dump.yaml)" << std::endl;
   std::cout << std::endl;
-  std::cout << "N.B. If SLHA2 file is given, all calculations are done only using DarkSUSY." << std::endl;
   std::cout << "The SLHA files for the MSSM-7 benchmarks in the DarkBit paper are located in    " << std::endl;
   std::cout << "DarkBit/data/benchmarks/                                                        " << std::endl;
   std::cout << "********************************************************************************" << std::endl;
