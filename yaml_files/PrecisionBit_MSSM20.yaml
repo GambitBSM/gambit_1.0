@@ -1,17 +1,19 @@
-# PrecisionBit test file (in YAML)
-#
-# Chris Rogan <crogan@cern.ch>
-# Apr 2015
-# Pat Scott <p.scott@imperial.ac.uk>
-# Aug 2015
+##########################################################################
+## GAMBIT configuration for running a test of precision EW constraints
+## on a single MSSM20 point
+##
+## Requires only PrecisionBit.
+##########################################################################
+
 
 Parameters:
 
-  #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_defaults.yaml
 
-  #SUSY parameters.
+  # SUSY parameters.
   MSSM20atQ:
+
     Qin: 1.9422e+16
     SignMu: 1
     TanBeta: 10
@@ -158,6 +160,7 @@ Logger:
 
   redirection:
     [Default] : "default.log"
+
 
 KeyValues:
 

@@ -1,1 +1,45 @@
-In which we explain everything the user could want to know about the example yaml files in this folder.
+GAMBIT steering files
+=====================
+
+
+Functionality/configuration demos and minimal examples
+------------------------------------------------------
+
+spartan.yaml                    --- Simplest example of using GAMBIT: a toy-model MultiNest scan
+spartan_CMSSM.yaml              --- Simple example of using GAMBIT in a random scan of CMSSM params
+
+ColliderBit_CMSSM.yaml          --- LEP and LHC direct search observables in a MultiNest scan of the CMSSM
+ColliderBit_ExternalModel.yaml  --- LHC likelihood demo on a single point of a Pythia external model
+
+DarkBit_MSSM7.yaml              --- DM constraint demo with a MultiNest scan of the MSSM7 model
+DarkBit_SingletDM.yaml          --- DarkBit demo with a simple of MultiNest scan of Singlet DM model
+
+DecayBit_MSSM20.yaml            --- Test of DecayBit, printing out a decay table for MSSM20 at a single model point
+DecayBit_SingletDM.yaml         --- Test of DecayBit, printing out a decay table for Singlet DM at 10 model points
+
+FlavBit_CMSSM.yaml              --- Flavour physics fits to CMSSM with Diver scan
+
+PrecisionBit_MSSM20.yaml        --- Precision EW observable demo on a single MSSM20 point
+
+ScannerBit.yaml                 --- Example of configuring the scanner system
+
+SpecBit_MSSM.yaml               --- Single-point test of mass spectrum generation in MSSM sub-models
+SpecBit_vacuum_stability.yaml   --- 50x50 grid scan of vacuum stability in [mT,mH]
+
+
+Physics model scan configurations
+---------------------------------
+
+CMSSM.yaml      --- Diver scan on CMSSM model
+MSSM7.yaml      --- Diver scan on MSSM7 model
+NUHM1.yaml      --- Diver scan on NUHM1 model
+NUHM2.yaml      --- Diver scan on NUHM2 model
+SingletDM.yaml  --- Diver scan on Singlet DM model
+WC.yaml         --- MultiNest scan of flavour physics Wilson Coeffs
+
+
+Config fragments containing parameters for inclusion in other steering files
+----------------------------------------------------------------------------
+
+StandardModel_SLHA2_defaults.yaml
+StandardModel_SLHA2_scan.yaml

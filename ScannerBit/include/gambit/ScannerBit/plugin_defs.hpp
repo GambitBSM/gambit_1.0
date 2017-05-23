@@ -28,6 +28,7 @@
 #include <set>
 #include <algorithm>
 #include <typeinfo>
+#include <unistd.h>
 
 #ifdef WITH_MPI
 #include <mpi.h>
@@ -45,13 +46,15 @@ namespace Gambit
     {
         typedef Priors::BasePrior prior_interface;
         
+        /// class to interface with the plugin manager resume functions.
         class resume_params_func
         {
         private:
             std::string name;
+            bool resume;
             
         public:
-            resume_params_func(const std::string &name_in)
+            resume_params_func(const std::string &name_in) : resume(false)
             {
                 int rank;
 #ifdef WITH_MPI
@@ -62,6 +65,18 @@ namespace Gambit
                 std::stringstream ss;
                 ss << rank;
                 name = name_in + "_" + ss.str();
+            }
+            
+            void set_resume_mode(const bool &mode)
+            {
+                resume = (mode && access( name.c_str(), F_OK )) ? false : mode;
+            }
+            
+            bool resume_mode() const {return resume;}
+            
+            void dump()
+            {
+                Gambit::Scanner::Plugins::plugin_info.dump(name);
             }
             
             template <typename... T>
@@ -75,6 +90,8 @@ namespace Gambit
         {
             using Gambit::type_index;
             
+            /// These classes are used by the plugins to load and save data
+            /// @{
             class factoryBase
             {
             public:
@@ -114,6 +131,7 @@ namespace Gambit
                         delete *it;
                 }
             };
+            /// @}
             
             /// Structure that holds all the data provided by plugins about themselves.
             struct pluginData

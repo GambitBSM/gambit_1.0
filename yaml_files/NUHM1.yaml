@@ -1,9 +1,21 @@
+##########################################################################
+## GAMBIT configuration for running a scan of the NUHM1 using Diver.
+##
+## Includes likelihoods for LHC and LEP particle searches, LHC and LEP Higgs
+## searches (and LHC signal strengths), flavour physics, indirect and
+## direct dark matter detection, and electroweak precision observables.
+##
+## SM, nuclear matrix element and dark matter halo nuisance parameters
+## are included.
+##########################################################################
+
+
 Parameters:
 
-  #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_scan.yaml
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_scan.yaml
 
-  #Nuclear matrix parameters.
+  # Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
       range:  [19, 67]
@@ -16,7 +28,7 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  #SUSY parameters.
+  # SUSY parameters.
   NUHM1:
     M0:
       range: [50, 1e4]
@@ -36,7 +48,7 @@ Parameters:
       range: [3.0, 70]
     SignMu: 1
 
-  #Dark matter halo parameters.
+  # Dark matter halo parameters.
   Halo_gNFW_rho0:
     rho0:
       range: [.2, .8]
@@ -49,9 +61,11 @@ Parameters:
     beta: 3
     gamma: 1
 
+
 Priors:
 
   # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
 
 Printer:
 
@@ -60,6 +74,7 @@ Printer:
   options:
     output_file: "NUHM1.hdf5"
     group: "/NUHM1"
+
 
 Scanner:
 
@@ -80,6 +95,7 @@ Scanner:
       NP: 19200
       convthresh: 1e-5
       verbosity: 1
+
 
 ObsLikes:
 
@@ -531,6 +547,7 @@ Logger:
     [ColliderBit] : "ColliderBit.log"
     [SpecBit] : "SpecBit.log"
     [Dependency Resolver] : "dep_resolver.log"
+
 
 KeyValues:
 

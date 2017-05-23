@@ -1,9 +1,17 @@
+##########################################################################
+## GAMBIT configuration for running a Diver scan of the CMSSM using
+## only FlavourBit likelihoods.
+##
+## alpha_s and the top mass are treated as SM nuisance parameters.
+##########################################################################
+
+
 Parameters:
 
-  #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_scan.yaml
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_scan.yaml
 
-  #SUSY parameters.
+  # SUSY parameters.
   CMSSM:
     M0:
       range: [50, 1e4]
@@ -20,9 +28,11 @@ Parameters:
       range: [3.0, 70]
     SignMu: 1
 
+
 Priors:
 
   # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
 
 Printer:
 
@@ -31,6 +41,7 @@ Printer:
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
+
 
 Scanner:
 
@@ -52,6 +63,7 @@ Scanner:
       convthresh: 1e-5
       verbosity: 1
       lambdajDE: false
+
 
 ObsLikes:
 
@@ -141,6 +153,7 @@ Logger:
     [FlavBit] : "FlavBit.log"
     [SpecBit] : "SpecBit.log"
     [Dependency Resolver] : "dep_resolver.log"
+
 
 KeyValues:
 

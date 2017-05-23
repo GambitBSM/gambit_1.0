@@ -1,32 +1,24 @@
-#
-# GAMBIT YAML initialization file for running ColliderBit on a
-# single parameter point of a user-specified BSM model.
-#
-# Note that a more appropriate alternative for running single points
-# through ColliderBit is to use the ColliderBit_standalone program.
-# See the ColliderBit paper for details on how this works.
-#
-# In this example, the new model is *not* implemented properly in
-# GAMBIT. Rather, we use a dummy model to bypass the full model
-# machinery in GAMBIT and simply pass the parameter point of interest
-# to Pythia via an SLHA file. We use a version of the Pythia backend
-# (Pythia 8.212.EM) extended with matrix elements for the new model.
-# See the main ColliderBit paper for details on the example BSM model
-# and how to replace it with a different one.
-#
-# Note: GAMBIT must be told to use Pythia 8.212.EM. Do this by specifying
-#       "8_212_EM" as the "Default_Pythia" in the file
-#       /Backends/include/gambit/Backends/default_bossed_versions.hpp
-#
-#
-# Martin White <martin.white@adelaide.edu.au>
-# Anders Kvellestad <anders.kvellestad@nordita.org>
-# March 2017
-#
+##########################################################################
+## GAMBIT configuration for running ColliderBit on a single parameter
+## point of a user-specified BSM model
+##
+## Note that a more appropriate alternative for running single points
+## through ColliderBit is to use the ColliderBit_standalone program.
+## See the ColliderBit paper for details on how this works.
+##
+## In this example, the new model is *not* implemented properly in
+## GAMBIT. Rather, we use a dummy model to bypass the full model
+## machinery in GAMBIT and simply pass the parameter point of interest
+## to Pythia via an SLHA file. We use a version of the Pythia backend
+## (Pythia 8.212.EM) extended with matrix elements for the new model.
+## See the main ColliderBit paper for details on the example BSM model
+## and how to replace it with a different one.
+##
+## Note: GAMBIT must be told to use Pythia 8.212.EM. Do this by specifying
+##       "8_212_EM" as the "Default_Pythia" in the file
+##       /Backends/include/gambit/Backends/default_bossed_versions.hpp
+##########################################################################
 
-###################################
-# Input parameter declarations
-###################################
 
 Parameters:
 
@@ -38,10 +30,6 @@ Parameters:
       prior_type: flat
       range: [0, 1]
 
-
-##############################
-# Printer setup
-##############################
 
 Printer:
 
@@ -61,10 +49,6 @@ Printer:
   #   output_file: "gambit_output.txt"
 
 
-##############################
-# Scanner setup
-##############################
-
 Scanner:
 
   # Use the random scanner to run a single point.
@@ -73,7 +57,6 @@ Scanner:
   use_scanner: random
 
   scanners:
-
     random:
       plugin: random
       point_number: 1
@@ -82,10 +65,6 @@ Scanner:
       files:
         output_file: "weights ..."
 
-
-###############################
-# Observables of interest
-###############################
 
 ObsLikes:
 
@@ -100,14 +79,8 @@ ObsLikes:
     type:       double
 
 
-#########################
-# Rule entries
-#########################
-
 Rules:
 
-  ##### LHC Detector and Analysis rules #####
-  #
   # The current capability structure allows for the user to mix'n'match
   # collider settings, detector sims and analyses. The user may run BuckFastATLAS
   # with ATLAS analyses, BuckFastCMS with CMS analyses, and Delphes with any analyses,
@@ -119,7 +92,7 @@ Rules:
   # In this example, we use the BuckFast simulation. For a Delphes example, see:
   # yaml_files/ColliderBit_CMSSM.yaml
 
- # BuckFast for ATLAS rules and options
+  # BuckFast for ATLAS rules and options
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearATLAS"
     function: getBuckFastATLAS
@@ -128,7 +101,7 @@ Rules:
       partonOnly: [false]
       antiktR: [0.4]
 
- # BuckFast for CMS rules and options
+  # BuckFast for CMS rules and options
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastSmearCMS"
     function: getBuckFastCMS
@@ -137,7 +110,7 @@ Rules:
       partonOnly: [false]
       antiktR: [0.5]
 
- # Specify the list of ATLAS analyses to run with BuckFast
+  # Specify the list of ATLAS analyses to run with BuckFast
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:
@@ -146,16 +119,16 @@ Rules:
                    "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
                    "ATLAS_3LEPEW_20invfb"] ]
 
- # Specify the list of CMS analyses to run with BuckFast
+  # Specify the list of CMS analyses to run with BuckFast
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:
       analyses: [ ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                    "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"] ]
 
- # Specify details of the ColliderOperator
- # Includes the number of generated events
- # Also includes the name of the Pythia object we will use (set to the external model one here)
+  # Specify details of the ColliderOperator
+  # Includes the number of generated events
+  # Also includes the name of the Pythia object we will use (set to the external model one here)
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
@@ -163,11 +136,10 @@ Rules:
       pythiaNames: ["Pythia_external"]
       silenceLoop: false
 
- # Choose which getPythia to use
- # Here we run on an input SLHA file by using "getPythiaFileReader", and specifying an SLHA_filename
- # Note that you must specify the path to the xmldoc
- # Note also that you can use normal Pythia options here
-
+  # Choose which getPythia to use
+  # Here we run on an input SLHA file by using "getPythiaFileReader", and specifying an SLHA_filename
+  # Note that you must specify the path to the xmldoc
+  # Note also that you can use normal Pythia options here
   - capability:  HardScatteringSim
     function:  getPythiaFileReader
     options:
@@ -193,23 +165,16 @@ Rules:
         - ColliderBit/data/ExternalModel_point.slha
       xsec_vetos: [0.0]   # Don't generate events if the estimated cross section upper limit is below this value [fb]
 
- # Use lognormal errors when marginalising the LHC Poisson likelihoods over systematic uncertainties
- # Can change "_lognormal_" to "_gaussian_" if you prefer
-
+  # Use lognormal errors when marginalising the LHC Poisson likelihoods over systematic uncertainties.
+  # Can change "_lognormal_" to "_gaussian_" if you prefer
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
 
-#########################
-# Logging setup
-#########################
-
 Logger:
 
-  # Redirectory of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
-
+  # Redirection of message tags to filenames or "stdout"/"stderr".
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -220,9 +185,6 @@ Logger:
     [Dependency Resolver] : "dependency_resolver.log"
     [ColliderBit] : "ColliderBit.log"
 
-##########################
-# Name/Value Section
-##########################
 
 KeyValues:
 

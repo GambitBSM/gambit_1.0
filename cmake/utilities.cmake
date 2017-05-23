@@ -523,9 +523,14 @@ macro(BOSS_backend name backend_version)
     if (NOT ${EIGEN3_INCLUDE_DIR} STREQUAL "")
       set(BOSS_includes "${BOSS_includes} -I ${EIGEN3_INCLUDE_DIR}")
     endif()
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+      set(BOSS_castxml_cc "--castxml-cc=${CMAKE_CXX_COMPILER}")
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+      set(BOSS_castxml_cc "")
+    endif()
     ExternalProject_Add_Step(${name}_${ver} BOSS
       # Run BOSS
-      COMMAND python ${BOSS_dir}/boss.py ${BOSS_includes} ${name}_${backend_version_safe}
+      COMMAND python ${BOSS_dir}/boss.py ${BOSS_castxml_cc} ${BOSS_includes} ${name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
       COMMAND cp -r BOSS_output/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
       COMMAND cp BOSS_output/frontends/${name_in_frontend}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp

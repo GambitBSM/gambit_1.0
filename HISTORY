@@ -1,1 +1,11 @@
-Csaba said "I think we should take over the world."  and then there was gambit.
+GAMBIT Revision History
+=======================
+Full details can be found in the git log.  Only a summary of the
+changes in each new version is given here.
+
+
+v1.0.0 - May 2017
+Initial release in combination with first 9 papers.
+
+v0.0.0 - Oct 2012
+Csaba said "I think we should take over the world."  It sounded like a good idea at the time.

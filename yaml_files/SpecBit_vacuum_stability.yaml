@@ -1,10 +1,16 @@
-# Vacuum stability test file
-#
-# This will run a grid scan of the Higgs and Top mass
-# parameter space which is constrained from either side
-# by perturbativity and vacuum stability constraints
+##########################################################################
+## GAMBIT configuration for testing vacuum stability in a grid scan of [mT,mH]
+##
+## This will run a grid scan of the Higgs and top mass parameter space
+## which is constrained from either side by perturbativity and vacuum
+## stability constraints.
+##
+## Requires only SpecBit.
+##########################################################################
+
 
 Parameters:
+
     StandardModel_SLHA2:
       mT:
          range: [120,200]
@@ -26,7 +32,6 @@ Parameters:
       mS      :  9.50000000E-02 # ms(2 GeV)^MSbar @
       mCmC    :  1.27500000E+00 # mc(mc)^MSbar %
 
-
       CKM_lambda  :  0.22537
       CKM_A       :  0.814
       CKM_rhobar  :  0.117
@@ -42,7 +47,7 @@ Parameters:
     StandardModel_Higgs_running:
       mH:
         range: [120,180]
-        #prior_type: flat
+        # prior_type: flat
       QEWSB: 173
 
     SingletDM:
@@ -50,8 +55,8 @@ Parameters:
       lambda_hS: 0.06
 
 
-
 Printer:
+
   printer: hdf5
   options:
     output_file: "gambit_output.hdf5"
@@ -91,6 +96,7 @@ ObsLikes:
          - capability: SingletDM_spectrum
            type: const Spectrum*
 
+
 Rules:
 
     - capability: SingletDM_spectrum
@@ -108,6 +114,7 @@ Logger:
     [Debug] : "debug.log"
     [Default] : "default.log"
     [SpecBit] : "SpecBit.log"
+
 
 KeyValues:
 

@@ -29,6 +29,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <type_traits>
 
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -109,7 +110,7 @@ namespace Gambit
             {
             public:
                 virtual void print(std::ofstream &) = 0;
-                virtual ~__plugin_resume_base__(){}
+                virtual ~__plugin_resume_base__() {}
             };
             
             ///Container class to store plugin values for resume function
@@ -126,6 +127,7 @@ namespace Gambit
                 {
                     resume_file_output<T>(out, *data);
                 }
+                
                 ~__plugin_resume__(){}
             };
             
@@ -156,7 +158,7 @@ namespace Gambit
                 template<typename U, typename... T>
                 void set_resume(std::vector<__plugin_resume_base__ *> &r_data, U& param, T&... params)
                 {
-                    r_data.push_back(new __plugin_resume__<U>(param));
+                    r_data.push_back(new __plugin_resume__<typename std::decay<U>::type>(param));
                     set_resume(r_data, params...); 
                 }
                 
@@ -208,12 +210,13 @@ namespace Gambit
                     {
                         if (resume_streams.find(name) == resume_streams.end())
                         {
-                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
-                            resume_streams[name] = new std::ifstream((path + "/" + name).c_str(), std::ifstream::binary);
+                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files/" + name);
+                            resume_streams[name] = new std::ifstream((path).c_str(), std::ifstream::binary);
                         }
+                        
                         if (resume_streams[name]->is_open())
                         {
-                           get_resume(*resume_streams[name], data...);
+                            get_resume(*resume_streams[name], data...);
                         }
                         else
                         {
@@ -225,8 +228,11 @@ namespace Gambit
                     set_resume(resume_data[name], data...);
                 }
                 
-                ///Dump contains for resume.
+                ///Dump contents for resume.
                 void dump();
+                
+                ///Dump contents for one plugin
+                void dump(const std::string &);
 
                 ///Save persistence file to record that the alternative min_LogL value is in use for this scan
                 void save_alt_min_LogL_state() const;
@@ -239,12 +245,14 @@ namespace Gambit
 
                 ///Retrieve plugin data.
                 const Plugin_Loader &operator()() {return plugins;}
+                
                 ///Get plugin data for single plugin.
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
                 ~pluginInfo();
             };
             
-            ///Access Functor for plugin info
+            ///Access Functor for plugin info.  This will manage all the 
+            ///plugins including stored and writing resume info.
             extern pluginInfo plugin_info;
             
         }

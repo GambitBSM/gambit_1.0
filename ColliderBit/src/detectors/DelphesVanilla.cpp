@@ -67,37 +67,30 @@ namespace Gambit {
 
 
     void DelphesVanilla::init(const vector<string>& settings) {
-      try 
-      {
-        // Create the implementation object, for PIMPL abstraction
-        _impl = new DelphesVanillaImpl();
+      // Create the implementation object, for PIMPL abstraction
+      _impl = new DelphesVanillaImpl();
 
-        // To read Delphes Config File
-        const string configFilename = settings[0];
-        _impl->confReader = new ExRootConfReader();
-        _impl->confReader->ReadFile(configFilename.c_str());
+      // To read Delphes Config File
+      const string configFilename = settings[0];
+      _impl->confReader = new ExRootConfReader();
+      _impl->confReader->ReadFile(configFilename.c_str());
 
-        // Modularity of Delphes set by Config File
-        _impl->modularDelphes = new Delphes("Delphes");
-        _impl->modularDelphes->SetConfReader(_impl->confReader);
+      // Modularity of Delphes set by Config File
+      _impl->modularDelphes = new Delphes("Delphes");
+      _impl->modularDelphes->SetConfReader(_impl->confReader);
 
-        // Factory production of particle "candidates"
-        _impl->factory = _impl->modularDelphes->GetFactory();
+      // Factory production of particle "candidates"
+      _impl->factory = _impl->modularDelphes->GetFactory();
 
-        // Delphes particle arrays: Pre-Detector-Sim
-        _impl->allParticleOutputArray = _impl->modularDelphes->ExportArray("allParticles");
-        _impl->stableParticleOutputArray = _impl->modularDelphes->ExportArray("stableParticles");
-        _impl->partonOutputArray = _impl->modularDelphes->ExportArray("partons");
+      // Delphes particle arrays: Pre-Detector-Sim
+      _impl->allParticleOutputArray = _impl->modularDelphes->ExportArray("allParticles");
+      _impl->stableParticleOutputArray = _impl->modularDelphes->ExportArray("stableParticles");
+      _impl->partonOutputArray = _impl->modularDelphes->ExportArray("partons");
 
-        // Database of PDG codes and particle info
-        _impl->pdg = TDatabasePDG::Instance();
+      // Database of PDG codes and particle info
+      _impl->pdg = TDatabasePDG::Instance();
 
-        _impl->modularDelphes->InitTask();
-      }
-      catch(runtime_error &e)
-      {
-        throw InitializationError();
-      }
+      _impl->modularDelphes->InitTask();
     }
 
 
@@ -117,7 +110,7 @@ namespace Gambit {
         const Pythia8::Particle& p = event[ip];
         candidate = _impl->factory->NewCandidate();
 
-        /// @TODO How to convert Py8 events without hadronisation?
+        /// @todo How to convert Py8 events without hadronisation?
         candidate->PID = p.id();
         pdgCode = abs(candidate->PID);
 
@@ -132,7 +125,7 @@ namespace Gambit {
         candidate->D1 = p.daughter1();
         candidate->D2 = p.daughter2();
 
-        /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
+        /// @todo Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
         _impl->allParticleOutputArray->Add(candidate);
         if (!pdgParticle) continue;
         if (p.isFinal()) _impl->stableParticleOutputArray->Add(candidate);
@@ -218,17 +211,10 @@ namespace Gambit {
 
 
     void DelphesVanilla::processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut) const {
-      try 
-      {
-        _impl->modularDelphes->Clear();
-        convertInput(eventIn);
-        _impl->modularDelphes->ProcessTask();
-        convertOutput(eventOut);
-      } 
-      catch(runtime_error &e) 
-      {
-        throw ProcessEventError();
-      }
+      _impl->modularDelphes->Clear();
+      convertInput(eventIn);
+      _impl->modularDelphes->ProcessTask();
+      convertOutput(eventOut);
     }
 
 

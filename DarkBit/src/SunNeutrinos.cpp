@@ -20,6 +20,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
+#include "gambit/DarkBit/DarkBit_utils.hpp"
 
 //#define DARKBIT_DEBUG
 
@@ -83,7 +84,7 @@ namespace Gambit
       double Higgs_mass_charged;
 
       // Set annihilation branching fractions
-      // FIXME needs to be fixed once BFs are available directly from TH_Process
+      // TODO: needs to be fixed once BFs are available directly from TH_Process
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       std::vector< std::vector<str> > neutral_channels = BEreq::get_DS_neutral_h_decay_channels();
@@ -159,7 +160,7 @@ namespace Gambit
           LOCAL_INFO, "H- decays exist in process catalog but not H+.");
 
       // Set the neutral Higgs decay branching fractions
-      // FIXME needs to be fixed once BFs are available directly from TH_Process
+      // TODO: needs to be fixed once BFs are available directly from TH_Process
       for (int i=0; i<3; i++)       // Loop over the three neutral Higgs
       {
 
@@ -168,7 +169,7 @@ namespace Gambit
         {
 
           // Get the total decay width, for normalising partial widths to BFs.
-          // FIXME: Replace when BFs become directly available.
+          // TODO: Replace when BFs become directly available.
           double totalwidth = 0.0;
           for (std::vector<TH_Channel>::const_iterator
               it = h0_decays[i]->channelList.begin();
@@ -179,15 +180,19 @@ namespace Gambit
               it->genRate->bind()->eval();
           }
 
+          std::vector<str> neutral_channel;
           // Loop over the decay channels for neutral scalars
           for (int j=0; j<29; j++)
           {
-            const TH_Channel* channel = h0_decays[i]->find(neutral_channels[j]);
+            neutral_channel.clear();
+            neutral_channel.push_back(DarkBit_utils::str_flav_to_mass((neutral_channels[j])[0]));
+            neutral_channel.push_back(DarkBit_utils::str_flav_to_mass((neutral_channels[j])[1]));
+            const TH_Channel* channel = h0_decays[i]->find(neutral_channel);
             // If this Higgs can decay into this channel, set the BF.
             if (channel != NULL)
             {
               Higgs_decay_BFs_neutral[j][i] = channel->genRate->bind()->eval();
-              if (i == 10)          // Add W- H+ for this channel
+              if (j == 10)          // Add W- H+ for this channel
               {
                 channel = h0_decays[i]->find(adhoc_chan);
                 if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
@@ -197,7 +202,7 @@ namespace Gambit
                   += channel->genRate->bind()->eval();
               }
               // This channel has not been implemented in DarkSUSY.
-              if (i == 26) Higgs_decay_BFs_neutral[j][i] = 0.;
+              if (j == 26) Higgs_decay_BFs_neutral[j][i] = 0.;
               Higgs_decay_BFs_neutral[j][i] /= totalwidth;
             }
             else
@@ -223,10 +228,10 @@ namespace Gambit
       {
 
         // Define the charged Higgs decay channels
-        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels()
-;
+        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels();
+
         // Get the total decay width, for normalising partial widths to BFs.
-        // FIXME: Replace when BFs become directly available.
+        // TODO: Replace when BFs become directly available.
         double totalwidth = 0.0;
         for (std::vector<TH_Channel>::const_iterator
             it = Hplus_decays->channelList.begin();
@@ -236,10 +241,14 @@ namespace Gambit
           if (it->nFinalStates == 2) totalwidth += it->genRate->bind()->eval();
         }
 
+        std::vector<str> charged_channel;
         // Loop over the decay channels for charged scalars
         for (int j=0; j<15; j++)
         {
-          const TH_Channel* channel = Hplus_decays->find(charged_channels[j]);
+          charged_channel.clear();
+          charged_channel.push_back(DarkBit_utils::str_flav_to_mass((charged_channels[j])[0]));
+          charged_channel.push_back(DarkBit_utils::str_flav_to_mass((charged_channels[j])[1]));
+          const TH_Channel* channel = Hplus_decays->find(charged_channel);
           // If this Higgs can decay into this channel, set the BF.
           if (channel != NULL)
           {
@@ -310,9 +319,20 @@ namespace Gambit
       // Hand back the pointer to the DarkSUSY neutrino yield function
       result.pointer = BEreq::nuyield.pointer();
 
-      //FIXME change below to >= when version numbers are available as ints
+      //TODO: change below to >= when version numbers are available as ints
       // Treat the yield function as threadsafe only if the loaded version of DarkSUSY supports it.
       result.threadsafe = (BEreq::nuyield.version() == "5.1.3");
+
+      // Avoid OpenMP with gfortran 6.x, as its implementation seems to be buggy (causes stack overflows).
+      #ifdef __GNUC__
+        #define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+        #if GCC_VERSION > 60000
+          result.threadsafe = false;
+        #endif
+        #undef GCC_VERSION
+      #endif
 
     }
 
@@ -562,7 +582,6 @@ namespace Gambit
           double v_earth = runOptions->getValueOrDef<double>(29.78, "v_earth");
 
           BEreq::dshmcom->rho0 = rho0;
-          BEreq::dshmcom->rhox = rho0;
           BEreq::dshmcom->v_sun = vrot;
           BEreq::dshmcom->v_earth = v_earth;
           BEreq::dshmcom->rhox = rho0_eff;

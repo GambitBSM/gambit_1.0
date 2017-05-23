@@ -105,17 +105,14 @@ endif()
 set(name "ddcalc")
 set(ver "1.0.0")
 set(lib "libDDCalc")
-#set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
-set(dl "null")
-set(md5 "FIXME")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(md5 "36592d81b3e59be24c66322b360c91eb")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(loc "${GAMBIT_INTERNAL}/DDCalc") #FIXME can be deleted when public
 check_ditch_status(${name} ${ver})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-             COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-             COMMAND ${CMAKE_COMMAND} -E copy_directory ${loc} ${dir}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ""
@@ -130,11 +127,9 @@ endif()
 # Gamlike
 set(name "gamlike")
 set(ver "1.0.0")
-#set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
-set(dl "null")
-set(md5 "FIXME")
+set(dl "https://www.hepforge.org/archive/${name}/${name}-${ver}.tar.gz")
+set(md5 "16b763a2e8b9d6c174d8b7ca2f4cb575")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(loc "${GAMBIT_INTERNAL}/gamLike") #FIXME can be deleted when public
 if(GSL_FOUND)
   execute_process(
     COMMAND gsl-config --libs
@@ -152,9 +147,7 @@ endif()
 check_ditch_status(${name} ${ver})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-             COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-             COMMAND ${CMAKE_COMMAND} -E copy_directory ${loc} ${dir}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ""
@@ -569,6 +562,7 @@ set(lib "libhiggssignals")
 set(dl "https://www.hepforge.org/archive/higgsbounds/HiggsSignals-${ver}.tar.gz")
 set(md5 "00b8ac655e357c7cba9ca786f8f2ddee")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 set(hb_name "higgsbounds")
 set(hb_ver "4.3.1")
 check_ditch_status(${name} ${ver})
@@ -577,6 +571,7 @@ if(NOT ditched_${name}_${ver})
     DEPENDS higgsbounds_${hb_ver}
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
+    PATCH_COMMAND patch -p1 < ${patch}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy configure my_configure
               COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../${hb_name}/${hb_ver}|" my_configure
@@ -674,3 +669,9 @@ if(NOT ditched_${name}_${ver})
   BOSS_backend(${name} ${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 endif()
+
+# Alternative download command for getting unreleased things from the gambit_internal repository.
+# If you don't know what that is, you don't need to tinker with these.
+#    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+#             COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+#             COMMAND ${CMAKE_COMMAND} -E copy_directory ${loc} ${dir}

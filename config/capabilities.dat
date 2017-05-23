@@ -27,11 +27,173 @@
 test_vector: |
    An example vector.
 
-widths: |
-   The width of some make-believe particle.  
+charge: |
+   The charge of some make-believe particle.
 
 xsection: |
    A cross-section for some make-believe process.
+
+nevents: |
+   Number of events for some make-believe process.
+
+nevents_postcuts: |
+   Number of events post cuts for some make-believe process.
+
+Example_lnL_A: |
+   An example likelihood that ExampleBitA can calculate.
+
+eventLoopManagement: |
+   An example of a manager for loops over other module functions.
+
+event: |
+   An event of some make-believe process.
+
+eventAccumulation: |
+   An example of a collector of events.
+
+particle_id: |
+   Name of some make-believe particle.
+
+damu: |
+   Mock muon (g-2) anomalous contribution;
+   an example of how to interact with models.
+
+normaldist_loglike: |
+   A test likelihood: normal distribution.
+
+function_pointer: |
+   Example of how to retrieve a pointer to some backend function.
+
+test_Farrays: |
+   Test interaction with arrays in Fortran backends.
+
+test_marg_lnlike: |
+   Tester for marginalised Poisson likelihood.
+
+test_Pythia: |
+   Tester for Pythia backend.
+
+test_BE_Array: |
+   Tester for C/C++ backend array interfaces.
+
+test_flat_likelihood: |
+   Tester for C/C++ backend array interfaces.
+
+LibFarrayTest_1_0_init: |
+   Initialize function for the LibFarrayTest backend.
+
+libFarrayTestCommonBlock: |
+   Tester for Fortran common blocks in the backend LibFarrayTest.
+
+libFarrayTestCommonBlock2: |
+   Tester for Fortran common blocks in the backend LibFarrayTest.
+
+libFarrayTestCommonBlock3: |
+   Tester for Fortran common blocks in the backend LibFarrayTest.
+
+libFarrayTest_doubleFuncArray: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
+
+libFarrayTest_doubleFuncArray2: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
+
+libFarrayTest_doubleFuncArray3: |
+   Tester for Fortran functions using arrays in the backend LibFarrayTest.
+
+libFarrayTest_fillArrays: |
+   Tester for filling Fortran arrays in the backend LibFarrayTest.
+
+libFarrayTest_fptrRoutine: |
+   Tester for pointers to Fortran routines in the backend LibFarrayTest.
+
+libFarrayTest_printStuff: |
+   Test printer for the backend LibFarrayTest.
+
+libFarrayTest_testcomplex: |
+   Fortran subroutine that test complex numbers.
+
+LibFirst_1_0_init: |
+   Initialize the C++ testing LibFirst backend, version 1.0.
+
+LibFirst_1_1_init: |
+   Initialize the C++ testing LibFirst backend, version 1.1.
+
+LibFirst_initialize_capability: |
+   Tester function for the initialization of backends.
+
+LibFirst_returnResult_capability: |
+   Tester function for the return of results from backends.
+
+LibFortran_1_0_init: |
+   Initialize the Fortran testing LibFortran backend.
+
+average: |
+   Test Fortran function that supposedly calculates an average.
+
+externalFunction: |
+   Simple example external function that output a double in inputs an integer.
+
+externalComplicatedFunction: |
+   Simple example external function that output a double in inputs an integer and a double.
+
+example_be_array_1D: |
+   Example 1D backend array.
+
+example_be_array_2D: |
+   Example 2D backend array.
+
+example_be_array_3D: |
+   Example 3D backend array.
+
+funcGauss: |
+   Test Fortran function that supposedly calculates a Gaussian function.
+
+awesomeness: |
+   Awesome example function by Anders that returns an awesome double and inputs
+   an awesome integer.  It runs an awesome example initalize function and some other
+   awesome function, and returns some awesome result.  It also send an awesome message from
+   "awesomenessByAnders" to the logger.
+
+SomeArray: |
+   Example double array in libfirst.
+
+SomeDouble: |
+   Example double in libfirst.
+
+SomeInt: |
+   Example integer in libfirst.
+
+funcBE: |
+   Example Fortran backend function that simulates a backend function
+   in a Fortran library.
+
+runMe: |
+   Example fortran subroutine that simulated a main functionality.
+
+refex: |
+   Example function in libfirst that inputs a variable by refernce.
+
+refex2: |
+   Example function in libfirst that inputs a variable by refernce
+   and another variable to value.
+
+someFunction: |
+   Example void function that does nothing.
+
+varex: |
+   Return value of a nasty example variadic function in libfirst.
+
+varex2: |
+   Return value of a nasty variadic convenience function in libfirst.
+
+run_MSSMspectrum_test: |
+   Function to thest the Spectrum object for the MSSM.
+
+run_light_quark_test: |
+   Tests the Standrad Model Spectrum wrapper (QedQcdWrapper).
+
+ptr_arr_tests: |
+   Function that tests array and -> operators on deps and BE vars.
 
 
 #-------------------------------------
@@ -42,7 +204,10 @@ xsection: |
 
 SingletDM_spectrum: |
     Create spectrum object for scalar singlet dark matter model, available functions
-    are a simple container spectrum and one produced by a spectrum generator
+    are a simple container spectrum and one produced by a spectrum generator.
+
+SingletDMZ3_spectrum: |
+    Create spectrum object for scalar singlet dark matter model with a Z3 symmetry.
 
 check_perturb: |
     Compute the spectrum with the spectrum generator and return a
@@ -99,20 +264,25 @@ Higgs_Couplings: |
 SMlike_Higgs_PDG_code: |
     The PDG code of the neutral Higgs boson that is most SM-like in the theory at hand.
 
+SPheno_3_3_8_init: |
+    Initalises SPheno 3.3.8 and sets the internal model type according to the one being scanned.
 
-#-------------------------------------
-#  PrecisionBit
-#-------------------------------------
+SPheno_MSSMspectrum: |
+    Calculates and returns a MSSM spectrum object using SPheno.
 
-
-MSSM_spectrum: |
-    Provide an updated MSSM spectrum from the unimproved version with
-    precision W and Higgs masses.
+SPheno_internal: |
+    Exclusively used for internal variables and function for the SPheno backend.
 
 
 #-------------------------------------
 #  ColliderBit capabilities
 #-------------------------------------
+
+
+DummyColliderObservable: |
+   Dummy observable that creates a dependency on TestModel1D, which is used
+   to satisfy the normal GAMBIT model requrements in a minimal way. Used
+   for testing.
 
 ColliderOperator: |
    Controls the parallelization and execution of the entire
@@ -163,6 +333,15 @@ CMSAnalysisContainer: |
    Provides a list of CMS analyses within a container which is ready
    to apply each analysis to an event.
 
+DETAnalysisContainer: |
+   Provides a list of Delphes analyses within a container which is ready
+   to apply each analysis to an event.
+
+IdentityAnalysisContainer: |
+   Provides a list of “identity” analyses (no detector
+   smearing) within a container that is ready to apply
+   them to an event.
+
 ATLASAnalysisNumbers: |
    Uses the given ATLASAnalysisContainer to perform all its
    analyses upon the given ATLASSmearedEvent.
@@ -170,6 +349,15 @@ ATLASAnalysisNumbers: |
 CMSAnalysisNumbers: |
    Uses the given CMSAnalysisContainer to perform all its analyses
    upon the given CMSSmearedEvent.
+
+DetAnalysisNumbers: |
+   Uses the given DetAnalysisContainer to perform all its analyses
+   upon the given ReconstructedEvent.
+
+IdentityAnalysisNumbers: |
+   Uses the given IdentityAnalysisContainer
+   to perform all its analyses upon the given
+   CopiedEvent.
 
 ALEPH_Selectron_LLike: |
    Compares the cross section times branching ratio
@@ -269,26 +457,475 @@ FH_HiggsProd: |
    an interface to FeynHiggs.
 
 
-# LEP}$E$_xsec_se}$X$se}$Y$bar}
-#             Calculates the LEP selectron pair production
-#             cross-section for centre of mass energy $E$, with selectron
-#             eigenstates $X$ and $Y$.
-# LEP}$E$_xsec_smu}$X$smu}$Y$bar}
-#             Calculates the LEP smuon pair production
-#             cross-section for centre of mass energy $E$, with smuon
-#             eigenstates $X$ and $Y$.
-# LEP}$E$_xsec_stau}$X$stau}$Y$bar}
-#             Calculates the LEP stau pair production
-#             cross-section for centre of mass energy $E$, with stau
-#             eigenstates $X$ and $Y$.
-# LEP}$E$_xsec_chi00_}$XY$bar}
-#             Calculates the LEP neutralino pair production
-#             cross-section for centre of mass energy $E$, with neutralino
-#             mass eigenstates $X$ and $Y$.
-# LEP}$E$_xsec_chipm_}$XY$bar}
-#             Calculates the LEP chargino pair production
-#             cross-section for centre of mass energy $E$, with chargino
-#             mass eigenstates $X$ and $Y$.
+# LEP cross-section capabilities
+
+
+LEP188_xsec_chi00_11: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi01' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_12: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi02' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_13: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi03' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_14: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi04' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_22: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi02' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_23: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi03' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_24: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi04' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_33: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi03' and 'chi03' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_34: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi03' and 'chi04' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chi00_44: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi04' and 'chi04' at centre of mass energy 188 GeV.
+
+LEP205_xsec_chi00_11: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi01' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_12: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi02' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_13: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi03' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_14: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi04' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_22: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi02' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_23: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi03' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_24: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi04' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_33: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi03' and 'chi03' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_34: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi03' and 'chi04' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chi00_44: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi04' and 'chi04' at centre of mass energy 205 GeV.
+
+LEP208_xsec_chi00_11: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi01' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_12: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi02' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_13: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi03' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_14: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi01' and 'chi04' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_22: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi02' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_23: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi03' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_24: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi02' and 'chi04' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_33: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi03' and 'chi03' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_34: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi03' and 'chi04' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chi00_44: |
+   The LEP neutralino pair production cross-section for
+   mass eigenstates 'chi04' and 'chi04' at centre of mass energy 208 GeV.
+
+
+LEP188_xsec_chipm_11: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm1' and 'chipm1' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chipm_12: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm1' and 'chipm2' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chipm_21: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm2' and 'chipm1' at centre of mass energy 188 GeV.
+
+LEP188_xsec_chipm_22: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm2' and 'chipm2' at centre of mass energy 188 GeV.
+
+LEP205_xsec_chipm_11: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm1' and 'chipm1' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chipm_12: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm1' and 'chipm2' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chipm_21: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm2' and 'chipm1' at centre of mass energy 205 GeV.
+
+LEP205_xsec_chipm_22: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm2' and 'chipm2' at centre of mass energy 205 GeV.
+
+LEP208_xsec_chipm_11: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm1' and 'chipm1' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chipm_12: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm1' and 'chipm2' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chipm_21: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm2' and 'chipm1' at centre of mass energy 208 GeV.
+
+LEP208_xsec_chipm_22: |
+   The LEP chargino pair production cross-section for
+   mass eigenstates 'chipm2' and 'chipm2' at centre of mass energy 208 GeV.
+
+
+LEP188_xsec_se1se1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se1' and 'se1bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_se1se2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se1' and 'se2bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_se2se1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se2' and 'se1bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_se2se2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se2' and 'se2bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smu1smu1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu1' and 'smu1bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smu1smu2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu1' and 'smu2bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smu2smu1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu2' and 'smu1bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smu2smu2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu2' and 'smu2bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_stau1stau1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau1' and 'stau1bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_stau1stau2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau1' and 'stau2bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_stau2stau1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau2' and 'stau1bar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_stau2stau2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau2' and 'stau2bar' at centre of mass energy 188 GeV.
+
+LEP205_xsec_se1se1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se1' and 'se1bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_se1se2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se1' and 'se2bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_se2se1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se2' and 'se1bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_se2se2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se2' and 'se2bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smu1smu1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu1' and 'smu1bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smu1smu2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu1' and 'smu2bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smu2smu1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu2' and 'smu1bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smu2smu2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu2' and 'smu2bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_stau1stau1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau1' and 'stau1bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_stau1stau2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau1' and 'stau2bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_stau2stau1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau2' and 'stau1bar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_stau2stau2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau2' and 'stau2bar' at centre of mass energy 205 GeV.
+
+LEP208_xsec_se1se1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se1' and 'se1bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_se1se2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se1' and 'se2bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_se2se1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se2' and 'se1bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_se2se2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'se2' and 'se2bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smu1smu1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu1' and 'smu1bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smu1smu2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu1' and 'smu2bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smu2smu1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu2' and 'smu1bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smu2smu2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smu2' and 'smu2bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_stau1stau1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau1' and 'stau1bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_stau1stau2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau1' and 'stau2bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_stau2stau1bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau2' and 'stau1bar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_stau2stau2bar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'stau2' and 'stau2bar' at centre of mass energy 208 GeV.
+
+
+
+LEP188_xsec_selselbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'sel' and 'selbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_selserbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'sel' and 'serbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_serselbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'ser' and 'selbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_serserbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'ser' and 'serbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smulsmulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smul' and 'smulbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smulsmurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smul' and 'smurbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smursmulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smur' and 'smulbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_smursmurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smur' and 'smurbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_staulstaulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staul' and 'staulbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_staulstaurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staul' and 'staurbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_staurstaulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staur' and 'staulbar' at centre of mass energy 188 GeV.
+
+LEP188_xsec_staurstaurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staur' and 'staurbar' at centre of mass energy 188 GeV.
+
+LEP205_xsec_selselbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'sel' and 'selbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_selserbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'sel' and 'serbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_serselbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'ser' and 'selbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_serserbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'ser' and 'serbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smulsmulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smul' and 'smulbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smulsmurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smul' and 'smurbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smursmulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smur' and 'smulbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_smursmurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smur' and 'smurbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_staulstaulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staul' and 'staulbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_staulstaurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staul' and 'staurbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_staurstaulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staur' and 'staulbar' at centre of mass energy 205 GeV.
+
+LEP205_xsec_staurstaurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staur' and 'staurbar' at centre of mass energy 205 GeV.
+
+LEP208_xsec_selselbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'sel' and 'selbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_selserbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'sel' and 'serbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_serselbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'ser' and 'selbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_serserbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'ser' and 'serbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smulsmulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smul' and 'smulbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smulsmurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smul' and 'smurbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smursmulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smur' and 'smulbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_smursmurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'smur' and 'smurbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_staulstaulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staul' and 'staulbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_staulstaurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staul' and 'staurbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_staurstaulbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staur' and 'staulbar' at centre of mass energy 208 GeV.
+
+LEP208_xsec_staurstaurbar: |
+   The LEP pair production cross-section for sfermion
+   eigenstates 'staur' and 'staurbar' at centre of mass energy 208 GeV.
+
+Pythia_8_212_EM_init: |
+   Initializes Pythia 8.212 EM.
+
+Pythia_8_212_init: |
+   Initializes Pythia 8.212.
+
 
 
 #-------------------------------------
@@ -329,8 +966,8 @@ RD_spectrum: |
    particles, as well as location of thresholds and resonances.
 
 RD_spectrum_ordered: |
-   Same as RD_spectrum, but with all resonances and thresholds 
-   ordered with increasing p_eff, and coannihilation thresholds 
+   Same as RD_spectrum, but with all resonances and thresholds
+   ordered with increasing p_eff, and coannihilation thresholds
    included
 
 RD_eff_annrate_DSprep: |
@@ -378,7 +1015,7 @@ XENON100_2012_Calculate: |
 
 XENON100_2012_Events: |
    The number of observed events for the XENON100 2012 direct detection analysis.
-   
+
 XENON100_2012_Background: |
    The number of background events for the XENON100 2012 direct detection analysis.
 
@@ -399,7 +1036,7 @@ LUX_2013_Calculate: |
 
 LUX_2013_Events: |
    The number of observed events for the LUX 2013 direct detection analysis.
-   
+
 LUX_2013_Background: |
    The number of background events for the LUX 2013 direct detection analysis.
 
@@ -420,7 +1057,7 @@ LUX_2015_Calculate: |
 
 LUX_2015_Events: |
    The number of observed events for the LUX 2015 direct detection analysis.
-   
+
 LUX_2015_Background: |
    The number of background events for the LUX 2015 direct detection analysis.
 
@@ -441,7 +1078,7 @@ LUX_2016_Calculate: |
 
 LUX_2016_Events: |
    The number of observed events for the LUX 2016 direct detection analysis.
-   
+
 LUX_2016_Background: |
    The number of background events for the LUX 2016 direct detection analysis.
 
@@ -462,7 +1099,7 @@ PandaX_2016_Calculate: |
 
 PandaX_2016_Events: |
    The number of observed events for the PandaX 2016 direct detection analysis.
-   
+
 PandaX_2016_Background: |
    The number of background events for the PandaX 2016 direct detection analysis.
 
@@ -483,7 +1120,7 @@ SuperCDMS_2014_Calculate: |
 
 SuperCDMS_2014_Events: |
    The number of observed events for the SuperCDMS 2014 direct detection analysis.
-   
+
 SuperCDMS_2014_Background: |
    The number of background events for the SuperCDMS 2014 direct detection analysis.
 
@@ -504,7 +1141,7 @@ SIMPLE_2014_Calculate: |
 
 SIMPLE_2014_Events: |
    The number of observed events for the SIMPLE 2014 direct detection analysis.
-   
+
 SIMPLE_2014_Background: |
    The number of background events for the SIMPLE 2014 direct detection analysis.
 
@@ -525,7 +1162,7 @@ PICO_2L_Calculate: |
 
 PICO_2L_Events: |
    The number of observed events for the PICO-2L direct detection analysis.
-   
+
 PICO_2L_Background: |
    The number of background events for the PICO-2L direct detection analysis.
 
@@ -546,7 +1183,7 @@ PICO_60_F_Calculate: |
 
 PICO_60_F_Events: |
    The number of observed events for the PICO-60 direct detection analysis (flourine only).
-   
+
 PICO_60_F_Background: |
    The number of background events for the PICO-60 direct detection analysis (flourine only).
 
@@ -567,7 +1204,7 @@ PICO_60_I_Calculate: |
 
 PICO_60_I_Events: |
    The number of observed events for the PICO-60 direct detection analysis (iodine only).
-   
+
 PICO_60_I_Background: |
    The number of background events for the PICO-60 direct detection analysis (iodine only).
 
@@ -588,7 +1225,7 @@ DARWIN_Ar_2015_Calculate: |
 
 DARWIN_Ar_2015_Events: |
    The number of observed events for the DARWIN Ar 2015 direct detection analysis.
-   
+
 DARWIN_Ar_2015_Background: |
    The number of background events for the DARWIN Ar 2015 direct detection analysis.
 
@@ -609,7 +1246,7 @@ DARWIN_Xe_2015_Calculate: |
 
 DARWIN_Xe_2015_Events: |
    The number of observed events for the DARWIN Xe 2015 direct detection analysis.
-   
+
 DARWIN_Xe_2015_Background: |
    The number of background events for the DARWIN Xe 2015 direct detection analysis.
 
@@ -623,6 +1260,48 @@ DARWIN_Xe_2015_SignalSD: |
    The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
 
 DARWIN_Xe_2015_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Ar_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_Events: |
+   The number of observed events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_Background: |
+   The number of background events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_Signal: |
+   The number of signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Ar_LogLikelihood: |
+   Calculate the log-likelihood for the DARWIN Ar 2015 direct detection analysis.
+
+DARWIN_Xe_Calculate: |
+   Perform rate and likelihood calculations for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_Events: |
+   The number of observed events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_Background: |
+   The number of background events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_Signal: |
+   The number of signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_SignalSI: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_SignalSD: |
+   The number of spin-independent signal events for the DARWIN Xe 2015 direct detection analysis.
+
+DARWIN_Xe_LogLikelihood: |
    Calculate the log-likelihood for the DARWIN Xe 2015 direct detection analysis.
 
 lnL_SI_nuclear_parameters: |
@@ -649,7 +1328,7 @@ cascadeMC_DecayTable: |
 cascadeMC_gammaSpectra: |
    Gamma-ray spectrum from cascade decays.
 
-cascadeMC_LoopManager: |
+cascadeMC_LoopManagement: |
    Controls the loop for the cascade decay Monte Carlo simulation.
 
 cascadeMC_InitialState: |
@@ -689,7 +1368,7 @@ annihilation_rate_Sun: |
    Annihilation rate of dark matter in the Sun (s^-1).
 
 nuyield_ptr: |
-   A pointer to a function that returns the neutrino yield from dark matter in the Sun. 
+   A pointer to a function that returns the neutrino yield from dark matter in the Sun.
 
 IC22_data: |
    Do signal, likelihood and related calculations for neutrino indirect detection analysis IC22.
@@ -793,10 +1472,525 @@ dump_GammaSpectrum: |
 UnitTest_DarkBit: |
    Prints various DarkBit results into YAML file.
 
+DD_SetDetectorEmin: |
+   Sets the minimum recoil energy relevant for a given direct detection experiment.
+
+DDCalc_1_0_0_init: |
+   Initialises DDCalc 1.0.0.
+
+DD_Experiment: |
+   The name of the DDcalc experiment corresponding to a specific experiment index.
+
+DD_Background: |
+   The number of background events for a given direct detection experiment.
+
+DD_CalcRates: |
+   Perform rate and likelihood calculations for a given direct detection experiment.
+
+DD_Events: |
+   The number of observed events for a given direct detection experiment.
+
+DD_LogLikelihood: |
+   Calculate the log-likelihood for a given direct detection experiment.
+
+DD_LogPValue: |
+   Calculate the log p-value for a given direct detection experiment.
+
+DD_Signal: |
+   The number of signal events for a given direct detection experiment.
+
+DD_SignalSD: |
+   The number of spin-dependent signal events for a given direct detection experiment.
+
+DD_SignalSI: |
+   The number of spin-independent signal events for a given direct detection experiment.
+
+LUX_2013_Init: |
+   Initialises a direct detection experiment with the properties of the 2013 analysis of LUX.
+
+LUX_2015_Init: |
+   Initialises a direct detection experiment with the properties of the 2015 reanalysis of LUX.
+
+LUX_2016_Init: |
+   Initialises a direct detection experiment with the properties of the 2016 analysis of LUX.
+
+SIMPLE_2014_Init: |
+   Initialises a direct detection experiment with the properties of the 2014 analysis of SIMPLE.
+
+PICO_2L_Init: |
+   Initialises a direct detection experiment with the properties of the analysis of PICO-2L.
+
+PICO_60_F_Init: |
+   Initialises a direct detection experiment with the properties of the analysis of PICO-60, including only fluorine.
+
+PICO_60_I_Init: |
+   Initialises a direct detection experiment with the properties of the analysis of PICO-60, including only iodine.
+
+PandaX_2016_Init: |
+   Initialises a direct detection experiment with the properties of the 2016 analysis of PandaX.
+
+XENON100_2012_Init: |
+   Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
+
+SuperCDMS_2014_Init: |
+   Initialises a direct detection experiment with the properties of the 2014 analysis of SuperCDMS.
+
+FreeDetectorss: |
+   Deletes the detector object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeHalos: |
+   Deletes the halo object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeWIMPs: |
+   Deletes the WIMP object held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+FreeAll: |
+   Deletes the detector, halo and WIMP objects held internally by DDCalc (relevant for the C/C++ interface of DDCalc).
+
+GetWIMP_mG: |
+  Gets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+GetWIMP_mfa: |
+  Gets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+GetWIMP_msigma: |
+  Gets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+SetWIMP_mG: |
+  Sets the WIMP parameters m, GpSI, GnSI, GpSD, GnSD (used in DDCalc)
+
+SetWIMP_mfa: |
+  Sets the WIMP parameters m, fp, fn, ap, an (used in DDCalc)
+
+SetWIMP_msigma: |
+  Sets the WIMP parameters m, sigmapSI, sigmanSI, sigmapSD, sigmanSD (used in DDCalc)
+
+InitDetector: |
+  Default detector setup used in DDCalc
+
+InitWIMP: |
+  Default WIMP structure used in DDCalc
+
+InitHalo: |
+  Default Halo structure used in DDCalc
+
+SetSHM: |
+  Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
+
+nulike_init: |
+  Initializes nulike.
+
+nulike_1_0_4_init: |
+  Initializes nulike_1_0_4.
+
+nubounds:
+  Counts, likelihoods and p-values from neutrino telescope searches for dark matter annihilation in the Sun.
+
+Example_lnL_B: |
+  Example log likelihood in ExampleBit B.
+
+lnlike_marg_poisson_gaussian_error: |
+  log of the convolution of a Poisson and Gausian distributions.
+
+lnlike_marg_poisson_lognormal_error: |
+  log of the convolution of a poisson and log-normal distributions.
+
+#-------------------------------------
+#  HiggsBounds capabilities
+#-------------------------------------
+
+Higgs_Production_Xsecs: |
+   Higss Production cross section
+
+HiggsBounds_4_2_1_init:
+   Initialises HiggsBounds backend, version 4.2.1.
+
+HiggsBounds_4_3_1_init:
+   Initialises HiggsBounds backend, version 4.3.1.
+
+finish_HiggsBounds: |
+   Finishes HiggsBound.
+
+initialize_HiggsBounds_int: |
+   Initialises HiggsBounds for library linking.
+
+HiggsBounds_charged_input: |
+   Required charged input values to initialise HiggsBounds.
+
+HiggsBounds_neutral_input_part: |
+   Required neutral input values to initialise HiggsBounds.
+
+HiggsBounds_input_SLHA: |
+   HiggsBounds SLHA file reader
+
+HiggsBounds_set_mass_uncertainties: |
+   Assign mass uncertainties for HiggsBounds backend.
+
+run_HiggsBounds_classic: |
+   Runs HiggsBounds after initialization.
+
+finish_HiggsBounds_chisqtables: |
+   Generates chi squared tables from HiggsBounds.
+
+initialize_HiggsBounds_chisqtables: |
+   Initializes HiggsBounds to produce chi squared tables.
+
+HB_calc_stats: |
+   To quote from HiggsBounds: "this is in the middle of development! DO NOT USE!"
+
+
+#-------------------------------------
+#  HiggsSignals capabilities
+#-------------------------------------
+
+HiggsSignals_1_4_init: |
+   Initialise HiggsSignals backend.
+
+HiggsSignals_neutral_input_MassUncertainty: |
+   Assign mass uncertainties for HiggsSignals backend.
+
+HiggsBounds_charged_input_HS: |
+   Required charged input values to initialise HiggsSignals.
+
+HiggsBounds_neutral_input_part_HS: |
+   Required neutral input values to initialise HiggsSignals.
+
+HiggsBounds_input_SLHA_HS: |
+   HiggsSignals SLHA file reader
+
+initialize_HiggsBounds_int_HS: |
+   Initialises HiggsBounds for library linking from HiggsSignals.
+
+finish_HiggsBounds_HS: |
+   Finishes HiggsBounds from HiggsSignals.
+
+finish_HiggsSignals: |
+   Finishes HiggsSignal Backend.
+
+initialize_HiggsSignals: |
+   Initializes HiggsSignals.
+
+initialize_HiggsSignals_latestresults: |
+   Initializes HiggsSignals.
+
+run_HiggsSignals: |
+   Runs HiggsSignals after Initialization.
+
+setup_pdf: |
+   Set pdf shape in HiggsSignals.
+
+setup_rate_uncertainties: |
+   Set the rate uncertainties in HiggsSignals.
+
+#-------------------------------------
+#  DarkSUSY capabilities
+#-------------------------------------
+
+DarkSUSY_5_1_3_init: |
+   Initialise DarkSUSY backend.
+
+dsIBffdxdy: |
+   Differential internal bremsstrahlung photon yield for fermion final states.
+
+dsIBfsrdxdy: |
+   Differential final state radiation photon yield for fermion final states.
+
+dsIBhhdxdy: |
+   Differential internal bremsstrahlung photon yield for the H+ H- final state.
+
+dsIBwhdxdy: |
+   Differential internal bremsstrahlung photon yield for W+- H-+ final states.
+
+dsIBwwdxdy: |
+   Differential internal bremsstrahlung photon yield for the W+ W- final state.
+
+dsSLHAread: |
+   DarkSUSY SLHA file reader.
+
+dsanwx: |
+   Neutralino self-annihilation invariant rate.
+
+dsddgpgn: |
+   Neutralino nucleon four-fermion couplings.
+
+dsgf2s2thw: |
+   Determines sin^2(theta_W) based on Fermi constant.
+
+dsgive_model_isasugra: |
+   Sets CMSSM model parameters in ISASUGRA included with DarkSUSY.
+
+dshainit: |
+   Intialises and loads common block values needed by DarkSUSY halo yield routines.
+
+dshayield: |
+   Integrated or differential yield of a range of SM species from various final states.
+
+dshigwid: |
+   Choose which Higgs width calculation to use in DarkSUSY.
+
+dshmcom: |
+   Halo model density, distance, and velocity parameters.
+
+dshmframevelcom: |
+   Velocity of observer in frame of galaxy.
+
+dshmisodf: |
+   Velocity dispersion and escape velocity.
+
+dshmnoclue: |
+   Mysterious DarkSUSY halo model common block (contains observer velocity).
+
+dsibyieldone: |
+   Inverse bremsstrahlung yield from one channel.
+
+dsinit: |
+   Initialise DarkSUSY.
+
+dsmqpole4loop: |
+   Calculate quark pole mass.
+
+dsmssmzero: |
+   Zeros all electroweak parameters in DarkSUSY.
+
+dsorder_flavour: |
+   Orders sfermions based on flavour content as expected by DarkSUSY routines.
+
+dsprep: |
+   Calculates cross sections and brnaching ratios and sets common block variables in DarkSUSY
+
+dsrdeqn: |
+   Solves the relic density evolution equation.
+
+dsrdinit: |
+   Initialise the DarkSUSY relic density routines (read in the degree of freedom table).
+
+dsrdomega: |
+   Calculates Omega h^2 for the MSSM neutralino.
+
+dsrdset: |
+   Set parameters for DarkSUSY relic density routines (which DOF table is used).
+
+dsrdtab: |
+   Tabulate the invariant annihilation rate in DarkSUSY.
+
+dsrdthlim: |
+   Determine which limits in p_eff for DarkSUSY to use when integrating for the thermal average.
+
+dsrdwintp: |
+   Interpolation of tabulated invariant rate.
+
+dssigmav: |
+   Neutralino self-annihilation cross section <sigma v> in zero velocity limit.
+
+dsspectrum: |
+   Sets up particle mass spectrum and mixing matrices in DarkSUSY.
+
+dsspwid: |
+   Sets widths of particles in DarkSUSY.
+
+dssuconst: |
+   Sets many useful constants in DarkSUSY.
+
+dssuconst_ckm: |
+   Sets CKM mixing parameters in DarkSUSY.
+
+dssuconst_yukawa_running: |
+   Calculates Yukawa couplings in DarkSUSY with running masses.
+
+dssusy: |
+   Sets up supersymmetric model routines in DarkSUSY.
+
+dssusy_isasugra: |
+   Sets up supersymmetric model routines in DarkSUSY using ISASUGRA.
+
+dsvertx: |
+   Sets up SUSY vertices in DarkSUSY.
+
+dswspectrum: |
+   Writes out mass spectrum.
+
+dswwidth: |
+   Writes out widths.
+
+cap_Sun_v0q0_isoscalar: |
+   Capture rate of dark matter in the sun.
+
+raw_muonyield: |
+   Gives either the differential or total yield of muons in a neutrino telescope from dark matter annihilation in the sun.
+
+pacodes: |
+   Common block containing particle codes used in DarkSUSY.
+
+mssmiuseful: |
+   Common block containing DarkSUSY particle codes for lightest supersymmmetric particle and neutralino.
+
+mspctm: |
+   DarkSUSY mass spectrum.
+
+widths: |
+   DarkSUSY particle widths. (Capability is defined twice.)
+
+intdof: |
+   Number of spin and color states for each particle for DarkSUSY.
+
+vrtxs: |
+   DarkSUSY interaction vertices.
+
+smruseful: |
+   Various standard model parameters.
+
+smcuseful: |
+   Contains option to determine how DarkSUSY runs particle masses.
+
+couplingconstants: |
+   Coupling constants.
+
+sckm: |
+   CKM matrix parameters.
+
+mixing: |
+   The CKM matrix.
+
+mssmtype: |
+   DarkSUSY parameter that specifies parameterisation of MSSM.
+
+mssmpar: |
+   MSSM parameters for DarkSUSY.
+
+mssmswitch: |
+   Switches that tell DarkSUSY how to calculate various quantities.
+
+sfermionmass: |
+   Sfermion masses for DarkSUSY.
+
+mssmwidths: |
+   Widths of Higgs sector particle for DarkSUSY.
+
+mssmmixing: |
+   MSSM mixing matrices.
+
+rdmgev: |
+   Information about (co)annihilating particles for the DarkSUSY relic density routines.
+
+rdpth: |
+   Momentum thresholds relevant for DarkSUSY relic density calculation.
+
+rddof: |
+   Common block for effective degrees of freedom in DarkSUSY.
+
+rderrors: |
+   Common block containing information about errors and warnings from DarkSUSY relic density routines.
+
+rdpars: |
+   Parameters that effect the DarkSUSY relic density calculation.
+
+rdswitch: |
+   Options for the DarkSUSY relic density calculation.
+
+rdlun: |
+   Logical units for DarkSUSY relic density calculation.
+
+rdpadd: |
+   Parameters that effect the tabulation of the invariant annihilation rate in DarkSUSY.
+
+IBintvars: |
+   Common block for DarkSUSY internal Bremsstrahlung routines.
+
+ddcom: |
+   Common block containing DM nucleon couplings and options for their calculation in DarkSUSY.
+
+nu_common_block: |
+   Annihilation branching rates and scalar decay rates used by DarkSUSY routines for DM annihilation in sun.
+
+nuyield: |
+   Neutrino yields at the top of the atmosphere.
+
+nuyield_setup: |
+   Sets DarkSUSY common blocks with all necessary information to calculate neutrino yields.
+
+particle_code: |
+   Translates GAMBIT string particle identifiers to corresponding DarkSUSY integer codes.
+
+initFromSLHAeaAndDecayTable: |
+   Initialises an MSSM model in DarkSUSY from an SLHAea object and a DecayTable.
+
+get_DS_neutral_h_decay_channels: |
+   Vector containing neutral Higgs decay channels in DarkSUSY.
+
+get_DS_charged_h_decay_channels: |
+   Vector containing charged Higgs decay channels in DarkSUSY.
+
+#-------------------------------------
+#  MicrOmegas capabilities
+#-------------------------------------
+
+MicrOmegas_MSSM_3_6_9_2_init: |
+   Initialise MicrOmegas MSSM backend.
+
+MicrOmegas_SingletDM_3_6_9_2_init: |
+   Initialise MicrOmegas SingletDM backend.
+
+assignVal: |
+   Assigns a value to a model parameter in MicrOmegas.
+
+vSigma: |
+   The velocity averaged cross section calculated at a specified temperature.
+
+oh2: |
+   The dark matter relic density (Omega h^2).
+
+suspectSUGRA: |
+   Calculates MSSM mass spectrum using SuSpect and use that to intialise MicrOmegas.
+
+lesHinput: |
+   Initialises MicrOmegas using an SLHA file.
+
+mass_spectrum: |
+   Calculates all masses/couplings in MicrOmegas and sorts odd particles by mass.
+
+cleanDecayTable: |
+   Removes all information from MicrOmegas decay table.
+
+nucleonAmplitudes: |
+   Calculates WIMP-nucleon scattering amplitudes.
+
+FeScLoop: |
+   Calculates loop contributions to WIMP-nucleon scattering.
+
+calcScalarQuarkFF: |
+   Calculates nuclear matrix elements for scalar DM-quark interactions.
+
+mInterp: |
+   MicrOmegas routine to interpolate between different center of mass energies to determine cosmic ray yields.
+
+zInterp: |
+   MicrOmegas routine for interpolating cosmic ray spectra.
+
+readSpectra: |
+   MicrOmegas routine to initialise cosmic-ray yield tables.
+
+MOcommon: |
+   MicrOmegas global variables.
+
+ForceUG: |
+   Flag to force CalcHEP in MicrOmegas to do calculation in unitary gauge.
+
+VZdecay: |
+   MicrOmegas flag that turns on 3 body decays via a virtual Z.
+
+VWdecay: |
+   MicrOmegas flag that turns on 3 body decays via a virtual W.
+
+dNdE: |
+   Differential cosmic-ray yield.
+
 
 #-------------------------------------
 #  DecayBit capabilities
 #-------------------------------------
+
+decay_rates: |
+   Collect all the decay rates into a table.
 
 Z_decay_rates : |
    All decays of the Z gauge boson.
@@ -871,7 +2065,7 @@ electron_ C _decay_rates : |
 
 smuon_ C _decay_rates : |
    Decays of the μ_R sleptons.
-   
+
 stop_1_decay_rates : |
    Decays of the t_1 squarks.
 
@@ -919,7 +2113,7 @@ electronbar_ C _decay_rates : |
 
 smuonbar_ C _decay_rates : |
    Decays of the anti-μ_L sleptons.
-   
+
 supbar_ C _decay_rates : |
    Decays of the anti-u_R squarks.
 
@@ -937,7 +2131,7 @@ electronbar_ C _decay_rates : |
 
 smuonbar_ C _decay_rates : |
    Decays of the anti-μ_R sleptons.
-   
+
 stopbar_1_decay_rates : |
    Decays of the anti-t_1 squarks.
 
@@ -955,7 +2149,7 @@ sbottombar_2_decay_rates : |
 
 staubar_2_decay_rates : |
    Decays of the anti-τ_2 sleptons.
-   
+
 mu_plus_decay_rates : |
   All decays of the μ+ lepton.
 
@@ -1010,22 +2204,38 @@ piminus_decay_rates : |
 rhominus_decay_rates : |
   All decays of the ρ- meson.
 
-neutralino_1_decay_rates : | 
+neutralino_1_decay_rates : |
    Decays of the neutralino 1.
 
-neutralino_2_decay_rates : | 
+neutralino_2_decay_rates : |
    Decays of the neutralino 2.
 
-neutralino_3_decay_rates : | 
+neutralino_3_decay_rates : |
    Decays of the neutralino 3.
 
-neutralino_4_decay_rates : | 
+neutralino_4_decay_rates : |
    Decays of the neutralino 4.
 
+SLHA1_violation: |
+   Checks if the first or second generation left-right mixing exceeds the specified tolerance (which means that SLHA1 is an invalid format for this model point).
+
+SLHA_pseudonyms: |
+   Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
+
+Reference_SM_A0_decay_rates: |
+   Computation of decays of SM Higgs with mass equal to the mass of the CP-odd Higgs boson.
+
+Reference_SM_other_Higgs_decay_rates: |
+   Computation of decays of SM Higgs with mass equal to the mass of the least SM-like CP-even Higgs.
 
 #-------------------------------------
 #  PrecisionBit capabilities
 #-------------------------------------
+
+
+MSSM_spectrum: |
+    Provide an updated MSSM spectrum from the unimproved version with
+    precision W and Higgs masses.
 
 lnL_alpha_em : |
    Log-likelihood of α_EM (m_Z), the MSBar value of the fine structure constant at μ = m_Z.
@@ -1101,3 +2311,749 @@ lnL_gm2 : |
 
 lnL_deltarho : |
    Log-likelihood of ∆ρ, the departure from one of the ratio of the Fermi effective coupling (G_F) in W and Z-mediated processes.
+
+
+#-------------------------------------
+#  FlavBit capabilities
+#-------------------------------------
+
+AI_BKstarmumu : |
+   The isospin asymmetry in B-> K* μ+ μ-.
+
+AI_BKstarmumu_zero : |
+   The zero-crossing of the isospin asymmetry in B-> K* μ+ μ-.
+
+A_BXsll_highq2 : |
+   The integrated forward-backward asymmetry of B->Xs l+ l- in the high-q2 bin.
+
+A_BXsll_lowq2 : |
+   The integrated forward-backward asymmetry of B->Xs l+ l- in the low-q2 bin.
+
+A_BXsll_zero : |
+   The zero crossing of the forward-backward asymmetry of B->Xs l+ l-.
+
+A_BXsmumu_highq2 : |
+   The integrated forward-backward asymmetry of B->Xs μ+ μ- in the high-q2 bin.
+
+A_BXsmumu_highq2_CONV : |
+   The Wilson coefficients and the integrated forward-backward asymmetry of B->Xs μ+ μ- in the high-q2 bin.
+
+A_BXsmumu_lowq2 : |
+   The integrated forward-backward asymmetry of B->Xs μ+ μ- in the low-q2 bin.
+
+A_BXsmumu_lowq2_CONV : |
+   The Wilson coefficients and the integrated forward-backward asymmetry of B->Xs μ+ μ- in the low-q2 bin.
+
+A_BXsmumu_zero : |
+   The zero crossing of the forward-backward asymmetry of B->Xs μ+ μ-.
+
+A_BXsmumu_zero_CONV : |
+   The Wilson coefficients and the zero crossing of the forward-backward asymmetry of B->Xs μ+ μ-.
+
+A_BXstautau_highq2 : |
+   The integrated forward-backward asymmetry of B->Xs tau+ tau- in the high-q2 bin.
+
+A_BXstautau_highq2_CONV : |
+   The Wilson coefficients and the integrated forward-backward asymmetry of B->Xs tau+ tau- in the high-q2 bin.
+
+BDmunu : |
+   The branching ratio of B-> D mu nu.
+
+BDtaunu : |
+   The branching ratio of B-> D tau nu.
+
+BRBDlnu : |
+   The branching ratio of B-> D l nu.
+
+BDtaunu_BDenu : |
+   The ratio of BR(B-> D tau nu)/BR(B-> D e nu).
+
+BDstarmunu : |
+   The branching ratio of B-> D* mu nu.
+
+BDstartaunu : |
+   The branching ratio of B-> D* tau nu.
+
+BRBDstarlnu : |
+   The branching ratio of B-> D* l nu.
+
+BDstartaunu_BDstarenu : |
+   The ratio of BR(B-> D* tau nu)/BR(B-> D* e nu).
+
+BKstarmumu_11_25 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 1.1 and 2.5 GeV^2.
+
+BKstarmumu_25_40 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 2.5 and 4 GeV^2.
+
+BKstarmumu_40_60 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 4 and 6 GeV^2.
+
+BKstarmumu_60_80 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 6 and 8 GeV^2.
+
+BKstarmumu_15_17 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 15 and 17 GeV^2.
+
+BKstarmumu_17_19 : |
+   The integrated differential cross-section and angular observables of B-> K* μ+ μ- for q2 between 17 and 19 GeV^2.
+
+BKstarmumu_CONV : |
+   The Wilson coefficients and the integrated differential cross-section and angular observables of B-> K* μ+ μ-.
+
+BRBKll : |
+   The differential cross-section and angular observables of B-> K l+ l-.
+
+BRBKstarll : |
+   The differential cross-section and angular observables of B-> K* l+ l-.
+
+BRBXsll_highq2 : |
+   The branching ratio B-> Xs l+ l- in the high-q2 bin.
+
+BRBXsll_lowq2 : |
+   The branching ratio B-> Xs l+ l- in the low-q2 bin.
+
+BRBXsmumu_highq2 : |
+   The branching ratio B-> Xs μ+ μ- in the high-q2 bin.
+
+BRBXsmumu_highq2_CONV : |
+   The Wilson coefficients and the branching ratio B-> Xs μ+ μ- in the high-q2 bin.
+
+BRBXsmumu_lowq2 : |
+   The branching ratio B-> Xs μ+ μ- in the low-q2 bin.
+
+BRBXsmumu_lowq2_CONV : |
+   The Wilson coefficients and the branching ratio B-> Xs μ+ μ- in the low-q2 bin.
+
+BRBXstautau_highq2 : |
+   The branching ratio B-> Xs tau+ tau- in the low-q2 bin.
+
+BRBXstautau_highq2_CONV : |
+   The Wilson coefficients and the branching ratio B-> Xs tau+ tau- in the low-q2 bin.
+
+BRBsphill : |
+   The differential cross-section and angular observables of Bs-> phi l+ l-.
+
+Bll : |
+   The branching ratio of Bd-> l+ l-.
+
+Bll_CONV : |
+   The Wilson coefficients and the branching ratio of Bd-> l+ l-.
+
+Blnu : |
+   The branching ratio of B-> l nu.
+
+Bmumu : |
+   The branching ratio of Bd-> μ+ μ-.
+
+Bsee_untag : |
+   The untagged branching ratio of Bs-> e+ e-.
+
+Bsll_untag : |
+   The untagged branching ratio of Bs-> l+ l-.
+
+Bsll_untag_CONV : |
+   The Wilson coefficients and the untagged branching ratio of Bs-> l+ l-.
+
+Bsmumu : |
+   The branching ratio of Bs-> μ+ μ-.
+
+Bsmumu_untag : |
+   The untagged branching ratio of Bs-> μ+ μ-.
+
+Btaunu : |
+   The branching ratio of B-> tau nu.
+
+CQ_calculator : |
+   The scalar and pseudoscalar Wilson coefficients.
+
+CW_calculator : |
+   The Wilson coefficients at the W mass scale.
+
+C_calculator_base1 : |
+   The Wilson coefficients at the b mass scale in the operator basis 1.
+
+C_calculator_base2 : |
+   The Wilson coefficients at the b mass scale in the operator basis 2.
+
+Cprime_calculator : |
+   The primed Wilson coefficients.
+
+DeltaMs : |
+   The Bs meson mass difference.
+
+Dmunu : |
+   The branching ratio of D-> mu nu.
+
+Dsmunu : |
+   The branching ratio of Ds-> mu nu.
+
+Dstaunu : |
+   The branching ratio of Ds-> tau nu.
+
+Kmunu_pimunu : |
+   The ratio of BR(K-> mu nu)/BR(pi-> mu nu).
+
+RD : |
+   The ratio of BR(B-> D tau nu)/BR(B-> D e nu).
+
+RDstar : |
+   The ratio of BR(B-> D* tau nu)/BR(B-> D* e nu).
+
+Rmu : |
+   The ratio of BR(K-> mu nu)/BR(pi-> mu nu).
+
+Rmu23 : |
+   The Rmu23 observable related to K-> mu nu and pi-> mu nu.
+
+SI_AI_BKstarmumu_CONV : |
+   The Wilson coefficients and the isospin asymmetry in B-> K* μ+ μ-.
+
+SI_AI_BKstarmumu_zero_CONV : |
+   The Wilson coefficients and the zero crossing of isospin asymmetry in B-> K* μ+ μ-.
+
+SL_LL : |
+  Log-likelihood for the tree-level leptonic and semileptonic B and D decays.
+
+SL_M : |
+  Measurements related to the tree-level leptonic and semileptonic B and D decays.
+
+SuperIso_3_6_init : |
+   Initalise SuperIso v3.6.
+
+SuperIso_modelinfo : |
+   SuperIso internal model information.
+
+b2ll_LL : |
+   Log-likelihood for BR(Bd-> μ+ μ-) and BR(Bs-> μ+ μ-).
+
+b2ll_M : |
+   Measurements related to BR(Bd-> μ+ μ-) and BR(Bs-> μ+ μ-).
+
+b2sgamma_LL : |
+   Log-likelihood for inclusive branching ratio of B-> Xs gamma.
+
+b2sll_LL : |
+   Log-likelihood for B-> K* μ+ μ- observables.
+
+b2sll_M : |
+   Measurements for B-> K* μ+ μ- observables.
+
+bsgamma : |
+   The inclusive branching ratio of B-> Xs gamma with a photon energy cut of 1.6 GeV.
+
+bsgamma_CONV : |
+   The Wilson coefficients and the inclusive branching ratio of B-> Xs gamma.
+
+bsgamma_Ecut : |
+   The inclusive branching ratio of B-> Xs gamma with a photon energy cut Ecut.
+
+delta0 : |
+   The isospin asymmetry of B-> K* gamma.
+
+deltaMB_LL : |
+   Log-likelihood for the Bs meson mass difference.
+
+mb_1S : |
+   The 1S bottom quark mass.
+
+SUSYPOPE_0_2_init: |
+   Initialize SUSYPOPE backend
+
+CalcObs_SUSYPOPE: |
+   Calculate precision observables using SUSYPOPE
+
+SetFlags_SUSYPOPE: |
+   Set internal flags for SUSYPOPE
+
+SetPara_SUSYPOPE: |
+   Set internal parameters for SUSYPOPE
+
+Init_param : |
+   Initialiases the SuperIso parameter structure.
+
+alphas_running : |
+   Computes the alphas running coupling at a given energy.
+
+slha_adjust : |
+   Adjusts the SLHA parameters to the SuperIso standard.
+
+#-------------------------------------
+#  SUSY-HIT capabilities
+#-------------------------------------
+
+SUSY_HIT_1_5_init: |
+   Initialise SUSY-HIT backend
+
+sdecay: |
+   Computation of all MSSM decays.
+
+unlikely: |
+   An unlikely double (used for SUSY-HIT initialisation).
+
+cb_checkfavvio: |
+   Common block containing options for flavour violation.
+
+cb_susyhitin: |
+   Various standard model parameters used by SUSY-HIT.
+
+cb_sd_leshouches1: |
+   SLHA1 values for SDecay.
+
+cb_sd_leshouches2: |
+   SLHA2 values for SDecay
+
+cb_slha_leshouches1_hdec: |
+   SLHA1 values for HDecay.
+
+cb_slha_leshouches2_hdec: |
+   SLHA2 values for HDecay.
+
+cb_widtha_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of A_0.
+
+cb_widthhl_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of h0_1.
+
+cb_widthhh_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of h0_2.
+
+cb_widthhc_hdec: |
+   Decay width and branching fractions to SM and Higgs sector particles of H_+.
+
+cb_wisusy_hdec: |
+   Branching fractions of various particles to SUSY particles.
+
+cb_wisfer_hdec: |
+   Branching fractions of various particles to sfermions.
+
+cb_hd_golddec: |
+   Goldstino decay widths.
+
+cb_sd_char2body: |
+   Branching fractions for two body decays of chargino_+_1.
+
+cb_sd_char2bodygrav: |
+   Branching fractions for two body decays of chargino_+_1 with gravitino in final state.
+
+cb_sd_char3body: |
+   Branching fractions for three body decays of chargino_+_1.
+
+cb_sd_charwidth: |
+   The total width of chargino_+_1.
+
+cb_sd_neut2body: |
+   Branching fractions for two body decays of neutralino_1.
+
+cb_sd_neut2bodygrav: |
+   Branching fractions for two body decays of neutralino_1 with gravitino in final state.
+
+cb_sd_neut3body: |
+   Branching fractions for three body decays of neutralino_1.
+
+cb_sd_neutloop: |
+   Branching fractions for loop induced decays of neutralino_1.
+
+cb_sd_neutwidth: |
+   Total width of neutralino_1.
+
+cb_sd_glui2body: |
+   Branching fractions for two body decays of gluino.
+
+cb_sd_glui3body: |
+   Branching fractions for three body decays of gluino.
+
+cb_sd_gluiloop: |
+   Branching fractions for loop induced decays of gluino.
+
+cb_sd_gluiwidth: |
+   Total width of gluino.
+
+cb_sd_sup2body: |
+   Branching fractions for two body decays of sups.
+
+cb_sd_supwidth: |
+   Total width of sups.
+
+cb_sd_sdown2body: |
+   Branching fractions for two body decays of sdowns.
+
+cb_sd_sdownwidth: |
+   Total width of sdowns.
+
+cb_sd_stop2body: |
+   Branching fractions for two body decays of stops.
+
+cb_sd_stop3body: |
+   Branching fractions for three body decays of stops.
+
+cb_sd_stoploop: |
+   Branching fractions for loop induced decays of stops.
+
+cb_sd_stop4body: |
+   Branching fractions for four body decays of stops.
+
+cb_sd_stopwidth: |
+   Total width of stops.
+
+cb_sd_sbot2body: |
+   Branching fractions for two body decays of sbottoms.
+
+cb_sd_sbot3body: |
+   Branching fractions for three body decays of sbottoms.
+
+cb_sd_sbotwidth: |
+   Total width of sbottoms.
+
+cb_sd_sel2body: |
+   Branching fractions for two body decaus of selectrons.
+
+cb_sd_selwidth: |
+   Total width of selectrons.
+
+cb_sd_snel2body: |
+   Branching fractions for two body decays of electron sneutrinos.
+
+cb_sd_snelwidth: |
+   Total width of electron sneutrinos.
+
+cb_sd_stau2body: |
+   Branching fractions for two body decauys of staus.
+
+cb_sd_stau2bodygrav: |
+   Branching fractions for two body decays of staus with gravitinos in the final state.
+
+cb_sd_stauwidth: |
+   Total width of staus.
+
+cb_sd_sntau2body: |
+   Branching fractions for two body decays of tau sneutrinos.
+
+cb_sd_sntauwidth: |
+   Total width of tau sneutrinos.
+
+cb_sd_top2body: |
+   Branching fractions for tops to two body final states.
+
+cb_sd_topwidth: |
+   Total width of top.
+
+cb_flavviolation: |
+   Mixing matrices.
+
+cb_sd_mbmb: |
+   Mb(Mb) in the MSbar scheme.
+
+cb_sd_selectron: |
+   Selectron mixing matrix.
+
+susy_hit_backend_level_init: |
+   Runs SUSY-HIT decay calculations.
+
+H_minus_decay_rates: |
+   Decay rate of the negative chared higgs.
+
+scharm_l_decay_rates: |
+   Decay rate of the left-handed scharm.
+
+scharm_r_decay_rates: |
+   Decay rate of the right-handed scharm.
+
+scharmbar_l_decay_rates: |
+   Decay rate of the left-handed anti-scharm.
+
+scharmbar_r_decay_rates: |
+   Decay rate of the right-handed anti-scharm.
+
+sdown_l_decay_rates: |
+   Decay rate of the left-handed sdown.
+
+sdown_r_decay_rates: |
+   Decay rate of the right-handed sdown.
+
+sdownbar_l_decay_rates: |
+   Decay rate of the left-handed anti-sdown.
+
+sdownbar_r_decay_rates: |
+   Decay rate of the right-handed auti-sdown.
+
+selectron_l_decay_rates: |
+   Decay rate of the left-handed selectron.
+
+selectron_r_decay_rates: |
+   Decay rate of the right-handed selectron.
+
+selectronbar_l_decay_rates: |
+   Decay rate of the left-handed anti-selectron.
+
+selectronbar_r_decay_rates: |
+   Decay rate of the right-handed anti-selectron.
+
+pi_0_decay_rates: |
+   Decay rate of the pi_0 meson.
+
+pi_minus_decay_rates: |
+   Decay rate of the pi minus mesaon.
+
+pi_plus_decay_rates: |
+   Decay rate of the pi plus meson.
+
+rho_0_decay_rates: |
+   Decay rate of the rho_0 meson.
+
+rho_minus_decay_rates: |
+   Decay rate of the rho minus meson.
+
+rho_plus_decay_rates: |
+   Decay rate of the rho plus meson.
+
+smuon_l_decay_rates: |
+   Decay rate of the left-handed smuon.
+
+smuon_r_decay_rates: |
+   Decay rate of the right-handed smuon.
+
+smuonbar_l_decay_rates: |
+   Decay rate of the left-handed anti-smuon.
+
+smuonbar_r_decay_rates: |
+   Decay rate of the right-handed anti-smuon.
+
+sstrange_l_decay_rates: |
+   Decay rate of the left-handed sstrang.
+
+sstrange_r_decay_rates: |
+   Decay rate of the right-handed sstrang.
+
+sstrangebar_l_decay_rates: |
+   Decay rate of the left-handed anti-sstrang.
+
+sstrangebar_r_decay_rates: |
+   Decay rate of the right-handed anti-sstrang.
+
+sup_l_decay_rates: |
+   Decay rate of the left-handed sup.
+
+sup_r_decay_rates: |
+   Decay rate of the right-handed sup.
+
+supbar_l_decay_rates: |
+   Decay rate of the left-handed anti-sup.
+
+supbar_r_decay_rates: |
+   Decay rate of the right-handed anti-sup.
+
+#-------------------------------------
+#  Model capabilities
+#-------------------------------------
+
+Halo_Einasto_parameters: |
+   Parameters of the Einasto halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha).
+   See also ./gambit Halo_Einasto
+
+Halo_Einasto_rho0_parameters: |
+   Parameters of the Einasto halo profile, with rhos being internally calculated from rho0 and the other parameters.
+   See also ./gambit Halo_Einasto_rho0
+
+Halo_Einasto_rhos_parameters: |
+   Parameters of the Einasto halo profile, with rho0 being internally calculated from rhos and the other parameters.
+   See also ./gambit Halo_Einasto_rhos
+
+Halo_gNFW_parameters: |
+   Parameters of the generalized NFW halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha, beta, gamma).
+   See also ./gambit Halo_gNFW
+
+Halo_gNFW_rho0_parameters: |
+   Parameters of the generalized NFW halo profile, with rhos being internally calculated from rho0 and the other parameters.
+   See also ./gambit Halo_gNFW_rho0
+
+Halo_gNFW_rhos_parameters: |
+   Parameters of the generalized NFW halo profile, with rho0 being internally calculated from rhos and the other parameters.
+   See also ./gambit Halo_gNFW_rhos
+
+MSSM10atQ_parameters: |
+   Parameters for the model MSSM10atQ (see ./gambit MSSM10atQ)
+
+MSSM10batQ_parameters: |
+   Parameters for the model MSSM10batQ (see ./gambit MSSM10batQ)
+
+MSSM10catQ_parameters: |
+   Parameters for the model MSSM10catQ (see ./gambit MSSM10catQ)
+
+MSSM11atQ_parameters: |
+   Parameters for the model MSSM11atQ (see ./gambit MSSM11atQ)
+
+MSSM15atQ_parameters: |
+   Parameters for the model MSSM15atQ (see ./gambit MSSM15atQ)
+
+MSSM16atQ_parameters: |
+   Parameters for the model MSSM16atQ (see ./gambit MSSM16atQ)
+
+MSSM19atQ_parameters: |
+   Parameters for the model MSSM19atQ (see ./gambit MSSM19atQ)
+
+MSSM20atQ_parameters: |
+   Parameters for the model MSSM20atQ (see ./gambit MSSM20atQ)
+
+MSSM24atQ_parameters: |
+   Parameters for the model MSSM24atQ (see ./gambit MSSM24atQ)
+
+MSSM25atQ_parameters: |
+   Parameters for the model MSSM25atQ (see ./gambit MSSM25atQ)
+
+MSSM30atMGUT_parameters: |
+   Parameters for the model MSSM30atMGUT (see ./gambit MSSM30atMGUT)
+
+MSSM30atQ_parameters: |
+   Parameters for the model MSSM30atQ (see ./gambit MSSM30atQ)
+
+MSSM63atMGUT_parameters: |
+   Parameters for the model MSSM63atMGUT (see ./gambit MSSM63atMGUT)
+
+MSSM63atQ_parameters: |
+   Parameters for the model MSSM63atQ (see ./gambit MSSM63atQ)
+
+MSSM7atQ_parameters: |
+   Parameters for the model MSSM7atQ (see ./gambit MSSM7atQ)
+
+MSSM9atQ_parameters: |
+   Parameters for the model MSSM9atQ (see ./gambit MSSM9atQ)
+
+NUHM1_parameters: |
+   Parameters for the model NUHM1 (see ./gambit NUHM1)
+
+NUHM2_parameters: |
+   Parameters for the model NUHM2 (see ./gambit NUHM2)
+
+CMSSM_parameters: |
+   Parameters for the model CMSSM (see ./gambit CMSSM)
+
+NormalDist_parameters: |
+   Parameters for the model NormalDist (see ./gambit NormalDist)
+
+SingletDMZ3_parameters: |
+   Parameters for the model SingletDMZ3 (see ./gambit SingletDMZ3)
+
+SingletDM_parameters: |
+   Parameters for the model SingletDM (see ./gambit SingletDM)
+
+SingletDM_running_parameters: |
+   Parameters for the model SingletDM_running (see ./gambit SingletDM_running)
+
+StandardModel_Higgs_parameters: |
+   Parameters for the model StandardModel_Higgs (see ./gambit StandardModel_Higgs)
+
+StandardModel_Higgs_running_parameters: |
+   Parameters for the model StandardModel_Higgs_running (see ./gambit StandardModel_Higgs_running)
+
+StandardModel_SLHA2_parameters: |
+   Parameters for the model StandardModel_SLHA2 (see ./gambit StandardModel_SLHA2)
+
+TestModel1D_parameters: |
+   Parameters for the model TestModel1D (see ./gambit TestModel1D)
+
+WC_parameters: |
+   Parameters for the model WC (see ./gambit WC)
+
+mSUGRA_parameters: |
+   Parameters for the model mSUGRA (see ./gambit mSUGRA)
+
+nuclear_params_fnq_parameters: |
+   Parameters for the model nuclear_params_fnq (see ./gambit nuclear_params_fnq)
+
+nuclear_params_sigma0_sigmal_parameters: |
+   Parameters for the model nuclear_params_sigma0_sigmal (see ./gambit nuclear_params_sigma0_sigmal)
+
+nuclear_params_sigmas_sigmal_parameters: |
+   Parameters for the model nuclear_params_sigmas_sigmal (see ./gambit nuclear_params_sigmas_sigmal)
+#-------------------------------------
+#  FeynHiggs capabilities
+#-------------------------------------
+
+FeynHiggs_2_11_2_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_11_3_init: |
+   Initialisation of FeynHiggs.
+
+FeynHiggs_2_12_0_init: |
+   Initialisation of FeynHiggs.
+
+FHConstraints: |
+   FeynHiggs precision constraint observables.
+
+FHCouplings: |
+
+FHFlavour: |
+
+FHGetPara: |
+
+FHHiggsCorr: |
+
+FHHiggsProd: |
+
+FHSelectUZ: |
+
+FHSetDebug: |
+
+FHSetFlags: |
+
+FHSetLFV: |
+
+FHSetNMFV: |
+
+FHSetPara: |
+
+FHSetSMPara: |
+
+FHUncertainties: |
+
+FH_Couplings_output: |
+
+FH_FlavourObs: |
+
+#----------------------------
+#  gamLike capabilities
+#----------------------------
+
+gamLike_1_0_0_init: |
+   Initialisation of gamLike.
+
+init: |
+   Initialise variables in gamLike.
+lnL: |
+   Calculates the likelihood for gamma-ray indirect searches for dark matter.
+
+set_data_path: |
+   Set the data path for gamLike.
+
+set_halo_profile: |
+   Set the halo profile in gamLike.
+
+#----------------------------
+#  gm2calc capabilities
+#----------------------------
+
+gm2calc_1_2_0_init: |
+   Initialises gm2calc, version 1.2.0.
+
+gm2calc_1_3_0_init: |
+   Initialised gm2calc, version 1.3.0.
+
+calculate_amu_1loop: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop.
+
+calculate_amu_1loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 1 loop with no resummation of tan beta.
+
+calculate_amu_2loop: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops.
+
+calculate_amu_2loop_non_tan_beta_resummed: |
+   Calculates the anomalous magnetic moment of the muon at 2 loops with no resummation of tan beta.
+
+calculate_uncertainty_amu_2loop: |
+   Calculates the uncertainty on the anomalous magnetic moment of the muon at 2 loops.
+
+
+

@@ -1,15 +1,17 @@
-# Minimal GAMBIT DarkBit test initialization file (in YAML)
+##########################################################################
+## GAMBIT configuration for a Diver scan of the singlet dark matter model
+##
+## Includes likelihood constraints from LHC, precision EW, and dark matter
+## observables, with SM and direct detection nuisance parameters.
+##########################################################################
 
-###################################
-# Input parameter declarations
-###################################
 
 Parameters:
 
-  #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_scan.yaml
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_scan.yaml
 
-  #Nuclear matrix parameters.
+  # Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
       range: [19, 67]
