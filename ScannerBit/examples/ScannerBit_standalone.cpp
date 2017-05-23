@@ -194,9 +194,9 @@ int main(int argc, char **argv)
 
     // Default exit behaviour in cases where no exceptions are raised
     int return_value(EXIT_SUCCESS);
-    bool allow_finalize(true);
 
     #ifdef WITH_MPI
+      bool allow_finalize(true);
       GMPI::Init();
     #endif
 
