@@ -89,17 +89,12 @@ namespace Gambit
         }
         else
         {
-          std::cout << "pos6, " << s1 <<"," <<s2 << std::endl;
-          // Wrong? s1 and s2 input are empty here...
-          std::map<str,str> family_to_3gen;
+          std::map<str,str> family_to_3gen; // TODO: make const or something
           family_to_3gen["~u"] = "~t";
           family_to_3gen["~d"] = "~b";
           family_to_3gen["~e-"] = "~tau";
           s1 = slhahelp::mass_es_closest_to_family(family_to_3gen.at(type)+"_1", spec, tol, LOCAL_INFO, pterror);
           s2 = slhahelp::mass_es_closest_to_family(family_to_3gen.at(type)+"_2", spec, tol, LOCAL_INFO, pterror);
-          // Try this instead:
-          //s1 = slhahelp::mass_es_closest_to_family(type+"_1", spec, tol, LOCAL_INFO, pterror);
-          //s2 = slhahelp::mass_es_closest_to_family(type+"_2", spec, tol, LOCAL_INFO, pterror);
         }
       }
 
@@ -407,7 +402,6 @@ namespace Gambit
       str mass_es_closest_to_family(str familystate,
                                     const SubSpectrum& mssm)
       {
-         std::cout << "pos1, " << familystate << std::endl;
          std::vector<str> family_gauge_states;
          try { family_gauge_states = family_state_to_gauge_state.at(familystate); }
          catch (std::out_of_range&) { utils_error().raise(LOCAL_INFO, "Unrecognised family state. ('"+familystate+"' was requested)"); }
@@ -444,7 +438,6 @@ namespace Gambit
                                                           const SubSpectrum& mssm)
       {
          //get mass_es using one of our routines
-         std::cout << "pos2, " << familystate << std::endl;
          mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type.at(mass_es)).first;
@@ -467,7 +460,6 @@ namespace Gambit
                                     const SubSpectrum& mssm)
       {
          //get mass_es using one of our routines
-         std::cout << "pos3, " << familystate << std::endl;
          str mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          std::vector<str> gauge_states;
@@ -505,7 +497,6 @@ namespace Gambit
                                     const SubSpectrum& mssm)
       {
          std::vector<double> off_family_mixing;
-         std::cout << "pos7, " << familystate << std::endl;
          str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
                                                  off_family_mixing, mssm);
          return mass_es;
@@ -519,7 +510,6 @@ namespace Gambit
                                     double & sqr_sum_mix,
                                     const SubSpectrum& mssm)
       {
-         std::cout << "pos8, " << familystate << std::endl;
          std::vector<double> off_family_mixing;
          std::vector<double>  gauge_composition;
          str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
@@ -535,7 +525,6 @@ namespace Gambit
       str mass_es_closest_to_family(str familystate, const SubSpectrum& mssm,
                                     double tol, str context, bool pterror)
       {
-        std::cout << "pos9, " << familystate << std::endl;
         std::vector<double> off_family_mixing;
         std::vector<double>  gauge_composition;
         str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
@@ -665,7 +654,6 @@ namespace Gambit
                 "called with types for the family state and mass eigenstate that don't match.");
             }
          ///get mass_es using one of our routines
-         std::cout << "pos4, " << familystate << std::endl;
          mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type.at(mass_es)).first;
@@ -838,7 +826,6 @@ namespace Gambit
            // MASS block.  Do everything except sfermions the same way as SLHA2.
            for(int i=0;i<12;i++)
            {
-             std::cout << "pdg_code["<<i<<"]: "<<pdg_codes[i]<<std::endl;
              str comment(Models::ParticleDB().long_name(pdg_codes[i], 0));
              SLHAea_add_from_subspec(slha, LOCAL_INFO, mssmspec, Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
            }
@@ -908,7 +895,6 @@ namespace Gambit
            for(int i=1;i<4;i++) for(int j=1;j<4;j++)
            {
              comment.str(""); comment << M[k].second << "(" << i << "," << j << ")";
-             std::cout << "comment: " << comment.str() << std::endl;
              if (slha_version == 2) SLHAea_add_from_subspec(slha, LOCAL_INFO,mssmspec, Par::mass2, M[k].second, i, j, M[k].first, i, j, comment.str());
              if (i== j)
              {

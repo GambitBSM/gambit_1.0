@@ -153,7 +153,6 @@ namespace Gambit
             {
               std::ostringstream comment;
               comment << block << "(" << i << "," << j << ")";
-              std::cout << "comment: " << comment.str() << std::endl;
               double entry;
               if(i==j)
               {
@@ -192,7 +191,6 @@ namespace Gambit
                 {
                   if(SLHAea_check_block(data,Y[k].first,i,j))
                   {
-                    std::cout << Y[k].first <<" "<<i<<","<<j<<" exists? "<<SLHAea_check_block(data,Y[k].first,i,j) << std::endl;
                     Yentry = getdata(Y[k].first,i,j);
                   }
                   else
