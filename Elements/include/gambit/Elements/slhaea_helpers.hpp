@@ -51,6 +51,9 @@ namespace Gambit
   /// Add a new block to an SLHAea object, with our without a scale
   void SLHAea_add_block(SLHAstruct&, const str& name, const double scale = -1);
 
+  /// Delete an entire block from an SLHAea object, if it exists (actually just the first block matching the given name)
+  void SLHAea_delete_block(SLHAstruct& slha, const std::string& block);
+
   /// Check if a block exists in an SLHAea object
   bool SLHAea_block_exists(SLHAstruct& slha, const str& block);
   /// Check if a block exists in an SLHAea object, add it if not

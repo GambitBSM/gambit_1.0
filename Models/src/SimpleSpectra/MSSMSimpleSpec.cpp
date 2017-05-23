@@ -76,7 +76,7 @@ namespace Gambit
           catch (const std::out_of_range& e)
           {
             std::ostringstream errmsg;
-            errmsg << "Could not find block \"GAUGE\" in SLHAea object. Received out_of_range error with message: " << e.what();
+            errmsg << "Could not find block \"GAUGE\" in SLHAea object (required to retrieve scale Q). Received out_of_range error with message: " << e.what();
             utils_error().raise(LOCAL_INFO,errmsg.str());
           }
 
@@ -100,13 +100,17 @@ namespace Gambit
             // Rewrite them in correct order, and populate the pdg-pdg maps
             for (int i = 0; i < lengths[j]; i++)
             {
-              data["MASS"][pdg[j][i]][1] = boost::lexical_cast<str>(masses[j][i].second);
-              data["MASS"][pdg[j][i]][2] = "# "+names[j]+boost::lexical_cast<str>(i+1);
+              //data["MASS"][pdg[j][i]][1] = boost::lexical_cast<str>(masses[j][i].second);
+              //data["MASS"][pdg[j][i]][2] = "# "+names[j]+boost::lexical_cast<str>(i+1);
+              str masspdg = boost::lexical_cast<str>(masses[j][i].second);
+              str comment = "# "+names[j]+boost::lexical_cast<str>(i+1);
+              SLHAea_add(data, "MASS", pdg[j][i], masspdg, comment, true);
               slha1to2[masses[j][i].first] = pdg[j][i];
             }
 
             // Write the mixing block.  i is the SLHA2 index, k is the SLHA1 index.
-            data[blocks[j]][""] << "BLOCK" << blocks[j];
+            //data[blocks[j]][""] << "BLOCK" << blocks[j];
+            SLHAea_check_block(data, blocks[j]);
             for (int i = 0; i < lengths[j]; i++) for (int k = 0; k < lengths[j]; k++)
             {
               double datum;
@@ -133,7 +137,8 @@ namespace Gambit
                 }
                 else datum = 0.0;
               }
-              data[blocks[j]][""] << i+1 << k+1 << datum << "# "+blocks[j]+boost::lexical_cast<str>(i*10+k+11);
+              //data[blocks[j]][""] << i+1 << k+1 << datum << "# "+blocks[j]+boost::lexical_cast<str>(i*10+k+11);
+              SLHAea_add(data, blocks[j], i+1, k+1, datum, "# "+blocks[j]+boost::lexical_cast<str>(i*10+k+11), true);
             }
 
           }
@@ -159,7 +164,8 @@ namespace Gambit
                 // Everything off-diagonal is zero in SLHA1
                 entry = 0;
               }
-              data[block][""] << i << j << entry*entry << "# "+comment.str();
+              //data[block][""] << i << j << entry*entry << "# "+comment.str();
+              SLHAea_add(data, block, i, j, entry*entry, "# "+comment.str(), true);
             }
           }
 
@@ -186,7 +192,8 @@ namespace Gambit
                 {
                   if(SLHAea_check_block(data,Y[k].first,i,j))
                   {
-                    Yentry = data.at(Y[k].first).at(i).at(j).at(1);
+                    std::cout << Y[k].first <<" "<<i<<","<<j<<" exists? "<<SLHAea_check_block(data,Y[k].first,i,j) << std::endl;
+                    Yentry = getdata(Y[k].first,i,j);
                   }
                   else
                   {
@@ -195,7 +202,7 @@ namespace Gambit
 
                   if(SLHAea_check_block(data,A[k].first,i,j))
                   {
-                    Aentry = data.at(A[k].first).at(i).at(j).at(1);
+                    Aentry = getdata(A[k].first,i,j);
                   }
                   else
                   {
@@ -242,28 +249,18 @@ namespace Gambit
         double sb = sin(atan(tb));
         return get_mA2() * (sb * cb);
       }
-      // TODO: Need to look up quadratic formula and fix these 
-      double MSSMea::get_vd() const { return -1; }
-      double MSSMea::get_vu() const { return -1; }
-      //{ 
-      //  tb = get_tanbeta();
-      //  v = get_v();
-      //  
-      //  v^2 = vd^2 + vu^2 )
-      //  vd2 = v2 - vu2
-      //  tb = vu/vd
-
-      //  vu2 = tb2/vd2
-      //      = tb2 / (v2 - vu2)
-      //  vu2*(v2 - vu2) = tb2
-      //  v2*vu2 - vu4 = tb2
-      //  -vu4 + v2^vu2 - tb2 = 0
-
-      //  x = b^2 +- sqrt(b + 4ac) / 2b
-      //       
-
-      //  return; 
-      //}
+      double MSSMea::get_vd() const 
+      {
+        double v = get_v();
+        double tb = get_tanbeta();
+        return sqrt(abs( v*v / ( tb*tb + 1 ) ));
+      }
+      double MSSMea::get_vu() const
+      {
+        double v = get_v();
+        double itb = 1./get_tanbeta();
+        return sqrt(abs( v*v / ( itb*itb + 1 ) )); 
+      }
 
       double MSSMea::get_MassB () const { return getdata("MSOFT",1); }
       double MSSMea::get_MassWB() const { return getdata("MSOFT",2); }
@@ -285,7 +282,7 @@ namespace Gambit
       double MSSMea::get_Yu(int i, int j) const { return getdata("Yu",i,j); }
       double MSSMea::get_Ye(int i, int j) const { return getdata("Ye",i,j); }
 
-      double MSSMea::get_g1() const { return getdata("GAUGE",1); }
+      double MSSMea::get_g1() const { return getdata("GAUGE",1)/sqrt(3./5.); } // Convert from gy (in SLHAea object) to g1
       double MSSMea::get_g2() const { return getdata("GAUGE",2); }
       double MSSMea::get_g3() const { return getdata("GAUGE",3); }
       double MSSMea::get_sinthW2_DRbar() const

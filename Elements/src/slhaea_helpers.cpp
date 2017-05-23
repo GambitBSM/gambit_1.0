@@ -101,17 +101,17 @@ namespace Gambit
 
   bool SLHAea_check_block(SLHAstruct& slha, const str& block)
   {
-    try
+    bool exists;
+    if(SLHAea_block_exists(slha,block))
     {
-      slha.at(block);
-      return true;
+      exists = true;
     }
-    catch (const std::out_of_range& e)
+    else
     {
-      // Nope; add it.
       slha[block][""] << "BLOCK" << block;
-      return false; // Didn't exist, but now it does.
+      exists = false; // Didn't exist, but now it does.
     }
+    return exists;
   }
 
   /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
@@ -119,60 +119,47 @@ namespace Gambit
   // overloading for two indices very difficult, so I'm going to delete it.
   bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index) /*, const bool overwrite)*/
   {
-    // Check if block exists
-    try
-    {
-      slha.at(block);
-    }
-    catch (const std::out_of_range& e)
-    {
-      // Nope; add it.
-      slha[block][""] << "BLOCK" << block;
-    }
+    bool found;
+    // Check if block exists and create it if it doesn't
+    SLHAea_check_block(slha, block);
     // Check for existing entry
-    //if(not overwrite)
-    //{
-    try // Might as well always do this check? Don't see why a flag is needed.
+    std::stringstream i;
+    i<<index;
+    SLHAea::Block::key_type key(1);
+    key[0] = i.str();
+    std::cout << "Searching block "<<block<<" for key "<<key[0]<<std::endl;
+    if( slha[block].find(key) != slha[block].end()) 
     {
-      slha.at(block).at(index).at(1);
-      // Entry exists, no further action required
-      return true;
+      found = true;
     }
-    catch (const std::out_of_range& e)
+    else
     {
-      // entry doesn't exist; continue with writing
+      found = false;
     }
-    //}
-    return false;
+    return found;
   }
 
   bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index1, const int index2) /*, const bool overwrite)*/
   {
-    // Check if block exists
-    try
-    {
-      slha.at(block);
-    }
-    catch (const std::out_of_range& e)
-    {
-      // Nope; add it.
-      slha[block][""] << "BLOCK" << block;
-    }
+    bool found;
+    // Check if block exists and create it if it doesn't
+    SLHAea_check_block(slha, block);
     // Check for existing entry
-    //if(not overwrite)
-    //{
-    try // Might as well always do this check? Don't see why a flag is needed.
+    std::stringstream i,j;
+    i<<index1; j<<index2;
+    SLHAea::Block::key_type key(2);
+    key[0] = i.str();
+    key[1] = j.str();
+    std::cout << "Searching block "<<block<<" for key "<<key[0]<<", "<<key[1]<<std::endl;
+    if( slha[block].find(key) != slha[block].end() ) 
     {
-      slha.at(block).at(index1).at(index2).at(1);
-      // Entry exists, no further action required
-      return true;
+      found = true;
     }
-    catch (const std::out_of_range& e)
+    else
     {
-      // entry doesn't exist; continue with writing
+      found = false;
     }
-    //}
-    return false;
+    return found;
   }
 
 
@@ -182,15 +169,19 @@ namespace Gambit
   void SLHAea_overwrite_block(SLHAstruct& slha /*modify*/, const str& block, int index,
    T value, const str& comment)
   {
-    try
+    if(SLHAea_check_block(slha, block, index))
     {
+      std::cout << "Entry "<<block<<", "<<index<<" already exists, deleting and replacing it." <<std::endl;
+      // entry exists already, delete it
       slha.at(block).at(index).at(1);
       auto& line = slha[block][index];
       line.clear();
       line << index << value << comment;
     }
-    catch (const std::out_of_range& e)
+    else
     {
+      // Doesn't already exist, add it
+      std::cout << "Adding entry "<<block<<", "<<index<<std::endl;
       slha[block][""] << index << value << comment;
     }
   }
@@ -200,16 +191,34 @@ namespace Gambit
   void SLHAea_overwrite_block(SLHAstruct& slha /*modify*/, const str& block, int index1, int index2,
    T value, const str& comment)
   {
-    std::vector<int> indices = initVector<int>(index1, index2);
-    try
+    //std::vector<int> indices = initVector<int>(index1, index2);
+    if(SLHAea_check_block(slha, block, index1, index2))
     {
-      slha.at(block).at(indices).at(1);
-      auto& line = slha[block][indices];
+      std::cout << "Entry "<<block<<", "<<index1<<","<<index2<<" already exists, deleting and replacing it." <<std::endl;
+      // entry exists already, delete it
+      //slha.at(block).at(indices).at(1); // Is this actually a valid way to use SLHAea? I don't see it in their documentation.
+      std::stringstream i,j;
+      i<<index1; j<<index2;
+      SLHAea::Block::key_type key(2);
+      key[0] = i.str();
+      key[1] = j.str();
+      auto& line = slha[block][key];
       line.clear();
       line << index1 << index2 << value << comment;
     }
-    catch (const std::out_of_range& e) {}
-    slha[block][""] << index1 << index2 << value << comment;
+    else
+    {
+      std::cout << "Adding entry "<<block<<","<<index1<<","<<index2<<std::endl;
+      // Doesn't exist, add it
+      slha[block][""] << index1 << index2 << value << comment;
+    }
+  }
+
+  /// Delete a block entirely if it exists (TODO: actually only deletes first instance of the block found!)
+  void SLHAea_delete_block(SLHAstruct& slha, const std::string& block)
+  {
+     auto it = slha.find(block);
+     if(it!=slha.end()) slha.erase(it);
   }
 
   void SLHAea_add_GAMBIT_SPINFO(SLHAstruct& slha /*modify*/)
@@ -219,8 +228,8 @@ namespace Gambit
      std::ostringstream progname;
      if(not SLHAea_check_block(slha, "SPINFO", 1, false))
      {
-        SLHAea_add(slha, "SPINFO", 1, "GAMBIT", "# Program");
-        SLHAea_add(slha, "SPINFO", 2, gambit_version(), "# Version number");
+        SLHAea_add(slha, "SPINFO", 1, "GAMBIT", "Program");
+        SLHAea_add(slha, "SPINFO", 2, gambit_version(), "Version number");
      }
   }
 
@@ -266,7 +275,7 @@ namespace Gambit
   {
      if(subspec.has(partype,pdg_pair))
      {
-       SLHAea_overwrite_block(slha, block, pdg_pair.first, subspec.get(partype,pdg_pair)*rescale, comment);
+       SLHAea_overwrite_block(slha, block, pdg_pair.first, subspec.get(partype,pdg_pair)*rescale, (comment == "" ? "" : "# " + comment));
      }
      else if(error_if_missing)
      {
@@ -286,7 +295,7 @@ namespace Gambit
   {
      if(subspec.has(partype,name))
      {
-       SLHAea_overwrite_block(slha, block, slha_index, subspec.get(partype,name)*rescale, comment);
+       SLHAea_overwrite_block(slha, block, slha_index, subspec.get(partype,name)*rescale, (comment == "" ? "" : "# " + comment));
      }
      else if(error_if_missing)
      {
@@ -305,7 +314,7 @@ namespace Gambit
   {
     if(subspec.has(partype,name,index1,index2))
     {
-      SLHAea_overwrite_block(slha, block, slha_index1, slha_index2, subspec.get(partype,name,index1,index2)*rescale, comment);
+      SLHAea_overwrite_block(slha, block, slha_index1, slha_index2, subspec.get(partype,name,index1,index2)*rescale, (comment == "" ? "" : "# " + comment));
     }
     else if(error_if_missing)
     {
