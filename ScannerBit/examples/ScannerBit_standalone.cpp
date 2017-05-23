@@ -192,6 +192,10 @@ int main(int argc, char **argv)
     signal(SIGUSR1, sighandler_soft);
     signal(SIGUSR2, sighandler_soft);
 
+    // Default exit behaviour in cases where no exceptions are raised
+    int return_value(EXIT_SUCCESS);
+    bool allow_finalize(true);
+
     #ifdef WITH_MPI
       GMPI::Init();
     #endif
@@ -332,10 +336,10 @@ int main(int argc, char **argv)
                 std::cout << ss.str();
             #ifdef WITH_MPI
                 signaldata().discard_excess_shutdown_messages();
-                GMPI::FinalizeWithTimeout(use_mpi_abort);
+                allow_finalize = GMPI::PrepareForFinalizeWithTimeout(use_mpi_abort);
             #endif
 
-            return EXIT_FAILURE;
+            return_value = EXIT_FAILURE;
         }
 
         catch (const std::exception& e)
@@ -348,21 +352,20 @@ int main(int argc, char **argv)
             #ifdef WITH_MPI
                 signaldata().broadcast_shutdown_signal();
                 signaldata().discard_excess_shutdown_messages();
-                GMPI::FinalizeWithTimeout(use_mpi_abort);
+                allow_finalize = GMPI::PrepareForFinalizeWithTimeout(use_mpi_abort);
             #endif
 
-            return EXIT_FAILURE;
+            return_value = EXIT_FAILURE;
         }
 
         #ifdef WITH_MPI
-        if (signaldata().shutdown_begun())
-            signaldata().discard_excess_shutdown_messages();
+            if (signaldata().shutdown_begun()) signaldata().discard_excess_shutdown_messages();
         #endif
     }
 
     #ifdef WITH_MPI
-        GMPI::Finalize();
+        if (allow_finalize) GMPI::Finalize();
     #endif
 
-    return 0;
+    return return_value;
 }
