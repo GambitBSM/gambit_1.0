@@ -149,6 +149,9 @@ endif()
 
 # Check for C++14 support, just in case any scanner plugin codes want to use it.
 CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+if(COMPILER_SUPPORTS_CXX14)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+endif()
 
 # Check for Boost
 set(Boost_NO_BOOST_CMAKE ON)
