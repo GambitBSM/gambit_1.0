@@ -333,7 +333,7 @@ CMSAnalysisContainer: |
    Provides a list of CMS analyses within a container which is ready
    to apply each analysis to an event.
 
-DETAnalysisContainer: |
+DetAnalysisContainer: |
    Provides a list of Delphes analyses within a container which is ready
    to apply each analysis to an event.
 
