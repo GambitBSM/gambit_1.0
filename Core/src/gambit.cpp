@@ -273,6 +273,7 @@ int main(int argc, char* argv[])
     }
 
     #ifdef WITH_MPI
+    if (signaldata().shutdown_begun())
       signaldata().discard_excess_shutdown_messages();
       // If all processes receive a POSIX signal to shutdown there might be many of these
       // (e.g. says 1000 processes all independently get a POSIX signal to shut down;
