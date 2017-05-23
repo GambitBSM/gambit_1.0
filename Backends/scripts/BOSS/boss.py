@@ -313,10 +313,13 @@ def main():
 
         # Run castxml
         try:
-            # utils.castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=timeout, poll_interval=poll)
             utils.castxmlRunner(input_file_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
         except:
-            raise
+            print
+            print "  The initial CastXML command failed. Some problems can be solved by simply specifying"
+            print "  a different C++ compiler in the 'castxml_cc' option in %s. It is currently set to '%s'." % (input_cfg_path, cfg.castxml_cc)
+            print
+            sys.exit(1)
 
         # Append xml file to list of xml files
         xml_files.append(xml_output_path)
@@ -390,14 +393,6 @@ def main():
 
         # Exit
         sys.exit()
-
-
-
-
-    #
-    # TODO: Check if the source code has already been BOSSed.
-    #
-
 
 
 

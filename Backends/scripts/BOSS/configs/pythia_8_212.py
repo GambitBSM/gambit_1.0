@@ -13,7 +13,7 @@
 #
 
 #
-# *** Special note for OSX *** 
+# *** Special note for OS X *** 
 # 
 # BOSS will most likely fail if 'g++' points to the Clang compiler.
 # Install GNU g++ and point the castxml_cc variable below the GNU 
