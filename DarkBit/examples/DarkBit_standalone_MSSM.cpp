@@ -55,12 +55,6 @@ namespace Gambit
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading spectrum from: " << inputFileName << std::endl;
       outSpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName, Spectrum::mc_info(), Spectrum::mr_info());
-
-      /// TEST! Immediate output SLHA file
-      cout << "Writing SLHA1&2 file for comparison to input!" << std::endl;
-      outSpec.writeSLHAfile(1,"dbsa_test.slha1");
-      outSpec.writeSLHAfile(2,"dbsa_test.slha2");
-      //exit(0);
     }
 
     // Create decay object from SLHA file
@@ -88,7 +82,6 @@ int main(int argc, char* argv[])
   std::cout << "data: name of output file for observables and likelihoods (default: data.dat)" << std::endl;
   std::cout << "dump: name of unit test output file (default: dump.yaml)" << std::endl;
   std::cout << std::endl;
-  std::cout << "N.B. If SLHA2 file is given, all calculations are done only using DarkSUSY." << std::endl;
   std::cout << "The SLHA files for the MSSM-7 benchmarks in the DarkBit paper are located in    " << std::endl;
   std::cout << "DarkBit/data/benchmarks/                                                        " << std::endl;
   std::cout << "********************************************************************************" << std::endl;
@@ -166,13 +159,6 @@ int main(int argc, char* argv[])
     createDecays.setOption<std::string>("filename", filename);
     createDecays.reset_and_calculate();
 
-    // ---- Work out if we have received an SLHA1 or SLHA2 file ----
-
-    //int slha_version = 2;
-    //try { createSpectrum(0).getSLHAea(2); }
-    //catch(Gambit::exception& e) { slha_version = 1;
-    //cout << "SLHA 1 reading does not work correctly! Do not believe results!" << endl;}
-
     // Check that the decay table contains ~chi0_2 (if it doesn't,
     // we do not use information from the SLHA decay block)
     bool decays = true;
@@ -194,8 +180,6 @@ int main(int argc, char* argv[])
     gamLike_1_0_0_init.reset_and_calculate();
 
     // Initialize MicrOmegas backend
-    //if (slha_version == 1)
-    //{
     MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createSpectrum);
     MicrOmegas_MSSM_3_6_9_2_init.resolveDependency(&createDecays);
     MicrOmegas_MSSM_3_6_9_2_init.notifyOfModel("MSSM30atQ");
@@ -209,7 +193,6 @@ int main(int argc, char* argv[])
     MicrOmegas_MSSM_3_6_9_2_init.setOption<int>("VZdecay", 0);
     MicrOmegas_MSSM_3_6_9_2_init.setOption<int>("VWdecay", 0);
     MicrOmegas_MSSM_3_6_9_2_init.reset_and_calculate();
-    //}
 
     // Initialize DarkSUSY backend
     DarkSUSY_5_1_3_init.reset_and_calculate();
@@ -243,12 +226,9 @@ int main(int argc, char* argv[])
     // ---- Relic density ----
 
     // Relic density calculation with MicrOmegas
-    //if (slha_version == 1)
-    //{
     RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::darkOmega);
     RD_oh2_MicrOmegas.setOption<int>("fast", 1);  // 0: accurate; 1: fast
     RD_oh2_MicrOmegas.reset_and_calculate();
-    //}
 
     // Calculate relic density using RD_oh2_DarkSUSY (for checks only)
     //RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
@@ -341,8 +321,6 @@ int main(int argc, char* argv[])
     // ---- Direct detection -----
 
     // Calculate DD couplings with Micromegas
-    //if (slha_version == 1)
-    //{
     DD_couplings_MicrOmegas.notifyOfModel("MSSM30atQ");
     DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
     DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
@@ -350,7 +328,6 @@ int main(int argc, char* argv[])
     DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::FeScLoop);
     DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_MSSM_3_6_9_2::Functown::mocommon_);
     DD_couplings_MicrOmegas.reset_and_calculate();
-    //}
 
     // Calculate DD couplings with DarkSUSY
     DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
@@ -368,12 +345,9 @@ int main(int argc, char* argv[])
     DDCalc_1_0_0_init.resolveDependency(&ExtractLocalMaxwellianHalo);
     DDCalc_1_0_0_init.resolveDependency(&RD_fraction_one);
     DDCalc_1_0_0_init.resolveDependency(&mwimp_generic);
-    //if (slha_version == 1)
-      // For SLHA1 choose between the two backends
-      //DDCalc_1_0_0_init.resolveDependency(&DD_couplings_MicrOmegas);
-      DDCalc_1_0_0_init.resolveDependency(&DD_couplings_DarkSUSY);
-    //else
-    //  DDCalc_1_0_0_init.resolveDependency(&DD_couplings_DarkSUSY);
+    //Choose between the two backends
+    //DDCalc_1_0_0_init.resolveDependency(&DD_couplings_MicrOmegas);
+    DDCalc_1_0_0_init.resolveDependency(&DD_couplings_DarkSUSY);
     DDCalc_1_0_0_init.reset_and_calculate();
 
     // Calculate direct detection rates for LUX 2016
@@ -391,12 +365,9 @@ int main(int argc, char* argv[])
     double sigma_SI_p_DS, sigma_SI_p_MO;
 
     sigma_SI_p_simple.resolveDependency(&mwimp_generic);
-    //if (slha_version == 1)
-    //{
-      sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
-      sigma_SI_p_simple.reset_and_calculate();
-      sigma_SI_p_MO = sigma_SI_p_simple(0);
-    //}
+    sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+    sigma_SI_p_simple.reset_and_calculate();
+    sigma_SI_p_MO = sigma_SI_p_simple(0);
 
     sigma_SI_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
     sigma_SI_p_simple.reset_and_calculate();
@@ -406,12 +377,9 @@ int main(int argc, char* argv[])
     double sigma_SD_p_DS, sigma_SD_p_MO;
 
     sigma_SD_p_simple.resolveDependency(&mwimp_generic);
-    //if (slha_version == 1)
-    //{
-      sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
-      sigma_SD_p_simple.reset_and_calculate();
-      sigma_SD_p_MO = sigma_SD_p_simple(0);
-    //}
+    sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+    sigma_SD_p_simple.reset_and_calculate();
+    sigma_SD_p_MO = sigma_SD_p_simple(0);
 
     sigma_SD_p_simple.resolveDependency(&DD_couplings_DarkSUSY);
     sigma_SD_p_simple.reset_and_calculate();
@@ -587,10 +555,8 @@ int main(int argc, char* argv[])
 
     cout << endl;
     // Retrieve and print MicrOmegas result
-    //if (slha_version == 1)
-    //{
-      cout << "Omega h^2 from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
-    //}
+    cout << "Omega h^2 from MicrOmegas: " << RD_oh2_MicrOmegas(0) << endl;
+
     // Retrieve and print DarkSUSY result
     cout << "Omega h^2 from RD_oh2_general routine: " << RD_oh2_general(0) << endl;
 
@@ -599,13 +565,11 @@ int main(int argc, char* argv[])
 
     // Print scattering cross section for DS and MO:
     cout << " sigma_SI_p [cm^2]: " << endl;
-    //if (slha_version == 1)
-      cout << "    MO: " << sigma_SI_p_MO << endl;
+    cout << "    MO: " << sigma_SI_p_MO << endl;
 
     cout << "    DS: " << sigma_SI_p_DS << endl;
     cout << " sigma_SD_p [cm^2]: " << endl;
-    //if (slha_version == 1)
-      cout << "    MO: " << sigma_SD_p_MO << endl;
+    cout << "    MO: " << sigma_SD_p_MO << endl;
     cout << "    DS: " << sigma_SD_p_DS << endl;
 
     cout << "LUX 2016 lnL: " << LUX_2016_GetLogLikelihood(0) << endl;
@@ -622,22 +586,17 @@ int main(int argc, char* argv[])
     file.open(filename_data, std::ios_base::out);
 
     file << "Omega h^2:"<< endl;
-    //if (slha_version == 1)
-    //{
-      file << "  MO: " << RD_oh2_MicrOmegas(0) << endl;
-    //}
+    file << "  MO: " << RD_oh2_MicrOmegas(0) << endl;
     file << "  DS: " << RD_oh2_general(0) << endl;
 
     file << "WMAP lnL: " << lnL_oh2_Simple(0) << endl;
     file << endl;
 
     file << " sigma_SI_p [cm^2]: " << endl;
-    //if (slha_version == 1)
-      file << "    MO: " << sigma_SI_p_MO << endl;
+    file << "    MO: " << sigma_SI_p_MO << endl;
     file << "    DS: " << sigma_SI_p_DS << endl;
     file << " sigma_SD_p [cm^2]: " << endl;
-    //if (slha_version == 1)
-      file << "    MO: " << sigma_SD_p_MO << endl;
+    file << "    MO: " << sigma_SD_p_MO << endl;
     file << "    DS: " << sigma_SD_p_DS << endl;
 
     file << "LUX 2016 lnL: " << LUX_2016_GetLogLikelihood(0) << endl;
