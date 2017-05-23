@@ -1,7 +1,7 @@
 # GAMBIT central models description database
 #
-# GAMBIT will parse this file and try to match the entries 
-# to the models it has registered. If there are any 
+# GAMBIT will parse this file and try to match the entries
+# to the models it has registered. If there are any
 # conflicts it will report them, and if any models
 # are lacking descriptions those will be reported too.
 # This is then merged with internally known information
@@ -16,29 +16,305 @@
 #  appear here. The extent of this string is
 #  indicated by indentation.
 
-MSSM25: |
-   25 parameter phenomenological MSSM (plus input scale, for 26 parameters)
-   Following the conventions for the MSSM soft breaking terms in Baer and Tata (2006): the off- diagonal terms in the squark and slepton matrices as well as the trilinear coupling matrices a_ij are set to zero. As well, the first and second generation terms in these matrices are set to zero, leaving only the third generation trilinear couplings a_t, a_b, a_tau. In explicit models of SUSY breaking it often occurs that these trilinear couplings are proportional to the corresponding Yukawa couplings, so the parameterisation a_i = y_i*A_i is often used; this is also the SLHA convention (Skands et al., 2004), so below the A_i are our parameters. The c_ij trilinear couplings are all set to zero, and the CP-violating gaugino masses M1′, M2′, M3′ are set to zero. These drastic simplifications leave one with the following parameters:
-   
-   M_input        - Input scale (i.e. SUSY breaking scale)
-   M1,M2,M3       - Soft gaugino masses
-   At,Ab,Atau     - Trilinear couplings 
-   mHu2,mHd2      - Up and down type soft Higgs masses squared
-   mu             - Superpotential mu (Higgs bilinear) parameter
-   tanb           - Ratio of Higgs VEVs, tan_\beta
-   meL,mmuL,mtauL,   
-   meR,mmuR,mtauR - Soft slepton masses
-   mq1L,mq2L,mq3L,
-   muR,mcR,mtR,
-   mdR,msR,mbR,   - Soft squark masses
-   
-   (Just for demo; I forget exactly what the SLHA conventions are)  
+NormalDist: |
+   A simple test model consisting of two parameters: the width and central value of a Gaussian distribution.
 
-MSSM29: |
-   Demo description; I think the parameters don't quite make sense as defined currently
+TestModel1D: |
+   A one-dimensional test model, typically used for debugging simple prior transformations, or when a dummy model is required (as in the external model example in ColliderBit).
 
-MSSMBen: |
-   Some model derived from MSSM29
+MSSM63atQ: |
+   The most general formulation of the CP-conserving MSSM, with C terms set to zero due to their usual irrelevance in (known) SUSY-breaking schemes. The parameters are:
+
+   Ad_11, Ad_12, Ad_13, Ad_21, Ad_22, Ad_23, Ad_31, Ad_32, Ad_33  - elements of the A_d trilinear coupling matrix
+   Ae_11, Ae_12, Ae_13, Ae_21, Ae_22, Ae_23, Ae_31, Ae_32, Ae_33  - elements of the A_e trilinear coupling matrix
+   Au_11, Au_12, Au_13, Au_21, Au_22, Au_23, Au_31, Au_32, Au_33  - elements of the A_u trilinear coupling matrix
+   M1, M2, M3                                                     - gaugino masses
+   Qin                                                            - the scale Q at which the parameters are specified
+   SignMu                                                         - the sign of the mu parameter
+   TanBeta                                                        - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                                                     - Higgs mass parameters
+   md2_11, md2_12, md2_13, md2_22, md2_23, md2_33                 - elements of the m_d^2 mass (squared) mixing matrix
+   me2_11, me2_12, me2_13, me2_22, me2_23, me2_33                 - elements of the m_e^2 mass (squared) mixing matrix
+   ml2_11, ml2_12, ml2_13, ml2_22, ml2_23, ml2_33                 - elements of the m_l^2 mass (squared) mixing matrix
+   mq2_11, mq2_12, mq2_13, mq2_22, mq2_23, mq2_33                 - elements of the m_Q^2 mass (squared) mixing matrix
+   mu2_11, mu2_12, mu2_13, mu2_22, mu2_23, mu2_33                 - elements of the m_u^2 mass (squared) mixing matrix
+
+MSSM63atMGUT: |
+   As per the MSSM63atQ, but with Q=MGUT. Note that translation to MSSM63atQ requires the RGEs to already have been solved (in order to determine the value of the GUT scale).
+
+MSSM30atQ: |
+   As per the MSSM63atQ, but with all off-diagonal elements in the mass squared matrices and the trilinear coupling matrices set to zero. This leaves:
+
+   Ad_1, Ad_2, Ad_3    - diagonal elements of the A_d trilinear coupling matrix
+   Ae_1, Ae_2, Ae_3    - diagonal elements of the A_e trilinear coupling matrix
+   Au_1, Au_2, Au_3    - diagonal elements of the A_u trilinear coupling matrix
+   M1, M2, M3          - gaugino masses
+   Qin                 - the scale at which the parameters are defined
+   SignMu              - the sign of the mu parameter
+   TanBeta             - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2          - Higgs mass parameters
+   md2_1, md2_2, md2_3 - diagonal elements of the m_d^2 mass (squared) mixing matrix
+   me2_1, me2_2, me2_3 - diagonal elements of the m_e^2 mass (squared) mixing matrix
+   ml2_1, ml2_2, ml2_3 - diagonal elements of the m_l^2 mass (squared) mixing matrix
+   mq2_1, mq2_2, mq2_3 - diagonal elements of the m_q^2 mass (squared) mixing matrix
+   mu2_1, mu2_2, mu2_3 - diagonal elements of the m_u^2 mass (squared) mixing matrix
+
+MSSM30atMGUT: |
+   As per the MSSM30atQ, but with Q=MGUT. Note that translation to MSSM63atQ requires the RGEs to already have been solved (in order to determine the value of the GUT scale).
+
+MSSM25atQ: |
+
+   As per the MSSM30atQ, but with first and second generation trilinear couplings degenerate in the slepton sector, and set to zero for squarks. This leaves:
+
+   Ad_3                - only non-zero element of the A_d trilinear coupling matrix
+   Ae_12, Ae_3         - diagonal elements of the A_e trilinear coupling matrix (same for first and second generations = Ae_12)
+   Au_3                - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3          - gaugino masses
+   Qin                 - the scale at which the parameters are defined
+   SignMu              - the sign of the mu parameter
+   TanBeta             - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2          - Higgs mass parameters
+   md2_1, md2_2, md2_3 - diagonal elements of the m_d^2 mass (squared) mixing matrix
+   me2_1, me2_2, me2_3 - diagonal elements of the m_e^2 mass (squared) mixing matrix
+   ml2_1, ml2_2, ml2_3 - diagonal elements of the m_l^2 mass (squared) mixing matrix
+   mq2_1, mq2_2, mq2_3 - diagonal elements of the m_q^2 mass (squared) mixing matrix
+   mu2_1, mu2_2, mu2_3 - diagonal elements of the m_u^2 mass (squared) mixing matrix
+
+MSSM25atMGUT: |
+   As per the MSSM25atQ, but with Q=MGUT. Note that translation to MSSM63atQ requires the RGEs to already have been solved (in order to determine the value of the GUT scale).
+
+MSSM24atQ: |
+
+   As per the MSSM25atQ, but with first and second-generation trilinear couplings in the slepton sector also set to zero. This leaves:
+
+   Ad_3                - only non-zero element of the A_d trilinear coupling matrix
+   Ae_3                - only non-zero diagonal element of the A_e trilinear coupling matrix
+   Au_3                - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3          - gaugino masses
+   Qin                 - the scale at which the parameters are defined
+   SignMu              - the sign of the mu parameter
+   TanBeta             - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2          - Higgs mass parameters
+   md2_1, md2_2, md2_3 - diagonal elements of the m_d^2 mass (squared) mixing matrix
+   me2_1, me2_2, me2_3 - diagonal elements of the m_e^2 mass (squared) mixing matrix
+   ml2_1, ml2_2, ml2_3 - diagonal elements of the m_l^2 mass (squared) mixing matrix
+   mq2_1, mq2_2, mq2_3 - diagonal elements of the m_q^2 mass (squared) mixing matrix
+   mu2_1, mu2_2, mu2_3 - diagonal elements of the m_u^2 mass (squared) mixing matrix
+
+MSSM20atQ: |
+
+   As per the MSSM25atQ, but with degenerate first and second-generation sfermion mass parameters. This leaves:
+
+   Ad_3                - only non-zero element of the A_d trilinear coupling matrix
+   Ae_12, Ae_3         - diagonal elements of the A_e trilinear coupling matrix (same for first and second generations = Ae_12)
+   Au_3                - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3          - gaugino masses
+   Qin                 - the scale at which the parameters are defined
+   SignMu              - the sign of the mu parameter
+   TanBeta             - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2          - Higgs mass parameters
+   md2_12, md2_3       - diagonal elements of the m_d^2 mass (squared) mixing matrix (same for first and second generations = md2_12)
+   me2_12, me2_3       - diagonal elements of the m_e^2 mass (squared) mixing matrix (same for first and second generations = me2_12)
+   ml2_12, ml2_3       - diagonal elements of the m_l^2 mass (squared) mixing matrix (same for first and second generations = ml2_12)
+   mq2_12, mq2_3       - diagonal elements of the m_q^2 mass (squared) mixing matrix (same for first and second generations = mq2_12)
+   mu2_12, mu2_3       - diagonal elements of the m_u^2 mass (squared) mixing matrix (same for first and second generations = mu2_12)
+
+MSSM19atQ: |
+
+   This is the model that is sometimes referred to as the “phenomenological” MSSM (pMSSM). As per the MSSM20atQ, but with first and second-generation trilinear couplings in the slepton sector also set to zero. This leaves:
+
+   Ad_3                - only non-zero element of the A_d trilinear coupling matrix
+   Ae_3                - only non-zero element of the A_e trilinear coupling matrix (same for first and second generations = Ae_12)
+   Au_3                - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3          - gaugino masses
+   Qin                 - the scale at which the parameters are defined
+   SignMu              - the sign of the mu parameter
+   TanBeta             - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2          - Higgs mass parameters
+   md2_12, md2_3       - diagonal elements of the m_d^2 mass (squared) mixing matrix (same for first and second generations = md2_12)
+   me2_12, me2_3       - diagonal elements of the m_e^2 mass (squared) mixing matrix (same for first and second generations = me2_12)
+   ml2_12, ml2_3       - diagonal elements of the m_l^2 mass (squared) mixing matrix (same for first and second generations = ml2_12)
+   mq2_12, mq2_3       - diagonal elements of the m_q^2 mass (squared) mixing matrix (same for first and second generations = mq2_12)
+   mu2_12, mu2_3       - diagonal elements of the m_u^2 mass (squared) mixing matrix (same for first and second generations = mu2_12)
+
+MSSM16atQ: |
+
+   As per the MSSM19atQ, but with all first and second generation squark mass parameters degenerate and all first and second generation slepton mass parameters degenerate. This leaves:
+
+   Ad_3                       - only non-zero element of the A_d trilinear coupling matrix
+   Ae_3                       - only non-zero element of the A_e trilinear coupling matrix (same for first and second generations = Ae_12)
+   Au_3                       - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   me2_3, ml2_3, mu2_3, md2_3 - third generation diagonal elements of the squark and slepton mass (squared) matrices
+   ml2_12, mq2_12             - first and second generation diagonal elements of the squark and slepton mass (squared) matrices
+
+MSSM15atQ: |
+
+   As per the MSSM16atQ, but with down-type and sleptonic trilinear couplings degenerate. This leaves:
+
+   A0                         - Ad_33 = Ae_33 = A0 (diagonal element of trilinear coupling matrices for the down-type squarks and sleptons)
+   At                         - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   me2_3, ml2_3, mu2_3, md2_3 - third generation diagonal elements of the squark and slepton mass (squared) matrices
+   ml2_12, mq2_12             - first and second generation diagonal elements of the squark and slepton mass (squared) matrices
+
+MSSM11atQ: |
+
+   As per the MSSM16atQ/MSSM19atQ, but with universal squark and slepton mass parameters. This leaves:
+
+   Ad_3                       - only non-zero element of the A_d trilinear coupling matrix
+   Ae_3                       - only non-zero element of the A_e trilinear coupling matrix (same for first and second generations = Ae_12)
+   Au_3                       - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   mq2                        - all diagonal elements of squark mass (squared) matrices
+   ml2                        - all diagonal elements of slepton mass (squared) matrices
+
+MSSM10atQ: |
+
+   As per the MSSM11atQ, but with no sleptonic trilinear coupings. This leaves:
+
+   Ad_3                       - only non-zero element of the A_d trilinear coupling matrix
+   Au_3                       - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   mq2                        - all diagonal elements of squark mass (squared) matrices
+   ml2                        - all diagonal elements of slepton mass (squared) matrices
+
+MSSM10batQ: |
+
+   As per the MSSM11atQ, but with a universal sfermion mass parameter mf2. This leaves:
+
+   Ad_3                       - only non-zero element of the A_d trilinear coupling matrix
+   Ae_3                       - only non-zero element of the A_e trilinear coupling matrix (same for first and second generations = Ae_12)
+   Au_3                       - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   mf2                        - all diagonal elements of squark and slepton mass (squared) matrices
+
+MSSM10catQ: |
+
+   As per the MSSM15atQ, but with a universal trilinear coupling A0, 3rd generation squark mass mq2_3 and slepton mass ml2 parameters. This leaves:
+
+   A0                         - Ad_33 = Ae_33 = Au_33 = A0 (diagonal element of trilinear coupling matrices for the down-type squarks and sleptons)
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   mq2_12, mq_3               - non-zero elements of the squark mass (squared) matrices, unified for first and second generations
+   ml2                        - all diagonal elements of the slepton mass (squared) matrices
+
+MSSM9atQ: |
+
+   As per the MSSM11atQ, but with universal sfermion masses and no sleptonic trilinear couplings. This leaves:
+
+   Ad_3                       - only non-zero element of the A_d trilinear coupling matrix
+   Au_3                       - only non-zero element of the A_u trilinear coupling matrix
+   M1, M2, M3                 - gaugino masses
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   mf2                        - all diagonal elements of squark and slepton mass (squared) matrices
+
+MSSM7atQ: |
+
+   As per the MSSM9atQ, but assuming a Grand Unified Theory (GUT)-inspired relationship between the gaugino masses. See the GAMBIT core paper for details. This leaves:
+
+   Ad_3                       - only non-zero element of the A_d trilinear coupling matrix
+   Au_3                       - only non-zero element of the A_u trilinear coupling matrix
+   M2                         - wino mass
+   Qin                        - the scale at which the parameters are defined
+   SignMu                     - the sign of the mu parameter
+   TanBeta                    - the ratio of the up-type to down-type Higgs vevs
+   mHd2, mHu2                 - Higgs mass parameters
+   mf2                        - all diagonal elements of squark and slepton mass (squared) matrices
+
+NUHM2: |
+
+   The second Non-Universal Higgs Mass model. Descended from the MSSM63atMGUT. All off-diagonal elements in the squark and slepton mass matrices are set to zero, and all diagonal elements are set equal to a universal sfermion mass M0. All gaugino masses are set to the universal mass M12 and all entries in the trilinear coupling matrices are set to the universal coupling A0. This leaves:
+
+   A0           - universal trilinear coupling
+   M0           - universal sfermion mass
+   M12          - universal gaugino mass
+   SignMu       - the sign of the mu parameter
+   TanBeta      - the ratio of the up-type to down-type Higgs vevs
+   mHd, mHu     - Higgs mass parameters
+
+NUHM1: |
+
+   The first Non-Universal Higgs Mass model. As per the NUHM2, but with a single Higgs mass parameter mH. This leaves:
+
+   A0           - universal trilinear coupling
+   M0           - universal sfermion mass
+   M12          - universal gaugino mass
+   SignMu       - the sign of the mu parameter
+   TanBeta      - the ratio of the up-type to down-type Higgs vevs
+   mH           - Higgs mass parameters
+
+CMSSM: |
+
+   The Constrained MSSM. As per the NUHM1, but with M0 playing the role of a fully universal scalar mass parameter. This leaves:
+
+   A0           - universal trilinear coupling
+   M0           - universal sfermion mass
+   M12          - universal gaugino mass
+   SignMu       - the sign of the mu parameter
+   TanBeta      - the ratio of the up-type to down-type Higgs vevs
+
+MSSM25atQ: |
+
+   As per the MSSM30atQ, but with first and second generation trilinear couplings degenerate in the slepton sector, and set to zero for squarks. This leaves:
+
+StandardModel_SLHA2: |
+   Contains all SM parameters except the Higgs mass, which is separated out since this is often a prediction of BSM physics models. Models without their own Higgs sector can be scanned in tandem with an extra model that contains the Higgs mass as a parameter. The StandardModel_SLHA2 model contains the SM parameters that are defined in the SMINPUTS, VCKMIN and UPMNSIN blocks of the second SUSY Les Houches Accord (SLHA2):
+
+   CKM_A, CKM_etabar, CKM_lambda, CKM_rhobar    - CKM matrix elements in the Wolfenstein parameterisation
+   alphaS                                       - the strong coupling constant at scale mZ in the MSbar renormalization scheme
+   alphainv                                     - the reciprocal of the electromagnetic coupling constant at scale mZ in the MSbar renormalisation scheme
+   delta13                                      - Dirac CP-violating phase
+   alpha1                                       - first Majorana CP-violating phase
+   alpha2                                       - second CP-violating Majorana phase
+   mBmB                                         - b quark mass at scale mb in the MSbar renormalisation scheme
+   mCmC                                         - c quark mass at scale mc in the MSbar renormalisation scheme
+   mU, mD, mS                                   - u, d and s quark masses at scale 2 GeV in the MSbar renormalisation scheme
+   mE, mMu, mTau                                - the electron, muon and tau pole masses
+   mNu1, mNu2, mNu3                             - the neutrino pole masses
+   mT                                           - the top quark pole mass
+   mZ                                           - the Z boson pole mass
+   theta12, theta13, theta23                    - mixing angles from PMNS matrix
+   GF                                           - the Fermi coupling constant
+
+SingletDMZ3: |
+
+   The singlet DM model with a Z3 symmetry.
+
+   lambda_S   - self-coupling of the scalar
+   lambda_hS  - coupling for vertex connecting the SM Higgs to the new scalar
+   mS         - the mass of the scalar DM candidate
+   mu3        - coefficient of S^3 Lagrangian term
+
+StandardModel_Higgs_running: |
+
+   This model provides a description of the SM Higgs sector in terms of mH , the bare Higgs mass parameter in the SM Lagrangian at scale mZ. QEWSB specifies the scale at which the electroweak symmetry-breaking (EWSB) consistency condition that the Higgs potential possess a tree-level minimum is imposed. This model is intended for use in situations where the Higgs potential is run to different scales, e.g. for calculating pole masses or investigating vacuum stability.
 
 Halo_Einasto: |
    Dark matter halo model corresponding to an Einasto density profile with scale density rhos,
@@ -46,11 +322,11 @@ Halo_Einasto: |
    Here, rhos and rho0 are set independently of each other.
 
 Halo_Einasto_rho0: |
-   Same as Halo_Einasto, but instead of giving rhos explicitly as a parameter, it is derived 
+   Same as Halo_Einasto, but instead of giving rhos explicitly as a parameter, it is derived
    from the local dark matter density rho0 and the other parameters of the density profile.
 
 Halo_Einasto_rhos: |
-   Same as Halo_Einasto, but instead of giving rho0 explicitly as a parameter, it is derived 
+   Same as Halo_Einasto, but instead of giving rho0 explicitly as a parameter, it is derived
    from the scale density rhos and the other parameters of the density profile.
 
 Halo_gNFW: |
@@ -59,9 +335,47 @@ Halo_gNFW: |
    Here, rhos and rho0 are set independently of each other.
 
 Halo_gNFW_rho0: |
-   Same as Halo_gNFW, but instead of giving rhos explicitly as a parameter, it is derived 
+   Same as Halo_gNFW, but instead of giving rhos explicitly as a parameter, it is derived
    from the local dark matter density rho0 and the other parameters of the density profile.
 
 Halo_gNFW_rhos: |
-   Same as Halo_gNFW, but instead of giving rho0 explicitly as a parameter, it is derived 
+   Same as Halo_gNFW, but instead of giving rho0 explicitly as a parameter, it is derived
    from the scale density rhos and the other parameters of the density profile.
+
+mSUGRA: |
+
+   The most common definition of the minimal supergravity model; just a pseudonym for the CMSSM. The parameters are:
+
+   A0           - universal trilinear coupling
+   M0           - universal sfermion mass
+   M12          - universal gaugino mass
+   SignMu       - the sign of the mu parameter
+   TanBeta      - the ratio of the up-type to down-type Higgs vevs
+
+StandardModel_Higgs: |
+
+   Simple Higgs model containing the SM tree-level Higgs mass mH as the only parameter, which is interpreted as the pole mass by most calculations. This generally removes the need to calculate it via renormalisation group running in any higher-energy theory. When observables are to be calculated that genuinely need to use running parameters, the model point is up-translated to a parameter point in the StandardModel_Higgs_running (the parent model), where mH^2 at scale mZ is set equal to the square of the tree-level mass, and QEWSB is set to the top mass. This is useful for more detailed calculations involving module functions that explicitly require the running mass parameter of StandardModel_Higgs_running, and/or functions that need accurate pole masses calculated by including the Higgs sector in renormalisation calculations.
+
+WC: |
+
+   An implementation of the standard effective field theory for the study of rare meson decays, based on the decomposition of the effective Hamiltonian into a linear combination of interactions specified with Wilson coefficients. This model incorporates enhancements and suppressions to the real and imaginary parts of the Wilson coefficients of the effective operators O7 , O9 , O10 , Q1 and Q2 (see the GAMBIT core paper for details and definitions).
+
+nuclear_params_fnq: |
+
+   This model contains the nuclear matrix elements that parameterise the quark content of protons and neutrons, plus parameters that describe the spin content of the proton.
+
+nuclear_params_sigma0_sigmal: |
+
+   The same as nuclear_params_fnq, but with the replacement of the six quark content matrix elements by the light quark content of the nucleon (sigmal) and the matrix element sigma0. See the GAMBIT core paper for details and definitions.
+
+nuclear_params_sigmas_sigmal: |
+
+   The same as nuclear_params_fnq, but with the replacement of the six quark content matrix elements by the matrix element sigma0 and the strange quark content of the nucleon sigmas. See the GAMBIT core paper for details and definitions.
+
+SingletDM: |
+
+   The scalar singlet DM model, with two parameters mS (the mass of the scalar DM), and lambda_hS, the strength of the new scalar interaction with the SM Higgs. Note that mS should either be interpreted as the tree level mass or directly as the pole mass for S. This is analogous to the treatment of the SM Higgs mass in the model StandardModel_Higgs.
+
+SingletDM_running: |
+
+   The scalar singlet DM model with lambda_S (the scalar self-coupling), lambda_hS (the scalar-SM Higgs interaction strength) and mS (the mass of the new scalar) defined at the scale mZ as free parameters, allowing full calculation of pole masses, renormalisation group running and vacuum stability.

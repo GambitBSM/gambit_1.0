@@ -1,8 +1,10 @@
-# Ultra-minimal GAMBIT CMSSM example initialization file in YAML.
-# Only needs example modules ExampleBit_A and ExampleBit_B,
-# plus example backends libfirst and libFortran.
+##########################################################################
+## GAMBIT configuration for an ultra-minimal random scan of the CMSSM.
+##
+## Only needs example modules ExampleBit_A and ExampleBit_B,
+## plus example backends libfirst and libFortran.
+##########################################################################
 
-#======== Input parameter declarations =======
 
 Parameters:
 
@@ -18,14 +20,11 @@ Parameters:
       fixed_value: 1
 
 
-#======== Prior setup ========
-
 Priors:
 
-  # Here specify the priors, the parameters they work with, and any options as needed for that prior
+  # Specify the priors, the parameters they work with, and any options as needed for that prior
   # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
   # and then they are combined into a "composite" prior
-
   m12_prior:
     parameters: [CMSSM::M12]
     prior_type: composite
@@ -35,12 +34,10 @@ Priors:
         prior_type: log
         range: [100,2000]
 
-#======== Printer (output) setup ========
 
 Printer:
 
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
+  # Select printer to use via string tag (ascii or hdf5)
   printer: ascii
 
   # This options node is passed on wholesale to
@@ -50,7 +47,6 @@ Printer:
   options:
     output_file: "results.dat"
 
-#======== Scanner setup ========
 
 Scanner:
 
@@ -73,7 +69,6 @@ Scanner:
       like: LogLike
       grid_pts: [2, 2, 3]
 
-#======== Observables of interest ========
 
 ObsLikes:
 
@@ -102,7 +97,6 @@ ObsLikes:
   - purpose:      Observable
     capability:   test_BE_Array
 
-#======== Rule entries ========
 
 Rules:
 
@@ -123,7 +117,6 @@ Rules:
     backends:
     - {function: "externalFunction2"}
 
-#======== Logging ========
 
 Logger:
 
@@ -144,7 +137,6 @@ Logger:
     [ExampleBit_A]        : "ExampleBit_A.log"
     [ExampleBit_B]        : "ExampleBit_B.log"
 
-#======== Global options ========
 
 KeyValues:
 
@@ -165,7 +157,7 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
 
-  #By default, errors are fatal and warnings non-fatal
+  # By default, errors are fatal and warnings non-fatal
   exceptions:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal

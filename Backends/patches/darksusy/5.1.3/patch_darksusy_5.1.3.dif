@@ -8568,3 +8568,2234 @@ diff -rupN darksusy-5.1.3/src/wa/dswayields.f ../installed/darksusy/5.1.3/src/wa
          endif
  
        endif
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/HiggsBounds_subroutines.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/HiggsBounds_subroutines.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/HiggsBounds_subroutines.F90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/HiggsBounds_subroutines.F90 2017-05-21 19:03:15.000000000 +0200
+@@ -68,7 +68,7 @@ subroutine initialize_HiggsBounds(nHiggs
+  np(Chiplus)=0! do not change this without contacting us first!
+ 
+  if(allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize has already been called once'
++  stop  'subroutine HiggsBounds_initialize has already been called once'
+  endif
+ 
+  whichanalyses=whichanalyses_in
+@@ -156,7 +156,7 @@ subroutine attempting_to_use_an_old_HB_v
+   write(*,*)'The subroutine run_HiggsBounds_'//subroutineid//' has been discontinued in this'
+   write(*,*)'version of HiggsBounds.'
+  case default
+-  stop'wrong input to subroutine attempting_to_use_an_old_HB_version'
++  stop 'wrong input to subroutine attempting_to_use_an_old_HB_version'
+  end select
+ 
+  write(*,*)'If you have code written for use with HB 1.*.*, you have two choices:'
+@@ -172,7 +172,7 @@ subroutine attempting_to_use_an_old_HB_v
+  write(*,*)'     generally the most useful when constraining new physics models.'
+  write(*,*)'     We will continue to support this code.'
+ 
+- stop'Incorrect call to a HiggsBounds subroutine.'
++ stop 'Incorrect call to a HiggsBounds subroutine.'
+ 
+ end subroutine attempting_to_use_an_old_HB_version
+ !************************************************************      
+@@ -206,7 +206,7 @@ subroutine HiggsBounds_input_SLHA(infile
+  n=1  
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+  
+  infile1=infile   
+@@ -257,13 +257,13 @@ subroutine HiggsBounds_neutral_input_eff
+  inputsub(subtype)%stat=inputsub(subtype)%stat+1
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  if(np(Hneut).eq.0)then
+   write(*,*)'subroutine HiggsBounds_neutral_input_effC should'
+   write(*,*)'only be called if np(Hneut)>0'
+-  stop 'error in subroutine HiggsBounds_neutral_input_effC'
++  stop  'error in subroutine HiggsBounds_neutral_input_effC'
+  endif
+ 
+  theo(n)%particle(Hneut)%M       = Mh 
+@@ -359,13 +359,13 @@ subroutine HiggsBounds_neutral_input_par
+  inputsub(subtype)%stat=inputsub(subtype)%stat+1
+       
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  if(np(Hneut).eq.0)then
+   write(*,*)'subroutine HiggsBounds_neutral_input_part should'
+   write(*,*)'only be called if np(Hneut)>0'
+-  stop 'error in subroutine HiggsBounds_neutral_input_part'
++  stop  'error in subroutine HiggsBounds_neutral_input_part'
+  endif
+ 
+ 
+@@ -468,13 +468,13 @@ subroutine HiggsBounds_neutral_input_had
+  inputsub(subtype)%stat=inputsub(subtype)%stat+1
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  if(np(Hneut).eq.0)then
+   write(*,*)'subroutine HiggsBounds_neutral_input_hadr should'
+   write(*,*)'only be called if np(Hneut)>0'
+-  stop 'error in subroutine HiggsBounds_neutral_input_hadr'
++  stop  'error in subroutine HiggsBounds_neutral_input_hadr'
+  endif
+ 
+  theo(n)%particle(Hneut)%M       = Mh  
+@@ -544,13 +544,13 @@ subroutine HiggsBounds_charged_input(Mhp
+  inputsub(subtype)%stat=inputsub(subtype)%stat+1
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  if(np(Hplus).eq.0)then
+   write(*,*)'subroutine HiggsBounds_charged_input should'
+   write(*,*)'only be called if np(Hplus)>0'
+-  stop 'error in subroutine HiggsBounds_charged_input'
++  stop  'error in subroutine HiggsBounds_charged_input'
+  endif
+ 
+  theo(n)%particle(Hplus)%M       = Mhplus 
+@@ -600,13 +600,13 @@ subroutine SUSYBounds_neutralinoonly_inp
+  inputsub(subtype)%stat=inputsub(subtype)%stat+1
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  if(np(Chineut).eq.0)then
+    write(*,*)'subroutine SUSYBounds_neutralinoonly_input should'
+    write(*,*)'only be called if np(Chineut)>0'
+-   stop'error in SUSYBounds_neutralinoonly_input'
++   stop 'error in SUSYBounds_neutralinoonly_input'
+  endif
+ 
+  theo(n)%particle(Chineut)%M       = MN
+@@ -655,13 +655,13 @@ subroutine SUSYBounds_neutralinochargino
+  inputsub(subtype)%stat=inputsub(subtype)%stat+1
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  if((np(Chineut).eq.0).or.(np(Chiplus).eq.0))then
+    write(*,*)'subroutine SUSYBounds_neutralinochargino_input should'
+    write(*,*)'only be called if np(Chineut)>0 and np(Chiplus)>0'
+-   stop 'error in subroutine SUSYBounds_neutralinochargino_input'
++   stop  'error in subroutine SUSYBounds_neutralinochargino_input'
+  endif
+ 
+  theo(n)%particle(Chineut)%M       = MC
+@@ -710,7 +710,7 @@ subroutine run_HiggsBounds( HBresult,cha
+  n=1
+ 
+  if(.not.allocated(theo))then
+-  stop 'subroutine HiggsBounds_initialize must be called first'
++  stop  'subroutine HiggsBounds_initialize must be called first'
+  endif
+ 
+  do i=1,ubound(inputsub,dim=1)
+@@ -718,7 +718,7 @@ subroutine run_HiggsBounds( HBresult,cha
+        write(*,*)'subroutine '//trim(adjustl(inputsub(i)%desc))
+        write(*,*)'should be called once and only once before each call to'
+        write(*,*)'subroutine run_HiggsBounds.'
+-       stop'error in subroutine run_HiggsBounds'
++       stop 'error in subroutine run_HiggsBounds'
+    endif
+    inputsub(i)%stat=0!now we have used this input, set back to zero
+  enddo
+@@ -747,14 +747,14 @@ use usefulbits, only : whichinput,just_a
+ use output, only : do_output
+ 
+   if(.not.just_after_run)then
+-   stop'subroutine run_HiggsBounds should be called before subroutine HiggsBounds_SLHA_output' 
++   stop 'subroutine run_HiggsBounds should be called before subroutine HiggsBounds_SLHA_output' 
+   endif  
+ 
+   select case(whichinput)
+   case('SLHA')
+     call do_output
+   case default
+-    stop'The subroutine HiggsBounds_SLHA_output should only be used when whichinput=SLHA'
++    stop 'The subroutine HiggsBounds_SLHA_output should only be used when whichinput=SLHA'
+   end select
+ 
+ end subroutine HiggsBounds_SLHA_output
+@@ -768,9 +768,9 @@ subroutine initialize_HiggsBounds_chisqt
+  implicit none            
+  
+  if(allocated(theo))then
+-  stop 'subroutine initialize_HiggsBounds_chisqtables should be called before subroutine HiggsBounds_initialize'
++  stop  'subroutine initialize_HiggsBounds_chisqtables should be called before subroutine HiggsBounds_initialize'
+  elseif(allocated(clsb_t3))then
+-  stop 'subroutine initialize_HiggsBounds_chisqtables has already been called once'
++  stop  'subroutine initialize_HiggsBounds_chisqtables has already been called once'
+  endif 
+ 
+  allocate(clsb_t3(ntable3))
+@@ -781,7 +781,7 @@ subroutine initialize_HiggsBounds_chisqt
+  call readclsbfiles_binary
+ 
+  if(allocated(allocate_if_stats_required))then
+-   stop'error in subroutine initialize_HiggsBounds_chisqtables'
++   stop 'error in subroutine initialize_HiggsBounds_chisqtables'
+  else
+    allocate(allocate_if_stats_required(1))
+  endif
+@@ -798,7 +798,7 @@ subroutine finish_HiggsBounds_chisqtable
+  integer :: x      
+ 
+  if(.not.allocated(clsb_t3))then
+-  stop 'initialize_HiggsBounds_chisqtables should be called first'
++  stop  'initialize_HiggsBounds_chisqtables should be called first'
+  endif
+ 
+  do x=lbound(clsb_t3,dim=1),ubound(clsb_t3,dim=1)
+@@ -833,11 +833,11 @@ subroutine HB_calc_stats(theory_uncertai
+   low_chisq=1.0D-2
+ 
+   if(.not.allocated(theo))then
+-   stop 'subroutine HiggsBounds_initialize must be called first'
++   stop  'subroutine HiggsBounds_initialize must be called first'
+   elseif(.not.allocated(clsb_t3))then
+-   stop 'subroutine initialize_HiggsBounds_chisqtables must be called first'
++   stop  'subroutine initialize_HiggsBounds_chisqtables must be called first'
+   elseif(.not.just_after_run)then
+-   stop 'subroutine run_HiggsBounds must be called first'
++   stop  'subroutine run_HiggsBounds must be called first'
+   endif
+ 
+   sigma=theory_uncertainty_1s
+@@ -871,7 +871,7 @@ subroutine HB_calc_stats(theory_uncertai
+ 
+    else
+      write(*,*)'hello y=',y
+-     stop'problem here with y'
++     stop 'problem here with y'
+    endif
+ 
+   else
+@@ -901,7 +901,7 @@ subroutine finish_HiggsBounds
+  endif
+ 
+  if(.not.allocated(theo))then
+-  stop 'HiggsBounds_initialize  should be called first'
++  stop  'HiggsBounds_initialize  should be called first'
+  endif
+ 
+  if(debug)write(*,*)'finishing off...'                      ; call flush(6)
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables.f90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables.f90 2017-05-21 18:51:52.000000000 +0200
+@@ -129,7 +129,7 @@ module S95tables
+   do i=lbound(S95_t1,dim=1),ubound(S95_t1,dim=1)
+    if(WhichColliderElement(S95_t1(i)%expt).eq.0)then
+      write(*,*)'~'//trim(adjustl(S95_t1(i)%expt))//'~ is not a valid experiment name'
+-     stop 'error in setup_S95tables (a)'
++     stop  'error in setup_S95tables (a)'
+    endif
+   enddo
+ 
+@@ -137,7 +137,7 @@ module S95tables
+   do i=lbound(S95_t2,dim=1),ubound(S95_t2,dim=1)
+    if(WhichColliderElement(S95_t2(i)%expt).eq.0)then
+      write(*,*)'~'//trim(adjustl(S95_t2(i)%expt))//'~ is not a valid experiment name'
+-     stop 'error in setup_S95tables (b)'
++     stop  'error in setup_S95tables (b)'
+    endif
+   enddo 
+ 
+@@ -146,7 +146,7 @@ module S95tables
+    if( count(S95_t1%id.eq.S95_t1(i)%id) &
+       +count(S95_t2%id.eq.S95_t1(i)%id).ne.1)then
+     write(*,*)'the id',S95_t1(i)%id,'is repeated'
+-    stop 'error in setup_S95tables (c1)'
++    stop  'error in setup_S95tables (c1)'
+    endif
+   enddo 
+   
+@@ -155,7 +155,7 @@ module S95tables
+    if( count(S95_t1%id.eq.S95_t2(i)%id)&
+       +count(S95_t2%id.eq.S95_t2(i)%id).ne.1)then
+     write(*,*)'the id',S95_t2(i)%id,'is repeated'
+-    stop 'error in setup_S95tables (c2)'
++    stop  'error in setup_S95tables (c2)'
+    endif
+   enddo 
+ 
+@@ -163,7 +163,7 @@ module S95tables
+   do i=lbound(S95_t1,dim=1),ubound(S95_t1,dim=1)
+    if(S95_t1(i)%particle_x.eq.not_a_particle)then
+     write(*,*)S95_t1(i)%id,'particle_x=not_a_particle.'
+-    stop 'error in setup_S95tables (d1)'  
++    stop  'error in setup_S95tables (d1)'  
+    endif
+   enddo
+ 
+@@ -171,7 +171,7 @@ module S95tables
+   do i=lbound(S95_t2,dim=1),ubound(S95_t2,dim=1)
+    if(S95_t2(i)%particle_x2.eq.not_a_particle)then
+     write(*,*)S95_t2(i)%id,'particle_x2=not_a_particle.'
+-    stop 'error in setup_S95tables (d2)'  
++    stop  'error in setup_S95tables (d2)'  
+    endif
+   enddo
+   
+@@ -256,7 +256,7 @@ module S95tables
+      delta_x_default(Hneut,c)=delta_Mh_LHC
+      delta_x_default(Hplus,c)=delta_Mhplus_LHC
+    else
+-     stop'error in subroutine setup_S95tables'
++     stop 'error in subroutine setup_S95tables'
+    endif
+   enddo
+ 
+@@ -309,29 +309,29 @@ module S95tables
+ 
+   !we need tevXS_SM_functions to have a big enough range to cover the tables
+   if(Exptrange_Mhmax_forSMXS(get_collider_element_number('TEV')).gt.tevXS_SM_functions_xmax)then
+-   stop'need to extend upper range of tevXS_SM_functions or reduce delta_M_TEV'
++   stop 'need to extend upper range of tevXS_SM_functions or reduce delta_M_TEV'
+   endif
+ 
+   if(Exptrange_Mhmin_forSMXS(get_collider_element_number('TEV')).lt.tevXS_SM_functions_xmin)then
+    write(*,*)Exptrange_Mhmin_forSMXS(get_collider_element_number('TEV')),tevXS_SM_functions_xmin
+-   stop'need to extend lower range of tevXS_SM_functions'
++   stop 'need to extend lower range of tevXS_SM_functions'
+   endif
+ 
+   !we need lhc7XS_SM_functions to have a big enough range to cover the tables
+   if(Exptrange_Mhmax_forSMXS(get_collider_element_number('LHC7')).gt.lhc7XS_SM_functions_xmax)then
+-   stop'need to extend upper range of lhc7XS_SM_functions or reduce delta_M_LHC'
++   stop 'need to extend upper range of lhc7XS_SM_functions or reduce delta_M_LHC'
+   endif
+ 
+   if(Exptrange_Mhmin_forSMXS(get_collider_element_number('LHC7')).lt.lhc7XS_SM_functions_xmin)then
+-   stop'need to extend lower range of lhc7XS_SM_functions'
++   stop 'need to extend lower range of lhc7XS_SM_functions'
+   endif
+   
+   ! we need the branching ratios for all the colliders
+   if(    maxval(Exptrange_Mhmax_forSMdecays).gt.BRSMt1Mhmax)then
+-   stop'need to extend upper range of BRfunctions or reduce delta_M_(LEP/TEV)'
++   stop 'need to extend upper range of BRfunctions or reduce delta_M_(LEP/TEV)'
+   elseif(minval(Exptrange_Mhmin_forSMdecays).lt.BRSMt1Mhmin)then
+    write(*,*)'hello',minval(Exptrange_Mhmin_forSMdecays),BRSMt1Mhmin
+-   stop'need to extend lower range of BRfunctions'
++   stop 'need to extend lower range of BRfunctions'
+   endif
+ 
+   deallocate(Expttables_Mhmin_forSMXS)
+@@ -399,7 +399,7 @@ module S95tables
+    endif
+   enddo
+ 
+-  if(y.ne.1)stop'problem in function get_collider_element_number'
++  if(y.ne.1)stop 'problem in function get_collider_element_number'
+ 
+  end function get_collider_element_number
+  !****************************************************************** 
+@@ -453,7 +453,7 @@ module S95tables
+   case(2)      
+    call calcfact_t2(proc%tlist,proc%findj,proc%findi,t,cfact,axis_i,axis_j,nc)
+   case default
+-   stop 'wrong input to function calcfact in module channels'
++   stop  'wrong input to function calcfact in module channels'
+   end select            
+ 
+  end subroutine calcfact
+@@ -497,7 +497,7 @@ module S95tables
+   case(2)
+    call outputproc_t2(proc%tlist,i,j,k,descrip) 
+   case default
+-   stop 'wrong input to subroutine outputproc in module channels'
++   stop  'wrong input to subroutine outputproc in module channels'
+   end select              
+             
+  end subroutine outputproc 
+@@ -532,7 +532,7 @@ module S95tables
+     call interpolate_tabletype2(Mi,Mj,S95_t2(proc%tlist),predobs,interpol)
+    case default
+     write(*,*)'wrong input to subroutine check_against_bound in module channels'
+-    stop
++    stop 
+    end select      
+   endif      
+ 
+@@ -769,7 +769,7 @@ module S95tables
+     case(6224,6225,6226)
+      call model_likeness(j,S95_t1(c)%id,t,model_like(j),fact(j))
+     case default
+-     stop 'wrong input to function calcfact_t1 in module S95tables'
++     stop  'wrong input to function calcfact_t1 in module S95tables'
+     end select
+ 
+    endif
+@@ -908,7 +908,7 @@ module S95tables
+     case(2011135) 
+     case(6224,6225,6226)
+     case default
+-     stop 'error calculating denom. in calcfact_t1'
++     stop  'error calculating denom. in calcfact_t1'
+     end select
+    
+     cfact_t1=sum(fact)
+@@ -1025,7 +1025,7 @@ module S95tables
+     endif
+ 
+    case default
+-    stop 'wrong input to function calcfact_t2 in module S95tables'
++    stop  'wrong input to function calcfact_t2 in module S95tables'
+    end select  
+ 
+    if(S95_t2(c)%particle_x1.eq.not_a_particle)then
+@@ -1033,7 +1033,7 @@ module S95tables
+      case(6227)
+      axis_i=t%BR_hjtautau(jj) 
+      case default 
+-      stop'Problem in subroutine calcfact_t2 (y1)'
++      stop 'Problem in subroutine calcfact_t2 (y1)'
+      end select
+    else
+      axis_i=Mi_av
+@@ -1042,7 +1042,7 @@ module S95tables
+    if(S95_t2(c)%particle_x2.eq.not_a_particle)then
+      select case(S95_t2(c)%id)
+      case default 
+-       stop'Problem in subroutine calcfact_t2 (y2)'
++       stop 'Problem in subroutine calcfact_t2 (y2)'
+      end select
+    else
+      axis_j=Mj_av
+@@ -1111,7 +1111,7 @@ module S95tables
+       test_appl=x 
+      endif
+     case default
+-      stop'error in function test_appl'
++      stop 'error in function test_appl'
+     end select              
+ 
+   end function test_appl
+@@ -1301,7 +1301,7 @@ module S95tables
+   case(2011103,11012)  
+    descrip=' (p p)->V(h'//j//')->V (b b-bar)   '  //label        
+   case default
+-   stop 'wrong input to function outputproc_t1 in module S95tables (1)'  
++   stop  'wrong input to function outputproc_t1 in module S95tables (1)'  
+   end select   
+ 
+ ! New description string based on data file input
+@@ -1384,7 +1384,7 @@ module S95tables
+   case(6227)  
+    descrip=' (p p-bar)->h'//j//'(b/b-bar)->(b b-bar) (b/b-bar) or (tau tau) (b/b-bar) '     //label 
+   case default
+-   stop 'wrong input to function outputproc_t2 in module S95tables (2)' 
++   stop  'wrong input to function outputproc_t2 in module S95tables (2)' 
+   end select        
+             
+  end subroutine outputproc_t2
+@@ -1432,7 +1432,7 @@ module S95tables
+   case default
+    if(S95_t1(n)%deltax.gt.0.0D0)then
+      write(*,*)'hello id=',id,'deltax=',S95_t1(n)%deltax
+-     stop'error in subroutine model_likeness (1)'
++     stop 'error in subroutine model_likeness (1)'
+    endif
+   end select
+ 
+@@ -2988,21 +2988,21 @@ module S95tables
+ 
+   case default
+    write(*,*)'hello id=',id
+-   stop 'error in subroutine model_likeness (2)'
++   stop  'error in subroutine model_likeness (2)'
+   end select
+ 
+ !----------------------------------------------------------
+ !--New model likeness check (TS 23/03/2012)
+ !----------------------------------------------------------
+   if(allocated(channel_rat)) then
+-    if(nc.ne.ubound(channel_rat,dim=1))stop'error in subroutine model_likeness (3a)'
+-    if(nc.ne.ubound(channel_SM,dim=1))stop'error in subroutine model_likeness (3a)'
++    if(nc.ne.ubound(channel_rat,dim=1))stop 'error in subroutine model_likeness (3a)'
++    if(nc.ne.ubound(channel_SM,dim=1))stop 'error in subroutine model_likeness (3a)'
+ !   Check if the channels have been filled correctly
+     do ic=1,nc    
+-     if(abs(channel_rat(ic,1)-unset).lt.1.0D-3)stop'error in subroutine model_likeness (4a)'      
+-     if(abs(channel_rat(ic,2)-unset).lt.1.0D-3)stop'error in subroutine model_likeness (4a)'         
+-     if(abs(channel_SM(ic,1)-unset).lt.1.0D-3)stop'error in subroutine model_likeness (4a)'         
+-     if(abs(channel_SM(ic,2)-unset).lt.1.0D-3)stop'error in subroutine model_likeness (4a)'         
++     if(abs(channel_rat(ic,1)-unset).lt.1.0D-3)stop 'error in subroutine model_likeness (4a)'      
++     if(abs(channel_rat(ic,2)-unset).lt.1.0D-3)stop 'error in subroutine model_likeness (4a)'         
++     if(abs(channel_SM(ic,1)-unset).lt.1.0D-3)stop 'error in subroutine model_likeness (4a)'         
++     if(abs(channel_SM(ic,2)-unset).lt.1.0D-3)stop 'error in subroutine model_likeness (4a)'         
+     enddo
+ !---Eliminate irrelevant channels (=channels with very small SM prediction).
+ !---Construct mean value of the ratio for the relevant channels
+@@ -3070,14 +3070,14 @@ module S95tables
+ !-If channel_rat is not allocated, use old method:  
+   else
+ 
+-    if(ns.ne.ubound(XS_rat,dim=1))stop'error in subroutine model_likeness (3a)'
+-    if(nb.ne.ubound(BR_rat,dim=1))stop'error in subroutine model_likeness (3b)'
++    if(ns.ne.ubound(XS_rat,dim=1))stop 'error in subroutine model_likeness (3a)'
++    if(nb.ne.ubound(BR_rat,dim=1))stop 'error in subroutine model_likeness (3b)'
+ 
+     do is=1,ns    
+-     if(abs(XS_rat(is)-unset).lt.1.0D-3)stop'error in subroutine model_likeness (4a)'
++     if(abs(XS_rat(is)-unset).lt.1.0D-3)stop 'error in subroutine model_likeness (4a)'
+     enddo
+     do ib=1,nb    
+-     if(abs(BR_rat(ib)-unset).lt.1.0D-3)stop'error in subroutine model_likeness (4b)'
++     if(abs(BR_rat(ib)-unset).lt.1.0D-3)stop 'error in subroutine model_likeness (4b)'
+     enddo
+   
+     s=sum(XS_rat)/ns 
+@@ -3176,7 +3176,7 @@ module S95tables
+    double precision, intent(in) :: ft1_sep,vmasslower,vmasshigher,vmass_xmin,vmass_xmax,vmass_sep,valueoutsidetable
+    type(table1) :: ft1
+     
+-    if(abs(vmass_xmin-vmass_xmax).lt.small)stop'problem in f_from_t3 (4)'
++    if(abs(vmass_xmin-vmass_xmax).lt.small)stop 'problem in f_from_t3 (4)'
+     ft1%sep=ft1_sep
+ 
+     ! we want f_t1%xmin to be lower  than x1lower
+@@ -3218,7 +3218,7 @@ module S95tables
+   !-------------------------------------------
+ 
+   if(vmasslower.gt.vmasshigher)then
+-    stop'problem in f_from_t1 (1)'
++    stop 'problem in f_from_t1 (1)'
+   endif
+ 
+   f_t1%id          =  t1%id  
+@@ -3280,7 +3280,7 @@ module S95tables
+   !-------------------------------------------
+ 
+   if(vmasslower.gt.vmasshigher)then
+-    stop'problem in f_from_t2 (1)'
++    stop 'problem in f_from_t2 (1)'
+   endif
+ 
+   if(abs(m1_at_ref_point_1-m1_at_ref_point_2).lt.small)then
+@@ -3305,19 +3305,19 @@ module S95tables
+ 
+   select case(vmassm1orm2)
+   case(1)
+-    if(const_m1)stop'problem in f_from_t2 (3a)'
++    if(const_m1)stop 'problem in f_from_t2 (3a)'
+     vmass_xmin      =  t2%xmin1
+     vmass_xmax      =  t2%xmax1
+     vmass_sep       =  t2%sep1
+     f_t1%sep        =  t2%sep1*sepmultfactor
+   case(2)
+-    if(const_m2)stop'problem in f_from_t2 (3b)'
++    if(const_m2)stop 'problem in f_from_t2 (3b)'
+     vmass_xmin      =  t2%xmin2
+     vmass_xmax      =  t2%xmax2
+     vmass_sep       =  t2%sep2
+     f_t1%sep        =  t2%sep2*sepmultfactor
+   case default 
+-    stop'problem in f_from_t2 (3)'
++    stop 'problem in f_from_t2 (3)'
+   end select
+ 
+   call fill_blank_ft1_dat(f_t1,f_t1%sep,vmasslower,vmasshigher,vmass_xmin,vmass_xmax,vmass_sep,valueoutsidetable) 
+@@ -3415,7 +3415,7 @@ module S95tables
+   double precision :: z_below,z_above
+ 
+   if(vmasslower.gt.vmasshigher)then
+-    stop'problem in f_from_slices_t2 (1)'
++    stop 'problem in f_from_slices_t2 (1)'
+   endif
+ 
+   if(abs(m1_at_ref_point_1-m1_at_ref_point_2).lt.small)then
+@@ -3436,12 +3436,12 @@ module S95tables
+     f_t1%deltax      =  slices_t2(1)%deltax
+ 
+     if((slices_t2(1)%nx2.eq.1).or.(vmassm1orm2.eq.1))then
+-       if(const_m1)stop'problem in f_from_slices_t2 (1a)'
++       if(const_m1)stop 'problem in f_from_slices_t2 (1a)'
+        vmass_xmin      =  slices_t2(1)%xmin1
+        vmass_sep       =  slices_t2(1)%sep1
+        f_t1%sep        =  slices_t2(1)%sep1*sepmultfactor
+     else
+-       if(const_m2)stop'problem in f_from_slices_t2 (1b)'
++       if(const_m2)stop 'problem in f_from_slices_t2 (1b)'
+        vmass_xmin      =  slices_t2(1)%xmin2
+        vmass_sep       =  slices_t2(1)%sep2
+        f_t1%sep        =  slices_t2(1)%sep2*sepmultfactor
+@@ -3485,7 +3485,7 @@ module S95tables
+        vmass_sep       =  slices_t2(1)%sep1
+        f_t1%sep        =  slices_t2(1)%sep1*sepmultfactor
+     else
+-       if(const_m2)stop'problem in f_from_slices_t2 (3b)'
++       if(const_m2)stop 'problem in f_from_slices_t2 (3b)'
+        vmass_xmin      =  slices_t2(1)%xmin2
+        vmass_xmax      =  slices_t2(1)%xmax2
+        vmass_sep       =  slices_t2(1)%sep2
+@@ -3513,7 +3513,7 @@ module S95tables
+             mass1 = (mass2 - line_const)/line_grad
+           endif
+        case default
+-          stop'problem in f_from_slices_t2 (4b)'
++          stop 'problem in f_from_slices_t2 (4b)'
+        end select
+      endif
+ 
+@@ -3561,7 +3561,7 @@ module S95tables
+   double precision :: z_below,z_above
+ 
+   if(vmasslower.gt.vmasshigher)then
+-    stop'problem in f_from_t3 (1)'
++    stop 'problem in f_from_t3 (1)'
+   endif
+ 
+   if(abs(m1_at_ref_point_1-m1_at_ref_point_2).lt.small)then
+@@ -3582,12 +3582,12 @@ module S95tables
+     f_t1%deltax      =  t3%deltax
+ 
+     if((t3%nx2.eq.1).or.(vmassm1orm2.eq.1))then
+-       if(const_m1)stop'problem in f_from_t3 (1a)'
++       if(const_m1)stop 'problem in f_from_t3 (1a)'
+        vmass_xmin      =  t3%xmin1
+        vmass_sep       =  t3%sep1
+        f_t1%sep        =  t3%sep1*sepmultfactor
+     else
+-       if(const_m2)stop'problem in f_from_t3 (1b)'
++       if(const_m2)stop 'problem in f_from_t3 (1b)'
+        vmass_xmin      =  t3%xmin2
+        vmass_sep       =  t3%sep2
+        f_t1%sep        =  t3%sep2*sepmultfactor
+@@ -3646,13 +3646,13 @@ module S95tables
+   double precision :: dati,datiplus1
+   !-------------------------------------------  
+   if((datcomp.lt.lbound(t1%dat,dim=2)).or.(datcomp.gt.ubound(t1%dat,dim=2)))then
+-   stop'wrong datcomp inputted to subroutine convolve_with_gaussian'
++   stop 'wrong datcomp inputted to subroutine convolve_with_gaussian'
+   elseif(t1%nx.le.1)then
+-   stop'wrong t1%nx inputted to subroutine convolve_with_gaussian (2)'
++   stop 'wrong t1%nx inputted to subroutine convolve_with_gaussian (2)'
+   elseif(sigma.le.vsmall)then
+-   stop'wrong sigma inputted to subroutine convolve_with_gaussian'
++   stop 'wrong sigma inputted to subroutine convolve_with_gaussian'
+   elseif(abs(t1%sep).le.vsmall)then
+-   stop'wrong t1%sep inputted to subroutine convolve_with_gaussian'
++   stop 'wrong t1%sep inputted to subroutine convolve_with_gaussian'
+   endif
+ 
+   big_number_instead_of_infinity=1.0D5
+@@ -3667,7 +3667,7 @@ module S95tables
+      ilow  = lbound(t1%dat,dim=1)
+      ihigh = ubound(t1%dat,dim=1)
+ 
+-     if(ilow.eq.ihigh)stop'problem in subroutine convolve_with_gaussian'
++     if(ilow.eq.ihigh)stop 'problem in subroutine convolve_with_gaussian'
+ 
+      newsep=t1%sep/dble(divisions)
+    
+@@ -3766,7 +3766,7 @@ module S95tables
+      case(2)  
+        S95_t1_or_S95_t2_idfromelementnumber=S95_t2(tlist)%id
+      case default
+-       stop'wrong input to function S95_t1_or_S95_t2_idfromelementnumber'
++       stop 'wrong input to function S95_t1_or_S95_t2_idfromelementnumber'
+      end select
+  end function S95_t1_or_S95_t2_idfromelementnumber
+  !************************************************************      
+@@ -3785,7 +3785,7 @@ module S95tables
+   case(2)
+     S95_t1_or_S95_t2_elementnumberfromid= t2elementnumberfromid(S95_t2,id)
+   case default
+-    stop'problem with function S95_t1_or_S95_t2_elementnumberfromid'
++    stop 'problem with function S95_t1_or_S95_t2_elementnumberfromid'
+   end select
+ 
+  end function S95_t1_or_S95_t2_elementnumberfromid
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type1.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type1.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type1.F90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type1.F90 2017-05-21 18:37:39.000000000 +0200
+@@ -86,7 +86,7 @@ module S95tables_type1
+    endif
+   enddo
+ 
+-  if(n.ne.1)stop'problem in function t3elementnumberfromid 1'
++  if(n.ne.1) stop 'problem in function t3elementnumberfromid 1'
+ 
+  end function t1elementnumberfromid
+ 
+@@ -3530,7 +3530,7 @@ module S95tables_type1
+ 
+   ! checks we've filled the whole array
+   if(x.ne.xend)then
+-   stop'error in initializetables1 (a)'
++   stop 'error in initializetables1 (a)'
+   endif 
+  
+   ! do loop to read in S95 tables 
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type2.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type2.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type2.F90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type2.F90 2017-05-21 18:42:00.000000000 +0200
+@@ -272,11 +272,11 @@ module S95tables_type2
+ 
+      do k=lbound(file_id_arr,dim=1),ubound(file_id_arr,dim=1)
+        read(file_id_arr(k),*)( testrow(i), i=0,S95_t2(x)%nx1 )
+-       if((testrow(0)+100.0D0).gt.small)stop'error in initializetables2 (d)' !top left number should be -100
++       if((testrow(0)+100.0D0).gt.small)stop 'error in initializetables2 (d)' !top left number should be -100
+        do i=1,S95_t2(x)%nx1      
+          if( abs(testrow(i)- (S95_t2(x)%xmin1 + dble(i-1)*S95_t2(x)%sep1) ).gt.small*S95_t2(x)%sep1 )then
+             write(*,*)S95_t2(x)%id,testrow(i),(S95_t2(x)%xmin1 + dble(i-1)*S95_t2(x)%sep1)
+-            stop'error in initializetables2 (e)'  
++            stop 'error in initializetables2 (e)'  
+          endif
+        enddo
+      enddo
+@@ -285,11 +285,11 @@ module S95tables_type2
+      do j=1,S95_t2(x)%nx2  
+       read(file_id_2_exp,*) dummy, ( S95_t2(x)%dat(j,i,2), i=1,S95_t2(x)%nx1 )
+       if( abs(dummy- (S95_t2(x)%xmin2 + dble(j-1)*S95_t2(x)%sep2) ).gt.small*S95_t2(x)%sep2 ) then
+-       stop'error in initializetables2 (f)'
++       stop 'error in initializetables2 (f)'
+       endif
+       read(file_id_2_obs,*) dummy, ( S95_t2(x)%dat(j,i,1), i=1,S95_t2(x)%nx1 )   
+       if( abs(dummy- (S95_t2(x)%xmin2 + dble(j-1)*S95_t2(x)%sep2) ).gt.small*S95_t2(x)%sep2 ) then
+-       stop'error in initializetables2 (g)'
++       stop 'error in initializetables2 (g)'
+       endif
+      end do
+    
+@@ -335,7 +335,7 @@ module S95tables_type2
+    endif
+   enddo
+ 
+-  if(n.ne.1)stop'problem in function t2elementnumberfromid 1'
++  if(n.ne.1)stop 'problem in function t2elementnumberfromid 1'
+ 
+  end function t2elementnumberfromid
+  !*********************************************************** 
+@@ -358,15 +358,15 @@ module S95tables_type2
+   n_ftype_selection=ubound(ftype_selection,dim=1)
+ 
+   do n=lbound(ftype_selection,dim=1),n_ftype_selection
+-     if(ftype_selection(n).lt.lbound(t2%dat,dim=3))stop'problem in fill_slices_t1_from_slices_of_t2 3a'
+-     if(ftype_selection(n).gt.ubound(t2%dat,dim=3))stop'problem in fill_slices_t1_from_slices_of_t2 3b'
++     if(ftype_selection(n).lt.lbound(t2%dat,dim=3))stop 'problem in fill_slices_t1_from_slices_of_t2 3a'
++     if(ftype_selection(n).gt.ubound(t2%dat,dim=3))stop 'problem in fill_slices_t1_from_slices_of_t2 3b'
+   enddo
+ 
+   if(lbound(xy_selection,dim=1).ne.lbound(slices_t1,dim=1))then
+-     stop'problem in fill_slices_t1_from_slices_of_t2 1a'
++     stop 'problem in fill_slices_t1_from_slices_of_t2 1a'
+   endif
+   if(ubound(xy_selection,dim=1).ne.ubound(slices_t1,dim=1))then
+-     stop'problem in fill_slices_t1_from_slices_of_t2 1b'
++     stop 'problem in fill_slices_t1_from_slices_of_t2 1b'
+   endif
+ 
+   select case(v1orv2)
+@@ -374,8 +374,8 @@ module S95tables_type2
+ 
+     do n=lbound(slices_t1,dim=1),ubound(slices_t1,dim=1)
+ 
+-     if(xy_selection(n).lt.lbound(t2%dat,dim=1))stop'problem in fill_slices_t1_from_slices_of_t2 4a'
+-     if(xy_selection(n).gt.ubound(t2%dat,dim=1))stop'problem in fill_slices_t1_from_slices_of_t2 4b'
++     if(xy_selection(n).lt.lbound(t2%dat,dim=1))stop 'problem in fill_slices_t1_from_slices_of_t2 4a'
++     if(xy_selection(n).gt.ubound(t2%dat,dim=1))stop 'problem in fill_slices_t1_from_slices_of_t2 4b'
+ 
+      slices_t1(n)%id          =  t2%id    
+      slices_t1(n)%nx          =  t2%nx1  
+@@ -398,8 +398,8 @@ module S95tables_type2
+ 
+     do n=lbound(slices_t1,dim=1),ubound(slices_t1,dim=1)
+ 
+-     if(xy_selection(n).lt.lbound(t2%dat,dim=2))stop'problem in fill_slices_t1_from_slices_of_t2 4aa'
+-     if(xy_selection(n).gt.ubound(t2%dat,dim=2))stop'problem in fill_slices_t1_from_slices_of_t2 4bb'
++     if(xy_selection(n).lt.lbound(t2%dat,dim=2))stop 'problem in fill_slices_t1_from_slices_of_t2 4aa'
++     if(xy_selection(n).gt.ubound(t2%dat,dim=2))stop 'problem in fill_slices_t1_from_slices_of_t2 4bb'
+ 
+      slices_t1(n)%id          =  t2%id    
+      slices_t1(n)%nx          =  t2%nx2  
+@@ -419,7 +419,7 @@ module S95tables_type2
+ 
+     enddo
+   case default
+-   stop'problem in fill_slices_t1_from_slices_of_t2 5'
++   stop 'problem in fill_slices_t1_from_slices_of_t2 5'
+   end select
+ 
+  end subroutine fill_slices_t1_from_slices_of_t2
+@@ -445,8 +445,8 @@ module S95tables_type2
+   n_ftype_selection=ubound(ftype_selection,dim=1)
+ 
+   do n=lbound(ftype_selection,dim=1),n_ftype_selection
+-     if(ftype_selection(n).lt.lbound(t2%dat,dim=3))stop'problem in fill_t1_from_t2 3a'
+-     if(ftype_selection(n).gt.ubound(t2%dat,dim=3))stop'problem in fill_t1_from_t2 3b'
++     if(ftype_selection(n).lt.lbound(t2%dat,dim=3))stop 'problem in fill_t1_from_t2 3a'
++     if(ftype_selection(n).gt.ubound(t2%dat,dim=3))stop 'problem in fill_t1_from_t2 3b'
+   enddo
+ 
+   t1%id          =  t2%id 
+@@ -455,8 +455,8 @@ module S95tables_type2
+   select case(v1orv2)
+   case(1)
+ 
+-     if(xy_selection.lt.lbound(t2%dat,dim=1))stop'problem in fill_t1_from_t2 4a'
+-     if(xy_selection.gt.ubound(t2%dat,dim=1))stop'problem in fill_t1_from_t2 4b'
++     if(xy_selection.lt.lbound(t2%dat,dim=1))stop 'problem in fill_t1_from_t2 4a'
++     if(xy_selection.gt.ubound(t2%dat,dim=1))stop 'problem in fill_t1_from_t2 4b'
+   
+      t1%nx          =  t2%nx1  
+      t1%xmax        =  t2%xmax1 
+@@ -474,8 +474,8 @@ module S95tables_type2
+ 
+   case(2)
+ 
+-     if(xy_selection.lt.lbound(t2%dat,dim=2))stop'problem in fill_t1_from_t2 4aa'
+-     if(xy_selection.gt.ubound(t2%dat,dim=2))stop'problem in fill_t1_from_t2 4bb'
++     if(xy_selection.lt.lbound(t2%dat,dim=2))stop 'problem in fill_t1_from_t2 4aa'
++     if(xy_selection.gt.ubound(t2%dat,dim=2))stop 'problem in fill_t1_from_t2 4bb'
+ 
+      t1%nx          =  t2%nx2  
+      t1%xmax        =  t2%xmax2 
+@@ -492,7 +492,7 @@ module S95tables_type2
+      enddo
+ 
+   case default
+-   stop'problem in fill_t1_from_t2 5'
++   stop 'problem in fill_t1_from_t2 5'
+   end select
+ 
+  end subroutine fill_t1_from_t2
+
+diff -rupN darksusy-5.1.3/HiggsBounds-3.8.1/HiggsBounds/S95tables_type3.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type3.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type3.F90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/S95tables_type3.F90 2017-05-21 18:43:13.000000000 +0200
+@@ -249,7 +249,7 @@ module S95tables_type3
+ 
+   ! checks we've filled the whole array
+   if(x.ne.xend)then
+-   stop'error in initializetables3 (a)'
++   stop 'error in initializetables3 (a)'
+   endif
+  
+   do x=xbeg,xend
+@@ -261,12 +261,12 @@ module S95tables_type3
+    clsb_t3(x)%nx1     = nint((clsb_t3(x)%xmax1-clsb_t3(x)%xmin1)/clsb_t3(x)%sep1)+1
+    clsb_t3(x)%nz      = nint((clsb_t3(x)%zmax -clsb_t3(x)%zmin )/clsb_t3(x)%zsep)+1
+ 
+-   if(abs(clsb_t3(x)%sep1).lt.small)stop'problem in subroutine initializetables3 b1'
+-   if(abs(clsb_t3(x)%sep2).lt.small)stop'problem in subroutine initializetables3 b2'
+-   if(abs(clsb_t3(x)%zsep).lt.small)stop'problem in subroutine initializetables3 b3'
+-   if(clsb_t3(x)%xmax1.lt.clsb_t3(x)%xmin1)stop'problem in subroutine initializetables3 b4'
+-   if(clsb_t3(x)%xmax2.lt.clsb_t3(x)%xmin2)stop'problem in subroutine initializetables3 b5'
+-   if(clsb_t3(x)%zmax .lt.clsb_t3(x)%zmin )stop'problem in subroutine initializetables3 b6'
++   if(abs(clsb_t3(x)%sep1).lt.small)stop 'problem in subroutine initializetables3 b1'
++   if(abs(clsb_t3(x)%sep2).lt.small)stop 'problem in subroutine initializetables3 b2'
++   if(abs(clsb_t3(x)%zsep).lt.small)stop 'problem in subroutine initializetables3 b3'
++   if(clsb_t3(x)%xmax1.lt.clsb_t3(x)%xmin1)stop 'problem in subroutine initializetables3 b4'
++   if(clsb_t3(x)%xmax2.lt.clsb_t3(x)%xmin2)stop 'problem in subroutine initializetables3 b5'
++   if(clsb_t3(x)%zmax .lt.clsb_t3(x)%zmin )stop 'problem in subroutine initializetables3 b6'
+ 
+    !problem: can't set clsb_t3(x)%needs_M2_gt_2M1 here because it needs 
+    !S95_t2
+@@ -315,7 +315,7 @@ module S95tables_type3
+    endif
+   enddo
+ 
+-  if(n.ne.1)stop'problem in function t3elementnumberfromid 1'
++  if(n.ne.1)stop 'problem in function t3elementnumberfromid 1'
+ 
+  end function t3elementnumberfromid
+ 
+@@ -335,49 +335,49 @@ module S95tables_type3
+   !-------------------------------------------
+ 
+   if(    t1%sep.eq.0)then
+-    stop'problem in fill_t1dat_from_t3 (2a)'
++    stop 'problem in fill_t1dat_from_t3 (2a)'
+   elseif(t1%nx.eq.0)then
+-    stop'problem in fill_t1dat_from_t3 (2b)'
++    stop 'problem in fill_t1dat_from_t3 (2b)'
+   elseif(nint((t1%xmax-t1%xmin)/t1%sep)+1.ne.t1%nx)then
+-    stop'problem in fill_t1dat_from_t3 (2c)'
++    stop 'problem in fill_t1dat_from_t3 (2c)'
+   endif
+ 
+-  if(t1%sep.ne.t3%sep1)stop'problem in fill_t1dat_from_t3 (2d)'
++  if(t1%sep.ne.t3%sep1)stop 'problem in fill_t1dat_from_t3 (2d)'
+ 
+-  if(ftype.lt.lbound(t3%dat,dim=3))stop'problem in fill_t1dat_from_t3 (2a)'
+-  if(ftype.gt.ubound(t3%dat,dim=3))stop'problem in fill_t1dat_from_t3 (2b)'
++  if(ftype.lt.lbound(t3%dat,dim=3))stop 'problem in fill_t1dat_from_t3 (2a)'
++  if(ftype.gt.ubound(t3%dat,dim=3))stop 'problem in fill_t1dat_from_t3 (2b)'
+ 
+-  if(zi.lt.lbound(t3%dat,dim=2))stop'problem in fill_t1dat_from_t3 (3a)'
+-  if(zi.gt.ubound(t3%dat,dim=2))stop'problem in fill_t1dat_from_t3 (3b)'
++  if(zi.lt.lbound(t3%dat,dim=2))stop 'problem in fill_t1dat_from_t3 (3a)'
++  if(zi.gt.ubound(t3%dat,dim=2))stop 'problem in fill_t1dat_from_t3 (3b)'
+   
+-  if(ubound(t1%dat,dim=1).ne.t1%nx)stop'problem in fill_t1dat_from_t3 (5a)'
++  if(ubound(t1%dat,dim=1).ne.t1%nx)stop 'problem in fill_t1dat_from_t3 (5a)'
+ 
+   select case(t3%type_of_assoc_table)
+   case(1)
+-    if(t1%xmin.lt.t3%xmin1)stop'problem in fill_t1dat_from_t3 (4a)'
+-    if(t1%xmax.gt.t3%xmax1)stop'problem in fill_t1dat_from_t3 (4b)'
++    if(t1%xmin.lt.t3%xmin1)stop 'problem in fill_t1dat_from_t3 (4a)'
++    if(t1%xmax.gt.t3%xmax1)stop 'problem in fill_t1dat_from_t3 (4b)'
+ 
+ 
+     ! at the moment, want t1%xmin, t1%xmax to correspond to points in t3
+     ! can edit this later if needed
+     if(abs((t1%xmin-t3%xmin1)/t3%sep1-dble(nint((t1%xmin-t3%xmin1)/t3%sep1))).gt.1.0D-3)then
+-     stop'problem in fill_t1dat_from_t3 (6a)'
++     stop 'problem in fill_t1dat_from_t3 (6a)'
+     endif
+     if(abs((t1%xmax-t3%xmax1)/t3%sep1-dble(nint((t1%xmax-t3%xmax1)/t3%sep1))).gt.1.0D-3)then
+-     stop'problem in fill_t1dat_from_t3 (6b)'
++     stop 'problem in fill_t1dat_from_t3 (6b)'
+     endif
+   case(2)
+-    if(t1%xmin.lt.t3%xmin2)stop'problem in fill_t1dat_from_t3 (5a)'
+-    if(t1%xmax.gt.t3%xmax2)stop'problem in fill_t1dat_from_t3 (5b)'
++    if(t1%xmin.lt.t3%xmin2)stop 'problem in fill_t1dat_from_t3 (5a)'
++    if(t1%xmax.gt.t3%xmax2)stop 'problem in fill_t1dat_from_t3 (5b)'
+ 
+     if(abs((t1%xmin-t3%xmin2)/t3%sep2-dble(nint((t1%xmin-t3%xmin2)/t3%sep2))).gt.1.0D-3)then
+-     stop'problem in fill_t1dat_from_t3 (5c)'
++     stop 'problem in fill_t1dat_from_t3 (5c)'
+     endif
+     if(abs((t1%xmax-t3%xmax2)/t3%sep2-dble(nint((t1%xmax-t3%xmax2)/t3%sep2))).gt.1.0D-3)then
+-     stop'problem in fill_t1dat_from_t3 (5d)'
++     stop 'problem in fill_t1dat_from_t3 (5d)'
+     endif
+   case default
+-    stop'problem in fill_t1dat_from_t3 (1a)'
++    stop 'problem in fill_t1dat_from_t3 (1a)'
+   end select 
+ 
+ 
+@@ -397,14 +397,14 @@ module S95tables_type3
+     t1%dat(a,1)=t3%dat(ji,zi,ftype)
+    enddo
+ 
+-   if(a.ne.ubound(t1%dat,dim=1))stop'problem in fill_t1dat_from_t3 (10)'
++   if(a.ne.ubound(t1%dat,dim=1))stop 'problem in fill_t1dat_from_t3 (10)'
+ 
+   case(2)
+    !This would need extra arguments to the function, since one
+    !of the masses would need to be kept constant
+-   stop'problem in subroutine fill_t1dat_from_t3'
++   stop 'problem in subroutine fill_t1dat_from_t3'
+   case default
+-    stop'problem in fill_t1dat_from_t3 (1)'
++    stop 'problem in fill_t1dat_from_t3 (1)'
+   end select 
+ 
+  end subroutine fill_t1dat_from_t3
+@@ -425,21 +425,21 @@ module S95tables_type3
+   !-------------------------------------------
+ 
+   if(lbound(zi_selection,dim=1).ne.lbound(slices_t2,dim=1))then
+-    stop'problem in fill_slices_t2_from_slices_of_t3 1a'
++    stop 'problem in fill_slices_t2_from_slices_of_t3 1a'
+   endif
+   if(ubound(zi_selection,dim=1).ne.ubound(slices_t2,dim=1))then
+-    stop'problem in fill_slices_t2_from_slices_of_t3 1b'
++    stop 'problem in fill_slices_t2_from_slices_of_t3 1b'
+   endif
+ 
+   do x=lbound(ftype_selection,dim=1),ubound(ftype_selection,dim=1)
+-   if(ftype_selection(x).lt.lbound(t3%dat,dim=3))stop'problem in fill_slices_t2_from_slices_of_t3 3a'
+-   if(ftype_selection(x).gt.ubound(t3%dat,dim=3))stop'problem in fill_slices_t2_from_slices_of_t3 3b'
++   if(ftype_selection(x).lt.lbound(t3%dat,dim=3))stop 'problem in fill_slices_t2_from_slices_of_t3 3a'
++   if(ftype_selection(x).gt.ubound(t3%dat,dim=3))stop 'problem in fill_slices_t2_from_slices_of_t3 3b'
+   enddo
+ 
+   do x=lbound(slices_t2,dim=1),ubound(slices_t2,dim=1)
+ 
+-   if(zi_selection(x).lt.lbound(t3%dat,dim=2))stop'problem in fill_slices_t2_from_slices_of_t3 4a'
+-   if(zi_selection(x).gt.ubound(t3%dat,dim=2))stop'problem in fill_slices_t2_from_slices_of_t3 4b'
++   if(zi_selection(x).lt.lbound(t3%dat,dim=2))stop 'problem in fill_slices_t2_from_slices_of_t3 4a'
++   if(zi_selection(x).gt.ubound(t3%dat,dim=2))stop 'problem in fill_slices_t2_from_slices_of_t3 4b'
+ 
+ 
+    slices_t2(x)%id          =  t3%id    
+@@ -470,7 +470,7 @@ module S95tables_type3
+     case(0,1)
+      itot=t3%nx1
+     case default
+-     stop'problem in fill_slices_t2_from_slices_of_t3 5'
++     stop 'problem in fill_slices_t2_from_slices_of_t3 5'
+     end select
+ 
+     do i=1,itot
+@@ -481,7 +481,7 @@ module S95tables_type3
+     enddo
+    enddo 
+ 
+-   if(ji.ne.size(t3%dat,dim=1))stop'problem in fill_slices_t2_from_slices_of_t3 6'
++   if(ji.ne.size(t3%dat,dim=1))stop 'problem in fill_slices_t2_from_slices_of_t3 6'
+ 
+   enddo
+ 
+@@ -559,7 +559,7 @@ module S95tables_type3
+ 
+    if(n.ne.1)then
+     write(*,*)'n=',n
+-    stop'problem in readclsbfiles 1'
++    stop 'problem in readclsbfiles 1'
+    endif
+ 
+    a=0 !a labels the number of data points in entire table (spread over many files)
+@@ -579,7 +579,7 @@ module S95tables_type3
+    ! because of the file format: the first file is shorter than would be the case if the above expression 
+    ! was correct
+ 
+-   if(abs(deltaMhinfilename-nint(deltaMhinfilename)).gt.vsmall)stop'deltaMhinfilename must be approx an integer'
++   if(abs(deltaMhinfilename-nint(deltaMhinfilename)).gt.vsmall)stop 'deltaMhinfilename must be approx an integer'
+ 
+    select case(clsb_t3(z)%type_of_assoc_table)
+    case(1)
+@@ -591,7 +591,7 @@ module S95tables_type3
+     Mhinfilename_xmin=clsb_t3(z)%xmin2
+     jmax=nint(deltaMhinfilename/dble(deltaMhinfilenamebits)/clsb_t3(z)%sep2)
+    case default
+-    stop'error in subroutine readclsbfiles'
++    stop 'error in subroutine readclsbfiles'
+    end select
+ 
+    allocate(imax(jmax))
+@@ -609,7 +609,7 @@ module S95tables_type3
+        imax(j)=int((Mhinfilename_initial+clsb_t3(z)%sep2*(j-1))*(clsb_t3(z)%xmax1/clsb_t3(z)%xmax2)/clsb_t3(z)%sep2)
+       enddo
+      case default
+-      stop'error in subroutine readclsbfiles'
++      stop 'error in subroutine readclsbfiles'
+      end select
+   
+      Mhbeg=  ( int( (Mhinfilename_initial)/deltaMhinfilename ) )*nint(deltaMhinfilename) 
+@@ -637,7 +637,7 @@ module S95tables_type3
+      Mhstringpart1=Mhbegstring//'_'//Mhendstring
+      !write(*,*)'~'//Mhstringpart1//'~'
+ 
+-     if(x.gt.9)stop'have not done this case yet'
++     if(x.gt.9)stop 'have not done this case yet'
+      write(Mhdigit,'(I1)')x
+      Mhstringpart2='_'//Mhdigit
+ 
+@@ -677,17 +677,17 @@ module S95tables_type3
+         !check Mh1_in,Mh2_in are as expected
+         select case(clsb_t3(z)%type_of_assoc_table)
+         case(1)
+-          if(abs(Mh1_in-( Mhinfilename_initial + dble(i-1)*clsb_t3(z)%sep1)) .gt.0.0001D0 )stop'error: Mh1_in'
+-          if(abs(Mh2_in-(clsb_t3(z)%xmin2 + dble(j-1)*clsb_t3(z)%sep2)) .gt.0.0001D0 )     stop'error: Mh2_in'
++          if(abs(Mh1_in-( Mhinfilename_initial + dble(i-1)*clsb_t3(z)%sep1)) .gt.0.0001D0 )stop 'error: Mh1_in'
++          if(abs(Mh2_in-(clsb_t3(z)%xmin2 + dble(j-1)*clsb_t3(z)%sep2)) .gt.0.0001D0 )     stop 'error: Mh2_in'
+         case(2)
+-          if(abs(Mh1_in-(clsb_t3(z)%xmin1 + dble(i-1)*clsb_t3(z)%sep1)) .gt.vsmall   )     stop'error: Mh1_in'
+-          if(abs(Mh2_in-( Mhinfilename_initial + dble(j-1)*clsb_t3(z)%sep2)) .gt.0.0001D0 )stop'error: Mh2_in'
++          if(abs(Mh1_in-(clsb_t3(z)%xmin1 + dble(i-1)*clsb_t3(z)%sep1)) .gt.vsmall   )     stop 'error: Mh1_in'
++          if(abs(Mh2_in-( Mhinfilename_initial + dble(j-1)*clsb_t3(z)%sep2)) .gt.0.0001D0 )stop 'error: Mh2_in'
+         case default
+-          stop'error in subroutine readclsbfiles'
++          stop 'error in subroutine readclsbfiles'
+         end select
+ 
+         !check log10sf_in is as expected
+-        if(  abs(log10sf_in-(clsb_t3(z)%zmin+clsb_t3(z)%zsep*dble(n-1))) .gt.0.0001D0 )stop'error: log10sf_in'
++        if(  abs(log10sf_in-(clsb_t3(z)%zmin+clsb_t3(z)%zsep*dble(n-1))) .gt.0.0001D0 )stop 'error: log10sf_in'
+ #endif
+ 
+         clsb_t3(z)%dat(b,n,clsb_t3_dat_3rdcol_clsb    )=clsb_in
+@@ -709,7 +709,7 @@ module S95tables_type3
+      if((n_csbfile-skip).ne.c)then
+        write(*,*)'n_csbfile,skip=',n_csbfile,skip
+        write(*,*)'c=',c
+-       stop'error: n_csbfile,skip'
++       stop 'error: n_csbfile,skip'
+      endif 
+ #endif
+     enddo
+@@ -718,14 +718,14 @@ module S95tables_type3
+    deallocate(imax)
+ 
+ #ifdef checktables
+-   if(abs(clsb_t3(z)%xmax2-Mh2_in).gt.vsmall)stop'error in clsb_t3(z)%xmax2'
++   if(abs(clsb_t3(z)%xmax2-Mh2_in).gt.vsmall)stop 'error in clsb_t3(z)%xmax2'
+    if(abs(clsb_t3(z)%xmax1-Mh1_in).gt.vsmall)then
+     write(*,*)'hello clsb_t3(z)%xmax1,Mh1_in',clsb_t3(z)%xmax1,Mh1_in
+-    stop'error in clsb_t3(z)%xmax1'
++    stop 'error in clsb_t3(z)%xmax1'
+    endif
+-   if(abs(clsb_t3(z)%zmax-log10sf_in).gt.0.001)stop'error in clsb_t3(z)%zmax'
+-   if((n_xy_combinations).ne.b)stop'error in n_xy_combinations'
+-   if((n_xy_combinations*clsb_t3(z)%nz).ne.a)stop'error in n_xy_combinations*clsb_t3(z)%nz'
++   if(abs(clsb_t3(z)%zmax-log10sf_in).gt.0.001)stop 'error in clsb_t3(z)%zmax'
++   if((n_xy_combinations).ne.b)stop 'error in n_xy_combinations'
++   if((n_xy_combinations*clsb_t3(z)%nz).ne.a)stop 'error in n_xy_combinations*clsb_t3(z)%nz'
+ #endif
+ 
+    write(*,*)'finished reading in ',trim(filename(z))
+@@ -739,7 +739,7 @@ module S95tables_type3
+   integer :: z,n
+   integer :: clsb_t3elementnumber_from_S95table
+ 
+-  if(.not.(allocated(clsb_t3)))stop'error in function clsb_t3elementnumber_from_S95table'
++  if(.not.(allocated(clsb_t3)))stop 'error in function clsb_t3elementnumber_from_S95table'
+ 
+   clsb_t3elementnumber_from_S95table=-1
+ 
+@@ -752,7 +752,7 @@ module S95tables_type3
+    endif
+   enddo
+ 
+-  if(n.gt.1)stop'error in function clsb_t3elementnumber_from_S95table'
++  if(n.gt.1)stop 'error in function clsb_t3elementnumber_from_S95table'
+  
+  end function clsb_t3elementnumber_from_S95table
+  !*********************************************************** 
+@@ -786,7 +786,7 @@ module S95tables_type3
+   zbit=(log10sf-(dble(z-1)*t3%zsep+t3%zmin ))/t3%zsep
+ 
+   if(max(ibit,jbit,zbit).gt.0.01D0)then ! Mj,Mi,log10sf are not on a data point
+-    stop'bad input to function gett3dat'
++    stop 'bad input to function gett3dat'
+   endif
+ 
+   ji=0
+@@ -800,7 +800,7 @@ module S95tables_type3
+     case(0,1)
+      itot=t3%nx1
+     case default
+-     stop'problem in function gett3dat'
++     stop 'problem in function gett3dat'
+     end select
+    endif
+  
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/SLHA_manip.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/SLHA_manip.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/SLHA_manip.f90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/SLHA_manip.f90  2017-05-21 19:00:45.000000000 +0200
+@@ -81,7 +81,7 @@ module SLHA_manip
+   ! write(*,*)'hello block',names_of_blocks_and_decays(i)%id, &
+   !  & trim(adjustl(names_of_blocks_and_decays(i)%line))
+   !enddo
+-  !stop'here for now (subroutine readSLHAfile)'
++  !stop 'here for now (subroutine readSLHAfile)'
+ 
+  end subroutine readSLHAfile
+  !********************************************************
+@@ -227,7 +227,7 @@ module SLHA_manip
+ 
+        call saferead_int(col(2),particlePDGcode_fromblock)
+        if(particlePDGcode.ne.particlePDGcode_fromblock)then
+-         stop'problem in function get_particledecaywidth(2)'
++         stop 'problem in function get_particledecaywidth(2)'
+        endif
+   
+        call saferead_dble(col(3),get_totaldecaywidth)
+@@ -278,15 +278,15 @@ module SLHA_manip
+     call saferead_int(col(7),incISR_fromblock)
+ 
+     if(trim(col(1))           .ne. 'XS'                       )then
+-      stop'problem in function get_SPhenocrosssectionCMenergy(1)'
++      stop 'problem in function get_SPhenocrosssectionCMenergy(1)'
+     elseif( .not.same_particles(particlePDGcode_req,particlePDGcode_fromblock) )then
+-      stop'problem in function get_SPhenocrosssectionCMenergy(2)'
++      stop 'problem in function get_SPhenocrosssectionCMenergy(2)'
+     elseif( pol_1             .ne. pol_1_fromblock            )then
+-      stop'problem in function get_SPhenocrosssectionCMenergy(4)'
++      stop 'problem in function get_SPhenocrosssectionCMenergy(4)'
+     elseif( pol_2             .ne. pol_2_fromblock            )then
+-      stop'problem in function get_SPhenocrosssectionCMenergy(5)'
++      stop 'problem in function get_SPhenocrosssectionCMenergy(5)'
+     elseif( incISR_fromblock  .ne. incISR_fromblock           )then
+-      stop'problem in function get_SPhenocrosssectionCMenergy(6)'
++      stop 'problem in function get_SPhenocrosssectionCMenergy(6)'
+     endif
+ 
+     call saferead_dble(col(4),get_SPhenocrosssectionCMenergy)
+@@ -872,7 +872,7 @@ module SLHA_manip
+    case(2)
+     blockname='dcinfo'
+    case default
+-    stop'error in function is_valid_point'
++    stop 'error in function is_valid_point'
+    end select
+    blocklines=line_numbers_of_block(blockname)
+    if(minval(blocklines).le.0)then
+@@ -918,7 +918,7 @@ module SLHA_manip
+   ub=ubound(array1,dim=1)
+ 
+   if(ub.ne.ubound(array2,dim=1))then
+-   stop'problem in function same_particles'
++   stop 'problem in function same_particles'
+   endif
+ 
+   same_particles=.True.
+@@ -1005,10 +1005,10 @@ module SLHA_manip
+   case('block')
+   case('decay')
+   case default
+-   stop'wrong input to function line_numbers_of_block_or_decay'
++   stop 'wrong input to function line_numbers_of_block_or_decay'
+   end select
+ 
+-  if(len(name_of_block).gt.len(name_of_block_lowercase))stop'error in function line_numbers_of_block_or_decay (a)'
++  if(len(name_of_block).gt.len(name_of_block_lowercase))stop 'error in function line_numbers_of_block_or_decay (a)'
+ 
+   line_numbers_of_block_or_decay=0
+ 
+@@ -1061,12 +1061,12 @@ module SLHA_manip
+    if(ios.lt.0)then
+     exit
+    elseif(ios.gt.0) then
+-    stop 'error in SLHA input file'
++    stop  'error in SLHA input file'
+    endif
+    n = n + 1               
+   enddo            
+ 
+-  if(n.eq.0)stop'File is empty'
++  if(n.eq.0)stop 'File is empty'
+       
+   getSLHAfilelength=n
+   rewind(fileid)
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/access_SM.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/access_SM.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/access_SM.f90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/access_SM.f90 2017-05-21 18:50:37.000000000 +0200
+@@ -321,13 +321,13 @@ subroutine testBRSM(M)
+    write(*,*)'calling the subroutines'
+    write(*,*)'initialize_HiggsBounds and'
+    write(*,*)'finish_HiggsBounds'
+-   stop'error (see standard output for more info)'
++   stop 'error (see standard output for more info)'
+   endif
+ 
+   !if(M.gt.0.0D0)then
+    !ok
+   !else !M is negative or NaN
+-  ! stop'wrong mass given to function'
++  ! stop 'wrong mass given to function'
+   !endif
+ end subroutine testBRSM
+ !*********************************
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/channels.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/channels.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/channels.F90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/channels.F90  2017-05-21 18:50:37.000000000 +0200
+@@ -67,7 +67,7 @@ module channels      
+      case('TEV','LHC7')
+       req= 0 * req
+      case default
+-      stop'error in error in setup_channels (1)'
++      stop 'error in error in setup_channels (1)'
+      end select
+    case('onlyH')
+      select case(WhichColliderString(expt))
+@@ -76,14 +76,14 @@ module channels      
+      case('LEP')
+       req= 0 * req
+      case default
+-      stop'error in error in setup_channels (2)'
++      stop 'error in error in setup_channels (2)'
+      end select
+    case('LandH')
+      select case(WhichColliderString(expt))
+      case('LEP','TEV','LHC7')
+       req= 1 * req
+      case default
+-      stop'error in error in setup_channels (3)'
++      stop 'error in error in setup_channels (3)'
+      end select
+    case('onlyP')
+      if(pub)then
+@@ -103,7 +103,7 @@ module channels      
+       endif
+      enddo
+    case default 
+-    stop'error in setup_channels (A)'
++    stop 'error in setup_channels (A)'
+    end select            
+ 
+    l_analyses(i)%req=req
+@@ -117,7 +117,7 @@ module channels      
+    case('TEV','LHC7')
+      l_analyses(i)%in_first_set=.False.
+    case default
+-      stop'error in error in setup_channels (a)'
++      stop 'error in error in setup_channels (a)'
+    end select
+  
+   enddo
+@@ -196,7 +196,7 @@ module channels      
+   rep=size(r%obsratio)
+   !if((size(r%chan).ne.rep).or.(size(r%allowed95).ne.rep))then
+   ! write(*,*)'wrong input to subroutine check_channels in module channels'
+-  ! stop
++  ! stop 
+   !endif                  
+   
+   if( t%gooddataset )then ! labels a physical parameter point               
+@@ -217,7 +217,7 @@ module channels      
+    ! compare with fact(mlratio) with experimental S95 value
+    count_clsb=0        
+    do ii=1,rep       
+-    if(count_clsb.gt.0)stop'should not occur. To generalise, use a pointer.' ! should also not use 'full' after a 'clsb'
++    if(count_clsb.gt.0)stop 'should not occur. To generalise, use a pointer.' ! should also not use 'full' after a 'clsb'
+     select case(r%channelselection(ii))
+     case('full')
+        ! do nothing        
+@@ -231,7 +231,7 @@ module channels      
+       enddo 
+       count_clsb=count_clsb+1
+     case default
+-       stop'problem in subroutine check_channels'
++       stop 'problem in subroutine check_channels'
+     end select
+ 
+     mlratio=maxloc(predratio,dim=1)
+@@ -306,8 +306,8 @@ module channels      
+   ! This section is just to assist with debugging
+ 
+      ! x=3
+-     ! if(x.gt.ubound(t%particle(Hneut)%M,dim=1))stop 'error in subroutine print_stuff_for_debugging a' 
+-     ! if(x.gt.ubound(t%particle(Hplus)%M,dim=1))stop 'error in subroutine print_stuff_for_debugging b' 
++     ! if(x.gt.ubound(t%particle(Hneut)%M,dim=1))stop  'error in subroutine print_stuff_for_debugging a' 
++     ! if(x.gt.ubound(t%particle(Hplus)%M,dim=1))stop  'error in subroutine print_stuff_for_debugging b' 
+      ! write(*,*)'hello subroutine print_stuff_for_debugging'
+ 
+      fileid=file_id_debug2
+@@ -317,7 +317,7 @@ module channels      
+      !elseif(np(Hneut).ge.1)then
+      !  write(n,'(" * Mhplus:",1E16.7)')t%particle(Hplus)%M(1)
+      else
+-       !stop'error in subroutine print_stuff_for_debugging B'
++       !stop 'error in subroutine print_stuff_for_debugging B'
+      endif
+ 
+      ! write(n,*)'********************' 
+@@ -376,7 +376,7 @@ module channels      
+     !write(*,'(1I6,2E12.3)')maxloc(predratio,dim=1),maxval(predratio,dim=1),r%obsratio(1)
+     !write(*,*)'********************'
+     
+-    !stop'just debugging at the moment'
++    !stop 'just debugging at the moment'
+ 
+   end subroutine print_stuff_for_debugging
+   !******************************************
+@@ -419,7 +419,7 @@ module channels      
+     case(2)
+      add_this_analysis_now =.not.l_analyses(x)%in_first_set
+     case default
+-     stop'error in subroutine fill_pr (a)'
++     stop 'error in subroutine fill_pr (a)'
+     end select
+  
+     if(add_this_analysis_now)then
+@@ -452,19 +452,19 @@ module channels      
+          enddo 
+         enddo 
+        case default
+-        stop'error in subroutine fill_pr (3)'
++        stop 'error in subroutine fill_pr (3)'
+        end select
+          
+       case(0)
+        !leave analyses out
+       case default
+-       stop'error in subroutine fill_pr (1)'
++       stop 'error in subroutine fill_pr (1)'
+       end select
+     endif
+    enddo
+   enddo  
+ 
+-  if(n.ne.ntot)stop'error in subroutine fill_pr (2)'
++  if(n.ne.ntot)stop 'error in subroutine fill_pr (2)'
+ 
+   if(allocated(allocate_if_stats_required))then
+    do n=1,ntot
+@@ -551,7 +551,7 @@ module channels      
+   enddo
+   close(n)
+   
+-  stop'subroutine check_tables should only be used when debugging'
++  stop 'subroutine check_tables should only be used when debugging'
+ 
+  end subroutine check_tables
+  !************************************************************
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/extra_bits_for_SLHA.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/extra_bits_for_SLHA.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/extra_bits_for_SLHA.f90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/extra_bits_for_SLHA.f90 2017-05-21 19:01:24.000000000 +0200
+@@ -52,22 +52,22 @@ module extra_bits_for_SLHA
+   !-------------------------------------------              
+  
+   if((np(Hneut).lt.0).or.(np(Hneut).gt.5))then
+-    stop'can not use subroutine getSLHAdata if number of neutral Higgs is not in range 0:5'
++    stop 'can not use subroutine getSLHAdata if number of neutral Higgs is not in range 0:5'
+   endif
+   if((np(Hplus).lt.0).or.(np(Hplus).gt.1))then
+-    stop'can not use subroutine getSLHAdata if number of charged Higgs is not in range 0:1'
++    stop 'can not use subroutine getSLHAdata if number of charged Higgs is not in range 0:1'
+   endif
+   if((np(Chineut).lt.0).or.(np(Chineut).gt.5))then
+-    stop'can not use subroutine getSLHAdata if number of neutralinos is not in range 0:5'
++    stop 'can not use subroutine getSLHAdata if number of neutralinos is not in range 0:5'
+   endif
+   if((np(Chiplus).lt.0).or.(np(Chiplus).gt.2))then
+-    stop'can not use subroutine getSLHAdata if number of charginos is not in range 0:2'
++    stop 'can not use subroutine getSLHAdata if number of charginos is not in range 0:2'
+   endif
+ 
+   open(file_id_common,file=trim(infile),status='old',action='read',iostat=ios) 
+   if(ios.ne.0)then 
+    write(*,*)'problem opening the SLHA file: $'//trim(adjustl(infile))//'$'
+-   !stop'problem opening SLHA input file'
++   !stop 'problem opening SLHA input file'
+   else
+ 
+    call readSLHAfile(file_id_common)
+@@ -79,7 +79,7 @@ module extra_bits_for_SLHA
+     Rparityviolation =get_modsel(4)
+     CPviolation      =get_modsel(5)
+ 
+-    if(Rparityviolation.ne.0)stop'HB can not yet use SLHA files with R parity violation'
++    if(Rparityviolation.ne.0)stop 'HB can not yet use SLHA files with R parity violation'
+ 
+     select case(particlecontent)
+     case(0)
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/input.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/input.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/input.F90  2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/input.F90 2017-05-21 19:01:53.000000000 +0200
+@@ -69,7 +69,7 @@ module input
+    !haven't yet set whichanalyses,whichinput
+    infile1=''
+   case default
+-   stop'incorrect value for inputmethod'
++   stop 'incorrect value for inputmethod'
+   end select
+ 
+   !getting ndat and n_additional...
+@@ -92,19 +92,19 @@ module input
+      write(*,*)'Check that <prefix> was specified correctly'
+      write(*,*)'and that file exists.'
+      call flush(6)
+-     stop'Problem opening file: see standard output for more info'
++     stop 'Problem opening file: see standard output for more info'
+     endif
+ 
+     ndat=getfilelength(f) ! number of data sets (i.e. lines) in input 
+  
+-    if((ndat.le.0))stop 'error getting ndat'         
++    if((ndat.le.0))stop  'error getting ndat'         
+     close(f)
+ 
+     g=ubound(stem_array,dim=1)
+     stem=stem_array(g)
+     f=f_orig+g
+     !the last element in stem_array should be 'additional'
+-    if(trim(stem_array(g)).ne.'additional')stop'Error in subroutine setup_input (a)'
++    if(trim(stem_array(g)).ne.'additional')stop 'Error in subroutine setup_input (a)'
+ 
+     required(g)=.False.
+     open(f,file=trim(infile1)//trim(stem)//'.dat',status='old',action='read',iostat=ios)  
+@@ -125,12 +125,12 @@ module input
+    case('SLHA')
+     ndat=1  ;  n_additional=0 
+    case default
+-    stop'error in subroutine do_input (1a)'
++    stop 'error in subroutine do_input (1a)'
+    end select
+   case('website','subrout')
+    ndat=1   ;  n_additional=0
+   case default
+-   stop'error in subroutine do_input (1b)'
++   stop 'error in subroutine do_input (1b)'
+   end select
+   !...finished getting ndat and n_additional
+ 
+@@ -183,12 +183,12 @@ module input
+    case('SLHA') 
+      n=1      
+      if(ndat.ne.1)then
+-       stop'error in subroutine do_input (4): need to specify infile1 for each SLHA file somehow'
++       stop 'error in subroutine do_input (4): need to specify infile1 for each SLHA file somehow'
+      endif          
+      call getSLHAdata(theo(n),g2(n),infile1)
+      !call test_input(n)
+    case default
+-    stop'error in subroutine do_input (1)'
++    stop 'error in subroutine do_input (1)'
+    end select
+ 
+   case('website')   
+@@ -198,7 +198,7 @@ module input
+    if(webdebugmode) call test_input(n)
+ 
+   case default
+-   stop'error in subroutine do_input (3)'
++   stop 'error in subroutine do_input (3)'
+   end select    
+ 
+  end subroutine do_input
+@@ -257,7 +257,7 @@ module input
+    call fill('CP_values'                  ,   1,   1,   0,     1,    1,    1,    1,    0, 1,     1,    1) 
+    call fill('additional'                 ,   1,   1,   1,     1,    1,    1,    1,    1, 1,     1,    1) 
+ 
+-   if(n.ne.nt+1)stop'Error in subroutine fill_stem_array A'
++   if(n.ne.nt+1)stop 'Error in subroutine fill_stem_array A'
+  
+    !write(*,*)'hello whichinput',whichinput
+    !write(*,*)'hello whichanalyses',whichanalyses
+@@ -266,7 +266,7 @@ module input
+    !do n=1,nt
+    ! write(*,*)'hello ',stem_array(n),required(n)
+    !enddo 
+-   !stop'hello ending here for now'
++   !stop 'hello ending here for now'
+ 
+ 
+    contains
+@@ -293,7 +293,7 @@ module input
+     case('effC')
+      req= effC * req
+     case default
+-     stop'error in subroutine fill(whichinput)'
++     stop 'error in subroutine fill(whichinput)'
+     end select
+ 
+     select case(whichanalyses)
+@@ -306,7 +306,7 @@ module input
+     case('onlyP')
+      req= onlyP * req
+     case default
+-     stop'error in subroutine fill(whichanalyses)'
++     stop 'error in subroutine fill(whichanalyses)'
+     end select
+ 
+     if(np(Hneut)==0)  req= Hneu  * req
+@@ -320,7 +320,7 @@ module input
+     case(1)
+      required(n)=.True.
+     case default
+-     stop'error in subroutine fill(req)' 
++     stop 'error in subroutine fill(req)' 
+     end select
+    
+     n=n+1
+@@ -358,7 +358,7 @@ module input
+ 
+     if(ios.ne.0)then
+      call file_name_msg(f)
+-     stop'problem opening file: see standard output for more info'
++     stop 'problem opening file: see standard output for more info'
+     endif
+ 
+    if((ndat.ne.getfilelength(f)))then
+@@ -366,7 +366,7 @@ module input
+      write(*,*)'It had',getfilelength(f),'lines'
+      write(*,*)'but should have been',ndat
+      call file_name_msg(f)
+-     stop 'error in input file length (see standard output for filename).'
++     stop  'error in input file length (see standard output for filename).'
+    endif
+ 
+    if(get_ncol(stem).ne.count_columns(f))then
+@@ -375,7 +375,7 @@ module input
+      write(*,*)'but should have been',get_ncol(stem)
+      write(*,*)'including line ID number'
+      call file_name_msg(f)
+-     stop 'error in input file format (see standard output for filename).'
++     stop  'error in input file format (see standard output for filename).'
+    endif
+ 
+    select case(trim(stem))
+@@ -598,7 +598,7 @@ module input
+      read(f,*)  nc, (theo(jj)%additional(i),i=1,n_additional)                 
+     enddo 
+   case default
+-    stop'problem in subroutine readthefile (2)'
++    stop 'problem in subroutine readthefile (2)'
+   end select 
+   
+   close(f)
+@@ -606,7 +606,7 @@ module input
+   if(ndat.ne.nint(nc))then 
+      write(*,*)'last line read in was not labled ndat'
+      call file_name_msg(f)
+-     stop 'error in input file (see standard output for filename and more details).'    
++     stop  'error in input file (see standard output for filename and more details).'    
+   endif 
+   
+   endif
+@@ -646,13 +646,13 @@ module input
+    wrong_args= (number_args .lt. (2+ ubound(np,dim=1)))
+   else
+    write(*,*)'inputmethod=',inputmethod
+-   stop 'error in getbasiccommandline'
++   stop  'error in getbasiccommandline'
+   endif
+ 
+   if( wrong_args )then
+    write(*,*) "Incorrect number of parameters given on command line"
+    call command_line_how2
+-   stop "Error: command line entered incorrectly (see standard output for more info)"
++   stop  "Error: command line entered incorrectly (see standard output for more info)"
+   endif
+       
+   ! Read arguments into text strings.
+@@ -689,7 +689,7 @@ module input
+     write(*,*)'(you entered n'//trim(adjustl(pdesc(x)%short))//'="'//trim(adjustl(nHtemp))//'")'
+     write(*,*)'n'//trim(adjustl(pdesc(x)%short))//' is the number of '//trim(adjustl(pdesc(x)%long))//'s'
+     call command_line_how2
+-    stop "Error: command line entered incorrectly (see standard output for more info)"
++    stop  "Error: command line entered incorrectly (see standard output for more info)"
+    endif
+ 
+    read(nHtemp,*) np(x)
+@@ -713,7 +713,7 @@ module input
+      write(*,*)'e.g.'
+      write(*,*)' ./HiggsBounds LandH part 3 1 4 2 T ...'
+     else
+-     stop'error in subroutine command_line_how2'
++     stop 'error in subroutine command_line_how2'
+     endif
+    elseif(.not.official)then
+     if(ubound(np,dim=1).eq.4)then
+@@ -721,7 +721,7 @@ module input
+      write(*,*)'e.g.'
+      write(*,*)' ./HiggsBounds LandH part 3 1 4 2 mhmax'
+     else
+-     stop'error in subroutine command_line_how2'
++     stop 'error in subroutine command_line_how2'
+     endif
+    else !official, datfile
+     write(*,*)' ./HiggsBounds whichanalyses whichinput nHneut nHplus prefix'
+@@ -751,7 +751,7 @@ module input
+    write(*,*)'            Tevatron and LHC hadronic cross sections'
+    write(*,*)'SLHA        SUSY Les Houches Accord files'     
+    call flush(6)                  
+-   stop 'error: input type selected incorrectly (see standard output for more info)'   
++   stop  'error: input type selected incorrectly (see standard output for more info)'   
+   end select 
+ 
+  end subroutine check_whichinput 
+@@ -766,17 +766,17 @@ module input
+    if(np(x).lt.0)then     
+     write(*,*) 'number of '//trim(adjustl(pdesc(x)%long))//'s must be greater than zero'         
+     if(inputmethod.eq.'datfile')call command_line_how2        
+-    stop 'error in subroutine check_number_of_particles (a) (see standard output for more info)'
++    stop  'error in subroutine check_number_of_particles (a) (see standard output for more info)'
+    elseif(np(x)>nHmax)then
+     write(*,*) 'number of '//trim(adjustl(pdesc(x)%long))//'s must be less than',nHmax
+     write(*,*) ' (if you need more than this, please contact us)'         
+     if(inputmethod.eq.'datfile')call command_line_how2        
+-    stop 'error in subroutine check_number_of_particles (b) (see standard output for more info)'
++    stop  'error in subroutine check_number_of_particles (b) (see standard output for more info)'
+    endif
+   enddo
+ 
+   if(sum(np).eq.0)then
+-    stop'There should be a non-zero number of particles'
++    stop 'There should be a non-zero number of particles'
+   endif
+ 
+   if((inputmethod.eq.'datfile').and.(official))then
+@@ -786,7 +786,7 @@ module input
+          &//trim(adjustl(pdesc(x)%long))//'s must be zero'   
+       write(*,*)'and you have entered the number',np(x)  
+       write(*,*)'Please contact us if you would like more information.'
+-      stop'error in subroutine check_number_of_particles (c) (see standard output for more info)'
++      stop 'error in subroutine check_number_of_particles (c) (see standard output for more info)'
+      endif
+     enddo
+   endif
+@@ -795,12 +795,12 @@ module input
+     if((np(Hneut).lt.0).or.(np(Hneut).gt.5))then
+       write(*,*)'If a SLHA file is used as input,'
+       write(*,*)'number of neutral Higgs must be in the range 0:5'
+-      stop'error in subroutine check_number_of_particles (d) (see standard output for more info)'
++      stop 'error in subroutine check_number_of_particles (d) (see standard output for more info)'
+     endif
+     if((np(Hplus).lt.0).or.(np(Hplus).gt.1))then
+       write(*,*)'If a SLHA file is used as input,'
+       write(*,*)'number of charged Higgs must be in the range 0:1'
+-      stop'error in subroutine check_number_of_particles (e) (see standard output for more info)'
++      stop 'error in subroutine check_number_of_particles (e) (see standard output for more info)'
+     endif
+   endif
+ 
+@@ -822,7 +822,7 @@ module input
+    write(*,*)'LandH         LEP, Tevatron and LHC results used'
+    write(*,*)'onlyP         use all analyses with an arXiv number'    
+    call flush(6)                  
+-   stop 'error: experiment selected incorrectly (see standard output for more info)'  
++   stop  'error: experiment selected incorrectly (see standard output for more info)'  
+   end select
+ 
+  end subroutine check_whichanalyses 
+@@ -849,7 +849,7 @@ module input
+   number_args = IARGC() 
+   
+   if( number_args .ne. nargs_datfile)then
+-   stop "Incorrect number of parameters given (getshortcommandline)"
++   stop  "Incorrect number of parameters given (getshortcommandline)"
+   endif
+ 
+   ! Read last argument into text string.
+@@ -898,16 +898,16 @@ module input
+     exit
+    elseif(ios.gt.0) then
+     call file_name_msg(fileid)
+-    stop 'error in input file: see standard output'
++    stop  'error in input file: see standard output'
+    elseif(trim(adjustl(sample)).eq.'')then
+     write(*,*)'No blank lines allowed in input file.' 
+     call file_name_msg(fileid)
+-    stop 'no blank lines allowed in input file: see standard output'
++    stop  'no blank lines allowed in input file: see standard output'
+    endif
+    n = n + 1               
+   enddo            
+ 
+-  if(n.eq.0)stop'File is empty'
++  if(n.eq.0)stop 'File is empty'
+       
+   getfilelength=n
+   rewind(fileid)
+@@ -922,7 +922,7 @@ module input
+ 
+   if(m.ne.n)then !checking that every line end in a newline character
+     call file_name_msg(fileid)
+-    stop'Error: file needs to end with a newline character (see standard output for filename)'
++    stop 'Error: file needs to end with a newline character (see standard output for filename)'
+   endif
+ 
+  end function getfilelength
+@@ -1079,7 +1079,7 @@ module input
+    case default 
+     write(*,*)'stem=',stem
+     call flush(6)
+-    stop 'error in function get_ncol'
++    stop  'error in function get_ncol'
+    end select
+ 
+    ! each file has the line number as the first column
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/interpolate.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/interpolate.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/interpolate.f90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/interpolate.f90 2017-05-21 18:46:34.000000000 +0200
+@@ -414,9 +414,9 @@ module interpolate
+   !-------------------------------------------
+ 
+   if(lbound(interpol_array, dim=1).ne.lbound(ftype_selection, dim=1))then
+-    stop'problem in interpolate_tabletype3_longer (a)'
++    stop 'problem in interpolate_tabletype3_longer (a)'
+   elseif(ubound(interpol_array, dim=1).ne.lbound(ftype_selection, dim=1))then
+-    stop'problem in interpolate_tabletype3_longer (b)'  
++    stop 'problem in interpolate_tabletype3_longer (b)'  
+   endif
+ 
+   ! check if mass is within z range of table:
+@@ -516,7 +516,7 @@ module interpolate
+   c_y   =  -1.0D6
+   c_f   =  -1.0D6
+ 
+-  if(size(slices_t2,dim=1).ne.2)stop'wrong input to slices_t2 (1)'
++  if(size(slices_t2,dim=1).ne.2)stop 'wrong input to slices_t2 (1)'
+ 
+   ! check if mass is within z range of table:
+ 
+@@ -643,7 +643,7 @@ module interpolate
+     endif
+    else ! x1 and x2 are the same point, but x is somewhere else
+      write(*,*)'x,x1,x2',x,x1,x2
+-     stop'error in function interpol1D' 
++     stop 'error in function interpol1D' 
+    endif
+ 
+  end function interpol1D
+@@ -688,7 +688,7 @@ module interpolate
+    elseif(abs(denom).lt.small)then  
+      if(  ((x1-x2)**2.0D0 + (y1-y2)**2.0D0 &
+        & + (x1-x3)**2.0D0 + (y1-y3)**2.0D0).lt. small )then ! (x1,y1),(x2,y2),(x3,y3) are in the same place but (x,y) is at a different place
+-       stop'error in function interpol2D (case 1d)' 
++       stop 'error in function interpol2D (case 1d)' 
+ 
+      elseif( ((x1-x2)**2.0D0 + (y1-y2)**2.0D0) .lt. small )then ! (x1,y1) and (x2,y2) are the same points
+        if( abs((x2-x3)*(y-y3)-(y2-y3)*(x-x3)) .lt.sqrt(small) .or. &
+@@ -704,7 +704,7 @@ module interpolate
+ 
+          interpol2D= interpol1D(r,r2,f2,r3,f3)
+        else
+-         stop'error in function interpol2D (case 2aii)' 
++         stop 'error in function interpol2D (case 2aii)' 
+        endif
+      elseif( ((x1-x3)**2.0D0 + (y1-y3)**2.0D0) .lt. small )then ! (x1,y1) and (x3,y3) are the same points
+        if( abs((x2-x1)*(y-y1)-(y2-y1)*(x-x1)) .lt.sqrt(small) .or. &
+@@ -719,7 +719,7 @@ module interpolate
+ 
+          interpol2D= interpol1D(r,r1,f1,r2,f2)
+        else
+-         stop'error in function interpol2D (case 2bii)' 
++         stop 'error in function interpol2D (case 2bii)' 
+        endif
+ 
+      elseif( ((x2-x3)**2.0D0 + (y2-y3)**2.0D0) .lt. small )then ! (x2,y2) and (x3,y3) are the same points
+@@ -736,15 +736,15 @@ module interpolate
+ 
+          interpol2D= interpol1D(r,r1,f1,r3,f3)
+        else
+-         stop'error in function interpol2D (case 2cii)'
++         stop 'error in function interpol2D (case 2cii)'
+        endif
+ 
+      elseif( abs((x2-x1)*(y-y1)-(y2-y1)*(x-x1)) .lt.small )then !the points are all in a line, but none are in exactly the same place
+          !first, need to work out which 2 points to use
+          !then, use interpol1D
+-         stop'error: have not implemented this bit yet (case 2d)'
++         stop 'error: have not implemented this bit yet (case 2d)'
+      else !(x1,y1),(x2,y2),(x3,y3) are in a line but (x,y) is not in that line
+-         stop'error in function interpol2D (case 2e)'
++         stop 'error in function interpol2D (case 2e)'
+      endif
+    else !case 3
+    ! write(*,*)'hello: case 3'
+@@ -851,9 +851,9 @@ module interpolate
+    !------------------------------------------- 
+ 
+    if(    (lbound(f1,dim=1).ne.1) .or. (lbound(f2,dim=1).ne.1) .or. (lbound(f3,dim=1).ne.1) )then
+-     stop'problem in function interpol3D (1)'
++     stop 'problem in function interpol3D (1)'
+    elseif((ubound(f1,dim=1).ne.2) .or. (ubound(f2,dim=1).ne.2) .or. (ubound(f3,dim=1).ne.2) )then  
+-     stop'problem in function interpol3D (2)'      
++     stop 'problem in function interpol3D (2)'      
+    endif
+ 
+    f1mid = interpol1D(z,z1(1),f1(1),z1(2),f1(2))
+@@ -893,7 +893,7 @@ module interpolate
+   double precision,allocatable :: dat(:)
+   !-------------------------------------------        
+ 
+-  if(size(m_interpol,dim=1).ne.n_points_max)stop'wrong input to interpolate_1D_inv 1'
++  if(size(m_interpol,dim=1).ne.n_points_max)stop 'wrong input to interpolate_1D_inv 1'
+ 
+  !table 1
+  !fact=   1.2001890350471742     
+@@ -912,10 +912,10 @@ module interpolate
+    m_interpol= - 4.0D0
+   elseif(m_in.gt.t1%xmax)then !m_in should also be in table
+    m_interpol= - 4.0D0
+-   stop'wrong input to interpolate_1D_inv a' 
++   stop 'wrong input to interpolate_1D_inv a' 
+   elseif(m_in.lt.t1%xmin)then
+    m_interpol= - 4.0D0
+-   stop'wrong input to interpolate_1D_inv b'
++   stop 'wrong input to interpolate_1D_inv b'
+ 
+   else
+    do i=1,t1%nx-1 ! the case where targt is exactly on last data point is dealt with separately below
+@@ -993,11 +993,11 @@ module interpolate
+   integer :: c_xint(3),c_yint(3)
+   !-------------------------------------------        
+ 
+-  if(ubound(t2%dat,dim=1).ne.ubound(relevent_points,dim=1))stop'wrong input to mask_for_2D_inv 1'
+-  if(ubound(t2%dat,dim=2).ne.ubound(relevent_points,dim=2))stop'wrong input to mask_for_2D_inv 2'
++  if(ubound(t2%dat,dim=1).ne.ubound(relevent_points,dim=1))stop 'wrong input to mask_for_2D_inv 1'
++  if(ubound(t2%dat,dim=2).ne.ubound(relevent_points,dim=2))stop 'wrong input to mask_for_2D_inv 2'
+ 
+-  if(lbound(relevent_points,dim=1).ne.1)stop'wrong input to mask_for_2D_inv 3'
+-  if(lbound(relevent_points,dim=2).ne.1)stop'wrong input to mask_for_2D_inv 4'
++  if(lbound(relevent_points,dim=1).ne.1)stop 'wrong input to mask_for_2D_inv 3'
++  if(lbound(relevent_points,dim=2).ne.1)stop 'wrong input to mask_for_2D_inv 4'
+ 
+   relevent_points = 0
+ 
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/output.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/output.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/output.F90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/output.F90  2017-05-21 19:02:14.000000000 +0200
+@@ -30,7 +30,7 @@ module output
+   !-------------------------------------------
+ 
+   if(len(start_of_filename).lt.len(infile1))then
+-     stop'problem in subroutine setup_output 2'
++     stop 'problem in subroutine setup_output 2'
+   endif
+ 
+   select case(inputmethod)
+@@ -43,7 +43,7 @@ module output
+    case('SLHA')
+     start_of_filename=''
+    case default 
+-     stop'problem in subroutine setup_output 1'
++     stop 'problem in subroutine setup_output 1'
+    end select
+    call createKey(start_of_filename)
+ 
+@@ -151,7 +151,7 @@ module output
+       endif
+      enddo
+    else
+-    stop'error in subroutine do_output(1)'
++    stop 'error in subroutine do_output(1)'
+    endif
+  
+    format43='(1I14,'
+@@ -256,7 +256,7 @@ module output
+    close(file_id_common)
+    deallocate(Mhall) 
+   case default
+-   stop'error in subroutine do_output (*2)'    
++   stop 'error in subroutine do_output (*2)'    
+   end select
+  case('website')               
+     do jj=1,ndat 
+@@ -267,10 +267,10 @@ module output
+     case('SLHA')
+        call outputSLHAdata(infile1)
+     case default
+-       stop'error in subroutine do_output(c)'
++       stop 'error in subroutine do_output(c)'
+     end select
+  case default
+-    stop'error in subroutine do_output (*1)'                                              
++    stop 'error in subroutine do_output (*1)'                                              
+  end select  
+                                                
+  end subroutine do_output
+@@ -338,7 +338,7 @@ module output
+       write(file_id_common,*)trim(descrip)
+     endif 
+    else 
+-    stop 'error in subroutine createKey'
++    stop  'error in subroutine createKey'
+    endif
+         
+    select case(pr(n)%ttype)
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/string_manip.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/string_manip.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/string_manip.f90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/string_manip.f902017-05-21 18:59:47.000000000 +0200
+@@ -12,9 +12,9 @@ contains
+     !integer :: strlowa = 97
+     !integer :: strlowz = 122
+     integer :: casediff = 32   ! = 97-65  = 122-90
++    integer :: i,n,ich
+     character(len=n) :: strtolcase
+     character(len=n) :: str
+-    integer :: i,n,ich
+     !-----------------------
+ 
+     strtolcase = str
+@@ -30,9 +30,9 @@ contains
+  function remove_from_character_onwards(string_in,n,charact)
+  !********************************************************
+   implicit none
++  integer,intent(in) :: n
+   character(len=n),intent(in)::string_in
+   character(len=n) ::remove_from_character_onwards
+-  integer,intent(in) :: n
+   integer :: position_of_charact
+   character(len=1) :: charact
+ 
+@@ -50,9 +50,9 @@ contains
+  function remove_from_character_backwards(string_in,n,charact)
+  !********************************************************
+   implicit none
++  integer,intent(in) :: n
+   character(len=n),intent(in)::string_in
+   character(len=n) ::remove_from_character_backwards
+-  integer,intent(in) :: n
+   integer :: position_of_charact
+   character(len=1) :: charact
+ 
+@@ -71,9 +71,9 @@ contains
+  function strip_off_comment(string_in,n)
+  !********************************************************
+   implicit none
++  integer,intent(in) :: n
+   character(len=n),intent(in)::string_in
+   character(len=n) ::strip_off_comment
+-  integer,intent(in) :: n
+ 
+   strip_off_comment=remove_from_character_onwards(string_in,n,'#')
+ 
+@@ -86,10 +86,10 @@ contains
+  !if there are m columns and m<n, columns(m+1)...columns(n) will be empty 
+  !********************************************************
+   implicit none
++  integer,intent(in) :: len_str,len_columns
+   character(len=len_str),intent(in) :: str
+   character(len=len_str) :: temp_line,bit_of_line
+   character(len=len_columns) :: columns(:)
+-  integer,intent(in) :: len_str,len_columns
+   integer :: n,i,position_of_first_space
+ 
+   columns=''
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theo_manip.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theo_manip.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theo_manip.f90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theo_manip.f90  2017-05-21 19:02:50.000000000 +0200
+@@ -36,7 +36,7 @@ module theo_manip
+     call cp_from_g2
+    case('hadr','part')
+    case default
+-    stop'error in subroutine complete_theo (1)' 
++    stop 'error in subroutine complete_theo (1)' 
+    end select               
+     
+   
+@@ -62,11 +62,11 @@ module theo_manip
+       call XS_from_partR
+      case('hadr')
+      case default
+-      stop'error in subroutine complete_theo (2)'  
++      stop 'error in subroutine complete_theo (2)'  
+      end select
+    case('onlyL')
+    case default       
+-    stop'error in subroutine complete_theo (3)'             
++    stop 'error in subroutine complete_theo (3)'             
+    end select   
+   endif
+ 
+@@ -88,7 +88,7 @@ module theo_manip
+   double precision :: Mhi
+   !---------------------------------------------
+ 
+-  if(np(Hneut)<1)stop'error in csratios_from_g2  (np(Hneut))'
++  if(np(Hneut)<1)stop 'error in csratios_from_g2  (np(Hneut))'
+ 
+ ! relative contributuion of WW- and ZZ-fusion to VBF (in LO) for
+ ! p p-bar collisions at SqrtS=1.96 TeV (calcuated by T. Figy with VBFNLO):s
+@@ -144,7 +144,7 @@ module theo_manip
+   double precision :: max_hjff_s,max_hjff_p
+   !---------------------------------------------
+ 
+-  if(np(Hneut)<1)stop'error in cp_from_g2  (np(Hneut))'
++  if(np(Hneut)<1)stop 'error in cp_from_g2  (np(Hneut))'
+ 
+    do jj=1,ndat
+  
+@@ -182,7 +182,7 @@ module theo_manip
+   double precision :: Mhi,GammaRat
+   !---------------------------------------------
+ 
+-  if(np(Hneut)<1)stop'error in br_from_g2 (np(Hneut))'
++  if(np(Hneut)<1)stop 'error in br_from_g2 (np(Hneut))'
+ 
+    do jj=1,ndat
+     do i=1,np(Hneut)
+@@ -356,7 +356,7 @@ module theo_manip
+   double precision :: Mhi
+   !----------------------------------------------
+   
+-  if(np(Hneut)<1)stop'error in subroutine fill_theo_SM (np(Hneut))'
++  if(np(Hneut)<1)stop 'error in subroutine fill_theo_SM (np(Hneut))'
+ 
+    do n=1,ndat        
+     if(theo(n)%gooddataset) then             
+@@ -452,7 +452,7 @@ module theo_manip
+   logical :: simple_partR
+   !----------------------------------------------
+ 
+-  if(np(Hneut)<1)stop'error in subroutine XS_from_partR (np(Hneut))'
++  if(np(Hneut)<1)stop 'error in subroutine XS_from_partR (np(Hneut))'
+ 
+     call allocate_hadroncolliderextras_parts(tevS) 
+     call allocate_hadroncolliderextras_parts(lhc7S) 
+@@ -571,11 +571,11 @@ module theo_manip
+       
+ 
+     if(abs(sum(tevS(1)%qq_hjWp(:,j))+sum(tevS(1)%qq_hjWm(:,j)) - 1.0D0) .gt. 1.0D-2)then 
+-     stop 'error in fill_tevS (a)'
++     stop  'error in fill_tevS (a)'
+     elseif(abs(tevS(1)%gg_hj(j)+sum(tevS(1)%qq_hj(:,j)) - 1.0D0) .gt. 1.0D-2)then
+-     stop 'error in fill_tevS (b)'
++     stop  'error in fill_tevS (b)'
+     elseif(abs(tevS(1)%gg_hjZ(j)+sum(tevS(1)%qq_hjZ(:,j)) - 1.0D0) .gt. 1.0D-2)then
+-     stop 'error in fill_tevS (c)'
++     stop  'error in fill_tevS (c)'
+     endif 
+   else
+     tevS(1)%qq_hjWp(:,j)=0.0D0
+@@ -608,7 +608,7 @@ module theo_manip
+     lhc7S(1)%qq_hj(5,j)=LHC7_rH_bb(Mhj)
+ 
+     if(abs(lhc7S(1)%gg_hj(j)+sum(lhc7S(1)%qq_hj(:,j)) - 1.0D0) .gt. 1.0D-2)then
+-     stop 'error in fill_lhc7S (b)'
++     stop  'error in fill_lhc7S (b)'
+     endif  
+ 
+     if(XS_lhc7_HW_SM(Mhj).lt.vsmall)then
+@@ -622,7 +622,7 @@ module theo_manip
+       lhc7S(1)%qq_hjWm(2,j)=LHC7_rHWm_scb(Mhj)
+   
+       if(abs(sum(lhc7S(1)%qq_hjWp(:,j))+sum(lhc7S(1)%qq_hjWm(:,j)) - 1.0D0) .gt. 1.0D-2)then 
+-       stop 'error in fill_lhc7S (a)'
++       stop  'error in fill_lhc7S (a)'
+       endif 
+     endif
+     if(XS_lhc7_HZ_SM(Mhj).lt.vsmall)then
+@@ -638,7 +638,7 @@ module theo_manip
+       lhc7S(1)%qq_hjZ(5,j)=LHC7_rHZ_bbb(Mhj)
+ 
+       if(abs(lhc7S(1)%gg_hjZ(j)+sum(lhc7S(1)%qq_hjZ(:,j)) - 1.0D0) .gt. 1.0D-2)then
+-       stop 'error in fill_lhc7S (c)'
++       stop  'error in fill_lhc7S (c)'
+       endif 
+     endif   
+   else
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_BRfunctions.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_BRfunctions.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_BRfunctions.F90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_BRfunctions.F90  2017-05-21 18:51:19.000000000 +0200
+@@ -56,7 +56,7 @@ module theory_BRfunctions
+   
+   ! checks we've filled the whole array
+   if(x.ne.xend)then
+-   stop'error in setup_BRSM (a)'
++   stop 'error in setup_BRSM (a)'
+   endif 
+  
+   col=7
+
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_XS_SM_functions.F90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_XS_SM_functions.F90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_XS_SM_functions.F90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/theory_XS_SM_functions.F90  2017-05-21 18:49:54.000000000 +0200
+@@ -71,7 +71,7 @@ module theory_XS_SM_functions 
+        rangeok=.False.
+       endif
+      case default 
+-        stop'problem in subroutine check_range'
++        stop  'problem in subroutine check_range'
+      end select
+   endif 
+ 
+@@ -313,7 +313,7 @@ module theory_XS_SM_functions 
+ 
+   call check_range('TEV ',x,rangeok,badvalue,strict)
+   if((x.lt.100.0D0).or.(x.gt.200.0D0))then
+-   !stop'function XS_gg_H_SM_9713: need to check validity at this MH'
++   !stop  'function XS_gg_H_SM_9713: need to check validity at this MH'
+    write(*,*)'WARNING: function XS_tev_gg_H_SM_9713: need to check validity at this MH'
+   endif
+ 
+@@ -347,7 +347,7 @@ module theory_XS_SM_functions 
+ 
+   call check_range('TEV ',x,rangeok,badvalue,strict)
+   if((x.lt.100.0D0).or.(x.gt.200.0D0))then
+-   !stop'function XS_gg_H_SM_9674: need to check validity at this MH'
++   !stop  'function XS_gg_H_SM_9674: need to check validity at this MH'
+    write(*,*)'WARNING: function XS_gg_H_SM_9674: need to check validity at this MH'
+   endif
+ 
+diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/usefulbits.f90 ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/usefulbits.f90
+--- darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/usefulbits.f90 2013-02-11 07:11:43.000000000 +0100
++++ ../installed/darksusy/5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/usefulbits.f90  2017-05-21 18:34:16.000000000 +0200
+@@ -288,7 +288,7 @@ module usefulbits
+       if(abs(value-array(i)).le.small) output = 1
+     enddo
+   else 
+-    stop'error: Passing an unallocated array to subroutine iselementofarray!'
++    stop 'error: Passing an unallocated array to subroutine iselementofarray!'
+   endif
+ 
+  end subroutine iselementofarray
+@@ -298,7 +298,7 @@ module usefulbits
+  !**********************************************************
+    integer :: x
+ 
+-   if(ubound(np,dim=1).ne.4)stop'error: have made a mistake in subroutine fill_pdesc (1)'
++   if(ubound(np,dim=1).ne.4) stop 'error: have made a mistake in subroutine fill_pdesc (1)'
+ 
+    x=0
+    allocate(  pdesc(  ubound(np,dim=1) )  )
+@@ -319,7 +319,7 @@ module usefulbits
+    pdesc(x)%short='C'
+    pdesc(x)%long ='chargino'
+ 
+-   if(x.ne.ubound(np,dim=1))stop'error: have made a mistake in subroutine fill_pdesc (2)'
++   if(x.ne.ubound(np,dim=1)) stop 'error: have made a mistake in subroutine fill_pdesc (2)'
+ 
+  end subroutine fill_pdesc
+  !**********************************************************            
+@@ -344,7 +344,7 @@ module usefulbits
+     np_t(x)=1
+    else
+     write(*,*)'np=',np
+-    stop'error in subroutine allocate_dataset_parts (1)'
++    stop 'error in subroutine allocate_dataset_parts (1)'
+    endif
+   enddo
+ 
+@@ -353,7 +353,7 @@ module usefulbits
+   elseif(n_addit.eq.0)then
+     n_add=1
+   else
+-    stop'error in subroutine allocate_dataset_parts (2)'
++    stop 'error in subroutine allocate_dataset_parts (2)'
+   endif
+ 
+   do x=lbound(d,dim=1),ubound(d,dim=1)
+@@ -515,7 +515,7 @@ module usefulbits
+    enddo
+   case('onlyL')
+   case default
+-   stop'error in allocate_dataset_parts (3)'
++   stop 'error in allocate_dataset_parts (3)'
+   end select
+   deallocate(np_t)
+  end subroutine allocate_dataset_parts
+@@ -537,7 +537,7 @@ module usefulbits
+   elseif(np(Hneut).eq.0)then
+     nHiggsneut=1
+   else
+-    stop'error in subroutine allocate_sqcouplratio_parts (1)'
++    stop 'error in subroutine allocate_sqcouplratio_parts (1)'
+   endif
+ 
+   do x=lbound(gsq,dim=1),ubound(gsq,dim=1) 
+@@ -617,7 +617,7 @@ module usefulbits
+   elseif(np(Hneut).eq.0)then
+     nHiggsneut=1
+   else
+-    stop'error in subroutine allocate_hadroncolliderextras_parts (1)'
++    stop 'error in subroutine allocate_hadroncolliderextras_parts (1)'
+   endif
+ 
+   tR%nq_hjWp=2 ! (u dbar), (c sbar)  e.g
+@@ -785,7 +785,7 @@ module usefulbits
+    enddo 
+   case('onlyL')
+   case default 
+-   stop'error in deallocate_usefulbits'
++   stop 'error in deallocate_usefulbits'
+   end select 
+   
+   deallocate(theo) !allocated in subroutine do_input  
+

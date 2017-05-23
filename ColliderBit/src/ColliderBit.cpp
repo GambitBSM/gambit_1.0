@@ -45,7 +45,7 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 #include "HEPUtils/FastJet.h"
 
-// #define COLLIDERBIT_DEBUG
+//#define COLLIDERBIT_DEBUG
 
 namespace Gambit
 {
@@ -260,12 +260,27 @@ namespace Gambit
         Loop::reset();
         Loop::executeIteration(COLLIDER_INIT);
 
+        // Any problem during COLLIDER_INIT step?
+        piped_warnings.check(ColliderBit_warning());
+        piped_errors.check(ColliderBit_error());
+
+        // 
+        // OMP parallelized loop begins here
+        // 
         int currentEvent = 0;
         #pragma omp parallel
         {
           Loop::executeIteration(START_SUBPROCESS);
-          // main event loop
-          while(currentEvent<nEvents[indexPythiaNames] and not *Loop::done) {
+        }
+        // Any problems during the START_SUBPROCESS step?
+        piped_warnings.check(ColliderBit_warning());
+        piped_errors.check(ColliderBit_error());
+
+        // Main event loop
+        #pragma omp parallel
+        {
+          while(currentEvent<nEvents[indexPythiaNames] and not *Loop::done and not piped_errors.inquire()) 
+          {
             if (!eventsGenerated)
               eventsGenerated = true;
             try
@@ -278,11 +293,24 @@ namespace Gambit
               std::cerr<<"\n   Continuing to the next event...\n\n";
             }
           }
+        }
+        // Any problems during the main event loop?
+        piped_warnings.check(ColliderBit_warning());
+        piped_errors.check(ColliderBit_error());
+
+        #pragma omp parallel
+        {
           Loop::executeIteration(END_SUBPROCESS);
         }
+        // Any problems during the END_SUBPROCESS loop?
+        piped_warnings.check(ColliderBit_warning());
+        piped_errors.check(ColliderBit_error());
+
+        // 
+        // OMP parallelized loop ends here
+        // 
 
         Loop::executeIteration(COLLIDER_FINALIZE);
-
       }
 
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
@@ -676,12 +704,14 @@ namespace Gambit
         {
           result.init(delphesOptions);
         }
-        catch (DelphesVanilla::InitializationError& e)
+        catch (std::runtime_error& e)
         {
           #ifdef COLLIDERBIT_DEBUG
             std::cerr << debug_prefix() << "DelphesVanilla::InitializationError caught in getDelphes. Will raise ColliderBit_error." << endl;
           #endif
-          ColliderBit_error().raise(LOCAL_INFO, "getDelphes failed to initialize Delphes.");
+          str errmsg = "getDelphes caught the following runtime error: ";
+          errmsg    += e.what();
+          piped_errors.request(LOCAL_INFO, errmsg);
         }
       }
     }
@@ -1200,7 +1230,7 @@ namespace Gambit
           {
             (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
           }
-          catch (DelphesVanilla::ProcessEventError& e)
+          catch (std::runtime_error& e)
           {
             #ifdef COLLIDERBIT_DEBUG
               std::cerr << debug_prefix() << "DelphesVanilla::ProcessEventError caught in reconstructDelphesEvent." << endl;
@@ -1212,6 +1242,10 @@ namespace Gambit
             std::stringstream ss;
             Dep::HardScatteringEvent->list(ss, 1);
             logger() << LogTags::debug << "DelphesVanilla::ProcessEventError caught in reconstructDelphesEvent. Pythia record for event that failed:\n" << ss.str() << EOM;
+
+            str errmsg = "Bad point: reconstructDelphesEvent caught the following runtime error: ";
+            errmsg    += e.what();
+            piped_invalid_point.request(errmsg);
 
             Loop::wrapup();
           }

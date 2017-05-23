@@ -48,18 +48,19 @@ namespace Gambit
         using boost::enable_shared_from_this;
 #endif
 
-        ///Generic function base used by the scanner.  Can be Likelihood, observables, etc.
+        /// Generic function base used by the scanner.  Can be Likelihood, observables, etc.
         template<typename T>
         class Function_Base;
 
-        ///Functor that deletes a Function_Base functor
+        /// Functor that deletes a Function_Base functor
         template<typename T>
         class Function_Deleter;
 
-        ///Generic ptr that takes ownership of a Function_Base.  This is how a plugin will call a function.
+        /// Generic ptr that takes ownership of a Function_Base.  This is how a plugin will call a function.
         template<typename T>
         class scan_ptr;
 
+        /// Base function for the object that is upputed by "set_purpose".
         template<typename ret, typename... args>
         class Function_Base <ret (args...)> : public enable_shared_from_this<Function_Base <ret (args...)>>
         {
@@ -145,7 +146,7 @@ namespace Gambit
             /// Tell ScannerBit that we are aborting the scan and it should tell the scanner plugin to stop, and return control to the calling code.
             void tell_scanner_early_shutdown_in_progress()
             {
-              Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress();
+                Gambit::Scanner::Plugins::plugin_info.set_early_shutdown_in_progress();
             }
 
             /// Tells log-likelihood function (defined by driver code) not to use its own shutdown system (e.g the
@@ -161,44 +162,44 @@ namespace Gambit
             /// log-likelihood. Called by e.g. MultiNest scanner plugin.
             void switch_to_alternate_min_LogL()
             {
-              use_alternate_min_LogL = true;
-              #ifdef WITH_MPI
-              GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
-              static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
-              MPI_Request req_null = MPI_REQUEST_NULL;
-              int nullmsg = 0; // Don't need message content, the message itself is the signal.
-              myComm.IsendToAll(&nullmsg, 1, TAG, &req_null);
-              #endif
-              Gambit::Scanner::Plugins::plugin_info.save_alt_min_LogL_state(); // Write a file to disk so that upon startup we can check if the alternate min LogL is supposed to be used.
+                use_alternate_min_LogL = true;
+                #ifdef WITH_MPI
+                    GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
+                    static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
+                    MPI_Request req_null = MPI_REQUEST_NULL;
+                    int nullmsg = 0; // Don't need message content, the message itself is the signal.
+                    myComm.IsendToAll(&nullmsg, 1, TAG, &req_null);
+                #endif
+                Gambit::Scanner::Plugins::plugin_info.save_alt_min_LogL_state(); // Write a file to disk so that upon startup we can check if the alternate min LogL is supposed to be used.
             }
 
             /// Checks if some process has triggered the 'switch_to_alternate_min_LogL' function
             bool check_for_switch_to_alternate_min_LogL()
             {
-              if(not use_alternate_min_LogL)
-              {
-                #ifdef WITH_MPI
-                GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
-                static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
-                if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+                if(not use_alternate_min_LogL)
                 {
-                  int nullmsg;
-                  MPI_Status msg_status;
-                  myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
-                  use_alternate_min_LogL = true;
+                    #ifdef WITH_MPI
+                    GMPI::Comm& myComm(Gambit::Scanner::Plugins::plugin_info.scanComm());
+                    static const int TAG = Gambit::Scanner::Plugins::plugin_info.MIN_LOGL_MSG;
+                    if(myComm.Iprobe(MPI_ANY_SOURCE, TAG))
+                    {
+                    int nullmsg;
+                    MPI_Status msg_status;
+                    myComm.Recv(&nullmsg, 1, MPI_ANY_SOURCE, TAG, &msg_status); // Recv the message to delete it.
+                    use_alternate_min_LogL = true;
+                    }
+                    #endif
                 }
-                #endif
-              }
-              // If we didn't decide to switch yet, check for the existence of
-              // the persistence file. This is not necessary for proper functioning
-              // of this system, but it allows users to manually create the persistence file
-              // as a 'hack' to force the likelihood to switch to the alternate min LogL
-              // value.
-              if(not use_alternate_min_LogL)
-              {
-                use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
-              }
-              return use_alternate_min_LogL;
+                // If we didn't decide to switch yet, check for the existence of
+                // the persistence file. This is not necessary for proper functioning
+                // of this system, but it allows users to manually create the persistence file
+                // as a 'hack' to force the likelihood to switch to the alternate min LogL
+                // value.
+                if(not use_alternate_min_LogL)
+                {
+                    use_alternate_min_LogL = Gambit::Scanner::Plugins::plugin_info.check_alt_min_LogL_state();
+                }
+                return use_alternate_min_LogL;
             }
             /// @}
 
@@ -226,6 +227,7 @@ namespace Gambit
             }
         };
 
+        /// Container class that hold the output of the "get_purpose" function.
         template<typename ret, typename... args>
         class scan_ptr<ret (args...)> : public shared_ptr< Function_Base< ret (args...)> >
         {
@@ -295,6 +297,8 @@ namespace Gambit
         // and unitCubeParameters twice for the same point, which it seems is what would
         // happen. So we need to change something here so that they only get printed once
         // per point, no matter how many like_ptr's may be "active" at once.
+        
+        /// likelihood container for scanner plugins.
         class like_ptr : public scan_ptr<double (std::unordered_map<std::string, double> &)>
         {
         private:
@@ -309,7 +313,6 @@ namespace Gambit
 
             double operator()(const std::vector<double> &vec)
             {
-                //std::cout << "operator() vec" << std::endl;
                 int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
@@ -325,7 +328,6 @@ namespace Gambit
 
             double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
             {
-                //std::cout << "operator() map/vec" << std::endl;
                 int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
@@ -340,7 +342,7 @@ namespace Gambit
             }
         };
 
-        ///Pure Base class of a plugin Factory function.
+        /// Pure Base class of a plugin Factory function.
         class Factory_Base
         {
         public:

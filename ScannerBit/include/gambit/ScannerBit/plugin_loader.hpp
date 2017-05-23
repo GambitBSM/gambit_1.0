@@ -245,12 +245,14 @@ namespace Gambit
 
                 ///Retrieve plugin data.
                 const Plugin_Loader &operator()() {return plugins;}
+                
                 ///Get plugin data for single plugin.
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
                 ~pluginInfo();
             };
             
-            ///Access Functor for plugin info
+            ///Access Functor for plugin info.  This will manage all the 
+            ///plugins including stored and writing resume info.
             extern pluginInfo plugin_info;
             
         }

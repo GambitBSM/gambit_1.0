@@ -1,9 +1,21 @@
+##########################################################################
+## GAMBIT configuration for running a MultiNest scan of the MSSM7
+## using likelihoods from DarkBit.
+##
+## The likelihoods include the relic density, indirect DM searches and
+## direct DM searches (plus constraints for the nuisance parameters.
+##
+## Nuisance parameters include the nuclear matrix elements, the SM Higgs
+## mass and the dark matter halo parameters.
+##########################################################################
+
+
 Parameters:
 
-  #SM parameters.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_scan.yaml
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_scan.yaml
 
-  #Nuclear matrix parameters.
+  # Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
       range:  [19, 67]
@@ -20,7 +32,6 @@ Parameters:
   # with sigma0
 
   # You could instead choose to directly specify the hadronic matrix elements:
-
   # nuclear_params_fnq:
   #   fpd:
   #     fixed_value: 0.0493
@@ -69,7 +80,7 @@ Parameters:
       prior_type: double_log_flat_join
       ranges: [0, 0, 1e4, 1e8]
 
-  #Dark matter halo parameters. 
+  # Dark matter halo parameters.
   Halo_gNFW_rho0:
     rho0:
       range: [.2, .8]
@@ -82,7 +93,7 @@ Parameters:
     beta: 3
     gamma: 1
 
-  #Halo_Einasto_rho0:
+  # Halo_Einasto_rho0:
   #  rho0:
   #    range: [.2, .8]
   #  v0: 235.0
@@ -92,12 +103,14 @@ Parameters:
   #  r_sun: 8.5
   #  alpha: .17
 
-  # Halo_gNFW_rhos and Halo_Einasto_rhos replace rho0 in the above models 
+  # Halo_gNFW_rhos and Halo_Einasto_rhos replace rho0 in the above models
   # with rhos
-  
+
+
 Priors:
 
   # All priors simple, so specified in Parameters section
+
 
 Printer:
 
@@ -135,6 +148,7 @@ Scanner:
      point_number: 100
      like:  LogLike
      printme: false
+
 
 ObsLikes:
 
@@ -202,15 +216,15 @@ ObsLikes:
     # DM Local Halo likelihoods
     - capability: lnL_rho0
       purpose: LogLike
-      
+
     - capability: lnL_vrot
       purpose: LogLike
-      
+
     - capability: lnL_v0
       purpose: LogLike
-      
+
     - capability: lnL_vesc
-      purpose: LogLike   
+      purpose: LogLike
 
     # Provide the actual relic density in the output (not just the likelihood)
     - purpose:    Observable
@@ -240,14 +254,15 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SD_n
 
+
 Rules:
-       
+
   # Options for Process Catalog setup
   - function: TH_Process_Catalog_MSSM
     options:
        ignore_three_body: false # Ignore 3 body final states?
        ProcessCatalog_MinBranching: 0 # Minimum branching fraction of included processes
-  
+
   # Options for SUSY relic density spectrum
   - function: RD_spectrum_SUSY
     options:
@@ -274,21 +289,21 @@ Rules:
 
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
-#    function: RD_fraction_rescaled # Rescale the local DM density
-#    options:
-#       oh2_obs: 0.1188
+    #function: RD_fraction_rescaled # Rescale the local DM density
+    #options:
+    #   oh2_obs: 0.1188
     function: RD_fraction_leq_one # Rescale the local DM density if the calculated relic density is less than the observed
     options:
        oh2_obs: 0.1188
-#    function: RD_fraction_one # Do not rescale the local DM density
+    #function: RD_fraction_one # Do not rescale the local DM density
 
   - function: DarkSUSY_PointInit_MSSM
     options:
        # Set the below to true to write SLHA file to disk and read it in using DarkSUSY
-       # SLHA reader instead of using diskless initialisation (not recommended!)                      
-       use_dsSLHAread: false 
+       # SLHA reader instead of using diskless initialisation (not recommended!)
+       use_dsSLHAread: false
 
-  # Choose whether MicrOmegas calculates decays widths for the MSSM internally using CalcHEP (internal_decays=true) or uses 
+  # Choose whether MicrOmegas calculates decays widths for the MSSM internally using CalcHEP (internal_decays=true) or uses
   # values from the GAMBIT decay table (internal_decays=false).
   - function: MicrOmegas_MSSM_3_6_9_2_init
     options:
@@ -315,7 +330,7 @@ Rules:
   -  function: lnL_FermiLATdwarfs_gamLike
      options:
         version: "pass8" # Other option is pass7
-  
+
   - function: lnL_FermiFC_gamLike
     options:
        version: "externalJ" # Other options are fixedJ, margJ, margJ_HEP and externalJ
@@ -340,8 +355,8 @@ Rules:
   # More options for determination of gamma ray yields
   - function: GA_missingFinalStates # Finds final states for which tabulated spectra do not exist
     options:
-       ignore_all: false 
-       ignore_two_body: false 
+       ignore_all: false
+       ignore_two_body: false
        ignore_three_body: false
 
   - function: GA_AnnYield_General
@@ -422,7 +437,7 @@ Rules:
 
   # Cascade decay MC options
   - function: cascadeMC_LoopManager
-    options: 
+    options:
       cMC_maxEvents: 20000 # Maximum number of cascade MC runs
 
   - function: cascadeMC_GenerateChain
@@ -502,6 +517,7 @@ Rules:
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
 
+
 Logger:
 
   redirection:
@@ -514,6 +530,7 @@ Logger:
     [ColliderBit] : "ColliderBit.log"
     [SpecBit] : "SpecBit.log"
     [Dependency Resolver] : "dep_resolver.log"
+
 
 KeyValues:
 
