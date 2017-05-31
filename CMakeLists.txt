@@ -235,12 +235,18 @@ endif()
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
 
-# Look for the tarball version file; if it is missing, set the version number directly from git tag
-if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/tarball_info.cmake")
-  include(cmake/tarball_info.cmake)
-else()
+# Look for the latest tag and use it to set the version number.  If there is no such tag, use the tarball info file.
+find_package(Git)
+if(GIT_FOUND)
   get_version_from_git(GAMBIT_VERSION_MAJOR GAMBIT_VERSION_MINOR GAMBIT_VERSION_REVISION
                        GAMBIT_VERSION_PATCH GAMBIT_VERSION_FULL)
+  if (GAMBIT_VERSION_MAJOR)
+    message("${BoldYellow}   GAMBIT version detected from git tag: ${GAMBIT_VERSION_FULL}${ColourReset}")
+  endif()
+endif()
+if(NOT GIT_FOUND OR NOT GAMBIT_VERSION_MAJOR)
+  message("${BoldYellow}   GAMBIT version not detected via git.  Reverting to cmake/tarball_info.cmake.${ColourReset}")
+  include(cmake/tarball_info.cmake)
 endif()
 
 # Add doxygen build as an external project
