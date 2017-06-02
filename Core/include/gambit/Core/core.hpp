@@ -144,7 +144,7 @@ namespace Gambit
 
       /// Flag recording whether an inifile has been supplied
       bool found_inifile;
-    
+
       /// Developer mode (ignore missing capability descriptions)
       bool developer_mode;
 
@@ -210,7 +210,7 @@ namespace Gambit
 
       /// Check the named database for conflicts and missing descriptions
       void check_databases();
-    
+
       /// set to true is capability descriptions missing
       bool missing_capability_description;
 

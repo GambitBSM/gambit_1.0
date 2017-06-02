@@ -72,7 +72,7 @@ namespace Gambit
 
     /// Getter for precision to use for cout
     int gambit_core::get_outprec() const { return outprec; }
-  
+
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail(int mpirank)
     {
@@ -102,6 +102,7 @@ namespace Gambit
                 "\n                                                                           "
                 "\nBasic options:                                                             "
                 "\n   --version             Display GAMBIT version information                "
+                "\n   --developer           Run in developer mode (suppress database errors)  "
                 "\n   -h/--help             Display this usage information                    "
                 "\n   -f <inifile>          Start scan using <inifile>                        "
                 "\n   -v/--verbose          Turn on verbose mode                              "
@@ -124,7 +125,7 @@ namespace Gambit
       int index;
       int iarg=0;
       str filename;
-      
+
       /// Gambit 'standard mode' command line option definitions (needed by getopt)
       // Basically this is a clone of the example in the getopt_long documentation
       // (http://www.gnu.org/savannah-checkouts/gnu/libc/manual/html_node/Getopt-Long-Option-Example.html#Getopt-Long-Option-Example)
@@ -284,7 +285,7 @@ namespace Gambit
       }
     }
 
-  
+
 
     /// Check the capability and model databases for conflicts and missing descriptions
     void gambit_core::check_databases()
@@ -363,7 +364,7 @@ namespace Gambit
         }
         capability_dbase.push_back(capinfo);
       }
-      
+
       missing_capability_description = false;
 
       if(missing_flag)
@@ -490,11 +491,11 @@ namespace Gambit
       outfile2 << "# Edit \"" << input_model_descriptions << "\" instead." << endl << endl << out2.c_str();
 
     }
-  
-    
+
+
     void gambit_core::check_capability_descriptions()
     {
-    
+
       if (missing_capability_description && !developer_mode)
       {
         std::ostringstream msg;
@@ -511,8 +512,8 @@ namespace Gambit
         core_error().raise(LOCAL_INFO,msg.str());
       }
     }
-  
-  
+
+
 
     /// Get the description of the named capability from the description database
     const capability_info gambit_core::get_capability_info(const str& name) const
@@ -679,8 +680,8 @@ namespace Gambit
           }
         }
       }
-      
-      
+
+
 
       // Guaranteed from this point that no scans (nor scanners) will be invoked.
 
