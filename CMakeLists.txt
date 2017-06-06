@@ -87,7 +87,10 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 include(cmake/utilities.cmake)
 
 # Check for Python and required libs
-find_package(PythonInterp 2.7 EXACT REQUIRED)
+find_package(PythonInterp 2 REQUIRED)
+if (PYTHON_VERSION_MAJOR GREATER 2)
+  message(FATAL_ERROR "GAMBIT requires Python 2")
+endif()
 find_package(PythonLibs)
 foreach(module yaml os re datetime sys getopt shutil itertools)
   find_python_module(${module} REQUIRED)
