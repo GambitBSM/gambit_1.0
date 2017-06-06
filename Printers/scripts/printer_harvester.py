@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 #
 # GAMBIT: Global and Modular BSM Inference Tool
 #*********************************************
@@ -6,10 +6,10 @@
 #
 #  Printer harvesting script.
 #  Generates printer_rollcall.hpp
-#  
-#  This script identifies all the headers that 
-#  define GAMBIT printers (output handlers), 
-#  and includes them in printer_rollcall unless 
+#
+#  This script identifies all the headers that
+#  define GAMBIT printers (output handlers),
+#  and includes them in printer_rollcall unless
 #  asked not to.
 #
 #  (duplicated mostly from model_harvester.py)
@@ -18,9 +18,9 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Ben Farmer 
+#  \author Ben Farmer
 #          (benjamin.farmer@fysik.su.se)
-#    \date 2015 
+#    \date 2015
 #
 #*********************************************
 import os
@@ -33,7 +33,7 @@ def main(argv):
     printer_headers=set([])  # Printer definition headers
     extra_headers=set([])    # Extra headers needed by printers
     extra_source=set([])     # Extra source files needed by printers
-    exclude_printers=set([]) # -Ditch'ed printers 
+    exclude_printers=set([]) # -Ditch'ed printers
 
     # Handle command line options
     verbose = False
@@ -42,8 +42,8 @@ def main(argv):
     except getopt.GetoptError:
         print 'Usage: printer_harvestor.py [flags]'
         print ' flags:'
-        print '        -v                       : More verbose output'  
-        print '        -x printer1,printer2,... : Exclude printer1, printer2, etc.' 
+        print '        -v                       : More verbose output'
+        print '        -x printer1,printer2,... : Exclude printer1, printer2, etc.'
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -53,7 +53,7 @@ def main(argv):
         exclude_printers.update(neatsplit(",",arg))
 
     # Get list of printers to include in printers_rollcall.hpp
-    printer_headers.update(retrieve_generic_headers(verbose,"./Printers/include/gambit/Printers/printers","printer",exclude_printers))   
+    printer_headers.update(retrieve_generic_headers(verbose,"./Printers/include/gambit/Printers/printers","printer",exclude_printers))
 
    # Generate a c++ header containing all the printer headers we have just harvested.
     towrite = "\
@@ -97,7 +97,7 @@ def main(argv):
     update_only_if_different(header, candidate)
 
     if verbose:
-        print "\nGenerated printer_rollcall.hpp." 
+        print "\nGenerated printer_rollcall.hpp."
 
 # Handle command line arguments (verbosity)
 if __name__ == "__main__":
