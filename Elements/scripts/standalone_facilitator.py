@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 #
 # GAMBIT: Global and Modular BSM Inference Tool
 #*********************************************

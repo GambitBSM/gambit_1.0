@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 #
 #  GAMBIT: Global and Modular BSM Inference Tool
 #  *********************************************
@@ -8,7 +8,7 @@
 #  Generates:
 #    backend_rollcall.hpp
 #    backend_types_rollcall.hpp
-#  
+#
 #  This script identifies all the frontend
 #  and type headers, and includes them in the
 #  relevant auto-generated header files.
@@ -19,7 +19,7 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Pat Scott 
+#  \author Pat Scott
 #          (patscott@physics.mcgill.ca)
 #  \date 2014 Nov
 #
@@ -41,8 +41,8 @@ def main(argv):
     except getopt.GetoptError:
         print 'Usage: backend_harvestor.py [flags]'
         print ' flags:'
-        print '        -v                       : More verbose output'  
-        print '        -x backend1,backend2,... : Exclude backend1, backend2, etc.' 
+        print '        -v                       : More verbose output'
+        print '        -x backend1,backend2,... : Exclude backend1, backend2, etc.'
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -52,7 +52,7 @@ def main(argv):
         exclude_backends.update(neatsplit(",",arg))
 
     # Get list of frontend header files to include in backend_rollcall.hpp
-    frontend_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/frontends","frontend",exclude_backends))   
+    frontend_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/frontends","frontend",exclude_backends))
     # Get list of backend type header files
     backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/backend_types","backend type",set([])))
     bossed_backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/backend_types","BOSSed type",set([])))
@@ -105,7 +105,7 @@ def main(argv):
     for h in frontend_headers:
         towrite+='#include \"gambit/Backends/frontends/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __backend_rollcall_hpp__\n"
-    
+
     with open("./Backends/include/gambit/Backends/backend_rollcall.hpp","w") as f:
         f.write(towrite)
 
@@ -163,13 +163,13 @@ def main(argv):
         towrite+='#include \"gambit/Backends/backend_types/{0}\"\n'.format(h)
 
     towrite+="\n#endif // defined __backend_types_rollcall_hpp__\n"
-    
+
     with open("./Backends/include/gambit/Backends/backend_types_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose:
-        print "Generated backend_rollcall.hpp." 
-        print "Generated backend_types_rollcall.hpp.\n" 
+        print "Generated backend_rollcall.hpp."
+        print "Generated backend_types_rollcall.hpp.\n"
 
 
 # Handle command line arguments (verbosity)

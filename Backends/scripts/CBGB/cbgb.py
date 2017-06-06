@@ -1,5 +1,4 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python
 #
 #   =========================================================
 #   |                                                       |
@@ -30,7 +29,7 @@ if (len(sys.argv) < 2):
     print 'Usage:'
     print
     print '  python cbgb.py configs/<config_file>'
-    print 
+    print
 
     sys.exit()
 
@@ -188,11 +187,11 @@ src_lines = utils.removeKeywords(src_lines)
 
 
 # Identify the various parts of the code: program, functions and subroutines.
-# Return a dict with the following structure: 
+# Return a dict with the following structure:
 #  {
-#   'some_subroutine_name' : { 'category'  : 'subroutine', 
-#                              'code_lines': [line1, line2, ...] }, 
-#   'some_function_name'   : { ... }, 
+#   'some_subroutine_name' : { 'category'  : 'subroutine',
+#                              'code_lines': [line1, line2, ...] },
+#   'some_function_name'   : { ... },
 #    ...
 #  }
 print '  Searching code...'
@@ -302,7 +301,7 @@ for code_part_name, code_dict in code_parts_dict.items():
             else:
                 print
                 print "    ERROR: The %s name '%s' listed in load_functions is ambiguous. The following candidates have been identified:" % (code_category, f_name_short)
-                print 
+                print
                 print "    - '%s' in module '%s'" % (f_name_short, module_name)
                 for other_f in other_f_list:
                     print "    - '%s' in module '%s'" % (f_name_short, other_f.split('::')[0])
@@ -320,7 +319,7 @@ for code_part_name, code_dict in code_parts_dict.items():
             print "    Found %s: '%s' in module '%s'" % (code_category, f_name_short, module_name)
         else:
             print "    Found %s: '%s'" % (code_category, f_name_short)
-            
+
         # If function, get info on return type
         if code_category == 'function':
             return_type_info = utils.getFunctionReturnType(code_lines)
@@ -405,7 +404,7 @@ for code_part_name, code_dict in code_parts_dict.items():
         break
 
 #
-# END: loop over code parts 
+# END: loop over code parts
 #
 
 # Encapsulate backend types code in a Gambit namespace
@@ -413,11 +412,11 @@ be_types_file_content = utils.addNamespace(be_types_file_content, 'Gambit', inde
 
 # Write output files
 with open(gb.output_file_path_be_types, 'w') as out_file_be_types:
-    out_file_be_types.write('\n')            
+    out_file_be_types.write('\n')
     out_file_be_types.write(be_types_file_content)
 
 with open(gb.output_file_path_frontend, 'w') as out_file_frontend:
-    out_file_frontend.write('\n')            
+    out_file_frontend.write('\n')
     out_file_frontend.write(frontend_file_content)
 
 # Print summary
@@ -428,17 +427,17 @@ print '  --------'
 
 # Check that all requested functions were found.
 if len(functions_left) > 0:
-    print 
+    print
     for f_name in functions_left:
-        print "    WARNING: Reqested function/subroutine '%s' was not found." % f_name 
+        print "    WARNING: Reqested function/subroutine '%s' was not found." % f_name
 
 # Check that all requested common blocks were found.
 if len(common_blocks_left) > 0:
-    print 
+    print
     for cb_name in common_blocks_left:
-        print "    WARNING: Reqested common block '%s' was not found." % cb_name 
+        print "    WARNING: Reqested common block '%s' was not found." % cb_name
 
-print 
+print
 print '    Generated code for GAMBIT written to files:'
 print
 print '    - ' + gb.output_file_path_frontend
@@ -448,5 +447,5 @@ print
 print
 print '  ~~~~  Done!  ~~~~'
 print
-print 
+print
 

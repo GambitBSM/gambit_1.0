@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 #
 # GAMBIT: Global and Modular BSM Inference Tool
 #*********************************************
@@ -6,8 +6,8 @@
 #
 #  Model harvesting script.
 #  Generates model_rollcall.hpp
-#  
-#  This script identifies all the headers that 
+#
+#  This script identifies all the headers that
 #  define GAMBIT models, and includes them
 #  in model_rollcall unless asked not to.
 #
@@ -15,7 +15,7 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Pat Scott 
+#  \author Pat Scott
 #          (patscott@physics.mcgill.ca)
 #    \date 2014 Nov
 #
@@ -36,8 +36,8 @@ def main(argv):
     except getopt.GetoptError:
         print 'Usage: model_harvestor.py [flags]'
         print ' flags:'
-        print '        -v                   : More verbose output'  
-        print '        -x model1,model2,... : Exclude model1, model2, etc.' 
+        print '        -v                   : More verbose output'
+        print '        -x model1,model2,... : Exclude model1, model2, etc.'
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -47,7 +47,7 @@ def main(argv):
         exclude_models.update(neatsplit(",",arg))
 
     # Get list of models to include in models_rollcall.hpp
-    model_headers.update(retrieve_generic_headers(verbose,"./Models/include/gambit/Models/models","model",exclude_models))   
+    model_headers.update(retrieve_generic_headers(verbose,"./Models/include/gambit/Models/models","model",exclude_models))
     # Get lists of model type header files
     model_type_headers.update(retrieve_generic_headers(verbose,"./Models/include/gambit/Models/model_types","model type",exclude_models))
 
@@ -95,7 +95,7 @@ def main(argv):
     for h in model_headers:
         towrite+='#include \"gambit/Models/models/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_rollcall_hpp__\n"
-    
+
     with open("./Models/include/gambit/Models/model_rollcall.hpp","w") as f:
         f.write(towrite)
 
@@ -135,13 +135,13 @@ def main(argv):
     for h in model_type_headers:
         towrite+='#include \"gambit/Models/model_types/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_types_rollcall_hpp__\n"
-    
+
     with open("./Models/include/gambit/Models/model_types_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose:
-        print "\nGenerated model_rollcall.hpp." 
-        print "Generated model_types_rollcall.hpp.\n" 
+        print "\nGenerated model_rollcall.hpp."
+        print "Generated model_types_rollcall.hpp.\n"
 
 # Handle command line arguments (verbosity)
 if __name__ == "__main__":
