@@ -97,8 +97,6 @@ source_extension = '.cc'
 
 indent = 4
 
-extra_output_dir = 'BOSS_output'
-
 
 # ~~~~~ Information about other known types ~~~~~
 

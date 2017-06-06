@@ -89,8 +89,6 @@ source_extension = '.cpp'
 
 indent = 3
 
-extra_output_dir = 'BOSS_output'
-
 
 # ~~~~~ Information about other known types ~~~~~
 
