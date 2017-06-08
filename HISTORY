@@ -4,6 +4,16 @@ Full details can be found in the git log.  Only a summary of the
 changes in each new version is given here.
 
 
+v1.0.1 - June 2017
+Bugfix release.
+- Improved treatment of version numbers to avoid the case where someone downloads a tarball from GitHub and cannot build
+- Removed leftover FlexibleSUSY linking debug output in cmake system
+- Added C++11 flags in gm2calc BOSS files to fix compatibility with gcc 7.1
+- Fixed hdf5 printer compilation problem with gcc 7.1
+- Fixed duplicate ditch notifications at cmake time when ditch commands overlap
+- Fixed race condition leading parallel builds of BOSSed backends to fail
+- Incorporated pull requests from Joshua Ellis (polish MultiNest and python cmake treatments)
+
 v1.0.0 - May 2017
 Initial release in combination with first 9 papers.
 

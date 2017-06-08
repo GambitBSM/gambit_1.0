@@ -66,10 +66,10 @@ def run():
         original_file_name       = original_class_file_el.get('name')
         original_file_name_base  = os.path.basename(original_file_name)
         original_class_file_dir  = os.path.split(original_file_name)[0]
-        extras_src_file_name     = os.path.join(cfg.extra_output_dir, gb.general_src_file_prefix + class_name['short'] + cfg.source_extension)
+        extras_src_file_name     = os.path.join(gb.boss_output_dir, gb.general_src_file_prefix + class_name['short'] + cfg.source_extension)
 
         short_abstr_class_fname  = gb.new_header_files[class_name['long']]['abstract']
-        abstr_class_fname        = os.path.join(cfg.extra_output_dir, short_abstr_class_fname)
+        abstr_class_fname        = os.path.join(gb.boss_output_dir, short_abstr_class_fname)
 
         # namespaces    = class_name['long'].split('::')[:-1]
         namespaces    = utils.getNamespaces(class_el, include_self=False)
@@ -664,7 +664,7 @@ def generateFactoryFunctions(class_el, class_name, is_template):
         return
 
     # Generate factory file name
-    dir_name = cfg.extra_output_dir
+    dir_name = gb.boss_output_dir
     factory_file_name = os.path.join(dir_name, gb.factory_file_prefix + class_name['short'] + cfg.source_extension)
 
     # Register code
@@ -691,9 +691,9 @@ def generateWrapperHeader(class_el, class_name, abstr_class_name, namespaces, sh
     wrapper_def_header_fname  = gb.new_header_files[class_name['long']]['wrapper_def']
     wrapper_header_fname      = gb.new_header_files[class_name['long']]['wrapper']
 
-    wrapper_decl_header_path = os.path.join(cfg.extra_output_dir, wrapper_decl_header_fname)
-    wrapper_def_header_path  = os.path.join(cfg.extra_output_dir, wrapper_def_header_fname)
-    wrapper_header_path      = os.path.join(cfg.extra_output_dir, wrapper_header_fname)
+    wrapper_decl_header_path = os.path.join(gb.boss_output_dir, wrapper_decl_header_fname)
+    wrapper_def_header_path  = os.path.join(gb.boss_output_dir, wrapper_def_header_fname)
+    wrapper_header_path      = os.path.join(gb.boss_output_dir, wrapper_header_fname)
     
     # Get code for the declaration and implementation headers
     wrapper_decl_header_content, wrapper_def_header_content = classutils.generateWrapperHeaderCode(class_el, class_name, abstr_class_name,
@@ -808,8 +808,8 @@ def constrWrapperUtils(class_name):
 
 
     # Register code
-    w_creator_header_path = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.header_extension)
-    w_creator_source_path = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.source_extension)
+    w_creator_header_path = os.path.join(gb.boss_output_dir, gb.wrapper_utils_fname + cfg.header_extension)
+    w_creator_source_path = os.path.join(gb.boss_output_dir, gb.wrapper_utils_fname + cfg.source_extension)
 
     if w_creator_header_path not in gb.new_code.keys():
         gb.new_code[w_creator_header_path] = {'code_tuples':[], 'add_include_guard':True}
@@ -850,7 +850,7 @@ def addAbstractTypedefs(abstr_class_name, namespaces):
     identification_include_statement = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n\n'
     undef_include_statement          = '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
 
-    abstracts_typedefs_header_path = os.path.join(cfg.extra_output_dir, gb.abstract_typedefs_fname + cfg.header_extension)
+    abstracts_typedefs_header_path = os.path.join(gb.boss_output_dir, gb.abstract_typedefs_fname + cfg.header_extension)
     if abstracts_typedefs_header_path not in gb.new_code.keys():
         gb.new_code[abstracts_typedefs_header_path] = {'code_tuples':[], 'add_include_guard':False}
 
@@ -887,7 +887,7 @@ def addWrapperTypedefs(class_name, namespaces):
     identification_include_statement = '#include "' + os.path.join(gb.backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n\n'
     undef_include_statement          = '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
 
-    wrapper_typedefs_path = os.path.join(cfg.extra_output_dir, gb.wrapper_typedefs_fname + cfg.header_extension)
+    wrapper_typedefs_path = os.path.join(gb.boss_output_dir, gb.wrapper_typedefs_fname + cfg.header_extension)
 
     if wrapper_typedefs_path not in gb.new_code.keys():
         gb.new_code[wrapper_typedefs_path] = {'code_tuples':[], 'add_include_guard':False}

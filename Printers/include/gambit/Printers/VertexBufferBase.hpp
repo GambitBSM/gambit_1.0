@@ -105,19 +105,19 @@ namespace Gambit {
             }
 
             // Metadata getters
-            int  get_vertexID()       { return vertexID; }
-            uint get_index()          { return index; }
-            std::string get_label()   { return label; }
+            int  get_vertexID() const     { return vertexID; }
+            uint get_index() const        { return index; }
+            std::string get_label() const { return label; }
 
             /// @{ Buffer status getters
-            char access_mode()        { return access; }
-            bool sync_buffer_is_full(){ return sync_buffer_full; }
-            bool sync_buffer_is_empty(){ return sync_buffer_empty; }
-            bool is_synchronised()    { return synchronised; }
-            bool is_silenced()        { return silenced; }
-            bool resume_mode()        { return resume; }
-            bool MPI_mode()           { return MPImode; }
-            unsigned int get_head_position() { return head_position; }
+            char access_mode() const               { return access; }
+            bool sync_buffer_is_full() const       { return sync_buffer_full; }
+            bool sync_buffer_is_empty() const      { return sync_buffer_empty; }
+            bool is_synchronised() const           { return synchronised; }
+            bool is_silenced() const               { return silenced; }
+            bool resume_mode() const               { return resume; }
+            bool MPI_mode() const                  { return MPImode; }
+            unsigned int get_head_position() const { return head_position; }
             /// @}
 
             /// MPI mode error

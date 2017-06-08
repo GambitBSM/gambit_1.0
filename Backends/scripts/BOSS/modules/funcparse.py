@@ -83,7 +83,7 @@ def run():
 
         # New source file name
         new_source_file_name = gb.function_files_prefix + func_el.get('name') + cfg.source_extension
-        new_source_file_path = os.path.join(cfg.extra_output_dir, new_source_file_name)
+        new_source_file_path = os.path.join(gb.boss_output_dir, new_source_file_name)
 
         # Get include statements
         include_statements = []

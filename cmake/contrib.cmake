@@ -147,7 +147,6 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
        --with-blas-libs=${LAPACK_LINKLIBS}
       #--enable-verbose flag causes verbose output at runtime as well. Maybe set it dynamically somehow in future.
      )
-  message("FS OPTIONS = ${FS_OPTIONS}")
 
   # Set the models (spectrum generators) existing in flexiblesusy (could autogen this, but that would build some things we don't need)
   set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SingletDMZ3 SingletDM)
