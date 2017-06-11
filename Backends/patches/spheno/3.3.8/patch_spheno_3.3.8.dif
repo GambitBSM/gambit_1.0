@@ -1,5 +1,34 @@
---- src/Makefile	2016-04-19 17:54:48.383309519 +0200
-+++ src/Makefile_patched	2016-04-19 17:51:34.139303757 +0200
+diff -rupN SPheno-3.3.8/Makefile ../installed/spheno/3.3.8/Makefile
+--- SPheno-3.3.8/Makefile	2015-11-02 14:26:45.000000000 +0100
++++ ../installed/spheno/3.3.8/Makefile	2017-06-10 23:38:28.663649893 +0200
+@@ -3,16 +3,19 @@
+ # cases NAG's nagfor, gfortran, g95, Lahey's lf95 and Intels ifort
+ # Please uncomment the corresponding line
+ # F90 = nagfor
+-# F90 = gfortran
++F90 = gfortran
+ # F90 = g95
+ # F90 = lf95
+-F90 = ifort
++# F90 = ifort
+ Model = src
+ version = 330.00
++all: bin/SPheno lib/libSPheno.so
+ bin/SPheno:
+-	cd ${Model} ; ${MAKE} F90=${F90} version=${version}
++	cd ${Model} ; ${MAKE} $@ F90=${F90} version=${version}
++lib/libSPheno.so:
++	cd ${Model} ; ${MAKE} $@ F90=${F90} version=${version}
+ clean:
+ 	rm -f *.o *~ */*.o */*~
+ cleanall:
+-	rm -f bin/SPheno lib/*.a *.o *~ */*.o */*~ include/*
+-.PHONY: bin/SPheno clean cleanall
++	rm -f bin/SPheno lib/*.a lib/*.so *.o *~ */*.o */*~ include/*
++.PHONY: bin/SPheno lib/libSPheno.so clean cleanall
+diff -rupN SPheno-3.3.8/src/Makefile ../installed/spheno/3.3.8/src/Makefile
+--- SPheno-3.3.8/src/Makefile	2015-11-02 14:26:45.000000000 +0100
++++ ../installed/spheno/3.3.8/src/Makefile	2017-06-10 23:38:28.667649893 +0200
 @@ -4,15 +4,17 @@ PreDef = -DGENERATIONMIXING  -DONLYDOUBL
  InDir = ../include
  Mdir = ${InDir}
@@ -32,8 +61,12 @@
  endif
  
  # g95 
-@@ -46,8 +48,10 @@ ifeq (${F90},nagfor)
+@@ -44,10 +46,14 @@ ifeq (${F90},nagfor)
+  comp = -c -O  -DONLYDOUBLE -mdir ${Mdir} -I${InDir}   
+  LFlagsB = -O
  endif
++
++.NOTPARALLEL:
   
  .SUFFIXES : .o .ps .f90 .F90 .a
 +${shared}: ${objs}
@@ -44,7 +77,7 @@
  	mv SPheno ../bin
  ${name}: ${name}(Control.o)  ${name}(Mathematics.o)  ${name}(RGEs.o)       \
      ${name}(MathematicsQP.o)  ${name}(LoopFunctions.o) ${name}(StandardModel.o) \
-@@ -61,6 +65,7 @@ ${name}: ${name}(Control.o)  ${name}(Mat
+@@ -61,6 +67,7 @@ ${name}: ${name}(Control.o)  ${name}(Mat
    ${name}(LoopMasses.o) ${name}(SugraRuns.o) ${name}(Experiment.o) \
    ${name}(LowEnergy.o) ${name}(NMSSM_tools.o) ${name}(RPtools.o) \
    ${name}(LHC_observables.o) ${name}(InputOutput.o) 
@@ -52,7 +85,7 @@
  clean:
  	rm -f *.o *~ */*.o */*~
  cleanall:
-@@ -78,6 +83,8 @@ cleanall:
+@@ -78,6 +85,8 @@ cleanall:
  	rm -f $*.o
  .f90.o: 
  	${F90} ${comp}  $< 
@@ -61,35 +94,9 @@
  .f90.ps:
  	a2ps  -o $*.ps $<
  .h.ps:
---- Makefile	2016-04-19 17:56:29.763312526 +0200
-+++ Makefile_patched	2016-04-14 15:23:26.335977690 +0200
-@@ -3,16 +3,19 @@
- # cases NAG's nagfor, gfortran, g95, Lahey's lf95 and Intels ifort
- # Please uncomment the corresponding line
- # F90 = nagfor
--# F90 = gfortran
-+F90 = gfortran
- # F90 = g95
- # F90 = lf95
--F90 = ifort
-+# F90 = ifort
- Model = src
- version = 330.00
-+all: bin/SPheno lib/libSPheno.so
- bin/SPheno:
--	cd ${Model} ; ${MAKE} F90=${F90} version=${version}
-+	cd ${Model} ; ${MAKE} $@ F90=${F90} version=${version}
-+lib/libSPheno.so:
-+	cd ${Model} ; ${MAKE} $@ F90=${F90} version=${version}
- clean:
- 	rm -f *.o *~ */*.o */*~
- cleanall:
--	rm -f bin/SPheno lib/*.a *.o *~ */*.o */*~ include/*
--.PHONY: bin/SPheno clean cleanall
-+	rm -f bin/SPheno lib/*.a lib/*.so *.o *~ */*.o */*~ include/*
-+.PHONY: bin/SPheno lib/libSPheno.so clean cleanall
---- src/SPheno3.f90	2016-04-19 17:56:14.619312077 +0200
-+++ src/SPheno3_patched.f90	2016-04-14 16:44:57.476132854 +0200
+diff -rupN SPheno-3.3.8/src/SPheno3.f90 ../installed/spheno/3.3.8/src/SPheno3.f90
+--- SPheno-3.3.8/src/SPheno3.f90	2015-11-02 14:26:45.000000000 +0100
++++ ../installed/spheno/3.3.8/src/SPheno3.f90	2017-06-10 23:38:28.667649893 +0200
 @@ -12,7 +12,9 @@
  !     the email above, if possible with a copy of the screen output 
  ! written by Werner Porod
