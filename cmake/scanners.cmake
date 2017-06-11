@@ -88,8 +88,11 @@ if(NOT ditched_${name}_${ver})
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
                                    -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@[[:space:]]*\\$^#-o \\$\\(LIBS\\)\\$@ \\$^ ${mnLAPACK}#g"
-                                   -e "s#default:#.NOTPARALLEL:\\n\\ndefault:#"
+                                   -e "s#default:#.NOTPARALLEL:${nl}${nl}default:#"
                                    <SOURCE_DIR>/Makefile
+              COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.tmp
+              COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" <SOURCE_DIR>/Makefile.tmp > <SOURCE_DIR>/Makefile
+              COMMAND ${CMAKE_COMMAND} -E remove <SOURCE_DIR>/Makefile.tmp
               COMMAND sed ${dashi} -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
                                    -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g"
                                    <SOURCE_DIR>/cwrapper.f90

@@ -531,7 +531,10 @@ if(NOT ditched_${name}_${ver})
               COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" my_configure
               COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
               COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" my_configure
-              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:\\n\\n.SUFFIXES|" makefile.in
+              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:${nl}${nl}.SUFFIXES|" makefile.in
+              COMMAND ${CMAKE_COMMAND} -E copy makefile.in makefile.in.tmp
+              COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.in.tmp > makefile.in
+              COMMAND ${CMAKE_COMMAND} -E remove makefile.in.tmp
               COMMAND ./my_configure
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
           COMMAND ${CMAKE_COMMAND} -E make_directory lib
@@ -566,7 +569,10 @@ if(NOT ditched_${name}_${ver})
               COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" my_configure
               COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
               COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" my_configure
-              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:\\n\\n.SUFFIXES|" makefile.in
+              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:${nl}${nl}.SUFFIXES|" makefile.in
+              COMMAND ${CMAKE_COMMAND} -E copy makefile.in makefile.in.tmp
+              COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.in.tmp > makefile.in
+              COMMAND ${CMAKE_COMMAND} -E remove makefile.in.tmp
               COMMAND ./my_configure
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
           COMMAND ${CMAKE_COMMAND} -E make_directory lib
@@ -603,7 +609,10 @@ if(NOT ditched_${name}_${ver})
               COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" my_configure
               COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
               COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" my_configure
-              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:\\n\\n.SUFFIXES|" makefile.in
+              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:${nl}${nl}.SUFFIXES|" makefile.in
+              COMMAND ${CMAKE_COMMAND} -E copy makefile.in makefile.in.tmp
+              COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.in.tmp > makefile.in
+              COMMAND ${CMAKE_COMMAND} -E remove makefile.in.tmp
               COMMAND ./my_configure
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
           COMMAND ${CMAKE_COMMAND} -E make_directory lib
