@@ -626,7 +626,6 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
             info_dict = OrderedDict()
             info_dict['name']         = factory_name
             info_dict['args_bracket'] = args_bracket_nonames
-            info_dict['symbol']       = ''  # Will be filled when the factory function source files are parsed by castxml
 
             if class_name['long'] not in gb.factory_info.keys():
                 gb.factory_info[class_name['long']] = []

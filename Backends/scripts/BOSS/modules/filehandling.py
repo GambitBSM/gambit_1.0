@@ -541,46 +541,46 @@ def copyFilesToSourceTree(verbose=False):
 
 
 
-# ====== parseFactoryFunctionFiles ========
+# # ====== parseFactoryFunctionFiles ========
 
-# Parse the factory function source files using castxml.
-# The harvested information will later be used to
-# generate the file loaded_types.hpp
+# # Parse the factory function source files using castxml.
+# # The harvested information will later be used to
+# # generate the file loaded_types.hpp
 
-def parseFactoryFunctionFiles():
+# def parseFactoryFunctionFiles():
 
-    factory_xml_files = OrderedDict()
+#     factory_xml_files = OrderedDict()
 
-    for i, class_name in enumerate(gb.classes_done):
+#     for i, class_name in enumerate(gb.classes_done):
 
-        # Check that this class has a factory file and get the path
-        if class_name['long_templ'] not in gb.class_factory_file_dict.keys():
-            continue
-        factory_source_dir, factory_source_fname = os.path.split( gb.class_factory_file_dict[class_name['long_templ']] )
-        factory_source_path = os.path.join(cfg.src_files_to, factory_source_fname)
+#         # Check that this class has a factory file and get the path
+#         if class_name['long_templ'] not in gb.class_factory_file_dict.keys():
+#             continue
+#         factory_source_dir, factory_source_fname = os.path.split( gb.class_factory_file_dict[class_name['long_templ']] )
+#         factory_source_path = os.path.join(cfg.src_files_to, factory_source_fname)
 
-        # Construct file name for xml file produced by castxml
-        xml_output_path = os.path.join(gb.boss_temp_dir, 'factory_tempfile_' + str(i) + '_' + factory_source_fname.replace('.','_') + '.xml' )
+#         # Construct file name for xml file produced by castxml
+#         xml_output_path = os.path.join(gb.boss_temp_dir, 'factory_tempfile_' + str(i) + '_' + factory_source_fname.replace('.','_') + '.xml' )
 
-        # List all include paths
-        # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
+#         # List all include paths
+#         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
-        # Timeout limit and process poll interval [seconds]
-        timeout = 300.
-        poll = 0.2
+#         # Timeout limit and process poll interval [seconds]
+#         timeout = 300.
+#         poll = 0.2
 
-        # Run castxml
-        try:
-            utils.castxmlRunner(factory_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
-        except:
-            raise
+#         # Run castxml
+#         try:
+#             utils.castxmlRunner(factory_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+#         except:
+#             raise
 
-        # Add factory xml file to dict
-        factory_xml_files[class_name['long']] = xml_output_path
+#         # Add factory xml file to dict
+#         factory_xml_files[class_name['long']] = xml_output_path
 
-    return factory_xml_files
+#     return factory_xml_files
 
-# ====== END: parseFactoryFunctionFiles ========
+# # ====== END: parseFactoryFunctionFiles ========
 
 
 
@@ -590,31 +590,7 @@ def parseFactoryFunctionFiles():
 # contain the symbol names and function signatures for all
 # the generated factory functions.
 
-def createLoadedTypesHeader(factory_xml_files_dict):
-
-    # First update the 'symbol' entry in the dictionaries containing the factory function info
-    for class_name in gb.classes_done:
-
-        # If there are no factory functions for this class, move on
-        if class_name['long'] not in gb.factory_info.keys():
-            continue
-
-        # Set useful variables
-        xml_file = factory_xml_files_dict[class_name['long']]
-        info_dicts_list = gb.factory_info[class_name['long']]
-
-        # Get all function elements in the xml file
-        factory_func_elements = OrderedDict()
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-        for func_el in root.findall('Function'):
-            func_name = func_el.get('name')
-            factory_func_elements[func_name] = func_el
-
-        for info_dict in info_dicts_list:
-
-            factory_el = factory_func_elements[ info_dict['name'] ]
-            info_dict['symbol'] = factory_el.get('mangled')
+def createLoadedTypesHeader():
 
     # Generate the code for loaded_types.hpp
     loaded_types_header_content = utils.constrLoadedTypesHeaderContent()

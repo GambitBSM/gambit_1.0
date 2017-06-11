@@ -204,19 +204,13 @@ def main():
             gb.classes_done, gb.factory_info = pickle.load(f)
 
         print '(Continuing from saved state.)'
-        print
-        print
-        print utils.modifyText('Parsing the generated factory function source files:','underline')
-        print
-
-        factory_xml_files = filehandling.parseFactoryFunctionFiles()
 
         print
         print
         print utils.modifyText('Generating file loaded_types.hpp:','underline')
         print
 
-        filehandling.createLoadedTypesHeader(factory_xml_files)
+        filehandling.createLoadedTypesHeader()
 
         print
         print utils.modifyText('Done!','bold')
@@ -770,19 +764,6 @@ def main():
 
 
     #
-    # Parse all factory function source files using castxml
-    #
-
-    print
-    print
-    print utils.modifyText('Parsing the generated factory function source files:','underline')
-    print
-
-    factory_xml_files = filehandling.parseFactoryFunctionFiles()
-
-
-
-    #
     # Generate header file 'loaded_types.hpp'
     #
 
@@ -791,7 +772,7 @@ def main():
     print utils.modifyText('Generating file loaded_types.hpp:','underline')
     print
 
-    filehandling.createLoadedTypesHeader(factory_xml_files)
+    filehandling.createLoadedTypesHeader()
 
 
     #
