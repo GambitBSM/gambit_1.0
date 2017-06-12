@@ -228,6 +228,11 @@ diff -rupN ./SingletDM/work/models/vars1.mdl ../../../installed/micromegas/3.6.9
 diff -rupN ./SingletDM/Makefile ../../installed/micromegas/3.6.9.2/SingletDM/Makefile
 --- ./SingletDM/Makefile	2014-04-03 15:29:30.000000000 +0100
 +++ ../../installed/micromegas/3.6.9.2/SingletDM/Makefile	2016-07-21 18:37:48.038256099 +0100
+@@ -1,3 +1,4 @@
++.NOTPARALLEL:
+
+ .PHONY: all libs clean
+
 @@ -45,7 +45,15 @@ libs:
  	$(MAKE) -C work
  	$(MAKE) -C lib
