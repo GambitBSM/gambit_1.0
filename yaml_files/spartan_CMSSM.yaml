@@ -14,6 +14,8 @@ Parameters:
       prior_type: log
       range: [0.001,1000]
     M12:
+      prior_type: log
+      range: [100,2000]
     SignMu:
       range: [-1, 1]
     TanBeta:
@@ -22,18 +24,9 @@ Parameters:
 
 Priors:
 
-  # Specify the priors, the parameters they work with, and any options as needed for that prior
-  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
-  # and then they are combined into a "composite" prior
-  m12_prior:
-    parameters: [CMSSM::M12]
-    prior_type: composite
-    options:
-      new_prior:
-        parameters: [CMSSM::M12]
-        prior_type: log
-        range: [100,2000]
-
+  # Specify the priors, the parameters they work with, and any options as needed for that prior.
+  # A prior object is built for every entry here (along with any coming from 'range' keywords above),
+  # and then they are combined internally by ScannerBit into an overall 'composite' prior.
 
 Printer:
 

@@ -118,5 +118,12 @@ other_priors: |
   #remove_newlines
     Does absolutely nothing, not even a transformation.  Used for parameters that are being postprocessed
 
-internal_priors: The maze is not meant for you.
+internal_priors: |
+  #remove_newlines
+  The maze is not meant for you.
+
+  composite:
+    This prior is only meant for internal use within ScannerBit, for combining all the different priors on
+    different parameters into one big prior transformation that acts on the whole parameter space.  It is
+    deliberately undocumented.  Don't use it.
 

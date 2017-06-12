@@ -14,9 +14,7 @@ Parameters:
 
 Priors:
 
-  # Specify the priors, the parameters they work with, and any options as needed for that prior.
-  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
-  # and then they are combined into a "composite" prior.
+  # None -- we're using ScannerBit's built-in objective functions in this example
 
 
 Printer:
