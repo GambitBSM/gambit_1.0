@@ -1,31 +1,6 @@
 diff -rupN Diver-1.0.0/makefile ../installed/diver/1.0.0/makefile
 --- Diver-1.0.0/makefile	2017-04-17 16:08:40.000000000 +0200
-+++ ../installed/diver/1.0.0/makefile	2017-06-09 17:00:22.440844964 +0200
-@@ -1,11 +1,11 @@
- # ===========================================
--# Makefile for Diver 
-+# Makefile for Diver
- # Author: Pat Scott, p.scott@imperial.ac.uk
- #
--# The Diver make system is not really complex enough to require autotools or 
-+# The Diver make system is not really complex enough to require autotools or
- # cmake.  Just change this makefile by hand to suit your system, or call it
--# from another makefile or the command line with overrides.  
--# 
-+# from another makefile or the command line with overrides.
-+#
- # The variables to override if you are just making
- # libdiver are FF, FOPT and MODULE.
- # If you also want to make the C/C++ examples, you may
-@@ -44,7 +44,7 @@ MIXOPT_CPP=
- 
- # Define some more internal variables
- CLEAN = _clean
--AR = ar r  
-+AR = ar r
- SHAR = ld -shared
- LIBNAME = diver
- EXAMPLENAMES = example_f example_c example_cpp
++++ ../installed/diver/1.0.0/makefile	2017-06-12 11:52:49.137034450 +0200
 @@ -70,28 +70,55 @@ DIVER_SO_LINK_FLAGS=$(SO_LINK_FLAGS) -sh
  export DIVER_FF DIVER_FOPT DIVER_CC DIVER_COPT DIVER_CPPOPT DIVER_MIXOPT_C DIVER_MIXOPT_CPP LIBNAME PREFIX LIB INC
  
@@ -43,7 +18,11 @@ diff -rupN Diver-1.0.0/makefile ../installed/diver/1.0.0/makefile
 -	$(AR) $(LIB)/$@ $(TYPEOBJ) $(OBJ)
 +libdiver.a: makefile $(OBJ)
 +	$(AR) $(LIB)/$@ $(OBJ)
-+
+ 
+-libdiver.so: makefile $(TYPEOBJ) $(OBJ) 
+-	$(DIVER_FF) $(DIVER_SO_LINK_FLAGS) -o $(LIB)/$@ $(TYPEOBJ) $(OBJ)  
+- 
+-$(BUILD)/%.o: $(SOURCE)/%.f90 $(TYPEF90)
 +libdiver.so: makefile $(OBJ)
 +	$(DIVER_FF) $(DIVER_SO_LINK_FLAGS) -o $(LIB)/$@ $(TYPEOBJ) $(OBJ)
 +
@@ -68,7 +47,7 @@ diff -rupN Diver-1.0.0/makefile ../installed/diver/1.0.0/makefile
 +$(BUILD)/evidence.o: $(SOURCE)/evidence.f90 $(BUILD)/detypes.o $(BUILD)/deutils.o $(BUILD)/posterior.o
 +	$(DIVER_FF) $(DIVER_FOPT) -c $< -o $@
 +
-+$(BUILD)/init.o: $(SOURCE)/init.f90 $(BUILD)/detypes.o $(BUILD)/deutils.o $(BUILD)/posterior.o
++$(BUILD)/init.o: $(SOURCE)/init.f90 $(BUILD)/detypes.o $(BUILD)/deutils.o $(BUILD)/mutation.o $(BUILD)/crossover.o $(BUILD)/selection.o
 +	$(DIVER_FF) $(DIVER_FOPT) -c $< -o $@
 +
 +$(BUILD)/io.o: $(SOURCE)/io.f90 $(BUILD)/detypes.o $(BUILD)/deutils.o $(BUILD)/evidence.o $(BUILD)/converge.o
@@ -76,12 +55,8 @@ diff -rupN Diver-1.0.0/makefile ../installed/diver/1.0.0/makefile
 +
 +$(BUILD)/mutation.o: $(SOURCE)/mutation.f90 $(BUILD)/detypes.o $(BUILD)/deutils.o
 +	$(DIVER_FF) $(DIVER_FOPT) -c $< -o $@
- 
--libdiver.so: makefile $(TYPEOBJ) $(OBJ) 
--	$(DIVER_FF) $(DIVER_SO_LINK_FLAGS) -o $(LIB)/$@ $(TYPEOBJ) $(OBJ)  
-- 
--$(BUILD)/%.o: $(SOURCE)/%.f90 $(TYPEF90)
-+$(BUILD)/posterior.o: $(SOURCE)/posterior.f90 $(BUILD)/detypes.o $(BUILD)/deutils.o
++
++$(BUILD)/posterior.o: $(SOURCE)/posterior.f90 $(BUILD)/detypes.o
  	$(DIVER_FF) $(DIVER_FOPT) -c $< -o $@
  
 -$(BUILD)/%.o: $(SOURCE)/%.F90 $(TYPEF90)
@@ -94,9 +69,3 @@ diff -rupN Diver-1.0.0/makefile ../installed/diver/1.0.0/makefile
  
  clean:
  	rm -f $(LIB)/*.a $(LIB)/*.so; \
-@@ -102,4 +129,4 @@ $(EXAMPLECLEAN):
- 	make EXAMPLENAME=$(subst $(CLEAN),,$@) \
-          -C $(subst $(CLEAN),,$@) clean
- 
--cleanall: clean $(EXAMPLECLEAN) 
-+cleanall: clean $(EXAMPLECLEAN)
