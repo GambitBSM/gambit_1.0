@@ -1,6 +1,428 @@
-diff -rupN ./sources/micromegas.h ../../installed/micromegas/3.6.9.2/sources/micromegas.h
---- ./sources/micromegas.h	2014-05-13 12:26:25.000000000 +0100
-+++ ../../installed/micromegas/3.6.9.2/sources/micromegas.h	2016-07-21 15:38:04.713995015 +0100
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/chep_crt/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/chep_crt/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/chep_crt/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/chep_crt/Makefile	2017-06-12 23:17:50.991963569 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ lib = ../../lib
+@@ -17,7 +19,7 @@ OBJ= $(subst .c,.o,$(wildcard *.c)) X11_
+ 
+ ifeq (,$(LX11))
+  vpath X11_crt0.c noxwin
+-else 
++else
+  vpath X11_crt0.c xwin
+ endif
+ 
+@@ -25,12 +27,11 @@ endif
+ $(lib)/serv.a:$(lib)/serv.a($(OBJ))
+ 	$(RANLIB) $@
+ 	@rm -f $(OBJ)
+-        
++
+ $(lib)/servNoX11.a:$(lib)/serv.a noxwin/X11_crt0.c
+-	cp $(lib)/serv.a $(lib)/servNoX11.a   	
++	cp $(lib)/serv.a $(lib)/servNoX11.a
+ 	$(CC) -c $(CFLAGS) -o noxwin/X11_crt0.o noxwin/X11_crt0.c
+ 	ar d $(lib)/servNoX11.a X11_crt0.o
+ 	ar r $(lib)/servNoX11.a noxwin/X11_crt0.o
+ 	$(RANLIB) $@
+-	rm noxwin/X11_crt0.o 
+-	 
+\ No newline at end of file
++	rm noxwin/X11_crt0.o
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/dynamicME/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/dynamicME/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/dynamicME/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/dynamicME/Makefile	2017-06-12 23:17:48.703963634 +0200
+@@ -1,5 +1,6 @@
++.NOTPARALLEL:
+ 
+-include ../../FlagsForMake 
++include ../../FlagsForMake
+ 
+ override CFLAGS += -Iinclude -I../SLHAplus/include  -I../service2/include  -I../../include -DMAKE=\"$(MAKE)\" -Wmissing-prototypes
+ 
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/getmem/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/getmem/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/getmem/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/getmem/Makefile	2017-06-12 23:17:45.683963720 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/mix_events/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/mix_events/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/mix_events/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/mix_events/Makefile	2017-06-12 23:17:43.571963780 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+@@ -12,24 +14,24 @@ ifeq (,$(CERN))
+ else
+ ifeq (,$(FC))
+    nt_maker =
+-else    
++else
+    nt_maker = $(bin)/nt_maker
+-endif 
++endif
+ endif
+ 
+-all: $(bin)/event_mixer  $(nt_maker) $(bin)/event2lhe 
++all: $(bin)/event_mixer  $(nt_maker) $(bin)/event2lhe
+ 
+-INC = -Iinclude -I../SLHAplus/include  -I../symb/include  -I../polynom/include 
++INC = -Iinclude -I../SLHAplus/include  -I../symb/include  -I../polynom/include
+ 
+ $(bin)/event_mixer:event_mixer.c event2pyth.c ch_events.c   $(lib)/libSLHAplus.a
+-	$(CC) $(CFLAGS) $(INC) -o $@ $^ -lm 
++	$(CC) $(CFLAGS) $(INC) -o $@ $^ -lm
+ 
+-$(bin)/event2lhe:event2lhe.c   ch_events.c 
+-	$(CC) $(CFLAGS) $(INC) -o $@ $^ -lm 
++$(bin)/event2lhe:event2lhe.c   ch_events.c
++	$(CC) $(CFLAGS) $(INC) -o $@ $^ -lm
+ 
+ 
+-$(bin)/nt_maker:nt_maker_02.F readLHE.c 
++$(bin)/nt_maker:nt_maker_02.F readLHE.c
+ 	- $(FC) -static  -Iinclude   -o $@ $^  -L$(CERN) -lpacklib -lkernlib
+-	
++
+ 
+ 
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/ntools/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/ntools/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/ntools/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/ntools/Makefile	2017-06-12 23:17:41.383963842 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+@@ -6,7 +8,7 @@ Idir = .. chep_crt plot  service2 getmem
+ 
+ override CFLAGS += -Iinclude $(patsubst %,-I../%/include ,$(Idir))
+ 
+-special = 
++special =
+ 
+ OBJ = $(notdir $(subst .c,.o,$(filter-out $(special),$(wildcard *.c strfun/*.c))))
+ 
+@@ -15,7 +17,7 @@ OBJ = $(notdir $(subst .c,.o,$(filter-ou
+ lib = $(CALCHEP)/lib
+ 
+ 
+-all: $(lib)/ntools.a 
++all: $(lib)/ntools.a
+ 
+ $(lib)/ntools.a:$(lib)/ntools.a($(OBJ))
+ 	$(RANLIB) $(lib)/ntools.a
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/num/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/num/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/num/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/num/Makefile	2017-06-12 23:17:38.987963910 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+@@ -31,10 +33,10 @@ $(lib)/dummy.a:$(lib)/dummy.a(usrfun_dum
+ $(bin)/Int:  userInt.c $(lib)/serv.a $(lib)/num_c.a $(lib)/ntools.a
+ 	$(CC) -o $@  $(CFLAGS) $^  -lm
+ 
+-ifneq ($(SONAME),)  
++ifneq ($(SONAME),)
+   soname_sqme_aux := $(SONAME)$(CALCHEP)/lib/sqme_aux.$(SO)
+ else
+-   soname_sqme_aux :=  
++   soname_sqme_aux :=
+ endif
+ 
+ 
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/plot/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/plot/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/plot/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/plot/Makefile	2017-06-12 23:17:36.359963985 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+@@ -12,7 +14,7 @@ bin = ../../bin
+ lib = ../../lib
+ 
+ OBJ = $(subst .c,.o,$(filter-out $(special),$(wildcard *.c)))
+- 
++
+ $(bin)/plot_view:  view_tab.c  $(lib)/serv.a
+ 	$(CC) $(CFLAGS) -o $@ $^  $(LX11) -lm
+ 
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/polynom/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/polynom/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/polynom/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/polynom/Makefile	2017-06-12 23:17:33.779964058 +0200
+@@ -1,3 +1,4 @@
++.NOTPARALLEL:
+ 
+ include ../../FlagsForMake
+ 
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/Root/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/Root/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/Root/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/Root/Makefile	2017-06-12 23:17:31.071964135 +0200
+@@ -1,3 +1,4 @@
++.NOTPARALLEL:
+ 
+ ROOT=
+ ifeq (,$(ROOT))
+@@ -7,23 +8,23 @@ endif
+ include ../../FlagsForMake
+ 
+ ifeq (,$(PATH))
+-  PATH=$(ROOT)/bin 
+-else    
++  PATH=$(ROOT)/bin
++else
+   PATH:= $(PATH):$(ROOT)/bin
+-endif 
+- 
++endif
++
+ 
+ ifeq (,$(LD_LIBRARY_PATH))
+    LD_LIBRARY_PATH=$(ROOT)/lib
+-else    
++else
+   LD_LIBRARY_PATH:=$(LD_LIBRARY_PATH):$(ROOT)/lib
+ endif
+ 
+ ifeq (,$(DYLD_LIBRARY_PATH))
+    DYLD_LIBRARY_PATH = $(ROOT)/lib
+-else     
++else
+    DYLD_LIBRARY_PATH:=$(DYLD_LIBRARY_PATH):$(ROOT)/lib
+-endif    
++endif
+ 
+ export PATH LD_LIBRARY_PATH DYLD_LIBRARY_PATH ROOT
+ 
+@@ -34,12 +35,11 @@ INCL= -I$(ROOT)/include -I$(CALCHEP)/inc
+ $(lib)/ch_root.so:ch_dict.cc ch_class.h ch_class.cc VandPgate.o $(lib)/dynamic_vp.a  $(lib)/dynamic_me.a
+ 	$(CXX)  $(SHARED) -o $(lib)/ch_root.so  $(CXXFLAGS)  $(INCL) ch_class.cc ch_dict.cc  $(lib)/dynamic_vp.a  $(lib)/dynamic_me.a \
+ 	$(lib)/num_c.a $(lib)/serv.a $(lib)/sqme_aux.so VandPgate.o  $(lib)/libSLHAplus.a  $(lib)/dummy.a $(lib)/ntools.a \
+-	-L$(ROOT)/lib -lCore -lCint  $(lDL) -lm $(LX11) 
++	-L$(ROOT)/lib -lCore -lCint  $(lDL) -lm $(LX11)
+ 	rm VandPgate.o
+ 
+-VandPgate.o:$(CALCHEP)/include/VandPgate.c  
++VandPgate.o:$(CALCHEP)/include/VandPgate.c
+ 	$(CC) $(CFLAGS) -c $(CALCHEP)/include/VandPgate.c
+-		
++
+ ch_dict.cc:ch_class.h
+ 	rootcint -f  ch_dict.cc -c $(INCL)  ch_class.h
+-	
+\ No newline at end of file
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/service2/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/service2/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/service2/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/service2/Makefile	2017-06-12 23:17:28.203964217 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h	2017-06-12 23:15:20.439967850 +0200
+@@ -18,6 +18,10 @@ extern "C" {
+ 
+ #include "aList.h"
+ 
++#ifndef complex
++#define complex _Complex
++#endif
++
+ extern int FError;
+ extern int slhaBasicReader( int mode, int (*readLn)(int, char*),int * anydate,char * end );
+ extern void cleanSLHAdata(void);
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/SLHAplus/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/SLHAplus/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/SLHAplus/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/SLHAplus/Makefile	2017-06-12 23:17:25.843964284 +0200
+@@ -1,9 +1,11 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+ 
+ ifeq ($(FC),)
+-all: $(CALCHEP)/lib/libSLHAplus.a 
++all: $(CALCHEP)/lib/libSLHAplus.a
+ else
+ all: $(CALCHEP)/lib/libSLHAplus.a  $(CALCHEP)/lib/faux.o
+ endif
+@@ -15,8 +17,7 @@ override CFLAGS += -I./include
+ $(CALCHEP)/lib/libSLHAplus.a:$(CALCHEP)/lib/libSLHAplus.a($(OBJ))
+ 	$(RANLIB) $(CALCHEP)/lib/libSLHAplus.a
+ 	rm -f *.o
+-	 
++
+ 
+  $(CALCHEP)/lib/faux.o:faux.f
+ 	$(FC) $(FFLAGS) -c -o $(CALCHEP)/lib/faux.o faux.f
+-	
+\ No newline at end of file
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/symb/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/symb/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/symb/Makefile	2014-05-13 13:26:22.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/symb/Makefile	2017-06-12 23:17:23.011964364 +0200
+@@ -1,3 +1,4 @@
++.NOTPARALLEL:
+ 
+ include ../../FlagsForMake
+ 
+@@ -13,7 +14,7 @@ OBJ = $(notdir $(subst .c,.o,$(filter-ou
+ bin = ../../bin
+ lib = ../../lib
+ 
+-all: $(bin)/s_calchep $(bin)/make_VandP 
++all: $(bin)/s_calchep $(bin)/make_VandP
+ 
+ #all:  $(bin)/make_VandP
+ 
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/c_source/tab/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/tab/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/c_source/tab/Makefile	2014-05-13 13:26:21.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/tab/Makefile	2017-06-12 23:17:18.579964490 +0200
+@@ -1,3 +1,5 @@
++.NOTPARALLEL:
++
+ .PHONY: all
+ 
+ include ../../FlagsForMake
+@@ -11,19 +13,19 @@ bin = ../../bin
+ 
+ #LIBS = $(lib)/num_c.a $(lib)/serv.a $(lib)/dummy.a  $(lib)/sqme_aux.so
+ 
+-#LIBS = $(lib)/serv.a  
++#LIBS = $(lib)/serv.a
+ LIBS =
+ 
+ all: $(bin)/events2tab $(bin)/show_distr $(bin)/sum_distr $(bin)/lhe2tab
+ #$(lib)/num_c.a  $(lib)/serv.a $(lib)/dummy.a
+-$(bin)/events2tab:events2tab.c  dummy_output.c  $(lib)/num_c.a    $(lib)/serv.a ../../include/VandPgate.c   $(lib)/dummy.a $(lib)/ntools.a 
+-	$(CC) $(CFLAGS)  -o $@ $^ $(LX11) $(lDL)  -lm 
++$(bin)/events2tab:events2tab.c  dummy_output.c  $(lib)/num_c.a    $(lib)/serv.a ../../include/VandPgate.c   $(lib)/dummy.a $(lib)/ntools.a
++	$(CC) $(CFLAGS)  -o $@ $^ $(LX11) $(lDL)  -lm
+ 
+ $(bin)/show_distr:show_distr.c  dummy_output.c   $(lib)/num_c.a  ../../include/VandPgate.c    $(lib)/serv.a $(lib)/dummy.a $(lib)/ntools.a
+ 	$(CC) $(CFLAGS)  -o $@ $^ $(LX11) $(lDL)  -lm
+ 
+ $(bin)/sum_distr:sum_distr.c  dummy_output.c  $(lib)/num_c.a  $(lib)/serv.a ../../include/VandPgate.c   $(lib)/dummy.a $(lib)/ntools.a
+ 	$(CC) $(CFLAGS)  -o $@ $^ $(LX11) $(lDL) -lm
+-	
++
+ $(bin)/lhe2tab:lhe2tab.c  ../mix_events/readLHE.c  dummy_output.c   $(lib)/num_c.a  $(lib)/serv.a ../../include/VandPgate.c   $(lib)/dummy.a $(lib)/ntools.a
+ 	$(CC) $(CFLAGS)  -o $@ $^  $(LX11) $(lDL) -lm
+diff -rupN micromegas_3.6.9.2/CalcHEP_src/Makefile ../installed/micromegas/3.6.9.2/CalcHEP_src/Makefile
+--- micromegas_3.6.9.2/CalcHEP_src/Makefile	2014-05-13 17:11:03.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/CalcHEP_src/Makefile	2017-06-12 23:16:26.891965960 +0200
+@@ -1,3 +1,4 @@
++.NOTPARALLEL:
+ 
+ .PHONY: all  COMPILE clean
+ 
+@@ -27,14 +28,14 @@ FlagsForMake: flags
+ COMPILE:FlagsForMake
+ 	if( test ! -d lib) then  mkdir lib; fi
+ 	./sbin/setPath $(CURDIR)
+-	$(MAKE) -C c_source/getmem 
++	$(MAKE) -C c_source/getmem
+ 	$(MAKE) -C c_source/chep_crt
+ 	$(MAKE) -C c_source/service2
+-	$(MAKE) -C c_source/polynom  
++	$(MAKE) -C c_source/polynom
+ 	$(MAKE) -C c_source/ntools
+ 	$(MAKE) -C c_source/dynamicME
+-	$(MAKE) -C c_source/plot 
+-	$(MAKE) -C c_source/num 
++	$(MAKE) -C c_source/plot
++	$(MAKE) -C c_source/num
+ 	$(MAKE) -C c_source/tab
+ 	$(MAKE) -C c_source/SLHAplus
+ 	$(MAKE) -C c_source/mix_events
+@@ -47,7 +48,7 @@ COMPILE:FlagsForMake
+ 	# CalcHEP has compiled successfuly and can be started.
+ 	# The manual can be found on the CalcHEP website:
+ 	#      http://theory.sinp.msu.ru/~pukhov/calchep.html
+-	# The next step is typically to run 
++	# The next step is typically to run
+ 	#      ./mkWORKdir  <new_dir>
+ 	# where <new_dir> is the new directory where you will do
+ 	# your calculations.  After creating this directory, you
+diff -rupN micromegas_3.6.9.2/Makefile ../installed/micromegas/3.6.9.2/Makefile
+--- micromegas_3.6.9.2/Makefile	2014-05-13 13:26:19.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/Makefile	2017-06-12 23:18:05.523963155 +0200
+@@ -1,3 +1,4 @@
++.NOTPARALLEL:
+ 
+ .PHONY: all clean flags
+ 
+@@ -7,11 +8,11 @@ all:sources/microPath.h
+ 
+ sources/microPath.h:
+ 	echo \#define micrO \"$(CURDIR)\"  > sources/microPath.h
+-        
+-   
+-clean:  
++
++
++clean:
+ 	rm -f sources/microPath.h
+ 	./clean
+ 
+-flags: 
++flags:
+ 	$(MAKE) -C CalcHEP_src flags
+\ No newline at end of file
+diff -rupN micromegas_3.6.9.2/sources/Makefile ../installed/micromegas/3.6.9.2/sources/Makefile
+--- micromegas_3.6.9.2/sources/Makefile	2014-05-13 13:26:25.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/sources/Makefile	2017-06-12 23:18:32.491962388 +0200
+@@ -1,21 +1,22 @@
+-  
++.NOTPARALLEL:
++
+ .PHONY: all clean
+ 
+ ifneq ($(MAKECMDGOALS),clean)
+ include ../CalcHEP_src/FlagsForMake
+ endif
+ 
+-all:micromegas.a 
++all:micromegas.a
+ 
+-OBJ = $(notdir $(subst .c,.o,$(filter-out $(special),$(wildcard *.c)))) 
++OBJ = $(notdir $(subst .c,.o,$(filter-out $(special),$(wildcard *.c))))
+ 
+ #ifneq ($(FC),)
+ #   override OBJ += faux.o
+ #endif
+ 
+-micromegas.a:micromegas.a($(OBJ)) 
+-	$(RANLIB) micromegas.a 
++micromegas.a:micromegas.a($(OBJ))
++	$(RANLIB) micromegas.a
+ 	rm -f *.o
+ 
+ clean:
+-	rm -f *.a  *.o 
++	rm -f *.a  *.o
+diff -rupN micromegas_3.6.9.2/sources/micromegas.h ../installed/micromegas/3.6.9.2/sources/micromegas.h
+--- micromegas_3.6.9.2/sources/micromegas.h	2014-05-13 13:26:25.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/sources/micromegas.h	2017-06-12 23:15:20.439967850 +0200
 @@ -170,6 +170,9 @@ output parameters:
            we get a non-SM particle which has not 1->2 decays.  
  */
@@ -11,9 +433,9 @@ diff -rupN ./sources/micromegas.h ../../installed/micromegas/3.6.9.2/sources/mic
  extern aChannel* vSigmaCh;
  extern double zInterp(double z, double * tab);
  /* input parameter:
-diff -rupN ./sources/omega.c ../../installed/micromegas/3.6.9.2/sources/omega.c
---- ./sources/omega.c	2014-05-13 12:26:25.000000000 +0100
-+++ ../../installed/micromegas/3.6.9.2/sources/omega.c	2016-07-21 15:38:04.717995015 +0100
+diff -rupN micromegas_3.6.9.2/sources/omega.c ../installed/micromegas/3.6.9.2/sources/omega.c
+--- micromegas_3.6.9.2/sources/omega.c	2014-05-13 13:26:25.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/sources/omega.c	2017-06-12 23:15:20.439967850 +0200
 @@ -139,7 +139,7 @@ static  double sigma(double PcmIn)
      if(r<=0) return 0;
      l=AUX[nsub22].virt;
@@ -23,9 +445,9 @@ diff -rupN ./sources/omega.c ../../installed/micromegas/3.6.9.2/sources/omega.c
      { double m1,m2,sqrtS;
        m1=pmass[0];
        m2=pmass[1];
-diff -rupN ./sources/spectra.c ../../installed/micromegas/3.6.9.2/sources/spectra.c
---- ./sources/spectra.c	2014-05-13 12:26:25.000000000 +0100
-+++ ../../installed/micromegas/3.6.9.2/sources/spectra.c	2016-07-21 15:38:04.713995015 +0100
+diff -rupN micromegas_3.6.9.2/sources/spectra.c ../installed/micromegas/3.6.9.2/sources/spectra.c
+--- micromegas_3.6.9.2/sources/spectra.c	2014-05-13 13:26:25.000000000 +0200
++++ ../installed/micromegas/3.6.9.2/sources/spectra.c	2017-06-12 23:15:20.439967850 +0200
 @@ -332,7 +332,7 @@ static double Spectra22A(char*name1,char
  /* ------------------------------------------------- */
  
@@ -44,18 +466,3 @@ diff -rupN ./sources/spectra.c ../../installed/micromegas/3.6.9.2/sources/spectr
  {  
  //  float mi[NEn]={10,25,50,80.3,91.2,100,150,176,200,250,350,500,750,1000,1500,2000,3000,5000};
     double mi[NEn]={2,5,10,25,50,80.3,85,91.2,92,95,100,110,120,125,130,140,150,176,200,250,350,500,750,1000,1500,2000,3000,5000};
-
-diff -rupN ./CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h ../../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h
---- ./CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h 2014-05-13 13:26:21.000000000 +0200
-+++ ../../installed/micromegas/3.6.9.2/CalcHEP_src/c_source/SLHAplus/include/SLHAplus.h 2017-05-21 18:03:50.000000000 +0200
-@@ -18,6 +18,10 @@ extern "C" {
- 
- #include "aList.h"
- 
-+#ifndef complex
-+#define complex _Complex
-+#endif
-+
- extern int FError;
- extern int slhaBasicReader( int mode, int (*readLn)(int, char*),int * anydate,char * end );
- extern void cleanSLHAdata(void);
