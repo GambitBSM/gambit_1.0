@@ -1,0 +1,219 @@
+diff -ruPN DDCalc-1.0.0/Makefile ../installed/ddcalc/1.0.0/Makefile
+--- DDCalc-1.0.0/Makefile	2017-05-18 17:59:04.000000000 +0200
++++ ../installed/ddcalc/1.0.0/Makefile	2017-06-10 23:13:33.455629435 +0200
+@@ -119,7 +119,7 @@
+ endif
+ 
+ # Flags used to specify DDCalc folder
+-FFLAGS += -D DDCALC_DIR=\"$(DDCALC_DIR)\" 
++FFLAGS += -D DDCALC_DIR=\"$(DDCALC_DIR)\"
+ 
+ # C++ compiler and flags.  Only used for test program.
+ # CXX_FLIBS are libraries necessary for linking fortran
+@@ -133,19 +133,19 @@
+ endif
+ ifneq (,$(findstring "$(origin CXXFLAGS)","undefined" "default"))
+   ifneq (,$(findstring icc,$(CXX)))
+-    CXXFLAGS := 
++    CXXFLAGS :=
+   else ifneq (,$(findstring g++,$(CXX)))
+-    CXXFLAGS := 
++    CXXFLAGS :=
+   endif
+ endif
+ ifneq (,$(findstring icc,$(CXX)))
+   CXX_FLIBS := -lifcore
+ else ifneq (,$(findstring g++,$(CXX)))
+-  CXX_FLIBS := -lgfortran 
++  CXX_FLIBS := -lgfortran
+ else
+   $(info WARNING: Unsupported C++ compiler $(CXX).  Build may fail due to)
+   $(info unknown library dependencies.)
+-  CXX_FLIBS := 
++  CXX_FLIBS :=
+ endif
+ 
+ # Debugging
+@@ -167,15 +167,15 @@
+ fsrc := DDConstants.f90 DDTypes.f90 DDCommandLine.f90 DDNuclear.f90 \
+         DDUtils.f90 DDNumerical.f90 DDStats.f90 DDCouplings.f90 \
+         DDWIMP.f90 DDInput.f90 DDHalo.f90 DDRates.f90 DDOutput.f90 \
+-        DDDetectors.f90 DDTabulation.f90                                           
+-fsrc_final := DDExperiments.f90 DDExHelp.f90 DDCalc.f90
++        DDDetectors.f90 DDTabulation.f90 DDExperiments.f90 \
++        DDExHelp.f90 DDCalc.f90
+ analyses := DARWIN_Ar.f90 DARWIN_Xe.f90 LUX_2013.f90 SIMPLE_2014.f90 \
+             SuperCDMS_2014.f90 XENON100_2012.f90 LUX_2016.f90 \
+             PandaX_2016.f90 LUX_2015.f90 PICO_2L.f90 PICO_60_F.f90 \
+             PICO_60_I.f90
+ 
+ # Include files
+-fincludes := 
++fincludes :=
+ fincludes := $(patsubst %,$(INCLUDE)/%,$(fincludes))
+ cincludes := DDCalc.hpp DDExperiments.hpp
+ cincludes := $(patsubst %,$(INCLUDE)/%,$(cincludes)) \
+@@ -190,13 +190,12 @@
+ fsources := $(fincludes) \
+             $(patsubst %,$(SRC)/%,$(fsrc)) \
+             $(patsubst %,$(SRC)/analyses/%,$(analyses)) \
+-            $(patsubst %,$(SRC)/%,$(fsrc_final)) \
+             $(patsubst %,$(SRC)/%.f90,$(fprograms)) \
+             $(patsubst %,$(EXAMPLES)/%.f90,$(ftestprograms))
+ csources := $(cincludes) \
+             $(patsubst %,$(EXAMPLES)/%.cpp,$(ctestprograms))
+ sources  := $(fsources) $(csources)
+-fobjects := $(patsubst %.f90,$(BUILD)/%.o,$(fsrc) $(analyses) $(fsrc_final))
++fobjects := $(patsubst %.f90,$(BUILD)/%.o,$(fsrc) $(analyses))
+ 
+ # Additional files to include in distribution tar file
+ extrafiles := Makefile README LICENSE DDCalc.bib
+@@ -210,7 +209,7 @@
+ cleanfiles := $(BUILD)/* \
+               $(fprograms) $(fprograms:=.dSYM) \
+ 							$(ftestprograms) $(ftestprograms:=.dSYM) \
+-							$(ctestprograms)                
++							$(ctestprograms)
+ # ...also tar file and libs
+ distcleanfiles := $(cleanfiles) $(LIB)/* $(distfile)
+ 
+@@ -219,8 +218,70 @@
+ # General include file dependencies
+ $(ctestprograms): $(cincludes)
+ 
+-# Some objects and programs have additional include files
+-#file.o: file_com.h
++# Some objects depend on each other
++$(BUILD)/DDCalc.o: $(BUILD)/DDExperiments.o \
++ $(BUILD)/DDConstants.o \
++ $(BUILD)/DDTypes.o \
++ $(BUILD)/DDCommandLine.o \
++ $(BUILD)/DDNumerical.o \
++ $(BUILD)/DDExHelp.o \
++ $(BUILD)/DDWIMP.o \
++ $(BUILD)/DDDetectors.o \
++ $(BUILD)/DDRates.o \
++ $(BUILD)/DDStats.o \
++ $(BUILD)/DDHalo.o \
++ $(BUILD)/DDOutput.o \
++ $(BUILD)/DDTabulation.o
++$(BUILD)/DDCouplings.o: $(BUILD)/DDConstants.o
++$(BUILD)/DDDetectors.o: $(BUILD)/DDTypes.o \
++ $(BUILD)/DDCommandLine.o \
++ $(BUILD)/DDNuclear.o \
++ $(BUILD)/DDUtils.o \
++ $(BUILD)/DDInput.o \
++ $(BUILD)/DDOutput.o
++$(BUILD)/DDExHelp.o: $(BUILD)/DDExperiments.o \
++ $(BUILD)/DDCommandLine.o \
++ $(BUILD)/DDDetectors.o
++$(BUILD)/DDExperiments.o: $(BUILD)/XENON100_2012.o \
++ $(BUILD)/LUX_2013.o \
++ $(BUILD)/SIMPLE_2014.o \
++ $(BUILD)/SuperCDMS_2014.o \
++ $(BUILD)/DARWIN_Ar.o \
++ $(BUILD)/DARWIN_Xe.o \
++ $(BUILD)/LUX_2016.o \
++ $(BUILD)/PandaX_2016.o \
++ $(BUILD)/LUX_2015.o \
++ $(BUILD)/PICO_2L.o \
++ $(BUILD)/PICO_60_F.o \
++ $(BUILD)/PICO_60_I.o
++$(BUILD)/DDHalo.o: $(BUILD)/DDConstants.o \
++ $(BUILD)/DDTypes.o \
++ $(BUILD)/DDUtils.o \
++ $(BUILD)/DDNumerical.o \
++ $(BUILD)/DDCommandLine.o \
++ $(BUILD)/DDInput.o
++$(BUILD)/DDInput.o: $(BUILD)/DDUtils.o
++$(BUILD)/DDNuclear.o: $(BUILD)/DDConstants.o
++$(BUILD)/DDNumerical.o: $(BUILD)/DDUtils.o
++$(BUILD)/DDOutput.o: $(BUILD)/DDUtils.o \
++ $(BUILD)/DDConstants.o \
++ $(BUILD)/DDTypes.o \
++ $(BUILD)/DDInput.o \
++ $(BUILD)/DDStats.o \
++ $(BUILD)/DDRates.o \
++ $(BUILD)/DDCouplings.o \
++ $(BUILD)/DDCommandLine.o
++$(BUILD)/DDRates.o: $(BUILD)/DDTypes.o \
++ $(BUILD)/DDHalo.o
++$(BUILD)/DDStats.o: $(BUILD)/DDTypes.o \
++ $(BUILD)/DDNumerical.o
++$(BUILD)/DDTabulation.o: $(BUILD)/DDTypes.o \
++ $(BUILD)/DDCommandLine.o
++$(BUILD)/DDUtils.o: $(BUILD)/DDTypes.o
++$(BUILD)/DDWIMP.o: $(BUILD)/DDTypes.o \
++ $(BUILD)/DDUtils.o \
++ $(BUILD)/DDCommandLine.o \
++ $(BUILD)/DDCouplings.o
+ 
+ #################### RULES #################################
+ 
+@@ -228,7 +289,7 @@
+ .DEFAULT_GOAL := bin
+ 
+ # Phony targets
+-.PHONY: all bin lib examples FORCE clean distclean 
++.PHONY: all bin lib examples FORCE clean distclean
+ 
+ # Build everything (except archives)
+ all: lib bin examples
+@@ -250,43 +311,35 @@
+ # Rule for building programs
+ $(fprograms): $(statlib)
+ $(fprograms): % : $(SRC)/%.f90
+-	@echo "===== Compiling $@ ====="
+-	$(FC) $(FFLAGS) -I$(BUILD) -o $@ $< $(LIB)/$(statlib) 
++	$(FC) $(FFLAGS) -I$(BUILD) -o $@ $< $(LIB)/$(statlib)
+ 
+ # Rule for building test programs (F)
+ $(ftestprograms): $(statlib)
+ $(ftestprograms): % : $(EXAMPLES)/%.f90
+-	@echo "===== Compiling $@ ====="
+-	$(FC) $(FFLAGS) -I$(BUILD) -o $@ $< $(LIB)/$(statlib) 
++	$(FC) $(FFLAGS) -I$(BUILD) -o $@ $< $(LIB)/$(statlib)
+ 
+ # Rule for building test programs (C++)
+ $(ctestprograms): $(statlib)
+ $(ctestprograms): % : $(EXAMPLES)/%.cpp
+-	@echo "===== Compiling $@ ====="
+ 	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ $< $(LIB)/$(statlib) $(CXX_FLIBS)
+ 
+ # Rules for building objects
+ $(BUILD)/%.o : $(SRC)/%.f90
+-	@echo "===== Compiling $@ ====="
+ 	$(FC) $(FFLAGS) -o $@ -c $<
+-$(BUILD)/%.o : $(SRC)/analyses/%.f90
+-	@echo "===== Compiling $@ ====="
++$(BUILD)/%.o : $(SRC)/analyses/%.f90 $(BUILD)/DDTypes.o $(BUILD)/DDDetectors.o
+ 	$(FC) $(FFLAGS) -o $@ -c $<
+ 
+ # Rule for building static library
+ $(statlib): $(fobjects)
+-	@echo "===== Generating $@ ====="
+ 	ar rcs $(LIB)/$@ $^
+ 
+ # Rule for building shared library
+ $(sharedlib): $(fobjects)
+-	@echo "===== Generating $@ ====="
+ 	$(FC) $(FFLAGS) -shared -o $(LIB)/$@ $^
+ 
+ # Generate archive file
+ dist: $(distfile)
+ $(distfile): $(sources) $(extrafiles)
+-	@echo "===== Generating $@ ====="
+ 	mkdir -p ".archive-temp/$(DIST_DIR)/build"
+ 	mkdir -p ".archive-temp/$(DIST_DIR)/lib"
+ 	cp -r -al $(SRC) $(INCLUDE) $(DOC) $(EXAMPLES) \
+@@ -296,10 +349,8 @@
+ 
+ # Remove files
+ clean: FORCE
+-	@echo "===== Cleaning ====="
+ 	-rm -rf $(cleanfiles)
+ 
+ # Remove more files
+ distclean:FORCE
+-	@echo "===== Cleaning ====="
+ 	-rm -rf $(distcleanfiles)
