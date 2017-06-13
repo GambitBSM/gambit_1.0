@@ -19,6 +19,7 @@
 #          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
 #  \date 2015 May, Dec
+#  \date For the term of my natural life
 #
 #  \author Chris Rogan
 #          (crogan@cern.ch)
@@ -77,7 +78,7 @@ endif()
 set(name "superiso")
 set(ver "3.6")
 set(lib "libsuperiso")
-set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")  # Note "beta" suffix!
+set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")
 set(md5 "df864ceeccb72467bfbe572a8da9711d")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 check_ditch_status(${name} ${ver})

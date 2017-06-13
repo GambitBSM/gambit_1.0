@@ -10799,3 +10799,15 @@ diff -rupN darksusy-5.1.3/contrib/HiggsBounds-3.8.1/HiggsBounds/usefulbits.f90 .
    
    deallocate(theo) !allocated in subroutine do_input  
 
+diff -rupN darksusy-5.1.3/share/DarkSUSY/tab_install.pl ../installed/darksusy/5.1.3/share/DarkSUSY/tab_install.pl 
+--- darksusy-5.1.3/share/DarkSUSY/tab_install.pl	2008-04-11 11:31:28.000000000 +0200
++++ ../installed/darksusy/5.1.3/share/DarkSUSY/tab_install.pl	2017-06-13 16:42:23.951110679 +0200
+@@ -12,7 +12,7 @@ if ($file =~ /.gz$/) {    # Convert asci
+ #    } else {
+ #	$type="d";
+ #    }
+-    $tmpfile="tmp.dat";
++    $tmpfile="$file-tmp";
+     system("gunzip -v -c $file > $tmpfile");
+ # Now we are ready to run ascii2bin
+     open(PROG,"|./ascii2bin") ||
