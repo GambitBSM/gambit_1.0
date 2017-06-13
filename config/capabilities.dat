@@ -1583,6 +1583,9 @@ nulike_init: |
 nulike_1_0_4_init: |
   Initializes nulike_1_0_4.
 
+nulike_1_0_5_init: |
+  Initializes nulike_1_0_5.
+
 nubounds:
   Counts, likelihoods and p-values from neutrino telescope searches for dark matter annihilation in the Sun.
 
