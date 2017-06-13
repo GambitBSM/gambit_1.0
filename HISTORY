@@ -16,6 +16,7 @@ Bugfix release.
 - Incorporated pull requests from Joshua Ellis (polish MultiNest and python cmake treatments)
 - Added --developer switch for turning off error raised when capability or model database is incomplete
 - Removed leftover FlexibleSUSY linking debug output in cmake system
+- Added interface to nulike 1.0.5
 
 v1.0.0 - May 2017
 Initial release in combination with first 9 papers.
