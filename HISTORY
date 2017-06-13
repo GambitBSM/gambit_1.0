@@ -7,8 +7,9 @@ changes in each new version is given here.
 v1.0.1 - June 2017
 Bugfix release.
 - Improved treatment of version numbers to avoid the case where someone downloads a tarball from GitHub and cannot build
-- Added C++11 flags in gm2calc BOSS files to fix compatibility with gcc 7.1
 - Fixed hdf5 printer compilation problem with gcc 7.1
+- Added C++11 flags in gm2calc BOSS files to fix compatibility with gcc 7.1
+- Fixed warning due to passing of both C++14 and C++11 flags to overall build
 - Fixed duplicate ditch notifications at cmake time when ditch commands overlap
 - Fixed race condition leading parallel builds of BOSSed backends to fail
 - Hardened all(!) backends against issues caused when building them in parallel
